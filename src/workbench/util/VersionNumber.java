@@ -181,6 +181,11 @@ public class VersionNumber
     try
     {
       String[] elements = version.split("\\.");
+      if (elements[0].equals("1"))
+      {
+        // Before Java 9 the Java version was reported as 1.8 or 1.7
+        return new VersionNumber(Integer.valueOf(elements[1]), 0);
+      }
       return new VersionNumber(Integer.valueOf(elements[0]), Integer.valueOf(elements[1]));
     }
     catch (Throwable th)
