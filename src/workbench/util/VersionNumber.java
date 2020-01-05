@@ -26,6 +26,10 @@ package workbench.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+
+
 /**
  * @author Thomas Kellerer
  */
@@ -181,17 +185,21 @@ public class VersionNumber
     try
     {
       String[] elements = version.split("\\.");
-      if (elements[0].equals("1"))
+      if (elements.length > 1)
       {
-        // Before Java 9 the Java version was reported as 1.8 or 1.7
-        return new VersionNumber(Integer.valueOf(elements[1]), 0);
+        if (elements[0].equals("1"))
+        {
+          return new VersionNumber(Integer.valueOf(elements[1]), 0);
+        }
+        return new VersionNumber(Integer.valueOf(elements[0]), Integer.valueOf(elements[1]));
       }
-      return new VersionNumber(Integer.valueOf(elements[0]), Integer.valueOf(elements[1]));
+      return new VersionNumber(Integer.valueOf(elements[0]), 0);
     }
     catch (Throwable th)
     {
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve Java version", th);
       // that's the minimum version this application needs
-      return new VersionNumber(1, 6);
+      return new VersionNumber(1, 8);
     }
   }
 }
