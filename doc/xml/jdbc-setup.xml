@@ -137,7 +137,7 @@
 						<entry><literal>org.postgresql.Driver</literal></entry>
 						<entry>
               <simplelist columns="1">
-							<member><literal>postgresql-9.4-1203.jdbc4.jar</literal> (exact name depends on PostgreSQL version)</member>
+							<member><literal>postgresql-42.2.8.jar</literal> (exact name depends on the driver version)</member>
 							<member><ulink url="http://jdbc.postgresql.org"/></member>
 						</simplelist>
 						</entry>
@@ -269,7 +269,7 @@
             <entry>
               <simplelist columns="1">
                 <member>
-                  <literal>ojdbc7.jar</literal>
+                  <literal>ojdbc8.jar</literal>
                 </member>
                 <member>
                   <ulink url="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html"/>
