@@ -7,6 +7,9 @@
     <para>
       &wb-productname; requires a Java 8 (or higher) runtime environment. You can either use a JRE ("Runtime") or a JDK ("Development Kit").
     </para>
+    <para>
+      Build 126 is the last version to support Java 8, following versions will require Java 11 or higher.
+    </para>
 
     <para>
       For Windows<superscript>&reg;</superscript> and Linux a batch file is provided to automatically download a Java runtime environment
@@ -15,10 +18,9 @@
           <simpara>For Windows<superscript>&reg;</superscript>: <literal>download_jre.cmd</literal></simpara>
         </listitem>
         <listitem>
-          <simpara>For Linux/Unix: <literal>download_jre.sh</literal></simpara>
+          <simpara>For Linux/Unix and MacOS: <literal>download_jre.sh</literal></simpara>
         </listitem>
       </itemizedlist>
-      The batch file should be run in the same directory where <literal>SQLWorkbench64.exe</literal> is stored.
       It will download the most recent JRE from <ulink url="https://adoptopenjdk.net">AdoptOpenJDK</ulink>, unpack
       the archive and store it in a sub-directory named <literal>jre</literal> which will automatically be used
       by the native Windows<superscript>&reg;</superscript> launcher and the Linux shell scripts to start &wb-productname;
@@ -38,7 +40,10 @@
         </listitem>
       </itemizedlist>
     </para>
-
+    <para>
+      Starting with build 126 the <link linkend="">Windows launcher</link> can also download a Java runtime, if none was
+      found.
+    </para>
   </section>
 
   <section id="first-time-install">
@@ -65,7 +70,7 @@
       The "user's home directory" is <literal>$HOME</literal> on a Linux or Unix based system,
       and <literal>%HOMEPATH%</literal> on a Windows<superscript>&reg;</superscript> system. (Technically speaking
       it is using the contents of Java system property <literal>user.home</literal> to
-      find the user's home directory)
+      find the user's home directory).
     </para>
 
   </section>
@@ -77,7 +82,7 @@
       <literal>sqlworkbench.jar</literal>, the <literal>exe</literal> files and shell scripts that
       start the application. If you are using the bundle that includes the libraries for
       reading and writing OpenOffice and Microsoft Office files, replace all existing <literal>jar</literal> files
-      with those from the distribution archive as well.
+      in the <literal>ext</literal> subdirectory with those from the distribution archive as well.
     </para>
   </section>
 
@@ -85,29 +90,25 @@
     <title>Starting the program from the commandline</title>
 
     <para>
-      sqlworkbench.jar is a self executing JAR file. This means, that if
-      your Java runtime is installed and registered with the system, a double click
-      on <literal>sqlworkbench.jar</literal> will execute the application. To run the application
-      manually use the command:
+      To start the program a shell/batch script is provided.
+      When using Linux or MacOS &wb-productname; can be started using <literal>sqlworkbench.sh</literal>.
     </para>
-
-    <programlisting>java -jar sqlworkbench.jar</programlisting>
 
     <para>
-      Native executables for Windows<superscript>&reg;</superscript> and Mac OSX are supplied that start &wb-productname; by
-      using the default Java runtime installed on your system. Details on using
-      the <link linkend="launcher-using">Windows<superscript>&reg;</superscript> launcher</link> can be found
+      When using Windows<superscript>&reg;</superscript>, you can either use the batch file <ltieral>sqlworkbench.cmd>/</ltieral>
+      or <literal>SQLWorkbench.exe</literal> to starts &wb-productname;.
+    </para>
+    <para>
+      Details on using the Windows<superscript>&reg;</superscript> launcher can be found
       <link linkend="launcher-using">here</link>.
     </para>
-
   </section>
 
   <section id="shell-using">
     <title>Starting the program using the shell script</title>
     <para>
       To run &wb-productname; under an Unix-type operating system, the supplied shell script
-      <literal>sqlworkbench.sh</literal> can be used. For Linux desktops a sample ".desktop"
-      file is available.
+      <literal>sqlworkbench.sh</literal> can be used.
     </para>
 
     <section id="jdk-shell">
@@ -115,7 +116,8 @@
 
       <para>
         The shell scripts (and the batch files) first check if a Java runtime is available in the sub-directory <literal>jre</literal>.
-        If that is available it will be used.
+        If that is available it will be used. The shell script <literal>download_jre.sh</literal> will automatically extract
+        the Java runtime into that directory.
       </para>
       <para>
         If no "local" Java runtime is found, the environment variable <literal>WORKBENCH_JDK</literal>
@@ -149,10 +151,14 @@
     <indexterm><primary>Java runtime</primary><secondary>Java not found on Windows</secondary></indexterm>
 
     <para>
-      To start &wb-productname; on the Windows<superscript>&reg;</superscript> platform, the supplied <literal>SQLWorkbench.exe</literal> (32bit Windows)
-      or <literal>SQLWorkbench64.exe</literal> (64bit Windows) can be used to start the program when using an installed
-      Oracle Java runtime. The file <literal>sqlworkbench.jar</literal> has to be located in the same directory as the
-      exe files, otherwise it does not work.
+      To start &wb-productname; on the Windows<superscript>&reg;</superscript> platform, the supplied <literal>SQLWorkbench.exe</literal>
+      can be used to start the program when using an installed Java runtime. The file <literal>sqlworkbench.jar</literal> has to be located in the
+      same directory as the exe files, otherwise it does not work.
+    </para>
+
+    <para>
+      Starting with build 126, the launcher has been changed, and it can use 32bit or 64bit Java runtimes alike.
+      There is no need for a separate 64bit launcher any more. The <literal>SQLWorkbench64.exe</literal> is only provided for backward compatibility.
     </para>
 
     <para>
@@ -163,12 +169,61 @@
     </para>
 
     <para>
-      If you cannot (or don't want to) do a regular installation of a Java 8 runtime, you can download
-      a ZIP distribution for Windows<superscript>&reg;</superscript> from Oracle's homepage: <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/index.html"/>.
-      Under <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html">"JRE Download"</ulink> there is also
-      an option to download a no-installer version. These downloads are offered as <literal>tar.gz</literal> archives, so a tool
-      that can handle Unix/Linux that format is needed for unpacking the archive (e.g.
-      <ulink url="http://www.ghisler.com/">TotalCommander</ulink> or <ulink url="http://www.7-zip.org/">7-Zip</ulink>).
+      How the launcher searches for the Java runtime in the following order. The first Java installation found
+      will be used.
+    </para>
+
+    <orderedlist>
+      <listitem>
+        <simpara>
+          it first checks if a command line parameter <literal>-javaHome</literal> was specified. If it was provided
+          and points to a Java installation, that will be used.
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          then it checks, if the configuration file <literal>sqlworkbench.cfg</literal> contains a <literal>javaHome</literal>
+          entry. If it exists and points to a Java installation, that will be used.
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          then it checks if a Java runtime is available in the sub-directory <literal>jre</literal>.
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          if the environment variable <literal>%WORKBENCH_JDK%</literal> is defined, the launcher will
+          use <literal>%WORKBENCH_JDK%\bin\java.exe</literal> to run the application.
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          if the environment variable <literal>JAVA_HOME</literal> is defined, the launcher
+          will use <literal>%JAVA_HOME%\bin\java.exe</literal> to run the application.
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          then it checks if the Windows registry contains information about a Java runtime.
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          if still no Java was found, all directories defined through the <literal>PATH</literal> variable are searched
+          for a Java installation. The first one found will be used.
+        </simpara>
+      </listitem>
+    </orderedlist>
+
+    <para>
+      If neither of those steps found a Java runtime, the launcher offers to download a Java runtime or select an
+      installation. The Java runtime is downloaded from <ulink url="https://adoptopenjdk.net">AdoptOpenJDK</ulink>,
+      as the the provided <link linkend="install-prereq">batch file</link> does.
+    </para>
+    <para>
+      All <literal>-X</literal> and <literal>-D</literal> parameters provided to the launcher are passed
+      without change to the Java runtime.
     </para>
 
     <para>
@@ -180,41 +235,43 @@
       <title>Parameters for the Windows<superscript>&reg;</superscript> launcher</title>
 
       <para id="launcher-ini-file">
-        Additional parameters to the Windows<superscript>&reg;</superscript> launcher can be defined in a <literal>INI</literal> file that needs to be created
-        in the directory where the <literal>.exe</literal> is located. The name of the <literal>INI</literal> has to match the
-        name of the used executable. To specify parameters for the 64bit executable, use <literal>SQLWorkbench64.ini</literal>.
-        To specify parameters for the 32bit executable, use <literal>SQLWorkbench.ini</literal>
+        Additional parameters to the Windows<superscript>&reg;</superscript> launcher can be defined in a configuration file that needs to be created
+        in the directory where <literal>SQLWorkbench.exe</literal> is located. The name of the file has to be <literal>sqlworkbench.cfg</literal>.
       </para>
+      <note><para>
+        The format of <literal>sqlworkbench.cfg</literal> is different than the <literal>.ini</literal> file of previous versions. The
+        launcher will convert an existing <literal>SQLWorkbench.ini</literal> or <literal>SQLWorkbench64.ini</literal>
+        to the new format if started for the first time.
+      </para></note>
 
       <section id="launcher-jvm-location">
         <title>Specifying the Java location</title>
         <para>
-          The launcher executables are based on <ulink url="http://winrun4j.sourceforge.net/">WinRun4J</ulink>, further documentation on
-          the format of the configuration file and parameters can also be found there.
-        </para>
-        <para>
-          If the launcher cannot find your installed Java runtime, you can specify the location of the JRE in the <link linkend="">INI</link> file
-          with the following parameter:
+          If the launcher cannot find a Java runtime, you can specify the location of the JRE in the configuration file
+          in the section <literal>[Workbench]</literal> with the following parameter:
         </para>
 
-        <programlisting>vm.location=c:\Program Files\Java\jdk8\jre\bin\server\jvm.dll</programlisting>
+        <programlisting>
+[Workbench]
+javaHome=c:\Program Files\Java
+</programlisting>
         <para>
-          You need to specify the <emphasis role="bold">full path</emphasis> to the <literal>jvm.dll</literal>,
-          <emphasis role="bold">not</emphasis> the <emphasis>directory</emphasis> where the Java runtime is installed.
-          Note that the 32bit Java runtime has both a <literal>server\jvm.dll</literal> <emphasis>and</emphasis> <literal>client\jvm.dll</literal>
-          A 64bit Java runtime only has a <literal>server\jvm.dll</literal>.
+          You need to specify the root directory of the Java runtime (or JDK). This can either be a 32bit or a 64bit runtime,
+          but a 64bit runtime is highly recommended.
         </para>
       </section>
 
       <section id="launcher-memory-parameter">
         <title>Defining the memory for the application</title>
-        <indexterm><primary>Memory problems</primary><secondary>Increasing the memory available for the application</secondary></indexterm>
         <para>
-          The memory that is available to the Java runtime is defined through the parameter <literal>vm.heapsize.preferred</literal>
-          in the <literal>INI</literal> file. The unit is bytes. To start &wb-productname; with 12GB of available memory (which is only possible
-          on a 64bit system!) add the following line to the <literal>INI</literal> file:
+          The memory available to the Java runtime is specified through the configuration file by providing the corresponding
+          JVM paramter. The following entry would set the maximum memory to 4GB (the <literal>-Xmx</literal> part is passed
+          to the Java runtime)
+        <programlisting>
+[Java]
+vmarg.1=-Xmx4g
+</programlisting>
         </para>
-        <programlisting>vm.heapsize.preferred=12000</programlisting>
         <para>
           You can verify the available memory in the about dialog: <menuchoice>
             <guimenu>Help</guimenu>
