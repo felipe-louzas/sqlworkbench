@@ -51,6 +51,7 @@ import workbench.util.StringUtil;
 public class WbFilePicker
   extends javax.swing.JPanel
 {
+  public static final String PROP_FILENAME = "filename";
   private String lastDir;
   private FileFilter fileFilter;
   private boolean allowMultiple;
@@ -70,7 +71,16 @@ public class WbFilePicker
     selectDirectory = flag;
   }
 
-  public boolean getSelectDirectoryOnly(boolean flag)
+  public void setSelectedFile(File f)
+  {
+    if (f != null)
+    {
+      this.selectedFiles = new File[] { f };
+      this.tfFilename.setText(f.toString());
+    }
+  }
+  
+  public boolean getSelectDirectoryOnly()
   {
     return selectDirectory;
   }
@@ -218,7 +228,7 @@ public class WbFilePicker
         {
           Settings.getInstance().setProperty(lastDirProperty, selectedFiles[0].getParent());
         }
-        this.firePropertyChange("filename", oldValue, newValue);
+        this.firePropertyChange(PROP_FILENAME, oldValue, newValue);
       }
     }
     catch (Throwable e)
@@ -266,6 +276,12 @@ public class WbFilePicker
   {
     this.fileFilter = f;
   }
+
+  public FileFilter getFileFilter()
+  {
+    return fileFilter;
+  }
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JButton selectFileButton;
   private JTextField tfFilename;

@@ -56,7 +56,6 @@ import workbench.db.exporter.ExportType;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnSelectorPanel;
-import workbench.gui.components.FoldingPanel;
 import workbench.gui.components.KeyColumnSelectorPanel;
 
 import workbench.storage.MergeGenerator;
@@ -96,12 +95,6 @@ public class SqlOptionsPanel
     blobTypes.setSelectedItem(BlobMode.SaveToFile.toString());
 
     WbSwingUtilities.setMinimumSizeFromCols(commitCount);
-
-    GridBagLayout layout = (GridBagLayout)getLayout();
-    GridBagConstraints c = layout.getConstraints(extOptionsPanel);
-    remove(extOptionsPanel);
-    FoldingPanel p = new FoldingPanel(extOptionsPanel);
-    add(p, c);
   }
 
   public final void setResultInfo(ResultInfo info)
@@ -494,56 +487,59 @@ public class SqlOptionsPanel
     literalTypesLabel.setText(ResourceMgr.getString("LblLiteralType")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 0, 5, 0);
     jPanel4.add(literalTypesLabel, gridBagConstraints);
 
     literalTypes.setToolTipText(ResourceMgr.getDescription("LblLiteralType"));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 0);
+    gridBagConstraints.insets = new Insets(0, 4, 5, 0);
     jPanel4.add(literalTypes, gridBagConstraints);
 
     mergeTypesLabel.setText(ResourceMgr.getString("LblMergeType")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 0, 5, 0);
     jPanel4.add(mergeTypesLabel, gridBagConstraints);
 
     mergeTypes.setToolTipText(ResourceMgr.getDescription("LblLiteralType"));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 0);
+    gridBagConstraints.insets = new Insets(0, 4, 5, 0);
     jPanel4.add(mergeTypes, gridBagConstraints);
 
     jLabel2.setText(ResourceMgr.getString("LblSqlExpType")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 0, 5, 0);
     jPanel4.add(jLabel2, gridBagConstraints);
 
     syntaxType.setModel(new DefaultComboBoxModel(new String[] { "INSERT", "UPDATE", "DELETE/INSERT", "MERGE", "DELETE" }));
     syntaxType.addActionListener(this);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 0);
+    gridBagConstraints.insets = new Insets(0, 4, 5, 0);
     jPanel4.add(syntaxType, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
@@ -596,6 +592,7 @@ public class SqlOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 0, 5, 0);
     extOptionsPanel.add(blobTypesLabel, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
@@ -604,12 +601,13 @@ public class SqlOptionsPanel
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 0);
+    gridBagConstraints.insets = new Insets(0, 4, 5, 0);
     extOptionsPanel.add(blobTypes, gridBagConstraints);
 
     commitLabel.setText(ResourceMgr.getString("LblExportCommitEvery")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 0, 5, 0);
     extOptionsPanel.add(commitLabel, gridBagConstraints);
 
     commitCount.setColumns(4);
@@ -617,7 +615,7 @@ public class SqlOptionsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 0);
+    gridBagConstraints.insets = new Insets(0, 4, 5, 0);
     extOptionsPanel.add(commitCount, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
@@ -636,6 +634,7 @@ public class SqlOptionsPanel
     gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(2, 0, 2, 0);
     add(ignoreIdentity, gridBagConstraints);
 
     multiRowInserts.setText(ResourceMgr.getString("LblMultiRowInsert")); // NOI18N
@@ -644,6 +643,7 @@ public class SqlOptionsPanel
     gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(2, 0, 2, 0);
     add(multiRowInserts, gridBagConstraints);
   }
 

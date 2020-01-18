@@ -2393,8 +2393,10 @@ public class SqlPanel
 
     final DataExporter exporter = new DataExporter(this.dbConnection);
     exporter.setRowMonitor(this.rowMonitor);
-    WbFile f = new WbFile(dialog.getSelectedFilename());
-    exporter.addQueryJob(sql, f, null);
+    final WbFile outputfile = new WbFile(dialog.getSelectedFilename());
+    final boolean openOutput = dialog.doOpenFile();
+
+    exporter.addQueryJob(sql, outputfile, null);
     dialog.setExporterOptions(exporter);
 
     this.worker = exporter;
@@ -2457,6 +2459,10 @@ public class SqlPanel
           messages.append("s\n");
           appendToLog(messages.toString());
           showLogPanel();
+          if (openOutput)
+          {
+            dialog.openOutputFile();
+          }
         }
         catch (Exception e)
         {

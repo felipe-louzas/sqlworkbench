@@ -25,6 +25,7 @@ package workbench.gui.dialogs.export;
 
 import java.awt.Component;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.exporter.DataExporter;
@@ -74,6 +75,10 @@ public class DataStoreExporter
     {
       this.output = new WbFile(dialog.getSelectedFilename());
       writeFile();
+      if (dialog.doOpenFile())
+      {
+        dialog.openOutputFile();
+      }
     }
   }
 
@@ -111,7 +116,7 @@ public class DataStoreExporter
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataStoreExporter.writeFile()", "Error writing export file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error writing export file", e);
       WbSwingUtilities.showErrorMessage(caller, ExceptionUtil.getDisplay(e));
     }
   }

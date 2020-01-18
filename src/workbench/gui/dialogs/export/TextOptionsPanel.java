@@ -406,96 +406,96 @@ public class TextOptionsPanel
     delimiterLabel.setText(ResourceMgr.getString("LblFieldDelimiter")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(2, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(2, 4, 4, 4);
     add(delimiterLabel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(2, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(2, 4, 4, 4);
     add(delimiter, gridBagConstraints);
 
     exportHeaders.setText(ResourceMgr.getString("LblExportIncludeHeaders")); // NOI18N
     exportHeaders.setToolTipText("");
     exportHeaders.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.insets = new Insets(5, 4, 1, 0);
+    gridBagConstraints.insets = new Insets(5, 4, 6, 0);
     add(exportHeaders, gridBagConstraints);
 
     quoteCharLabel.setText(ResourceMgr.getString("LblQuoteChar")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(5, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(5, 4, 4, 4);
     add(quoteCharLabel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(1, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(1, 4, 4, 4);
     add(quoteChar, gridBagConstraints);
 
     quoteAlways.setText(ResourceMgr.getString("LblExportQuoteAlways")); // NOI18N
     quoteAlways.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(4, 4, 2, 0);
+    gridBagConstraints.insets = new Insets(4, 4, 6, 0);
     add(quoteAlways, gridBagConstraints);
 
     lineEndingLabel.setText(ResourceMgr.getString("LblExportLineEnding")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(1, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(1, 4, 4, 4);
     add(lineEndingLabel, gridBagConstraints);
 
     lineEnding.setModel(new DefaultComboBoxModel(new String[] { "LF", "CRLF" }));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(1, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(1, 4, 4, 4);
     add(lineEnding, gridBagConstraints);
 
     decimalLabel.setText(ResourceMgr.getString("LblDecimalSymbol")); // NOI18N
     decimalLabel.setToolTipText(ResourceMgr.getDescription("LblDecimalSymbol"));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(6, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(6, 4, 4, 4);
     add(decimalLabel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(2, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(2, 4, 4, 4);
     add(decimalChar, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(2, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(2, 4, 4, 4);
     add(escapeSelect, gridBagConstraints);
 
     jLabel1.setText(ResourceMgr.getString("LblQuoteEsc")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(6, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(6, 4, 4, 4);
     add(jLabel1, gridBagConstraints);
 
     extOptionsPanel.setLayout(new GridBagLayout());
@@ -506,7 +506,7 @@ public class TextOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(1, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(1, 4, 5, 4);
     extOptionsPanel.add(ctrlFileLabel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -514,7 +514,7 @@ public class TextOptionsPanel
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(0, 4, 5, 4);
     extOptionsPanel.add(controlFiles, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
@@ -539,8 +539,9 @@ public class TextOptionsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(2, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(2, 4, 5, 4);
     extOptionsPanel.add(escapeLabel, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
@@ -549,12 +550,12 @@ public class TextOptionsPanel
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(2, 4, 0, 4);
+    gridBagConstraints.insets = new Insets(2, 4, 5, 4);
     extOptionsPanel.add(escapeRange, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -566,10 +567,10 @@ public class TextOptionsPanel
     quoteHeader.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(4, 4, 2, 0);
+    gridBagConstraints.insets = new Insets(4, 4, 6, 0);
     add(quoteHeader, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 

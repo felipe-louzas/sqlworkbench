@@ -32,6 +32,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -55,8 +57,9 @@ import workbench.gui.actions.WbAction;
  */
 public class ValidatingDialog
   extends JDialog
-  implements WindowListener, ActionListener
+  implements WindowListener, ActionListener, PropertyChangeListener
 {
+  public static final String PROPERTY_VALID_STATE = "editorValid";
   protected ValidatingComponent validator;
   protected JComponent editorComponent;
   private JButton[] optionButtons;
@@ -120,6 +123,28 @@ public class ValidatingDialog
     }
   }
 
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    if (evt.getSource() == this.editorComponent && PROPERTY_VALID_STATE.equals(evt.getPropertyName()))
+    {
+      Boolean valid = (Boolean)evt.getNewValue();
+      if (valid != null)
+      {
+        setButtonsEnabled(valid);
+      }
+    }
+  }
+
+  public void setButtonsEnabled(boolean flag)
+  {
+    if (this.validator == null) return;
+    for (JButton b : optionButtons)
+    {
+      b.setEnabled(flag);
+    }
+  }
+
   private void init(JComponent editor, String[] options, boolean addCancelButton)
   {
     if (editor instanceof ValidatingComponent)
@@ -127,6 +152,7 @@ public class ValidatingDialog
       this.validator = (ValidatingComponent)editor;
     }
     this.editorComponent = editor;
+    this.editorComponent.addPropertyChangeListener(PROPERTY_VALID_STATE, this);
     this.optionButtons = new JButton[options.length];
     for (int i = 0; i < options.length; i++)
     {

@@ -65,6 +65,7 @@ public class TableExporter
   private ProgressDialog progress;
   private List<TableIdentifier> toExport;
   private List<ColumnIdentifier> columnsToExport;
+  private boolean openExportFile;
 
   // Can be a file name or directory name, depending on how many tables were selected
   private String selectedOutput;
@@ -111,6 +112,7 @@ public class TableExporter
       dialog.setSelectDirectoryOnly(true);
     }
     dialog.restoreSettings();
+    dialog.setAllowOpenFile(singleTableExport);
 
     String title = ResourceMgr.getString("LblSelectDirTitle");
     WbConnection dbConnection = exporter.getConnection();
@@ -122,7 +124,7 @@ public class TableExporter
     {
       columnsToExport = dialog.getColumnsToExport();
     }
-
+    this.openExportFile = dialog.doOpenFile();
     this.selectedOutput = dialog.getSelectedFilename();
     dialog.setExporterOptions(exporter);
     this.toExport = new ArrayList<>(tables.size());
@@ -207,7 +209,6 @@ public class TableExporter
         WbSwingUtilities.showMessage(parent, e.getMessage());
       }
     }
-
   }
 
   @Override
@@ -227,6 +228,10 @@ public class TableExporter
     {
       CharSequence msg = exporter.getErrors();
       WbSwingUtilities.showErrorMessage(msg.toString());
+    }
+    if (openExportFile)
+    {
+      ExportFileDialog.openFile(exporter.getOutputFile());
     }
   }
 

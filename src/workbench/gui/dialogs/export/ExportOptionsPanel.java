@@ -25,21 +25,33 @@ package workbench.gui.dialogs.export;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Desktop;
+import java.awt.Desktop.Action;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.List;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
 
 import workbench.interfaces.EncodingSelector;
+import workbench.interfaces.ValidatingComponent;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -50,12 +62,16 @@ import workbench.db.exporter.PoiHelper;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnSelectorPanel;
-import workbench.gui.components.DividerBorder;
+import workbench.gui.components.ExtensionFileFilter;
+import workbench.gui.components.ValidatingDialog;
+import workbench.gui.components.WbFilePicker;
 
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
+import workbench.util.WbFile;
 
 import static workbench.db.exporter.ExportType.*;
 
@@ -66,12 +82,15 @@ import static workbench.db.exporter.ExportType.*;
  */
 public class ExportOptionsPanel
   extends JPanel
-  implements EncodingSelector, ActionListener
+  implements EncodingSelector, ActionListener, ValidatingComponent, PropertyChangeListener
 {
   private GeneralExportOptionsPanel generalOptions;
-  private JPanel typePanel;
+  private JPanel typeOptionsPanel;
   private CardLayout card;
+  private WbFilePicker picker;
+  private JCheckBox openFile;
   private JComboBox typeSelector;
+  private JLabel pickerLabel;
   private TextOptionsPanel textOptions;
   private SqlOptionsPanel sqlOptions;
   private HtmlOptionsPanel htmlOptions;
@@ -89,6 +108,7 @@ public class ExportOptionsPanel
   private WbConnection dbConnection;
   private boolean poiAvailable = false;
   private boolean xlsxAvailable = false;
+  private boolean allowOpenFile = true;
 
   private final String ODS_ITEM = ResourceMgr.getString("TxtOdsName");
   private final String XLS_ITEM = ResourceMgr.getString("TxtXlsName");
@@ -104,28 +124,11 @@ public class ExportOptionsPanel
   {
     super();
     this.setLayout(new BorderLayout());
-    boolean allowColumnSelection = (columns != null);
-    this.dataStoreColumns = columns;
-    this.generalOptions = new GeneralExportOptionsPanel();
-    generalOptions.allowSelectColumns(allowColumnSelection);
-    //generalOptions.setBorder(new EmptyBorder(0, 1, 0, 0));
-
-    if (allowColumnSelection)
-    {
-      generalOptions.showSelectColumnsLabel();
-      this.columnSelectEventSource = generalOptions.addColumnSelectListener(this);
-    }
-    JPanel p = new JPanel();
-    p.setLayout(new BorderLayout());
-    p.add(this.generalOptions, BorderLayout.CENTER);
-
-    JPanel selectorPanel = new JPanel(new BorderLayout(2, 2));
-    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 2, 2, 0));
-    selectorPanel.setBorder(b);
-
     poiAvailable = PoiHelper.isPoiAvailable();
     xlsxAvailable = PoiHelper.isXLSXAvailable();
 
+    this.picker = new WbFilePicker();
+    this.picker.addPropertyChangeListener(WbFilePicker.PROP_FILENAME, this);
     typeSelector = new JComboBox();
     typeSelector.addItem("Text");
     typeSelector.addItem("SQL");
@@ -143,50 +146,212 @@ public class ExportOptionsPanel
       typeSelector.addItem(XLSX_ITEM);
     }
 
-    JLabel typeLabel = new JLabel(ResourceMgr.getString("LblExportType"));
-    selectorPanel.add(typeLabel, BorderLayout.WEST);
-    selectorPanel.add(typeSelector, BorderLayout.CENTER);
-    p.add(selectorPanel, BorderLayout.SOUTH);
+    JPanel pickerPanel = createPickerPanel();
 
-    this.add(p, BorderLayout.NORTH);
+    boolean allowColumnSelection = (columns != null);
+    this.dataStoreColumns = columns;
+    this.generalOptions = new GeneralExportOptionsPanel();
+    generalOptions.allowSelectColumns(allowColumnSelection);
+
+    if (allowColumnSelection)
+    {
+      generalOptions.showSelectColumnsLabel();
+      this.columnSelectEventSource = generalOptions.addColumnSelectListener(this);
+    }
+
+    JPanel baseOptionsPanel = new JPanel(new BorderLayout());
+
+    baseOptionsPanel.add(pickerPanel, BorderLayout.PAGE_START);
+    baseOptionsPanel.add(this.generalOptions, BorderLayout.CENTER);
+
+    this.add(baseOptionsPanel, BorderLayout.PAGE_START);
 
     this.textOptions = new TextOptionsPanel();
-    this.typePanel = new JPanel();
+    this.typeOptionsPanel = new JPanel();
     this.card = new CardLayout();
-    this.typePanel.setLayout(card);
-    this.typePanel.add(this.textOptions, "text");
+    this.typeOptionsPanel.setLayout(card);
+    this.typeOptionsPanel.add(this.textOptions, "text");
 
     this.sqlOptions = new SqlOptionsPanel(columns);
-    this.typePanel.add(this.sqlOptions, "sql");
+    this.typeOptionsPanel.add(this.sqlOptions, "sql");
 
     xmlOptions = new XmlOptionsPanel();
-    this.typePanel.add(xmlOptions, "xml");
+    this.typeOptionsPanel.add(xmlOptions, "xml");
 
     odsOptions = new SpreadSheetOptionsPanel("ods");
-    this.typePanel.add(odsOptions, "ods");
+    this.typeOptionsPanel.add(odsOptions, "ods");
 
     htmlOptions = new HtmlOptionsPanel();
-    this.typePanel.add(htmlOptions, "html");
+    this.typeOptionsPanel.add(htmlOptions, "html");
 
     xlsmOptions = new SpreadSheetOptionsPanel("xlsm");
-    this.typePanel.add(xlsmOptions, "xlsm");
+    this.typeOptionsPanel.add(xlsmOptions, "xlsm");
 
-    this.typePanel.add(new JPanel(), "empty");
+    this.typeOptionsPanel.add(new JPanel(), "empty");
 
     if (poiAvailable)
     {
       xlsOptions = new SpreadSheetOptionsPanel("xls");
-      this.typePanel.add(xlsOptions, "xls");
+      this.typeOptionsPanel.add(xlsOptions, "xls");
     }
 
     if (xlsxAvailable)
     {
       xlsxOptions = new SpreadSheetOptionsPanel("xlsx");
-      typePanel.add(xlsxOptions, "xlsx");
+      typeOptionsPanel.add(xlsxOptions, "xlsx");
     }
 
-    this.add(typePanel, BorderLayout.CENTER);
+    this.add(typeOptionsPanel, BorderLayout.CENTER);
     typeSelector.addActionListener(this);
+  }
+
+  public void setAllowOpenFile(boolean flag)
+  {
+    this.allowOpenFile = flag;
+    this.openFile.setEnabled(flag);
+    if (!openFile.isEnabled())
+    {
+      this.openFile.setSelected(false);
+    }
+  }
+
+  private JPanel createPickerPanel()
+  {
+    int gap = IconMgr.getInstance().getSizeForLabel() / 2;
+
+    JPanel pickerPanel = new JPanel(new GridBagLayout());
+    pickerLabel = new JLabel(ResourceMgr.getString("LblExportOutput"));
+    JLabel typeLabel = new JLabel(ResourceMgr.getString("LblExportType"));
+    openFile = new JCheckBox(ResourceMgr.getString("LblExportOpenOutput"));
+    openFile.setMargin(new Insets(0,0,0,0));
+    boolean desktopSupported = allowOpenFile && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.OPEN);
+    openFile.setEnabled(desktopSupported);
+    if (!desktopSupported)
+    {
+      openFile.setSelected(false);
+    }
+
+    GridBagConstraints gc = new GridBagConstraints();
+    gc.anchor = GridBagConstraints.LINE_START;
+    gc.fill = GridBagConstraints.NONE;
+    gc.gridwidth = 1;
+    gc.gridx = 0;
+    gc.gridy = 0;
+    gc.weightx = 0;
+    gc.insets = new Insets(0, 0, 0, gap);
+
+    pickerPanel.add(pickerLabel, gc);
+    gc.gridy = 1;
+    pickerPanel.add(typeLabel, gc);
+
+    gc.gridx = 1;
+    gc.gridy = 0;
+    gc.insets = new Insets(0, 0, 0, 0);
+    gc.fill = GridBagConstraints.HORIZONTAL;
+    gc.weightx = 1.0;
+    pickerPanel.add(picker, gc);
+
+    gc.gridx = 2;
+    gc.gridy = 0;
+    gc.weightx = 0;
+    gc.fill = GridBagConstraints.NONE;
+    //gc.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+    gc.insets = new Insets(0, gap, 0, gap);
+    pickerPanel.add(openFile, gc);
+
+    gc.gridx = 1;
+    gc.gridy = 1;
+    gc.gridwidth = 2;
+    gc.fill = GridBagConstraints.NONE;
+    gc.insets = new Insets(gap, 0, 0, 0);
+    pickerPanel.add(typeSelector, gc);
+
+    gc.gridx = 0;
+    gc.gridy = 3;
+    gc.gridwidth = 3;
+    gc.weightx = 1.0;
+    gc.weighty = 1.0;
+    gc.fill = GridBagConstraints.HORIZONTAL;
+    gc.anchor = GridBagConstraints.LINE_START;
+    gc.insets = new Insets(gap, 0, gap, 0);
+    pickerPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gc);
+
+    return pickerPanel;
+  }
+
+  public void setSelectDirectoriesOnly(boolean selectDirs)
+  {
+    this.picker.setSelectDirectoryOnly(selectDirs);
+    if (pickerLabel != null)
+    {
+      String label = selectDirs ? ResourceMgr.getString("LblExportOutputDir") : ResourceMgr.getString("LblExportOutput");
+      pickerLabel.setText(label);
+    }
+  }
+
+  public void setLastDirProperty(String prop)
+  {
+    this.picker.setLastDirProperty(prop);
+  }
+
+  public boolean doOpenFile()
+  {
+    return this.openFile.isEnabled() && this.openFile.isSelected();
+  }
+
+  public File getSelectedFile()
+  {
+    return picker.getSelectedFile();
+  }
+
+  public FileFilter getFileFilter()
+  {
+    return picker.getFileFilter();
+  }
+
+  @Override
+  public boolean validateInput()
+  {
+    return getSelectedFile() != null;
+  }
+
+  @Override
+  public void componentDisplayed()
+  {
+  }
+
+  @Override
+  public void componentWillBeClosed()
+  {
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    if (evt.getSource() == this.picker)
+    {
+      File selectedFile = picker.getSelectedFile();
+      boolean valid = selectedFile != null;
+      firePropertyChange(ValidatingDialog.PROPERTY_VALID_STATE, false, valid);
+      if (selectedFile != null)
+      {
+        WbFile fl = new WbFile(selectedFile);
+        String filename = fl.getFullPath();
+        FileFilter ff = picker.getFileFilter();
+        if (!picker.getSelectDirectoryOnly() && ff instanceof ExtensionFileFilter)
+        {
+          ExtensionFileFilter eff = (ExtensionFileFilter)ff;
+          String ext = ExtensionFileFilter.getExtension(fl);
+          if (StringUtil.isEmptyString(ext))
+          {
+            if (!filename.endsWith(".")) filename += ".";
+            filename += eff.getDefaultExtension();
+            fl = new WbFile(filename);
+            picker.setSelectedFile(fl);
+          }
+        }
+      }
+    }
   }
 
   public void updateSqlOptions(DataStore source)
@@ -255,6 +420,7 @@ public class ExportOptionsPanel
       this.xlsxOptions.saveSettings();
     }
     Settings.getInstance().setProperty("workbench.export.type", this.currentType.getCode());
+    Settings.getInstance().setProperty("workbench.export.open.output", doOpenFile());
   }
 
   public void restoreSettings()
@@ -277,6 +443,11 @@ public class ExportOptionsPanel
     String code = Settings.getInstance().getProperty("workbench.export.type", ExportType.TEXT.getCode());
     ExportType type = ExportType.getTypeFromCode(code);
     this.setExportType(type);
+    boolean openOutput = Settings.getInstance().getBoolProperty("workbench.export.open.output", false);
+    if (this.openFile.isEnabled())
+    {
+      openFile.setSelected(openOutput);
+    }
   }
 
   /**
@@ -332,7 +503,8 @@ public class ExportOptionsPanel
 
   private void showTextOptions()
   {
-    this.card.show(this.typePanel, "text");
+    this.card.show(this.typeOptionsPanel, "text");
+    picker.setFileFilter(ExtensionFileFilter.getTextFileFilter());
   }
 
   public void setTypeText()
@@ -344,7 +516,8 @@ public class ExportOptionsPanel
 
   private void showSqlOptions()
   {
-    this.card.show(this.typePanel, "sql");
+    this.card.show(this.typeOptionsPanel, "sql");
+    this.picker.setFileFilter(ExtensionFileFilter.getSqlFileFilter());
   }
 
   public void setTypeSql()
@@ -356,7 +529,8 @@ public class ExportOptionsPanel
 
   private void showXmlOptions()
   {
-    this.card.show(this.typePanel, "xml");
+    this.card.show(this.typeOptionsPanel, "xml");
+    this.picker.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
   }
 
   public void setTypeXml()
@@ -366,14 +540,16 @@ public class ExportOptionsPanel
     typeSelector.setSelectedItem("XML");
   }
 
-  private void showEmptyOptions()
+  private void showJsonOption()
   {
-    this.card.show(this.typePanel, "empty");
+    this.card.show(this.typeOptionsPanel, "empty");
+    this.picker.setFileFilter(ExtensionFileFilter.getJsonFilterFilter());
   }
 
   private void showHtmlOptions()
   {
-    this.card.show(this.typePanel, "html");
+    this.card.show(this.typeOptionsPanel, "html");
+    this.picker.setFileFilter(ExtensionFileFilter.getHtmlFileFilter());
   }
 
   public void setTypeHtml()
@@ -385,7 +561,8 @@ public class ExportOptionsPanel
 
   private void showOdsOptions()
   {
-    this.card.show(this.typePanel, "ods");
+    this.card.show(this.typeOptionsPanel, "ods");
+    picker.setFileFilter(ExtensionFileFilter.getOdsFileFilter());
   }
 
   public void setTypeOds()
@@ -397,17 +574,20 @@ public class ExportOptionsPanel
 
   private void showXlsOptions()
   {
-    this.card.show(this.typePanel, "xls");
+    this.card.show(this.typeOptionsPanel, "xls");
+    this.picker.setFileFilter(ExtensionFileFilter.getXlsFileFilter());
   }
 
   private void showXlsXOptions()
   {
-    this.card.show(this.typePanel, "xlsx");
+    this.card.show(this.typeOptionsPanel, "xlsx");
+    this.picker.setFileFilter(ExtensionFileFilter.getXlsXFileFilter());
   }
 
   private void showXlsMOptions()
   {
-    this.card.show(this.typePanel, "xlsm");
+    this.card.show(this.typeOptionsPanel, "xlsm");
+    this.picker.setFileFilter(ExtensionFileFilter.getXlsMFileFilter());
   }
 
   public void setTypeXls()
@@ -426,7 +606,7 @@ public class ExportOptionsPanel
 
   public void setTypeJson()
   {
-    this.card.show(this.typePanel, "empty");
+    showJsonOption();
     this.currentType = ExportType.JSON;
     typeSelector.setSelectedItem("JSON");
   }
@@ -504,7 +684,7 @@ public class ExportOptionsPanel
       String itemValue = item.toString();
       ExportType type = null;
 
-      this.card.show(this.typePanel, itemValue);
+      this.card.show(this.typeOptionsPanel, itemValue);
 
       if ("text".equalsIgnoreCase(itemValue))
       {
@@ -549,7 +729,7 @@ public class ExportOptionsPanel
       else if ("json".equalsIgnoreCase(itemValue))
       {
         type = ExportType.JSON;
-        showEmptyOptions();
+        showJsonOption();
       }
 
       this.currentType = type;
@@ -572,7 +752,7 @@ public class ExportOptionsPanel
     catch (Exception e)
     {
       this.dataStoreColumns = null;
-      LogMgr.logError("ExportOptionsPanel.retrieveQueryColumns()", "Could not retrieve query columns", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve query columns", e);
     }
     finally
     {
