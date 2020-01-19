@@ -298,7 +298,7 @@ public class ExportFileDialog
     dialog.setVisible(true);
 
     boolean ok = !dialog.isCancelled();
-    //Settings.getInstance().storeWindowSize(dialog, "workbench.saveas.dialog");
+    Settings.getInstance().storeWindowSize(dialog, "workbench.saveas.dialog");
 
     if (ok)
     {
