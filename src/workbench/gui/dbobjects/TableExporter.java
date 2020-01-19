@@ -27,6 +27,7 @@ import java.awt.Frame;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import workbench.interfaces.DbExecutionListener;
 import workbench.interfaces.ProgressReporter;
@@ -114,9 +115,12 @@ public class TableExporter
     dialog.restoreSettings();
     dialog.setAllowOpenFile(singleTableExport);
 
+    String names = tables.stream().map(t -> t.getObjectName()).collect(Collectors.joining(", "));
+
     String title = ResourceMgr.getString("LblSelectDirTitle");
     WbConnection dbConnection = exporter.getConnection();
     DbMetadata meta = dbConnection.getMetadata();
+    dialog.setExportInfo(names);
     boolean answer = dialog.selectOutput(title);
     if (!answer) return false;
 

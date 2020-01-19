@@ -246,6 +246,11 @@ public class ExportFileDialog
     this.exportOptions.setAllowOpenFile(flag);
   }
 
+  public void setExportInfo(String info)
+  {
+    exportOptions.setExportInfo(info);
+  }
+
   public boolean selectOutput()
   {
     return this.selectOutput(ResourceMgr.getString("TxtWindowTitleSaveData"));
@@ -277,7 +282,7 @@ public class ExportFileDialog
       // the larges option panel, then pack() can figure it out correctly
       exportOptions.setExportType(ExportType.SQL_INSERT);
       dialog.pack();
-      dialog.setSize(700, (int)(dialog.getHeight() * 1.1));
+      dialog.setSize(640, (int)(dialog.getHeight() * 1.05));
     }
 
     dialog.setDefaultButton(0);
@@ -293,7 +298,7 @@ public class ExportFileDialog
     dialog.setVisible(true);
 
     boolean ok = !dialog.isCancelled();
-    Settings.getInstance().storeWindowSize(dialog, "workbench.saveas.dialog");
+    //Settings.getInstance().storeWindowSize(dialog, "workbench.saveas.dialog");
 
     if (ok)
     {

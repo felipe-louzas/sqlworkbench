@@ -91,6 +91,7 @@ public class ExportOptionsPanel
   private JCheckBox openFile;
   private JComboBox typeSelector;
   private JLabel pickerLabel;
+  private JPanel pickerPanel;
   private TextOptionsPanel textOptions;
   private SqlOptionsPanel sqlOptions;
   private HtmlOptionsPanel htmlOptions;
@@ -146,7 +147,7 @@ public class ExportOptionsPanel
       typeSelector.addItem(XLSX_ITEM);
     }
 
-    JPanel pickerPanel = createPickerPanel();
+    pickerPanel = createPickerPanel();
 
     boolean allowColumnSelection = (columns != null);
     this.dataStoreColumns = columns;
@@ -205,6 +206,24 @@ public class ExportOptionsPanel
     typeSelector.addActionListener(this);
   }
 
+  public void setExportInfo(String info)
+  {
+    if (StringUtil.isNonBlank(info))
+    {
+      int gap = IconMgr.getInstance().getSizeForLabel() / 2;
+      GridBagConstraints gc = new GridBagConstraints();
+      gc.gridx = 0;
+      gc.gridy = 0;
+      gc.gridwidth = 3;
+      gc.weightx = 0;
+      gc.weighty = 0;
+      gc.fill = GridBagConstraints.NONE;
+      gc.anchor = GridBagConstraints.LINE_START;
+      gc.insets = new Insets(0, 0, gap, 0);
+      pickerPanel.add(new JLabel(ResourceMgr.getFormattedString("LblExportInfo", info)), gc);
+    }
+  }
+
   public void setAllowOpenFile(boolean flag)
   {
     this.allowOpenFile = flag;
@@ -219,7 +238,7 @@ public class ExportOptionsPanel
   {
     int gap = IconMgr.getInstance().getSizeForLabel() / 2;
 
-    JPanel pickerPanel = new JPanel(new GridBagLayout());
+    JPanel panel = new JPanel(new GridBagLayout());
     pickerLabel = new JLabel(ResourceMgr.getString("LblExportOutput"));
     JLabel typeLabel = new JLabel(ResourceMgr.getString("LblExportType"));
     openFile = new JCheckBox(ResourceMgr.getString("LblExportOpenOutput"));
@@ -236,47 +255,47 @@ public class ExportOptionsPanel
     gc.fill = GridBagConstraints.NONE;
     gc.gridwidth = 1;
     gc.gridx = 0;
-    gc.gridy = 0;
+    gc.gridy = 1;
     gc.weightx = 0;
     gc.insets = new Insets(0, 0, 0, gap);
+    panel.add(pickerLabel, gc);
 
-    pickerPanel.add(pickerLabel, gc);
-    gc.gridy = 1;
-    pickerPanel.add(typeLabel, gc);
+    gc.gridy = 2;
+    panel.add(typeLabel, gc);
 
     gc.gridx = 1;
-    gc.gridy = 0;
+    gc.gridy = 1;
     gc.insets = new Insets(0, 0, 0, 0);
     gc.fill = GridBagConstraints.HORIZONTAL;
     gc.weightx = 1.0;
-    pickerPanel.add(picker, gc);
+    panel.add(picker, gc);
 
     gc.gridx = 2;
-    gc.gridy = 0;
+    gc.gridy = 1;
     gc.weightx = 0;
     gc.fill = GridBagConstraints.NONE;
     //gc.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
     gc.insets = new Insets(0, gap, 0, gap);
-    pickerPanel.add(openFile, gc);
+    panel.add(openFile, gc);
 
     gc.gridx = 1;
-    gc.gridy = 1;
+    gc.gridy = 2;
     gc.gridwidth = 2;
     gc.fill = GridBagConstraints.NONE;
     gc.insets = new Insets(gap, 0, 0, 0);
-    pickerPanel.add(typeSelector, gc);
+    panel.add(typeSelector, gc);
 
     gc.gridx = 0;
-    gc.gridy = 3;
+    gc.gridy = 4;
     gc.gridwidth = 3;
     gc.weightx = 1.0;
     gc.weighty = 1.0;
     gc.fill = GridBagConstraints.HORIZONTAL;
     gc.anchor = GridBagConstraints.LINE_START;
     gc.insets = new Insets(gap, 0, gap, 0);
-    pickerPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gc);
+    panel.add(new JSeparator(SwingConstants.HORIZONTAL), gc);
 
-    return pickerPanel;
+    return panel;
   }
 
   public void setSelectDirectoriesOnly(boolean selectDirs)
