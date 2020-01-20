@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import workbench.resource.ResourceMgr;
@@ -164,6 +165,7 @@ public class GeneralExportOptionsPanel
     selectColumnsButton = new FlatButton();
     nullStringLabel = new JLabel();
     nullString = new JTextField();
+    jSeparator1 = new JSeparator();
 
     setLayout(new GridBagLayout());
     gridBagConstraints = new GridBagConstraints();
@@ -194,7 +196,6 @@ public class GeneralExportOptionsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(4, 0, 7, 0);
     add(timestampFormatLabel, gridBagConstraints);
@@ -213,7 +214,6 @@ public class GeneralExportOptionsPanel
     gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(6, 0, 7, 4);
     add(selectColumnsButton, gridBagConstraints);
 
@@ -222,7 +222,6 @@ public class GeneralExportOptionsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(4, 0, 7, 0);
     add(nullStringLabel, gridBagConstraints);
@@ -235,6 +234,15 @@ public class GeneralExportOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(0, 4, 7, 4);
     add(nullString, gridBagConstraints);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(2, 0, 0, 0);
+    add(jSeparator1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
@@ -242,6 +250,7 @@ public class GeneralExportOptionsPanel
   private JTextField dateFormat;
   private JLabel dateFormatLabel;
   private EncodingDropDown encodingPanel;
+  private JSeparator jSeparator1;
   private JTextField nullString;
   private JLabel nullStringLabel;
   private JButton selectColumnsButton;

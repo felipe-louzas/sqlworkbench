@@ -160,7 +160,8 @@ public class ExportOptionsPanel
       this.columnSelectEventSource = generalOptions.addColumnSelectListener(this);
     }
 
-    JPanel baseOptionsPanel = new JPanel(new BorderLayout());
+		int gap = IconMgr.getInstance().getSizeForLabel() / 2;
+    JPanel baseOptionsPanel = new JPanel(new BorderLayout(0, 0));
 
     baseOptionsPanel.add(pickerPanel, BorderLayout.PAGE_START);
     baseOptionsPanel.add(this.generalOptions, BorderLayout.CENTER);

@@ -76,6 +76,8 @@ public class ExportFileDialog
   private boolean includeSqlDeleteInsert = true;
 
   private String lastDirConfigKey = "workbench.export.lastdir";
+	private final static String SIZE_KEY = "workbench.saveas.dialog";
+
   private final DataStore source;
   private boolean sqlChecked = false;
 
@@ -276,10 +278,10 @@ public class ExportFileDialog
 
     exportOptions.setBorder(new EmptyBorder(gap, gap, gap, gap));
     ValidatingDialog dialog = new ValidatingDialog(mainWindow, title, exportOptions);
-    if (!Settings.getInstance().restoreWindowSize(dialog, "workbench.saveas.dialog"))
+    if (!Settings.getInstance().restoreWindowSize(dialog, SIZE_KEY))
     {
       // to properly calculate the needed size, we have to activate
-      // the larges option panel, then pack() can figure it out correctly
+      // the largest option panel, then pack() can figure it out correctly
       exportOptions.setExportType(ExportType.SQL_INSERT);
       dialog.pack();
       dialog.setSize(640, (int)(dialog.getHeight() * 1.05));
@@ -298,7 +300,7 @@ public class ExportFileDialog
     dialog.setVisible(true);
 
     boolean ok = !dialog.isCancelled();
-    Settings.getInstance().storeWindowSize(dialog, "workbench.saveas.dialog");
+    Settings.getInstance().storeWindowSize(dialog, SIZE_KEY);
 
     if (ok)
     {
