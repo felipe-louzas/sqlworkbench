@@ -25,8 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.WbConnection;
 
@@ -127,10 +127,7 @@ public class DbmsMetadata
     {
       initTransforms(conn);
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug("OracleUtils.getDDL()", "Calling dbms_metadata using:\n" + SqlUtil.replaceParameters(sql, type, name, owner));
-      }
+			LogMgr.logMetadataSql(new CallerInfo(){}, "dbms_metadata for " + type, sql, type, name, owner);
       stmt = conn.getSqlConnection().prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       stmt.setString(1, type);
       stmt.setString(2, SqlUtil.removeObjectQuotes(name));
@@ -149,7 +146,7 @@ public class DbmsMetadata
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("OracleUtils.getDDL()", "Could not read source using:\n" + SqlUtil.replaceParameters(sql, type, name, owner), ex);
+			LogMgr.logMetadataError(new CallerInfo(){}, ex, "dbms_metadata for " + type, sql, type, name, owner);
       throw ex;
     }
     finally
@@ -159,7 +156,7 @@ public class DbmsMetadata
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("OracleUtils.getDDL()", "Retrieving DDL using dbms_metadata for " + type + " " + owner + "." + name + " took: " + duration + "ms");
+		LogMgr.logDebug(new CallerInfo(){}, "Retrieving DDL using dbms_metadata for " + type + " " + owner + "." + name + " took: " + duration + "ms");
     return source;
   }
 
@@ -187,7 +184,7 @@ public class DbmsMetadata
     catch (Throwable th)
     {
       SqlUtil.closeStatement(stmt);
-      LogMgr.logDebug("OracleUtils.initDBMSMetadata()", "Could not set transform parameter", th);
+			LogMgr.logDebug(new CallerInfo(){}, "Could not set transform parameter", th);
     }
   }
 
@@ -211,7 +208,7 @@ public class DbmsMetadata
     catch (Throwable th)
     {
       SqlUtil.closeStatement(stmt);
-      LogMgr.logDebug("OracleUtils.initDBMSMetadata()", "Could not reset transform parameters", th);
+			LogMgr.logDebug(new CallerInfo(){}, "Could not reset transform parameters", th);
     }
   }
 
@@ -227,7 +224,7 @@ public class DbmsMetadata
     catch (Throwable th)
     {
       SqlUtil.closeStatement(stmt);
-      LogMgr.logDebug("OracleUtils.disableTransformParam()", "Could not disable transform parameter: " + transform, th);
+			LogMgr.logDebug(new CallerInfo(){}, "Could not disable transform parameter: " + transform, th);
     }
   }
 

@@ -26,9 +26,11 @@ package workbench.interfaces;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.WbConnection;
+import workbench.db.exporter.BlobMode;
 import workbench.db.importer.ImportFileHandler;
 import workbench.db.importer.ImportFileLister;
 import workbench.db.importer.RowDataProducer;
@@ -111,4 +113,7 @@ public interface ImportFileParser
   void setIgnoreMissingColumns(boolean flag);
 
   void setCheckTargetWithQuery(boolean flag);
+
+	void setColumnBlobModes(Map<String, BlobMode> modes);
+	void setDefaultBlobMode(BlobMode mode);
 }

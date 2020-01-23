@@ -23,8 +23,10 @@
  */
 package workbench.sql.wbcommands;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import workbench.interfaces.BatchCommitter;
 import workbench.interfaces.Committer;
@@ -35,6 +37,7 @@ import workbench.resource.Settings;
 
 import workbench.db.DropType;
 import workbench.db.WbConnection;
+import workbench.db.exporter.BlobMode;
 import workbench.db.importer.DeleteType;
 import workbench.db.importer.ImportMode;
 
@@ -103,6 +106,7 @@ public class CommonArgs
   public static final String ARG_FILE = "file";
   public static final String ARG_OUTPUT_FILE = "outputFile";
   public static final String ARG_OUTPUT_DIR = "outputDir";
+  public static final String ARG_COLUMN_BLOB_MODE = "columnBlobType";
 
   private static List<String> getDelimiterArguments()
   {
@@ -177,6 +181,21 @@ public class CommonArgs
   {
     cmdLine.addArgument(ARG_DELIM, getDelimiterArguments());
   }
+
+	public static Map<String, BlobMode> getColumnBlobModes(ArgumentParser cmdLine)
+	{
+		Map<String, BlobMode> modes = new HashMap<>();
+    Map<String, String> values = cmdLine.getMapValue(ARG_COLUMN_BLOB_MODE);
+		for (Map.Entry<String, String> entry : values.entrySet())
+		{
+			String colname = entry.getKey();
+			String modeString = entry.getValue();
+			BlobMode mode = BlobMode.getMode(modeString);
+			modes.put(colname, mode);
+		}
+
+		return modes;
+	}
 
   public static boolean checkQuoteEscapting(ArgumentParser cmdLine)
   {

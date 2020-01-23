@@ -288,11 +288,21 @@ public abstract class AbstractImportFileParser
     return defaultBlobMode;
   }
 
+	@Override
   public void setDefaultBlobMode(BlobMode mode)
   {
     defaultBlobMode = mode;
   }
 
+	@Override
+	public void setColumnBlobModes(Map<String, BlobMode> modes)
+	{
+		if (modes != null)
+		{
+			columnBlobModes.clear();
+			columnBlobModes.putAll(modes);
+		}
+	}
 
   @Override
   public abstract void setColumns(List<ColumnIdentifier> columnList)

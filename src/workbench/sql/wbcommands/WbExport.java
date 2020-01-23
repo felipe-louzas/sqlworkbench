@@ -69,7 +69,6 @@ import workbench.util.QuoteEscapeType;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
-
 /**
  * SQL Command for running an export.
  * @see workbench.db.exporter.DataExporter
@@ -930,7 +929,7 @@ public class WbExport
     }
 
     this.exporter.prepareExport();
-    
+
     if (consumeQuery)
     {
       // Waiting for the next SQL Statement...

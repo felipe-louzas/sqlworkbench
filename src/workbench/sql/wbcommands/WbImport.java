@@ -219,6 +219,7 @@ public class WbImport
     cmdLine.addArgument(ARG_XML_ATT_MAPPING, ArgumentType.Repeatable);
     cmdLine.addArgument(ARG_XML_COL_TAGS, ArgumentType.Repeatable);
     cmdLine.addArgument(ARG_COLUMN_EXPR, ArgumentType.Repeatable);
+    cmdLine.addArgument(CommonArgs.ARG_COLUMN_BLOB_MODE, ArgumentType.Repeatable);
 
     ModifierArguments.addArguments(cmdLine);
     ConditionCheck.addParameters(cmdLine);
@@ -578,25 +579,6 @@ public class WbImport
         return result;
       }
 
-      String btype = cmdLine.getValue(WbExport.ARG_BLOB_TYPE);
-      BlobMode mode = BlobMode.getMode(btype);
-      if (btype != null && mode != null)
-      {
-        textParser.setDefaultBlobMode(mode);
-      }
-      else if (cmdLine.isArgPresent(ARG_BLOB_ISFILENAME))
-      {
-        boolean flag = cmdLine.getBoolean(ARG_BLOB_ISFILENAME, true);
-        if (flag)
-        {
-          textParser.setDefaultBlobMode(BlobMode.SaveToFile);
-        }
-        else
-        {
-          textParser.setDefaultBlobMode(BlobMode.None);
-        }
-      }
-
       String filter = cmdLine.getValue(ARG_LINE_FILTER);
       if (filter != null)
       {
@@ -799,6 +781,8 @@ public class WbImport
       addColumnFilter(colFilter, parser);
     }
 
+		setBlobModes(parser);
+
     Map<String, String> columnExpressions = cmdLine.getMapValue(ARG_COLUMN_EXPR);
     imp.setColumnExpressions(columnExpressions);
 
@@ -934,6 +918,31 @@ public class WbImport
     }
     return result;
   }
+
+	private void setBlobModes(ImportFileParser parser)
+	{
+		String btype = cmdLine.getValue(WbExport.ARG_BLOB_TYPE);
+		BlobMode mode = BlobMode.getMode(btype);
+		if (btype != null && mode != null)
+		{
+			parser.setDefaultBlobMode(mode);
+		}
+		else if (cmdLine.isArgPresent(ARG_BLOB_ISFILENAME))
+		{
+			boolean flag = cmdLine.getBoolean(ARG_BLOB_ISFILENAME, true);
+			if (flag)
+			{
+				parser.setDefaultBlobMode(BlobMode.SaveToFile);
+			}
+			else
+			{
+				parser.setDefaultBlobMode(BlobMode.None);
+			}
+		}
+
+		Map<String, BlobMode> blobModes = CommonArgs.getColumnBlobModes(cmdLine);
+		parser.setColumnBlobModes(blobModes);
+	}
 
   private void initParser(String tableName, TabularDataParser parser, StatementRunnerResult result, boolean isMultifile, boolean skipTargetCheck)
   {
