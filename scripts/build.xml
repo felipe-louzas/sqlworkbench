@@ -573,6 +573,9 @@
       <zipfileset dir="../xslt" prefix="xslt">
         <include name="**/*.*"/>
       </zipfileset>
+      <zipfileset dir="../launcher" prefix="launcher">
+        <include name="**/*.*"/>
+      </zipfileset>
     </zip>
   </target>
 
@@ -636,10 +639,6 @@
     <xmltask source="history.xml" dest="history.xml">
       <attr path="/history/release[1]" attr="date" value="${today}"/>
     </xmltask>
-  </target>
-
-  <target name="build-launcher">
-    <ant antfile="./build_launcher.xml" inheritall="false" target="build-launcher"/>
   </target>
 
   <target name="website">
@@ -747,29 +746,27 @@
       </zipfileset>
       <zipfileset dir="../launcher">
         <include name="SQLWorkbench.exe"/>
-        <include name="sqlwbconsole.exe"/>
         <include name="SQLWorkbench64.exe"/>
-        <include name="sqlwbconsole64.exe"/>
-        <include name="SQLWorkbench.ini.sample"/>
-        <include name="SQLWorkbench64.ini.sample"/>
+        <include name="SQLWorkbench.cfg.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}" prefix="ext">
         <include name="README_EXT"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
         <include name="log4j-sample.xml"/>
-        <include name="SQLWorkbench.vbs"/>
         <include name="sqlwbconsole.cmd"/>
         <include name="sqlworkbench.cmd"/>
-        <include name="sqlworkbench.sh"/>
-        <include name="sqlwbconsole.sh"/>
         <include name="history.html"/>
         <include name="sqlworkbench.desktop"/>
         <include name="LICENSE"/>
         <include name="download_jre.cmd"/>
         <include name="download_jre.ps1"/>
-        <include name="download_jre.sh"/>
         <include name="README Libraries NEW"/>
+      </zipfileset>
+      <zipfileset dir="${scriptsrc}" filemode="555">
+        <include name="sqlworkbench.sh"/>
+        <include name="sqlwbconsole.sh"/>
+        <include name="download_jre.sh"/>
       </zipfileset>
       <zipfileset dir="${src}/workbench/resource/images">
         <include name="workbench32.png"/>
@@ -798,24 +795,24 @@
       </zipfileset>
       <zipfileset dir="../launcher">
         <include name="SQLWorkbench.exe"/>
-        <include name="sqlwbconsole.exe"/>
         <include name="SQLWorkbench64.exe"/>
-        <include name="sqlwbconsole64.exe"/>
         <include name="SQLWorkbench.ini.sample"/>
         <include name="SQLWorkbench64.ini.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
         <include name="log4j-sample.xml"/>
-        <include name="SQLWorkbench.vbs"/>
         <include name="sqlworkbench.cmd"/>
         <include name="sqlwbconsole.cmd"/>
-        <include name="sqlworkbench.sh"/>
-        <include name="sqlwbconsole.sh"/>
         <include name="history.html"/>
         <include name="sqlworkbench.desktop"/>
+        <include name="README Libraries NEW"/>
         <include name="LICENSE"/>
         <include name="download_jre.cmd"/>
         <include name="download_jre.ps1"/>
+      </zipfileset>
+      <zipfileset dir="${scriptsrc}" filemode="555">
+        <include name="sqlworkbench.sh"/>
+        <include name="sqlwbconsole.sh"/>
         <include name="download_jre.sh"/>
       </zipfileset>
       <zipfileset dir="${src}/workbench/resource/images">

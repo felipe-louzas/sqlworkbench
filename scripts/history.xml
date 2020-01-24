@@ -2,6 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2019-12-01">
+    <entry dev-build="5" type="enh">It's now possible to optionally open the saved file when using "Save As"</entry>
     <entry dev-build="5" type="enh">It's now possible to use a special variable in WbImport to assign the input file's line number to a column.</entry>
     <entry dev-build="4" type="enh">It's now possible to cycle through the result tabs using a keyboard shortcut.</entry>
     <entry dev-build="4" type="enh">When exporting a single table from the table list (Database Explorer or DbTree) it's now possible to select the columns to export.</entry>
@@ -17,6 +18,7 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="5" type="fix">Individual statements were not detected correctly in the editor if the text started with a semicolon.</entry>
     <entry dev-build="5" type="fix">"Create SQL List" did not work properly if only a part of the first or last line was selected.</entry>
     <entry dev-build="5" type="fix">For PostgreSQL, the dependency display of trigger functions wasn't working any more.</entry>
     <entry dev-build="5" type="fix">When using Page Down when the editor text was shorter than the number of lines, the display was corrupted.</entry>

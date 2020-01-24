@@ -1,8 +1,7 @@
 #!/bin/bash
 # Start SQL Workbench/J in console mode
 
-# TODO: this does not seem to work properly on MacOS
-SCRIPT_PATH=$(dirname $(realpath "$0"))
+SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 JAVACMD="java"
 
