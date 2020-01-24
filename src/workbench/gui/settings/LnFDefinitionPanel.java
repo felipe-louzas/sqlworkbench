@@ -367,13 +367,22 @@ public class LnFDefinitionPanel
     {
       ignoreChange = true;
       this.currentLnF = lnf;
-      WbSwingUtilities.initPropertyEditors(this.currentLnF, this);
-      classpathEditor.setLibraries(lnf.getLibraries());
-      this.setEnabled(lnf.isDynamic());
-      if (lnf.isExt())
-      {
-        selectClass.setEnabled(true);
-      }
+			if (this.currentLnF != null)
+			{
+				WbSwingUtilities.initPropertyEditors(this.currentLnF, this);
+				classpathEditor.setLibraries(currentLnF.getLibraries());
+				this.setEnabled(!currentLnF.isBuiltIn());
+				if (lnf.isExt())
+				{
+					selectClass.setEnabled(true);
+				}
+			}
+			else
+			{
+				this.classpathEditor.setLibraries(null);
+				this.setEnabled(false);
+				this.selectClass.setEnabled(false);
+			}
     }
     finally
     {

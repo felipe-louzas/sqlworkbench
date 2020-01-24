@@ -104,16 +104,22 @@ public class ClasspathEditor
 
   public boolean hasLibraries()
   {
-    return getLibraries().size() > 0;
+    return libList.getModel().getSize() > 0;
   }
 
   public void setLibraries(List<String> libraries)
   {
     DefaultListModel model = new DefaultListModel();
-    for (String lib : libraries)
-    {
-      model.addElement(new LibraryElement(lib));
-    }
+		if (libraries != null)
+		{
+			for (String lib : libraries)
+			{
+				if (lib != null)
+				{
+					model.addElement(new LibraryElement(lib));
+				}
+			}
+		}
     libList.setModel(model);
     libList.getSelectionModel().clearSelection();
     checkButtons();

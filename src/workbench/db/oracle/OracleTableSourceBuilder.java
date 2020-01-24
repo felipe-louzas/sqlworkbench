@@ -1205,11 +1205,16 @@ public class OracleTableSourceBuilder
       return "";
     }
 
-    final String sql =
+    String sql =
       "select extension \n" +
       "from all_stat_extensions \n" +
       "where owner = ? \n" +
       "  and table_name = ?";
+
+		if (OracleUtils.showSystemGeneratedExtendedStats() == false)
+		{
+			sql += "\n  and creator <> 'SYSTEM'";
+		}
 
     StringBuilder result = new StringBuilder(500);
 
@@ -1226,7 +1231,7 @@ public class OracleTableSourceBuilder
     final String tname = dbConnection.getMetadata().quoteObjectname(table.getTableName());
     final String cmd = "select dbms_stats.create_extended_stats(ownname => %s, tabname => '%s', extension => '%s') from dual;\n";
 
-    LogMgr.logMetadataSql(new CallerInfo(){}, "column groups", sql, table.getRawSchema(), table.getRawTableName());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "extended stats", sql, table.getRawSchema(), table.getRawTableName());
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -1254,7 +1259,7 @@ public class OracleTableSourceBuilder
     }
     catch (Exception ex)
     {
-      LogMgr.logMetadataError(new CallerInfo(){}, ex, "column groups", sql, table.getRawSchema(), table.getRawTableName());
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "extended stats", sql, table.getRawSchema(), table.getRawTableName());
     }
     finally
     {

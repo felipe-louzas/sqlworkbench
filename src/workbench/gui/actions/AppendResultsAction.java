@@ -69,7 +69,7 @@ public class AppendResultsAction
     {
       this.toggleButton = new JToggleButton(this);
       this.toggleButton.setText(null);
-      this.toggleButton.setMargin(WbToolbarButton.MARGIN);
+      this.toggleButton.setMargin(WbToolbarButton.SMALL_MARGIN);
       this.toggleButton.setIcon(IconMgr.getInstance().getToolbarIcon(getIconKey()));
       this.toggleButton.setSelected(this.isSwitchedOn());
     }

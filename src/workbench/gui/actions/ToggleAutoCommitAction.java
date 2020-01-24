@@ -132,7 +132,7 @@ public class ToggleAutoCommitAction
   private JToggleButton createButton()
   {
     this.toggleButton = new JToggleButton(this);
-    this.toggleButton.setMargin(WbToolbarButton.MARGIN);
+    this.toggleButton.setMargin(WbToolbarButton.SMALL_MARGIN);
     ImageIcon icon = getToolbarIcon();
     if (icon != null)
     {

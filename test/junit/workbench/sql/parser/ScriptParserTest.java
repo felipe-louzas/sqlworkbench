@@ -58,6 +58,22 @@ public class ScriptParserTest
     super("ScriptParserTest");
   }
 
+	@Test
+	public void testDelimiterAtTheStart()
+	{
+		String script =
+			";select x from table_1 \n" +
+			";select y from table_2";
+
+    ScriptParser p = new ScriptParser(ParserType.SqlServer);
+		p.setEmptyLineIsDelimiter(false);
+		p.setScript(script);
+		int size = p.getSize();
+		assertEquals(2, size);
+    assertEquals("select x from table_1", p.getCommand(0));
+    assertEquals("select y from table_2", p.getCommand(1));
+	}
+
   @Test
   public void getDelimiter()
   {

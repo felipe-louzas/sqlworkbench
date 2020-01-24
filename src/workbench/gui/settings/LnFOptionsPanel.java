@@ -111,7 +111,6 @@ public class LnFOptionsPanel
     };
     search.setIcon("find-lnf");
 
-
     deleteEntry = new DeleteListEntryAction(this);
     this.toolbar = new WbToolbar();
     this.toolbar.add(new NewListEntryAction(this));
@@ -179,9 +178,7 @@ public class LnFOptionsPanel
 		}
 		else
 		{
-			final List<String> classNames =
-				newClasses.stream().map(ci -> ci.getClassName()).collect(Collectors.toList());
-
+			final List<String> classNames = newClasses.stream().map(ci -> ci.getClassName()).collect(Collectors.toList());
 			final String newLnFClass = ClassFinderGUI.selectEntry(classNames, null, "TxtSelectLnF", SwingUtilities.getWindowAncestor(this));
 			if (newLnFClass != null)
 			{

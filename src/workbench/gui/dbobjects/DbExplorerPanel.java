@@ -213,7 +213,7 @@ public class DbExplorerPanel
 
       reloadButton = new FlatButton(reloadSchemasAction);
       reloadButton.setText(null);
-      reloadButton.setMargin(WbToolbarButton.MARGIN);
+      reloadButton.setMargin(WbToolbarButton.SMALL_MARGIN);
 
       selectorPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
       selectorPanel.add(schemaLabel);
@@ -938,7 +938,7 @@ public class DbExplorerPanel
     };
     t.start();
   }
-
+  
   @Override
   public void setTabName(String name)
   {

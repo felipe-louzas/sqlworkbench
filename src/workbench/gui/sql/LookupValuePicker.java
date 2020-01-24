@@ -252,7 +252,7 @@ public class LookupValuePicker
 
     FlatButton reload = new FlatButton(new ReloadAction(this));
     reload.setText(null);
-    reload.setMargin(WbToolbarButton.MARGIN);
+    reload.setMargin(WbToolbarButton.SMALL_MARGIN);
     edit.add(reload, BorderLayout.LINE_END);
 
     statusPanel = createStatusPanel();

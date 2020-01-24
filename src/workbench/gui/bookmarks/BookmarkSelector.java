@@ -122,7 +122,7 @@ public class BookmarkSelector
   private CheckBoxAction rememberColumnWidths;
   private CheckBoxAction rememberSort;
   private SelectionHandler keyHandler;
-  
+
   public BookmarkSelector(MainWindow win)
   {
     super(new GridBagLayout());
@@ -306,7 +306,7 @@ public class BookmarkSelector
     doReload.setTooltip(ResourceMgr.getString("TxtBookmarkReload"));
     FlatButton reload = new FlatButton(doReload);
     reload.setText(null);
-    reload.setMargin(WbToolbarButton.MARGIN);
+    reload.setMargin(WbToolbarButton.SMALL_MARGIN);
 
     WbLabel tabLbl = new WbLabel();
     tabLbl.setText(ResourceMgr.getString("LblBookPanel"));

@@ -51,7 +51,7 @@ public class IgnoreErrorsAction
   {
     this.toggleButton = new JToggleButton(this);
     this.toggleButton.setText(null);
-    this.toggleButton.setMargin(WbToolbarButton.MARGIN);
+    this.toggleButton.setMargin(WbToolbarButton.SMALL_MARGIN);
     this.toggleButton.setIcon(getToolbarIcon());
     this.toggleButton.setSelected(isSwitchedOn());
     return this.toggleButton;

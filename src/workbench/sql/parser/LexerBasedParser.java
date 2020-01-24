@@ -339,7 +339,7 @@ public class LexerBasedParser
       }
     }
 
-    if (statementEnd > 0)
+    if (statementEnd >= 0)
     {
       if (token == null && !scriptEnd && !matchedAtEnd) statementEnd = realScriptLength;
       ScriptCommandDefinition cmd = createCommandDef(sql, statementStart, statementEnd);

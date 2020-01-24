@@ -280,6 +280,11 @@ public class OracleUtils
     return Settings.getInstance().getBoolProperty("workbench.db.oracle.retrieve_tablespace", true);
   }
 
+  public static boolean showSystemGeneratedExtendedStats()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.db.oracle.extended_stats.include.system", false);
+  }
+
   public static boolean shouldAppendTablespace(String tablespace, String defaultTablespace, String objectOwner, String currentUser)
   {
     // no tablespace given --> nothing to append

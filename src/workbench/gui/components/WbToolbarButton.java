@@ -35,6 +35,7 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
+import workbench.gui.lnf.LnFHelper;
 
 /**
  *
@@ -44,7 +45,10 @@ public class WbToolbarButton
   extends WbButton
   implements PropertyChangeListener
 {
-  public static final Insets MARGIN = new Insets(1,1,1,1);
+  public static final Insets SMALL_MARGIN = new Insets(1,1,1,1);
+  public static final Insets WIDE_MARGIN = new Insets(5,5,5,5);
+
+	private static final boolean USE_WIDE_MARGIN = LnFHelper.isFlatLaf();
 
   public WbToolbarButton()
   {
@@ -91,7 +95,7 @@ public class WbToolbarButton
 
   private void init()
   {
-    this.setMargin(MARGIN);
+    this.setMargin(USE_WIDE_MARGIN ? WIDE_MARGIN : SMALL_MARGIN);
     this.setFocusable(false);
     if (getAction() instanceof WbAction)
     {

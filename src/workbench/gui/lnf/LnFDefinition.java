@@ -101,10 +101,12 @@ public class LnFDefinition
   {
     return this.type == LnFType.ext;
   }
+
   public boolean isDynamic()
   {
     return this.type == LnFType.dynamic;
   }
+
   public boolean isBuiltIn()
   {
     return this.type == LnFType.builtIn;
@@ -119,6 +121,11 @@ public class LnFDefinition
     }
     return definitionComplete && StringUtil.isNonBlank(this.name) && CollectionUtil.isNonEmpty(liblist);
   }
+
+	public String debugString()
+	{
+		return name + ", class: " + className + ", type: " + this.type;
+	}
 
   @Override
   public String toString()
@@ -214,5 +221,12 @@ public class LnFDefinition
   {
     return this.className.hashCode();
   }
+
+	public static LnFDefinition newExtLaf(String name, String className)
+	{
+		LnFDefinition lnf = new LnFDefinition(name, className);
+		lnf.type = LnFType.ext;
+		return lnf;
+	}
 
 }

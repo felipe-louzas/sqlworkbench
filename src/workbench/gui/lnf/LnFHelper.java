@@ -44,7 +44,6 @@ import workbench.util.CollectionUtil;
 import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 
-
 /**
  * Initialize some gui elements during startup.
  *
@@ -57,6 +56,7 @@ public class LnFHelper
   public static final String TREE_FONT_KEY = "Tree.font";
 
   private boolean isWindowsClassic;
+	private LnFManager lnfManager = new LnFManager();
 
   // Font properties that are automatically scaled by Java
   private final Set<String> noScale = CollectionUtil.treeSet(
@@ -219,11 +219,30 @@ public class LnFHelper
     }
   }
 
+  public static boolean isFlatLaf()
+  {
+    String lnf = UIManager.getLookAndFeel().getClass().getName();
+    return lnf.startsWith("com.formdev.flatlaf");
+  }
+
   public static boolean isJGoodies()
   {
     String lnf = UIManager.getLookAndFeel().getClass().getName();
     return lnf.startsWith("com.jgoodies.looks.plastic");
   }
+
+	private String getDefaultLookAndFeel()
+	{
+		if (PlatformHelper.isWindows())
+		{
+			return UIManager.getSystemLookAndFeelClassName();
+		}
+		if (lnfManager.isFlatLafLibPresent())
+		{
+			return LnFManager.FLATLAF_LIGHT_CLASS;
+		}
+		return UIManager.getSystemLookAndFeelClassName();
+	}
 
   protected void initializeLookAndFeel()
   {
@@ -232,10 +251,9 @@ public class LnFHelper
     {
       if (StringUtil.isEmptyString(className))
       {
-        className = UIManager.getSystemLookAndFeelClassName();
+        className = getDefaultLookAndFeel();
       }
-      LnFManager mgr = new LnFManager();
-      LnFDefinition def = mgr.findLookAndFeel(className);
+      LnFDefinition def = lnfManager.findLookAndFeel(className);
 
       if (def == null)
       {
