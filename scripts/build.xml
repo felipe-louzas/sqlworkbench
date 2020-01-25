@@ -486,7 +486,7 @@
     <jar compress="true" level="9" jarfile="${distdir}/${jarfile}">
       <manifest>
         <attribute name="Main-Class" value="workbench.WbStarter"/>
-        <attribute name="Class-Path" value=". ext/log4j.jar ext/dbunit-2.3.0.jar ext/slf4j-api-1.5.10.jar ext/slf4j-log4j12-1.5.6.jar ext/mail.jar ext/poi.jar ext/poi-ooxml.jar ext/commons-codec.jar ext/commons-collections4.jar ext/commons-compress.jar ext/commons-logging.jar ext/poi-ooxml-schemas.jar ext/xmlbeans.jar ext/odfdom-java.jar ext/resolver.jar ext/serializer.jar ext/simple-odf.jar ext/xercesImpl.jar ext/xml-apis.jar ext/jna.jar ext/jna-platform.jar ext/"/>
+        <attribute name="Class-Path" value=". ext/log4j.jar ext/dbunit.jar ext/slf4j-api.jar ext/slf4j-log4j12.jar ext/mail.jar ext/poi.jar ext/poi-ooxml.jar ext/commons-codec.jar ext/commons-collections4.jar ext/commons-compress.jar ext/commons-logging.jar ext/poi-ooxml-schemas.jar ext/xmlbeans.jar ext/odfdom-java.jar ext/resolver.jar ext/serializer.jar ext/simple-odf.jar ext/xercesImpl.jar ext/xml-apis.jar ext/jna.jar ext/jna-platform.jar ext/flatlaf.jar ext/"/>
         <attribute name="Created-By" value="Thomas Kellerer (support@sql-workbench.eu)"/>
         <attribute name="Implementation-Title" value="SQL Workbench/J"/>
         <attribute name="Implementation-URL" value="http://www.sql-workbench.eu"/>
@@ -659,6 +659,9 @@
       </zipfileset>
       <zipfileset dir="${scriptsrc}" prefix="ext">
         <include name="README_EXT"/>
+      </zipfileset>
+      <zipfileset dir="../libs/lnf" prefix="ext">
+        <include name="*.jar"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
         <include name="log4j-sample.xml"/>
