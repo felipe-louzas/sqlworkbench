@@ -10,6 +10,8 @@
 -->
 <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+<xsl:import href="liquibase_common.xslt"/>
+
 <xsl:output encoding="UTF-8" method="xml" indent="yes" cdata-section-elements="createView"/>
 
 <xsl:param name="schema.owner"/>
@@ -19,8 +21,6 @@
 <xsl:param name="useJdbcTypes">true</xsl:param>
 <xsl:param name="mapXMLToClob">true</xsl:param>
 <xsl:param name="useOrderedSequence">false</xsl:param>
-
-<xsl:import href="liquibase_common.xslt"/>
 
 <xsl:template match="/schema-report">
 

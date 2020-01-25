@@ -132,55 +132,68 @@ public class LnFManager
 	private synchronized List<LnFDefinition> getLnFList()
 	{
 		if (lnfList != null) return lnfList;
+    long start = System.currentTimeMillis();
+
 		lnfList = new ArrayList<>();
 		Settings set = Settings.getInstance();
 
-		boolean lightPresent = false;
-		boolean darkPresent = false;
+		boolean lightConfigure = false;
+		boolean darkConfigured = false;
 
-		int count = set.getIntProperty("workbench.lnf.count", 0);
+    int count = set.getIntProperty("workbench.lnf.count", 0);
 		for (int i = 0; i < count; i++)
 		{
 			String clz = set.getProperty("workbench.lnf." + i + ".class", "");
-			if (!lightPresent && clz.equals(FLATLAF_LIGHT_CLASS))
+      if (clz == null) continue;
+
+			if (!lightConfigure && clz.equals(FLATLAF_LIGHT_CLASS))
 			{
-				lightPresent = true;
+				lightConfigure = true;
 			}
-			if (!darkPresent && clz.equals(FLATLAF_DARK_CLASS))
+			if (!darkConfigured && clz.equals(FLATLAF_DARK_CLASS))
 			{
-				darkPresent = true;
+				darkConfigured = true;
 			}
 			String name = set.getProperty("workbench.lnf." + i + ".name", clz);
 			String libs = set.getProperty("workbench.lnf." + i + ".classpath", "");
-			List<String> liblist = null;
-			if (libs.contains(LnFDefinition.LNF_PATH_SEPARATOR))
-			{
-				liblist = StringUtil.stringToList(libs, LnFDefinition.LNF_PATH_SEPARATOR);
-			}
-			else
-			{
-				liblist = StringUtil.stringToList(libs, StringUtil.getPathSeparator());
-			}
-			if (clz != null && CollectionUtil.isNonEmpty(liblist))
-			{
-				LnFDefinition lnf = new LnFDefinition(name, clz, liblist);
-				LogMgr.logDebug(new CallerInfo(){}, "Found Look & Feel: " + lnf.debugString());
-				lnfList.add(lnf);
-			}
+
+      if (libs.equals(ClasspathUtil.EXT_DIR))
+      {
+        LnFDefinition lnf = LnFDefinition.newExtLaf(name, clz);
+        LogMgr.logDebug(new CallerInfo(){}, "Found Look & Feel: " + lnf.debugString());
+        lnfList.add(lnf);
+      }
+      else
+      {
+        List<String> liblist = null;
+        if (libs.contains(LnFDefinition.LNF_PATH_SEPARATOR))
+        {
+          liblist = StringUtil.stringToList(libs, LnFDefinition.LNF_PATH_SEPARATOR);
+        }
+        else
+        {
+          liblist = StringUtil.stringToList(libs, StringUtil.getPathSeparator());
+        }
+
+        if (CollectionUtil.isNonEmpty(liblist))
+        {
+          LnFDefinition lnf = new LnFDefinition(name, clz, liblist);
+          LogMgr.logDebug(new CallerInfo(){}, "Found Look & Feel: " + lnf.debugString());
+          lnfList.add(lnf);
+        }
+      }
 		}
 
-		if (isFlatLafLibPresent())
+		if ((!lightConfigure || !darkConfigured) && isFlatLafLibPresent())
 		{
-			LogMgr.logDebug(new CallerInfo(){}, "FlatLaf is available");
-
-			if (!lightPresent)
+			if (!lightConfigure)
 			{
 				LnFDefinition light = LnFDefinition.newExtLaf("FlatLaf Light", FLATLAF_LIGHT_CLASS);
 				lnfList.add(light);
 				LogMgr.logDebug(new CallerInfo(){}, "Added " + light.debugString());
 			}
 
-			if (!darkPresent)
+			if (!darkConfigured)
 			{
 				LnFDefinition dark = LnFDefinition.newExtLaf("FlatLaf Dark", FLATLAF_DARK_CLASS);
 				lnfList.add(dark);
@@ -204,6 +217,10 @@ public class LnFManager
 
 		Comparator<LnFDefinition> nameComp = (LnFDefinition first, LnFDefinition second) -> StringUtil.compareStrings(first.getName(), second.getName(), true);
 		lnfList.sort(nameComp);
+
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Checking look & feels took: " + duration + "ms");
+
 		return lnfList;
 	}
 

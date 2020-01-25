@@ -43,6 +43,12 @@ import workbench.log.LogMgr;
 public class ClasspathUtil
 {
   public static final String EXT_DIR = "ext";
+  private final File extDir;
+
+  public ClasspathUtil()
+  {
+    this.extDir = getExtDir();
+  }
 
   public List<File> checkLibsToMove()
   {
@@ -68,7 +74,6 @@ public class ClasspathUtil
 
   public List<File> getExtLibs()
   {
-    File extDir = getExtDir();
     FileFilter ff = (File pathname) -> pathname.getName().toLowerCase().endsWith(".jar");
     File[] files = extDir.listFiles(ff);
 
@@ -88,7 +93,7 @@ public class ClasspathUtil
   public boolean isExtDir(File toCheck)
   {
     if (toCheck == null) return false;
-    return toCheck.equals(getExtDir());
+    return toCheck.equals(extDir);
   }
 
   public boolean isInExtDir(List<File> libs)
@@ -103,7 +108,7 @@ public class ClasspathUtil
   public boolean isInExtDir(File jarfile)
   {
     if (jarfile == null) return false;
-    File extDir = getExtDir();
+
     if (extDir.equals(jarfile))
     {
       return true;
@@ -111,9 +116,7 @@ public class ClasspathUtil
 
     if (jarfile.isAbsolute())
     {
-      boolean contained = extDir.equals(jarfile.getParentFile());
-      LogMgr.logDebug(new CallerInfo(){}, "File " + jarfile + " is " + (contained ? "" : "not ") + "located in the \"ext\" directory");
-      return contained;
+      return extDir.equals(jarfile.getParentFile());
     }
 
     List<File> cp = getExtLibs();
@@ -127,9 +130,7 @@ public class ClasspathUtil
     {
       realFile = new File(new WbFile(jarfile).getFullPath());
     }
-    boolean contained = cp.contains(realFile);
-    LogMgr.logDebug(new CallerInfo(){}, "File " + jarfile + " is " + (contained ? "" : "not ") + "located in the \"ext\" directory");
-    return contained;
+    return cp.contains(realFile);
   }
 
   public WbFile getExtDir()

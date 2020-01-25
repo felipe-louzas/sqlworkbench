@@ -65,13 +65,16 @@ public class ScriptParserTest
 			";select x from table_1 \n" +
 			";select y from table_2";
 
-    ScriptParser p = new ScriptParser(ParserType.SqlServer);
-		p.setEmptyLineIsDelimiter(false);
-		p.setScript(script);
-		int size = p.getSize();
-		assertEquals(2, size);
-    assertEquals("select x from table_1", p.getCommand(0));
-    assertEquals("select y from table_2", p.getCommand(1));
+    for (ParserType type : ParserType.values())
+    {
+      ScriptParser p = new ScriptParser(type);
+      p.setEmptyLineIsDelimiter(false);
+      p.setScript(script);
+      int size = p.getSize();
+      assertEquals(2, size);
+      assertEquals("select x from table_1", p.getCommand(0));
+      assertEquals("select y from table_2", p.getCommand(1));
+    }
 	}
 
   @Test
@@ -81,15 +84,18 @@ public class ScriptParserTest
       "select * from foo;\n" +
       "select * from bar";
 
-    ScriptParser p = new ScriptParser(ParserType.Postgres);
-    p.setScript(sql);
-    int size = p.getSize();
-    assertEquals(2, size);
-    DelimiterDefinition d1 = p.getDelimiterUsed(0);
-    assertNotNull(d1);
+    for (ParserType type : ParserType.values())
+    {
+      ScriptParser p = new ScriptParser(type);
+      p.setScript(sql);
+      int size = p.getSize();
+      assertEquals(2, size);
+      DelimiterDefinition d1 = p.getDelimiterUsed(0);
+      assertNotNull(d1);
 
-    DelimiterDefinition d2 = p.getDelimiterUsed(1);
-    assertNull(d2);
+      DelimiterDefinition d2 = p.getDelimiterUsed(1);
+      assertNull(d2);
+    }
   }
 
   @Test
@@ -280,52 +286,59 @@ public class ScriptParserTest
       "\n" +
       "select '$[var3]';";
 
-    ScriptParser p = new ScriptParser(ParserType.Standard);
-    p.setDelimiter(DelimiterDefinition.STANDARD_DELIMITER);
-    p.setScript(sql);
-    int count = p.getSize();
-    assertEquals(3, count);
-    assertTrue(p.getCommand(2).startsWith("select"));
+    for (ParserType type : ParserType.values())
+    {
+      ScriptParser p = new ScriptParser(type);
+      p.setDelimiter(DelimiterDefinition.STANDARD_DELIMITER);
+      p.setScript(sql);
+      int count = p.getSize();
+      assertEquals(3, count);
+      assertTrue(p.getCommand(2).startsWith("select"));
+    }
   }
 
   @Test
   public void testQuotes()
     throws Exception
   {
-    String sql = "delete from gaga;\n" +
-      "\n" +
-      "insert into gaga (col1) values ('one, two);";
-    ScriptParser p = new ScriptParser(ParserType.Standard);
-    p.setScript(sql);
-    p.setDelimiter(DelimiterDefinition.STANDARD_DELIMITER);
-    p.setScript(sql);
-    // Make sure the remainder of the script (after the initial delete) is
-    // added as (an incorrect) statement to the list of statement. Otherwise
-    // it won't be processed and won't give an error
-    int count = p.getSize();
-    assertEquals(2, count);
-    assertEquals("delete from gaga", p.getCommand(0));
-    assertEquals("insert into gaga (col1) values ('one, two)", p.getCommand(1));
+    for (ParserType type : ParserType.values())
+    {
+      String sql = "delete from gaga;\n" +
+        "\n" +
+        "insert into gaga (col1) values ('one, two);";
 
-    sql = "wbfeedback off; \n" +
-             " \n" +
-             "create procedure dbo.CopyTable \n" +
-             "      @SrcTableName varchar(max), \n" +
-             "      @DestTableName varchar(max) \n" +
-             "      as \n" +
-             "   set nocount on \n" +
-             "   set xact_abort on \n" +
-             "   declare @cols varchar(max) \n" +
-             "   select @cols = case when @cols is null then '' else @cols + ',' end + name from sys.columns where object_id=object_id(@DestTableName) order by column_id \n" +
-             "   declare @sql varchar(max) \n" +
-             "   set @sql = 'insert into ' + @DestTableName + ' (' + @cols + ') ' + \n" +
-             "      'select ' + @cols + ' from + @SrcTableName \n" +
-             "   exec (@sql); \n" +
-             " \n" +
-             "commit;";
-    p.setScript(sql);
-//    System.out.println("*****\n" + p.getCommand(1));
-    assertEquals(2, p.getSize());
+      ScriptParser p = new ScriptParser(type);
+      p.setScript(sql);
+      p.setDelimiter(DelimiterDefinition.STANDARD_DELIMITER);
+      p.setScript(sql);
+      // Make sure the remainder of the script (after the initial delete) is
+      // added as (an incorrect) statement to the list of statement. Otherwise
+      // it won't be processed and won't give an error
+      int count = p.getSize();
+      assertEquals(2, count);
+      assertEquals("Wrong statement for parser type " + type, "delete from gaga", p.getCommand(0));
+      assertEquals("Wrong statement for parser type " + type, "insert into gaga (col1) values ('one, two)", p.getCommand(1));
+
+      sql = "wbfeedback off; \n" +
+               " \n" +
+               "create procedure dbo.CopyTable \n" +
+               "      @SrcTableName varchar(max), \n" +
+               "      @DestTableName varchar(max) \n" +
+               "      as \n" +
+               "   set nocount on \n" +
+               "   set xact_abort on \n" +
+               "   declare @cols varchar(max) \n" +
+               "   select @cols = case when @cols is null then '' else @cols + ',' end + name from sys.columns where object_id=object_id(@DestTableName) order by column_id \n" +
+               "   declare @sql varchar(max) \n" +
+               "   set @sql = 'insert into ' + @DestTableName + ' (' + @cols + ') ' + \n" +
+               "      'select ' + @cols + ' from + @SrcTableName \n" +
+               "   exec (@sql); \n" +
+               " \n" +
+               "commit;";
+      p.setScript(sql);
+  //    System.out.println("*****\n" + p.getCommand(1));
+      assertEquals("Wrong count type " + type, 2, p.getSize());
+    }
   }
 
 
@@ -390,13 +403,16 @@ public class ScriptParserTest
     throws Exception
   {
     String script = "select 1 from bla;\nselect 2 from blub;\n";
-    ScriptParser p = new ScriptParser(script);
-    int count = 0;
-    while (p.getNextCommand() != null)
+    for (ParserType type : ParserType.values())
     {
-      count ++;
+      ScriptParser p = new ScriptParser(script, type);
+      int count = 0;
+      while (p.getNextCommand() != null)
+      {
+        count ++;
+      }
+      assertEquals(2, count);
     }
-    assertEquals(2, count);
   }
 
   @Test

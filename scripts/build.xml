@@ -645,98 +645,6 @@
     <ant antfile="../website/build.xml" inheritall="false" target="release"/>
   </target>
 
-  <target name="bundleapp" depends="init">
-
-    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../libs/appbundler/appbundler-1.0.jar"/>
-
-    <property name="bundledir" value="${distdir}/mac"/>
-    <delete dir="${bundledir}" failonerror="false"/>
-    <mkdir dir="${bundledir}"/>
-
-    <bundleapp outputdirectory="${bundledir}"
-               name="SQLWorkbenchJ"
-               displayname="SQL Workbench/J"
-               identifier="sqlworkbench.app"
-               icon="Workbench.icns"
-               shortversion="${build.number}"
-               signature="sqwb"
-               applicationCategory="public.app-category.developer-tools"
-               copyright="Thomas Kellerer 2002-2018"
-               mainclassname="workbench.WbStarter">
-
-      <classpath dir="${distdir}">
-        <include name="${jarfile}"/>
-      </classpath>
-
-      <option value="-Dapple.laf.useScreenMenuBar=true"/>
-      <option value="-Dapple.awt.showGrowBoxtrue=true"/>
-      <option value="-Xmx2048m"/>
-      <option value="-Xdock:name=SQLWorkbench/J"/>
-    </bundleapp>
-
-    <replace file="${bundledir}/SQLWorkbenchJ.app/Contents/Info.plist">
-      <replacefilter>
-        <replacetoken>&lt;/dict&gt;</replacetoken>
-        <replacevalue>&lt;key&gt;NSHighResolutionCapable&lt;/key&gt;
-&lt;true/&gt;
-&lt;/dict&gt;</replacevalue>
-      </replacefilter>
-    </replace>
-  </target>
-
-  <target name="mac-package" depends="init,publish,bundleapp">
-
-    <tar compression="gzip" destfile="${distdir}/Workbench-Build${build.number}-Mac.tgz">
-      <tarfileset dir="${bundledir}">
-        <include name="**/*"/>
-        <exclude name="**/JavaAppLauncher"/>
-      </tarfileset>
-      <tarfileset mode="555" dir="${bundledir}">
-        <include name="**/JavaAppLauncher"/>
-      </tarfileset>
-      <tarfileset dir="${distdir}/manual" prefix="SQLWorkbenchJ.app/Contents/Java/manual">
-        <include name="**/*.*"/>
-      </tarfileset>
-      <tarfileset dir="${scriptsrc}" prefix="SQLWorkbenchJ.app/Contents/Java">
-        <include name="history.html"/>
-        <include name="LICENSE"/>
-      </tarfileset>
-      <tarfileset dir="${distdir}" prefix="SQLWorkbenchJ.app/Contents/Java">
-        <include name="SQLWorkbench-Manual.pdf"/>
-      </tarfileset>
-    </tar>
-
-    <tar compression="gzip" destfile="${distdir}/Workbench-Build${build.number}-Mac-with-optional-libs.tgz">
-      <tarfileset dir="${bundledir}">
-        <include name="**/*"/>
-        <exclude name="**/JavaAppLauncher"/>
-      </tarfileset>
-      <tarfileset mode="555" dir="${bundledir}">
-        <include name="**/JavaAppLauncher"/>
-      </tarfileset>
-      <tarfileset dir="${distdir}/manual" prefix="SQLWorkbenchJ.app/Contents/Java/manual">
-        <include name="**/*.*"/>
-      </tarfileset>
-      <tarfileset dir="${scriptsrc}" prefix="SQLWorkbenchJ.app/Contents/Java">
-        <include name="history.html"/>
-        <include name="LICENSE"/>
-      </tarfileset>
-      <tarfileset dir="${distdir}" prefix="SQLWorkbenchJ.app/Contents/Java">
-        <include name="SQLWorkbench-Manual.pdf"/>
-      </tarfileset>
-      <tarfileset dir="../libs/poi" prefix="SQLWorkbenchJ.app/Contents/Java">
-        <include name="*.jar"/>
-      </tarfileset>
-      <tarfileset dir="../libs/odf" prefix="SQLWorkbenchJ.app/Contents/Java">
-        <include name="*.jar"/>
-      </tarfileset>
-      <tarfileset dir="../libs/jna" prefix="SQLWorkbenchJ.app/Contents/Java">
-        <include name="*.jar"/>
-      </tarfileset>
-    </tar>
-
-  </target>
-
   <target name="release-package" depends="fixshellscripts,html-history">
 
     <zip zipfile="${distdir}/Workbench-Build${build.number}.zip">
@@ -757,7 +665,6 @@
         <include name="sqlwbconsole.cmd"/>
         <include name="sqlworkbench.cmd"/>
         <include name="history.html"/>
-        <include name="sqlworkbench.desktop"/>
         <include name="LICENSE"/>
         <include name="download_jre.cmd"/>
         <include name="download_jre.ps1"/>
@@ -793,18 +700,19 @@
       <zipfileset dir="../libs/jna" prefix="ext">
         <include name="*.jar"/>
       </zipfileset>
+      <zipfileset dir="../libs/lnf" prefix="ext">
+        <include name="*.jar"/>
+      </zipfileset>
       <zipfileset dir="../launcher">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
-        <include name="SQLWorkbench.ini.sample"/>
-        <include name="SQLWorkbench64.ini.sample"/>
+        <include name="SQLWorkbench.cfg.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
         <include name="log4j-sample.xml"/>
         <include name="sqlworkbench.cmd"/>
         <include name="sqlwbconsole.cmd"/>
         <include name="history.html"/>
-        <include name="sqlworkbench.desktop"/>
         <include name="README Libraries NEW"/>
         <include name="LICENSE"/>
         <include name="download_jre.cmd"/>
@@ -825,42 +733,6 @@
         <include name="**/*.xslt"/>
       </zipfileset>
     </zip>
-
-    <tar tarfile="${distdir}/Workbench-Build${build.number}-with-optional-libs.tar.gz">
-      <tarfileset dir="${distdir}">
-        <include name="${jarfile}"/>
-        <include name="SQLWorkbench-Manual.pdf"/>
-      </tarfileset>
-      <tarfileset dir="../libs/poi" prefix="ext">
-        <include name="*.jar"/>
-      </tarfileset>
-      <tarfileset dir="../libs/odf" prefix="ext">
-        <include name="*.jar"/>
-      </tarfileset>
-      <tarfileset dir="../libs/jna" prefix="ext">
-        <include name="*.jar"/>
-      </tarfileset>
-      <tarfileset dir="${scriptsrc}">
-        <include name="log4j-sample.xml"/>
-        <include name="history.html"/>
-        <include name="sqlworkbench.desktop"/>
-        <include name="LICENSE"/>
-      </tarfileset>
-      <tarfileset mode="555" dir="${scriptsrc}">
-        <include name="sqlworkbench.sh"/>
-        <include name="sqlwbconsole.sh"/>
-        <include name="download_jre.sh"/>
-      </tarfileset>
-      <tarfileset dir="${src}/workbench/resource/images">
-        <include name="workbench32.png"/>
-      </tarfileset>
-      <tarfileset dir="${distdir}/manual" prefix="manual">
-        <include name="**/*.*"/>
-      </tarfileset>
-      <tarfileset dir="../xslt" prefix="xslt">
-        <include name="**/*.xslt"/>
-      </tarfileset>
-    </tar>
 
     <delete file="docbook-history.xml" failonerror="false"/>
 
@@ -902,8 +774,6 @@
         <include name="SQLWorkbench.vbs"/>
         <include name="sqlwbconsole.cmd"/>
         <include name="sqlworkbench.sh"/>
-        <include name="sqlworkbench.desktop"/>
-        <include name="sqlwb.sh"/>
         <include name="download_jre.cmd"/>
         <include name="download_jre.ps1"/>
         <include name="download_jre.sh"/>
@@ -924,6 +794,12 @@
 
       <zipfileset dir="../xslt" prefix="xslt">
         <include name="*.*"/>
+      </zipfileset>
+
+      <zipfileset dir="../launcher" prefix="launcher">
+        <include name="*.au3"/>
+        <include name="*.ico"/>
+        <include name="SQLWorkbench.cfg.sample"/>
       </zipfileset>
     </zip>
   </target>
@@ -1206,75 +1082,6 @@
     </javac>
   </target>
 
-
-  <target name="init-cobertura">
-    <delete dir="${instrumented.dir}" />
-    <mkdir dir="${instrumented.dir}" />
-    <delete file="${junitdir}/cobertura.ser" />
-
-    <cobertura-instrument datafile="${junitdir}/cobertura.ser" todir="${instrumented.dir}">
-      <fileset dir="${build}">
-        <include name="workbench/**/*.class" />
-        <exclude name="workbench/WbStarter"/>
-        <exclude name="workbench/sql/wbcommands/MissingWidthDefinition.class"/> <!-- exception -->
-        <exclude name="workbench/db/SourceStatementsHelp.class"/>
-        <exclude name="workbench/db/KeepAliveDaemon.class"/>
-        <exclude name="workbench/db/ASAConstraintReader.class"/>
-        <exclude name="workbench/db/search/TableDataSearcher"/> <!-- interface -->
-        <exclude name="workbench/**/*Exception*.class" />
-        <exclude name="workbench/storage/filter/ComparatorFactory"/> <!-- doesn't work with coberture -->
-        <exclude name="workbench/**/*$*.class" />
-        <exclude name="workbench/sql/wbcommands/console/**" />
-        <exclude name="workbench/gui/lnf/**" />
-        <exclude name="workbench/db/mysql/**" />
-        <exclude name="workbench/db/firstsql/**" />
-        <exclude name="workbench/db/derby/**" />
-        <exclude name="workbench/db/mckoi/**" />
-        <exclude name="workbench/db/mssql/**" />
-        <exclude name="workbench/interfaces/**" />
-        <exclude name="workbench/print/**" />
-        <exclude name="workbench/gui/log/**" />
-        <exclude name="workbench/gui/lnf/**" />
-        <exclude name="workbench/gui/dialogs/**" />
-        <exclude name="workbench/gui/renderer/**" />
-        <exclude name="workbench/gui/help/**" />
-      </fileset>
-    </cobertura-instrument>
-  </target>
-
-  <target name="coverage" depends="clean, clean-junit, compile-tests, compile-db-tests, init-cobertura">
-    <junit fork="true" forkmode="perBatch" showoutput="false" haltonerror="true" haltonfailure="true" printsummary="true" includeantruntime="true">
-      <classpath>
-        <pathelement location="${instrumented.dir}"/>
-        <pathelement location="${build}"/>
-        <pathelement location="${build.test}"/>
-        <path refid="junit.path"/>
-        <path refid="cobertura.path"/>
-      </classpath>
-
-      <sysproperty key="net.sourceforge.cobertura.datafile" file="${junitdir}/cobertura.ser" />
-
-      <batchtest todir="${junitdir}">
-        <formatter type="plain"/>
-        <fileset dir="${unittest}">
-          <include name="**/*Test.java"/>
-          <exclude name="**/XsltTransformerTest.java"/>
-          <exclude name="**/ClassFinderTest.java"/>
-          <exclude name="**/ComparatorFactoryTest.java"/>
-        </fileset>
-      </batchtest>
-
-      <batchtest todir="${junitdir}">
-        <formatter type="plain"/>
-        <fileset dir="${dbtest}">
-          <include name="workbench/db/postgres/*Test.java"/>
-        </fileset>
-      </batchtest>
-    </junit>
-
-    <cobertura-report datafile="${junitdir}/cobertura.ser" format="html" destdir="${coverage.report.dir}" srcdir="${src}" />
-  </target>
-
   <target name="test" depends="compile-tests, clean-junit">
 
     <junit fork="true"
@@ -1398,7 +1205,7 @@
              noqualifier="java.*:javax.*"
              notree="true"
              sourcepath="${src}"
-             link="http://docs.oracle.com/javase/6/docs/api/"
+             link="http://docs.oracle.com/javase/8/docs/api/"
              packagenames="workbench.*"/>
   </target>
 

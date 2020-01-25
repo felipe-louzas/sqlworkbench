@@ -6,7 +6,7 @@ body
   margin-bottom: 0px;
   width: 100%;
   height: 100%;
-  font-size: 12px;
+  font-size: 1em;
   /*font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;*/
   background-color: #F1F1E3;
   line-height:150%;
@@ -35,7 +35,7 @@ h1 {
   text-align:center;
   color: #666633;
   font-family: sans-serif;
-  font-size: 1.4em;
+  font-size: 1.2em;
   margin-top:0px;
   margin-bottom:25px;
 }
@@ -43,7 +43,7 @@ h1 {
 h1.build-nr
 {
   text-align:left;
-  font-size:1.2em;
+  font-size:1.3em;
   background-color:#F0F1E3;
   padding:5px;
 }
@@ -51,7 +51,7 @@ h1.build-nr
 h2 { 
   color: #666633;
   font-family: sans-serif;
-  font-size: 1em;
+  font-size: 1.2em;
   margin-top:0px;
   text-align:center;
 }
@@ -64,7 +64,7 @@ h2.history-entry
 h3 {
   color: #666633;
   font-family: sans-serif;
-  font-size: 1.2em;
+  font-size: 1.1em;
   text-align:left;
   margin-top: 0;
   margin-bottom: 10px;
@@ -72,19 +72,6 @@ h3 {
   border-bottom: 1px;
   border-bottom-color:#D9D8B2;
   border-bottom-style: solid;
-}
-
-#mgm
-{
-  background-image: url(images/mgm_weiss.gif);
-  background-repeat: no-repeat;
-  width:146px;
-  height:84px;
-  position:absolute;
-  top: 8px;
-  left: 78%;
-  float: left;
-  z-index:3;
 }
 
 #top
@@ -120,7 +107,7 @@ h3 {
 
 #left
 {
-  width:185px;
+  width:15%;
   height:100%;
   position:relative;
   top: -92px;
@@ -170,7 +157,7 @@ h3 {
 
 ul.toc
 {
-  width: 180px;
+  width: 100%;
   height: auto;
   position: relative;
   top: 0;
@@ -189,7 +176,7 @@ li.toclist#manual
   font-size:135%;
   padding-top: 10px;
   padding-bottom: 5px;
-  margin-top: 15%;
+  margin-top: 10%;
 }
 
 li.toclist#google
@@ -197,15 +184,15 @@ li.toclist#google
   border-bottom-color: #666633;
   border-bottom-style: solid;
   border-bottom-width: 1px;
-  padding-bottom: 10px;
-  margin-bottom: 2em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 ul.toc#smalltext
 {
   font-size: 0.8em;
   line-height: 1.2em;
-  padding-top: 20%;
+  padding-top: 15%;
 }
 
 a.list

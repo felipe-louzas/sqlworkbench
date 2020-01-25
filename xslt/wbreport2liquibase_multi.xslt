@@ -11,6 +11,8 @@
 -->
 <xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+<xsl:import href="liquibase_common.xslt"/>
+
 <xsl:output encoding="UTF-8" method="xml" indent="yes" cdata-section-elements="createView"/>
 
 <xsl:preserve-space elements="*"/>
@@ -28,8 +30,6 @@
 <xsl:variable name="newline">
   <xsl:text>&#10;</xsl:text>
 </xsl:variable>
-
-<xsl:import href="liquibase_common.xslt"/>
 
 <xsl:template match="/schema-report">
 

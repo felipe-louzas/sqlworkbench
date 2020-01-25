@@ -237,7 +237,7 @@ public class LnFHelper
 		{
 			return UIManager.getSystemLookAndFeelClassName();
 		}
-		if (lnfManager.isFlatLafLibPresent())
+		if (PlatformHelper.isLinux() && lnfManager.isFlatLafLibPresent())
 		{
 			return LnFManager.FLATLAF_LIGHT_CLASS;
 		}

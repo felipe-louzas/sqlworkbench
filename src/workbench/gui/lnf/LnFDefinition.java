@@ -66,18 +66,6 @@ public class LnFDefinition
   {
     this.name = desc;
     this.className = (clazz == null ? clazz : clazz.trim());
-    if (libs == null)
-    {
-      this.type = LnFType.builtIn;
-    }
-    else if (isExtLibs(libs))
-    {
-      this.type = LnFType.ext;
-    }
-    else
-    {
-      this.type = LnFType.dynamic;
-    }
     this.setLibraries(libs);
   }
 
