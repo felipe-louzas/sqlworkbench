@@ -152,7 +152,7 @@
 
     <para>
       To start &wb-productname; on the Windows<superscript>&reg;</superscript> platform, the supplied <literal>SQLWorkbench.exe</literal>
-      can be used to start the program when using an installed Java runtime. The file <literal>sqlworkbench.jar</literal> has to be located in the
+      can be used to start the program. The file <literal>sqlworkbench.jar</literal> has to be located in the
       same directory as the exe files, otherwise it does not work.
     </para>
 
@@ -163,13 +163,13 @@
 
     <para>
       &wb-productname; does not need a "fully installed" runtime environment, you can also copy
-      the <literal>jre</literal> directory from an existing Java installation.
-      Note that the "local" Java installation in the <literal>jre</literal> subdirectory will not be used by the Windows<superscript>&reg;</superscript> launcher
-      if a Java runtime has been installed and registered in the system.
+      the <literal>jre</literal> directory from an existing Java installation into the directory where &wb-productname; is installed.
+      Creating a symbolic link (using <literal>mklink</literal>) also works. A "local" Java installation in the <literal>jre</literal> subdirectory will have priority over any JRE or JDK registered
+      in the Windows<superscript>&reg;</superscript> registry.
     </para>
 
     <para>
-      How the launcher searches for the Java runtime in the following order. The first Java installation found
+      The launcher searches for the Java runtime in the following order. The first Java installation found
       will be used.
     </para>
 
@@ -193,14 +193,14 @@
       </listitem>
       <listitem>
         <simpara>
-          if the environment variable <literal>%WORKBENCH_JDK%</literal> is defined, the launcher will
-          use <literal>%WORKBENCH_JDK%\bin\java.exe</literal> to run the application.
+          if the environment variable <literal>WORKBENCH_JDK</literal> is defined, the launcher will
+          use <literal>%WORKBENCH_JDK%\bin\javaw.exe</literal> to run the application.
         </simpara>
       </listitem>
       <listitem>
         <simpara>
           if the environment variable <literal>JAVA_HOME</literal> is defined, the launcher
-          will use <literal>%JAVA_HOME%\bin\java.exe</literal> to run the application.
+          will use <literal>%JAVA_HOME%\bin\javaw.exe</literal> to run the application.
         </simpara>
       </listitem>
       <listitem>
@@ -218,9 +218,10 @@
 
     <para>
       If neither of those steps found a Java runtime, the launcher offers to download a Java runtime or select an
-      installation. The Java runtime is downloaded from <ulink url="https://adoptopenjdk.net">AdoptOpenJDK</ulink>,
+      existing installation. The Java runtime is downloaded from <ulink url="https://adoptopenjdk.net">AdoptOpenJDK</ulink>,
       as the the provided <link linkend="install-prereq">batch file</link> does.
     </para>
+
     <para>
       All <literal>-X</literal> and <literal>-D</literal> parameters provided to the launcher are passed
       without change to the Java runtime.
@@ -239,7 +240,7 @@
         in the directory where <literal>SQLWorkbench.exe</literal> is located. The name of the file has to be <literal>sqlworkbench.cfg</literal>.
       </para>
       <note><para>
-        The format of <literal>sqlworkbench.cfg</literal> is different than the <literal>.ini</literal> file of previous versions. The
+        The format of <literal>sqlworkbench.cfg</literal> is different to the <literal>.ini</literal> file of previous versions. The
         launcher will convert an existing <literal>SQLWorkbench.ini</literal> or <literal>SQLWorkbench64.ini</literal>
         to the new format if started for the first time.
       </para></note>
