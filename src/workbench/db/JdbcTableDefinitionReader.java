@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -123,12 +124,13 @@ public class JdbcTableDefinitionReader
       }
     }
 
+    final CallerInfo ci = new CallerInfo(){};
     try
     {
+
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug("JdbcTableDefinitionReader.getTableColumns()",
-          "Calling getColumns() using: catalog="+ catalog + ", schema=" + schema + ", table=" + tablename);
+        LogMgr.logDebug(ci, "Calling getColumns() using: catalog="+ catalog + ", schema=" + schema + ", table=" + tablename);
       }
 
       long start = System.currentTimeMillis();
@@ -139,7 +141,7 @@ public class JdbcTableDefinitionReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug("JdbcTableDefinitionReader.getTableColumns()", "Calling getColumns() took: " + duration + "ms");
+        LogMgr.logDebug(ci, "Calling getColumns() took: " + duration + "ms");
         String fqn = SqlUtil.fullyQualifiedName(dbConnection, table);
         SqlUtil.dumpResultSetInfo("JdbcTableDefinitionReader.getColumns() for " + fqn, rsmeta);
       }
@@ -196,7 +198,7 @@ public class JdbcTableDefinitionReader
         }
         catch (Exception e)
         {
-          LogMgr.logWarning("JdbcTableDefinitionReader.getTableColumns()", "JDBC driver does not suport ORDINAL_POSITION column for getColumns()", e);
+          LogMgr.logWarning(ci, "JDBC driver does not suport ORDINAL_POSITION column for getColumns()", e);
           position = -1;
         }
 
@@ -273,7 +275,7 @@ public class JdbcTableDefinitionReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("JdbcTableDefinitionReader.getString()", "Could not read column " + colName, ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read column " + colName, ex);
     }
     return null;
   }

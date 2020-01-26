@@ -2137,14 +2137,18 @@ public class DataImporter
       this.insertStatement.setCommitBatch(this.commitBatch);
       LogMgr.logInfo(ci, "Statement for insert: " + insertSql);
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       LogMgr.logError(ci, "Error when preparing INSERT statement: " + insertSql, e);
       this.messages.append(ResourceMgr.getString("ErrImportInitTargetFailed"));
       this.messages.append(ExceptionUtil.getDisplay(e));
       this.insertStatement = null;
       this.hasErrors = true;
-      throw e;
+      if (e instanceof SQLException)
+      {
+        throw (SQLException)e;
+      }
+      throw new SQLException("Could not prepare instert statement", e);
     }
   }
 
@@ -2348,14 +2352,18 @@ public class DataImporter
       this.updateStatement = new BatchedStatement(stmt, dbConn, getRealBatchSize());
       this.updateStatement.setCommitBatch(this.commitBatch);
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error when preparing UPDATE statement", e);
       this.messages.append(ResourceMgr.getString("ErrImportInitTargetFailed"));
       this.messages.append(ExceptionUtil.getDisplay(e));
       this.updateStatement = null;
       this.hasErrors = true;
-      throw e;
+      if (e instanceof SQLException)
+      {
+        throw (SQLException)e;
+      }
+      throw new SQLException("Could not prepare instert statement", e);
     }
   }
 
@@ -2370,7 +2378,7 @@ public class DataImporter
       List<ColumnIdentifier> cols = this.dbConn.getMetadata().getTableColumns(targetTable);
       this.keyColumns = cols.stream().filter( col -> col.isPkColumn()).collect(Collectors.toList());
     }
-    catch (SQLException e)
+    catch (Exception e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error when retrieving key columns", e);
       this.columnMap = null;
