@@ -20,7 +20,7 @@ $url= "https://api.adoptopenjdk.net/v2/binary/releases/openjdk13?openjdk_impl=ho
 $fUrl = Get-RedirectedUrl $url
 $filename = [System.IO.Path]::GetFileName($fUrl); 
 
-Write-Host "Downloading $filename (approx. 40MB)"
+Write-Host "Downloading $filename (approx. 45MB)"
 
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 Invoke-WebRequest -Uri $url -OutFile $filename

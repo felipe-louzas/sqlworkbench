@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2019-12-01">
+  <release build="-1" date="2020-01-26">
+    <entry dev-build="5" type="enh">A new Windows launcher is available that removes the need for a separate 64 and 32 bit executables and can optionally download a JRE</entry>
     <entry dev-build="5" type="enh">It's now possible to optionally open the saved file when using "Save As"</entry>
     <entry dev-build="5" type="enh">It's now possible to use a special variable in WbImport to assign the input file's line number to a column.</entry>
     <entry dev-build="4" type="enh">It's now possible to cycle through the result tabs using a keyboard shortcut.</entry>
