@@ -52,6 +52,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionProfile;
+import workbench.db.DbDriver;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -645,9 +646,7 @@ public class StatementRunner
     if (conn != null)
     {
       msg.append('(');
-      msg.append(conn.getCurrentUser());
-      msg.append('@');
-      msg.append(conn.getUrl());
+      msg.append(conn.toString());
       msg.append(')');
     }
 

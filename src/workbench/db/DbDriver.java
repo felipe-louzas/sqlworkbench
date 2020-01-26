@@ -796,23 +796,23 @@ public class DbDriver
     return getId().compareTo(o.getId());
   }
 
-  static String getURLForLogging(ConnectionProfile profile)
+  public static String getURLForLogging(ConnectionProfile profile)
   {
     if (profile == null) return "";
     return getURLForLogging(profile.getUrl());
   }
 
-  static String getURLForLogging(String url)
+  public static String getURLForLogging(String url)
   {
     if (url == null) return "";
     if (Settings.getInstance().getObfuscateDbInformation())
     {
-      return JdbcUtils.extractPrefix(url) + "****";
+      return JdbcUtils.extractPrefix(url) + "******";
     }
     return url;
   }
 
-  static String getUsernameForLogging(String user)
+  public static String getUsernameForLogging(String user)
   {
     if (user == null) return "";
     if (Settings.getInstance().getObfuscateDbInformation())

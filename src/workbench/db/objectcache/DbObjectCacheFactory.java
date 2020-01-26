@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 
@@ -126,7 +127,7 @@ public class DbObjectCacheFactory
     {
       ObjectCache cache = caches.get(key);
       if (cache == null) return;
-      LogMgr.logDebug("DbObjectCacheFactory.saveCache()", "Saving cache for key: " + key);
+      LogMgr.logDebug(new CallerInfo(){}, "Saving cache for: " + connection.toString());
       saveCache(cache, connection);
     }
   }
@@ -141,7 +142,7 @@ public class DbObjectCacheFactory
       ObjectCache cache = caches.get(key);
       if (cache == null)
       {
-        LogMgr.logDebug("DbObjectCacheFactory.getCache()", "Creating new cache for: " + key);
+        LogMgr.logDebug(new CallerInfo(){}, "Creating new cache for: " + connection.toString());
         cache = new ObjectCache(connection);
         caches.put(key, cache);
       }
@@ -211,6 +212,8 @@ public class DbObjectCacheFactory
         WbConnection.CONNECTION_CLOSED.equals(evt.getNewValue()))
     {
       WbConnection conn = (WbConnection)evt.getSource();
+      if (conn == null) return;
+
       synchronized (lock)
       {
         String key = makeKey(conn);
@@ -219,14 +222,14 @@ public class DbObjectCacheFactory
 
         ObjectCache cache = caches.get(key);
         int refCount = decreaseRefCount(key, conn.getId());
-        LogMgr.logDebug("DbObjectCacheFactory.propertyChange()", "Connection with key=" + key + " was closed. Reference count for this cache is: " + refCount);
-        
+        LogMgr.logDebug(new CallerInfo(){}, "Connection " + conn.toString() + " was closed. Reference count for this cache is: " + refCount);
+
         if (cache != null && (refCount <= 0 || alwaysClear))
         {
           saveCache(cache, conn);
           cache.clear();
           caches.remove(key);
-          LogMgr.logDebug("DbObjectCacheFactory.propertyChange()", "Removed cache for key=" + key);
+          LogMgr.logDebug(new CallerInfo(){}, "Removed cache for " + conn.toString());
         }
         conn.removeChangeListener(this);
       }

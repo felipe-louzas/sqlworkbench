@@ -824,7 +824,7 @@ public class Settings
 		return props.containsKey(key);
 	}
 
-  public final DurationFormat getDurationFormat()
+  public DurationFormat getDurationFormat()
   {
     return getEnumProperty(PROP_DURATION_FORMAT, DurationFormat.dynamic);
   }
@@ -834,9 +834,14 @@ public class Settings
     return getBoolProperty("workbench.db.postgresql.check.cockroachdb", false);
   }
 
-	public final boolean getObfuscateDbInformation()
+	public boolean getObfuscateDbInformation()
   {
     return getBoolProperty(PROPERTY_LOG_OBFUSCATE, false);
+  }
+
+	public void setObfuscateDbInformation(boolean flag)
+  {
+    setProperty(PROPERTY_LOG_OBFUSCATE, flag);
   }
 
   public final boolean getLogAllStatements()

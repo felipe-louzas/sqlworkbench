@@ -1228,7 +1228,7 @@ public class WbConnection
   @Override
   public String toString()
   {
-    return getId() + ", " + getDisplayUser() + "@" + getUrl();
+    return getId() + ", " + DbDriver.getUsernameForLogging(getDisplayUser()) + "@" + DbDriver.getURLForLogging(getUrl());
   }
 
   /**

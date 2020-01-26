@@ -178,6 +178,7 @@ public class GeneralOptionsPanel
     alertDuration.setEnabled(showFinishAlert.isSelected());
     logAllStatements.setSelected(Settings.getInstance().getLogAllStatements());
     logMetaSQL.setSelected(Settings.getInstance().getDebugMetadataSql());
+    obfuscateDbInfo.setSelected(Settings.getInstance().getObfuscateDbInformation());
     autoSaveProfiles.setSelected(Settings.getInstance().getSaveProfilesImmediately());
     enableQuickFilter.setSelected(GuiSettings.enableProfileQuickFilter());
     focusToQuickFilter.setSelected(GuiSettings.focusToProfileQuickFilter());
@@ -215,6 +216,7 @@ public class GeneralOptionsPanel
     set.setShowConnectDialogOnStartup(autoConnect.isSelected());
     set.setLogAllStatements(logAllStatements.isSelected());
     set.setDebugMetadataSql(logMetaSQL.isSelected());
+    set.setObfuscateDbInformation(obfuscateDbInfo.isSelected());
     int index = checkInterval.getSelectedIndex();
     switch (index)
     {
@@ -339,6 +341,7 @@ public class GeneralOptionsPanel
     logMetaSQL = new JCheckBox();
     jSeparator5 = new JSeparator();
     logfileLabel = new WbLabelField();
+    obfuscateDbInfo = new JCheckBox();
 
     setLayout(new GridBagLayout());
 
@@ -488,7 +491,7 @@ public class GeneralOptionsPanel
     settingsfilename.setText("Settings");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 12;
+    gridBagConstraints.gridy = 14;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
@@ -676,7 +679,7 @@ public class GeneralOptionsPanel
     add(jSeparator3, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 10;
+    gridBagConstraints.gridy = 11;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(jPanel3, gridBagConstraints);
@@ -685,14 +688,14 @@ public class GeneralOptionsPanel
     logLevelLabel.setToolTipText(ResourceMgr.getString("d_LblLogLevel")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 11;
+    gridBagConstraints.gridy = 13;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     add(logLevelLabel, gridBagConstraints);
 
     logLevel.setModel(new DefaultComboBoxModel(new String[] { "ERROR", "WARNING", "INFO", "DEBUG" }));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 11;
+    gridBagConstraints.gridy = 13;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
@@ -796,7 +799,6 @@ public class GeneralOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     add(jPanel5, gridBagConstraints);
 
-    logAllStatements.setSelected(Settings.getInstance().getConsolidateLogMsg());
     logAllStatements.setText(ResourceMgr.getString("LblLogAllSql")); // NOI18N
     logAllStatements.setToolTipText(ResourceMgr.getString("d_LblLogAllSql")); // NOI18N
     logAllStatements.setBorder(null);
@@ -811,7 +813,6 @@ public class GeneralOptionsPanel
     gridBagConstraints.insets = new Insets(3, 0, 5, 0);
     add(logAllStatements, gridBagConstraints);
 
-    logMetaSQL.setSelected(Settings.getInstance().getConsolidateLogMsg());
     logMetaSQL.setText(ResourceMgr.getString("LblLogMetaSql")); // NOI18N
     logMetaSQL.setToolTipText(ResourceMgr.getString("d_LblLogMetaSql")); // NOI18N
     logMetaSQL.setBorder(null);
@@ -827,21 +828,31 @@ public class GeneralOptionsPanel
     add(logMetaSQL, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(0, 0, 9, 0);
+    gridBagConstraints.insets = new Insets(10, 0, 10, 0);
     add(jSeparator5, gridBagConstraints);
 
     logfileLabel.setText("Logfile");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 13;
+    gridBagConstraints.gridy = 15;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
     gridBagConstraints.insets = new Insets(2, 0, 0, 0);
     add(logfileLabel, gridBagConstraints);
+
+    obfuscateDbInfo.setText(ResourceMgr.getString("LblObfuscateDbInfo")); // NOI18N
+    obfuscateDbInfo.setToolTipText(ResourceMgr.getString("d_LblObfuscateDbInfo")); // NOI18N
+    obfuscateDbInfo.setBorder(null);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridwidth = 4;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    add(obfuscateDbInfo, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -897,6 +908,7 @@ public class GeneralOptionsPanel
   private JLabel logLevelLabel;
   private JCheckBox logMetaSQL;
   private JTextField logfileLabel;
+  private JCheckBox obfuscateDbInfo;
   private JCheckBox onlyActiveTab;
   private JCheckBox scrollTabs;
   private JTextField settingsfilename;
