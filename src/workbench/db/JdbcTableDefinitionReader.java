@@ -243,6 +243,11 @@ public class JdbcTableDefinitionReader
         processColumnsResultRow(rs, col);
       }
     }
+    catch (SQLException ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve table columns", ex);
+      throw ex;
+    }
     finally
     {
       SqlUtil.closeResult(rs);
