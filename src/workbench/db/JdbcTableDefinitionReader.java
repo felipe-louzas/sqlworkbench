@@ -248,6 +248,11 @@ public class JdbcTableDefinitionReader
       LogMgr.logError(ci, "Could not retrieve table columns", ex);
       throw ex;
     }
+    catch (Exception ex)
+    {
+      LogMgr.logError(ci, "Could not retrieve table columns", ex);
+      throw new SQLException(ex);
+    }
     finally
     {
       SqlUtil.closeResult(rs);

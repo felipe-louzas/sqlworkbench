@@ -25,9 +25,12 @@ package workbench.db.mssql;
 
 import java.sql.Types;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.storage.DataConverter;
+
 import workbench.util.NumberStringCache;
 
 /**
@@ -118,7 +121,7 @@ public class SqlServerDataConverter
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning("SqlServerDataConverter.convertValue()", "Error converting value " + originalValue, th);
+			LogMgr.logWarning(new CallerInfo(){}, "Error converting value " + originalValue, th);
       newValue = originalValue;
     }
     return newValue;

@@ -370,41 +370,53 @@ public abstract class AbstractImportFileParser
     if (getTablename() == null) return null;
     if (this.targetTable != null) return targetTable;
 
+    TableIdentifier table = createTargetTableId();
+
     // we can't verify the table without a connection
     // not having one isn't an error if we are importing the clipboard into a DataStore
     if (this.connection == null)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Can't verify target: " + getTablename());
+      LogMgr.logWarning(new CallerInfo(){}, "Can't verify target: " + table.getTableExpression());
       return null;
     }
 
-    TableIdentifier table = createTargetTableId();
-
-    if (checkTargetWithQuery)
+    try
     {
-      try
+      if (checkTargetWithQuery)
       {
-        TableSelectBuilder builder = new TableSelectBuilder(connection, TableSelectBuilder.TABLEDATA_TEMPLATE_NAME);
+        try
+        {
+          TableSelectBuilder builder = new TableSelectBuilder(connection, TableSelectBuilder.TABLEDATA_TEMPLATE_NAME);
 
-        // make sure the table name is used as specified by the user
-        builder.setNeverUseFQN(true);
+          // make sure the table name is used as specified by the user
+          builder.setNeverUseFQN(true);
 
-        String query = builder.getSelectForColumns(table, null, 1);
-        LogMgr.logDebug(new CallerInfo(){}, "Using query to detect table columns:\n" + query);
+          String query = builder.getSelectForColumns(table, null, 1);
+          LogMgr.logDebug(new CallerInfo(){}, "Using query to detect table columns:\n" + query);
 
-        List<ColumnIdentifier> columns = SqlUtil.getResultSetColumns(query, connection);
-        targetTable = new TableDefinition(table, columns);
+          List<ColumnIdentifier> columns = SqlUtil.getResultSetColumns(query, connection);
+          targetTable = new TableDefinition(table, columns);
+        }
+        catch (Exception ex)
+        {
+          LogMgr.logError(new CallerInfo(){}, "Error trying to detect the target table using a query", ex);
+        }
       }
-      catch (Exception ex)
+      else
       {
-        LogMgr.logError(new CallerInfo(){}, "Error trying to detect the target table using a query", ex);
+        targetTable = connection.getMetadata().getTableDefinition(table, true);
       }
     }
-    else
+    catch (SQLException ex)
     {
-      targetTable = connection.getMetadata().getTableDefinition(table, true);
+      String msg = ResourceMgr.getFormattedString("ErrTargetTableNotFound", table.getTableExpression());
+      this.messages.append(msg);
+      this.messages.appendNewLine();
+      this.messages.append(ex.getMessage());
+      this.messages.appendNewLine();
+      this.hasErrors = true;
+      throw ex;
     }
-
     return targetTable;
   }
 

@@ -28,8 +28,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ConstraintDefinition;
 import workbench.db.IndexDefinition;
@@ -99,10 +99,7 @@ public class SqlServerUniqueConstraintReader
       return;
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("SqlServerUniqueConstraintReader.processIndexList()", "Using:\n" + sql);
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -125,7 +122,7 @@ public class SqlServerUniqueConstraintReader
     }
     catch (SQLException se)
     {
-      LogMgr.logError("SqlServerUniqueConstraintReader.processIndexList()", "Could not retrieve definition", se);
+      LogMgr.logMetadataError(new CallerInfo(){}, se, "unique constraints", sql);
     }
     finally
     {

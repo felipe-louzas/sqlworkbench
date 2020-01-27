@@ -25,8 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DefaultTriggerReader;
 import workbench.db.TriggerReader;
@@ -105,10 +105,7 @@ public class SqlServerTriggerReader
       "where is_ms_shipped = 0" +
       "  and tr.parent_class_desc = 'SERVER'";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("SqlServerTriggerReader.readDDLTriggers()", "Query to retrieve DDL triggers:\n" + sql);
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "DDL triggers", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -133,7 +130,7 @@ public class SqlServerTriggerReader
     }
     catch (Exception ex)
     {
-      LogMgr.logWarning("SqlServerTriggerReader.readDDLTriggers()", "Couldn not retrieve event triggers", ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "DDL triggers", sql);
     }
     finally
     {

@@ -29,8 +29,8 @@ import java.sql.Types;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.ObjectListEnhancer;
@@ -139,10 +139,7 @@ public class SqlServerObjectListEnhancer
       for (String requestedType : requestedTypes)
       {
         type = requestedType;
-        if (Settings.getInstance().getDebugMetadataSql())
-        {
-          LogMgr.logInfo("SqlServerObjectListEnhancer.updateObjectRemarks()", "Retrieving table remarks using:\n" + SqlUtil.replaceParameters(sql, schema, type));
-        }
+				LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql, schema, type);
         stmt = con.getSqlConnection().prepareStatement(sql);
         if (schema == null)
         {
@@ -168,7 +165,7 @@ public class SqlServerObjectListEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlServerObjectListEnhancer.updateObjectRemarks()", "Error retrieving remarks using:\n " + SqlUtil.replaceParameters(sql, schema, type), e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql, schema, type);
     }
     finally
     {

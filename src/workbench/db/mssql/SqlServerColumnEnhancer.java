@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
@@ -114,11 +114,7 @@ public class SqlServerColumnEnhancer
       tablename = table.getTable().getRawTableName();
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("SqlServerColumnEnhancer.updateColumnInformation()",
-        "Retrieving additional column information using:\n" + SqlUtil.replaceParameters(sql, tablename));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "column information", sql, tablename);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -190,7 +186,7 @@ public class SqlServerColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlServerColumnEnhancer.updateColumnInformation()", "Error retrieving computed columns using:\n" + SqlUtil.replaceParameters(sql, tablename), e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "column information", sql, tablename);
     }
     finally
     {
@@ -213,10 +209,7 @@ public class SqlServerColumnEnhancer
     try
     {
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logInfo("SqlServerColumnEnhancer.getDatabaseCollation()", "Retrieving database collation using: " + sql);
-      }
+			LogMgr.logMetadataSql(new CallerInfo(){}, "database collation", sql);
 
       info = conn.createStatement();
       rs = info.executeQuery(sql);
@@ -227,7 +220,7 @@ public class SqlServerColumnEnhancer
     }
     catch (SQLException e)
     {
-      LogMgr.logError("SqlServerColumnEnhancer.getDatabaseCollation()", "Could not read database collation using: " + sql, e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "database collation", sql);
     }
     finally
     {
@@ -263,11 +256,7 @@ public class SqlServerColumnEnhancer
       sql += "::fn_listextendedproperty ('" + propName + "','user', ?, 'table', ?, 'column', null)";
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("SqlServerColumnEnhancer.updateColumnRemarks()",
-        "Retrieving column remarks using query:\n" + SqlUtil.replaceParameters(sql, schema, tablename));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "column remarks", sql, schema, tablename);
 
     List<ColumnIdentifier> columns = table.getColumns();
 
@@ -293,7 +282,7 @@ public class SqlServerColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlServerColumnEnhancer.updateColumnRemarks()", "Error retrieving remarks using:\n" + SqlUtil.replaceParameters(sql, schema, tablename), e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "column remarks", sql, schema, tablename);
     }
     finally
     {

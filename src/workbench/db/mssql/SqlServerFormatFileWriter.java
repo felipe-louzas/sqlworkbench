@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.exporter.DataExporter;
@@ -109,7 +110,7 @@ public class SqlServerFormatFileWriter
     }
     catch (IOException io)
     {
-      LogMgr.logError("SqlServerFormatFileWriter.writeFormatFile()", "Error opening outputfile", io);
+			LogMgr.logError(new CallerInfo(){}, "Error opening outputfile", io);
     }
     finally
     {

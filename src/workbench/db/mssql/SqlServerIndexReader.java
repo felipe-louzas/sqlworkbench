@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.IndexDefinition;
@@ -96,11 +96,7 @@ public class SqlServerIndexReader
       "  and sh.name = ? \n" +
       "order by ic.index_column_id";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("SqlServerIndexReader.getIncludedColumns()", "Retrieving index information using:\n" +
-        SqlUtil.replaceParameters(sql, index.getName(), table.getRawTableName(), table.getRawSchema()));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "index information", sql, index.getName(), table.getRawTableName(), table.getRawSchema());
 
     List<String> cols = new ArrayList<>();
     boolean ignoreDups = false;
@@ -134,7 +130,7 @@ public class SqlServerIndexReader
     }
     catch (SQLException ex)
     {
-      LogMgr.logWarning("SqlServerIndexReader.getIncludedColumns()", "Could not read included columns", ex);
+			LogMgr.logMetadataError(new CallerInfo(){}, ex, "index information", sql, index.getName(), table.getRawTableName(), table.getRawSchema());
     }
     finally
     {

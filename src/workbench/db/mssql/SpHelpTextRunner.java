@@ -26,8 +26,8 @@ package workbench.db.mssql;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.WbConnection;
 
@@ -69,10 +69,7 @@ public class SpHelpTextRunner
       }
       stmt = connection.createStatement();
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logInfo("SpHelpTextRunner.getSource()", "Retrieving view definition using query: " + query);
-      }
+			LogMgr.logMetadataSql(new CallerInfo(){}, "view definition", query);
 
       boolean hasResult = stmt.execute(query);
 
@@ -94,7 +91,7 @@ public class SpHelpTextRunner
     }
     catch (Exception ex)
     {
-      LogMgr.logError("SpHelpTextRunner.getSource()", "Could not retrieve object source using:\n" + query, ex);
+			LogMgr.logMetadataError(new CallerInfo(){}, ex, "view definition", query);
       sql = ex.getMessage();
     }
     finally

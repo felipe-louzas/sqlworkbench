@@ -26,6 +26,7 @@ package workbench.db.mssql;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.JdbcUtils;
@@ -68,7 +69,7 @@ public class SqlServerSchemaInfoReader
       }
       catch (Throwable th)
       {
-        LogMgr.logWarning("SqlServerSchemaInfoReader.<init>", "Error retrieving current schema using getSchema(): " + th.getMessage());
+				LogMgr.logWarning(new CallerInfo(){}, "Error retrieving current schema using getSchema(): " + th.getMessage());
       }
     }
 
@@ -77,7 +78,7 @@ public class SqlServerSchemaInfoReader
       defaultSchema = retrieveSchema(dbConnection);
       schemaRetrieved = true;
     }
-    LogMgr.logDebug("SqlServerSchemaInfoReader.<init>", "Using current schema: " + defaultSchema);
+		LogMgr.logDebug(new CallerInfo(){}, "Using current schema: " + defaultSchema);
   }
 
   private String retrieveSchema(WbConnection con)
@@ -100,7 +101,7 @@ public class SqlServerSchemaInfoReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlServerSchemaInfoReader", "Could not obtain default schema using: \n" + sql, e);
+			LogMgr.logError(new CallerInfo(){}, "Could not obtain default schema using: \n" + sql, e);
     }
     finally
     {

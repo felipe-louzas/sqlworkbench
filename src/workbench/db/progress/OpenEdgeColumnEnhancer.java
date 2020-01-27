@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -74,11 +75,8 @@ public class OpenEdgeColumnEnhancer
     String tablename = SqlUtil.removeObjectQuotes(table.getTable().getTableName());
     String schema = SqlUtil.removeObjectQuotes(table.getTable().getSchema());
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("OpenEdgeColumnEnhancer.updateColumnRemarks()",
-        "Retrieving column remarks using query:\n" + SqlUtil.replaceParameters(sql, schema, tablename));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "column remarks", sql, schema, tablename);
+
 
     Map<String, String> remarks = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
     try
@@ -99,7 +97,7 @@ public class OpenEdgeColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlServerColumnEnhancer.updateColumnRemarks()", "Error retrieving remarks using:\n" + SqlUtil.replaceParameters(sql, schema, tablename), e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "column remarks", sql, schema, tablename);
     }
     finally
     {

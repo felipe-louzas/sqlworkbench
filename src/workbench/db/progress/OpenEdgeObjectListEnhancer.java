@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -123,10 +124,7 @@ public class OpenEdgeObjectListEnhancer
     long start = System.currentTimeMillis();
     try
     {
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logInfo("OpenEdgeObjectListEnhancer.updateObjectRemarks()", "Retrieving table remarks using:\n" + SqlUtil.replaceParameters(sql, schema, object));
-      }
+			LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql, schema, object);
       stmt = con.getSqlConnection().prepareStatement(sql);
       if (schemaIndex > 0) stmt.setString(schemaIndex, schema);
       if (tableIndex > 0) stmt.setString(tableIndex, object);
@@ -146,14 +144,14 @@ public class OpenEdgeObjectListEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("OpenEdgeObjectListEnhancer.updateObjectRemarks()", "Error retrieving remarks using:\n " + SqlUtil.replaceParameters(sql, schema, object), e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql, schema, object);
     }
     finally
     {
       SqlUtil.closeAll(rs, stmt);
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("OpenEdgeObjectListEnhancer.updateObjectRemarks()", "Retrieving table remarks took: " + duration + "ms");
+		LogMgr.logDebug(new CallerInfo(){}, "Retrieving table remarks took: " + duration + "ms");
     return remarks;
   }
 }

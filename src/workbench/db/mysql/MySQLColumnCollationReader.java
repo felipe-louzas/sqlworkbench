@@ -29,8 +29,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableDefinition;
@@ -52,11 +52,12 @@ public class MySQLColumnCollationReader
     String defaultCollation = null;
     Statement info = null;
     ResultSet rs = null;
+		String defaultCollationSql = "show variables where variable_name in ('collation_database', 'character_set_database')";
     try
     {
-      String variables = "show variables where variable_name in ('collation_database', 'character_set_database')";
+			LogMgr.logMetadataSql(new CallerInfo(){}, "default collation", defaultCollationSql);
       info = conn.createStatement();
-      rs = info.executeQuery(variables);
+      rs = info.executeQuery(defaultCollationSql);
       while (rs.next())
       {
         String name = rs.getString(1);
@@ -73,7 +74,7 @@ public class MySQLColumnCollationReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("MySQLColumnCollationReader.readCollations()", "Could not read default collation", e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "default collation", defaultCollationSql);
     }
     finally
     {
@@ -96,10 +97,7 @@ public class MySQLColumnCollationReader
       "WHERE table_name = ? \n" +
       "AND   table_schema = ? ";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("MySQLColumnCollationReader.readCollations()", "Retrieving column collation information using:\n" + sql);
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "column collation", sql);
 
     try
     {
@@ -138,7 +136,7 @@ public class MySQLColumnCollationReader
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("MySQLColumnCollationReader.readCollations()", "Could not read column collations", ex);
+			LogMgr.logMetadataError(new CallerInfo(){}, ex, "column collation", sql);
     }
     finally
     {

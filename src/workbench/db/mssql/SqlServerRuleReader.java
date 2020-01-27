@@ -30,8 +30,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
@@ -60,10 +60,12 @@ public class SqlServerRuleReader
 
     Statement stmt = null;
     ResultSet rs = null;
+		String sql = null;
     try
     {
       stmt = connection.createStatementForQuery();
-      String sql = getSql(connection, schemaPattern, namePattern);
+      sql = getSql(connection, schemaPattern, namePattern);
+			LogMgr.logMetadataSql(new CallerInfo(){}, "rules", sql, sql, schemaPattern, namePattern);
       rs = stmt.executeQuery(sql);
       while (rs.next())
       {
@@ -76,7 +78,7 @@ public class SqlServerRuleReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("SqlServerRuleReader.getRuleList()", "Could not read rules", e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "rules", sql, schemaPattern, namePattern);
     }
     finally
     {
@@ -189,7 +191,7 @@ public class SqlServerRuleReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("SqlServerRuleReader.getObjectSource()", "Could not retrieve rule source: ", e);
+			LogMgr.logError(new CallerInfo(){}, "Could not retrieve rule source: ", e);
       return null;
     }
     finally
@@ -254,10 +256,6 @@ public class SqlServerRuleReader
         sql.append("\n AND ");
         SqlUtil.appendExpression(sql, "convert(sysname, user_name(uid))", ruleSchemaPattern, con);
       }
-    }
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("SqlServerRuleReader.getSql()", "Using SQL=\n" + sql);
     }
     return sql.toString();
   }

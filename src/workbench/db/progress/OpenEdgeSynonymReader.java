@@ -23,15 +23,14 @@
  */
 package workbench.db.progress;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
@@ -94,10 +93,7 @@ public class OpenEdgeSynonymReader
       }
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo(getClass().getName() + ".getSynonymList()", "Retrieving synonym list using:\n" + sql);
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "synonyms", sql);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -121,6 +117,11 @@ public class OpenEdgeSynonymReader
         }
       }
     }
+		catch (SQLException e)
+		{
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "synonyms", sql);
+			throw e;
+		}
     finally
     {
       SqlUtil.closeAll(rs, stmt);
@@ -140,10 +141,7 @@ public class OpenEdgeSynonymReader
       "WHERE sname = ?\n" +
       "  AND sowner = ?";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo(getClass().getName() + ".getSynonymTable()", "Retrieving synonym table using:\n" + SqlUtil.replaceParameters(sql, synonym, owner));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "synonym table", sql, synonym, owner);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -168,6 +166,11 @@ public class OpenEdgeSynonymReader
         }
       }
     }
+		catch (SQLException e)
+		{
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "synonym table", sql, synonym, owner);
+			throw e;
+		}
     finally
     {
       SqlUtil.closeAll(rs,stmt);

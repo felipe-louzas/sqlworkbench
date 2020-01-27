@@ -23,7 +23,6 @@
  */
 package workbench.db.mssql;
 
-
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -32,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -114,10 +114,7 @@ public class SqlServerSequenceReader
     }
     sql.append("\n ORDER BY 1,2");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("SqlServerSequenceReader.getRawSequenceDefinition()", "Using query=\n" + sql);
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -130,7 +127,7 @@ public class SqlServerSequenceReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("OracleMetaData.getSequenceDefinition()", "Error when retrieving sequence definition", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql);
     }
     finally
     {
@@ -185,7 +182,7 @@ public class SqlServerSequenceReader
     }
     catch (NumberFormatException nfe)
     {
-      LogMgr.logWarning("SqlServerSequenceReader.getNumberValue()", "Could not convert " + v + " to a number", nfe);
+			LogMgr.logWarning(new CallerInfo(){}, "Could not convert " + v + " to a number", nfe);
     }
     return null;
   }

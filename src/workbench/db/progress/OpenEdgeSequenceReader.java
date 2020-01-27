@@ -23,14 +23,13 @@
  */
 package workbench.db.progress;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -112,10 +111,7 @@ public class OpenEdgeSequenceReader
     PreparedStatement stmt = null;
     List<SequenceDefinition> result = new ArrayList<>();
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("ProgressSequenceReader.getSquences()", "Query to retrieve sequence: \n" + SqlUtil.replaceParameters(sql, owner, namePattern));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "sequences", sql, owner, namePattern);
 
     try
     {
@@ -133,7 +129,7 @@ public class OpenEdgeSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ProgressSequenceReader.getSequences()", "Error when retrieving sequences using: \n" + sql, e);
+		LogMgr.logMetadataError(new CallerInfo(){}, e, "sequences", sql, owner, namePattern);
     }
     finally
     {
@@ -169,6 +165,9 @@ public class OpenEdgeSequenceReader
     ResultSet rs = null;
     DataStore result = null;
     String sql = SELECT_SEQUENCE_DEF + " WHERE \"SEQ-OWNER\" = ? AND \"SEQ-NAME\" = ?";
+
+		LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql, owner, sequence);
+
     try
     {
       stmt = this.dbConn.getSqlConnection().prepareStatement(sql);
@@ -180,7 +179,7 @@ public class OpenEdgeSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ProgressSequenceReader.getRawSequenceDefinition()", "Error when retrieving sequence definition", e);
+			LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql, owner, sequence);
     }
     finally
     {

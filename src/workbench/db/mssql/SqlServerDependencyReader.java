@@ -20,7 +20,6 @@
  */
 package workbench.db.mssql;
 
-
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.CatalogChanger;
 import workbench.db.DbObject;
@@ -37,9 +39,9 @@ import workbench.db.TableIdentifier;
 import workbench.db.TriggerDefinition;
 import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
+
 import workbench.gui.dbobjects.objecttree.DbObjectSorter;
-import workbench.log.LogMgr;
-import workbench.resource.Settings;
+
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -197,7 +199,7 @@ public class SqlServerDependencyReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("SqlServerDependencyReader.changeDatabase()", "Could not change database", ex);
+			LogMgr.logError(new CallerInfo(){}, "Could not change database", ex);
     }
     return currentCatalog;
   }
@@ -211,20 +213,14 @@ public class SqlServerDependencyReader
 
     String fqName = buildFQName(connection, base);
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      String s;
-      if (useFQN)
-      {
-        s = SqlUtil.replaceParameters(sql, fqName);
-      }
-      else
-      {
-        s = SqlUtil.replaceParameters(sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
-      }
-
-      LogMgr.logDebug("SqlServerDependencyReader.retrieveObjects()", "Retrieving dependent objects using query:\n" + s);
-    }
+		if (useFQN)
+		{
+			LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, fqName);
+		}
+		else
+		{
+			LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
+		}
 
     String oldCatalog = changeDatabase(connection, base.getCatalog());
 
@@ -296,16 +292,14 @@ public class SqlServerDependencyReader
     }
     catch (Exception ex)
     {
-      String s;
-      if (useFQN)
-      {
-        s = SqlUtil.replaceParameters(sql, fqName);
-      }
-      else
-      {
-        s = SqlUtil.replaceParameters(sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
-      }
-      LogMgr.logError("SqlServerDependencyReader.retrieveObjects()", "Could not read object dependency using:\n" + s, ex);
+			if (useFQN)
+			{
+				LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, fqName);
+			}
+			else
+			{
+				LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
+			}
     }
     finally
     {

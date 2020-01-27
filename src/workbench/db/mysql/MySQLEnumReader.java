@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
@@ -64,10 +65,14 @@ public class MySQLEnumReader
     ResultSet rs = null;
     HashMap<String, String> defs = new HashMap<>(17);
 
+		String sql = "SHOW COLUMNS FROM " + tbl.getTable().getTableExpression(connection);
+		LogMgr.logMetadataSql(new CallerInfo(){}, "table enums", sql);
+
     try
     {
       stmt = connection.createStatement();
-      rs = stmt.executeQuery("SHOW COLUMNS FROM " + tbl.getTable().getTableExpression(connection));
+      rs = stmt.executeQuery(sql);
+
       while (rs.next())
       {
         String column = rs.getString(1);
@@ -96,7 +101,7 @@ public class MySQLEnumReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("MySQLEnumReader.updateEnumDefinition()", "Could not read enum definition", e);
+			LogMgr.logError(new CallerInfo(){}, "table enums", e);
     }
     finally
     {
