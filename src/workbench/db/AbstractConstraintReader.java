@@ -33,18 +33,16 @@ import java.util.regex.Pattern;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.sqltemplates.ColumnDefinitionTemplate;
 import workbench.db.sqltemplates.ConstraintNameTester;
 
 import workbench.util.CollectionUtil;
-import workbench.util.ExceptionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
- * A class to read table level constraints from the database.
+ * A class to read table level check constraints from the database.
  *
  * @author Thomas Kellerer
  */
@@ -60,7 +58,6 @@ public abstract class AbstractConstraintReader
 
   public abstract String getColumnConstraintSql();
   public abstract String getTableConstraintSql();
-
 
   public int getIndexForSchemaParameter()
   {

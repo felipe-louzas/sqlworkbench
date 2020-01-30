@@ -48,6 +48,7 @@ import workbench.db.postgres.PostgresUtil;
 import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
+import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -153,6 +154,9 @@ public class DbDriver
 
   private boolean doAddLibraryPath()
   {
+    // The DLL is only needed for integrated security, which only works on Windows anyway
+    if (!PlatformHelper.isWindows()) return false;
+
     // alway adjust the library path for SQL Server driver to make enabling Windows authentication easier.
     if (driverClass.equals("com.microsoft.sqlserver.jdbc.SQLServerDriver"))
     {

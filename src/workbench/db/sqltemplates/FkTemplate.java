@@ -33,13 +33,13 @@ public class FkTemplate
   private final String defaultSQL =
     "ALTER TABLE %table_name%\n" +
     "  ADD CONSTRAINT %constraint_name% FOREIGN KEY (%columnlist%)\n" +
-    "  REFERENCES %targettable% (%targetcolumnlist%)\n" +
+    "  REFERENCES %targettable% (%targetcolumnlist%) %fk_match_type%\n" +
     "  %fk_update_rule%\n" +
     "  %fk_delete_rule%\n" +
     "  %deferrable%";
 
   private final String defaultInlineSQL =
-    "CONSTRAINT %constraint_name% FOREIGN KEY (%columnlist%) REFERENCES %targettable% (%targetcolumnlist%)\n" +
+    "CONSTRAINT %constraint_name% FOREIGN KEY (%columnlist%) REFERENCES %targettable% (%targetcolumnlist%) %fk_match_type%\n" +
     "    %fk_update_rule%%fk_delete_rule% %deferrable%";
 
   private String sql;

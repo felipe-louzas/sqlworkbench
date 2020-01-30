@@ -61,6 +61,7 @@ public class DependencyNode
   private String fkName;
   private String deferrable;
   private String remarks;
+	private FKMatchType matchType;
 
   private int updateActionValue;
   private int deleteActionValue;
@@ -94,6 +95,16 @@ public class DependencyNode
     }
   }
 
+	public FKMatchType getMatchType()
+	{
+		return matchType;
+	}
+
+	public void setMatchType(FKMatchType type)
+	{
+		this.matchType = type;
+	}
+
   public String getComment()
   {
     return remarks;
@@ -103,7 +114,7 @@ public class DependencyNode
   {
     this.remarks = comment;
   }
-  
+
   public boolean isEnabled()
   {
     return enabled;

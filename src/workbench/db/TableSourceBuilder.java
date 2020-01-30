@@ -930,6 +930,7 @@ public class TableSourceBuilder
     FkTemplate tmpl = new FkTemplate(dbConnection.getDbId(), forInlineUse);
     String template = tmpl.getSQLTemplate();
     List<String> fkStatements = new ArrayList<>(fkList.size());
+		FKHandler fkHandler = FKHandler.createInstance(dbConnection);
 
     for (DependencyNode node : fkList)
     {
@@ -985,6 +986,16 @@ public class TableSourceBuilder
       {
         stmt = TemplateHandler.replacePlaceholder(stmt, MetaDataSqlManager.DEFERRABLE, rule.trim(), true);
       }
+
+			FKMatchType matchType = node.getMatchType();
+			if (!fkHandler.shouldGenerate(matchType))
+			{
+				stmt = TemplateHandler.removePlaceholder(stmt, MetaDataSqlManager.FK_MATCH_TYPE, false);
+			}
+			else
+			{
+				stmt = TemplateHandler.replacePlaceholder(stmt, MetaDataSqlManager.FK_MATCH_TYPE, "MATCH " + matchType.toString(), true);
+			}
 
       stmt = TemplateHandler.replacePlaceholder(stmt, MetaDataSqlManager.FK_TARGET_TABLE_PLACEHOLDER, node.getTable().getTableExpression(dbConnection), true);
       stmt = TemplateHandler.replacePlaceholder(stmt, MetaDataSqlManager.FK_TARGET_COLUMNS_PLACEHOLDER, getColumnList(node.getSourceColumns()), true);

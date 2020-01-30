@@ -74,10 +74,13 @@ public interface FKHandler
   int COLUMN_IDX_FK_DEF_DEFERRABLE_RULE_VALUE = 10;
 
   int COLUMN_IDX_DEFERRABILITY = 13;
-  
+
   final String COLUMN_NAME_REMARKS = "REMARKS";
   final ColumnIdentifier REMARKS_COLUMN = new ColumnIdentifier(COLUMN_NAME_REMARKS, Types.VARCHAR, 20);
 
+  final String COLUMN_NAME_MATCH_TYPE = "MATCH_TYPE";
+  final ColumnIdentifier MATCH_TYPE_COLUMN = new ColumnIdentifier(COLUMN_NAME_MATCH_TYPE, Types.VARCHAR, 10);
+  
   boolean supportsStatus();
   boolean containsStatusColumn();
 
@@ -142,14 +145,22 @@ public interface FKHandler
     return false;
   }
 
+	default boolean shouldGenerate(FKMatchType type)
+	{
+		return supportsMatchType() && type != null;
+	}
+
+  default boolean supportsMatchType()
+  {
+    return false;
+  }
+
   default void initializeSharedCache()
   {
-
   }
 
   default void clearSharedCache()
   {
-
   }
 
   public static class FkStatusInfo

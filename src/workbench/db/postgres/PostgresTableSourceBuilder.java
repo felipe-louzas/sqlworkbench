@@ -29,7 +29,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -450,16 +449,11 @@ public class PostgresTableSourceBuilder
   private void appendFKComments(TableIdentifier table, StringBuilder fkSource, List<DependencyNode> fkList)
   {
     if (CollectionUtil.isEmpty(fkList)) return;
-
-    PostgresFKHandler fkHandler = new PostgresFKHandler(dbConnection);
-    List<String> names = fkList.stream().map(node -> node.getFkName()).collect(Collectors.toList());
-
-    Map<String, String> remarks = fkHandler.getConstraintRemarks(table, names);
-    String tblname = table.getTableExpression(dbConnection);
-    for (Map.Entry<String, String> entry : remarks.entrySet())
+		String tblname = table.getTableExpression(dbConnection);
+    for (DependencyNode node : fkList)
     {
-      String conname = SqlUtil.quoteObjectname(entry.getKey());
-      String comment = SqlUtil.escapeQuotes(entry.getValue());
+      String conname = SqlUtil.quoteObjectname(node.getFkName());
+      String comment = SqlUtil.escapeQuotes(node.getComment());
       String ddl = "\nCOMMENT ON CONSTRAINT " + conname + " ON " + tblname + " IS '" + comment + "';";
       fkSource.append(ddl);
     }
