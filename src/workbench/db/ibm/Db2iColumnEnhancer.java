@@ -24,8 +24,8 @@ package workbench.db.ibm;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
@@ -71,10 +71,7 @@ public class Db2iColumnEnhancer
       "where table_schema = ? \n" +
       "  and table_name  = ?";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("Db2iColumnEnhancer.updateComputedColumns()", "Query to retrieve column information:\n" + SqlUtil.replaceParameters(sql, schema, tablename));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column information", sql, schema, tablename);
 
     try
     {
@@ -98,7 +95,7 @@ public class Db2iColumnEnhancer
           {
             col.setComment(comment);
           }
-          if (showCCSID && charset > 0)
+          if (showCCSID && charset > 0 && SqlUtil.isCharacterType(col.getDataType()))
           {
             col.setCollationExpression("CCSID " + charset);
           }
@@ -107,7 +104,7 @@ public class Db2iColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("Db2iColumnEnhancer.updateComputedColumns()", "Error retrieving column comments using:\n" + SqlUtil.replaceParameters(sql, schema, tablename), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "column information", sql, schema, tablename);
     }
     finally
     {

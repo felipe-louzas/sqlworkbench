@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
@@ -137,7 +138,7 @@ public class InformixColumnEnhancer
     String tablename = table.getTable().getRawTableName();
     String schema = table.getTable().getRawSchema();
 
-    LogMgr.logDebug("InformixColumnEnhancer.updateDateColumns()", "Query to retrieve column details:\n" + SqlUtil.replaceParameters(sql, tablename, schema));
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column details", sql, tablename, schema);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -172,14 +173,13 @@ public class InformixColumnEnhancer
         }
         else
         {
-          LogMgr.logError("InformixColumnEnhancer.updateDateColumns()","The query returned a column name (" + colname + ") that was not part of the passed table definition!",null);
+          LogMgr.logError(new CallerInfo(){},"The query returned a column name (" + colname + ") that was not part of the passed table definition!",null);
         }
       }
     }
     catch (Exception e)
     {
-      LogMgr.logError("InformixColumnEnhancer.updateDateColumns()", "Error retrieving datetime qualifiers using:\n" +
-        SqlUtil.replaceParameters(sql, tablename, schema), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "column details", sql, tablename, schema);
     }
     finally
     {

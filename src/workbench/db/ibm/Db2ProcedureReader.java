@@ -30,8 +30,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
@@ -82,10 +82,7 @@ public class Db2ProcedureReader
     String sql = getSQL(schemaPattern, namePattern);
     try
     {
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug("Db2ProcedureReader.getProcedures()", "Query to retrieve procedurelist:\n" + sql);
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "procedures", sql);
       stmt = connection.createStatementForQuery();
       rs = stmt.executeQuery(sql);
       DataStore ds = fillProcedureListDataStore(rs);
@@ -98,7 +95,7 @@ public class Db2ProcedureReader
     catch (Exception e)
     {
       forceJDBC = true;
-      LogMgr.logError("Db2ProcedureReader.getProcedures()", "Error retrieving procedures using query:\n" + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedures", sql);
       return super.getProcedures(catalog, schemaPattern, namePattern);
     }
     finally
@@ -243,10 +240,7 @@ public class Db2ProcedureReader
 
     String sql = "call " + procSchema + ".SQLFUNCTIONCOLS(?, ?, ?, '%', '" +  options + "')";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("Db2ProcedureReader.getFunctionParameters()", "Query to retrieve function parameters: " + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "function parameters", sql);
 
     try
     {
@@ -272,7 +266,7 @@ public class Db2ProcedureReader
     }
     catch (SQLException ex)
     {
-      LogMgr.logWarning("Db2ProcedureReader.getFunctionParams()", "Could not retrieve function parameters using: " + sql, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "function parameters", sql);
       throw ex;
     }
     finally

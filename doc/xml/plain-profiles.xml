@@ -137,11 +137,23 @@ profile.042.driverjar=postgresql-9.4-1203.jdbc41.jar
               to the location of the properties file.
             </para>
             <para>
-              Either this parameter or <literal>drivername</literal> is mandatory.
+              Either this parameter or <literal>drivername</literal> is mandatory. If <literal>driverjar</literal>
+              is specified, <literal>driverclass</literal> must also be specified.
             </para>
             <para>
               Defining the driver jar in this way is not supported when running in GUI mode. Drivers managed
               through the GUI will always be saved in <literal>WbDrivers.xml</literal>
+            </para>
+          </entry>
+        </row>
+        <row>
+          <entry>
+            <literal>driverclass</literal>
+          </entry>
+          <entry>
+            <para>
+              This specifies JDBC driver's class name. This parameter is required if <literal>driverjar</literal>
+              is specified.
             </para>
           </entry>
         </row>

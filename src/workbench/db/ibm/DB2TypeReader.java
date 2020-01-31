@@ -30,6 +30,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -130,10 +131,8 @@ public class DB2TypeReader
     }
 
     select += " ORDER BY typeschema, typename ";
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("DB2TypeReader.getTypes()", "Query to retrieve TYPE: " + select);
-    }
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "types", select);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -168,7 +167,7 @@ public class DB2TypeReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("DB2TypeReader.getTypes()", "Error retrieving object types using:\n" + select, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "types", select);
     }
     finally
     {
@@ -345,10 +344,7 @@ public class DB2TypeReader
     sql += " AND typeschema = '" + type.getSchema() + "' \n";
     sql += " ORDER BY ordinal";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("DB2TypeReader.getAttributes()", "Retrieving type attributes using:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "type attributes", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -378,7 +374,7 @@ public class DB2TypeReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("DB2TypeReader.getAttributes()", "Error retrieving attributes using:\n" + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "type attributes", sql);
     }
     finally
     {

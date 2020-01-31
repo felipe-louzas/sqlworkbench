@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -67,7 +68,7 @@ public class Db2SearchPath
     ResultSet rs = null;
     Statement stmt = null;
     String sql = getSQL(con);
-    LogMgr.logDebug("Db2SearchPath.getSearchPath()", "Query to retrieve search path: " + sql);
+    LogMgr.logDebug(new CallerInfo(){}, "Query to retrieve search path: " + sql);
 
     try
     {
@@ -85,7 +86,7 @@ public class Db2SearchPath
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("Db2SearchPath.getSearchPath()", "Could not read search path", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read search path", ex);
     }
     finally
     {
@@ -94,7 +95,7 @@ public class Db2SearchPath
 
     List<String> searchPath = parseResult(result);
 
-    LogMgr.logDebug("Db2SearchPath.getSearchPath()", "Using path: " + searchPath.toString());
+    LogMgr.logDebug(new CallerInfo(){}, "Using path: " + searchPath.toString());
     return searchPath;
   }
 

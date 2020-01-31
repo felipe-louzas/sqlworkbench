@@ -27,8 +27,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.JdbcUtils;
@@ -77,10 +77,7 @@ public class Db2TableSourceBuilder
     String schema = table.getSchema();
 
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("Db2TableSourceBuilder.readTableOptions()", "Query to retrieve table options:\n" + SqlUtil.replaceParameters(sql, schema, tablename));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table options", sql, schema, tablename);
 
     try
     {
@@ -111,7 +108,7 @@ public class Db2TableSourceBuilder
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("Db2TableSourceBuilder.readTableOptions()", "Could not retrieve history table", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "table options", sql, schema, tablename);
     }
     finally
     {

@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbSettings;
@@ -148,7 +149,7 @@ public class Db2FormatFileWriter
     }
     catch (IOException io)
     {
-      LogMgr.logError("OracleControlFileWriter.writeFormatFile()", "Error opening outputfile", io);
+      LogMgr.logError(new CallerInfo(){}, "Error opening outputfile", io);
     }
     finally
     {

@@ -54,6 +54,7 @@ public enum DBID
   Ingres("ingres"),
   Redshift("redshift"),
   CockroachDB("cockroachdb"),
+  UCanAccess("ucanaccess"),
   Unknown("_$unknown$_");
 
   private String dbid;

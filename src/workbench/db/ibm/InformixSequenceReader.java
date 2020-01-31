@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -141,10 +142,7 @@ public class InformixSequenceReader
       SqlUtil.appendExpression(sql, "t.tabname", namePattern, dbConn);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("InformixSequenceReader.getRawSequenceDefinition()", "Query to retrieve sequence:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -157,7 +155,7 @@ public class InformixSequenceReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("InformixSequenceReader.getRawSequenceDefinition()", "Could not retrieve sequence definition using SQL:\n" + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql);
     }
     finally
     {

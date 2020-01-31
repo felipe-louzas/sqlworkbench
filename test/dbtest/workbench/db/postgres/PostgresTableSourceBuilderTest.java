@@ -259,6 +259,36 @@ public class PostgresTableSourceBuilderTest
   }
 
   @Test
+  public void testConstraints()
+    throws Exception
+  {
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
+    TestUtil.executeScript(con,
+      "create table one \n" +
+      "(\n" +
+      "   id integer primary key, \n" +
+      "   some_column integer \n" +
+      "); \n" +
+      "create table two \n" +
+      "(\n" +
+      "   id integer primary key, \n" +
+			"   one_id integer, \n" +
+      "   constraint fk_two2one foreign key (one_id) references one (id) match full \n " +
+      ");\n" +
+      "comment on constraint fk_two2one on two is 'The foreign key';\n" +
+      "commit;");
+
+    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("two"));
+    TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
+
+    String source = builder.getTableSource(tbl, DropType.none, true);
+//    System.out.println(source);
+		assertTrue(source.contains("COMMENT ON CONSTRAINT fk_two2one"));
+		assertTrue(source.contains("REFERENCES one (id) MATCH FULL"));
+  }
+
+  @Test
   public void testQuotedIdentifiers()
     throws Exception
   {

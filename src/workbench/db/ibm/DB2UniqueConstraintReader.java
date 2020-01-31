@@ -28,8 +28,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ConstraintDefinition;
 import workbench.db.DBID;
@@ -127,10 +127,7 @@ public class DB2UniqueConstraintReader
       return;
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("DB2UniqueConstraintReader.processIndexList()", "Query to retrieve constraints:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -153,7 +150,7 @@ public class DB2UniqueConstraintReader
     }
     catch (SQLException se)
     {
-      LogMgr.logError("DB2UniqueConstraintReader.processIndexList()", "Could not retrieve index definition using:\n" + sql, se);
+      LogMgr.logMetadataError(new CallerInfo(){}, se, "unique constraints", sql);
     }
     finally
     {

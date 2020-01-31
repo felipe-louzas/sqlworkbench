@@ -29,8 +29,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
@@ -80,10 +80,7 @@ public class InformixSynonymReader
       "and syn.tabname = ? \n" +
       "and syn.owner = ?";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("InformixSynonymReader.getSynonymTable()", "Query to retrieve synonym:\n" + SqlUtil.replaceParameters(sql, synonymName, schema));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonym table",  sql, synonymName, schema);
 
     TableIdentifier result = null;
     PreparedStatement stmt = null;
@@ -110,7 +107,7 @@ public class InformixSynonymReader
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("InformixSynonymReader.getSynonymTable()", "Could not retrieve synonym table using:\n + sql", ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "synonym table",  sql, synonymName, schema);
       throw ex;
     }
     finally

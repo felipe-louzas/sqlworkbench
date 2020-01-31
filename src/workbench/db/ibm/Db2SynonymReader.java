@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -101,10 +102,7 @@ public class Db2SynonymReader
           "  and tabschema = ?";
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("Db2SynonymReader.getSynonymTable()", "Query to retrieve synonyms:\n" + SqlUtil.replaceParameters(sql, namePattern, schemaPattern));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonyms", sql, namePattern, schemaPattern);
 
     PreparedStatement stmt = con.getSqlConnection().prepareStatement(sql);
     stmt.setString(1, namePattern);
@@ -126,6 +124,10 @@ public class Db2SynonymReader
           result.setNeverAdjustCase(true);
         }
       }
+    }
+    catch (Exception e)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "synonyms", sql, namePattern, schemaPattern);
     }
     finally
     {

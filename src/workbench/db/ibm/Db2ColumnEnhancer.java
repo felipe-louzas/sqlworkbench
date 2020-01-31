@@ -27,8 +27,8 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
@@ -94,10 +94,7 @@ public class Db2ColumnEnhancer
 
     String sql = columns + from;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("Db2ColumnEnhancer.updateComputedColumns()", "Query to retrieve column details:\n" + SqlUtil.replaceParameters(sql, tablename, schema));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column details", sql, tablename, schema);
 
     try
     {
@@ -191,7 +188,7 @@ public class Db2ColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("Db2ColumnEnhancer.updateComputedColumns()", "Error retrieving generated column info using:\n" + SqlUtil.replaceParameters(sql, tablename, schema), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "column details", sql, tablename, schema);
     }
     finally
     {

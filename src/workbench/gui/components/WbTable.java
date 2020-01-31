@@ -2139,6 +2139,7 @@ public class WbTable
   {
     if (this.dwModel == null) return false;
     Class colClass = dwModel.getColumnClass(column);
+    if (colClass == null) return false;
     return (Map.class.isAssignableFrom(colClass));
   }
 

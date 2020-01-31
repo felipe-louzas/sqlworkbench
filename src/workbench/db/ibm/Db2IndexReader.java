@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.IndexColumn;
@@ -88,10 +88,7 @@ public class Db2IndexReader
 
     if (counter == 0) return;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("Db2IndexReader.readExpressionIndex()", "Retrieving index expressions using:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "index expressions", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -112,7 +109,7 @@ public class Db2IndexReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("Db2IndexReader.readExpressionIndex()", "Could not read expression index definition using:\n" + sql, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "index expressions", sql);
     }
     finally
     {
@@ -191,11 +188,7 @@ public class Db2IndexReader
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("Db2IndexReader.readIndexOptions()", "Retrieving index information using:\n" +
-        SqlUtil.replaceParameters(sql, index.getSchema(), index.getName(), table.getRawTableName(), table.getRawSchema()));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "index information", sql, index.getSchema(), index.getName(), table.getRawTableName(), table.getRawSchema());
 
     try
     {
@@ -231,8 +224,7 @@ public class Db2IndexReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("Db2IndexReader.readIndexOptions()", "Could not read index options using:\n" +
-        SqlUtil.replaceParameters(sql, index.getSchema(), index.getName(), table.getRawTableName(), table.getRawSchema()), ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "index information", sql, index.getSchema(), index.getName(), table.getRawTableName(), table.getRawSchema());
     }
     finally
     {

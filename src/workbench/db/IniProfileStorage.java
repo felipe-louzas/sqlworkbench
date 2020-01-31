@@ -41,6 +41,8 @@ import workbench.resource.Settings;
 import workbench.ssh.SshConfig;
 import workbench.ssh.SshHostConfig;
 
+import workbench.sql.wbcommands.ConnectionDescriptor;
+
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -216,10 +218,24 @@ public class IniProfileStorage
       connectionTimeOut = Integer.valueOf(timeOut);
     }
 
+    if (StringUtil.isBlank(driverClass))
+    {
+      driverClass = ConnectionDescriptor.findDriverClassFromUrl(url);
+      if (driverClass != null)
+      {
+        LogMgr.logInfo(new CallerInfo(){}, "Profile " + name + " does not contain a driver class definition. Using " + driverClass + " based on the URL: " + url);
+      }
+    }
+
     // if a driver jar was explicitely specified, that jar should be used
     // regardless of any registered driver that might be referenced through driverName
     if (StringUtil.isNonEmpty(driverJar))
     {
+      if (StringUtil.isBlank(driverClass))
+      {
+        LogMgr.logError(new CallerInfo(){}, "Profile " + name + " defines a JDBC driver but no driver class was specified. Ignoring the profile", null);
+        return null;
+      }
       WbFile drvFile = new WbFile(driverJar);
       if (!drvFile.isAbsolute())
       {

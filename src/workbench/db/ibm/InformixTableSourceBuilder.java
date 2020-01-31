@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -99,11 +100,7 @@ public class InformixTableSourceBuilder
       "where tabname = ? \n" +
       "  and owner = ? \n";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("InformixTableSourceBuilder.readLockMode()",
-        "Query to retrieve lock mode:\n" + SqlUtil.replaceParameters(sql, table.getTableName(), table.getSchema()));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "lock mode", sql, table.getTableName(), table.getSchema());
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -160,8 +157,7 @@ public class InformixTableSourceBuilder
     }
     catch (Exception e)
     {
-      LogMgr.logError("InformixTableSourceBuilder.readLockMode()", "Error when retrieving lock mode using:\n" +
-        SqlUtil.replaceParameters(sql, table.getTableName(), table.getSchema()), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "lock mode", sql, table.getTableName(), table.getSchema());
     }
     finally
     {

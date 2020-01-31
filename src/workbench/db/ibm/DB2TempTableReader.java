@@ -23,8 +23,8 @@ package workbench.db.ibm;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.ObjectListAppender;
@@ -90,10 +90,7 @@ public class DB2TempTableReader
 
     sql += "\nfor read only";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("Db2TempTableReader.extendObjectList()", "Reading temp tables using:\n" + SqlUtil.replaceParameters(sql, schema, objects));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "temp tables", sql, schema, objects);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -135,7 +132,7 @@ public class DB2TempTableReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("Db2TempTableReader.extendObjectList()", "Error reading temp tables using:\n" + SqlUtil.replaceParameters(sql, schema, objects), ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "temp tables", sql, schema, objects);
     }
     finally
     {

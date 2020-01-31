@@ -128,9 +128,9 @@ public class DbDriver
     return this.driverClass;
   }
 
-  public final void setDriverClass(String aClass)
+  public final void setDriverClass(String className)
   {
-    this.driverClass = aClass.trim();
+    this.driverClass = StringUtil.trimToNull(className);
     this.driverClassInstance = null;
     this.classLoader = null;
   }

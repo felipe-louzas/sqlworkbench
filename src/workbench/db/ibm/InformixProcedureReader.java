@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -86,7 +87,7 @@ public class InformixProcedureReader
   {
     if (!fixProcRetrieval)
     {
-      LogMgr.logDebug("InformixProcedureReader.getProcedures()", "Using JDBC driver to retrieve procedures.");
+      LogMgr.logDebug(new CallerInfo(){}, "Using JDBC driver to retrieve procedures.");
       return super.getProcedures(catalog, schemaPattern, namePattern);
     }
 
@@ -101,12 +102,10 @@ public class InformixProcedureReader
 
     boolean showParametersInName = connection.getDbSettings().getBoolProperty("procedurelist.showparameters", true);
 
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedures", sql);
+
     try
     {
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug("InformixProcedureReader.getProcedures()", "Query to retrieve procedurelist:\n" + sql);
-      }
       stmt = connection.createStatementForQuery();
       rs = stmt.executeQuery(sql);
       while (rs.next())
@@ -155,7 +154,7 @@ public class InformixProcedureReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("InformixProcedureReader.getProcedures()", "Error retrieving procedures using query:\n" + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedures", sql);
       fixProcRetrieval = false;
       return super.getProcedures(catalog, schemaPattern, namePattern);
     }
@@ -285,10 +284,8 @@ public class InformixProcedureReader
         "  and ifx_param_types(p.procid) = '" + types + "' \n";
     }
     sql += "order by col.paramid";
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("InformixProcedureReader.getProcedures()", "Query to retrieve procedure parameters:\n" + sql);
-    }
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedure parameters", sql);
 
     DataStore ds = createProcColsDataStore();
 
@@ -334,7 +331,7 @@ public class InformixProcedureReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("InformixProcedureReader.getProcedures()", "Error retrieving procedure columns using query:\n" + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedure parameters", sql);
       fixParamsRetrieval = false; // don't try again
       return null;
     }

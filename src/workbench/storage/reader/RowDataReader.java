@@ -47,12 +47,14 @@ import workbench.resource.Settings;
 
 import workbench.db.BlobAccessType;
 import workbench.db.ClobAccessType;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 import workbench.db.mssql.SqlServerDataConverter;
 import workbench.db.oracle.OracleDataConverter;
 import workbench.db.postgres.PostgresDataConverter;
+import workbench.db.ucanaccess.UCanAccessDataConverter;
 
 import workbench.storage.ArrayConverter;
 import workbench.storage.DataConverter;
@@ -686,6 +688,10 @@ public class RowDataReader
     DbMetadata meta = conn.getMetadata();
     if (meta == null) return null;
 
+    if (meta.isPostgres())
+    {
+      return PostgresDataConverter.getInstance();
+    }
     if (meta.isOracle() && Settings.getInstance().getConvertOracleTypes())
     {
       return OracleDataConverter.getInstance();
@@ -694,9 +700,9 @@ public class RowDataReader
     {
       return SqlServerDataConverter.getInstance();
     }
-    if (meta.isPostgres())
+    if (DBID.UCanAccess.isDB(conn))
     {
-      return PostgresDataConverter.getInstance();
+      return UCanAccessDataConverter.getInstance();
     }
     return null;
   }
