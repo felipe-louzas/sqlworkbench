@@ -26,6 +26,8 @@ fi
 cp=$SCRIPT_PATH/sqlworkbench.jar
 cp=$cp:$SCRIPT_PATH/ext/*
 
+# For Java 9 and later add
+# --add-opens java.base/java.lang=ALL-UNNAMED 
 "$JAVACMD" -Djava.awt.headless=true \
            -Dvisualvm.display.name=SQLWorkbenchJ \
            -cp "$cp" workbench.console.SQLConsole "$@"

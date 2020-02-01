@@ -575,6 +575,8 @@
       </zipfileset>
       <zipfileset dir="../launcher" prefix="launcher">
         <include name="**/*.*"/>
+        <exclude name="*.exe"/>
+        <exclude name="*.cmd"/>
       </zipfileset>
     </zip>
   </target>
