@@ -151,7 +151,7 @@ public class JoinCreator
     throws SQLException
   {
     TableAlias joinedTable = getJoinedTable();
-    if (joinTable == null || joinedTable == null) return null;
+    if (joinTable == null || joinedTable == null) return Collections.emptyList();
 
     JoinColumnsDetector detector = new JoinColumnsDetector(connection, joinTable, joinedTable);
     detector.setPreferUsingOperator(preferUsingOperator);
@@ -165,7 +165,6 @@ public class JoinCreator
   public String getJoinCondition(JoinCondition joinCondition)
     throws SQLException
   {
-
     String currentWord = StringUtil.findWordLeftOfCursor(sql, cursorPos);
     boolean whiteSpaceAtLeft = isWhitespaceAtCursor();
     boolean includeOperator = true;
