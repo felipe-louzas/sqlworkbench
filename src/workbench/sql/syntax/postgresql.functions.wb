@@ -176,6 +176,7 @@ quote_nullable
 radians
 random
 rank
+regexp_match
 regexp_matches
 regexp_replace
 regexp_split_to_array
