@@ -65,7 +65,7 @@ public class PostgresTestUtil
     String port = System.getenv("WB_TEST_PORT");
     if (port == null)
     {
-      port = "5445";
+      port = "5432";
     }
     return port;
   }
