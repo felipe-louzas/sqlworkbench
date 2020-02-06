@@ -45,7 +45,6 @@ import workbench.db.WbConnection;
 
 import workbench.util.AggregatingMap;
 
-
 /**
  * A class to sort tables according to their foreign key constraints,
  * so that data can be imported or deleted without disabling FK constraints.
@@ -246,7 +245,7 @@ public class TableDependencySorter
     return allNodes;
   }
 
-  public static List<TableIdentifier> sortTables(final Collection<DependencyNode> allNodes, final Collection<TableIdentifier> tables, final boolean bottomUp)
+  public static List<TableIdentifier> sortTables(Collection<DependencyNode> allNodes, Collection<TableIdentifier> tables, boolean bottomUp)
   {
     long start = System.currentTimeMillis();
 
@@ -272,6 +271,7 @@ public class TableDependencySorter
 
     final Comparator<TableIdentifier> depComp = new Comparator<TableIdentifier>()
     {
+			// <editor-fold defaultstate="collapsed" desc="Comparator">
       final int factor = bottomUp ? -1 : 1;
 
       @Override
@@ -367,6 +367,7 @@ public class TableDependencySorter
         }
         return lvl.intValue();
       }
+			// </editor-fold>
     };
 
     Collections.sort(sorted, depComp);

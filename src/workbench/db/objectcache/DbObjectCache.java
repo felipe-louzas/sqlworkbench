@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
@@ -44,7 +45,6 @@ import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
 import workbench.util.WbThread;
-
 
 /**
  * A wrapper around ObjectCache in order to avoid having to supply the Connection for each call.
@@ -233,7 +233,7 @@ public class DbObjectCache
     WbConnection conn = null;
     try
     {
-      LogMgr.logDebug("DbObjectCache._retrieveColumnsInBackground()", "Retrieving columns for " + tables.size() + " tables");
+			LogMgr.logDebug(new CallerInfo(){}, "Retrieving columns for " + tables.size() + " tables");
       conn = ConnectionMgr.getInstance().getConnection(dbConnection.getProfile(), "ObjectCache-Retrieval");
       for (TableIdentifier tbl : tables)
       {
@@ -242,7 +242,7 @@ public class DbObjectCache
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning("DbObjectCache._retrieveColumnsInBackground()", "Could not retrieve table columns", th);
+			LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve table columns", th);
     }
     finally
     {

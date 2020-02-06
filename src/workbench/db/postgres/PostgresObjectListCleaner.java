@@ -74,7 +74,7 @@ public class PostgresObjectListCleaner
   private void removePartitions(WbConnection con, DataStore result)
   {
     if (result.getRowCount() == 0) return;
-    
+
     List<TableIdentifier> partitions = getAllPartitions(con);
     if (CollectionUtil.isEmpty(partitions)) return;
 
@@ -103,18 +103,17 @@ public class PostgresObjectListCleaner
       "  select i.inhrelid, i.inhparent\n" +
       "  from pg_catalog.pg_inherits i  \n" +
       "  where i.inhparent in (select partrelid from pg_partitioned_table)\n" +
-      "  \n" +
+      "\n" +
       "  union all \n" +
       "\n" +
       "  select i.inhrelid, i.inhparent\n" +
       "  from inh \n" +
       "    join pg_catalog.pg_inherits i on inh.inhrelid = i.inhparent\n" +
       ") \n" +
-      "select n.nspname as partition_schema,\n" +
+      "select c.relnamespace::regnamespace::text as partition_schema,\n" +
       "       c.relname as partition_name\n" +
       "from inh \n" +
-      "  join pg_catalog.pg_class c on inh.inhrelid = c.oid \n" +
-      "  join pg_catalog.pg_namespace n on c.relnamespace = n.oid";
+      "  join pg_catalog.pg_class c on inh.inhrelid = c.oid ";
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -176,10 +175,9 @@ public class PostgresObjectListCleaner
       "with table_list (schemaname, tablename) as (\n" +
       " values " + tableList  +
       "\n)\n" +
-      "select s.nspname, t.relname\n" +
+      "select t.relnamespace::regnamespace::text, t.relname\n" +
       "from pg_class t\n" +
-      "  join pg_namespace s on s.oid = t.relnamespace\n" +
-      "  join table_list l on (l.schemaname, l.tablename) = (s.nspname, t.relname) \n" +
+      "  join table_list l on (l.schemaname::regnamespace, l.tablename) = (t.relnamespace, t.relname) \n" +
       "where not has_table_privilege(t.oid, 'select')";
 
     Statement stmt = null;

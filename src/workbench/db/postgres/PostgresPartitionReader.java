@@ -26,8 +26,8 @@ import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -35,7 +35,9 @@ import workbench.db.WbConnection;
 import workbench.util.SqlUtil;
 
 /**
+ * A class to read the partition definition of a Postgres table.
  *
+ * Before any information is returned, {@link #readPartitionInformation()} has to be called.
  * @author Thomas Kellerer
  */
 public class PostgresPartitionReader
@@ -76,6 +78,11 @@ public class PostgresPartitionReader
     return partitionDefinition;
   }
 
+  /**
+   * Returns the CREATE TABLE statements for all partitions of the table.
+   *
+   * This requires that {@link #readPartitionInformation()} has been called.
+   */
   public String getCreatePartitions()
   {
     if (partitions == null) return null;
@@ -127,8 +134,7 @@ public class PostgresPartitionReader
       "  select i.inhrelid, null::text as parent  \n" +
       "  from pg_catalog.pg_inherits i  \n" +
       "    join pg_catalog.pg_class cl on i.inhparent = cl.oid \n" +
-      "    join pg_catalog.pg_namespace nsp on cl.relnamespace = nsp.oid \n" +
-      "  where nsp.nspname = ? \n" +
+      "  where cl.relnamespace = cast(? as regnamespace) \n" +
       "    and cl.relname = ? \n" +
       "  union all \n" +
       "\n" +
@@ -137,7 +143,7 @@ public class PostgresPartitionReader
       "    join pg_catalog.pg_inherits i on (inh.inhrelid = i.inhparent) \n" +
       ") \n" +
       "select c.relname as partition_name, \n" +
-      "       n.nspname as partition_schema,  \n" +
+      "       c.relnamespace::regnamespace::text as partition_schema,  \n" +
       "       pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, " +
       "       pg_get_expr(p.partexprs, c.oid, true) as sub_partition, \n" +
       "       parent, \n" +
@@ -148,15 +154,16 @@ public class PostgresPartitionReader
       "       end as sub_partition_strategy \n" +
       "from inh \n" +
       "  join pg_catalog.pg_class c on inh.inhrelid = c.oid \n" +
-      "  join pg_catalog.pg_namespace n on c.relnamespace = n.oid \n" +
       "  left join pg_partitioned_table p on p.partrelid = c.oid \n" +
-      "order by n.nspname, c.relname";
+      "order by c.relnamespace::regnamespace, c.relname";
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
 
     partitions = new ArrayList<>();
+
+		LogMgr.logMetadataSql(new CallerInfo(){}, "partitions", sql, table.getSchema(), table.getTableName());
 
     try
     {
@@ -192,8 +199,7 @@ public class PostgresPartitionReader
     catch (Exception ex)
     {
       dbConnection.rollback(sp);
-      LogMgr.logError("PostgresPartitionReader.readPartitions()",
-        "Error reading partitions using:\n" + SqlUtil.replaceParameters(sql, table.getSchema(), table.getTableName()), ex);
+			LogMgr.logMetadataError(new CallerInfo(){}, ex, "partitions", sql, table.getSchema(), table.getTableName());
     }
     finally
     {
@@ -226,11 +232,7 @@ public class PostgresPartitionReader
     ResultSet rs = null;
     Savepoint sp = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("PostgresPartitionReader.readPartitioningDefinition()",
-        "Retrieving partitioning information using:\n" + SqlUtil.replaceParameters(sql, table.getSchema(), table.getTableName()));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "partitioning definition", sql, table.getSchema(), table.getTableName());
 
     try
     {
@@ -267,8 +269,7 @@ public class PostgresPartitionReader
     catch (Exception ex)
     {
       dbConnection.rollback(sp);
-      LogMgr.logError("PostgresPartitionReader.readPartitioningDefinition()",
-        "Error retrieving partitioning information using :\n" + SqlUtil.replaceParameters(sql, table.getSchema(), table.getTableName()), ex);
+			LogMgr.logMetadataError(new CallerInfo(){}, ex, "partitioning definition", sql, table.getSchema(), table.getTableName());
     }
     finally
     {
@@ -288,7 +289,7 @@ public class PostgresPartitionReader
   public static PostgresPartition getPartitionDefinition(TableIdentifier table, WbConnection dbConnection)
   {
     String sql =
-      "select bs.nspname as base_table_schema, \n" +
+      "select base.relnamespace::regnamespace::text as base_table_schema, \n" +
       "       base.relname as base_table, \n" +
       "       pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, \n" +
       "       pg_get_expr(p.partexprs, c.oid, true) as sub_partition, \n" +
@@ -296,24 +297,18 @@ public class PostgresPartitionReader
       "         when 'l' then 'LIST' \n" +
       "         when 'r' then 'RANGE' \n" +
       "       end as sub_partition_strategy \n" +
-      "from pg_catalog.pg_inherits i\n" +
+      "from pg_catalog.pg_inherits i \n" +
       "  join pg_catalog.pg_class c on i.inhrelid = c.oid \n" +
-      "  join pg_catalog.pg_namespace n on c.relnamespace = n.oid \n" +
-      "  join pg_partitioned_table p on p.partrelid = i.inhparent\n" +
-      "  join pg_class base on base.oid = p.partrelid\n" +
-      "  join pg_namespace bs on bs.oid = base.relnamespace\n" +
-      "where n.nspname = ? \n" +
+      "  join pg_partitioned_table p on p.partrelid = i.inhparent \n" +
+      "  join pg_class base on base.oid = p.partrelid \n" +
+      "where c.relnamespace = cast(? as regnamespace) \n" +
       "  and c.relname = ?";
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("PostgresPartitionReader.getCreateForPartition()",
-        "Retrieving partition information using:\n" + SqlUtil.replaceParameters(sql, table.getSchema(), table.getTableName()));
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "partition information", sql, table.getSchema(), table.getTableName());
 
     PostgresPartition result = null;
     try
@@ -342,8 +337,7 @@ public class PostgresPartitionReader
     catch (Exception ex)
     {
       dbConnection.rollback(sp);
-      LogMgr.logError("PostgresPartitionReader.getCreateForPartition()",
-        "Error retrieving partition information using :\n" + SqlUtil.replaceParameters(sql, table.getSchema(), table.getTableName()), ex);
+			LogMgr.logMetadataError(new CallerInfo(){}, ex, "partition information", sql, table.getSchema(), table.getTableName());
     }
     finally
     {

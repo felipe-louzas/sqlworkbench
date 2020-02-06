@@ -29,7 +29,6 @@ import static org.junit.Assert.*;
 public class PostgresPolicyReaderTest
   extends WbTestCase
 {
-
   private final static String TESTID = "poltest";
 
   public PostgresPolicyReaderTest()

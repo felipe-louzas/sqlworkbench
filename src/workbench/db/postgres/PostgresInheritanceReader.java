@@ -138,13 +138,13 @@ public class PostgresInheritanceReader
     ResultSet rs = null;
 
     String sql =
-      "select bt.relname as table_name, bns.nspname as table_schema \n" +
+      "select bt.relname as table_name, bt.relnamespace::regnamespace::text as table_schema \n" +
       "from pg_class ct \n" +
-      "  join pg_namespace cns on ct.relnamespace = cns.oid and cns.nspname = ? \n" +
-      "  join pg_inherits i on i.inhrelid = ct.oid and ct.relname = ? \n" +
+      "  join pg_inherits i on i.inhrelid = ct.oid \n" +
       "  join pg_class bt on i.inhparent = bt.oid \n" +
-      "  join pg_namespace bns on bt.relnamespace = bns.oid \n" +
-      "where bt.relkind <> 'p'";
+      "where bt.relkind <> 'p' \n" +
+			"  and ct.relnamespace = cast(? as regnamespace) \n" +
+			"  and ct.relname = ? ";
 
     if (dbConnection.getDbSettings().returnAccessibleTablesOnly())
     {
@@ -175,7 +175,7 @@ public class PostgresInheritanceReader
     catch (Exception e)
     {
       dbConnection.rollback(sp);
-      LogMgr.logMetadataError(new CallerInfo(){}, e, "table inheritance" + sql, table.getSchema(), table.getTableName());
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "parent tables", sql, table.getSchema(), table.getTableName());
       return null;
     }
     finally

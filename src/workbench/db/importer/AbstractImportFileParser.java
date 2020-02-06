@@ -42,6 +42,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbSearchPath;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSelectBuilder;
@@ -404,6 +405,16 @@ public abstract class AbstractImportFileParser
       }
       else
       {
+				if (table.getSchema() == null)
+				{
+					// if no schema was specified make sure we search the table on the search path (if supported)
+					// otherwise e.g. temporary tables in Postgres wouldn't be found
+					DbSearchPath handler = DbSearchPath.Factory.getSearchPathHandler(connection);
+					if (handler.isRealSearchPath())
+					{
+						table = connection.getMetadata().searchObjectOnPath(table, connection.getMetadata().getTableTypesArray());
+					}
+				}
         targetTable = connection.getMetadata().getTableDefinition(table, true);
       }
     }

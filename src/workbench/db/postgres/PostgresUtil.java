@@ -40,7 +40,6 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.VersionNumber;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -137,29 +136,26 @@ public class PostgresUtil
     Statement stmt = null;
     Savepoint sp = null;
 
-    String query = Settings.getInstance().getProperty("workbench.db.postgresql.retrieve.search_path", "select array_to_string(current_schemas(true), ',')");
+    final String query = "select unnest(current_schemas(true))";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo(new CallerInfo(){}, "Query used to retrieve search path:\n" + query);
-    }
+		LogMgr.logMetadataSql(new CallerInfo(){}, "search path", query);
 
     try
     {
       sp = con.setSavepoint();
       stmt = con.createStatementForQuery();
       rs = stmt.executeQuery(query);
-      if (rs.next())
+      while (rs.next())
       {
         String path = rs.getString(1);
-        result.addAll(StringUtil.stringToList(path, ",", true, true, false, false));
+        result.add(path);
       }
       con.releaseSavepoint(sp);
     }
-    catch (SQLException sql)
+    catch (SQLException ex)
     {
       con.rollback(sp);
-      LogMgr.logError(new CallerInfo(){}, "Could not read search path", sql);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "search path", query);
     }
     finally
     {
@@ -169,7 +165,8 @@ public class PostgresUtil
     if (result.isEmpty())
     {
       LogMgr.logWarning(new CallerInfo(){}, "Using public as the default search path");
-      // Fallback. At least look in the public schema
+      // Fallback. Use the Postgres default settings
+			result.add(con.getDisplayUser());
       result.add("public");
     }
     return result;
@@ -296,7 +293,7 @@ public class PostgresUtil
     {
       return false;
     }
-    
+
     Statement stmt = null;
     ResultSet rs = null;
     try

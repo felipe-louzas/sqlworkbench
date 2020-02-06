@@ -634,7 +634,7 @@ public class DbMetadata
 
     if (configuredTypes.size() > 0)
     {
-      LogMgr.logDebug("DbMetadata.retrieveTableTypes()", getConnId() + ": Using configured table types: " + configuredTypes);
+			LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Using configured table types: " + configuredTypes);
     }
   }
 
@@ -646,11 +646,11 @@ public class DbMetadata
       try
       {
         identifierPattern = Pattern.compile(pattern);
-        LogMgr.logInfo("DbMetadata.initIdentifierPattern()", getConnId() + ": Using regular expression for valid identifiers: " + pattern);
+				LogMgr.logInfo(new CallerInfo(){}, getConnId() + ": Using regular expression for valid identifiers: " + pattern);
       }
       catch (Exception ex)
       {
-        LogMgr.logWarning("DbMetadata.initIdentifierPattern()", "Could not compile pattern: " + pattern, ex);
+				LogMgr.logWarning(new CallerInfo(){}, getConnId() + ": Could not compile pattern: " + pattern, ex);
       }
     }
   }
@@ -1219,7 +1219,7 @@ public class DbMetadata
         }
         catch (SQLException sql)
         {
-          LogMgr.logDebug("DbMetadata.isKeyword()", "Could not read SQL keywords from driver", sql);
+					LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Could not read SQL keywords from driver", sql);
         }
       }
       return this.keywords.contains(name);
@@ -1920,7 +1920,7 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbMetadata.findObject()", "Error checking table existence", e);
+			LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error checking table existence", e);
     }
     return result;
   }
@@ -1977,7 +1977,7 @@ public class DbMetadata
       return findTable(table, types, false);
     }
 
-    LogMgr.logDebug("DbMetaData.searchObjectOnPath()", "Looking for table " + table.getRawTableName() + " in schemas: " + searchPath);
+		LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Looking for table " + table.getRawTableName() + " in schemas: " + searchPath);
     for (String checkSchema  : searchPath)
     {
       TableIdentifier toSearch = table.createCopy();
@@ -1986,7 +1986,7 @@ public class DbMetadata
       TableIdentifier found = findTable(toSearch, types, false);
       if (found != null)
       {
-        LogMgr.logDebug("DbMetaData.searchObjectOnPath()", "Found table " + found.getTableExpression());
+				LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Found table " + found.getTableExpression());
         return found;
       }
     }
@@ -2070,7 +2070,7 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbMetadata.findTable()", "Error checking table existence", e);
+      LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error checking table existence", e);
     }
     return result;
   }
@@ -2201,7 +2201,7 @@ public class DbMetadata
       }
       catch (Exception e)
       {
-        LogMgr.logError("DbMetadata.enableOutput()", "Could not create DbmsOutput", e);
+        LogMgr.logError(new CallerInfo(){}, getConnId() + ": Could not create DbmsOutput", e);
         this.oraOutput = null;
       }
     }
@@ -2214,7 +2214,7 @@ public class DbMetadata
       }
       catch (Throwable e)
       {
-        LogMgr.logError("DbMetadata.enableOutput()", "Error when enabling DbmsOutput", e);
+        LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error when enabling DbmsOutput", e);
       }
     }
   }
@@ -2243,7 +2243,7 @@ public class DbMetadata
       }
       catch (Throwable e)
       {
-        LogMgr.logError("DbMetadata.disableOutput()", "Error when disabling DbmsOutput", e);
+        LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error when disabling DbmsOutput", e);
       }
     }
   }
@@ -2265,7 +2265,7 @@ public class DbMetadata
       }
       catch (Throwable th)
       {
-        LogMgr.logError("DbMetadata.getOutputMessages()", "Error when retrieving Output Messages", th);
+        LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error when retrieving Output Messages", th);
         result = StringUtil.EMPTY_STRING;
       }
     }
@@ -2719,11 +2719,11 @@ public class DbMetadata
         }
       }
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug("DbMetadata.getCatalogInformation()", getConnId() + ": Retrieving " + result.size() +  " catalogs using getCatalogs() took: " + duration + "ms");
+			LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving " + result.size() +  " catalogs using getCatalogs() took: " + duration + "ms");
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbMetadata.getCatalogInformation()", "Error retrieving catalog information", e);
+      LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving catalog information", e);
     }
     finally
     {
@@ -2815,7 +2815,7 @@ public class DbMetadata
           {
             details = new Exception("Backtrace");
           }
-          LogMgr.logWarning("DbMetadata.getSchemas()",
+					LogMgr.logWarning(new CallerInfo(){},
             getConnId() + ": getSchemas() called with catalog parameter, but current connection is not configured to support that", details);
         }
         ResultSet rs = this.metaData.getSchemas();
@@ -2824,11 +2824,11 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbMetadata.getSchemas()", getConnId() + ": Error retrieving schemas: " + e.getMessage(), e);
+			LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving schemas: " + e.getMessage(), e);
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("DbMetadata.getSchemas()", getConnId() + ": Retrieving " + result.size() + " schemas using getSchemas() took " + duration + "ms");
+		LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving " + result.size() + " schemas using getSchemas() took " + duration + "ms");
 
     // This is mainly for Oracle because the Oracle driver does not return the "PUBLIC" schema
     // which is - strictly speaking - correct as there is no user PUBLIC in the database.
@@ -2918,7 +2918,7 @@ public class DbMetadata
 
         if (ignoreIndexTypes && isIndexType(type))
         {
-          LogMgr.logDebug("DbMetadata.retrieveObjectTypes()", getConnId() + ": Ignoring table type: " + type);
+					LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Ignoring table type: " + type);
           continue;
         }
         types.add(type.toUpperCase());
@@ -2926,7 +2926,7 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbMetadata.retrieveObjectTypes()", getConnId() + ": Error retrieving table types.", e);
+			LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving table types.", e);
     }
     finally
     {
@@ -2936,11 +2936,11 @@ public class DbMetadata
     if (types.isEmpty() && useDefaults)
     {
       types = CollectionUtil.caseInsensitiveSet("TABLE", "VIEW");
-      LogMgr.logWarning("DbMetadata.retrieveObjectTypes()", getConnId() + ": The driver did not return any table types using getTableTypes(). Using default values: " + types);
+			LogMgr.logWarning(new CallerInfo(){}, getConnId() + ": The driver did not return any table types using getTableTypes(). Using default values: " + types);
     }
     else
     {
-      LogMgr.logInfo("DbMetadata.retrieveObjectTypes()", getConnId() + ": Table types returned by the JDBC driver: " + types);
+			LogMgr.logInfo(new CallerInfo(){}, getConnId() + ": Table types returned by the JDBC driver: " + types);
     }
 
     objectTypesFromDriver = Collections.unmodifiableSet(types);
@@ -3086,7 +3086,7 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbMetadata.getSynonymTable()", "Could not retrieve table for synonym", e);
+			LogMgr.logError(new CallerInfo(){}, "Could not retrieve table for synonym", e);
     }
     return id;
   }

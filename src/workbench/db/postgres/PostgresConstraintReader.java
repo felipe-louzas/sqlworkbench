@@ -30,10 +30,9 @@ import workbench.db.TableConstraint;
 
 import workbench.util.CollectionUtil;
 
-
 /**
- * Read table level constraints for Postgres
- * (column constraints are stored on table level...)
+ * Read table level constraints for Postgres.
+ * 
  * @author  Thomas Kellerer
  */
 public class PostgresConstraintReader
@@ -44,11 +43,10 @@ public class PostgresConstraintReader
         "       pg_get_constraintdef(rel.oid) as src, \n" +
         "       obj_description(rel.oid) as remarks  \n" +
         "from pg_class t \n" +
-        "  join pg_constraint rel on t.oid = rel.conrelid   \n" +
-        "  join pg_namespace nsp on t.relnamespace = nsp.oid \n" +
+        "  join pg_constraint rel on t.oid = rel.conrelid \n" +
         "where rel.contype in ('c', 'x') \n" +
         " and t.relname = ? \n" +
-        " and nsp.nspname = ? ";
+        " and t.relnamespace = cast(? as regnamespace)";
 
   public PostgresConstraintReader(String dbId)
   {

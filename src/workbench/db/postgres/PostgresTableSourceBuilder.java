@@ -197,10 +197,9 @@ public class PostgresTableSourceBuilder
       "       " + rlsEnableCol + ", \n" +
       "       " + rlsForceCol + " \n " +
       "from pg_catalog.pg_class ct \n" +
-      "  join pg_catalog.pg_namespace cns on ct.relnamespace = cns.oid \n " +
       "  join pg_catalog.pg_roles own on ct.relowner = own.oid \n " +
       "  left join pg_catalog.pg_tablespace spc on spc.oid = ct.reltablespace \n" + defaultTsQuery +
-      " where cns.nspname = ? \n" +
+      " where ct.relnamespace = cast(? as regnamespace)\n" +
       "   and ct.relname = ?";
 
     boolean isPartitioned = false;
@@ -375,14 +374,13 @@ public class PostgresTableSourceBuilder
   {
     ObjectSourceOptions option = table.getSourceOptions();
 
-    String sql
-      = "select ft.ftoptions, fs.srvname \n" +
+    String sql =
+			"select ft.ftoptions, fs.srvname \n" +
       "from pg_foreign_table ft \n" +
       "  join pg_class tbl on tbl.oid = ft.ftrelid  \n" +
-      "  join pg_namespace ns on tbl.relnamespace = ns.oid  \n" +
       "  join pg_foreign_server fs on ft.ftserver = fs.oid \n " +
       " WHERE tbl.relname = ? \n" +
-      "   and ns.nspname = ? ";
+      "   and tbl.relnamespace = cast(? as regnamespace) ";
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -710,17 +708,15 @@ public class PostgresTableSourceBuilder
 
     String sql =
       "select st.stxname as statistic_name, \n" +
-      "       sn.nspname as statistic_schema, \n" +
+      "       st.stxnamespace::regnamespace as statistic_schema, \n" +
       "       string_agg(col.attname, ',') as columns, \n" +
       "       array_to_string(stxkind, '') as stxkind \n"+
       "from pg_statistic_ext st \n" +
-      "  join pg_namespace sn on sn.oid = st.stxnamespace \n" +
       "  join pg_class t on t.oid = st.stxrelid\n" +
-      "  join pg_namespace nsp on nsp.oid = t.relnamespace\n" +
       "  join pg_attribute col on t.oid = col.attrelid and col.attnum = any(stxkeys)\n" +
-      "where nsp.nspname = ? \n"+
+      "where t.relnamespace = cast(? as regnamespace) \n"+
       "  and t.relname = ? \n" +
-      "group by st.stxname, sn.nspname, st.stxkind";
+      "group by st.stxname, st.stxnamespace, st.stxkind";
     ResultSet rs = null;
     PreparedStatement pstmt = null;
     StringBuilder b = new StringBuilder(100);

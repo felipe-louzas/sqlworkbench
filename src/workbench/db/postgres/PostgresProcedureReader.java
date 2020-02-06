@@ -139,9 +139,8 @@ public class PostgresProcedureReader
       ResultSet rs = null;
       Savepoint sp = null;
       String sql =
-        "select t.oid, format_type(t.oid, null), t.typtype, ns.nspname as schema_name \n" +
-        "from pg_type t \n" +
-        "  join pg_namespace ns on ns.oid = t.typnamespace";
+        "select t.oid, format_type(t.oid, null), t.typtype, t.typnamespace::regnamespace::text as schema_name \n" +
+        "from pg_type t";
 
       LogMgr.logMetadataSql(new CallerInfo(){}, "type lookup", sql);
 

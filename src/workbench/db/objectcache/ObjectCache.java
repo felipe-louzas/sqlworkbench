@@ -37,6 +37,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -165,11 +166,6 @@ class ObjectCache
     return meta.adjustSchemaNameCase(schema);
   }
 
-  private boolean isValid(Namespace namespace)
-  {
-    return namespace != null && namespace.isValid();
-  }
-
   List<Namespace> getSearchPath(WbConnection dbConn, Namespace requestedNamespace)
   {
     if (requestedNamespace != null && requestedNamespace.hasCatalogAndSchema() && supportsCatalogs && supportsSchemas)
@@ -278,7 +274,7 @@ class ObjectCache
     if (dbConnection.isBusy()) return Collections.emptySet();
 
     List<Namespace> searchPath = getSearchPath(dbConnection, requestedNamespace);
-    LogMgr.logDebug("ObjectCache.getTables()", "Getting tables using schema: " + requestedNamespace + ", filter: " + types + ", search path: " + searchPath);
+		LogMgr.logDebug(new CallerInfo(){}, "Getting tables using schema: " + requestedNamespace + ", filter: " + types + ", search path: " + searchPath);
 
     DbMetadata meta = dbConnection.getMetadata();
 
@@ -294,11 +290,11 @@ class ObjectCache
             tbl.checkQuotesNeeded(dbConnection);
           }
           this.setTables(tables, dbConnection);
-          LogMgr.logDebug("ObjectCache.getTables()", "Namespace \"" + namespace + "\" not found in cache. Retrieved " + tables.size() + " objects");
+					LogMgr.logDebug(new CallerInfo(){}, "Namespace \"" + namespace + "\" not found in cache. Retrieved " + tables.size() + " objects");
         }
         catch (Exception e)
         {
-          LogMgr.logError("ObjectCache.getTables()", "Could not retrieve table list for namespace: " + namespace, e);
+					LogMgr.logError(new CallerInfo(){}, "Could not retrieve table list for namespace: " + namespace, e);
         }
       }
     }
@@ -355,11 +351,11 @@ class ObjectCache
     List<DependencyNode> old = referencedTables.put(table, referenced);
     if (old == null)
     {
-      LogMgr.logDebug("ObjectCache.addReferencedTables()", "Added referenced tables for " + table + "(" + referenced + ")");
+			LogMgr.logDebug(new CallerInfo(){}, "Added referenced tables for " + table + "(" + referenced + ")");
     }
     else
     {
-      LogMgr.logDebug("ObjectCache.addReferencedTables()", "Replaced existing referenced tables for " + table);
+			LogMgr.logDebug(new CallerInfo(){}, "Replaced existing referenced tables for " + table);
     }
   }
 
@@ -369,11 +365,11 @@ class ObjectCache
     List<DependencyNode> old = referencingTables.put(table, referencing);
     if (old == null)
     {
-      LogMgr.logDebug("ObjectCache.addReferencingTables()", "Added referencing tables for " + table + "(" + referencing + ")");
+			LogMgr.logDebug(new CallerInfo(){}, "Added referencing tables for " + table + "(" + referencing + ")");
     }
     else
     {
-      LogMgr.logDebug("ObjectCache.addReferencingTables()", "Replaced existing referencing tables for " + table);
+      LogMgr.logDebug(new CallerInfo(){}, "Replaced existing referencing tables for " + table);
     }
   }
 
@@ -412,7 +408,7 @@ class ObjectCache
       }
       catch (SQLException e)
       {
-        LogMgr.logError("ObjectCache.getProcedures()", "Error retrieving procedures", e);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving procedures", e);
       }
     }
     return procs;
@@ -571,7 +567,7 @@ class ObjectCache
    */
   public synchronized List<ColumnIdentifier> getColumns(WbConnection dbConnection, TableIdentifier tbl)
   {
-    LogMgr.logDebug("ObjectCache.getColumns()", "Checking columns for: " + tbl.getTableExpression(dbConnection));
+    LogMgr.logDebug(new CallerInfo(){}, "Checking columns for: " + tbl.getTableExpression(dbConnection));
 
     TableIdentifier toSearch = findEntry(dbConnection, tbl);
 
@@ -592,7 +588,7 @@ class ObjectCache
     // nothing in the cache. We can only retrieve this from the database if the connection isn't busy
     if (cols == null && dbConnection.isBusy())
     {
-      LogMgr.logDebug("ObjectCache.getColumns()", "No columns found for table " + tbl.getTableExpression() + ", but connection " + dbConnection.getId() + " is busy.");
+      LogMgr.logDebug(new CallerInfo(){}, "No columns found for table " + tbl.getTableExpression() + ", but connection " + dbConnection.getId() + " is busy.");
       return Collections.emptyList();
     }
 
@@ -614,18 +610,18 @@ class ObjectCache
     {
       try
       {
-        LogMgr.logDebug("ObjectCache.getColumns()", "Table not in cache, retrieving columns for " + toSearch.getTableExpression());
+        LogMgr.logDebug(new CallerInfo(){}, "Table not in cache, retrieving columns for " + toSearch.getTableExpression());
         cols = dbConnection.getMetadata().getTableColumns(toSearch);
       }
       catch (Throwable e)
       {
-        LogMgr.logError("ObjectCache.getColumns()", "Error retrieving columns for " + toSearch, e);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving columns for " + toSearch, e);
         cols = null;
       }
 
       if (toSearch != null && CollectionUtil.isNonEmpty(cols))
       {
-        LogMgr.logDebug("ObjectCache.getColumns()", "Adding columns for " + toSearch.getTableExpression() + " to cache");
+        LogMgr.logDebug(new CallerInfo(){}, "Adding columns for " + toSearch.getTableExpression() + " to cache");
         this.objects.put(toSearch, cols);
       }
 
@@ -647,7 +643,7 @@ class ObjectCache
       String procName = proc.getObjectNameForDrop(dbConn);
       if (procName.equals(fullName))
       {
-        LogMgr.logDebug("ObjectCache.removeProcedure()", "Procedure " + fullName + " removed from the cache");
+        LogMgr.logDebug(new CallerInfo(){}, "Procedure " + fullName + " removed from the cache");
         itr.remove();
         break;
       }
@@ -662,7 +658,7 @@ class ObjectCache
     if (toRemove == null) return;
 
     this.objects.remove(toRemove);
-    LogMgr.logDebug("ObjectCache.removeTable()", "Removed " + tbl.getTableName() + " from the cache");
+    LogMgr.logDebug(new CallerInfo(){}, "Removed " + tbl.getTableName() + " from the cache");
   }
 
   synchronized void addTableList(WbConnection dbConnection, DataStore tables, String schema)
@@ -686,7 +682,7 @@ class ObjectCache
         this.schemasInCache.add(Namespace.fromTable(tbl, dbConnection));
       }
     }
-    LogMgr.logDebug("ObjectCache.addTableList()", "Added " + count + " objects");
+    LogMgr.logDebug(new CallerInfo(){}, "Added " + count + " objects");
   }
 
   synchronized void addProcedureList(DataStore procs, String schema)
@@ -704,7 +700,7 @@ class ObjectCache
       }
     }
     procedureCache.put(schema, procList);
-    LogMgr.logDebug("ObjectCache.addTableList()", "Added " + procList.size() + " procedures");
+    LogMgr.logDebug(new CallerInfo(){}, "Added " + procList.size() + " procedures");
   }
 
 
@@ -739,11 +735,11 @@ class ObjectCache
     List<ColumnIdentifier> old = this.objects.put(definition.getTable(), definition.getColumns());
     if (old == null)
     {
-      LogMgr.logDebug("ObjectCache.addTable()", "Added table definition for " + tbName);
+      LogMgr.logDebug(new CallerInfo(){}, "Added table definition for " + tbName);
     }
     else
     {
-      LogMgr.logDebug("ObjectCache.addTable()", "Replaced existing table definition for " + tbName);
+      LogMgr.logDebug(new CallerInfo(){}, "Replaced existing table definition for " + tbName);
     }
   }
 
@@ -911,7 +907,7 @@ class ObjectCache
     synonymMap.clear();
     availableDatabases.clear();
     databasesCached = false;
-    LogMgr.logDebug("ObjectCache.clear()", "Removed all entries from the cache");
+    LogMgr.logDebug(new CallerInfo(){}, "Removed all entries from the cache");
   }
 
   Collection<String> getSchemasInCache()
@@ -999,10 +995,9 @@ class ObjectCache
       pkMap.putAll(pk);
     }
 
-    LogMgr.logDebug("ObjectCache.initExternally",
-      "Added " + objects.size() + " objects, " +
-      procedureCache.values().size() + " procedures, " +
-      synonymMap.size() + " synonyms and "
-      + refCount + " foreign key definitions from local storage");
+    LogMgr.logDebug(new CallerInfo(){},
+				"Added " + objects.size() + " objects, " +
+				procedureCache.values().size() + " procedures, " +
+				synonymMap.size() + " synonyms and " + refCount + " foreign key definitions from local storage");
   }
 }
