@@ -83,15 +83,15 @@ public class PostgresPartitionReaderTest
       "\n" +
       "create table range_table_p1 \n" +
       "  partition of range_table\n" +
-      "  for values from (minvalue) to (date '2018-01-01');\n" +
+      "  for values from (minvalue) to ('2018-01-01');\n" +
       "  \n" +
       "create table range_table_p2\n" +
       "  partition of range_table\n" +
-      "  for values from (date '2018-01-01') to (date '2019-01-01');\n" +
+      "  for values from ('2018-01-01') to ('2019-01-01');\n" +
       "\n" +
       "create table range_table_p3\n" +
       "  partition of range_table\n" +
-      "  for values from (date '2019-01-01') to (date '2020-01-01');\n" +
+      "  for values from ('2019-01-01') to ('2020-01-01');\n" +
       "commit;";
 
     TestUtil.executeScript(conn, sql);

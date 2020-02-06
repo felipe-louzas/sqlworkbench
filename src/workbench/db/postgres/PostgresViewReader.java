@@ -96,15 +96,16 @@ public class PostgresViewReader
     {
       src = "d.adsrc";
     }
-
+    
     String sql =
       "select c.attname as column_name, \n" +
       "       " + src + " as expression\n" +
       "from pg_attrdef d\n" +
       "  join pg_attribute c on c.attrelid = d.adrelid and c.attnum = d.adnum\n" +
       "  join pg_class v on v.oid = d.adrelid\n" +
+      "  join pg_namespace n on n.oid = v.relnamespace\n" +
       "where v.relname = ? \n" +
-      "  and v.relnamespace = cast(? as regnamespace)";
+      "  and n.nspname = ? ";
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;

@@ -58,8 +58,9 @@ public class PostgresSequenceReader
       "       obj_description(seq.oid, 'pg_class') as remarks, \n" +
       "       quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by, \n" +
       "       seq.relname as sequence_name, \n" +
-      "       seq.relnamespace::regnamespace::text as sequence_schema \n" +
+      "       sn.nspname as sequence_schema \n" +
       "FROM pg_class seq   \n" +
+      "  JOIN pg_namespace sn ON sn.oid = seq.relnamespace \n" +
       "  CROSS JOIN (SELECT min_value, max_value, last_value, increment_by, cache_value, is_cycled FROM " + NAME_PLACEHOLDER + ") seq_info \n" +
       "  LEFT JOIN pg_depend d ON d.objid = seq.oid AND deptype = 'a' \n" +
       "  LEFT JOIN pg_class tab ON d.objid = seq.oid AND d.refobjid = tab.oid   \n" +

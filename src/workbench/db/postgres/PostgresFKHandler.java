@@ -92,9 +92,10 @@ public class PostgresFKHandler
 			"       c.confmatchtype, \n" +
       "       obj_description(c.oid, 'pg_constraint') as remarks\n" +
       "from pg_constraint c\n" +
-      "where c.contype = 'f' \n" +
-      "  and c.connamespace = cast(? as regnamespace) \n" +
-      "  and c.conname in (";
+      "  join pg_namespace s on s.oid = c.connamespace\n" +
+      "where contype = 'f' \n" +
+      "  and s.nspname = ? \n" +
+      "  and conname in (";
 
 		for (int row = 0; row < keys.getRowCount(); row++)
 		{
