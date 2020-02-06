@@ -62,7 +62,7 @@ public class PostgresTestUtil
 
   public static String getPort()
   {
-    String port = System.getenv("WB_TEST_PORT");
+    String port = System.getProperty("WB_TEST_PORT", System.getenv("WB_TEST_PORT"));
     if (port == null)
     {
       port = "5432";
