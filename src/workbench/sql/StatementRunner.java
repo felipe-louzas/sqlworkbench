@@ -52,7 +52,6 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionProfile;
-import workbench.db.DbDriver;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;

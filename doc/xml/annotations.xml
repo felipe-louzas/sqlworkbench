@@ -241,6 +241,33 @@ order by id;</programlisting>
         a scrollable table.
       </para>
       <para>
+        The annotation can be used with or without a parameter. If no parameter is specified, it will turn text mode on for the
+        statement immediately following the annotation.
+      </para>
+      <para>
+        If the parameter <literal>on</literal> is specified, the text mode will be kept until the script finishes or
+        it's turned off again using <literal>@WbResultAsText off</literal>.
+      </para>
+      <para>Assuming the following script:</para>
+    <programlisting>-- @WbResultAsText
+select * from table_one;
+
+select * from table_two;
+
+-- @WbResultAsText on
+select * from table_three;
+select * from table_four;
+
+-- @WbResultAsText off
+select * from table_five;
+select * from table_six;
+</programlisting>
+      <para>
+        The first result ("table_one") will be shown in text mode. The second result ("table_two") will be shown as a
+        table. The results for table_three and table_four will again be shown in text mode and the last two results will
+        be shown as tables again.
+      </para>
+      <para>
         This annotation has no effect in console mode.
       </para>
     </section>

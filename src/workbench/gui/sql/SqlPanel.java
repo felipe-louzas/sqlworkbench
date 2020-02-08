@@ -227,6 +227,7 @@ import workbench.sql.StatementRunnerResult;
 import workbench.sql.VariablePool;
 import workbench.sql.annotations.AppendResultAnnotation;
 import workbench.sql.annotations.ResultAsTextAnnotation;
+import workbench.sql.annotations.ResultAsTextMode;
 import workbench.sql.annotations.UseTabAnnotation;
 import workbench.sql.annotations.WbAnnotation;
 import workbench.sql.commands.TransactionEndCommand;
@@ -367,6 +368,7 @@ public class SqlPanel
   private boolean locked;
   private boolean ignoreStateChange;
   private boolean cmdMode;
+  private boolean cmdModeForScript;
   private long lastScriptExecTime;
   protected final List<ToolWindow> resultWindows = new ArrayList<>(1);
   private final int macroClientId;
@@ -3448,6 +3450,8 @@ public class SqlPanel
           " Cursor: line=" + (editor.getCaretLine() + 1) + ", column=" + (editor.getCaretPositionInLine(editor.getCaretLine()) + 1) + " (" + cursorPos + ")");
       }
 
+      this.cmdModeForScript = cmdMode;
+
       for (int i=startIndex; i < endIndex; i++)
       {
         String currentSql = scriptParser.getCommand(i);
@@ -4140,6 +4144,27 @@ public class SqlPanel
     return null;
   }
 
+  private boolean evaluateResultMode(List<WbAnnotation> sourceAnnotations)
+  {
+    final ResultAsTextMode textMode = ResultAsTextAnnotation.getMode(sourceAnnotations);
+    boolean displayAsText = cmdModeForScript;
+    switch (textMode)
+    {
+      case turnOff:
+        cmdModeForScript = false;
+        displayAsText = false;
+        break;
+      case turnOn:
+        cmdModeForScript = true;
+        displayAsText = true;
+        break;
+      case onceOnly:
+        displayAsText = true;
+        break;
+    }
+    return displayAsText;
+  }
+
   /**
    * Display the data contained in the StatementRunnerResult.
    * For each DataStore or ResultSet in the result, an additional
@@ -4159,8 +4184,8 @@ public class SqlPanel
     final ResultAsTextAnnotation asTextAnnotation = new ResultAsTextAnnotation();
     final UseTabAnnotation useTab = new UseTabAnnotation();
     final List<WbAnnotation> sourceAnnotations = WbAnnotation.readAllAnnotations(sql, useTab, asTextAnnotation);
+    boolean displayAsText = evaluateResultMode(sourceAnnotations);
 
-    boolean displayAsText = cmdMode || sourceAnnotations.contains(asTextAnnotation);
     if (result.hasDataStores())
     {
       final List<DataStore> results = result.getDataStores();
@@ -4184,7 +4209,7 @@ public class SqlPanel
             {
               localAnnotations = sourceAnnotations;
             }
-            boolean showAsText = displayAsText || localAnnotations.contains(asTextAnnotation);
+            boolean showAsText = displayAsText || evaluateResultMode(sourceAnnotations);
             String tabName1 = localAnnotations.contains(useTab) ? useTab.getResultName(sql) : null;
             DwPanel p = null;
             if (StringUtil.isNonEmpty(tabName1))

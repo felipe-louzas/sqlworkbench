@@ -34,4 +34,11 @@ public class KeepResultAnnotation
   {
     super(ANNOTATION);
   }
+
+  @Override
+  public boolean needsValue()
+  {
+    return false;
+  }
+
 }

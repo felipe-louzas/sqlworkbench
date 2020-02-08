@@ -1,14 +1,14 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2020, Thomas Kellerer
+ * Copyright 2002-2020 Thomas Kellerer.
  *
- * Licensed under a modified Apache License, Version 2.0
+ * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
  * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at.
+ * You may obtain a copy of the License at
  *
- *     https://www.sql-workbench.eu/manual/license.html
+ *      https://www.sql-workbench.eu/manual/license.html
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  * limitations under the License.
  *
  * To contact the author please send an email to: support@sql-workbench.eu
- *
  */
 package workbench.sql.annotations;
 
@@ -25,20 +24,20 @@ package workbench.sql.annotations;
  *
  * @author Thomas Kellerer
  */
-public class RemoveEmptyResultsAnnotation
-  extends WbAnnotation
+public enum ResultAsTextMode
 {
-  public static final String ANNOTATION = "WbRemoveEmpty";
+  /**
+   * Use text mode for the next result.
+   */
+  onceOnly,
+  /**
+   * Use text mode for all following results.
+   */
+  turnOff,
+  /**
+   * Turn off text mode for all following results.
+   */
+  turnOn,
 
-  public RemoveEmptyResultsAnnotation()
-  {
-    super(ANNOTATION);
-  }
-
-  @Override
-  public boolean needsValue()
-  {
-    return false;
-  }
-
+  noChange;
 }

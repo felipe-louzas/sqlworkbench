@@ -24,7 +24,6 @@ package workbench.sql.annotations;
 
 import java.util.List;
 
-import workbench.util.StringUtil;
 
 /**
  * A class to mark the next result to be shown as "text", rather than a tab in the GUI.
@@ -41,40 +40,34 @@ public class ResultAsTextAnnotation
     super(ANNOTATION);
   }
 
-  public static boolean shouldTurnOn(List<WbAnnotation> annotations)
+  @Override
+  public boolean needsValue()
+  {
+    return false;
+  }
+
+  public static ResultAsTextMode getMode(List<WbAnnotation> annotations)
   {
     for (WbAnnotation toCheck : annotations)
     {
       if (toCheck instanceof ResultAsTextAnnotation)
       {
-        ResultAsTextAnnotation asText = (ResultAsTextAnnotation)toCheck;
-        return asText.doTurnOn();
+        String value = toCheck.getValue();
+        if (value == null)
+        {
+          return ResultAsTextMode.onceOnly;
+        }
+        if ("on".equalsIgnoreCase(value))
+        {
+          return ResultAsTextMode.turnOn;
+        }
+        if ("off".equalsIgnoreCase(value))
+        {
+          return ResultAsTextMode.turnOff;
+        }
       }
     }
-    return false;
-  }
-
-  public static boolean shouldTurnOff(List<WbAnnotation> annotations)
-  {
-    for (WbAnnotation toCheck : annotations)
-    {
-      if (toCheck instanceof ResultAsTextAnnotation)
-      {
-        ResultAsTextAnnotation asText = (ResultAsTextAnnotation)toCheck;
-        return asText.doTurnOff();
-      }
-    }
-    return false;
-  }
-
-  public boolean doTurnOn()
-  {
-    return StringUtil.equalStringIgnoreCase("on", getValue());
-  }
-
-  public boolean doTurnOff()
-  {
-    return StringUtil.equalStringIgnoreCase("off", getValue());
+    return ResultAsTextMode.noChange;
   }
 
 }

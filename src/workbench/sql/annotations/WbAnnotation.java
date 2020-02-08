@@ -54,6 +54,11 @@ public class WbAnnotation
     return "@" + key.toLowerCase();
   }
 
+  public boolean needsValue()
+  {
+    return true;
+  }
+
   public String getValue()
   {
     return value;
@@ -106,12 +111,11 @@ public class WbAnnotation
           String value = null;
 
           WbAnnotation annotation = toCheck.newInstance();
-
           if (pos < comment.length() && Character.isWhitespace(comment.charAt(pos)))
           {
             value = extractAnnotationValue(token, key);
           }
-          if (value != null)
+          if (value != null || !annotation.needsValue())
           {
             annotation.setValue(value);
             result.add(annotation);
