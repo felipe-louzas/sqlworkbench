@@ -138,10 +138,21 @@ public class PostgresProcedureReader
       Statement stmt = null;
       ResultSet rs = null;
       Savepoint sp = null;
-      String sql =
-        "select t.oid, format_type(t.oid, null), t.typtype, ns.nspname as schema_name \n" +
-        "from pg_type t \n" +
-        "  join pg_namespace ns on ns.oid = t.typnamespace";
+
+      String sql;
+			if (JdbcUtils.hasMinimumServerVersion(connection, "10"))
+			{
+				sql =
+					"select t.oid, format_type(t.oid, null), t.typtype, t.typnamespace::regnamespace::text as schema_name \n" +
+					"from pg_type t";
+			}
+			else
+			{
+				sql =
+					"select t.oid, format_type(t.oid, null), t.typtype, ns.nspname as schema_name \n" +
+					"from pg_type t \n" +
+					"  join pg_namespace ns on ns.oid = t.typnamespace";
+			}
 
       LogMgr.logMetadataSql(new CallerInfo(){}, "type lookup", sql);
 
@@ -262,7 +273,7 @@ public class PostgresProcedureReader
           "   JOIN pg_catalog.pg_namespace n on p.pronamespace = n.oid \n" +
           "   LEFT JOIN pg_catalog.pg_description d ON p.oid = d.objoid \n" +
           "   LEFT JOIN pg_catalog.pg_class c ON d.classoid=c.oid AND c.relname='pg_proc' \n" +
-          "   LEFT JOIN pg_catalog.pg_namespace pn ON (c.relnamespace=pn.oid AND pn.nspname='pg_catalog')";
+          "   LEFT JOIN pg_catalog.pg_namespace pn ON c.relnamespace=pn.oid AND pn.nspname='pg_catalog'";
 
     boolean whereNeeded = true;
     if (StringUtil.isNonBlank(schemaPattern))

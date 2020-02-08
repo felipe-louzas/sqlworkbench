@@ -30,7 +30,6 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.BaseObjectType;
 import workbench.db.ColumnIdentifier;

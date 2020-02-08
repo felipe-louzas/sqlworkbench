@@ -161,7 +161,127 @@ public class PostgresPartitionReaderTest
     String ddl = reader.getCreatePartitions();
     assertTrue(ddl.contains("CREATE TABLE list_table_p1"));
     assertTrue(ddl.contains("CREATE TABLE list_table_p2"));
+
+    String source = rangeTable.getSource(conn).toString();
+    assertTrue(source.contains("PARTITION BY LIST (code)"));
+    assertTrue(source.contains("CREATE TABLE list_table_p1\n" +
+                               "  PARTITION OF list_table\n" +
+                               "  FOR VALUES IN (1, 2, 3, 4)"));
+    assertTrue(source.contains("CREATE TABLE list_table_p2\n" +
+                               "  PARTITION OF list_table\n" +
+                               "  FOR VALUES IN (5, 6, 7, 8)"));
   }
+
+  @Test
+  public void testSubPartition1()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    if (!JdbcUtils.hasMinimumServerVersion(conn, "10")) return;
+    assertNotNull(conn);
+    String sql =
+      "create table sub_expr_table\n" +
+      "(\n" +
+      "  id integer not null,\n" +
+      "  code integer not null,\n" +
+      "  some_date date not null,\n" +
+      "  c1 integer,\n" +
+      "  data text not null\n" +
+      ")\n" +
+      "partition by list (code);\n" +
+      "\n" +
+      "create table sub_expr_table_p1 \n" +
+      "  partition of sub_expr_table \n" +
+      "  for values in (1,2,3,4)\n" +
+      "  partition by range (lower(data), c1, (code * 2));";
+
+    TestUtil.executeScript(conn, sql);
+
+    TableIdentifier subTable = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".sub_expr_table"));
+
+    PostgresPartitionReader reader = new PostgresPartitionReader(subTable, conn);
+    reader.readPartitionInformation();
+    assertEquals("LIST", reader.getStrategy());
+    List<PostgresPartition> partitions = reader.getTablePartitions();
+    assertNotNull(partitions);
+    assertEquals(1, partitions.size());
+    assertEquals("RANGE", partitions.get(0).getSubPartitionStrategy());
+    assertEquals("(lower(data), c1, code * 2)", partitions.get(0).getSubPartitionDefinition());
+  }
+  
+  @Test
+  public void testSubPartition2()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    if (!JdbcUtils.hasMinimumServerVersion(conn, "10")) return;
+    assertNotNull(conn);
+
+    String sql =
+      "create table sub_list_table\n" +
+      "(\n" +
+      "  id integer not null,\n" +
+      "  code integer not null,\n" +
+      "  some_date date not null \n" +
+      ")\n" +
+      "partition by list (code);\n" +
+
+      "create table sub_list_table_p1 \n" +
+      "  partition of sub_list_table \n" +
+      "  for values in (1,2,3,4)" +
+      "  partition by range (some_date);\n" +
+
+      "create table sub_list_table_p1_p1 \n" +
+      "  partition of sub_list_table_p1 \n" +
+      "  for values from (minvalue) to ('2019-01-01');\n" +
+
+      "create table sub_list_table_p1_p2 \n" +
+      "  partition of sub_list_table_p1 \n" +
+      "  for values from ('2019-01-01') to ('2020-01-01'); \n" +
+
+      "create table sub_list_table_p2 \n" +
+      "  partition of sub_list_table \n" +
+      "  for values in (5,6,7,8)" +
+      "  partition by range (some_date);\n" +
+
+      "create table sub_list_table_p2_p1 \n" +
+      "  partition of sub_list_table_p2 \n" +
+      "  for values from (minvalue) to ('2019-01-01'); \n" +
+
+      "create table sub_list_table_p2_p2 \n" +
+      "  partition of sub_list_table_p2 \n" +
+      "  for values from ('2019-01-01') to ('2020-01-01'); \n" +
+
+      "commit;";
+
+    TestUtil.executeScript(conn, sql);
+
+    TableIdentifier subTable = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".sub_list_table"));
+
+    PostgresPartitionReader reader = new PostgresPartitionReader(subTable, conn);
+    reader.readPartitionInformation();
+    assertEquals("LIST", reader.getStrategy());
+
+    assertEquals("PARTITION BY LIST (code)", reader.getPartitionDefinition());
+    List<PostgresPartition> partitions = reader.getTablePartitions();
+
+    assertNotNull(partitions);
+    assertEquals(6, partitions.size());
+    String subPart = partitions.get(0).getSubPartitionDefinition();
+    assertEquals("RANGE", partitions.get(0).getSubPartitionStrategy());
+    assertEquals("(some_date)", subPart);
+
+    String source = subTable.getSource(conn).toString();
+    assertTrue(source.contains("CREATE TABLE sub_list_table_p1\n" +
+                               "  PARTITION OF sub_list_table\n" +
+                               "  FOR VALUES IN (1, 2, 3, 4)\n" +
+                               "  PARTITION BY RANGE (some_date);"));
+    assertTrue(source.contains("CREATE TABLE sub_list_table_p2\n" +
+                               "  PARTITION OF sub_list_table\n" +
+                               "  FOR VALUES IN (5, 6, 7, 8)\n" +
+                               "  PARTITION BY RANGE (some_date);"));
+  }
+
 
   @Test
   public void testHashPartition()

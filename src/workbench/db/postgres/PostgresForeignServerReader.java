@@ -74,10 +74,19 @@ public class PostgresForeignServerReader
 
     if (StringUtil.isNonBlank(namePattern))
     {
-      sql += "\nWHERE s.srvname like '";
-      sql += SqlUtil.escapeUnderscore(namePattern, connection);
-      sql += "%' ";
-      sql += getEscapeClause(connection, namePattern);
+			if (namePattern.contains("%"))
+			{
+				sql += "\nWHERE s.srvname like '";
+				sql += SqlUtil.escapeUnderscore(namePattern, connection);
+				sql += "' ";
+				sql += getEscapeClause(connection, namePattern);
+			}
+			else
+			{
+				sql += "\nWHERE s.srvname = '";
+				sql += SqlUtil.escapeQuotes(namePattern);
+				sql += "' ";
+			}
     }
     sql += "\norder by s.srvname";
 

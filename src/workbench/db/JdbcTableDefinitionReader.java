@@ -290,6 +290,18 @@ public class JdbcTableDefinitionReader
     return null;
   }
 
+	@Override
+	public String getSchemaToUse(TableIdentifier toRead)
+	{
+		return dbConnection.getMetadata().getCurrentSchema();
+	}
+
+	@Override
+	public String getCatalogToUse(TableIdentifier toRead)
+	{
+		return dbConnection.getMetadata().getCurrentCatalog();
+	}
+
   /**
    * Return the definition of the given table.
    * <br/>
@@ -315,20 +327,20 @@ public class JdbcTableDefinitionReader
     String schema = SqlUtil.removeObjectQuotes(table.getSchema());
     String tablename = SqlUtil.removeObjectQuotes(table.getTableName());
 
-    DbMetadata meta = dbConnection.getMetadata();
     if (schema == null)
     {
-      schema = meta.getCurrentSchema();
+			schema = getSchemaToUse(toRead);
       table.setSchema(schema);
     }
 
     if (catalog == null)
     {
-      catalog = meta.getCurrentCatalog();
+			catalog = getCatalogToUse(toRead);
       table.setCatalog(catalog);
     }
 
     TableIdentifier retrieve = table;
+    DbMetadata meta = dbConnection.getMetadata();
 
     if (dbConnection.getDbSettings().isSynonymType(table.getType()))
     {

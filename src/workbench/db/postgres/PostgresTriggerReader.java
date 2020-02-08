@@ -70,12 +70,12 @@ public class PostgresTriggerReader
     DataStore result = super.getTriggers(catalog, schema);
     if (is93)
     {
-      retrieveEventTriggers(result);
+      retrieveEventTriggers(result, null);
     }
     return result;
   }
 
-  public int retrieveEventTriggers(DataStore triggers)
+  public int retrieveEventTriggers(DataStore triggers, String namePattern)
   {
     String sql =
       "select evtname as trigger, \n" +
@@ -86,6 +86,19 @@ public class PostgresTriggerReader
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
+
+		if (namePattern != null)
+		{
+			sql += " \nWHERE evtname ";
+			if (namePattern.contains("%"))
+			{
+				sql += " LIKE '" + SqlUtil.escapeQuotes(namePattern) + "'";
+			}
+			else
+			{
+				sql += " = '" + SqlUtil.escapeQuotes(namePattern) + "'";
+			}
+		}
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "event triggers", sql);
 

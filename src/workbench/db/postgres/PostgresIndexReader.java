@@ -104,16 +104,15 @@ public class PostgresIndexReader
     if (JdbcUtils.hasMinimumServerVersion(con, "11"))
     {
       myPgIndexes =
-        "  SELECT n.nspname AS schemaname,\n" +
-        "         c.relname AS tablename,\n" +
-        "         i.relname AS indexname,\n" +
-        "         t.spcname AS tablespace,\n" +
-        "         pg_get_indexdef(i.oid) AS indexdef\n" +
-        "  FROM pg_index x\n" +
-        "     JOIN pg_class c ON c.oid = x.indrelid\n" +
-        "     JOIN pg_class i ON i.oid = x.indexrelid\n" +
-        "     LEFT JOIN pg_namespace n ON n.oid = c.relnamespace\n" +
-        "     LEFT JOIN pg_tablespace t ON t.oid = i.reltablespace\n" +
+        "  SELECT c.relnamespace::regnamespace::text AS schemaname, \n" +
+        "         c.relname AS tablename, \n" +
+        "         i.relname AS indexname, \n" +
+        "         t.spcname AS tablespace, \n" +
+        "         pg_get_indexdef(i.oid) AS indexdef \n" +
+        "  FROM pg_index x \n" +
+        "     JOIN pg_class c ON c.oid = x.indrelid \n" +
+        "     JOIN pg_class i ON i.oid = x.indexrelid \n" +
+        "     LEFT JOIN pg_tablespace t ON t.oid = i.reltablespace \n" +
         "  WHERE c.relkind in ('r','m','p') \n" +
         "    AND i.relkind in ('i', 'I') \n " +
         "    AND NOT i.relispartition \n"; // exclude "automatic" indexes on partitions

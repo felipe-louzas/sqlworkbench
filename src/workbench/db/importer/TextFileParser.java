@@ -884,12 +884,12 @@ public class TextFileParser
     if (def == null || def.getColumns().isEmpty())
     {
       TableIdentifier tbl = createTargetTableId();
-      String msg = ResourceMgr.getFormattedString("ErrTargetTableNotFound", tbl.getTableExpression());
+      String msg = ResourceMgr.getFormattedString("ErrTargetTableNotFound", tbl.getTableExpression(connection));
       this.messages.append(msg);
       this.messages.appendNewLine();
       this.importColumns = null;
       this.hasErrors = true;
-      throw new SQLException("Table " + tbl.getTableExpression() + " not found!");
+      throw new SQLException("Table " + tbl.getTableExpression(connection) + " not found!");
     }
   }
 

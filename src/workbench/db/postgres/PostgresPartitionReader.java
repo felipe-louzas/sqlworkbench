@@ -25,6 +25,8 @@ import java.sql.ResultSet;
 import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -32,7 +34,9 @@ import workbench.log.LogMgr;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
+import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 
 /**
  * A class to read the partition definition of a Postgres table.
@@ -54,6 +58,7 @@ public class PostgresPartitionReader
 
   public PostgresPartitionReader(TableIdentifier table, WbConnection conn)
   {
+    Objects.requireNonNull(table, "A table must be specified");
     this.table = table;
     this.dbConnection = conn;
   }
@@ -109,12 +114,12 @@ public class PostgresPartitionReader
     TableIdentifier name = new TableIdentifier(partition.getSchema(), partition.getName());
     String partSQL =
       "CREATE TABLE " + name.getTableExpression(dbConnection) + "\n" +
-      "  PARTITION OF " + tableOf + " " + partition.getDefinition();
+      "  PARTITION OF " + tableOf + "\n  " + partition.getDefinition();
 
     if (partition.getSubPartitionDefinition() != null)
     {
-      partSQL += "\n" +
-        "  PARTITION BY " + partition.getSubPartitionStrategy() + " " + partition.getSubPartitionDefinition();
+      partSQL +=
+        "\n  PARTITION BY " + partition.getSubPartitionStrategy() + " " + partition.getSubPartitionDefinition();
     }
 
     return partSQL;
@@ -145,7 +150,12 @@ public class PostgresPartitionReader
       "select c.relname as partition_name, \n" +
       "       c.relnamespace::regnamespace::text as partition_schema,  \n" +
       "       pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, " +
-      "       pg_get_expr(p.partexprs, c.oid, true) as sub_partition, \n" +
+      "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
+      "        from unnest(p.partattrs) with ordinality as x(attnum, idx)\n" +
+      "          left join pg_attribute att \n" +
+      "                 on att.attnum = x.attnum \n" +
+      "                and att.attrelid = p.partrelid) as sub_part_cols,\n" +
+      "       pg_get_expr(p.partexprs, p.partrelid, true) as sub_part_expression, " +
       "       parent, \n" +
       "       case p.partstrat \n" +
       "         when 'l' then 'LIST' \n" +
@@ -179,13 +189,20 @@ public class PostgresPartitionReader
         String partName = rs.getString("partition_name");
         String schema = rs.getString("partition_schema");
         String partExpr = rs.getString("partition_expression");
-        String subPartExpr = rs.getString("sub_partition");
+        String subPartExpr = rs.getString("sub_part_expression");
+        String subPartCols = rs.getString("sub_part_cols");
         String parent = rs.getString("parent");
 
         PostgresPartition partition = new PostgresPartition(schema, partName);
         partition.setDefinition(partExpr);
-        partition.setSubPartitionDefinition(subPartExpr);
-        partition.setSubPartitionStrategy(rs.getString("sub_partition_strategy"));
+        String subPartStrategy = rs.getString("sub_partition_strategy");
+        if (subPartStrategy != null)
+        {
+          String expr = mergeSubPartitionExpression(subPartCols, subPartExpr);
+          partition.setSubPartitionDefinition("(" + expr + ")");
+          partition.setSubPartitionStrategy(subPartStrategy);
+        }
+
         if (parent != null)
         {
           TableIdentifier p = new TableIdentifier(parent);
@@ -207,8 +224,22 @@ public class PostgresPartitionReader
     }
   }
 
+  private String mergeSubPartitionExpression(String columns, String expressions)
+  {
+    if (expressions == null) return columns;
+    List<String> expressionList = StringUtil.stringToList(expressions, ",", true, true, true, true);
+    if (CollectionUtil.isEmpty(expressionList)) return columns;
+    for (int i=0; i < expressionList.size(); i++)
+    {
+      columns = columns.replaceFirst("<expr>", Matcher.quoteReplacement(expressionList.get(i)));
+    }
+    return columns;
+  }
+
   private void readPartitioningDefinition()
   {
+    if (table == null) return;
+
     String sql =
       "select p.partstrat, \n" +
       "       case \n" +

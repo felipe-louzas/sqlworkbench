@@ -463,43 +463,27 @@ public class TableIdentifier
   public String getSchemaToUse(WbConnection conn)
   {
     if (useTableNameOnlyInExpression) return null;
+    if (conn == null) return null;
 
     DbMetadata meta = conn.getMetadata();
-    if (meta.needSchemaInDML(this))
-    {
-      String schemaToUse = this.schema;
-      String currentSchema = null;
-      if (schemaToUse == null)
-      {
-        currentSchema = meta.getCurrentSchema();
-        schemaToUse = currentSchema;
-      }
-
-      if (meta.ignoreSchema(schemaToUse, currentSchema)) return null;
-
-      return StringUtil.trim(schemaToUse);
-    }
-    return null;
+		if (meta.needSchemaInDML(this))
+		{
+			return meta.getSchemaToUse(this);
+		}
+		return null;
   }
 
   public String getCatalogToUse(WbConnection conn)
   {
     if (useTableNameOnlyInExpression) return null;
+    if (conn == null) return null;
 
     DbMetadata meta = conn.getMetadata();
-    if (meta.needCatalogInDML(this))
-    {
-      String catalogToUse = this.catalog;
-      if (catalogToUse == null)
-      {
-        catalogToUse = meta.getCurrentCatalog();
-      }
-
-      if (meta.ignoreCatalog(catalogToUse)) return null;
-
-      return StringUtil.trim(catalogToUse);
-    }
-    return null;
+		if (meta.needCatalogInDML(this))
+		{
+			return meta.getCatalogToUse(this);
+		}
+		return null;
   }
 
   public void adjustCatalogAndSchema(WbConnection conn)

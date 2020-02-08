@@ -420,7 +420,7 @@ public abstract class AbstractImportFileParser
     }
     catch (SQLException ex)
     {
-      String msg = ResourceMgr.getFormattedString("ErrTargetTableNotFound", table.getTableExpression());
+      String msg = ResourceMgr.getFormattedString("ErrTargetTableNotFound", table.getTableExpression(connection));
       this.messages.append(msg);
       this.messages.appendNewLine();
       this.messages.append(ex.getMessage());

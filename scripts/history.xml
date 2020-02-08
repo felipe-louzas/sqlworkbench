@@ -2,6 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2020-01-26">
+    <entry dev-build="6" type="enh">The annotation @WbResultAsText can now be used to turn the "text mode" display on for multiple statements</entry>
     <entry dev-build="6" type="enh">For PostgreSQL, the "match mode" of foreign key constraints is now displayed and included in the generated DDL</entry>
     <entry dev-build="5" type="enh">A new Windows launcher is available that removes the need for a separate 64 and 32 bit executables and can optionally download a JRE</entry>
     <entry dev-build="5" type="enh">It's now possible to optionally open the saved file when using "Save As"</entry>
@@ -20,6 +21,8 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="6" type="fix">For PostgreSQL, the DDL for partitioned tables with sub-partitions was not generated correctly</entry>
+    <entry dev-build="6" type="fix">Using WbImport with temp tables as the target did not work with PostgreSQL and SQL Server</entry>
     <entry dev-build="6" type="fix">When using UCanAccess certain types of "linked columns" are now displayed correctly.</entry>
     <entry dev-build="6" type="fix">For DB2 on AS/400 the CSID attribute was also generated for data types where it wasn't relevant.</entry>
     <entry dev-build="5" type="fix">Individual statements were not detected correctly in the editor if the text started with a semicolon.</entry>

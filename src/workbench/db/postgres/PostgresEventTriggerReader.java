@@ -61,7 +61,7 @@ public class PostgresEventTriggerReader
     if (!DbMetadata.typeIncluded(TYPE, requestedTypes)) return false;
 
     PostgresTriggerReader reader = new PostgresTriggerReader(con);
-    int count = reader.retrieveEventTriggers(result);
+    int count = reader.retrieveEventTriggers(result, objectNamePattern);
     return count > 0;
   }
 

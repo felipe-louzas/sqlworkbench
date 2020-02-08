@@ -63,6 +63,7 @@ import workbench.db.mssql.SqlServerDataTypeResolver;
 import workbench.db.mssql.SqlServerObjectListEnhancer;
 import workbench.db.mssql.SqlServerRuleReader;
 import workbench.db.mssql.SqlServerSchemaInfoReader;
+import workbench.db.mssql.SqlServerTableDefinitionReader;
 import workbench.db.mssql.SqlServerTypeReader;
 import workbench.db.mssql.SqlServerUtil;
 import workbench.db.mysql.MySQLTableCommentReader;
@@ -386,7 +387,7 @@ public class DbMetadata
       {
         extenders.add(new SqlServerRuleReader());
       }
-
+			definitionReader = new SqlServerTableDefinitionReader(dbConnection);
       objectListEnhancer = new SqlServerObjectListEnhancer();
       dataTypeResolver = new SqlServerDataTypeResolver();
       if (Settings.getInstance().getBoolProperty("workbench.db.microsoft_sql_server.use.schemareader", true)
@@ -2646,6 +2647,39 @@ public class DbMetadata
     tbl.setComment(ds.getValueAsString(row, COLUMN_IDX_TABLE_LIST_REMARKS));
     return tbl;
   }
+
+	public String getSchemaToUse(TableIdentifier tbl)
+	{
+		if (!getDbSettings().supportsSchemas()) return null;
+
+		String schemaToUse = tbl.getRawSchema();
+		String currentSchema = null;
+
+		if (schemaToUse == null)
+		{
+			currentSchema = getCurrentSchema();
+			schemaToUse = currentSchema;
+		}
+
+		if (ignoreSchema(schemaToUse, currentSchema)) return null;
+
+		return StringUtil.trim(schemaToUse);
+	}
+
+	public String getCatalogToUse(TableIdentifier tbl)
+	{
+		if (!getDbSettings().supportsCatalogs()) return null;
+
+		String catalogToUse = tbl.getRawCatalog();
+		if (catalogToUse == null)
+		{
+			catalogToUse = definitionReader.getCatalogToUse(tbl);
+		}
+
+		if (ignoreCatalog(catalogToUse)) return null;
+
+		return StringUtil.trim(catalogToUse);
+	}
 
   /**
    * Return the current catalog for this connection.
