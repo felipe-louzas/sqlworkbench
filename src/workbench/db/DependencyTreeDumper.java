@@ -74,7 +74,7 @@ public class DependencyTreeDumper
       String rootLine = "Root: " + node.getTable().getTableExpression();
       writer.println(rootLine);
       writer.println(StringUtil.padRight("=", rootLine.length(), '='));
-      DependencyTreeDumper.this.dumpNode(node, 0, writer);
+      dumpNode(node, 0, writer);
     }
     catch (Exception ex)
     {
@@ -92,7 +92,7 @@ public class DependencyTreeDumper
     for (DependencyNode child : children)
     {
       out.println(StringUtil.padRight("", level * 4) + child.debugString());
-      DependencyTreeDumper.this.dumpNode(child, level + 1, out);
+      dumpNode(child, level + 1, out);
     }
   }
 
