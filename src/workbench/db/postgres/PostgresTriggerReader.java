@@ -80,25 +80,25 @@ public class PostgresTriggerReader
     String sql =
       "select evtname as trigger, \n" +
       "       evtevent as event, \n" +
-      "       obj_description(oid, 'pg_event_trigger') as remarks \n" +
-      "FROM pg_event_trigger";
+      "       pg_catalog.obj_description(oid, 'pg_event_trigger') as remarks \n" +
+      "FROM pg_catalog.pg_event_trigger";
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
 
-		if (namePattern != null)
-		{
-			sql += " \nWHERE evtname ";
-			if (namePattern.contains("%"))
-			{
-				sql += " LIKE '" + SqlUtil.escapeQuotes(namePattern) + "'";
-			}
-			else
-			{
-				sql += " = '" + SqlUtil.escapeQuotes(namePattern) + "'";
-			}
-		}
+    if (namePattern != null)
+    {
+      sql += " \nWHERE evtname ";
+      if (namePattern.contains("%"))
+      {
+        sql += " LIKE '" + SqlUtil.escapeQuotes(namePattern) + "'";
+      }
+      else
+      {
+        sql += " = '" + SqlUtil.escapeQuotes(namePattern) + "'";
+      }
+    }
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "event triggers", sql);
 
@@ -173,10 +173,10 @@ public class PostgresTriggerReader
       "select pr.proname, \n" +
       "       trg.evtevent, \n " +
       "       trg.evttags, \n "+
-      "       pg_get_functiondef(pr.oid) as func_source \n" +
-      "FROM pg_event_trigger trg \n" +
-      " JOIN pg_proc pr on pr.oid = trg.evtfoid \n" +
-      " join pg_namespace nsp on nsp.oid = pr.pronamespace \n" +
+      "       pg_catalog.pg_get_functiondef(pr.oid) as func_source \n" +
+      "FROM pg_catalog.pg_event_trigger trg \n" +
+      " JOIN pg_catalog.pg_proc pr on pr.oid = trg.evtfoid \n" +
+      " join pg_catalog.pg_namespace nsp on nsp.oid = pr.pronamespace \n" +
       "where trg.evtname = ?";
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "event trigger source", sql, triggerName);
@@ -253,11 +253,11 @@ public class PostgresTriggerReader
 
     final String sql =
       "SELECT trgsch.nspname as function_schema, proc.proname as function_name \n" +
-      "FROM pg_trigger trg  \n" +
-      "  JOIN pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
-      "  JOIN pg_proc proc ON proc.oid = trg.tgfoid \n" +
-      "  JOIN pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
-      "  JOIN pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
+      "FROM pg_catalog.pg_trigger trg  \n" +
+      "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
+      "  JOIN pg_catalog.pg_proc proc ON proc.oid = trg.tgfoid \n" +
+      "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
+      "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
       "WHERE trg.tgname = ? \n" +
       "  AND tblsch.nspname = ? ";
 
@@ -379,9 +379,9 @@ public class PostgresTriggerReader
       "         when 1 then 'ROW'::text \n" +
       "         else 'STATEMENT'::text \n" +
       "       end as trigger_level \n" +
-      "FROM pg_trigger trg \n" +
-      "  JOIN pg_class tbl on trg.tgrelid = tbl.oid \n" +
-      "  JOIN pg_namespace ns ON ns.oid = tbl.relnamespace \n";
+      "FROM pg_catalog.pg_trigger trg \n" +
+      "  JOIN pg_catalog.pg_class tbl on trg.tgrelid = tbl.oid \n" +
+      "  JOIN pg_catalog.pg_namespace ns ON ns.oid = tbl.relnamespace \n";
 
     if (JdbcUtils.hasMinimumServerVersion(dbConnection, "9.0"))
     {
@@ -406,7 +406,7 @@ public class PostgresTriggerReader
 
     if (this.dbConnection.getDbSettings().returnAccessibleTablesOnly())
     {
-      sql += "  AND has_table_privilege(tbl.oid, 'select') \n";
+      sql += "  AND pg_catalog.has_table_privilege(tbl.oid, 'select') \n";
     }
 
     return sql;

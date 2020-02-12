@@ -136,7 +136,7 @@ public class PostgresUtil
     Statement stmt = null;
     Savepoint sp = null;
 
-    final String query = "select unnest(current_schemas(true))";
+    final String query = "select unnest(pg_catalog.current_schemas(true))";
 
 		LogMgr.logMetadataSql(new CallerInfo(){}, "search path", query);
 
@@ -222,8 +222,8 @@ public class PostgresUtil
 
     DataStore names = SqlUtil.getResult(conn,
       "select datname " +
-      "from pg_database " +
-      "where has_database_privilege(datname, 'connect') \n" +
+      "from pg_catalog.pg_database " +
+      "where pg_catalog.has_database_privilege(datname, 'connect') \n" +
       "  and datallowconn \n" +
       "order by datname", true);
 

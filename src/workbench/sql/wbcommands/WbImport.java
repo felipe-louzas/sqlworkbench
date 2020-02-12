@@ -748,7 +748,8 @@ public class WbImport
         if (importAllSheets)
         {
           spreadSheetParser.setSheetIndex(-1);
-          table = null;
+					multiFileImport = true;
+//          table = null;
         }
         else if (cmdLine.isArgPresent(ARG_SHEET_NAME))
         {
@@ -919,30 +920,30 @@ public class WbImport
     return result;
   }
 
-	private void setBlobModes(ImportFileParser parser)
-	{
-		String btype = cmdLine.getValue(WbExport.ARG_BLOB_TYPE);
-		BlobMode mode = BlobMode.getMode(btype);
-		if (btype != null && mode != null)
-		{
-			parser.setDefaultBlobMode(mode);
-		}
-		else if (cmdLine.isArgPresent(ARG_BLOB_ISFILENAME))
-		{
-			boolean flag = cmdLine.getBoolean(ARG_BLOB_ISFILENAME, true);
-			if (flag)
-			{
-				parser.setDefaultBlobMode(BlobMode.SaveToFile);
-			}
-			else
-			{
-				parser.setDefaultBlobMode(BlobMode.None);
-			}
-		}
+  private void setBlobModes(ImportFileParser parser)
+  {
+    String btype = cmdLine.getValue(WbExport.ARG_BLOB_TYPE);
+    BlobMode mode = BlobMode.getMode(btype);
+    if (btype != null && mode != null)
+    {
+      parser.setDefaultBlobMode(mode);
+    }
+    else if (cmdLine.isArgPresent(ARG_BLOB_ISFILENAME))
+    {
+      boolean flag = cmdLine.getBoolean(ARG_BLOB_ISFILENAME, true);
+      if (flag)
+      {
+        parser.setDefaultBlobMode(BlobMode.SaveToFile);
+      }
+      else
+      {
+        parser.setDefaultBlobMode(BlobMode.None);
+      }
+    }
 
-		Map<String, BlobMode> blobModes = CommonArgs.getColumnBlobModes(cmdLine);
-		parser.setColumnBlobModes(blobModes);
-	}
+    Map<String, BlobMode> blobModes = CommonArgs.getColumnBlobModes(cmdLine);
+    parser.setColumnBlobModes(blobModes);
+  }
 
   private void initParser(String tableName, TabularDataParser parser, StatementRunnerResult result, boolean isMultifile, boolean skipTargetCheck)
   {

@@ -65,11 +65,11 @@ public class PostgresUniqueConstraintReader
         "         cons.conname as constraint_name, \n" +
         "         cons.condeferrable as deferrable, \n" +
         "         cons.condeferred as deferred \n" +
-        "  from pg_constraint cons \n" +
-        "    join pg_class tbl ON tbl.oid = cons.conrelid \n" +
-        "    join pg_namespace ns ON ns.oid = tbl.relnamespace \n" +
-        "    join pg_class ind ON ind.oid = cons.conindid \n" +
-        "    join pg_namespace indschem ON indschem.oid = ind.relnamespace \n" +
+        "  from pg_catalog.pg_constraint cons \n" +
+        "    join pg_catalog.pg_class tbl ON tbl.oid = cons.conrelid \n" +
+        "    join pg_catalog.pg_namespace ns ON ns.oid = tbl.relnamespace \n" +
+        "    join pg_catalog.pg_class ind ON ind.oid = cons.conindid \n" +
+        "    join pg_catalog.pg_namespace indschem ON indschem.oid = ind.relnamespace \n" +
         "  where cons.contype = 'u'";
     }
     else
@@ -82,9 +82,9 @@ public class PostgresUniqueConstraintReader
         "         cons.conname as constraint_name, \n" +
         "         false as deferrable, \n" +
         "         false as deferred \n" +
-        "  from pg_constraint cons  \n" +
-        "    join pg_class tbl ON tbl.oid = cons.conrelid  \n" +
-        "    join pg_namespace cns on cns.oid = cons.connamespace \n" +
+        "  from pg_catalog.pg_constraint cons  \n" +
+        "    join pg_catalog.pg_class tbl ON tbl.oid = cons.conrelid  \n" +
+        "    join pg_catalog.pg_namespace cns on cns.oid = cons.connamespace \n" +
         "  where cons.contype = 'u'";
     }
     sql.append(

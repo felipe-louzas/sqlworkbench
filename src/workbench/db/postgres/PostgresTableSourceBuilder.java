@@ -161,8 +161,8 @@ public class PostgresTableSourceBuilder
       defaultTsQuery =
       "  cross join (\n" +
       "    select ts.spcname as default_tablespace\n" +
-      "    from pg_database d\n" +
-      "      join pg_tablespace ts on ts.oid = d.dattablespace\n" +
+      "    from pg_catalog.pg_database d\n" +
+      "      join pg_catalog.pg_tablespace ts on ts.oid = d.dattablespace\n" +
       "    where d.datname = current_database()\n" +
       "  ) ts \n ";
     }

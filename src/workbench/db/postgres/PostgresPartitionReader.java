@@ -149,13 +149,13 @@ public class PostgresPartitionReader
       ") \n" +
       "select c.relname as partition_name, \n" +
       "       c.relnamespace::regnamespace::text as partition_schema,  \n" +
-      "       pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, " +
+      "       pg_catalog.pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, " +
       "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
       "        from unnest(p.partattrs) with ordinality as x(attnum, idx)\n" +
       "          left join pg_attribute att \n" +
       "                 on att.attnum = x.attnum \n" +
       "                and att.attrelid = p.partrelid) as sub_part_cols,\n" +
-      "       pg_get_expr(p.partexprs, p.partrelid, true) as sub_part_expression, " +
+      "       pg_catalog.pg_get_expr(p.partexprs, p.partrelid, true) as sub_part_expression, " +
       "       parent, \n" +
       "       case p.partstrat \n" +
       "         when 'l' then 'LIST' \n" +
@@ -164,7 +164,7 @@ public class PostgresPartitionReader
       "       end as sub_partition_strategy \n" +
       "from inh \n" +
       "  join pg_catalog.pg_class c on inh.inhrelid = c.oid \n" +
-      "  left join pg_partitioned_table p on p.partrelid = c.oid \n" +
+      "  left join pg_catalog.pg_partitioned_table p on p.partrelid = c.oid \n" +
       "order by c.relnamespace::regnamespace, c.relname";
 
     PreparedStatement pstmt = null;
@@ -244,14 +244,14 @@ public class PostgresPartitionReader
       "select p.partstrat, \n" +
       "       case \n" +
       "         when p.partexprs is null then cols.columns \n" +
-      "         else pg_get_expr(p.partexprs, t.oid, true)\n" +
+      "         else pg_catalog.pg_get_expr(p.partexprs, t.oid, true)\n" +
       "       end as partition_expression\n" +
-      "from pg_partitioned_table p\n" +
-      "  join pg_class t on t.oid = p.partrelid\n" +
-      "  join pg_namespace n on n.oid = t.relnamespace\n" +
+      "from pg_catalog.pg_partitioned_table p\n" +
+      "  join pg_catalog.pg_class t on t.oid = p.partrelid\n" +
+      "  join pg_catalog.pg_namespace n on n.oid = t.relnamespace\n" +
       "  left join lateral (\n" +
       "    select cols.attrelid, string_agg(cols.attname, ',') as columns\n" +
-      "    from pg_attribute cols\n" +
+      "    from pg_catalog.pg_attribute cols\n" +
       "    where cols.attrelid = t.oid\n" +
       "      and cols.attnum = any (p.partattrs)\n" +
       "    group by cols.attrelid\n" +
@@ -322,8 +322,8 @@ public class PostgresPartitionReader
     String sql =
       "select base.relnamespace::regnamespace::text as base_table_schema, \n" +
       "       base.relname as base_table, \n" +
-      "       pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, \n" +
-      "       pg_get_expr(p.partexprs, c.oid, true) as sub_partition, \n" +
+      "       pg_catalog.pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, \n" +
+      "       pg_catalog.pg_get_expr(p.partexprs, c.oid, true) as sub_partition, \n" +
       "       case p.partstrat \n" +
       "         when 'l' then 'LIST' \n" +
       "         when 'r' then 'RANGE' \n" +
@@ -339,7 +339,7 @@ public class PostgresPartitionReader
     ResultSet rs = null;
     Savepoint sp = null;
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "partition information", sql, table.getSchema(), table.getTableName());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "partition information", sql, table.getSchema(), table.getTableName());
 
     PostgresPartition result = null;
     try
@@ -368,7 +368,7 @@ public class PostgresPartitionReader
     catch (Exception ex)
     {
       dbConnection.rollback(sp);
-			LogMgr.logMetadataError(new CallerInfo(){}, ex, "partition information", sql, table.getSchema(), table.getTableName());
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "partition information", sql, table.getSchema(), table.getTableName());
     }
     finally
     {

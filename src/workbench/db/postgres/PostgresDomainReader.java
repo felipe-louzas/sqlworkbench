@@ -64,7 +64,7 @@ public class PostgresDomainReader
     "       t.typdefault as default_value, \n" +
     "       c.conname as constraint_name, \n" +
     "       pg_catalog.pg_get_constraintdef(c.oid, true) as constraint_definition, \n" +
-    "       obj_description(t.oid) as remarks \n" +
+    "       pg_catalog.obj_description(t.oid) as remarks \n" +
     "FROM pg_catalog.pg_type t \n" +
     "  LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace \n" +
     "  LEFT JOIN pg_catalog.pg_constraint c ON t.oid = c.contypid \n" +

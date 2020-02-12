@@ -173,13 +173,13 @@ public class PostgresColumnEnhancer
       "       " + identityAtt + ", \n" +
       "       " + generatedExpr + ", \n" +
       "       " + generationType + " \n" +
-      "from pg_attribute att  \n" +
-      "  join pg_class tbl on tbl.oid = att.attrelid   \n" +
-      "  join pg_namespace ns on tbl.relnamespace = ns.oid   \n" +
+      "from pg_catalog.pg_attribute att  \n" +
+      "  join pg_catalog.pg_class tbl on tbl.oid = att.attrelid   \n" +
+      "  join pg_catalog.pg_namespace ns on tbl.relnamespace = ns.oid   \n" +
       (is91 ?
-      "  left join pg_collation col on att.attcollation = col.oid \n" : "" ) +
+      "  left join pg_catalog.pg_collation col on att.attcollation = col.oid \n" : "" ) +
       (is12 ?
-      "  left join pg_attrdef d on d.adrelid = att.attrelid  and d.adnum = att.attnum \n" : "") +
+      "  left join pg_catalog.pg_attrdef d on d.adrelid = att.attrelid  and d.adnum = att.attnum \n" : "") +
       "where tbl.relname = ? \n" +
       "  and ns.nspname = ? \n" +
       "  and not att.attisdropped \n " +
@@ -305,13 +305,13 @@ public class PostgresColumnEnhancer
   {
     String sql =
       "SELECT col.attname, s.seqstart, s.seqincrement, s.seqmax, s.seqmin, s.seqcache, s.seqcycle \n" +
-      "FROM pg_sequence s \n" +
-      "  JOIN pg_class seq on s.seqrelid = seq.oid \n" +
-      "  JOIN pg_namespace sn ON sn.oid = seq.relnamespace  \n" +
-      "  JOIN pg_depend d ON d.objid = seq.oid AND deptype in ('a', 'i') \n" +
-      "  JOIN pg_class tab ON d.objid = seq.oid AND d.refobjid = tab.oid    \n" +
-      "  JOIN pg_namespace ts on ts.oid = tab.relnamespace \n" +
-      "  JOIN pg_attribute col ON (d.refobjid, d.refobjsubid) = (col.attrelid, col.attnum)  \n" +
+      "FROM pg_catalog.pg_sequence s \n" +
+      "  JOIN pg_catalog.pg_class seq on s.seqrelid = seq.oid \n" +
+      "  JOIN pg_catalog.pg_namespace sn ON sn.oid = seq.relnamespace  \n" +
+      "  JOIN pg_catalog.pg_depend d ON d.objid = seq.oid AND deptype in ('a', 'i') \n" +
+      "  JOIN pg_catalog.pg_class tab ON d.objid = seq.oid AND d.refobjid = tab.oid    \n" +
+      "  JOIN pg_catalog.pg_namespace ts on ts.oid = tab.relnamespace \n" +
+      "  JOIN pg_catalog.pg_attribute col ON (d.refobjid, d.refobjsubid) = (col.attrelid, col.attnum)  \n" +
       "where ts.nspname = ? \n" +
       "  and tab.relname = ? \n" +
       "  and col.attname in (";

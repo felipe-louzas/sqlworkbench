@@ -54,11 +54,11 @@ public class PostgresFKHandler
     return true;
   }
 
-	@Override
-	public boolean shouldGenerate(FKMatchType type)
-	{
-		return type != null && type != FKMatchType.SIMPLE;
-	}
+  @Override
+  public boolean shouldGenerate(FKMatchType type)
+  {
+    return type != null && type != FKMatchType.SIMPLE;
+  }
 
   @Override
   public boolean supportsMatchType()
@@ -81,31 +81,31 @@ public class PostgresFKHandler
   {
     int remarksColumn = keys.getColumnIndex(COLUMN_NAME_REMARKS);
     int matchColumn = keys.getColumnIndex(COLUMN_NAME_MATCH_TYPE);
-		if (keys.getRowCount() <= 0) return;
+    if (keys.getRowCount() <= 0) return;
 
     if (remarksColumn < 0 || matchColumn < 0) return;
 
-		int nameColumn = keys.getColumnIndex("FK_NAME");
+    int nameColumn = keys.getColumnIndex("FK_NAME");
 
     String sql =
       "select c.conname, \n" +
-			"       c.confmatchtype, \n" +
-      "       obj_description(c.oid, 'pg_constraint') as remarks\n" +
-      "from pg_constraint c\n" +
-      "  join pg_namespace s on s.oid = c.connamespace\n" +
+      "       c.confmatchtype, \n" +
+      "       pg_catalog.obj_description(c.oid, 'pg_constraint') as remarks\n" +
+      "from pg_catalog.pg_constraint c\n" +
+      "  join pg_catalog.pg_namespace s on s.oid = c.connamespace\n" +
       "where contype = 'f' \n" +
       "  and s.nspname = ? \n" +
       "  and conname in (";
 
-		for (int row = 0; row < keys.getRowCount(); row++)
-		{
-			if (row > 0)
-			{
+    for (int row = 0; row < keys.getRowCount(); row++)
+    {
+      if (row > 0)
+      {
         sql += ',';
-			}
-			String fkName = keys.getValueAsString(row, nameColumn);
+      }
+      String fkName = keys.getValueAsString(row, nameColumn);
       sql += "'" + SqlUtil.escapeQuotes(fkName) + "'";
-		}
+    }
     sql += ")";
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "foreign key details", sql, tbl.getRawSchema());
@@ -121,14 +121,14 @@ public class PostgresFKHandler
       while (rs.next())
       {
         String conname = rs.getString(1);
-				FKMatchType matchType = getMatchType(rs.getString(2));
+        FKMatchType matchType = getMatchType(rs.getString(2));
         String comment = rs.getString(3);
-				int row = findConstraint(keys, nameColumn, conname);
-				if (row > -1)
-				{
-					keys.setValue(row, remarksColumn, comment);
-					keys.setValue(row, matchColumn, matchType.toString());
-				}
+        int row = findConstraint(keys, nameColumn, conname);
+        if (row > -1)
+        {
+          keys.setValue(row, remarksColumn, comment);
+          keys.setValue(row, matchColumn, matchType.toString());
+        }
       }
     }
     catch (Throwable th)
@@ -141,20 +141,20 @@ public class PostgresFKHandler
     }
   }
 
-	private FKMatchType getMatchType(String pgType)
-	{
-		if (StringUtil.isBlank(pgType)) return FKMatchType.UNKNOWN;
-		switch (pgType)
-		{
-			case "f":
-				return FKMatchType.FULL;
-			case "p":
-				return FKMatchType.PARTIAL;
-			case "s":
-				return FKMatchType.SIMPLE;
-		}
-		return FKMatchType.UNKNOWN;
-	}
+  private FKMatchType getMatchType(String pgType)
+  {
+    if (StringUtil.isBlank(pgType)) return FKMatchType.UNKNOWN;
+    switch (pgType)
+    {
+      case "f":
+        return FKMatchType.FULL;
+      case "p":
+        return FKMatchType.PARTIAL;
+      case "s":
+        return FKMatchType.SIMPLE;
+    }
+    return FKMatchType.UNKNOWN;
+  }
 
   private int findConstraint(DataStore keys, int nameColumn, String name)
   {

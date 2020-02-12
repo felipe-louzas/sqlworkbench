@@ -75,7 +75,7 @@ public class PostgresDependencyReader
       "       vtu.table_name, \n" + typeCase +
       "       obj_description(cl.oid) as remarks\n" +
       "from information_schema.view_table_usage vtu \n" +
-      "  join pg_class cl on cl.oid = (quote_ident(vtu.table_schema)||'.'||quote_ident(vtu.table_name))::regclass \n" +
+      "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.table_schema)||'.'||quote_ident(vtu.table_name))::regclass \n" +
       "where (view_schema, view_name) = (?, ?) \n" +
       "order by view_schema, view_name";
 
@@ -84,27 +84,27 @@ public class PostgresDependencyReader
         "       vtu.view_name, \n" + typeCase +
         "       obj_description(cl.oid) as remarks\n" +
         "from information_schema.view_table_usage vtu \n" +
-        "  join pg_class cl on cl.oid = (quote_ident(vtu.view_schema)||'.'||quote_ident(vtu.view_name))::regclass \n" +
+        "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.view_schema)||'.'||quote_ident(vtu.view_name))::regclass \n" +
         "where (table_schema, table_name) = (?, ?) \n" +
         "order by view_schema, view_name";
 
   private String typesUsedByFunction =
     "select distinct ts.nspname as type_schema, typ.typname as type_name, 'TYPE', obj_description(typ.oid) as remarks \n" +
-    "from pg_proc c \n" +
-    "  join pg_namespace n on n.oid = c.pronamespace \n" +
-    "  join pg_depend d on d.objid = c.oid and d.refclassid = 'pg_type'::regclass \n" +
-    "  join pg_type typ on typ.oid = d.refobjid \n" +
-    "  join pg_namespace ts on ts.oid = typ.typnamespace \n" +
+    "from pg_catalog.pg_proc c \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = c.pronamespace \n" +
+    "  join pg_catalog.pg_depend d on d.objid = c.oid and d.refclassid = 'pg_type'::regclass \n" +
+    "  join pg_catalog.pg_type typ on typ.oid = d.refobjid \n" +
+    "  join pg_catalog.pg_namespace ts on ts.oid = typ.typnamespace \n" +
     "where n.nspname = ? \n" +
     "  and c.proname = ?";
 
   private final String functionsUsingType =
     "select distinct n.nspname as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, \n" + proArgs +
-    "from pg_proc p \n" +
-    "  join pg_namespace n on n.oid = p.pronamespace \n" +
-    "  join pg_depend d on d.objid = p.oid and d.classid = 'pg_proc'::regclass \n" +
-    "  join pg_type typ on typ.oid = d.refobjid \n" +
-    "  join pg_namespace ts on ts.oid = typ.typnamespace \n" +
+    "from pg_catalog.pg_proc p \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = p.pronamespace \n" +
+    "  join pg_catalog.pg_depend d on d.objid = p.oid and d.classid = 'pg_proc'::regclass \n" +
+    "  join pg_catalog.pg_type typ on typ.oid = d.refobjid \n" +
+    "  join pg_catalog.pg_namespace ts on ts.oid = typ.typnamespace \n" +
     "where ts.nspname = ? \n" +
     "  and typ.typname = ? \n";
 
@@ -113,11 +113,11 @@ public class PostgresDependencyReader
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
     "       obj_description(cl.oid) as remarks  \n" +
-    "from pg_class cl  \n" +
-    "  join pg_namespace n on n.oid = cl.relnamespace  \n" +
+    "from pg_catalog.pg_class cl  \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = cl.relnamespace  \n" +
     "  join pg_depend d on d.objid = cl.oid and d.classid = 'pg_class'::regclass  \n" +
-    "  join pg_type t on t.oid = d.refobjid  \n" +
-    "  join pg_namespace tn on tn.oid = t.typnamespace \n" +
+    "  join pg_catalog.pg_type t on t.oid = d.refobjid  \n" +
+    "  join pg_catalog.pg_namespace tn on tn.oid = t.typnamespace \n" +
     "where d.deptype in ('a', 'n')" +
     "  and cl.relkind in ('r', 'v', 'f') \n" +
     "  and tn.nspname = ? \n" +
@@ -125,24 +125,24 @@ public class PostgresDependencyReader
 
   private final String typesUsedByTable =
     "select distinct tn.nspname as type_schema, t.typname as type_name, 'TYPE' as object_type, obj_description(t.oid) as remarks \n" +
-    "from pg_class c \n" +
-    "  join pg_namespace n on n.oid = c.relnamespace \n" +
+    "from pg_catalog.pg_class c \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = c.relnamespace \n" +
     "  join pg_depend d on d.objid = c.oid and d.classid = 'pg_class'::regclass \n" +
-    "  join pg_type t on t.oid = d.refobjid \n" +
-    "  join pg_namespace tn on tn.oid = t.typnamespace\n" +
+    "  join pg_catalog.pg_type t on t.oid = d.refobjid \n" +
+    "  join pg_catalog.pg_namespace tn on tn.oid = t.typnamespace\n" +
     "where d.deptype in ('a', 'n') \n" +
     "  and n.nspname = ? \n"+
     "  and c.relname = ? ";
 
   private final String sequencesUsedByTable =
     "select distinct sn.nspname as sequence_schema, s.relname as sequence_name, 'SEQUENCE', obj_description(s.oid) as remarks\n" +
-    "from pg_class s\n" +
-    "  join pg_namespace sn on sn.oid = s.relnamespace \n" +
+    "from pg_catalog.pg_class s\n" +
+    "  join pg_catalog.pg_namespace sn on sn.oid = s.relnamespace \n" +
     "  join pg_depend d on d.refobjid = s.oid and d.refclassid='pg_class'::regclass \n" +
     "  join pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
     "  join pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
-    "  join pg_class tbl on tbl.oid = ad.adrelid \n" +
-    "  join pg_namespace ts on ts.oid = tbl.relnamespace \n" +
+    "  join pg_catalog.pg_class tbl on tbl.oid = ad.adrelid \n" +
+    "  join pg_catalog.pg_namespace ts on ts.oid = tbl.relnamespace \n" +
     "where s.relkind = 'S' \n" +
     "  and d.deptype in ('a', 'n') \n " +
     "  and ts.nspname = ? \n" +
@@ -153,12 +153,12 @@ public class PostgresDependencyReader
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
     "       obj_description(cl.oid) as remarks\n" +
-    "from pg_class s\n" +
-    "  join pg_depend d on d.refobjid = s.oid and d.refclassid = 'pg_class'::regclass\n" +
-    "  join pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
-    "  join pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
-    "  join pg_class cl on cl.oid = ad.adrelid \n" +
-    "  join pg_namespace n on n.oid = cl.relnamespace\n " +
+    "from pg_catalog.pg_class s\n" +
+    "  join pg_catalog.pg_depend d on d.refobjid = s.oid and d.refclassid = 'pg_class'::regclass\n" +
+    "  join pg_catalog.pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
+    "  join pg_catalog.pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
+    "  join pg_catalog.pg_class cl on cl.oid = ad.adrelid \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = cl.relnamespace\n " +
     "where s.relkind = 'S' \n" +
     "  and d.deptype in ('a', 'n') \n " +
     "  and n.nspname = ? \n" +
@@ -166,31 +166,31 @@ public class PostgresDependencyReader
 
   private final String triggerImplementationFunction =
     "SELECT trgsch.nspname as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, " + proArgs +
-    "FROM pg_trigger trg  \n" +
-    "  JOIN pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
-    "  JOIN pg_proc p ON p.oid = trg.tgfoid \n" +
-    "  JOIN pg_namespace trgsch ON trgsch.oid = p.pronamespace \n" +
-    "  JOIN pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
+    "FROM pg_catalog.pg_trigger trg  \n" +
+    "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
+    "  JOIN pg_catalog.pg_proc p ON p.oid = trg.tgfoid \n" +
+    "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = p.pronamespace \n" +
+    "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
     "WHERE tblsch.nspname =  ? \n" +
     "  AND trg.tgname = ? ";
 
   private final String triggerTable =
     "SELECT tblsch.nspname as table_schema, tbl.relname as table_name, 'TABLE', obj_description(tbl.oid) as remarks \n" +
-    "FROM pg_trigger trg  \n" +
-    "  JOIN pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
-    "  JOIN pg_proc proc ON proc.oid = trg.tgfoid \n" +
-    "  JOIN pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
-    "  JOIN pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
+    "FROM pg_catalog.pg_trigger trg  \n" +
+    "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
+    "  JOIN pg_catalog.pg_proc proc ON proc.oid = trg.tgfoid \n" +
+    "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
+    "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
     "WHERE tblsch.nspname =  ? \n" +
     "  AND trg.tgname = ? ";
 
   private final String triggersUsingFunction =
     "SELECT trgsch.nspname as trigger_schema, trg.tgname as trigger_name, 'TRIGGER', obj_description(trg.oid) as remarks \n" +
-    "FROM pg_trigger trg  \n" +
-    "  JOIN pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
-    "  JOIN pg_proc proc ON proc.oid = trg.tgfoid \n" +
-    "  JOIN pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
-    "  JOIN pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
+    "FROM pg_catalog.pg_trigger trg  \n" +
+    "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
+    "  JOIN pg_catalog.pg_proc proc ON proc.oid = trg.tgfoid \n" +
+    "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
+    "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
     "WHERE tblsch.nspname = ? \n" +
     "  and proc.proname = ? ";
 

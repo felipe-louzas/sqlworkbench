@@ -55,16 +55,16 @@ public class PostgresSequenceReader
   private final String baseSql =
       "SELECT seq_info.*, \n" +
       "       null::text as data_type, \n" +
-      "       obj_description(seq.oid, 'pg_class') as remarks, \n" +
-      "       quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by, \n" +
+      "       pg_catalog.obj_description(seq.oid, 'pg_class') as remarks, \n" +
+      "       pg_catalog.quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by, \n" +
       "       seq.relname as sequence_name, \n" +
       "       sn.nspname as sequence_schema \n" +
-      "FROM pg_class seq   \n" +
-      "  JOIN pg_namespace sn ON sn.oid = seq.relnamespace \n" +
+      "FROM pg_catalog.pg_class seq   \n" +
+      "  JOIN pg_catalog.pg_namespace sn ON sn.oid = seq.relnamespace \n" +
       "  CROSS JOIN (SELECT min_value, max_value, last_value, increment_by, cache_value, is_cycled FROM " + NAME_PLACEHOLDER + ") seq_info \n" +
-      "  LEFT JOIN pg_depend d ON d.objid = seq.oid AND deptype = 'a' \n" +
-      "  LEFT JOIN pg_class tab ON d.objid = seq.oid AND d.refobjid = tab.oid   \n" +
-      "  LEFT JOIN pg_attribute col ON (d.refobjid, d.refobjsubid) = (col.attrelid, col.attnum) \n" +
+      "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = seq.oid AND deptype = 'a' \n" +
+      "  LEFT JOIN pg_catalog.pg_class tab ON d.objid = seq.oid AND d.refobjid = tab.oid   \n" +
+      "  LEFT JOIN pg_catalog.pg_attribute col ON (d.refobjid, d.refobjsubid) = (col.attrelid, col.attnum) \n" +
       "WHERE seq.relkind = 'S'";
 
   private final String baseSqlV10 =
@@ -75,14 +75,14 @@ public class PostgresSequenceReader
     "       s.cache_size as cache_value,\n" +
     "       s.cycle as is_cycled,\n" +
     "       pg_catalog.format_type(s.data_type, NULL) as data_type,\n" +
-    "       obj_description(to_regclass(format('%I.%I', s.schemaname, s.sequencename)), 'pg_class') as remarks,\n" +
-    "       quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by,\n" +
+    "       pg_catalog.obj_description(to_regclass(format('%I.%I', s.schemaname, s.sequencename)), 'pg_class') as remarks,\n" +
+    "       pg_catalog.quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by,\n" +
     "       s.sequencename as sequence_name, \n" +
     "       s.schemaname as sequence_schema\n" +
     "from pg_catalog.pg_sequences s\n" +
-    "  LEFT JOIN pg_depend d ON d.objid = to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND deptype in ('a', 'i') \n" +
-    "  LEFT JOIN pg_class tab ON d.objid = to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND d.refobjid = tab.oid   \n" +
-    "  LEFT JOIN pg_attribute col ON (d.refobjid, d.refobjsubid) = (col.attrelid, col.attnum)";
+    "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = pg_catalog.to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND deptype in ('a', 'i') \n" +
+    "  LEFT JOIN pg_catalog.pg_class tab ON d.objid = pg_catalog.to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND d.refobjid = tab.oid   \n" +
+    "  LEFT JOIN pg_catalog.pg_attribute col ON (d.refobjid, d.refobjsubid) = (col.attrelid, col.attnum)";
 
   public PostgresSequenceReader(WbConnection conn)
   {

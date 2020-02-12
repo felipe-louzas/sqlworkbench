@@ -52,11 +52,11 @@ public class PostgresInheritanceReader
 
     String sql83 =
       "select bt.relname as table_name, bns.nspname as table_schema, 0 as level \n" +
-      "from pg_class ct \n" +
-      "    join pg_namespace cns on ct.relnamespace = cns.oid and cns.nspname = ? \n" +
-      "    join pg_inherits i on i.inhparent = ct.oid and ct.relname = ? \n" +
-      "    join pg_class bt on i.inhrelid = bt.oid \n" +
-      "    join pg_namespace bns on bt.relnamespace = bns.oid ";
+      "from pg_catalog.pg_class ct \n" +
+      "    join pg_catalog.pg_namespace cns on ct.relnamespace = cns.oid and cns.nspname = ? \n" +
+      "    join pg_catalog.pg_inherits i on i.inhparent = ct.oid and ct.relname = ? \n" +
+      "    join pg_catalog.pg_class bt on i.inhrelid = bt.oid \n" +
+      "    join pg_catalog.pg_namespace bns on bt.relnamespace = bns.oid ";
     if (dbConnection.getDbSettings().returnAccessibleTablesOnly())
     {
       sql83 += "\nwhere has_table_privilege(ct.oid, 'select') \n";
@@ -139,16 +139,16 @@ public class PostgresInheritanceReader
 
     String sql =
       "select bt.relname as table_name, bns.nspname as table_schema \n" +
-      "from pg_class ct \n" +
-      "  join pg_namespace cns on ct.relnamespace = cns.oid and cns.nspname = ? \n" +
-      "  join pg_inherits i on i.inhrelid = ct.oid and ct.relname = ? \n" +
-      "  join pg_class bt on i.inhparent = bt.oid \n" +
-      "  join pg_namespace bns on bt.relnamespace = bns.oid \n" +
+      "from pg_catalog.pg_class ct \n" +
+      "  join pg_catalog.pg_namespace cns on ct.relnamespace = cns.oid and cns.nspname = ? \n" +
+      "  join pg_catalog.pg_inherits i on i.inhrelid = ct.oid and ct.relname = ? \n" +
+      "  join pg_catalog.pg_class bt on i.inhparent = bt.oid \n" +
+      "  join pg_catalog.pg_namespace bns on bt.relnamespace = bns.oid \n" +
       "where bt.relkind <> 'p'";
 
     if (dbConnection.getDbSettings().returnAccessibleTablesOnly())
     {
-      sql += "\n  and has_table_privilege(ct.oid, 'select') \n";
+      sql += "\n  and pg_catalog.has_table_privilege(ct.oid, 'select') \n";
     }
 
     Savepoint sp = null;

@@ -112,14 +112,14 @@ public class PostgresSequenceAdjuster
       "select * \n" +
       "from ( \n" +
       "  select column_name,  \n" +
-      "         pg_get_serial_sequence(?, column_name) as sequence_name \n" +
+      "         pg_catalog.pg_get_serial_sequence(?, column_name) as sequence_name \n" +
       "  from information_schema.columns \n" +
       "  where table_name = ? \n" +
       "  and table_schema = ? \n" +
       ") t \n" +
       "where sequence_name is not null";
 
-    LogMgr.logMetadataSql(new CallerInfo(){}, "column sequences using", sql, table.getRawTableName(), table.getRawTableName(), table.getRawSchema());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column sequences", sql, table.getRawTableName(), table.getRawTableName(), table.getRawSchema());
 
     Map<String, String> result = new HashMap<>();
     try
@@ -139,7 +139,7 @@ public class PostgresSequenceAdjuster
     }
     catch (SQLException ex)
     {
-      LogMgr.logMetadataError(new CallerInfo(){}, ex, "column sequences using", sql, table.getRawTableName(), table.getRawTableName(), table.getRawSchema());
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "column sequences", sql, table.getRawTableName(), table.getRawTableName(), table.getRawSchema());
     }
     finally
     {

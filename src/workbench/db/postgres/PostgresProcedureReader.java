@@ -140,19 +140,19 @@ public class PostgresProcedureReader
       Savepoint sp = null;
 
       String sql;
-			if (JdbcUtils.hasMinimumServerVersion(connection, "10"))
-			{
-				sql =
-					"select t.oid, format_type(t.oid, null), t.typtype, t.typnamespace::regnamespace::text as schema_name \n" +
-					"from pg_type t";
-			}
-			else
-			{
-				sql =
-					"select t.oid, format_type(t.oid, null), t.typtype, ns.nspname as schema_name \n" +
-					"from pg_type t \n" +
-					"  join pg_namespace ns on ns.oid = t.typnamespace";
-			}
+      if (JdbcUtils.hasMinimumServerVersion(connection, "10"))
+      {
+        sql =
+          "select t.oid, pg_catalog.format_type(t.oid, null), t.typtype, t.typnamespace::regnamespace::text as schema_name \n" +
+          "from pg_catalog.pg_type t";
+      }
+      else
+      {
+        sql =
+          "select t.oid, pg_catalog.format_type(t.oid, null), t.typtype, ns.nspname as schema_name \n" +
+          "from pg_catalog.pg_type t \n" +
+          "  join pg_catalog.pg_namespace ns on ns.oid = t.typnamespace";
+      }
 
       LogMgr.logMetadataSql(new CallerInfo(){}, "type lookup", sql);
 
@@ -292,7 +292,7 @@ public class PostgresProcedureReader
     if (connection.getDbSettings().returnAccessibleProceduresOnly())
     {
       sql += whereNeeded ? "\n WHERE " : "\n  AND ";
-      sql += "has_function_privilege(p.oid,'execute')";
+      sql += "pg_catalog.has_function_privilege(p.oid,'execute')";
       whereNeeded = false;
     }
 

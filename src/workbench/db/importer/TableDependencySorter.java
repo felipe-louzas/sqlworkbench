@@ -37,8 +37,10 @@ import workbench.interfaces.ScriptGenerationMonitor;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.db.DependencyNode;
+import workbench.db.DependencyTreeDumper;
 import workbench.db.TableDependency;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -370,7 +372,20 @@ public class TableDependencySorter
 			// </editor-fold>
     };
 
-    Collections.sort(sorted, depComp);
+    try
+    {
+      Collections.sort(sorted, depComp);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not sort dependency tree " + (bottomUp ? "up" : "down"), th);
+      if (Settings.getInstance().getBoolProperty("workbench.dependencysorter.dump.onerror", false))
+      {
+        DependencyTreeDumper dumper = new DependencyTreeDumper();
+        dumper.dumpNodes(allNodes);
+        LogMgr.logInfo(new CallerInfo(){}, "All nodes dumped to configuration directory");
+      }
+    }
 
     long duration = System.currentTimeMillis() - start;
 
@@ -419,5 +434,3 @@ public class TableDependencySorter
     return result;
   }
 }
-
-

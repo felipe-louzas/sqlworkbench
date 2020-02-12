@@ -25,10 +25,17 @@ package workbench.db;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Map;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
+
+import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 
@@ -38,27 +45,40 @@ import workbench.util.StringUtil;
  */
 public class DependencyTreeDumper
 {
-  public static void dumpTree(TableIdentifier rootTable, Map<Integer, Set<DependencyNode>> levels, String fname)
+  private final Set<TableIdentifier> dumpedNodes = new HashSet<>();
+
+  public void dumpNodes(Collection<DependencyNode> nodes)
   {
-    FileWriter writer = null;
+    for (DependencyNode node : nodes)
+    {
+      dumpNode(node);
+    }
+  }
+
+  public void dumpNode(DependencyNode node)
+  {
+    if (node == null) return;
+    if (CollectionUtil.isEmpty(node.getChildren())) return;
+    if (dumpedNodes.contains(node.getTable())) return;
+
+    dumpedNodes.add(node.getTable());
+
+    PrintWriter writer = null;
     try
     {
-      writer = new FileWriter(new File(fname));
-      writer.append(rootTable.getTableExpression() + "\n");
+      File configDir = Settings.getInstance().getConfigDir();
+      String table = node.getTable().getTableName();
+      File dumpFile = File.createTempFile("deptree_" + StringUtil.makeFilename(table) + "_", ".txt", configDir);
 
-      for (Map.Entry<Integer, Set<DependencyNode>> entry : levels.entrySet())
-      {
-        int level = entry.getKey();
-        for (DependencyNode node : entry.getValue())
-        {
-          writer.append(StringUtil.padRight("", level*2));
-          writer.append(node.getTable() + " (" + node.getFkName() + ")\n");
-        }
-      }
+      writer = new PrintWriter(new FileWriter(dumpFile));
+      String rootLine = "Root: " + node.getTable().getTableExpression();
+      writer.println(rootLine);
+      writer.println(StringUtil.padRight("=", rootLine.length(), '='));
+      DependencyTreeDumper.this.dumpNode(node, 0, writer);
     }
     catch (Exception ex)
     {
-      LogMgr.logDebug("dumpTree()", "error writing tree", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not dump dependency node: " + node.debugString(), ex);
     }
     finally
     {
@@ -66,5 +86,14 @@ public class DependencyTreeDumper
     }
   }
 
+  private void dumpNode(DependencyNode node, int level, PrintWriter out)
+  {
+    List<DependencyNode> children = node.getChildren();
+    for (DependencyNode child : children)
+    {
+      out.println(StringUtil.padRight("", level * 4) + child.debugString());
+      DependencyTreeDumper.this.dumpNode(child, level + 1, out);
+    }
+  }
 
 }

@@ -78,6 +78,7 @@ public class SpreadsheetFileParser
   private SpreadsheetReader reader;
   protected List<Object> dataRowValues;
   private TableDependencySorter tableSorter;
+	private boolean tableNameSpecified;
 
   public SpreadsheetFileParser()
   {
@@ -86,6 +87,12 @@ public class SpreadsheetFileParser
     converter.setDefaultDateFormat(StringUtil.ISO_DATE_FORMAT);
   }
 
+  @Override
+  public void setTableName(String aName)
+  {
+    super.setTableName(aName);
+    this.tableNameSpecified = StringUtil.isNonBlank(aName);
+  }
 
   public void setRecalcFormulas(boolean flag)
   {
@@ -510,8 +517,11 @@ public class SpreadsheetFileParser
           sheetName = allSheets.get(sheetIndex);
           importColumns = null;
 
-          tableName = sheetName;
-          targetTable = null;
+          if (!tableNameSpecified)
+          {
+            tableName = sheetName;
+            targetTable = null;
+          }
 
           TableIdentifier tbl = createTargetTableId();
           if (connection.getMetadata().tableExists(tbl))

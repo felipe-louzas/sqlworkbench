@@ -68,12 +68,12 @@ public class PostgresRuleReader
     "         when '4' then 'DELETE' \n" +
     "         else 'UNKNOWN' \n" +
     "       end as rule_event, \n" +
-    "       pg_get_ruledef(r.oid, true) as definition, \n" +
+    "       pg_catalog.pg_get_ruledef(r.oid, true) as definition, \n" +
     "       d.description as remarks \n" +
-    "from pg_rewrite r  \n" +
-    "  join pg_class c on r.ev_class = c.oid \n" +
-    "  left join pg_namespace n on n.oid = c.relnamespace \n" +
-    "  left join pg_description d on r.oid = d.objoid ";
+    "from pg_catalog.pg_rewrite r  \n" +
+    "  join pg_catalog.pg_class c on r.ev_class = c.oid \n" +
+    "  left join pg_catalog.pg_namespace n on n.oid = c.relnamespace \n" +
+    "  left join pg_catalog.pg_description d on r.oid = d.objoid ";
 
   private String getSql(WbConnection con, String ruleSchemaPattern, String ruleNamePattern, String ruleTable, boolean excludeSelectView)
   {

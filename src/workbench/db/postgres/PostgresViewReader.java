@@ -90,20 +90,20 @@ public class PostgresViewReader
     String src;
     if (isPg12)
     {
-      src = "pg_get_expr(d.adbin, d.adrelid)";
+      src = "pg_catalog.pg_get_expr(d.adbin, d.adrelid)";
     }
     else
     {
       src = "d.adsrc";
     }
-    
+
     String sql =
       "select c.attname as column_name, \n" +
       "       " + src + " as expression\n" +
-      "from pg_attrdef d\n" +
-      "  join pg_attribute c on c.attrelid = d.adrelid and c.attnum = d.adnum\n" +
-      "  join pg_class v on v.oid = d.adrelid\n" +
-      "  join pg_namespace n on n.oid = v.relnamespace\n" +
+      "from pg_catalog.pg_attrdef d\n" +
+      "  join pg_catalog.pg_attribute c on c.attrelid = d.adrelid and c.attnum = d.adnum\n" +
+      "  join pg_catalog.pg_class v on v.oid = d.adrelid\n" +
+      "  join pg_catalog.pg_namespace n on n.oid = v.relnamespace\n" +
       "where v.relname = ? \n" +
       "  and n.nspname = ? ";
 

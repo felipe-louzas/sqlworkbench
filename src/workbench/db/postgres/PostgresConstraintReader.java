@@ -41,11 +41,11 @@ public class PostgresConstraintReader
 {
   private final String TABLE_SQL =
         "select rel.conname,  \n" +
-        "       pg_get_constraintdef(rel.oid) as src, \n" +
-        "       obj_description(rel.oid) as remarks  \n" +
-        "from pg_class t \n" +
-        "  join pg_constraint rel on t.oid = rel.conrelid   \n" +
-        "  join pg_namespace nsp on t.relnamespace = nsp.oid \n" +
+        "       pg_catalog.pg_get_constraintdef(rel.oid) as src, \n" +
+        "       pg_catalog.obj_description(rel.oid) as remarks  \n" +
+        "from pg_catalog.pg_class t \n" +
+        "  join pg_catalog.pg_constraint rel on t.oid = rel.conrelid   \n" +
+        "  join pg_catalog.pg_namespace nsp on t.relnamespace = nsp.oid \n" +
         "where rel.contype in ('c', 'x') \n" +
         " and t.relname = ? \n" +
         " and nsp.nspname = ? ";

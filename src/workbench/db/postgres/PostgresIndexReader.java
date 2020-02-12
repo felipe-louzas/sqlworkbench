@@ -95,7 +95,9 @@ public class PostgresIndexReader
 
     if (JdbcUtils.hasMinimumServerVersion(con, "11"))
     {
-      colStatsExpr = "(select array_agg(a.attstattarget) from pg_attribute a where a.attrelid = format('%I.%I', i.schemaname, i.indexname)::regclass) as column_stats";
+      colStatsExpr = "(select array_agg(a.attstattarget) " +
+                     "from pg_attribute a " +
+                     "where a.attrelid = pg_catalog.format('%I.%I', i.schemaname, i.indexname)::regclass) as column_stats";
     }
 
     String myPgIndexes;
@@ -108,11 +110,11 @@ public class PostgresIndexReader
         "         c.relname AS tablename, \n" +
         "         i.relname AS indexname, \n" +
         "         t.spcname AS tablespace, \n" +
-        "         pg_get_indexdef(i.oid) AS indexdef \n" +
-        "  FROM pg_index x \n" +
-        "     JOIN pg_class c ON c.oid = x.indrelid \n" +
-        "     JOIN pg_class i ON i.oid = x.indexrelid \n" +
-        "     LEFT JOIN pg_tablespace t ON t.oid = i.reltablespace \n" +
+        "         pg_catalog.pg_get_indexdef(i.oid) AS indexdef \n" +
+        "  FROM pg_catalog.pg_index x \n" +
+        "     JOIN pg_catalog.pg_class c ON c.oid = x.indrelid \n" +
+        "     JOIN pg_catalog.pg_class i ON i.oid = x.indexrelid \n" +
+        "     LEFT JOIN pg_catalog.pg_tablespace t ON t.oid = i.reltablespace \n" +
         "  WHERE c.relkind in ('r','m','p') \n" +
         "    AND i.relkind in ('i', 'I') \n " +
         "    AND NOT i.relispartition \n"; // exclude "automatic" indexes on partitions
@@ -131,14 +133,14 @@ public class PostgresIndexReader
         "SELECT i.indexdef, \n" +
         "       i.indexname, \n" +
         "       i.tablespace, \n" +
-        "       obj_description((quote_ident(i.schemaname)||'.'||quote_ident(i.indexname))::regclass, 'pg_class') as remarks, \n" +
+        "       pg_catalog.obj_description(format('%I.%I', i.schemaname, i.indexname)::regclass, 'pg_class') as remarks, \n" +
         "       " + colStatsExpr + ", \n " +
         "       ts.default_tablespace \n" +
         "FROM my_pg_indexes i \n" +
         "  cross join (\n" +
         "    select ts.spcname as default_tablespace\n" +
-        "    from pg_database d\n" +
-        "      join pg_tablespace ts on ts.oid = d.dattablespace\n" +
+        "    from pg_catalog.pg_database d\n" +
+        "      join pg_catalog.pg_tablespace ts on ts.oid = d.dattablespace\n" +
         "    where d.datname = current_database()\n" +
         "  ) ts \n " +
         "WHERE (i.schemaname, i.indexname) IN (");
@@ -147,7 +149,7 @@ public class PostgresIndexReader
     {
       sql.append(
         "SELECT indexdef, indexname, null::text as tablespace, null::text as remarks, null::text as default_tablespace \n" +
-        "FROM pg_indexes \n" +
+        "FROM pg_catalog.pg_indexes \n" +
         "WHERE (schemaname, indexname) IN (");
     }
 
@@ -336,18 +338,18 @@ public class PostgresIndexReader
     sql.append(
       "SELECT i.relname AS indexname, \n" +
       "       coalesce(t.spcname, ts.default_tablespace) as tablespace, \n" +
-      "       obj_description(i.oid) as remarks, \n" +
+      "       pg_catalog.obj_description(i.oid) as remarks, \n" +
       "       am.amname as index_type, \n" +
-      "       pg_get_expr(x.indpred, x.indrelid, true) as filter_expression \n" +
-      "FROM pg_index x \n" +
-      "  JOIN pg_class i ON i.oid = x.indexrelid \n" +
-      "  JOIN pg_class c ON c.oid = x.indrelid \n" +
-      "  JOIN pg_am am on am.oid = i.relam \n" +
-      "  LEFT JOIN pg_namespace n ON n.oid = c.relnamespace \n" +
-      "  LEFT JOIN pg_tablespace t ON t.oid = i.reltablespace \n" +
+      "       pg_catalog.pg_get_expr(x.indpred, x.indrelid, true) as filter_expression \n" +
+      "FROM pg_catalog.pg_index x \n" +
+      "  JOIN pg_catalog.pg_class i ON i.oid = x.indexrelid \n" +
+      "  JOIN pg_catalog.pg_class c ON c.oid = x.indrelid \n" +
+      "  JOIN pg_catalog.pg_am am on am.oid = i.relam \n" +
+      "  LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace \n" +
+      "  LEFT JOIN pg_catalog.pg_tablespace t ON t.oid = i.reltablespace \n" +
       "  cross join ( \n" +
       "    select nullif(ts.spcname, 'pg_default') as default_tablespace \n" +
-      "    from pg_database d \n" +
+      "    from pg_catalog.pg_database d \n" +
       "      join pg_tablespace ts on ts.oid = d.dattablespace \n" +
       "    where d.datname = current_database() \n" +
       "  ) ts \n" +

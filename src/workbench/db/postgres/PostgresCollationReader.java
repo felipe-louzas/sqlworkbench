@@ -71,8 +71,8 @@ public class PostgresCollationReader
       "       c.collctype, \n" +
       "       " + providerCol + ", \n" +
       "       obj_description(c.oid) as remarks \n" +
-      "from pg_collation c\n" +
-      "  join pg_namespace s on s.oid = c.collnamespace");
+      "from pg_catalog.pg_collation c\n" +
+      "  join pg_catalog.pg_namespace s on s.oid = c.collnamespace");
 
     boolean whereAdded = false;
     if (StringUtil.isNonBlank(namePattern))

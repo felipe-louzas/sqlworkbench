@@ -62,8 +62,8 @@ public class PostgresEnumReader
     "       t.typname as enum_name,  \n" +
     "       e.enumlabel as enum_value,  \n" +
     "       obj_description(t.oid) as remarks \n" +
-    "from pg_type t \n" +
-    "   join pg_enum e on t.oid = e.enumtypid  \n" +
+    "from pg_catalog.pg_type t \n" +
+    "   join pg_catalog.pg_enum e on t.oid = e.enumtypid  \n" +
     "   join pg_catalog.pg_namespace n ON n.oid = t.typnamespace";
 
   @Override

@@ -59,7 +59,7 @@ public class PostgresPolicyReader
 
     String query =
       "select polname, \n" +
-      "       pg_get_expr(p.polqual, p.polrelid, true) as expression, \n" +
+      "       pg_catalog.pg_get_expr(p.polqual, p.polrelid, true) as expression, \n" +
       "       case p.polcmd \n" +
       "         when 'r' then 'SELECT' \n" +
       "         when 'a' then 'INSERT' \n" +
@@ -68,12 +68,12 @@ public class PostgresPolicyReader
       "         else 'ALL' \n" +
       "       end as command, \n" +
       "       " + permissiveCol + ", \n" +
-      "       (select string_agg(quote_ident(rolname), ',') from pg_roles r where r.oid = any(p.polroles)) as roles, \n" +
-      "       pg_get_expr(p.polwithcheck, p.polrelid, true) as with_check, \n" +
+      "       (select string_agg(quote_ident(rolname), ',') from pg_catalog.pg_roles r where r.oid = any(p.polroles)) as roles, \n" +
+      "       pg_catalog.pg_get_expr(p.polwithcheck, p.polrelid, true) as with_check, \n" +
       "       t.relrowsecurity, \n" +
       "       t.relforcerowsecurity \n" +
-      "from pg_policy p \n" +
-      "  join pg_class t on t.oid = p.polrelid \n" +
+      "from pg_catalog.pg_policy p \n" +
+      "  join pg_catalog.pg_class t on t.oid = p.polrelid \n" +
       "where p.polrelid = cast(? as regclass)\n " +
       "order by p.polname";
 
