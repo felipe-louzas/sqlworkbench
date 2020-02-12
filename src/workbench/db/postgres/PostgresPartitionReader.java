@@ -152,7 +152,7 @@ public class PostgresPartitionReader
       "       pg_catalog.pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, " +
       "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
       "        from unnest(p.partattrs) with ordinality as x(attnum, idx)\n" +
-      "          left join pg_attribute att \n" +
+      "          left join pg_catalog.pg_attribute att \n" +
       "                 on att.attnum = x.attnum \n" +
       "                and att.attrelid = p.partrelid) as sub_part_cols,\n" +
       "       pg_catalog.pg_get_expr(p.partexprs, p.partrelid, true) as sub_part_expression, " +
@@ -224,7 +224,7 @@ public class PostgresPartitionReader
     }
   }
 
-  private String mergeSubPartitionExpression(String columns, String expressions)
+  private static String mergeSubPartitionExpression(String columns, String expressions)
   {
     if (expressions == null) return columns;
     List<String> expressionList = StringUtil.stringToList(expressions, ",", true, true, true, true);
@@ -242,21 +242,15 @@ public class PostgresPartitionReader
 
     String sql =
       "select p.partstrat, \n" +
-      "       case \n" +
-      "         when p.partexprs is null then cols.columns \n" +
-      "         else pg_catalog.pg_get_expr(p.partexprs, t.oid, true)\n" +
-      "       end as partition_expression\n" +
+      "       pg_catalog.pg_get_expr(p.partexprs, t.oid, true) as partition_expression, \n" +
+      "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
+      "        from unnest(p.partattrs) with ordinality as x(attnum, idx)\n" +
+      "          left join pg_catalog.pg_attribute att \n" +
+      "                 on att.attnum = x.attnum \n" +
+      "                and att.attrelid = p.partrelid) as partition_columns\n" +
       "from pg_catalog.pg_partitioned_table p\n" +
       "  join pg_catalog.pg_class t on t.oid = p.partrelid\n" +
-      "  join pg_catalog.pg_namespace n on n.oid = t.relnamespace\n" +
-      "  left join lateral (\n" +
-      "    select cols.attrelid, string_agg(cols.attname, ',') as columns\n" +
-      "    from pg_catalog.pg_attribute cols\n" +
-      "    where cols.attrelid = t.oid\n" +
-      "      and cols.attnum = any (p.partattrs)\n" +
-      "    group by cols.attrelid\n" +
-      "  ) as cols on cols.attrelid = t.oid \n" +
-      "where n.nspname = ? \n" +
+      "where t.relnamespace = cast(? as regnamespace) \n" +
       "  and t.relname = ? ";
 
     PreparedStatement pstmt = null;
@@ -276,7 +270,10 @@ public class PostgresPartitionReader
 
       if (rs.next())
       {
-        partitionExpression = rs.getString("partition_expression");
+        String expression = rs.getString("partition_expression");
+        String cols = rs.getString("partition_columns");
+        partitionExpression = mergeSubPartitionExpression(cols, expression);
+
         String strat = rs.getString("partstrat");
         switch (strat)
         {
@@ -323,15 +320,21 @@ public class PostgresPartitionReader
       "select base.relnamespace::regnamespace::text as base_table_schema, \n" +
       "       base.relname as base_table, \n" +
       "       pg_catalog.pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, \n" +
-      "       pg_catalog.pg_get_expr(p.partexprs, c.oid, true) as sub_partition, \n" +
+      "       pg_catalog.pg_get_expr(p.partexprs, p.partrelid, true) as sub_partition_expression, \n" +
+      "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
+      "        from unnest(p.partattrs) with ordinality as x(attnum, idx)\n" +
+      "          left join pg_catalog.pg_attribute att \n" +
+      "                 on att.attnum = x.attnum \n" +
+      "                and att.attrelid = p.partrelid) as sub_part_cols,\n" +
       "       case p.partstrat \n" +
       "         when 'l' then 'LIST' \n" +
       "         when 'r' then 'RANGE' \n" +
+      "         when 'h' then 'HASH' \n" +
       "       end as sub_partition_strategy \n" +
       "from pg_catalog.pg_inherits i \n" +
       "  join pg_catalog.pg_class c on i.inhrelid = c.oid \n" +
-      "  join pg_partitioned_table p on p.partrelid = i.inhparent \n" +
-      "  join pg_class base on base.oid = p.partrelid \n" +
+      "  join pg_partitioned_table p on p.partrelid = i.inhrelid\n" +
+      "  join pg_class base on base.oid = i.inhparent \n" +
       "where c.relnamespace = cast(? as regnamespace) \n" +
       "  and c.relname = ?";
 
@@ -360,7 +363,9 @@ public class PostgresPartitionReader
         result.setParentTable(tbl);
         result.setDefinition(rs.getString("partition_expression"));
         result.setSubPartitionStrategy(rs.getString("sub_partition_strategy"));
-        result.setSubPartitionDefinition(rs.getString("sub_partition"));
+        String subExpr = rs.getString("sub_partition_expression");
+        String subCols = rs.getString("sub_part_cols");
+        result.setSubPartitionDefinition(mergeSubPartitionExpression(subCols, subExpr));
       }
 
       dbConnection.releaseSavepoint(sp);

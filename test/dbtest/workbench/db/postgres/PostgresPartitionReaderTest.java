@@ -119,6 +119,34 @@ public class PostgresPartitionReaderTest
   }
 
   @Test
+  public void textMixedExpression()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    if (!JdbcUtils.hasMinimumServerVersion(conn, "11")) return;
+
+    String sql =
+      "create table mixed_expression\n" +
+      "(\n" +
+      "  id integer not null,\n" +
+      "  code integer not null,\n" +
+      "  some_date date not null,\n" +
+      "  c1 integer,\n" +
+      "  data text not null\n" +
+      ")\n" +
+      "partition by range (lower(data), c1, (code * 2));";
+
+    TestUtil.executeScript(conn, sql);
+
+    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".mixed_expression"));
+
+    PostgresPartitionReader reader = new PostgresPartitionReader(tbl, conn);
+    reader.readPartitionInformation();
+    assertEquals("RANGE", reader.getStrategy());
+    assertEquals("PARTITION BY RANGE (lower(data), c1, code * 2)", reader.getPartitionDefinition());
+  }
+
+  @Test
   public void testListPartition()
     throws Exception
   {
@@ -207,8 +235,16 @@ public class PostgresPartitionReaderTest
     assertEquals(1, partitions.size());
     assertEquals("RANGE", partitions.get(0).getSubPartitionStrategy());
     assertEquals("(lower(data), c1, code * 2)", partitions.get(0).getSubPartitionDefinition());
+
+    TableIdentifier part1 = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".sub_expr_table_p1"));
+    PostgresPartition partition1 = PostgresPartitionReader.getPartitionDefinition(part1, conn);
+    assertNotNull(partition1);
+    assertEquals("FOR VALUES IN (1, 2, 3, 4)", partition1.getDefinition());
+    assertEquals("lower(data), c1, code * 2", partition1.getSubPartitionDefinition());
+    assertEquals("RANGE", partition1.getSubPartitionStrategy());
+
   }
-  
+
   @Test
   public void testSubPartition2()
     throws Exception
