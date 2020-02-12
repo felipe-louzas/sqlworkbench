@@ -133,7 +133,7 @@ public class PostgresIndexReader
         "SELECT i.indexdef, \n" +
         "       i.indexname, \n" +
         "       i.tablespace, \n" +
-        "       pg_catalog.obj_description(format('%I.%I', i.schemaname, i.indexname)::regclass, 'pg_class') as remarks, \n" +
+        "       pg_catalog.obj_description((quote_ident(i.schemaname)||'.'||quote_ident(i.indexname))::regclass, 'pg_class') as remarks, \n" +
         "       " + colStatsExpr + ", \n " +
         "       ts.default_tablespace \n" +
         "FROM my_pg_indexes i \n" +
