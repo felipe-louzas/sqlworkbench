@@ -2,6 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2020-01-26">
+    <entry dev-build="6" type="enh">WbImport can now import all sheets of a spreadsheet into the same table when -sheetName=* is specified together with -table</entry>
     <entry dev-build="6" type="enh">The annotation @WbResultAsText can now be used to turn the "text mode" display on for multiple statements</entry>
     <entry dev-build="6" type="enh">For PostgreSQL, the "match mode" of foreign key constraints is now displayed and included in the generated DDL</entry>
     <entry dev-build="5" type="enh">A new Windows launcher is available that removes the need for a separate 64 and 32 bit executables and can optionally download a JRE</entry>
