@@ -32,6 +32,7 @@ import java.util.List;
 import workbench.interfaces.JobErrorHandler;
 import workbench.interfaces.ScriptGenerationMonitor;
 import workbench.interfaces.StatusBar;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -139,7 +140,7 @@ public class TableDeleter
     if (useTruncate && !connection.getDbSettings().supportsTruncate())
     {
       useTruncate = false;
-      LogMgr.logWarning("TableDeleterUI.deleteTables()", "Use of TRUNCATE requested, but DBMS does not support truncate. Using DELETE instead.");
+      LogMgr.logWarning(new CallerInfo(){}, "Use of TRUNCATE requested, but DBMS does not support truncate. Using DELETE instead.");
     }
 
     boolean hasError = false;
@@ -152,7 +153,7 @@ public class TableDeleter
     }
     catch (SQLException e)
     {
-      LogMgr.logError("TableDeleterUI.deleteTables()", "Error creating statement", e);
+      LogMgr.logError(new CallerInfo(){}, "Error creating statement", e);
       throw e;
     }
 
@@ -192,7 +193,7 @@ public class TableDeleter
         catch (SQLException ex)
         {
           String error = ExceptionUtil.getDisplay(ex);
-          LogMgr.logError("TableDeleter.deleteTableData()", "Error deleting table " + table, ex);
+          LogMgr.logError(new CallerInfo(){}, "Error deleting table " + table, ex);
 
           if (errorHandler == null)
           {
@@ -256,7 +257,7 @@ public class TableDeleter
       }
       catch (SQLException e)
       {
-        LogMgr.logError("TableDeleter.deleteTableData()", "Error on commit/rollback", e);
+        LogMgr.logError(new CallerInfo(){}, "Error on commit/rollback", e);
         String error = ExceptionUtil.getDisplay(e);
         String msg = null;
 
@@ -308,7 +309,7 @@ public class TableDeleter
         sp = connection.setSavepoint();
       }
       String deleteSql = getDeleteStatement(table, useTruncate, cascadedTruncate);
-      LogMgr.logInfo("TableDeleterUI.deleteTable()", "Executing: [" + deleteSql + "] to delete target table...");
+      LogMgr.logInfo(new CallerInfo(){}, "Executing: [" + deleteSql + "] to delete target table...");
       currentStatement.executeUpdate(deleteSql);
       if (doCommit && !this.connection.getAutoCommit())
       {

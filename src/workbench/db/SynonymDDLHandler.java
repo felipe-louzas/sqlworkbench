@@ -23,7 +23,7 @@
  */
 package workbench.db;
 
-
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.StringUtil;
@@ -114,7 +114,7 @@ public class SynonymDDLHandler
       }
       catch (Exception e)
       {
-        LogMgr.logError("SynonymDDLHandler.getSynonymSource()", "Error when retrieving source for synonym table", e);
+        LogMgr.logError(new CallerInfo(){}, "Error when retrieving source for synonym table", e);
       }
     }
 

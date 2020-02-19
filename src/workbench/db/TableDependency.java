@@ -326,7 +326,7 @@ public class TableDependency
 
       if (LogMgr.isTraceEnabled())
       {
-        LogMgr.logTrace("TableDependency.readTree()", "level: " + level  + ", retrieving: " + parent.debugString());
+        LogMgr.logTrace(new CallerInfo(){}, "level: " + level  + ", retrieving: " + parent.debugString());
       }
 
       if (exportedKeys)

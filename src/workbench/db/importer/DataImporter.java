@@ -2524,7 +2524,7 @@ public class DataImporter
     catch (Exception e)
     {
       // log all others...
-      LogMgr.logError("DataImporter.importFinished()", "Error when commiting changes", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when commiting changes", e);
       this.messages.append(ExceptionUtil.getDisplay(e));
       this.hasErrors = true;
     }

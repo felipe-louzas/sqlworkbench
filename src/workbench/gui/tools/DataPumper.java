@@ -65,6 +65,7 @@ import workbench.AppArguments;
 import workbench.WbManager;
 import workbench.interfaces.StatusBar;
 import workbench.interfaces.ToolWindow;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
@@ -218,11 +219,9 @@ public class DataPumper
       s.setLastConnection("workbench.datapumper.target.lastprofile", this.targetProfile);
     }
     s.setProperty("workbench.datapumper.divider", jSplitPane1.getDividerLocation());
-    s.setProperty("workbench.datapumper.target.deletetable", Boolean.toString(this.deleteTargetCbx.isSelected()));
     s.setProperty("workbench.datapumper.continue", Boolean.toString(this.continueOnErrorCbx.isSelected()));
     s.setProperty("workbench.datapumper.commitevery", this.commitEvery.getText());
     s.setProperty("workbench.datapumper.usequery", Boolean.toString(this.useQueryCbx.isSelected()));
-    s.setProperty("workbench.datapumper.droptable", Boolean.toString(this.dropTargetCbx.isSelected()));
     s.setProperty("workbench.datapumper.updatemode", (String)this.modeComboBox.getSelectedItem());
     s.setProperty("workbench.datapumper.alwayssynctables", targetTable.isAutoSyncSelected());
 
@@ -256,12 +255,8 @@ public class DataPumper
   public void restoreSettings()
   {
     Settings s = Settings.getInstance();
-    boolean delete = s.getBoolProperty("workbench.datapumper.target.deletetable", false);
     boolean cont = s.getBoolProperty("workbench.datapumper.continue", false);
-    boolean drop = s.getBoolProperty("workbench.datapumper.droptable", false);
-    this.deleteTargetCbx.setSelected(delete);
     this.continueOnErrorCbx.setSelected(cont);
-    this.dropTargetCbx.setSelected(drop);
     if (!s.restoreWindowSize(this.window, "workbench.datapumper.window"))
     {
       this.window.setSize(800,600);
@@ -438,7 +433,7 @@ public class DataPumper
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataPumper.doConnectSource()", "Error when connecting to profile: " + (sourceProfile == null ? "n/a" : this.sourceProfile.getName()), e);
+      LogMgr.logError(new CallerInfo(){}, "Error when connecting to profile: " + (sourceProfile == null ? "n/a" : this.sourceProfile.getName()), e);
       this.sourceProfile = null;
       WbSwingUtilities.showFriendlyErrorMessage(this, ResourceMgr.getString("ErrConnectFailed"), ExceptionUtil.getDisplay(e));
     }
@@ -469,7 +464,7 @@ public class DataPumper
         {
           try
           {
-            LogMgr.logDebug("DataPumper.connectSource()", "Source connection established retrieving tables.");
+            LogMgr.logDebug(new CallerInfo(){}, "Source connection established retrieving tables.");
             sourceTable.setConnection(sourceConnection);
             completionAction.setConnection(sourceConnection);
           }
@@ -540,7 +535,7 @@ public class DataPumper
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataPumper.doConnectSource()", "Error when connecting to profile: " + this.targetProfile.getName(), e);
+      LogMgr.logError(new CallerInfo(){}, "Error when connecting to profile: " + this.targetProfile.getName(), e);
       this.targetProfile = null;
       WbSwingUtilities.showFriendlyErrorMessage(this, ResourceMgr.getString("ErrConnectFailed"), ExceptionUtil.getDisplay(e));
     }
@@ -565,7 +560,7 @@ public class DataPumper
         {
           try
           {
-            LogMgr.logDebug("DataPumper.connectSource()", "Target connection established retrieving tables.");
+            LogMgr.logDebug(new CallerInfo(){}, "Target connection established retrieving tables.");
             targetTable.setConnection(targetConnection);
           }
           finally
@@ -1270,7 +1265,7 @@ public class DataPumper
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataPumper.disconnectTarget()", "Error disconnecting target connection", e);
+      LogMgr.logError(new CallerInfo(){}, "Error disconnecting target connection", e);
     }
     finally
     {
@@ -1298,7 +1293,7 @@ public class DataPumper
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataPumper.disconnectSource()", "Error disconnecting source connection", e);
+      LogMgr.logError(new CallerInfo(){}, "Error disconnecting source connection", e);
     }
     finally
     {
@@ -1342,7 +1337,7 @@ public class DataPumper
         }
         else
         {
-          LogMgr.logError("DataPumper.selectConnection()", "NULL Profile selected!", null);
+          LogMgr.logError(new CallerInfo(){}, "NULL Profile selected!", null);
         }
       }
       dialog.setVisible(false);
@@ -1350,7 +1345,7 @@ public class DataPumper
     }
     catch (Throwable th)
     {
-      LogMgr.logError("DataPumper.selectConnection()", "Error during connect", th);
+      LogMgr.logError(new CallerInfo(){}, "Error during connect", th);
       prof = null;
     }
     return prof;
@@ -1676,7 +1671,7 @@ public class DataPumper
     }
     catch (SQLException e)
     {
-      LogMgr.logError("DataPumper", "Error when retrieving ResultSet definition for source SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when retrieving ResultSet definition for source SQL", e);
       WbSwingUtilities.showErrorMessage(this, e.getMessage());
     }
     return result;
@@ -1717,7 +1712,7 @@ public class DataPumper
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataPumper.showImportCommand()", "Error creating SQL command", e);
+      LogMgr.logError(new CallerInfo(){}, "Error creating SQL command", e);
       sql = new StringBuilder(ExceptionUtil.getDisplay(e));
     }
 
@@ -1987,7 +1982,7 @@ public class DataPumper
     catch (Exception e)
     {
       WbSwingUtilities.showFriendlyErrorMessage(this, this.window.getTitle(), ExceptionUtil.getDisplay(e));
-      LogMgr.logError("DataPumper.initColumnMapper()", "Error when intializing column mapper", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when intializing column mapper", e);
     }
   }
 
@@ -2104,7 +2099,7 @@ public class DataPumper
       this.showLogButton.setEnabled(true);
       this.startButton.setEnabled(true);
       this.cancelButton.setEnabled(false);
-      LogMgr.logError("DataPumper.startCopy()", "Could not execute copy process", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not execute copy process", e);
       this.statusLabel.setText(ResourceMgr.getString("MsgCopyFinishedWithErrors"));
     }
   }
@@ -2288,7 +2283,7 @@ public class DataPumper
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataPumper.showLog()", "Error when retrieving log information", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when retrieving log information", e);
       log = ExceptionUtil.getDisplay(e);
     }
 
