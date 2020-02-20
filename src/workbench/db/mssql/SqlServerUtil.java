@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.JdbcUtils;
@@ -46,6 +47,8 @@ import workbench.util.StringUtil;
  */
 public class SqlServerUtil
 {
+  private static final String IS_ENTERPRISE_PROP = "isEnterprise";
+
   public static boolean isMicrosoftDriver(WbConnection conn)
   {
     if (conn == null) return false;
@@ -119,6 +122,58 @@ public class SqlServerUtil
   }
 
   /**
+   * Returns true if the current connection is to a SQL Server version that supports partitioning.
+   */
+  public static boolean supportsPartitioning(WbConnection conn)
+  {
+    if (conn == null) return false;
+    if (!isSqlServer2016(conn)) return false;
+    return isEnterprise(conn);
+  }
+
+  /**
+   * Returns true if the current connection is to an enterprise (or developer) edition.
+   */
+  public static boolean isEnterprise(WbConnection conn)
+  {
+    if (conn == null) return false;
+
+    String prop = conn.getSessionProperty(IS_ENTERPRISE_PROP);
+    if (prop != null)
+    {
+      return StringUtil.stringToBool(prop);
+    }
+
+    String sql = "select cast(serverproperty('Edition') as varchar(100))";
+    Statement stmt = null;
+    ResultSet rs = null;
+    boolean isEnterprise = false;
+    try
+    {
+      stmt = conn.createStatement();
+      rs = stmt.executeQuery(sql);
+      if (rs.next())
+      {
+        String edition = rs.getString(1);
+        if (StringUtil.isNonBlank(edition))
+        {
+          isEnterprise = edition.toLowerCase().contains("enterprise") || edition.toLowerCase().contains("developer");
+        }
+      }
+    }
+    catch (Throwable ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve edition using " + sql, ex);
+    }
+    finally
+    {
+      SqlUtil.closeAll(rs, stmt);
+    }
+    conn.setSessionProperty(IS_ENTERPRISE_PROP, Boolean.toString(isEnterprise));
+    return isEnterprise;
+  }
+
+  /**
    * Returns true if the connection is to a SQL Server 2000 or later.
    */
   public static boolean isSqlServer2000(WbConnection conn)
@@ -133,12 +188,12 @@ public class SqlServerUtil
     try
     {
       stmt = conn.createStatement();
-      LogMgr.logInfo("SqlServerUtil.setLockTimeout()", "Setting lock timeout: " + millis + "ms");
+      LogMgr.logInfo(new CallerInfo(){}, "Setting lock timeout: " + millis + "ms");
       stmt.execute(sql);
     }
     catch (Throwable ex)
     {
-      LogMgr.logError("SqlServerUtil.setLockTimeout()", "Could not set lock timeout using: " + sql, ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not set lock timeout using: " + sql, ex);
     }
     finally
     {
@@ -154,7 +209,7 @@ public class SqlServerUtil
     }
     catch (SQLException ex)
     {
-      LogMgr.logWarning("SqlServerUtil.changeDatabase()", "Could not change database", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not change database", ex);
     }
   }
 
@@ -182,7 +237,7 @@ public class SqlServerUtil
     }
     catch (Throwable ex)
     {
-      LogMgr.logWarning("SqlServerUtil.getVersion()", "Could not retrieve database version using @@version" , ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve database version using @@version" , ex);
       try
       {
         version = conn.getMetadata().getJdbcMetaData().getDatabaseProductVersion();

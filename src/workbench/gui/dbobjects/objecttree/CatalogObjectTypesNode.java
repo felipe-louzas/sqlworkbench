@@ -27,6 +27,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.DbMetadata;
+import workbench.db.DbObject;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 
@@ -37,12 +38,12 @@ import workbench.util.CollectionUtil;
  *
  * @author Thomas Kellerer
  */
-public class GlobalTreeNode
+public class CatalogObjectTypesNode
     extends ObjectTreeNode
 {
   private final Set<String> typesToShow = CollectionUtil.caseInsensitiveSet();
 
-  public GlobalTreeNode(Set<String> showTypes)
+  public CatalogObjectTypesNode(Set<String> showTypes)
   {
     super(ResourceMgr.getString("LblGlobalObjects"), TreeLoader.TYPE_GLOBAL);
     setAllowsChildren(true);
@@ -64,16 +65,18 @@ public class GlobalTreeNode
     DbMetadata meta = connection.getMetadata();
     if (meta == null) return false;
 
-    Set<String> types = dbs.getGlobalObjectTypes();
+    Set<String> types = dbs.getCatalogLevelTypes();
     if (CollectionUtil.isEmpty(types)) return false;
-    LogMgr.logDebug(new CallerInfo(){}, "Loading global object types: " + types);
+    LogMgr.logDebug(new CallerInfo(){}, "Loading catalog object types: " + types);
+
+    String catalog = ((DbObject)getParent().getUserObject()).getObjectName();
 
     for (String type : types)
     {
       if (typesToShow.isEmpty() || typesToShow.contains(type))
       {
-        GlobalTypeNode typeNode = new GlobalTypeNode(type);
-        add(typeNode);
+        CatalogObjectNode node = new CatalogObjectNode(catalog, type);
+        add(node);
       }
     }
     setChildrenLoaded(true);

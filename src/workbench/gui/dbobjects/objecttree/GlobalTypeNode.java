@@ -22,6 +22,7 @@ package workbench.gui.dbobjects.objecttree;
 
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
@@ -70,7 +71,7 @@ public class GlobalTypeNode
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("GlobalTreeNode.loadChildren()", "Could not load type: " + getName(), sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not load global type: " + getName(), sql);
     }
     setChildrenLoaded(true);
     return true;

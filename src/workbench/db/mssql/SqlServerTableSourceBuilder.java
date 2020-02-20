@@ -52,6 +52,8 @@ public class SqlServerTableSourceBuilder
   extends TableSourceBuilder
 {
   public static final String CLUSTERED_PLACEHOLDER = "%clustered_attribute%";
+  private static final String OPTION_KEY_SCHEME = "partition_scheme";
+  private static final String OPTION_KEY_COLUMNS = "partition_columns";
 
   public SqlServerTableSourceBuilder(WbConnection con)
   {
@@ -108,12 +110,97 @@ public class SqlServerTableSourceBuilder
   @Override
   public String getAdditionalTableInfo(TableIdentifier table, List<ColumnIdentifier> columns, List<IndexDefinition> indexList)
   {
-    if (SqlServerUtil.isSqlServer2012(dbConnection))
+    if (SqlServerUtil.isSqlServer2012(dbConnection) && !table.getSourceOptions().isInitialized())
     {
-      String stats = readExtendeStats(table);
-      return "\n" + stats;
+      return readExtendeStats(table);
     }
     return null;
+  }
+
+  @Override
+  public void readTableOptions(TableIdentifier table, List<ColumnIdentifier> columns)
+  {
+    if (SqlServerUtil.supportsPartitioning(dbConnection))
+    {
+      readPartitionDefinition(table);
+    }
+  }
+
+  private void readPartitionDefinition(TableIdentifier table)
+  {
+    String getPartitionInfo =
+      "SELECT ps.name as partition_scheme,\n" +
+      "       c.name AS column_name\n" +
+      "FROM sys.tables AS t   \n" +
+      "  JOIN sys.indexes AS i ON t.object_id = i.object_id AND i.type <= 1 \n" +
+      "  JOIN sys.partition_schemes AS ps ON ps.data_space_id = i.data_space_id \n" +
+      "  JOIN sys.index_columns AS ic \n" +
+      "    ON ic.object_id = i.object_id   \n" +
+      "   AND ic.index_id = i.index_id   \n" +
+      "   AND ic.partition_ordinal >= 1\n" +
+      "  JOIN sys.columns AS c \n" +
+      "    ON t.object_id = c.object_id   \n" +
+      "   AND ic.column_id = c.column_id   \n" +
+      "WHERE t.object_id = object_id(?)\n" +
+      "ORDER BY ic.partition_ordinal";
+
+    final CallerInfo ci = new CallerInfo(){};
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+
+    String tname = table.getTableExpression(dbConnection);
+    LogMgr.logMetadataSql(ci, "partition info", getPartitionInfo, tname);
+    String scheme = null;
+    try
+    {
+      pstmt = dbConnection.getSqlConnection().prepareStatement(getPartitionInfo);
+      pstmt.setString(1, tname);
+      rs = pstmt.executeQuery();
+      int colNr = 0;
+      String columns = null;
+      while (rs.next())
+      {
+        if (colNr == 0)
+        {
+          scheme = rs.getString(1);
+        }
+        else
+        {
+          columns += ",";
+        }
+        columns += rs.getString(2);
+        colNr ++;
+      }
+      if (scheme != null && columns != null)
+      {
+        table.getSourceOptions().setTableOption("ON " + scheme + " (" + columns + ")");
+        table.getSourceOptions().addConfigSetting(OPTION_KEY_SCHEME, scheme);
+        table.getSourceOptions().addConfigSetting(OPTION_KEY_COLUMNS, columns);
+        readPartitionSchemeAndFunction(table);
+
+        table.getSourceOptions().setInitialized();
+      }
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logMetadataError(ci, th, "partition info", getPartitionInfo, tname);
+    }
+  }
+
+  private void readPartitionSchemeAndFunction(TableIdentifier table)
+  {
+    SqlServerPartitionReader reader = new SqlServerPartitionReader(dbConnection);
+    PartitionFunction function = reader.getFunctionForTable(table);
+    if (function != null)
+    {
+      table.getSourceOptions().appendAdditionalSql("-- partitioning details");
+      table.getSourceOptions().appendAdditionalSql(function.getSource() + ";");
+    }
+    PartitionScheme scheme = reader.getSchemeForTable(table);
+    if (scheme != null)
+    {
+      table.getSourceOptions().appendAdditionalSql("\n" + scheme.getSource() + ";");
+    }
   }
 
   private String readExtendeStats(TableIdentifier table)
@@ -125,7 +212,8 @@ public class SqlServerTableSourceBuilder
       "from sys.stats st\n" +
       "  join sys.stats_columns sc on sc.stats_id = st.stats_id and sc.object_id = st.object_id\n" +
       "  join sys.columns c on c.column_id = sc.column_id and c.object_id = st.object_id\n" +
-      "where st.object_id = object_id(?)\n" +
+      "where st.user_created = 1 \n" +
+      "  and st.object_id = object_id(?) \n" +
       "order by st.stats_id, sc.stats_column_id";
 
     ResultSet rs = null;
@@ -178,13 +266,16 @@ public class SqlServerTableSourceBuilder
           result.append(colName);
         }
       }
-      result.append(")");
-      if (currentFilter != null)
+      if (result.length() > 0)
       {
-        result.append("\nWHERE ");
-        result.append(currentFilter);
+        result.append(")");
+        if (currentFilter != null)
+        {
+          result.append("\nWHERE ");
+          result.append(currentFilter);
+        }
+        result.append(";");
       }
-      result.append(";");
     }
     catch (Exception e)
     {
@@ -201,6 +292,6 @@ public class SqlServerTableSourceBuilder
     }
 
     if (result.length() == 0) return null;
-    return result.toString();
+    return "\n" + result.toString();
   }
 }

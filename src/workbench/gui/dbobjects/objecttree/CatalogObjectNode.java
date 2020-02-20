@@ -20,39 +20,33 @@
  */
 package workbench.gui.dbobjects.objecttree;
 
-import java.util.Set;
+import java.sql.SQLException;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
 
 import workbench.db.DbMetadata;
+import workbench.db.DbObject;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 
-import workbench.util.CollectionUtil;
+import workbench.storage.DataStore;
 
+import static workbench.gui.dbobjects.objecttree.TreeLoader.*;
 
 /**
  *
  * @author Thomas Kellerer
  */
-public class GlobalTreeNode
+public class CatalogObjectNode
     extends ObjectTreeNode
 {
-  private final Set<String> typesToShow = CollectionUtil.caseInsensitiveSet();
+  private String catalog;
 
-  public GlobalTreeNode(Set<String> showTypes)
+  public CatalogObjectNode(String catalog, String objectType)
   {
-    super(ResourceMgr.getString("LblGlobalObjects"), TreeLoader.TYPE_GLOBAL);
+    super(objectType, TYPE_DBO_TYPE_NODE);
     setAllowsChildren(true);
-    setTypesToShow(showTypes);
-  }
-
-  public void setTypesToShow(Set<String> showTypes)
-  {
-    typesToShow.clear();
-    typesToShow.addAll(showTypes);
   }
 
   @Override
@@ -64,19 +58,26 @@ public class GlobalTreeNode
     DbMetadata meta = connection.getMetadata();
     if (meta == null) return false;
 
-    Set<String> types = dbs.getGlobalObjectTypes();
-    if (CollectionUtil.isEmpty(types)) return false;
-    LogMgr.logDebug(new CallerInfo(){}, "Loading global object types: " + types);
-
-    for (String type : types)
+    try
     {
-      if (typesToShow.isEmpty() || typesToShow.contains(type))
+      DataStore ds = meta.getObjects(catalog, null, new String[]{getName()});
+      for (int row=0; row < ds.getRowCount(); row ++)
       {
-        GlobalTypeNode typeNode = new GlobalTypeNode(type);
-        add(typeNode);
+        DbObject dbo = (DbObject)ds.getRow(row).getUserObject();
+        if (dbo != null)
+        {
+          ObjectTreeNode node = new ObjectTreeNode(dbo);
+          add(node);
+        }
       }
+    }
+    catch (SQLException sql)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not load catalog type: " + getName(), sql);
     }
     setChildrenLoaded(true);
     return true;
   }
+
+
 }

@@ -118,6 +118,9 @@ public class ObjectSourceOptions
 
   /**
    * Return a complete SQL statement that should be executed after the CREATE TABLE statement.
+   *
+   * @see #setAdditionalSql(String)
+   * @see #appendAdditionalSql(String)
    */
   public String getAdditionalSql()
   {
@@ -126,13 +129,26 @@ public class ObjectSourceOptions
 
   /**
    * Define a complete SQL statement that should be executed after the CREATE TABLE statement.
+   * This overwrite the current additional SQL. To append to an existing SQL,
+   * use {@link #appendAdditionalSql(String)}.
+   *
+   * @param sql the SQL statement to set
+   *
    * @see #getAdditionalSql()
+   * @see #appendAdditionalSql(String)
    */
   public void setAdditionalSql(String sql)
   {
     options.put(KEY_ADDITIONAL_SQL, sql);
   }
 
+  /**
+   * Adds another String to the additional SQL that should be executed after the CREATE TABLE statement.
+   * @param sql the SQL statement to append.
+   *
+   * @see #getAdditionalSql()
+   * @see #setAdditionalSql(String)
+   */
   public void appendAdditionalSql(String sql)
   {
     if (StringUtil.isBlank(sql)) return;

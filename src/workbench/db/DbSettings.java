@@ -2522,6 +2522,12 @@ public class DbSettings
     return CollectionUtil.caseInsensitiveSet(types);
   }
 
+  public Set<String> getCatalogLevelTypes()
+  {
+    List<String> types = getListProperty("objects.catalog.global", "");
+    return CollectionUtil.caseInsensitiveSet(types);
+  }
+
   public boolean enableDatabaseSwitcher()
   {
     return getBoolProperty("gui.enable.dbswitcher", false);

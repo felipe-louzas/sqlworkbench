@@ -449,21 +449,33 @@ public class TreeLoader
     {
       LogMgr.logWarning(new CallerInfo(){}, "Loading catalogs to an already populated parent node: " + parentNode, new Exception("Backtrack"));
     }
+    boolean supportsCatalogObjects = connection.getMetadata().supportsCatalogLevelObjects();
+
     try
     {
       levelChanger.changeIsolationLevel(connection);
       List<String> catalogs = connection.getMetadata().getCatalogInformation(connection.getCatalogFilter());
       for (String cat : catalogs)
       {
-        ObjectTreeNode node = new ObjectTreeNode(cat, TYPE_CATALOG);
-        node.setAllowsChildren(true);
+        ObjectTreeNode catalogNode = new ObjectTreeNode(cat, TYPE_CATALOG);
+        catalogNode.setAllowsChildren(true);
         CatalogIdentifier id = new CatalogIdentifier(cat);
         id.setTypeName(connection.getMetadata().getCatalogTerm());
-        node.setUserObject(id);
-        parentNode.add(node);
+        catalogNode.setUserObject(id);
+        parentNode.add(catalogNode);
+        if (supportsCatalogObjects)
+        {
+          Set<String> types = connection.getDbSettings().getCatalogLevelTypes();
+          if (!types.isEmpty())
+          {
+            CatalogObjectTypesNode catalogObjectTypes = new CatalogObjectTypesNode(types);
+            catalogObjectTypes.loadChildren(connection);
+            catalogNode.add(catalogObjectTypes);
+          }
+        }
         if (!connection.getDbSettings().supportsSchemas())
         {
-          addTypeNodes(node);
+          addTypeNodes(catalogNode);
         }
       }
       model.nodeStructureChanged(parentNode);

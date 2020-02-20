@@ -170,6 +170,17 @@ public class SqlServerDependencyReader
       List<DbObject> types = retrieveObjects(connection, base, searchColumnTypes, true);
       result.addAll(types);
     }
+    if (SqlServerUtil.supportsPartitioning(connection) && base instanceof TableIdentifier)
+    {
+      SqlServerPartitionReader reader = new SqlServerPartitionReader(connection);
+      PartitionScheme scheme = reader.getSchemeForTable((TableIdentifier)base);
+      if (scheme != null)
+      {
+        result.add(scheme);
+        PartitionFunction func = reader.getFunctionForTable((TableIdentifier)base);
+        result.add(func);
+      }
+    }
     return result;
   }
 

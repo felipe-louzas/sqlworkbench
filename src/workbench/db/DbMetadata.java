@@ -2720,6 +2720,11 @@ public class DbMetadata
     return getCatalogInformation(null);
   }
 
+  public boolean supportsCatalogLevelObjects()
+  {
+    return this.isSqlServer && SqlServerUtil.supportsPartitioning(dbConnection);
+  }
+  
   /**
    * Return a filtered list of catalogs in the database.
    * <br/>
