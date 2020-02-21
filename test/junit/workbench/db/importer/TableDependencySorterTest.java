@@ -32,6 +32,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.DbObjectFinder;
 import workbench.db.DeleteScriptGeneratorTest;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -481,9 +482,10 @@ public class TableDependencySorterTest
     String sql = FileUtil.readCharacters(r);
 
     TestUtil.executeScript(con, sql);
-    TableIdentifier country = con.getMetadata().findTable(new TableIdentifier("COUNTRIES"));
-    TableIdentifier regions = con.getMetadata().findTable(new TableIdentifier("REGIONS"));
-    TableIdentifier prdDetails = con.getMetadata().findTable(new TableIdentifier("PRODUCT_DETAILS"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier country = finder.findTable(new TableIdentifier("COUNTRIES"));
+    TableIdentifier regions = finder.findTable(new TableIdentifier("REGIONS"));
+    TableIdentifier prdDetails = finder.findTable(new TableIdentifier("PRODUCT_DETAILS"));
     TableIdentifier products = new TableIdentifier("products");
     TableIdentifier salesMgr = new TableIdentifier("sales_mgr");
     TableIdentifier stores = new TableIdentifier("stores");

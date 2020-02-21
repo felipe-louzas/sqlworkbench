@@ -29,6 +29,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilderFactory;
@@ -94,8 +95,9 @@ public class MySQLTableSourceBuilderTest
       "commit;\n";
     TestUtil.executeScript(con, sql);
 
-    TableIdentifier isam = con.getMetadata().findTable(new TableIdentifier("tbl_isam"));
-    TableIdentifier inno = con.getMetadata().findTable(new TableIdentifier("tbl_inno"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier isam = finder.findTable(new TableIdentifier("tbl_isam"));
+    TableIdentifier inno = finder.findTable(new TableIdentifier("tbl_inno"));
     MySQLTableSourceBuilder builder = (MySQLTableSourceBuilder)TableSourceBuilderFactory.getBuilder(con);
 
     builder.readTableOptions(isam, null);
@@ -134,7 +136,8 @@ public class MySQLTableSourceBuilderTest
       "commit;\n";
     TestUtil.executeScript(con, sql);
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("foo"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("foo"));
 
     String create = tbl.getSource(con).toString();
     System.out.println(create);
@@ -156,7 +159,8 @@ public class MySQLTableSourceBuilderTest
 
     TestUtil.executeScript(con, "create table foo (id integer not null auto_increment, primary key (id));");
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("foo"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("foo"));
 
     String create = tbl.getSource(con).toString();
 //    System.out.println(create);
@@ -175,7 +179,8 @@ public class MySQLTableSourceBuilderTest
       "set @@sql_mode=ANSI_QUOTES;\n" +
       "create table gentest (id integer not null, foo int generated always as (id * 2), primary key (id));");
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("gentest"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("gentest"));
 
     String create = tbl.getSource(con).toString();
 //    System.out.println(create);
@@ -197,7 +202,8 @@ public class MySQLTableSourceBuilderTest
 
     TestUtil.executeScript(con,
       "create table check_test (id integer not null, constraint positive_id check (id > 0));");
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("check_test"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("check_test"));
 
     String create = tbl.getSource(con).toString();
 //    System.out.println(create);

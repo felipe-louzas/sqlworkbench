@@ -33,6 +33,7 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
+import workbench.db.DbObjectFinder;
 import workbench.db.DependencyNode;
 import workbench.db.IndexDefinition;
 import workbench.db.PkDefinition;
@@ -55,6 +56,7 @@ public class DbObjectCache
 {
   private final ObjectCache objectCache;
   private final WbConnection dbConnection;
+  private final DbObjectFinder finder;
   private WbThread retrievalThread;
 
   DbObjectCache(ObjectCache cache, WbConnection connection)
@@ -63,6 +65,7 @@ public class DbObjectCache
     assert connection != null;
     dbConnection = connection;
     objectCache = cache;
+    finder = new DbObjectFinder(connection);
   }
 
   public List<DependencyNode> getReferencedTables(TableIdentifier table)
@@ -202,7 +205,7 @@ public class DbObjectCache
     TableIdentifier realTable = objectCache.findEntry(dbConnection, table);
     if (realTable == null)
     {
-      realTable = dbConnection.getMetadata().searchSelectableObjectOnPath(table);
+      realTable = finder.searchSelectableObjectOnPath(table);
       if (realTable != null)
       {
         objectCache.addTable(realTable, dbConnection);

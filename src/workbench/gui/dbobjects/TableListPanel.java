@@ -1300,7 +1300,7 @@ public class TableListPanel
       }
       else
       {
-        SortDefinition sort = DbMetadata.getTableListSort();
+        SortDefinition sort = SortDefinition.getTableListSort();
         sort.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
         model.setSortDefinition(sort);
       }

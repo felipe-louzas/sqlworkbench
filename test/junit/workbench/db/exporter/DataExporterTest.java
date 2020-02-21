@@ -34,6 +34,7 @@ import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -324,7 +325,7 @@ public class DataExporterTest
       exporter.setTextOptions(getTextOptions(true, ","));
 
       WbFile exportFile = new WbFile(util.getBaseDir(), "replaced.txt");
-      TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
       exporter.addTableExportJob(exportFile, tbl);
 
       long rowCount = exporter.startExport();
@@ -368,7 +369,7 @@ public class DataExporterTest
 
       WbFile exportFile = new WbFile(util.getBaseDir(), "query_export.txt");
       //exporter.addQueryJob("SELECT * FROM person ORDER BY nr;", exportFile);
-      TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
       exporter.addTableExportJob(exportFile, tbl, "WHERE nr < 3");
 
       long rowCount = exporter.startExport();

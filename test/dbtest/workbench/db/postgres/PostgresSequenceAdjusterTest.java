@@ -23,6 +23,7 @@ package workbench.db.postgres;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -76,7 +77,8 @@ public class PostgresSequenceAdjusterTest
       "insert into table_one (id) values (1), (2), (7), (41);\n" +
       "commit;" );
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("table_one"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("table_one"));
 
     PostgresSequenceAdjuster sync = new PostgresSequenceAdjuster();
     sync.adjustTableSequences(con, tbl, true);

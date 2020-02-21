@@ -55,7 +55,8 @@ import workbench.util.SqlUtil;
 public class DropScriptGenerator
   implements Scripter
 {
-  private WbConnection connection;
+  private final WbConnection connection;
+  private final DbObjectFinder finder;
   private List<TableIdentifier> tables;
   private ScriptGenerationMonitor scriptMonitor;
   private RowActionMonitor rowMonitor;
@@ -74,6 +75,7 @@ public class DropScriptGenerator
   {
     this.connection = aConnection;
     dropTemplate = connection.getDbSettings().getDropFKConstraint("table");
+    finder = new DbObjectFinder(connection);
   }
 
   @Override
@@ -117,7 +119,7 @@ public class DropScriptGenerator
   public void setTable(TableIdentifier table)
   {
     if (table == null) throw new IllegalArgumentException("The table name may not be empty");
-    this.tables = Collections.singletonList(this.connection.getMetadata().findTable(table, false));
+    this.tables = Collections.singletonList(finder.findTable(table, false));
     reset();
   }
 
@@ -126,7 +128,7 @@ public class DropScriptGenerator
     this.tables = new ArrayList<>(tableList.size());
     for (TableIdentifier tbl : tableList)
     {
-      TableIdentifier toUse = this.connection.getMetadata().findTable(tbl, false);
+      TableIdentifier toUse = finder.findTable(tbl, false);
       if (toUse != null)
       {
         tables.add(toUse);

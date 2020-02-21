@@ -26,6 +26,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.DbObject;
+import workbench.db.DbObjectFinder;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
 import workbench.db.TableIdentifier;
@@ -78,7 +79,7 @@ public class PostgresDependencyReaderTest
           "create trigger t1_update_trigger before update on t1 for each row execute procedure update_foo(); \n" +
           "commit;\n");
 
-    TableIdentifier t1 = conn.getMetadata().findObject(new TableIdentifier("t1"));
+    TableIdentifier t1 = new DbObjectFinder(conn).findObject(new TableIdentifier("t1"));
     PostgresDependencyReader depReader = new PostgresDependencyReader(conn);
 
     PostgresTriggerReader trgReader = new PostgresTriggerReader(conn);
@@ -110,9 +111,10 @@ public class PostgresDependencyReaderTest
       "create view v2 as select t1.id as id1, v1.id as id2 from v1 cross join t1;\n" +
       "commit;");
 
-    TableIdentifier t1 = conn.getMetadata().findObject(new TableIdentifier("t1"));
-    TableIdentifier v1 = conn.getMetadata().findObject(new TableIdentifier("v1"));
-    TableIdentifier v2 = conn.getMetadata().findObject(new TableIdentifier("v2"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    TableIdentifier t1 = finder.findObject(new TableIdentifier("t1"));
+    TableIdentifier v1 = finder.findObject(new TableIdentifier("v1"));
+    TableIdentifier v2 = finder.findObject(new TableIdentifier("v2"));
 
     PostgresDependencyReader reader = new PostgresDependencyReader(conn);
     List<DbObject> usedBy = reader.getUsedBy(conn, t1);

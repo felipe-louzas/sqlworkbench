@@ -34,6 +34,7 @@ import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSearchPath;
 import workbench.db.DbSettings;
 import workbench.db.DependencyNode;
@@ -409,6 +410,7 @@ public class ObjectInfo
   {
     boolean busy = connection.isBusy();
     boolean useCache = connection.getDbSettings().useCacheForObjectInfo();
+    DbObjectFinder finder = new DbObjectFinder(connection);
     try
     {
       connection.setBusy(false);
@@ -433,13 +435,13 @@ public class ObjectInfo
         {
           TableIdentifier tb = dbObject.createCopy();
           tb.setSchema(schema);
-          toDescribe = connection.getMetadata().findObject(tb, true, false);
+          toDescribe = finder.findObject(tb, true, false);
           if (toDescribe != null) break;
         }
       }
       else
       {
-        toDescribe = connection.getMetadata().findObject(dbObject, true, searchAllSchemas);
+        toDescribe = finder.findObject(dbObject, true, searchAllSchemas);
       }
       return toDescribe;
     }

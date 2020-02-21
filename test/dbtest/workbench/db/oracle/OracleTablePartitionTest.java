@@ -27,12 +27,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.AfterClass;
+
 import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -197,7 +201,7 @@ public class OracleTablePartitionTest
     assertNotNull("Oracle not available", con);
 
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("WB_LIST_PARTITION_TEST"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("WB_LIST_PARTITION_TEST"));
     assertNotNull(tbl);
     OracleTablePartition reader = new OracleTablePartition(con, false);
     reader.retrieve(tbl, con);
@@ -235,7 +239,7 @@ public class OracleTablePartitionTest
     WbConnection con = OracleTestUtil.getOracleConnection();
     assertNotNull("Oracle not available", con);
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("WB_HASH_PARTITION_TEST"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("WB_HASH_PARTITION_TEST"));
     assertNotNull(tbl);
     OracleTablePartition reader = new OracleTablePartition(con, false);
     reader.retrieve(tbl, con);
@@ -271,7 +275,7 @@ public class OracleTablePartitionTest
     WbConnection con = OracleTestUtil.getOracleConnection();
     assertNotNull("Oracle not available", con);
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("RANGE_SUB_PART_HASH"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("RANGE_SUB_PART_HASH"));
     assertNotNull(tbl);
     OracleTablePartition reader = new OracleTablePartition(con, false);
     reader.retrieve(tbl, con);
@@ -310,7 +314,7 @@ public class OracleTablePartitionTest
     WbConnection con = OracleTestUtil.getOracleConnection();
     assertNotNull("Oracle not available", con);
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("WB_REF_PART_DETAIL"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("WB_REF_PART_DETAIL"));
     assertNotNull(tbl);
     String source = tbl.getSource(con).toString();
 //    System.out.println(source);

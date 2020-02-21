@@ -37,6 +37,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 
 import workbench.util.CaseInsensitiveComparator;
@@ -213,7 +214,8 @@ public class GenericXmlFileParser
     if (this.connection == null) return;
     if (tbl == null) return;
 
-    if (!this.connection.getMetadata().tableExists(tbl))
+    DbObjectFinder finder = new DbObjectFinder(this.connection);
+    if (!finder.tableExists(tbl))
     {
       if (this.receiver.getCreateTarget())
       {

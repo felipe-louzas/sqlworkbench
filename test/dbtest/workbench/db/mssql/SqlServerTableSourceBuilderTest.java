@@ -27,6 +27,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.DbObjectFinder;
 import workbench.db.DropType;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -75,7 +76,7 @@ public class SqlServerTableSourceBuilderTest
       ");\n" +
       "commit;";
     TestUtil.executeScript(conn, sql);
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier("foo"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("foo"));
     SqlServerTableSourceBuilder builder = new SqlServerTableSourceBuilder(conn);
     String source = builder.getTableSource(tbl, DropType.none, false);
     assertTrue(source.contains("PRIMARY KEY NONCLUSTERED (id)"));
@@ -100,7 +101,7 @@ public class SqlServerTableSourceBuilderTest
         "   avg_price as (single_price / pieces) persisted \n" +
         ")";
     TestUtil.executeScript(conn, sql);
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier("sales"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("sales"));
     SqlServerTableSourceBuilder builder = new SqlServerTableSourceBuilder(conn);
     String source = builder.getTableSource(tbl, DropType.none, false);
     assertTrue(source.contains("AS ([pieces]*[single_price])"));

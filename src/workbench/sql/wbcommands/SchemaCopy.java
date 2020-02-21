@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import workbench.AppArguments;
+
 import workbench.db.DbSettings;
 import workbench.db.DropType;
 import workbench.db.TableIdentifier;
@@ -42,10 +43,16 @@ import workbench.db.compare.TableDiffStatus;
 import workbench.db.datacopy.DataCopier;
 import workbench.db.importer.DataReceiver;
 import workbench.db.importer.TableDependencySorter;
+
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+
+import workbench.db.DbObjectFinder;
+
 import workbench.sql.StatementRunnerResult;
+
 import workbench.storage.RowActionMonitor;
+
 import workbench.util.ArgumentParser;
 import workbench.util.ExceptionUtil;
 import workbench.util.MessageBuffer;
@@ -256,7 +263,7 @@ class SchemaCopy
     String currentTargetCatalog = this.targetConnection.getMetadata().getCurrentCatalog();
     String schema = this.targetSchema != null ? targetConnection.getMetadata().adjustSchemaNameCase(targetSchema) : currentTargetSchema;
     String catalog = this.targetCatalog != null ? targetConnection.getMetadata().adjustObjectnameCase(targetCatalog) : currentTargetCatalog;
-
+    DbObjectFinder tFinder = new DbObjectFinder(targetConnection);
     String[] types = targetConnection.getMetadata().getTablesAndViewTypes();
     for (TableIdentifier sourceTable : sourceTables)
     {
@@ -284,7 +291,7 @@ class SchemaCopy
       }
       else
       {
-        targetTable = this.targetConnection.getMetadata().findTable(targetTable, types);
+        targetTable = tFinder.findTable(targetTable, types);
         if (targetTable == null && targetSchema == null && targetCatalog == null)
         {
           // if the table was not found using the schema/catalog as specified in the source
@@ -298,7 +305,7 @@ class SchemaCopy
           {
             targetTable.setCatalog(currentTargetCatalog);
           }
-          targetTable = this.targetConnection.getMetadata().findTable(targetTable, types);
+          targetTable = tFinder.findTable(targetTable, types);
         }
 
         // check if the target table exists. DataCopier will throw an exception if

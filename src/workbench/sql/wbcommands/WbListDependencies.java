@@ -30,6 +30,7 @@ import workbench.resource.ResourceMgr;
 
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.dependency.DependencyReader;
 import workbench.db.dependency.DependencyReaderFactory;
@@ -142,7 +143,7 @@ public class WbListDependencies
       {
         typesToSearch = new String[] { objectType };
       }
-      toUse = currentConnection.getMetadata().searchObjectOnPath(base, typesToSearch);
+      toUse = new DbObjectFinder(currentConnection).searchObjectOnPath(base, typesToSearch);
     }
 
     if (toUse == null)

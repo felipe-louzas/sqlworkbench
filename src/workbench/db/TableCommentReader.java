@@ -99,7 +99,7 @@ public class TableCommentReader
 
   public String getTableComment(WbConnection dbConnection, TableIdentifier tbl)
   {
-    TableIdentifier id = dbConnection.getMetadata().findObject(tbl);
+    TableIdentifier id = new DbObjectFinder(dbConnection).findObject(tbl);
     if (id == null) return null;
     return id.getComment();
   }

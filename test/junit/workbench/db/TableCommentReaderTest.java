@@ -82,7 +82,7 @@ public class TableCommentReaderTest
   {
     try
     {
-      TableIdentifier table = connection.getMetadata().findTable(new TableIdentifier("COMMENT_TEST"));
+      TableIdentifier table = new DbObjectFinder(connection).findTable(new TableIdentifier("COMMENT_TEST"));
       TableCommentReader reader = new TableCommentReader();
 
       String tableComment = reader.getTableCommentSql(connection, table);
@@ -111,7 +111,7 @@ public class TableCommentReaderTest
   {
     try
     {
-      TableIdentifier table = connection.getMetadata().findTable(new TableIdentifier("COMMENT_TEST"));
+      TableIdentifier table = new DbObjectFinder(connection).findTable(new TableIdentifier("COMMENT_TEST"));
       TableCommentReader reader = new TableCommentReader();
 
       String tableComment = reader.getTableCommentSql("XXX", connection, table);
@@ -140,7 +140,7 @@ public class TableCommentReaderTest
   {
     try
     {
-      TableIdentifier table = connection.getMetadata().findTable(new TableIdentifier("COMMENT_TEST"));
+      TableIdentifier table = new DbObjectFinder(connection).findTable(new TableIdentifier("COMMENT_TEST"));
       TableCommentReader reader = new TableCommentReader();
 
       String tableComment = reader.getTableCommentSql("db2i", connection, table);

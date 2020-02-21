@@ -42,6 +42,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSearchPath;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -412,7 +413,8 @@ public abstract class AbstractImportFileParser
 					DbSearchPath handler = DbSearchPath.Factory.getSearchPathHandler(connection);
 					if (handler.isRealSearchPath())
 					{
-						table = connection.getMetadata().searchObjectOnPath(table, connection.getMetadata().getTableTypesArray());
+            DbObjectFinder finder = new DbObjectFinder(connection);
+						table = finder.searchObjectOnPath(table, connection.getMetadata().getTableTypesArray());
 					}
 				}
         targetTable = connection.getMetadata().getTableDefinition(table, true);

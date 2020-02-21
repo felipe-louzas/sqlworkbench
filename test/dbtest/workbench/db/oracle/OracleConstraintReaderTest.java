@@ -28,14 +28,18 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.AfterClass;
+
 import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConstraintType;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableConstraint;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -106,22 +110,23 @@ public class OracleConstraintReaderTest
       "create table foo4 (id4 integer constraint id4_not_null check (id4 is not null));";
     TestUtil.executeScript(con, sql);
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("FOO1"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("FOO1"));
     String source = tbl.getSource(con).toString();
 //    System.out.println(source);
     assertTrue(source.contains("ID1  NUMBER   NOT NULL"));
 
-    tbl = con.getMetadata().findTable(new TableIdentifier("FOO2"));
+    tbl = finder.findTable(new TableIdentifier("FOO2"));
     source = tbl.getSource(con).toString();
 //    System.out.println(source);
     assertTrue(source.contains("ID2  NUMBER   CONSTRAINT ID2_NOT_NULL NOT NULL"));
 
-    tbl = con.getMetadata().findTable(new TableIdentifier("FOO3"));
+    tbl = finder.findTable(new TableIdentifier("FOO3"));
     source = tbl.getSource(con).toString();
 //    System.out.println(source);
     assertTrue(source.contains("ID3  NUMBER   CHECK (id3 is not null)"));
 
-    tbl = con.getMetadata().findTable(new TableIdentifier("FOO4"));
+    tbl = finder.findTable(new TableIdentifier("FOO4"));
     source = tbl.getSource(con).toString();
 //    System.out.println(source);
     assertTrue(source.contains("ID4  NUMBER   CONSTRAINT ID4_NOT_NULL CHECK (id4 is not null)"));

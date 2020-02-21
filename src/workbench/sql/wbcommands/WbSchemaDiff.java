@@ -38,6 +38,7 @@ import java.util.Map;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.diff.SchemaDiff;
@@ -221,7 +222,7 @@ public class WbSchemaDiff
       List<TableIdentifier> tables = new ArrayList<>();
       for (TableIdentifier tbl : parms.getTables())
       {
-        TableIdentifier realTable = referenceConnection.getMetadata().findTable(tbl, false);
+        TableIdentifier realTable = new DbObjectFinder(referenceConnection).findTable(tbl, false);
         if (realTable != null)
         {
           tables.add(realTable);

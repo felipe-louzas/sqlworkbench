@@ -25,6 +25,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
 import workbench.db.TableIdentifier;
@@ -76,7 +77,7 @@ public class Db2IndexReaderTest
         "create table junit_t1 (id integer, c1 integer);\n" +
         "create index junit_i1 on junit_t1 (id) cluster;\n" +
         "commit;");
-      TableIdentifier table = conn.getMetadata().findTable(new TableIdentifier("JUNIT_T1"));
+      TableIdentifier table = new DbObjectFinder(conn).findTable(new TableIdentifier("JUNIT_T1"));
       IndexReader reader = conn.getMetadata().getIndexReader();
       assertTrue(reader instanceof Db2IndexReader);
       List<IndexDefinition> indexes = reader.getTableIndexList(table, false);
@@ -111,8 +112,9 @@ public class Db2IndexReaderTest
         "create table junit_t2 (c1 integer, c2 integer, c3 integer, c4 integer);\n" +
         "create unique index junit_i2 on junit_t2 (c1,c2) include (c3,c4);\n" +
         "commit;");
-      TableIdentifier t1 = conn.getMetadata().findTable(new TableIdentifier("JUNIT_T1"));
-      TableIdentifier t2 = conn.getMetadata().findTable(new TableIdentifier("JUNIT_T2"));
+      DbObjectFinder finder = new DbObjectFinder(conn);
+      TableIdentifier t1 = finder.findTable(new TableIdentifier("JUNIT_T1"));
+      TableIdentifier t2 = finder.findTable(new TableIdentifier("JUNIT_T2"));
 
       IndexReader reader = conn.getMetadata().getIndexReader();
       assertTrue(reader instanceof Db2IndexReader);

@@ -30,6 +30,7 @@ import java.util.function.Function;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.DBID;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -119,7 +120,7 @@ public class ConditionCheck
    * @param conn    the current connection (needed for isDBMS and isNotDBMS)
    *
    * To resolve file parameters, this function simply creates a WbFile instance from the parameter name.
-   * 
+   *
    * @return {@link #OK} if the condition is met,
    *         the parameter where the check failed otherwise
    */
@@ -282,7 +283,7 @@ public class ConditionCheck
   private static boolean tableExists(WbConnection conn, String tableName)
   {
     if (conn == null) return false;
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier(tableName));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier(tableName));
     return tbl != null;
   }
 

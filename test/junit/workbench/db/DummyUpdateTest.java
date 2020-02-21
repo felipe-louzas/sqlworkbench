@@ -49,7 +49,7 @@ public class DummyUpdateTest
       TestUtil.executeScript(con,
         "create table person (nr integer not null primary key, firstname varchar(20), lastname varchar(20));\n" +
         "commit;");
-      TableIdentifier person = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier person = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
       DummyUpdate update = new DummyUpdate(person);
       update.setDoFormatSql(false);
 
@@ -83,7 +83,7 @@ public class DummyUpdateTest
         "create table link_table (some_data varchar(20), id1 integer not null, id2 integer not null, primary key (id1, id2));\n" +
         "commit;");
 
-      TableIdentifier person = con.getMetadata().findTable(new TableIdentifier("LINK_TABLE"));
+      TableIdentifier person = new DbObjectFinder(con).findTable(new TableIdentifier("LINK_TABLE"));
       DummyUpdate update = new DummyUpdate(person);
       update.setDoFormatSql(false);
       assertEquals("UPDATE", update.getObjectType());

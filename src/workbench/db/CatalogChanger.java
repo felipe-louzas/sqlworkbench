@@ -24,6 +24,7 @@ package workbench.db;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.SqlUtil;
@@ -111,7 +112,7 @@ public class CatalogChanger
           // not quoted, so we assume the name is used as an identifier which might need quoting
           sql = sql.replace(TableSourceBuilder.CATALOG_PLACEHOLDER, meta.quoteObjectname(catalogName));
         }
-        LogMgr.logDebug("CatalogChanger.setCurrentCatalog()", "Changing catalog using: " + sql);
+        LogMgr.logDebug(new CallerInfo(){}, "Changing catalog using: " + sql);
 
         stmt = conn.createStatement();
         stmt.execute(sql);
@@ -122,7 +123,7 @@ public class CatalogChanger
       }
       catch (Exception ex)
       {
-        LogMgr.logWarning("CatalogChanger.setCurrentCatalog()", "Could not change catalog using: " + sql, ex);
+        LogMgr.logWarning(new CallerInfo(){}, "Could not change catalog using: " + sql, ex);
         catalogChanged = false;
       }
       finally
@@ -144,7 +145,7 @@ public class CatalogChanger
     {
       conn.catalogChanged(old, newCatalog);
     }
-    LogMgr.logDebug("CatalogChanger.setCurrentCatalog()", "Catalog changed to " + newCat);
+    LogMgr.logDebug(new CallerInfo(){}, "Catalog changed to " + newCat);
 
     return catalogChanged;
   }

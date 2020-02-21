@@ -72,7 +72,7 @@ public class DeleteScriptGeneratorTest
     String sql = FileUtil.readCharacters(r);
 
     TestUtil.executeScript(dbConnection, sql);
-    TableIdentifier tbl = dbConnection.getMetadata().findTable(new TableIdentifier("COUNTRIES"));
+    TableIdentifier tbl = new DbObjectFinder(dbConnection).findTable(new TableIdentifier("COUNTRIES"));
 
     DeleteScriptGenerator generator = new DeleteScriptGenerator(dbConnection);
     generator.setFormatSql(false);

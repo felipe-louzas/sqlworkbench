@@ -97,8 +97,6 @@ import workbench.storage.DataStore;
 import workbench.storage.DatastoreTransposer;
 import workbench.storage.RowDataListSorter;
 import workbench.storage.SortDefinition;
-import workbench.storage.filter.AndExpression;
-import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.sql.syntax.SqlKeywordHelper;
 
@@ -891,7 +889,7 @@ public class DbMetadata
     return this.productName;
   }
 
-  private String getConnId()
+  String getConnId()
   {
     if (dbConnection == null) return "";
     return dbConnection.getId();
@@ -1167,10 +1165,11 @@ public class DbMetadata
     String type = null;
     try
     {
+      DbObjectFinder finder = new DbObjectFinder(this);
       TableIdentifier tbl = table.createCopy();
       tbl.adjustCase(this.dbConnection);
       tbl.checkIsQuoted(this);
-      TableIdentifier target = findObject(tbl);
+      TableIdentifier target = finder.findObject(tbl);
       if (target != null)
       {
         type = target.getType();
@@ -1803,16 +1802,6 @@ public class DbMetadata
     return result;
   }
 
-  public static SortDefinition getTableListSort()
-  {
-    SortDefinition def = new SortDefinition();
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_TYPE, true);
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_CATALOG, true);
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_SCHEMA, true);
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_NAME, true);
-    return def;
-  }
-
   /**
    * Checks if the given type is contained in the passed array.
    * If at least one entry in the types array is * then this
@@ -1834,246 +1823,6 @@ public class DbMetadata
       if (type.equalsIgnoreCase(types[i])) return true;
     }
     return false;
-  }
-
-  public TableIdentifier findObject(TableIdentifier tbl)
-  {
-    return findObject(tbl, true, false);
-  }
-
-  public TableIdentifier findObject(TableIdentifier tbl, boolean adjustCase, boolean searchAllSchemas)
-  {
-    if (tbl == null) return null;
-    TableIdentifier result = null;
-    TableIdentifier table = tbl.createCopy();
-    if (adjustCase) table.adjustCase(dbConnection);
-
-    try
-    {
-      boolean schemaWasNull = false;
-
-      String schema = table.getSchema();
-      if (schema == null)
-      {
-        schemaWasNull = true;
-        schema = getCurrentSchema();
-      }
-      else
-      {
-        searchAllSchemas = false;
-      }
-
-      String catalog = table.getCatalog();
-      if (catalog == null)
-      {
-        catalog = getCurrentCatalog();
-      }
-
-      String tablename = table.getRawTableName();
-
-      String[] types;
-      if (table.getType() == null)
-      {
-        types = null;
-      }
-      else
-      {
-        types = new String[]{table.getType()};
-      }
-      DataStore ds = getObjects(catalog, schema, tablename, types);
-
-      String[] cols = getTableListColumns();
-
-      if (ds.getRowCount() == 0 && this.isOracle)
-      {
-        // try again with PUBLIC, maybe it's a public synonym
-        ds = getObjects(null, "PUBLIC", tablename, null);
-      }
-
-      if (ds.getRowCount() == 0 && schemaWasNull && searchAllSchemas)
-      {
-        ds = getObjects(null, null, tablename, null);
-      }
-
-      if (ds.getRowCount() == 1)
-      {
-        result = buildTableIdentifierFromDs(ds, 0);
-      }
-      else if (ds.getRowCount() > 1)
-      {
-        AndExpression filter = new AndExpression();
-        StringEqualsComparator comp = new StringEqualsComparator();
-        filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_NAME], comp, table.getRawTableName(), true);
-        if (StringUtil.isNonBlank(schema))
-        {
-          filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_SCHEMA], comp, schema, true);
-        }
-        if (StringUtil.isNonBlank(catalog))
-        {
-          filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_CATALOG], comp, catalog, true);
-        }
-        ds.applyFilter(filter);
-        if (ds.getRowCount() == 1)
-        {
-          result = buildTableIdentifierFromDs(ds, 0);
-        }
-      }
-    }
-    catch (Exception e)
-    {
-			LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error checking table existence", e);
-    }
-    return result;
-  }
-
-  /**
-   * Check if the given table exists in the database
-   */
-  public boolean tableExists(TableIdentifier aTable)
-  {
-    return objectExists(aTable, tableTypesArray);
-  }
-
-  public boolean objectExists(TableIdentifier aTable, String type)
-  {
-    String[] types = null;
-    if (type != null)
-    {
-      types = new String[] { type };
-    }
-    return objectExists(aTable, types);
-  }
-
-  public boolean objectExists(TableIdentifier aTable, String[] types)
-  {
-    return findTable(aTable, types, false) != null;
-  }
-
-  public TableIdentifier findSelectableObject(TableIdentifier tbl)
-  {
-    return findTable(tbl, selectableTypes, false);
-  }
-
-  public TableIdentifier searchSelectableObjectOnPath(TableIdentifier tbl)
-  {
-    return searchObjectOnPath(tbl, selectableTypes);
-  }
-
-  public TableIdentifier searchTableOnPath(TableIdentifier table)
-  {
-    return searchObjectOnPath(table, tableTypesArray);
-  }
-
-  public TableIdentifier searchObjectOnPath(TableIdentifier table, String[] types)
-  {
-    if (table.getSchema() != null)
-    {
-      return findTable(table, types, false);
-    }
-
-    List<String> searchPath = DbSearchPath.Factory.getSearchPathHandler(this.dbConnection).getSearchPath(this.dbConnection, null);
-
-    if (searchPath.isEmpty())
-    {
-      return findTable(table, types, false);
-    }
-
-		LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Looking for table " + table.getRawTableName() + " in schemas: " + searchPath);
-    for (String checkSchema  : searchPath)
-    {
-      TableIdentifier toSearch = table.createCopy();
-      toSearch.setSchema(checkSchema);
-
-      TableIdentifier found = findTable(toSearch, types, false);
-      if (found != null)
-      {
-				LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Found table " + found.getTableExpression());
-        return found;
-      }
-    }
-    return null;
-  }
-
-  public TableDefinition findTableDefinition(TableIdentifier tbl)
-  {
-    TableIdentifier realTable = findTable(tbl, tableTypesArray, false);
-    if (realTable == null) return null;
-    try
-    {
-      return getTableDefinition(realTable, true);
-    }
-    catch (SQLException ex)
-    {
-      return null;
-    }
-  }
-
-  public TableIdentifier findTable(TableIdentifier tbl, boolean searchAllSchemas)
-  {
-    return findTable(tbl, tableTypesArray, searchAllSchemas);
-  }
-
-  public TableIdentifier findTable(TableIdentifier tbl)
-  {
-    return findTable(tbl, tableTypesArray, false);
-  }
-
-  public TableIdentifier findTable(TableIdentifier tbl, String[] types)
-  {
-    return findTable(tbl, types == null || types.length == 0 ? tableTypesArray : types, false);
-  }
-
-  private TableIdentifier findTable(TableIdentifier tbl, String[] types, boolean searchAllSchemas)
-  {
-    if (tbl == null) return null;
-
-    TableIdentifier result = null;
-    TableIdentifier table = tbl.createCopy();
-    table.adjustCase(dbConnection);
-    try
-    {
-      String schema = table.getSchema();
-      if (schema == null && !searchAllSchemas)
-      {
-        schema = getCurrentSchema();
-      }
-
-      String catalog = table.getCatalog();
-      if (catalog == null)
-      {
-        catalog = getCurrentCatalog();
-      }
-
-      String tablename = table.getRawTableName();
-
-      DataStore ds = getObjects(catalog, schema, tablename, types);
-
-      if (ds.getRowCount() == 1)
-      {
-        result = buildTableIdentifierFromDs(ds, 0);
-        return result;
-      }
-
-      // Nothing found, try again with the original catalog and schema information
-      ds = getObjects(table.getRawCatalog(), table.getRawSchema(), table.getRawTableName(), types);
-      if (ds.getRowCount() == 0)
-      {
-        return null;
-      }
-      else if (ds.getRowCount() == 1)
-      {
-        result = buildTableIdentifierFromDs(ds, 0);
-        return result;
-      }
-
-      // if nothing was found there is nothing we can do to guess the correct
-      // "searching strategy" for the current DBMS
-    }
-    catch (Exception e)
-    {
-      LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error checking table existence", e);
-    }
-    return result;
   }
 
   /**
@@ -2724,7 +2473,7 @@ public class DbMetadata
   {
     return this.isSqlServer && SqlServerUtil.supportsPartitioning(dbConnection);
   }
-  
+
   /**
    * Return a filtered list of catalogs in the database.
    * <br/>

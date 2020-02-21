@@ -58,7 +58,7 @@ public class TableSelectBuilderTest
 
     TableSelectBuilder builder = new TableSelectBuilder(con);
     builder.setTemplate("select %columnlist%\nfrom %catalog_name%.%schema_name%.%table_name%");
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("person"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("person"));
 
     TableDefinition def = con.getMetadata().getTableDefinition(tbl);
 
@@ -110,7 +110,7 @@ public class TableSelectBuilderTest
 
     TableSelectBuilder builder = new TableSelectBuilder(con, "junittabledata");
     builder.setTemplate("select %columnlist%\nfrom %table_name% with (nolock)");
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("person"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("person"));
 
     String sql = builder.getSelectForTable(tbl, -1);
     String expected = "select NR,\n" +
@@ -118,7 +118,7 @@ public class TableSelectBuilderTest
       "       LASTNAME\nfrom PERSON with (nolock)";
     assertEquals(expected, sql);
 
-    sql = builder.getSelectForColumns(tbl, new ArrayList<ColumnIdentifier>(), -1);
+    sql = builder.getSelectForColumns(tbl, new ArrayList<>(), -1);
     expected = "select *\nfrom PERSON with (nolock)";
     assertEquals(expected, sql);
   }
@@ -132,9 +132,9 @@ public class TableSelectBuilderTest
     TestUtil.executeScript(con, "create table person (nr integer, firstname varchar(20), lastname varchar(20))");
 
     TableSelectBuilder builder = new TableSelectBuilder(con);
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("person"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("person"));
 
-    String sql = builder.getSelectForColumns(tbl, new ArrayList<ColumnIdentifier>(), -1);
+    String sql = builder.getSelectForColumns(tbl, new ArrayList<>(), -1);
     String expected = "SELECT *\nFROM PERSON";
     assertEquals(expected, sql);
   }
@@ -149,7 +149,7 @@ public class TableSelectBuilderTest
 
     DbSettings dbconfig = con.getDbSettings();
     TableSelectBuilder builder = new TableSelectBuilder(con);
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("person"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("person"));
 
     String sql = builder.getSelectForTable(tbl, -1);
     String expected = "SELECT NR,\n" +

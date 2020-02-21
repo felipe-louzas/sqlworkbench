@@ -158,7 +158,7 @@ public class DeleteScriptGenerator
 
     // Make sure we are using a completely filled TableIdentifier
     // otherwise comparisons won't work correctly
-    this.rootTable = this.meta.findTable(table, false);
+    this.rootTable = new DbObjectFinder(this.meta).findTable(table, false);
     this.dependency = new TableDependency(this.connection, this.rootTable);
   }
 
@@ -704,7 +704,7 @@ public class DeleteScriptGenerator
 
   private Map<Integer, Set<DependencyNode>> buildLevelsTopDown(DependencyNode root, int level)
   {
-    AggregatingMap<Integer, DependencyNode> map = new AggregatingMap<>(new TreeMap<Integer, Set<DependencyNode>>(descComparator));
+    AggregatingMap<Integer, DependencyNode> map = new AggregatingMap<>(new TreeMap<>(descComparator));
 
     List<DependencyNode> children = root.getChildren();
 

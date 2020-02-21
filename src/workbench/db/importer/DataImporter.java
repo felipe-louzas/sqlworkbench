@@ -59,6 +59,7 @@ import workbench.resource.Settings;
 import workbench.db.ArrayValueHandler;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
 import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
@@ -884,7 +885,8 @@ public class DataImporter
     creator.createTable();
     String table = creator.getTable().getTableName();
     String msg = StringUtil.replace(ResourceMgr.getString("MsgImporterTableCreated"), "%table%", table);
-    targetTable = dbConn.getMetadata().findTable(targetTable); // make sure we use the correct table name
+    DbObjectFinder finder = new DbObjectFinder(dbConn);
+    targetTable = finder.findTable(targetTable); // make sure we use the correct table name
     this.messages.append(msg);
     this.messages.appendNewLine();
   }
@@ -2049,7 +2051,8 @@ public class DataImporter
     if (this.targetTable == null) return;
 
     DbMetadata meta = this.dbConn.getMetadata();
-    boolean exists = meta.objectExists(targetTable, meta.getTablesAndViewTypes());
+    DbObjectFinder finder = new DbObjectFinder(dbConn);
+    boolean exists = finder.objectExists(targetTable, meta.getTablesAndViewTypes());
     if (!exists)
     {
       throw new SQLException("Table " +targetTable.getTableExpression(this.dbConn) + " not found!");

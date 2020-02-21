@@ -22,11 +22,11 @@
  */
 package workbench.util;
 
+import workbench.sql.parser.ParserType;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
-import workbench.sql.parser.ParserType;
 
 
 /**
@@ -141,6 +141,17 @@ public class DdlObjectInfoTest
     assertTrue(info.isValid());
     assertEquals("hstore", info.getObjectName());
     assertEquals("EXTENSION", info.getObjectType());
+
+    String createRule =
+      "create or replace rule insert_some_view_rule\n" +
+      "as on insert to some_view\n" +
+      "do instead \n" +
+      "  insert into real_table (id, name)\n" +
+      "  values (new.id, new.real_name);";
+
+    info = new DdlObjectInfo(createRule, ParserType.Postgres);
+    assertEquals("RULE", info.getObjectType());
+    assertEquals("insert_some_view_rule", info.getObjectName());
   }
 
   @Test

@@ -49,6 +49,8 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
+import workbench.db.DbObjectFinder;
+
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
 import workbench.util.MessageBuffer;
@@ -127,7 +129,8 @@ public class WbXmlDataFileParser
     if (this.columns == null) return;
     if (tbl == null) return;
 
-    if (!this.connection.getMetadata().tableExists(tbl))
+    DbObjectFinder finder = new DbObjectFinder(connection);
+    if (!finder.tableExists(tbl))
     {
       if (this.receiver.getCreateTarget())
       {

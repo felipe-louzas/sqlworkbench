@@ -27,6 +27,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 import workbench.resource.Settings;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.TableCommentReader;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -94,7 +95,7 @@ public class SqlServerCommentReaderTest
     {
       Settings.getInstance().setProperty("workbench.db.microsoft_sql_server.remarks.column.retrieve", true);
       Settings.getInstance().setProperty("workbench.db.microsoft_sql_server.remarks.object.retrieve", true);
-      TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("foo"));
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("foo"));
       assertNotNull(tbl);
       assertNotNull(tbl.getComment());
       TableDefinition def = con.getMetadata().getTableDefinition(tbl);

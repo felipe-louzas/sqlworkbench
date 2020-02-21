@@ -28,6 +28,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -91,7 +92,7 @@ public class OracleUniqueConstraintReaderTest
     WbConnection con = OracleTestUtil.getOracleConnection();
     assertNotNull("Oracle not available", con);
 
-    TableIdentifier parent = con.getMetadata().findObject(new TableIdentifier("PARENT"));
+    TableIdentifier parent = new DbObjectFinder(con).findObject(new TableIdentifier("PARENT"));
     List<IndexDefinition> indexList = con.getMetadata().getIndexReader().getTableIndexList(parent, true);
 
     boolean foundConstraint = false;
@@ -115,7 +116,7 @@ public class OracleUniqueConstraintReaderTest
     assertNotNull("Oracle not available", con);
 
     SchemaReporter reporter = new SchemaReporter(con);
-    TableIdentifier parent = con.getMetadata().findObject(new TableIdentifier("PARENT"));
+    TableIdentifier parent = new DbObjectFinder(con).findObject(new TableIdentifier("PARENT"));
     reporter.setObjectList(CollectionUtil.arrayList(parent));
     String xml = reporter.getXml();
     System.out.println(xml);

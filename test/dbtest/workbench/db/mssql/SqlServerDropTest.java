@@ -31,6 +31,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 import workbench.interfaces.ObjectDropper;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.GenericObjectDropper;
 import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
@@ -95,7 +96,7 @@ public class SqlServerDropTest
     WbConnection conn = SQLServerTestUtil.getSQLServerConnection();
     assertNotNull("No connection available", conn);
 
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier("foo"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("foo"));
     assertNotNull(tbl);
     ObjectDropper dropper = new GenericObjectDropper();
     dropper.setConnection(conn);
@@ -118,7 +119,7 @@ public class SqlServerDropTest
     WbConnection conn = SQLServerTestUtil.getSQLServerConnection();
     assertNotNull("No connection available", conn);
 
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier("foo"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("foo"));
     assertNotNull(tbl);
     List<IndexDefinition> indexes = conn.getMetadata().getIndexReader().getTableIndexList(tbl, false);
     assertNotNull(indexes);

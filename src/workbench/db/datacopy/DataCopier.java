@@ -41,6 +41,7 @@ import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
 import workbench.db.DropType;
 import workbench.db.GenericObjectDropper;
@@ -261,7 +262,8 @@ public class DataCopier
     this.targetTable = targetTbl;
     this.targetColumnsForQuery = null;
 
-    if (!this.sourceConnection.getMetadata().objectExists(sourceTbl, this.sourceConnection.getMetadata().getSelectableTypes()))
+    DbObjectFinder finder = new DbObjectFinder(sourceConnection);
+    if (!finder.objectExists(sourceTbl, this.sourceConnection.getMetadata().getSelectableTypes()))
     {
       this.addError(ResourceMgr.getFormattedString("ErrCopySourceTableNotFound", sourceTbl.getQualifiedName()));
       throw new SQLException("Table " + sourceTbl.getTableName() + " not found in source connection");
@@ -283,8 +285,9 @@ public class DataCopier
 
   private TableIdentifier findTargetTable()
   {
+    DbObjectFinder finder = new DbObjectFinder(targetConnection);
     LogMgr.logDebug("DataCopier.findTargetTable()", "Looking for table " + targetTable.getQualifiedName() + " in target database");
-    TableIdentifier realTable = this.targetConnection.getMetadata().findTable(targetTable, false);
+    TableIdentifier realTable = finder.findTable(targetTable, false);
     if (realTable == null)
     {
       TableIdentifier toFind = targetTable.createCopy();
@@ -292,7 +295,7 @@ public class DataCopier
       toFind.setSchema(toFind.getSchemaToUse(targetConnection));
       toFind.setCatalog(toFind.getCatalogToUse(targetConnection));
       LogMgr.logDebug("DataCopier.findTargetTable()", "Table " + targetTable.getQualifiedName() + " not found. Trying " + toFind.getQualifiedName());
-      realTable = this.targetConnection.getMetadata().findTable(toFind, false);
+      realTable = finder.findTable(toFind, false);
     }
     return realTable;
   }

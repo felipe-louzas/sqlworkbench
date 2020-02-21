@@ -29,9 +29,8 @@ import workbench.console.ConsoleSettings;
 import workbench.console.RowDisplay;
 import workbench.resource.ResourceMgr;
 
-import workbench.db.DbMetadata;
-
 import workbench.storage.DataStore;
+import workbench.storage.SortDefinition;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
@@ -93,7 +92,7 @@ public class WbList
     {
       resultList.setResultName(ResourceMgr.getString("TxtObjList"));
       resultList.setGeneratingSql(sql);
-      resultList.sort(DbMetadata.getTableListSort());
+      resultList.sort(SortDefinition.getTableListSort());
       result.addDataStore(resultList);
 
       if (currentConnection.getDbSettings().supportsSchemas() && lister.getSchemaUsed() != null)

@@ -31,6 +31,7 @@ import workbench.WbTestCase;
 
 import workbench.db.ColumnDropper;
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -81,7 +82,7 @@ public class ColumnDropperPostgresTest
       "create table person (nr integer, firstname varchar(20), lastname varchar(20), dummy1 integer, dummy2 date);\n" +
       "commit;");
 
-    TableIdentifier table = con.getMetadata().findTable(new TableIdentifier("person"));
+    TableIdentifier table = new DbObjectFinder(con).findTable(new TableIdentifier("person"));
     List<ColumnIdentifier> cols = new ArrayList<>();
     cols.add(new ColumnIdentifier("dummy1"));
     cols.add(new ColumnIdentifier("dummy2"));

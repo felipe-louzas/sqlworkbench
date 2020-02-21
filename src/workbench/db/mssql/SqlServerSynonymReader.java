@@ -33,6 +33,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -195,7 +196,8 @@ public class SqlServerSynonymReader
     if (result == null) return null;
 
     result.setSchema(schema);
-    TableIdentifier tbl = meta.findObject(result);
+    DbObjectFinder finder = new DbObjectFinder(meta);
+    TableIdentifier tbl = finder.findObject(result);
 
     return tbl;
   }

@@ -56,7 +56,8 @@ public class DbMetadataTest
         "commit;");
 
       DbMetadata meta = con.getMetadata();
-      TableIdentifier tbl = meta.findObject(new TableIdentifier("\"MyTest\""));
+      DbObjectFinder finder = new DbObjectFinder(con);
+      TableIdentifier tbl = finder.findObject(new TableIdentifier("\"MyTest\""));
       assertNotNull(tbl);
       assertTrue(tbl.getNeverAdjustCase());
       assertEquals("MyTest", tbl.getTableName());
@@ -66,11 +67,11 @@ public class DbMetadataTest
       assertNotNull(def.getTable());
       assertEquals("MyTest", def.getTable().getTableName());
 
-      tbl = meta.findObject(new TableIdentifier("MyTest"), false, false);
+      tbl = finder.findObject(new TableIdentifier("MyTest"), false, false);
       assertNotNull(tbl);
       assertEquals("MyTest", tbl.getTableName());
 
-      TableIdentifier tbl2 = meta.findObject(new TableIdentifier("Person"));
+      TableIdentifier tbl2 = finder.findObject(new TableIdentifier("Person"));
       assertNotNull(tbl2);
       assertEquals("PERSON", tbl2.getTableName());
 

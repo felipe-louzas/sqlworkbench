@@ -23,6 +23,7 @@ package workbench.db.mssql;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.DummyInsert;
 import workbench.db.DummyUpdate;
 import workbench.db.TableIdentifier;
@@ -74,7 +75,7 @@ public class SqlServerDummyDMLTest
     WbConnection con = SQLServerTestUtil.getSQLServerConnection();
     assertNotNull(con);
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("one"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("one"));
     DummyInsert insert = new DummyInsert(tbl);
     insert.setDoFormatSql(false);
     assertEquals("INSERT", insert.getObjectType());
@@ -97,7 +98,7 @@ public class SqlServerDummyDMLTest
     WbConnection con = SQLServerTestUtil.getSQLServerConnection();
     assertNotNull(con);
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("one"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("one"));
     DummyUpdate update = new DummyUpdate(tbl);
     update.setDoFormatSql(false);
     assertEquals("UPDATE", update.getObjectType());

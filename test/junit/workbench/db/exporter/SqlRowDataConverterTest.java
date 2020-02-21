@@ -35,6 +35,7 @@ import workbench.WbTestCase;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -90,7 +91,7 @@ public class SqlRowDataConverterTest
       stmt = con.createStatement();
       rs = stmt.executeQuery("SELECT id, name, name||'*' as name FROM person");
       ResultInfo info = new ResultInfo(rs.getMetaData(), con);
-      TableIdentifier tbl = con.getMetadata().findObject(new TableIdentifier("person"));
+      TableIdentifier tbl = new DbObjectFinder(con).findObject(new TableIdentifier("person"));
       info.setUpdateTable(tbl);
       RowDataReader reader = RowDataReaderFactory.createReader(info, con);
       rs.next();
@@ -183,7 +184,7 @@ public class SqlRowDataConverterTest
         "commit;\n";
       TestUtil.executeScript(con, script);
 
-      TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
 
       stmt = con.createStatement();
       rs = stmt.executeQuery("SELECT * FROM person");
@@ -236,7 +237,7 @@ public class SqlRowDataConverterTest
         "commit;\n";
       TestUtil.executeScript(con, script);
 
-      TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
 
       stmt = con.createStatement();
       rs = stmt.executeQuery("SELECT * FROM person");
@@ -333,13 +334,13 @@ public class SqlRowDataConverterTest
       assertEquals("No insert generated", "INSERT", verb);
 
 //      System.out.println(line);
-      assertEquals("JDBC date literal not found", true, line.indexOf("{d '2006-10-26'}") > -1);
-      assertEquals("JDBC timestamp literal not found", true, line.indexOf("{ts '2006-10-26 ") > -1);
+      assertEquals("JDBC date literal not found", true, line.contains("{d '2006-10-26'}"));
+      assertEquals("JDBC timestamp literal not found", true, line.contains("{ts '2006-10-26 "));
 
       converter.setDateLiteralType(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE);
       line = converter.convertRowData(data, 0).toString().trim();
-      assertEquals("ANSI date literal not found", true, line.indexOf("DATE '2006-10-26'") > -1);
-      assertEquals("ANSI timestamp literal not found", true, line.indexOf("TIMESTAMP '2006-10-26") > -1);
+      assertEquals("ANSI date literal not found", true, line.contains("DATE '2006-10-26'"));
+      assertEquals("ANSI timestamp literal not found", true, line.contains("TIMESTAMP '2006-10-26"));
 
       converter.setCreateUpdate();
       line = converter.convertRowData(data, 0).toString().trim();
@@ -355,7 +356,7 @@ public class SqlRowDataConverterTest
       line = converter.convertRowData(data, 0).toString().trim();
       assertEquals("date_col included", -1, line.indexOf("date_col ="));
       assertEquals("ts_col included", -1, line.indexOf("ts_col ="));
-      assertEquals("int_col not updated", true, line.indexOf("SET int_col = 42") > -1);
+      assertEquals("int_col not updated", true, line.contains("SET int_col = 42"));
 
       converter.setCreateInsertDelete();
       line = converter.convertRowData(data, 0).toString().trim();

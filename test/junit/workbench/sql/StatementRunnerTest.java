@@ -31,6 +31,7 @@ import workbench.WbTestCase;
 import workbench.interfaces.ExecutionController;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -91,7 +92,7 @@ public class StatementRunnerTest
       result = runner.runStatement("commit");
       assertTrue(result.isSuccess());
 
-      boolean exists = con.getMetadata().tableExists(new TableIdentifier("read_only_test"));
+      boolean exists = new DbObjectFinder(con).tableExists(new TableIdentifier("read_only_test"));
       assertTrue(exists);
 
       con.getProfile().setReadOnly(true);

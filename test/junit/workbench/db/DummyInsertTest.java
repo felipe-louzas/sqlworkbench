@@ -52,7 +52,7 @@ public class DummyInsertTest
       TestUtil.executeScript(con,
         "create table person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
         "commit;");
-      TableIdentifier person = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier person = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
       DummyInsert insert = new DummyInsert(person);
       insert.setDoFormatSql(false);
       assertEquals("INSERT", insert.getObjectType());
@@ -83,7 +83,7 @@ public class DummyInsertTest
       TestUtil.executeScript(con,
         "create table person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
         "commit;");
-      TableIdentifier person = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier person = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
 
       insert = new DummyInsert(person);
       insert.setDoFormatSql(false);
@@ -117,7 +117,7 @@ public class DummyInsertTest
       TestUtil.executeScript(con,
         "create table person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
         "commit;");
-      TableIdentifier person = con.getMetadata().findTable(new TableIdentifier("PERSON"));
+      TableIdentifier person = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
       List<ColumnIdentifier> cols = new ArrayList<>();
       cols.add(new ColumnIdentifier("NR"));
 

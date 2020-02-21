@@ -31,6 +31,7 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSearchPath;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -208,7 +209,7 @@ public class SourceTableArgument
         {
           TableIdentifier toSearch = new TableIdentifier(searchName, dbConn);
           adjustTableSchema(toSearch, schemaToUse);
-          TableIdentifier tbl = dbConn.getMetadata().searchObjectOnPath(toSearch, types);
+          TableIdentifier tbl = new DbObjectFinder(dbConn).searchObjectOnPath(toSearch, types);
 
           if (tbl != null)
           {

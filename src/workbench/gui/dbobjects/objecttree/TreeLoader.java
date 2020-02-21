@@ -469,8 +469,8 @@ public class TreeLoader
           if (!types.isEmpty())
           {
             CatalogObjectTypesNode catalogObjectTypes = new CatalogObjectTypesNode(types);
-            catalogObjectTypes.loadChildren(connection);
             catalogNode.add(catalogObjectTypes);
+            catalogObjectTypes.loadChildren(connection);
           }
         }
         if (!connection.getDbSettings().supportsSchemas())

@@ -23,6 +23,7 @@ package workbench.db.hsqldb;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -54,7 +55,7 @@ public class HsqlSequenceAdjusterTest
       "insert into table_one (id) values (1), (2), (7), (41);\n" +
       "commit;" );
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("table_one"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("table_one"));
 
     HsqlSequenceAdjuster sync = new HsqlSequenceAdjuster();
     sync.adjustTableSequences(con, tbl, true);

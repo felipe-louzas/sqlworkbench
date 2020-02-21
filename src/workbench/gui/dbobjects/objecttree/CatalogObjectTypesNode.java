@@ -67,15 +67,19 @@ public class CatalogObjectTypesNode
 
     Set<String> types = dbs.getCatalogLevelTypes();
     if (CollectionUtil.isEmpty(types)) return false;
-    LogMgr.logDebug(new CallerInfo(){}, "Loading catalog object types: " + types);
 
-    String catalog = ((DbObject)getParent().getUserObject()).getObjectName();
+    ObjectTreeNode parentNode = getParent();
+    if (parentNode == null) return false;
+
+    DbObject catalog = (DbObject)parentNode.getUserObject();
+    if (catalog == null) return false;
+    String catalogName = catalog.getObjectName();
 
     for (String type : types)
     {
       if (typesToShow.isEmpty() || typesToShow.contains(type))
       {
-        CatalogObjectNode node = new CatalogObjectNode(catalog, type);
+        CatalogObjectNode node = new CatalogObjectNode(catalogName, type);
         add(node);
       }
     }

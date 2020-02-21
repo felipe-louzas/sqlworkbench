@@ -39,6 +39,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.DependencyNode;
 import workbench.db.DependencyTreeDumper;
 import workbench.db.TableDependency;
@@ -59,12 +60,14 @@ public class TableDependencySorter
   private final List<TableIdentifier> cycleErrors = new ArrayList<>();
   private ScriptGenerationMonitor monitor;
   private TableDependency dependencyReader;
+  private final DbObjectFinder finder;
   private boolean cancel;
   private boolean validateInputTables = true;
 
   public TableDependencySorter(WbConnection con)
   {
     this.dbConn = con;
+    this.finder = new DbObjectFinder(con);
   }
 
   public void setValidateTables(boolean flag)
@@ -151,7 +154,7 @@ public class TableDependencySorter
     List<TableIdentifier> result = new ArrayList<>(toCheck.size());
     for (TableIdentifier tbl : toCheck)
     {
-      TableIdentifier realTable = dbConn.getMetadata().findTable(tbl);
+      TableIdentifier realTable = finder.findTable(tbl);
       if (realTable != null)
       {
         result.add(realTable);

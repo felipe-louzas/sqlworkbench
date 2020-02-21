@@ -29,6 +29,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSearchPath;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
@@ -485,7 +486,7 @@ public class UpdateTableDetector
 
     if (tbl == null)
     {
-      tbl = conn.getMetadata().searchSelectableObjectOnPath(table);
+      tbl = new DbObjectFinder(conn).searchSelectableObjectOnPath(table);
     }
     return tbl;
   }

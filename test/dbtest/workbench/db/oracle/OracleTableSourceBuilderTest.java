@@ -25,19 +25,26 @@ package workbench.db.oracle;
 
 
 import org.junit.AfterClass;
+
 import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.TableSourceBuilderFactory;
 import workbench.db.WbConnection;
+
 import workbench.resource.Settings;
+
+import workbench.db.DbObjectFinder;
+
 import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
 
@@ -296,7 +303,7 @@ public class OracleTableSourceBuilderTest
     WbConnection con = OracleTestUtil.getOracleConnection();
     assertNotNull("Oracle not available", con);
 
-    TableIdentifier table = con.getMetadata().findTable(new TableIdentifier("INDEX_TEST"));
+    TableIdentifier table = new DbObjectFinder(con).findTable(new TableIdentifier("INDEX_TEST"));
     assertNotNull(table);
     String sql = table.getSource(con).toString();
 
@@ -319,7 +326,7 @@ public class OracleTableSourceBuilderTest
     assertNotNull("Oracle not available", con);
 
     boolean showTablespace = Settings.getInstance().getBoolProperty("workbench.db.oracle.retrieve_tablespace", true);
-    TableIdentifier table = con.getMetadata().findTable(new TableIdentifier("UC_TEST"));
+    TableIdentifier table = new DbObjectFinder(con).findTable(new TableIdentifier("UC_TEST"));
     assertNotNull(table);
     try
     {
@@ -372,7 +379,7 @@ public class OracleTableSourceBuilderTest
       "LOB (B5) STORE AS SECUREFILE (ENABLE STORAGE IN ROW CACHE DEDUPLICATE);";
 
     TestUtil.executeScript(con, sql);
-    TableIdentifier foo = con.getMetadata().findTable(new TableIdentifier("FOO"));
+    TableIdentifier foo = new DbObjectFinder(con).findTable(new TableIdentifier("FOO"));
     String source = foo.getSource(con).toString().trim();
     System.out.println(source);
     assertTrue(source.contains("LOB (B1) STORE AS SECUREFILE (DISABLE STORAGE IN ROW RETENTION NONE COMPRESS MEDIUM NOCACHE)"));

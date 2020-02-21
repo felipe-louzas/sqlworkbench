@@ -96,6 +96,11 @@ public class ObjectTreeNode
     nodeName = name;
   }
 
+  public String getNodeName()
+  {
+    return nodeName;
+  }
+
   public void setDisplay(String text)
   {
     this.display = text;
@@ -273,12 +278,12 @@ public class ObjectTreeNode
   @Override
   public String toString()
   {
-    DbObject dbo = getDbObject();
-
     if (display != null)
     {
       return display;
     }
+
+    DbObject dbo = getDbObject();
 
     if (dbo == null)
     {

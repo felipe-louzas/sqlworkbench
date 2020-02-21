@@ -28,6 +28,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.DbObjectFinder;
 import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -78,7 +79,7 @@ public class HsqlUniqueConstraintReaderTest
     WbConnection con = getTestUtil().getHSQLConnection("unique_test");
     TestUtil.executeScript(con, sql);
 
-    TableIdentifier parent = con.getMetadata().findObject(new TableIdentifier("UTEST"));
+    TableIdentifier parent = new DbObjectFinder(con).findObject(new TableIdentifier("UTEST"));
     List<IndexDefinition> indexList = con.getMetadata().getIndexReader().getTableIndexList(parent, true);
 
     assertEquals(1, indexList.size());
@@ -104,7 +105,7 @@ public class HsqlUniqueConstraintReaderTest
     TestUtil.executeScript(con, sql);
 
     SchemaReporter reporter = new SchemaReporter(con);
-    TableIdentifier parent = con.getMetadata().findObject(new TableIdentifier("UTEST"));
+    TableIdentifier parent = new DbObjectFinder(con).findObject(new TableIdentifier("UTEST"));
     reporter.setObjectList(CollectionUtil.arrayList(parent));
     String xml = reporter.getXml();
     System.out.println(xml);

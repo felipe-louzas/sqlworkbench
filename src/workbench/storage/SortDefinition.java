@@ -29,6 +29,8 @@ import java.util.List;
 import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
 
+import static workbench.db.DbMetadata.*;
+
 /**
  * A class to store the sort definition of a result set (e.g. DataStore,
  * DatastoreTableModel)
@@ -351,6 +353,16 @@ public class SortDefinition
       }
     }
     return new SortDefinition(columns, ascending);
+  }
+
+  public static SortDefinition getTableListSort()
+  {
+    SortDefinition def = new SortDefinition();
+    def.addSortColumn(COLUMN_IDX_TABLE_LIST_TYPE, true);
+    def.addSortColumn(COLUMN_IDX_TABLE_LIST_CATALOG, true);
+    def.addSortColumn(COLUMN_IDX_TABLE_LIST_SCHEMA, true);
+    def.addSortColumn(COLUMN_IDX_TABLE_LIST_NAME, true);
+    return def;
   }
 
 }

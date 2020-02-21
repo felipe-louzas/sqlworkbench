@@ -40,6 +40,7 @@ import workbench.resource.ResourceMgr;
 
 import workbench.db.ConnectionInfoBuilder;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
 import workbench.db.FKHandler;
 import workbench.db.ProcedureDefinition;
@@ -307,12 +308,15 @@ public class SchemaDiff
 
     if (referenceList.size() != targetList.size()) throw new IllegalArgumentException("Size of lists does not match");
 
+    DbObjectFinder rFinder = new DbObjectFinder(referenceDb);
+    DbObjectFinder tFinder = new DbObjectFinder(targetDb);
+
     for (int i=0; i < referenceList.size(); i++)
     {
       String rname = referenceList.get(i);
-      TableIdentifier rtbl = referenceDb.getMetadata().findTable(new TableIdentifier(rname, referenceDb), false);
+      TableIdentifier rtbl = rFinder.findTable(new TableIdentifier(rname, referenceDb), false);
       String tname = targetList.get(i);
-      TableIdentifier ttbl = targetDb.getMetadata().findTable(new TableIdentifier(tname, targetDb), false);
+      TableIdentifier ttbl = tFinder.findTable(new TableIdentifier(tname, targetDb), false);
       if (rtbl != null && ttbl != null)
       {
         reference.add(rtbl);
@@ -738,7 +742,7 @@ public class SchemaDiff
     if (tbl != null) return tbl;
 
     tid.setType(refTable.getType());
-    return targetDb.getMetadata().findObject(tid);
+    return new DbObjectFinder(targetDb).findObject(tid);
   }
 
   private void processSequenceList(List<SequenceDefinition> refSeqs, List<SequenceDefinition> targetSeqs)

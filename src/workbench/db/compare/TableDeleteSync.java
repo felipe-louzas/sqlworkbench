@@ -41,6 +41,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -205,8 +206,11 @@ public class TableDeleteSync
     if (tableToCheck == null) throw new IllegalArgumentException("Source table may not be null!");
     if (tableToDelete == null) throw new IllegalArgumentException("Target table (for source: " + tableToCheck.getTableName() + ") may not be null!");
 
-    this.referenceTable = this.referenceConnection.getMetadata().findSelectableObject(tableToCheck);
-    TableIdentifier toDelete = this.targetConnection.getMetadata().findTable(tableToDelete);
+    DbObjectFinder rFinder = new DbObjectFinder(referenceConnection);
+    this.referenceTable = rFinder.findSelectableObject(tableToCheck);
+
+    DbObjectFinder tFinder = new DbObjectFinder(targetConnection);
+    TableIdentifier toDelete = tFinder.findTable(tableToDelete);
     this.tableToDeleteFrom = this.targetConnection.getMetadata().getTableDefinition(toDelete, true);
 
     if (tableToDeleteFrom == null) throw new SQLException("Table " + tableToDelete.getTableName() + " not found in target database");

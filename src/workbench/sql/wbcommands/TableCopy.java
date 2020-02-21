@@ -32,6 +32,7 @@ import workbench.AppArguments;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
 import workbench.db.DropType;
 import workbench.db.TableIdentifier;
@@ -113,7 +114,7 @@ class TableCopy
     else
     {
       String[] types = targetConnection.getMetadata().getTablesAndViewTypes();
-      targetId = targetConnection.getMetadata().findTable(new TableIdentifier(targettable, targetConnection), types);
+      targetId = new DbObjectFinder(targetConnection).findTable(new TableIdentifier(targettable, targetConnection), types);
     }
 
     if (targetId == null)

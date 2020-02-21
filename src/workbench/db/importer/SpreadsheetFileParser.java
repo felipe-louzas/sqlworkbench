@@ -43,6 +43,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 
@@ -421,7 +422,8 @@ public class SpreadsheetFileParser
           ts.setSchema(null);
           ts.setCatalog(null);
         }
-        TableIdentifier tbl = connection.getMetadata().findObject(ts);
+        DbObjectFinder finder = new DbObjectFinder(connection);
+        TableIdentifier tbl = finder.findObject(ts);
         if (tbl != null)
         {
           tables.add(tbl);
@@ -523,8 +525,9 @@ public class SpreadsheetFileParser
             targetTable = null;
           }
 
+          DbObjectFinder finder = new DbObjectFinder(connection);
           TableIdentifier tbl = createTargetTableId();
-          if (connection.getMetadata().tableExists(tbl))
+          if (finder.tableExists(tbl))
           {
             reader.setActiveWorksheet(sheetIndex);
             processOneSheet();

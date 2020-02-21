@@ -26,6 +26,7 @@ package workbench.db.oracle;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.DropType;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -87,7 +88,7 @@ public class OracleMViewReaderTest
       "as\n" +
       "select * from person;";
     TestUtil.executeScript(con, sql);
-    TableIdentifier mview = con.getMetadata().findObject(new TableIdentifier("MV_PERSON"));
+    TableIdentifier mview = new DbObjectFinder(con).findObject(new TableIdentifier("MV_PERSON"));
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
     String source = builder.getTableSource(mview, DropType.none, false);
     assertNotNull(source);
@@ -123,7 +124,8 @@ public class OracleMViewReaderTest
       "as\n" +
       "select * from person;";
     TestUtil.executeScript(con, sql);
-    TableIdentifier mview = con.getMetadata().findObject(new TableIdentifier("V_PERSON"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier mview = finder.findObject(new TableIdentifier("V_PERSON"));
     TableDefinition def = con.getMetadata().getTableDefinition(mview);
     OracleMViewReader reader = new OracleMViewReader();
     String source = reader.getMViewSource(con, def, null, DropType.none, true).toString();
@@ -146,7 +148,7 @@ public class OracleMViewReaderTest
       "comment on materialized view v_person is 'the mview';\n"+
       "comment on column v_person.id is 'the person PK';\n");
 
-    mview = con.getMetadata().findObject(new TableIdentifier("V_PERSON"));
+    mview = finder.findObject(new TableIdentifier("V_PERSON"));
     def = con.getMetadata().getTableDefinition(mview);
     expected += "\n\n" +
       "COMMENT ON MATERIALIZED VIEW V_PERSON IS 'the mview';\n"+
@@ -170,7 +172,7 @@ public class OracleMViewReaderTest
       "as\n" +
       "select * from person;";
     TestUtil.executeScript(con, sql);
-    TableIdentifier mview = con.getMetadata().findObject(new TableIdentifier("V_PERSON"));
+    TableIdentifier mview = new DbObjectFinder(con).findObject(new TableIdentifier("V_PERSON"));
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
     String source = builder.getTableSource(mview, DropType.none, false);
     assertNotNull(source);
@@ -201,7 +203,7 @@ public class OracleMViewReaderTest
       "as\n" +
       "select * from person;";
     TestUtil.executeScript(con, sql);
-    TableIdentifier mview = con.getMetadata().findObject(new TableIdentifier("V_PERSON"));
+    TableIdentifier mview = new DbObjectFinder(con).findObject(new TableIdentifier("V_PERSON"));
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
     String source = builder.getTableSource(mview, DropType.none, false);
     assertNotNull(source);
@@ -233,7 +235,7 @@ public class OracleMViewReaderTest
       ";";
 
     TestUtil.executeScript(con, sql);
-    TableIdentifier mview = con.getMetadata().findObject(new TableIdentifier("MV_PERSON"));
+    TableIdentifier mview = new DbObjectFinder(con).findObject(new TableIdentifier("MV_PERSON"));
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
     String source = builder.getTableSource(mview, DropType.none, false);
     assertNotNull(source);

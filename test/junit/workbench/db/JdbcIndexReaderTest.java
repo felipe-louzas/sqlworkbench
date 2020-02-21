@@ -63,7 +63,7 @@ public class JdbcIndexReaderTest
       "create unique index idx_foo on foo (id, code);\n" +
       "commit;");
 
-    TableIdentifier table = con.getMetadata().findTable(new TableIdentifier("FOO"));
+    TableIdentifier table = new DbObjectFinder(con).findTable(new TableIdentifier("FOO"));
 
     DataStore result = con.getMetadata().getIndexReader().getTableIndexInformation(table);
     assertNotNull(result);

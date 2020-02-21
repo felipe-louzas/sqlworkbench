@@ -26,6 +26,7 @@ package workbench.db.postgres;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.DropType;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
@@ -91,7 +92,7 @@ public class PostgresTableSourceBuilderTest
     TestUtil.executeScript(con,
       "create table x (c1 integer, c2 integer, c3 integer generated always as (c1 * c2) stored);");
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("x"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("x"));
     String ddl = tbl.getSource(con).toString();
     assertTrue(ddl.contains(("c3  integer   GENERATED ALWAYS AS (c1 * c2) STORED")));
   }
@@ -108,7 +109,7 @@ public class PostgresTableSourceBuilderTest
     assertTrue(sql.contains("INHERITS (base_table)"));
 
     TestUtil.executeScript(con, "create table child_fill (foo_data text) inherits (base_table) with (fillfactor=40);");
-    tbl = con.getMetadata().findTable(new TableIdentifier("child_fill"));
+    tbl = new DbObjectFinder(con).findTable(new TableIdentifier("child_fill"));
     String source = tbl.getSource(con).toString();
     assertTrue(source.contains("INHERITS (base_table)\nWITH (fillfactor=40)"));
   }
@@ -127,7 +128,7 @@ public class PostgresTableSourceBuilderTest
       ");\n" +
       "commit;");
     TableIdentifier tbl = new TableIdentifier(TEST_SCHEMA, "identity_test");
-    TableIdentifier idTest = con.getMetadata().findTable(tbl);
+    TableIdentifier idTest = new DbObjectFinder(con).findTable(tbl);
 
     String sql = idTest.getSource(con).toString();
     assertTrue(sql.contains("GENERATED ALWAYS AS IDENTITY"));
@@ -146,7 +147,7 @@ public class PostgresTableSourceBuilderTest
       ");\n" +
       "commit;");
     TableIdentifier tbl = new TableIdentifier(TEST_SCHEMA, "serial_test");
-    TableIdentifier idTest = con.getMetadata().findTable(tbl);
+    TableIdentifier idTest = new DbObjectFinder(con).findTable(tbl);
 
     String sql = idTest.getSource(con).toString();
     assertTrue(sql.contains("id         serial,"));
@@ -168,7 +169,7 @@ public class PostgresTableSourceBuilderTest
       ");\n" +
       "commit;");
     TableIdentifier tbl = new TableIdentifier(TEST_SCHEMA, "default_test");
-    TableIdentifier idTest = con.getMetadata().findTable(tbl);
+    TableIdentifier idTest = new DbObjectFinder(con).findTable(tbl);
 
     String sql = idTest.getSource(con).toString().trim();
     String expected =
@@ -216,7 +217,7 @@ public class PostgresTableSourceBuilderTest
     assertNotNull(con);
     if (!JdbcUtils.hasMinimumServerVersion(con, "9.1")) return;
     TestUtil.executeScript(con, "create unlogged table no_crash_safe (id integer, some_data varchar(100));");
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("no_crash_safe"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("no_crash_safe"));
     String source = tbl.getSource(con).toString();
     assertTrue(source.contains("CREATE UNLOGGED TABLE"));
   }
@@ -228,7 +229,7 @@ public class PostgresTableSourceBuilderTest
     WbConnection con = PostgresTestUtil.getPostgresConnection();
     assertNotNull(con);
     TestUtil.executeScript(con, "create table foo_fill (id integer, some_data varchar(100)) with (fillfactor=40);");
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("foo_fill"));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("foo_fill"));
     String source = tbl.getSource(con).toString();
     assertTrue(source.contains("fillfactor=40"));
   }
@@ -239,7 +240,8 @@ public class PostgresTableSourceBuilderTest
   {
     WbConnection con = PostgresTestUtil.getPostgresConnection();
     assertNotNull(con);
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("base_table"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("base_table"));
     String source = tbl.getSource(con).toString();
 //    System.out.println(source);
     assertFalse(source.contains("SET STORAGE"));
@@ -249,7 +251,7 @@ public class PostgresTableSourceBuilderTest
       "alter table foo_storage alter some_data set storage plain;\n" +
       "commit;");
 
-    tbl = con.getMetadata().findTable(new TableIdentifier("foo_storage"));
+    tbl = finder.findTable(new TableIdentifier("foo_storage"));
     source = tbl.getSource(con).toString();
 //    System.out.println(source);
     ScriptParser p = new ScriptParser(source, ParserType.Postgres);
@@ -279,7 +281,8 @@ public class PostgresTableSourceBuilderTest
       "comment on constraint fk_two2one on two is 'The foreign key';\n" +
       "commit;");
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("two"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("two"));
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
 
     String source = builder.getTableSource(tbl, DropType.none, true);
@@ -312,7 +315,7 @@ public class PostgresTableSourceBuilderTest
       "comment on table \"Foo_Bar\" is 'Some witty comment';\n" +
       "commit;");
 
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("\"Foo_Bar\""));
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("\"Foo_Bar\""));
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
 
     String source = builder.getTableSource(tbl, DropType.none, true);

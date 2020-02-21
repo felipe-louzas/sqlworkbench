@@ -47,6 +47,8 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DbObjectFinder;
+
 import workbench.storage.ColumnData;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowActionMonitor;
@@ -262,7 +264,7 @@ public class TableDataDiff
   {
     comparer.setClobAsFile(encoding, threshold);
   }
-  
+
   /**
    * Define a list of column names which should not considered when
    * checking for differences (e.g. a "MODIFIED" column)
@@ -334,7 +336,9 @@ public class TableDataDiff
     pkColumns.clear();
     realPKCols.clear();
 
-    referenceTable = this.reference.getMetadata().findSelectableObject(refTable);
+    DbObjectFinder refFinder = new DbObjectFinder(reference);
+
+    referenceTable = refFinder.findSelectableObject(refTable);
     if (referenceTable == null)
     {
       LogMgr.logError("TableDataDiff.setTableName()", "Reference table " + refTable.getTableName() + " not found!", null);
@@ -362,8 +366,8 @@ public class TableDataDiff
     {
       return TableDiffStatus.NoPK; //throw new SQLException("No primary key found for table " + referenceTable);
     }
-
-    tableToSync = this.toSync.getMetadata().findSelectableObject(tableToVerify);
+    DbObjectFinder sFinder = new DbObjectFinder(this.toSync);
+    tableToSync = sFinder.findSelectableObject(tableToVerify);
     if (tableToSync == null && !ignoreMissingTarget)
     {
       LogMgr.logError("TableDataDiff.setTableName()", "Target table " + tableToVerify.getTableName() + " not found!", null);

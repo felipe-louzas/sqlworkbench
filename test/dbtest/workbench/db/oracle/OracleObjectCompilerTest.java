@@ -28,6 +28,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
 import workbench.db.TableIdentifier;
@@ -162,13 +163,14 @@ public class OracleObjectCompilerTest
   {
     WbConnection con = OracleTestUtil.getOracleConnection();
     if (con == null) return;
+    DbObjectFinder finder = new DbObjectFinder(con);
     OracleObjectCompiler compiler = new OracleObjectCompiler(con);
-    TableIdentifier tbl = con.getMetadata().findObject(new TableIdentifier("V_PERSON"));
+    TableIdentifier tbl = finder.findObject(new TableIdentifier("V_PERSON"));
     assertTrue(OracleObjectCompiler.canCompile(tbl));
     String error = compiler.compileObject(tbl);
     assertNull(error);
 
-    TableIdentifier mv = con.getMetadata().findObject(new TableIdentifier("MV_PERSON"));
+    TableIdentifier mv = finder.findObject(new TableIdentifier("MV_PERSON"));
     assertTrue(OracleObjectCompiler.canCompile(mv));
     error = compiler.compileObject(mv);
     assertNull(error);

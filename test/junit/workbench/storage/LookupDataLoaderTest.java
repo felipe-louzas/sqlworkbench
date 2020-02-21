@@ -27,9 +27,9 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
 
 import org.junit.After;
 import org.junit.Before;
@@ -81,7 +81,7 @@ extends WbTestCase
       "commit;"
       );
 
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier("ADDRESS"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("ADDRESS"));
     LookupDataLoader retriever = new LookupDataLoader(tbl, "ADR_TYPE_ID");
     retriever.retrieveReferencedTable(conn);
     TableIdentifier result = retriever.getLookupTable();

@@ -27,6 +27,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -90,7 +91,7 @@ public class PostgresUniqueConstraintReaderTest
     WbConnection con = PostgresTestUtil.getPostgresConnection();
     assertNotNull(con);
 
-    TableIdentifier parent = con.getMetadata().findObject(new TableIdentifier("parent"));
+    TableIdentifier parent = new DbObjectFinder(con).findObject(new TableIdentifier("parent"));
     List<IndexDefinition> indexList = con.getMetadata().getIndexReader().getTableIndexList(parent, true);
 
     boolean foundConstraint = false;
@@ -113,7 +114,7 @@ public class PostgresUniqueConstraintReaderTest
     WbConnection con = PostgresTestUtil.getPostgresConnection();
     assertNotNull(con);
     SchemaReporter reporter = new SchemaReporter(con);
-    TableIdentifier parent = con.getMetadata().findObject(new TableIdentifier("parent"));
+    TableIdentifier parent = new DbObjectFinder(con).findObject(new TableIdentifier("parent"));
     reporter.setObjectList(CollectionUtil.arrayList(parent));
     String xml = reporter.getXml();
 //    System.out.println(xml);

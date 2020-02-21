@@ -24,16 +24,22 @@ package workbench.db.oracle;
 import java.util.List;
 
 import org.junit.After;
+
 import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.DbObject;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
 import workbench.sql.DelimiterDefinition;
+
 import workbench.util.CollectionUtil;
 
 /**
@@ -81,7 +87,7 @@ public class OracleDependencyReaderTest
       "end; \n" +
       "/", DelimiterDefinition.DEFAULT_ORA_DELIMITER);
 
-    TableIdentifier t1 = conn.getMetadata().findObject(new TableIdentifier("TX"));
+    TableIdentifier t1 = new DbObjectFinder(conn).findObject(new TableIdentifier("TX"));
     OracleDependencyReader reader = new OracleDependencyReader();
     List<DbObject> usedBy = reader.getUsedBy(conn, t1);
     assertEquals(1, usedBy.size());
@@ -102,9 +108,10 @@ public class OracleDependencyReaderTest
       "create view v2 as select t1.id as id1, v1.id as id2 from v1 cross join t1;\n" +
       "commit;");
 
-    TableIdentifier t1 = conn.getMetadata().findObject(new TableIdentifier("T1"));
-    TableIdentifier v1 = conn.getMetadata().findObject(new TableIdentifier("V1"));
-    TableIdentifier v2 = conn.getMetadata().findObject(new TableIdentifier("V2"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    TableIdentifier t1 = finder.findObject(new TableIdentifier("T1"));
+    TableIdentifier v1 = finder.findObject(new TableIdentifier("V1"));
+    TableIdentifier v2 = finder.findObject(new TableIdentifier("V2"));
 
     OracleDependencyReader reader = new OracleDependencyReader();
     List<DbObject> usedBy = reader.getUsedBy(conn, t1);
@@ -126,7 +133,7 @@ public class OracleDependencyReaderTest
 
     TestUtil.executeScript(conn,
       "create materialized view mv1 as select * from t1;");
-    TableIdentifier mv1 = conn.getMetadata().findObject(new TableIdentifier("MV1"));
+    TableIdentifier mv1 = finder.findObject(new TableIdentifier("MV1"));
     List<DbObject> mv1Uses = reader.getUsedObjects(conn, mv1);
     assertEquals(1, mv1Uses.size());
     assertEquals("T1", mv1Uses.get(0).getObjectName());

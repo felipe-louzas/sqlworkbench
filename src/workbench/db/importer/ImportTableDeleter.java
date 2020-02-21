@@ -31,6 +31,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -129,7 +130,8 @@ class ImportTableDeleter
           break;
         }
 
-        TableIdentifier targetTable = dbConn.getMetadata().findTable(new TableIdentifier(sourceTable.getTableName()), false);
+        DbObjectFinder finder = new DbObjectFinder(dbConn);
+        TableIdentifier targetTable = finder.findTable(new TableIdentifier(sourceTable.getTableName()), false);
         if (this.rowMonitor != null)
         {
           this.rowMonitor.setCurrentObject(targetTable.getTableName(), table, tables.size());

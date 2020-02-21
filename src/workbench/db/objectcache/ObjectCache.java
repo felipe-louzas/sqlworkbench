@@ -43,6 +43,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSearchPath;
 import workbench.db.DbSwitcher;
 import workbench.db.DependencyNode;
@@ -89,7 +90,7 @@ class ObjectCache
   private boolean databasesCached;
   private char catalogSeparator;
   private final List<String> availableDatabases = new ArrayList<>();
-
+  private final DbObjectFinder finder;
   private final TableIdentifier dummyTable = new TableIdentifier("-$WB DUMMY$-", "-$WB DUMMY$-");
 
   ObjectCache(WbConnection conn)
@@ -100,6 +101,7 @@ class ObjectCache
     supportsSchemas = conn.getDbSettings().supportsSchemas();
     supportsCatalogs = conn.getDbSettings().supportsCatalogs();
     catalogSeparator = SqlUtil.getCatalogSeparator(conn);
+    finder = new DbObjectFinder(conn);
   }
 
   private String[] getCompletionTypes(WbConnection conn)
@@ -313,7 +315,7 @@ class ObjectCache
   {
     if (table == null) return Collections.emptyList();
 
-    TableIdentifier tbl = dbConn.getMetadata().findTable(table, false);
+    TableIdentifier tbl = finder.findTable(table, false);
     List<DependencyNode> referencing = referencingTables.get(tbl);
     if (referencing == null && dbConn.isBusy()) return Collections.emptyList();
 
@@ -332,7 +334,7 @@ class ObjectCache
   {
     if (table == null || dbConn.isBusy()) return Collections.emptyList();
 
-    TableIdentifier tbl = dbConn.getMetadata().findTable(table, false);
+    TableIdentifier tbl = finder.findTable(table, false);
     List<DependencyNode> referenced = referencedTables.get(tbl);
     if (referenced == null)
     {
@@ -579,7 +581,7 @@ class ObjectCache
     }
     else if (!dbConnection.isBusy())
     {
-      toSearch = dbConnection.getMetadata().searchSelectableObjectOnPath(tbl);
+      toSearch = finder.searchSelectableObjectOnPath(tbl);
       if (toSearch == null) return null;
 
       toSearch.checkQuotesNeeded(dbConnection);

@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -64,7 +65,7 @@ public class OracleFKHandlerTest
   {
     WbConnection conn = OracleTestUtil.getOracleConnection();
     assertNotNull("No Oracle connection available", conn);
-    
+
     OracleFKHandler fkHandler = new OracleFKHandler(conn);
     String create =
       "create table parent (id integer not null primary key);\n" +
@@ -77,7 +78,7 @@ public class OracleFKHandlerTest
 
     TestUtil.executeScript(conn, create);
 
-    TableIdentifier parent = conn.getMetadata().findTable(new TableIdentifier("PARENt"));
+    TableIdentifier parent = new DbObjectFinder(conn).findTable(new TableIdentifier("PARENt"));
 
     DataStore fklist = fkHandler.getReferencedBy(parent);
     assertNotNull(fklist);

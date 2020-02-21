@@ -162,11 +162,11 @@ keyword=(
 (GROUP{wsp}BY)|
 (ORDER{wsp}BY)|
 
-
+(TYPE{wsp}BODY)|
 (CREATE{wsp}OR{wsp}REPLACE)|
 
 (IS{wsp}NOT{wsp}NULL)|
-
+(FLASHBACK{wsp}ARCHIVE)|
 (MATERIALIZED{wsp}VIEW)|
 
 (START{wsp}WITH)|
@@ -198,7 +198,7 @@ keyword=(
 (CHARACTER{wsp}VARYING)|
 (DISTINCT{wsp}ON)|
 (PRIMARY{wsp}KEY)|
-
+(SNAPSHOT{wsp}LOG)|
 (IF{wsp}EXISTS)|
 (IF{wsp}NOT{wsp}EXISTS)|
 (WITHIN{wsp}GROUP)|
@@ -452,7 +452,7 @@ keyword=(
 "VALID"|
 "VALUES"|
 "VARCHAR"|
-
+"VARCHAR2"|
 "VARIABLE"|
 "VERBOSE"|
 "VERSION"|

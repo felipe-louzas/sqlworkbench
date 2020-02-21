@@ -25,6 +25,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -96,7 +97,7 @@ public class PostgresPartitionReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier rangeTable = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".range_table"));
+    TableIdentifier rangeTable = new DbObjectFinder(conn).findTable(new TableIdentifier(TESTID + ".range_table"));
 
     PostgresPartitionReader reader = new PostgresPartitionReader(rangeTable, conn);
     reader.readPartitionInformation();
@@ -138,7 +139,7 @@ public class PostgresPartitionReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".mixed_expression"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier(TESTID + ".mixed_expression"));
 
     PostgresPartitionReader reader = new PostgresPartitionReader(tbl, conn);
     reader.readPartitionInformation();
@@ -172,7 +173,7 @@ public class PostgresPartitionReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier rangeTable = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".list_table"));
+    TableIdentifier rangeTable = new DbObjectFinder(conn).findTable(new TableIdentifier(TESTID + ".list_table"));
 
     PostgresPartitionReader reader = new PostgresPartitionReader(rangeTable, conn);
     reader.readPartitionInformation();
@@ -225,7 +226,8 @@ public class PostgresPartitionReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier subTable = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".sub_expr_table"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    TableIdentifier subTable = finder.findTable(new TableIdentifier(TESTID + ".sub_expr_table"));
 
     PostgresPartitionReader reader = new PostgresPartitionReader(subTable, conn);
     reader.readPartitionInformation();
@@ -236,7 +238,7 @@ public class PostgresPartitionReaderTest
     assertEquals("RANGE", partitions.get(0).getSubPartitionStrategy());
     assertEquals("(lower(data), c1, code * 2)", partitions.get(0).getSubPartitionDefinition());
 
-    TableIdentifier part1 = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".sub_expr_table_p1"));
+    TableIdentifier part1 = finder.findTable(new TableIdentifier(TESTID + ".sub_expr_table_p1"));
     PostgresPartition partition1 = PostgresPartitionReader.getPartitionDefinition(part1, conn);
     assertNotNull(partition1);
     assertEquals("FOR VALUES IN (1, 2, 3, 4)", partition1.getDefinition());
@@ -292,7 +294,7 @@ public class PostgresPartitionReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier subTable = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".sub_list_table"));
+    TableIdentifier subTable = new DbObjectFinder(conn).findTable(new TableIdentifier(TESTID + ".sub_list_table"));
 
     PostgresPartitionReader reader = new PostgresPartitionReader(subTable, conn);
     reader.readPartitionInformation();
@@ -345,7 +347,7 @@ public class PostgresPartitionReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier rangeTable = conn.getMetadata().findTable(new TableIdentifier(TESTID + ".hash_table"));
+    TableIdentifier rangeTable = new DbObjectFinder(conn).findTable(new TableIdentifier(TESTID + ".hash_table"));
 
     PostgresPartitionReader reader = new PostgresPartitionReader(rangeTable, conn);
     reader.readPartitionInformation();

@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.ReaderFactory;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -89,12 +90,12 @@ public class SqlServerConstraintReaderTest
     WbConnection conn = SQLServerTestUtil.getSQLServerConnection();
     assertNotNull("No connection available", conn);
 
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier("sales"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("sales"));
     assertNotNull(tbl);
     String source = tbl.getSource(conn).toString();
     assertNotNull(source);
-    assertTrue(source.indexOf("CHECK ([pieces]>(0))") > -1);
-    assertTrue(source.indexOf("CONSTRAINT positive_amount") > -1);
+    assertTrue(source.contains("CHECK ([pieces]>(0))"));
+    assertTrue(source.contains("CONSTRAINT positive_amount"));
 
     SqlServerConstraintReader reader = (SqlServerConstraintReader)ReaderFactory.getConstraintReader(conn.getMetadata());
     assertTrue(reader.isSystemConstraintName("FK__child__base_id__70099B30"));
@@ -111,12 +112,12 @@ public class SqlServerConstraintReaderTest
     WbConnection conn = SQLServerTestUtil.getSQLServerConnection();
     assertNotNull("No connection available", conn);
 
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier("def_test"));
+    TableIdentifier tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("def_test"));
     assertNotNull(tbl);
     String source = tbl.getSource(conn).toString();
     assertNotNull(source);
 //    System.out.println(source);
-    assertTrue(source.indexOf("CONSTRAINT inital_value") > -1);
+    assertTrue(source.contains("CONSTRAINT inital_value"));
   }
 
 }

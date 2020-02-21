@@ -31,6 +31,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 import workbench.resource.Settings;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.TableCommentReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -91,7 +92,7 @@ public class SqlServerObjectListEnhancerTest
     WbConnection conn = SQLServerTestUtil.getSQLServerConnection();
     assertNotNull("No connection available", conn);
     Settings.getInstance().setProperty("workbench.db.microsoft_sql_server.remarks.object.retrieve", true);
-    TableIdentifier sales = conn.getMetadata().findTable(new TableIdentifier("person"));
+    TableIdentifier sales = new DbObjectFinder(conn).findTable(new TableIdentifier("person"));
 
     sales.setComment("One person");
     TableCommentReader reader = new TableCommentReader();
@@ -116,7 +117,7 @@ public class SqlServerObjectListEnhancerTest
     assertEquals(1, tables.size());
     sales = tables.get(0);
     assertEquals("One person", sales.getComment());
-    sales = conn.getMetadata().findTable(new TableIdentifier("person"));
+    sales = new DbObjectFinder(conn).findTable(new TableIdentifier("person"));
     assertEquals("One person", sales.getComment());
   }
 

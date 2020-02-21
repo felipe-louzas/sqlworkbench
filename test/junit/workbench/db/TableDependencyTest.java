@@ -118,7 +118,7 @@ public class TableDependencyTest
     TestUtil.executeScript(dbConn, script);
     try
     {
-      TableIdentifier base = dbConn.getMetadata().findTable(new TableIdentifier("ONE.T1"));
+      TableIdentifier base = new DbObjectFinder(dbConn).findTable(new TableIdentifier("ONE.T1"));
       TableDependency dep = new TableDependency(dbConn, base);
       dep.setRetrieveDirectChildrenOnly(false);
       dep.readTreeForChildren();
@@ -153,7 +153,7 @@ public class TableDependencyTest
     try
     {
       WbConnection dbConn = createRegularDB();
-      TableIdentifier base = dbConn.getMetadata().findTable(new TableIdentifier("BASE"));
+      TableIdentifier base = new DbObjectFinder(dbConn).findTable(new TableIdentifier("BASE"));
 
       TableDependency dep = new TableDependency(dbConn, base);
       dep.readTreeForChildren();
@@ -451,7 +451,7 @@ public class TableDependencyTest
 
     try
     {
-      TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("main"));
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("main"));
       TableDependency dep = new TableDependency(con, tbl);
       dep.readTreeForParents();
       assertEquals(false, dep.wasAborted());
@@ -470,7 +470,8 @@ public class TableDependencyTest
     throws Exception
   {
     WbConnection con = createRegularDB();
-    TableIdentifier tbl = con.getMetadata().findTable(new TableIdentifier("child2"));
+    DbObjectFinder finder = new DbObjectFinder(con);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier("child2"));
 
     TableDependency dep = new TableDependency(con);
     dep.setMainTable(tbl);
@@ -479,7 +480,7 @@ public class TableDependencyTest
     assertEquals(1, fklist.size());
     assertEquals("BASE", fklist.get(0).getTable().getTableName());
 
-    tbl = con.getMetadata().findTable(new TableIdentifier("child2_detail"));
+    tbl = finder.findTable(new TableIdentifier("child2_detail"));
     dep.setMainTable(tbl);
     fklist = dep.getOutgoingForeignKeys();
     assertNotNull(fklist);

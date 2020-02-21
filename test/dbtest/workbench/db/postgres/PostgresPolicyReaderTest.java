@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -71,7 +72,8 @@ public class PostgresPolicyReaderTest
       "commit;"
     );
 
-    TableIdentifier tbl = conn.getMetadata().findTable(new TableIdentifier(TESTID, "ptest"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    TableIdentifier tbl = finder.findTable(new TableIdentifier(TESTID, "ptest"));
     String sql = tbl.getSource(conn).toString();
 
     System.out.println(sql);
@@ -101,7 +103,7 @@ public class PostgresPolicyReaderTest
       "commit;"
     );
 
-    tbl = conn.getMetadata().findTable(new TableIdentifier(TESTID, "ptest"));
+    tbl = finder.findTable(new TableIdentifier(TESTID, "ptest"));
     sql = tbl.getSource(conn).toString();
     parser.setScript(sql);
     size = parser.getSize();

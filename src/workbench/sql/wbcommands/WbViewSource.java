@@ -25,6 +25,7 @@ package workbench.sql.wbcommands;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.DropType;
 import workbench.db.ReaderFactory;
 import workbench.db.TableIdentifier;
@@ -98,7 +99,7 @@ public class WbViewSource
     }
 
     TableIdentifier object = new TableIdentifier(viewName, currentConnection);
-    TableIdentifier tbl = currentConnection.getMetadata().findObject(object);
+    TableIdentifier tbl = new DbObjectFinder(currentConnection).findObject(object);
 
     CharSequence source = null;
     if (tbl != null)

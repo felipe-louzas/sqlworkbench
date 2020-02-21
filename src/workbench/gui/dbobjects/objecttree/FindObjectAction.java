@@ -27,6 +27,7 @@ import workbench.interfaces.TextContainer;
 import workbench.log.LogMgr;
 
 import workbench.db.DbObject;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -98,7 +99,8 @@ public class FindObjectAction
     }
     else
     {
-      tbl = editorConnection.getMetadata().searchObjectOnPath(new TableIdentifier(text, editorConnection), null);
+      DbObjectFinder finder = new DbObjectFinder(editorConnection);
+      tbl = finder.searchObjectOnPath(new TableIdentifier(text, editorConnection), null);
     }
     showTable(tbl);
   }

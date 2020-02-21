@@ -37,6 +37,7 @@ import workbench.resource.GuiSettings;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.IndexReader;
 import workbench.db.PkDefinition;
 import workbench.db.QuoteHandler;
@@ -97,7 +98,7 @@ public class ResultInfo
   {
     DbMetadata meta = conn.getMetadata();
 
-    TableIdentifier toUse = meta.findObject(table);
+    TableIdentifier toUse = new DbObjectFinder(conn).findObject(table);
 
     if (toUse == null)
     {

@@ -30,6 +30,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
 import workbench.db.TableIdentifier;
@@ -125,7 +126,7 @@ public class PostgresIndexReaderTest
       "alter table person add constraint uq_firstname unique (firstname);\n" +
       "commit;\n");
 
-    TableIdentifier table = meta.findTable(new TableIdentifier("person"));
+    TableIdentifier table = new DbObjectFinder(meta).findTable(new TableIdentifier("person"));
     List<IndexDefinition> indexes = reader.getTableIndexList(table, true);
 
     assertFalse(indexes.isEmpty());
@@ -164,7 +165,7 @@ public class PostgresIndexReaderTest
       "create index idx_person_id on person (id) where active;\n" +
       "commit;\n");
 
-    TableIdentifier table = meta.findTable(new TableIdentifier("person"));
+    TableIdentifier table = new DbObjectFinder(meta).findTable(new TableIdentifier("person"));
     List<IndexDefinition> indexes = reader.getTableIndexList(table, true);
 
     assertFalse(indexes.isEmpty());
@@ -207,7 +208,7 @@ public class PostgresIndexReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier table = meta.findTable(new TableIdentifier("films"));
+    TableIdentifier table = new DbObjectFinder(meta).findTable(new TableIdentifier("films"));
     List<IndexDefinition> indexes = reader.getTableIndexList(table, false);
     assertEquals(3, indexes.size());
 

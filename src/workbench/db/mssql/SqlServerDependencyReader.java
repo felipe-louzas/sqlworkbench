@@ -146,40 +146,49 @@ public class SqlServerDependencyReader
   {
     catalogChanger.setFireEvents(false);
   }
-
+  
   @Override
   public List<DbObject> getUsedObjects(WbConnection connection, DbObject base)
   {
     if (base == null || connection == null) return Collections.emptyList();
 
+    String oldCatalog = changeDatabase(connection, base.getCatalog());
     List<DbObject> result = null;
-    if (connection.getDbSettings().getBoolProperty("dependency.use.infoschema", false))
-    {
-      result = retrieveObjects(connection, base, searchUsedByInfSchema, false);
-    }
-    else
-    {
-      result = retrieveObjects(connection, base, searchUsedByDMView, true);
-    }
 
-    if (connection.getMetadata().isTableType(base.getObjectType()))
+    try
     {
-      List<DbObject> defaults = retrieveObjects(connection, base, searchDefaultConstraints, true);
-      result.addAll(defaults);
-
-      List<DbObject> types = retrieveObjects(connection, base, searchColumnTypes, true);
-      result.addAll(types);
-    }
-    if (SqlServerUtil.supportsPartitioning(connection) && base instanceof TableIdentifier)
-    {
-      SqlServerPartitionReader reader = new SqlServerPartitionReader(connection);
-      PartitionScheme scheme = reader.getSchemeForTable((TableIdentifier)base);
-      if (scheme != null)
+      if (connection.getDbSettings().getBoolProperty("dependency.use.infoschema", false))
       {
-        result.add(scheme);
-        PartitionFunction func = reader.getFunctionForTable((TableIdentifier)base);
-        result.add(func);
+        result = retrieveObjects(connection, base, searchUsedByInfSchema, false);
       }
+      else
+      {
+        result = retrieveObjects(connection, base, searchUsedByDMView, true);
+      }
+
+      if (connection.getMetadata().isTableType(base.getObjectType()))
+      {
+        List<DbObject> defaults = retrieveObjects(connection, base, searchDefaultConstraints, true);
+        result.addAll(defaults);
+
+        List<DbObject> types = retrieveObjects(connection, base, searchColumnTypes, true);
+        result.addAll(types);
+      }
+      if (SqlServerUtil.supportsPartitioning(connection) && base instanceof TableIdentifier)
+      {
+        SqlServerPartitionReader reader = new SqlServerPartitionReader(connection);
+        PartitionScheme scheme = reader.getSchemeForTable((TableIdentifier)base);
+        if (scheme != null)
+        {
+          result.add(scheme);
+          PartitionFunction func = reader.getFunctionForTable((TableIdentifier)base);
+          result.add(func);
+        }
+      }
+    }
+    finally
+    {
+      changeDatabase(connection, oldCatalog);
     }
     return result;
   }
@@ -189,11 +198,19 @@ public class SqlServerDependencyReader
   {
     if (base == null || connection == null) return Collections.emptyList();
 
-    if (connection.getDbSettings().getBoolProperty("dependency.use.infoschema", false))
+    String oldCatalog = changeDatabase(connection, base.getCatalog());
+    try
     {
-      return retrieveObjects(connection, base, searchUsedSqlInfSchema, false);
+      if (connection.getDbSettings().getBoolProperty("dependency.use.infoschema", false))
+      {
+        return retrieveObjects(connection, base, searchUsedSqlInfSchema, false);
+      }
+      return retrieveObjects(connection, base, searchUsedSqlDMView, true);
     }
-    return retrieveObjects(connection, base, searchUsedSqlDMView, true);
+    finally
+    {
+      changeDatabase(connection, oldCatalog);
+    }
   }
 
   private String changeDatabase(WbConnection conn, String catalog)
@@ -232,8 +249,6 @@ public class SqlServerDependencyReader
 		{
 			LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
 		}
-
-    String oldCatalog = changeDatabase(connection, base.getCatalog());
 
     try
     {
@@ -315,7 +330,6 @@ public class SqlServerDependencyReader
     finally
     {
       SqlUtil.closeAll(rs, pstmt);
-      changeDatabase(connection, oldCatalog);
     }
 
     DbObjectSorter sorter = new DbObjectSorter(true);

@@ -69,11 +69,12 @@ public class TableDependency
   private final Set<DependencyNode> visitedParents = new HashSet<>();
   private ScriptGenerationMonitor monitor;
   private final List<TableIdentifier> excludeTables = new ArrayList<>();
-
+  private final DbObjectFinder finder;
   public TableDependency(WbConnection con)
   {
     this.connection = con;
     this.metaData = this.connection.getMetadata();
+    finder = new DbObjectFinder(this.metaData);
     this.fkHandler = FKHandler.createInstance(connection);
   }
 
@@ -92,7 +93,7 @@ public class TableDependency
   {
     if (verifyTable)
     {
-      theTable = metaData.findTable(tbl, false);
+      theTable = finder.findTable(tbl, false);
     }
     else
     {
@@ -244,7 +245,7 @@ public class TableDependency
     TableIdentifier tableToUse = this.theTable;
     if (!this.theTable.getNeverAdjustCase())
     {
-      tableToUse = this.metaData.findTable(theTable, false);
+      tableToUse = finder.findTable(theTable, false);
     }
     if (tableToUse == null) return;
 

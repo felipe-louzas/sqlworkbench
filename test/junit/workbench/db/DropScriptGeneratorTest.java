@@ -88,10 +88,11 @@ public class DropScriptGeneratorTest
 
     DropScriptGenerator gen = new DropScriptGenerator(conn);
 
-    TableIdentifier oi = conn.getMetadata().findTable(new TableIdentifier("ORDER_ITEM"));
-    TableIdentifier cust = conn.getMetadata().findTable(new TableIdentifier("CUSTOMER"));
-    TableIdentifier orders = conn.getMetadata().findTable(new TableIdentifier("ORDERS"));
-    TableIdentifier del = conn.getMetadata().findTable(new TableIdentifier("DELIVERY"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    TableIdentifier oi = finder.findTable(new TableIdentifier("ORDER_ITEM"));
+    TableIdentifier cust = finder.findTable(new TableIdentifier("CUSTOMER"));
+    TableIdentifier orders = finder.findTable(new TableIdentifier("ORDERS"));
+    TableIdentifier del = finder.findTable(new TableIdentifier("DELIVERY"));
     gen.setTables(CollectionUtil.arrayList(oi,cust,orders,del));
 
     gen.setSortByType(true);
@@ -130,7 +131,8 @@ public class DropScriptGeneratorTest
 
     DropScriptGenerator generator = new DropScriptGenerator(conn);
 
-    TableIdentifier cust = conn.getMetadata().findTable(new TableIdentifier("CUSTOMER"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    TableIdentifier cust = finder.findTable(new TableIdentifier("CUSTOMER"));
     generator.setTable(cust);
 //    String result = generator.getScript();
 //    System.out.println(result);
@@ -145,7 +147,7 @@ public class DropScriptGeneratorTest
     assertTrue(restore.get(1).startsWith("ALTER TABLE ORDERS"));
     assertTrue(restore.get(1).contains("ADD CONSTRAINT FK_ORDERS_CUST FOREIGN KEY (CUST_ID)"));
 
-    TableIdentifier orders = conn.getMetadata().findTable(new TableIdentifier("ORDERS"));
+    TableIdentifier orders = finder.findTable(new TableIdentifier("ORDERS"));
     generator.setTable(orders);
 //    String ordersScript = generator.getScript();
 //    System.out.println(ordersScript);
@@ -162,7 +164,7 @@ public class DropScriptGeneratorTest
     assertTrue(restore.get(3).startsWith("ALTER TABLE ORDERS"));
     assertTrue(restore.get(3).contains("ADD CONSTRAINT FK_ORDERS_CUST FOREIGN KEY (CUST_ID)"));
 
-    TableIdentifier orderItem = conn.getMetadata().findTable(new TableIdentifier("ORDER_ITEM"));
+    TableIdentifier orderItem = finder.findTable(new TableIdentifier("ORDER_ITEM"));
     generator.setTable(orderItem);
 //    String itemScript = generator.getScript();
 //    System.out.println(itemScript);
