@@ -199,8 +199,6 @@ public class OraclePartitionDefinition
     return result;
   }
 
-
-
   static int getMaxPartitionNameLength(List<OraclePartitionDefinition> parts)
   {
     int maxLength = 0;

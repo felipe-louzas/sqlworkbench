@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Savepoint;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -65,7 +66,11 @@ public class PostgresPartitionReader
 
   public List<PostgresPartition> getTablePartitions()
   {
-    return partitions;
+    if (partitions == null)
+    {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(partitions);
   }
 
   public String getStrategy()
@@ -125,6 +130,15 @@ public class PostgresPartitionReader
     return partSQL;
   }
 
+  public List<PostgresPartition> loadTablePartitions()
+  {
+    if (this.partitions == null)
+    {
+      readPartitions();
+    }
+    return getTablePartitions();
+  }
+
   public void readPartitionInformation()
   {
     readPartitioningDefinition();
@@ -149,6 +163,7 @@ public class PostgresPartitionReader
       ") \n" +
       "select c.relname as partition_name, \n" +
       "       c.relnamespace::regnamespace::text as partition_schema,  \n" +
+      "       pg_catalog.obj_description(c.oid, 'pg_class') as remarks, \n" +
       "       pg_catalog.pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, " +
       "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
       "        from unnest(p.partattrs) with ordinality as x(attnum, idx)\n" +
@@ -164,7 +179,7 @@ public class PostgresPartitionReader
       "       end as sub_partition_strategy \n" +
       "from inh \n" +
       "  join pg_catalog.pg_class c on inh.inhrelid = c.oid \n" +
-      "  left join pg_catalog.pg_partitioned_table p on p.partrelid = c.oid \n" +
+        "  left join pg_catalog.pg_partitioned_table p on p.partrelid = c.oid \n" +
       "order by c.relnamespace::regnamespace, c.relname";
 
     PreparedStatement pstmt = null;
@@ -192,9 +207,10 @@ public class PostgresPartitionReader
         String subPartExpr = rs.getString("sub_part_expression");
         String subPartCols = rs.getString("sub_part_cols");
         String parent = rs.getString("parent");
-
-        PostgresPartition partition = new PostgresPartition(schema, partName);
+        String remarks = rs.getString("remarks");
+        PostgresPartition partition = new PostgresPartition(this.table, schema, partName);
         partition.setDefinition(partExpr);
+        partition.setComment(remarks);
         String subPartStrategy = rs.getString("sub_partition_strategy");
         if (subPartStrategy != null)
         {
@@ -359,7 +375,7 @@ public class PostgresPartitionReader
         String name = rs.getString("base_table");
         String schema = rs.getString("base_table_schema");
         TableIdentifier tbl = new TableIdentifier(schema, name);
-        result = new PostgresPartition(table.getRawSchema(), table.getRawTableName());
+        result = new PostgresPartition(table, table.getRawSchema(), table.getRawTableName());
         result.setParentTable(tbl);
         result.setDefinition(rs.getString("partition_expression"));
         result.setSubPartitionStrategy(rs.getString("sub_partition_strategy"));

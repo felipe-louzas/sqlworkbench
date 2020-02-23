@@ -42,6 +42,7 @@ import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectNameSorter;
+import workbench.db.PartitionLister;
 import workbench.db.ProcedureDefinition;
 import workbench.db.SchemaIdentifier;
 import workbench.db.TableDefinition;
@@ -59,7 +60,6 @@ import workbench.gui.dbobjects.objecttree.vertica.ProjectionListNode;
 
 import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
-
 
 /**
  *
@@ -138,6 +138,11 @@ public class TreeLoader
   public static final String TYPE_DEPENDENCY_USING = "dep-using";
 
   /**
+   * The node type for the "dependencies" node in a table or a view.
+   */
+  public static final String TYPE_PARTITIONS_NODE = "table-partitions-node";
+
+  /**
    * The node type for the foreign key nodes in a table.
    * These are the "outgoing" foreign keys, i.e. columns from the "current" table
    * referencing other tables.
@@ -181,6 +186,7 @@ public class TreeLoader
   private Collection<String> availableTypes;
   private ProcedureTreeLoader procLoader;
   private DependencyReader dependencyLoader;
+  private PartitionLister partitionLister;
   private final Set<String> typesToShow = CollectionUtil.caseInsensitiveSet();
   private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
 
@@ -211,6 +217,7 @@ public class TreeLoader
     }
     procLoader = new ProcedureTreeLoader();
     dependencyLoader = DependencyReaderFactory.getReader(connection);
+    partitionLister = PartitionLister.Factory.createReader(connection);
   }
 
   private void removeAllChildren(ObjectTreeNode node)
@@ -770,6 +777,16 @@ public class TreeLoader
     node.add(cols);
   }
 
+  public boolean addPartitionsNode(ObjectTreeNode node)
+  {
+    if (node == null) return false;
+    if (this.partitionLister == null) return false;
+    node.setAllowsChildren(true);
+    ObjectTreeNode partNode = new ObjectTreeNode("Partitions", TYPE_PARTITIONS_NODE);
+    node.add(partNode);
+    return true;
+  }
+
   public boolean addDependencyNodes(ObjectTreeNode node)
   {
     if (node == null) return false;
@@ -813,6 +830,7 @@ public class TreeLoader
   private void addTableSubNodes(ObjectTreeNode node)
   {
     addIndexNode(node);
+    addPartitionsNode(node);
 
     ObjectTreeNode fk = new ObjectTreeNode(ResourceMgr.getString("TxtDbExplorerFkColumns"), TYPE_FK_LIST);
     fk.setAllowsChildren(true);
@@ -1021,6 +1039,55 @@ public class TreeLoader
     columnsNode.setChildrenLoaded(true);
   }
 
+  private TableIdentifier findTableParent(ObjectTreeNode node)
+  {
+    if (node == null) return null;
+    ObjectTreeNode parent = node.getParent();
+    while (parent != null)
+    {
+      if (parent.getUserObject() instanceof TableIdentifier)
+      {
+        return (TableIdentifier)parent.getUserObject();
+      }
+      parent = parent.getParent();
+    }
+    return null;
+  }
+
+  private void loadSubPartitions(ObjectTreeNode partitionNode)
+  {
+    if (this.partitionLister == null) return;
+    DbObject partition = partitionNode.getDbObject();
+
+    TableIdentifier baseTable = findTableParent(partitionNode);
+    List<? extends DbObject> subPartitions = partitionLister.getSubPartitions(baseTable, partition);
+    partitionNode.setChildrenLoaded(true);
+    if (CollectionUtil.isEmpty(subPartitions)) return;
+
+    for (DbObject obj : subPartitions)
+    {
+      ObjectTreeNode node = new ObjectTreeNode(obj);
+      node.setAllowsChildren(false);
+      partitionNode.add(node);
+    }
+    model.nodeStructureChanged(partitionNode);
+  }
+
+  private void loadTablePartitions(DbObject table, ObjectTreeNode partNode)
+  {
+    if (this.partitionLister == null) return;
+    List<? extends DbObject> partitions = partitionLister.getPartitions((TableIdentifier)table);
+    boolean supportsSubPartitions = partitionLister.supportsSubPartitions();
+    for (DbObject obj : partitions)
+    {
+      ObjectTreeNode node = new ObjectTreeNode(obj);
+      node.setAllowsChildren(supportsSubPartitions);
+      partNode.add(node);
+    }
+    model.nodeStructureChanged(partNode);
+    partNode.setChildrenLoaded(true);
+  }
+
   private void loadForeignKeys(DbObject dbo, ObjectTreeNode fkNode, boolean showIncoming)
     throws SQLException
   {
@@ -1163,6 +1230,16 @@ public class TreeLoader
         ObjectTreeNode parent = node.getParent();
         DbObject dbo = parent.getDbObject();
         loadTableIndexes(dbo, node);
+      }
+      else if (PartitionLister.PARTITION_TYPE_NAME.equals(type))
+      {
+        loadSubPartitions(node);
+      }
+      else if (TYPE_PARTITIONS_NODE.equals(type))
+      {
+        ObjectTreeNode parent = node.getParent();
+        DbObject dbo = parent.getDbObject();
+        loadTablePartitions(dbo, node);
       }
       else if (TYPE_FK_LIST.equals(type))
       {

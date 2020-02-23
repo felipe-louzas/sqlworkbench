@@ -23,7 +23,6 @@ package workbench.db.mssql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,15 +30,9 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.db.ColumnIdentifier;
-import workbench.db.DbObject;
-import workbench.db.ObjectListExtender;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.storage.DataStore;
-
-import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 
 /**
@@ -47,7 +40,6 @@ import workbench.util.SqlUtil;
  * @author Thomas Kellerer
  */
 public class SqlServerPartitionReader
-  implements ObjectListExtender
 {
   private final WbConnection dbConnection;
 
@@ -90,82 +82,6 @@ public class SqlServerPartitionReader
   {
     this.dbConnection = conn;
     this.supportsPartitioning = SqlServerUtil.supportsPartitioning(conn);
-  }
-
-  @Override
-  public List<String> supportedTypes()
-  {
-    return CollectionUtil.arrayList(PartitionFunction.TYPE_NAME, PartitionScheme.TYPE_NAME);
-  }
-
-  @Override
-  public boolean isDerivedType()
-  {
-    return false;
-  }
-
-  @Override
-  public boolean handlesType(String type)
-  {
-    return supportedTypes().contains(type);
-  }
-
-  @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String type : types)
-    {
-      if (handlesType(type)) return true;
-    }
-    return false;
-  }
-
-  @Override
-  public DataStore getObjectDetails(WbConnection con, DbObject object)
-  {
-    return null;
-  }
-
-  @Override
-  public DbObject getObjectDefinition(WbConnection con, DbObject name)
-  {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
-  @Override
-  public String getObjectSource(WbConnection con, DbObject object)
-  {
-    if (object == null) return null;
-    CharSequence source;
-    try
-    {
-      source = object.getSource(con);
-      if (source != null) return source.toString();
-    }
-    catch (SQLException ex)
-    {
-      // ignore
-    }
-    return null;
-  }
-
-  @Override
-  public List<ColumnIdentifier> getColumns(WbConnection con, DbObject object)
-  {
-    return null;
-  }
-
-  @Override
-  public boolean hasColumns()
-  {
-    return false;
-  }
-
-  @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
-  {
-    return false;
   }
 
   public List<PartitionFunction> getFunctions()

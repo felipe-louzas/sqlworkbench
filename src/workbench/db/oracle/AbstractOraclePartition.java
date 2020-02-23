@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
@@ -257,11 +257,7 @@ public abstract class AbstractOraclePartition
     try
     {
       pstmt = conn.getSqlConnection().prepareStatement(retrievePartitionDefinitionSql);
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(getClassName() + ".retrieveDefinition()", "Retrieving partition information using:\n" +
-          SqlUtil.replaceParameters(retrievePartitionDefinitionSql, dbObject.getSchema(), dbObject.getObjectName()));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "partition definition", retrievePartitionDefinitionSql, dbObject.getSchema(), dbObject.getObjectName());
 
       pstmt.setString(1, SqlUtil.removeObjectQuotes(dbObject.getSchema()));
       pstmt.setString(2, SqlUtil.removeObjectQuotes(dbObject.getObjectName()));
@@ -287,6 +283,11 @@ public abstract class AbstractOraclePartition
         objectOwner = dbObject.getSchema();
       }
     }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "partition definition", retrievePartitionDefinitionSql, dbObject.getSchema(), dbObject.getObjectName());
+      throw ex;
+    }
     finally
     {
       SqlUtil.closeAll(rs, pstmt);
@@ -302,10 +303,9 @@ public abstract class AbstractOraclePartition
       retrieveSubColumns(dbObject, conn);
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("AbstractOraclePartition.retrieveDefinition()", "Retrieving partition definition for " + dbObject.getFullyQualifiedName(conn)+ " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving partition definition for " + dbObject.getFullyQualifiedName(conn)+ " took: " + duration + "ms");
     return type != null;
   }
-
 
   private void retrieveColumns(DbObject table, WbConnection conn)
     throws SQLException
@@ -318,11 +318,7 @@ public abstract class AbstractOraclePartition
     try
     {
       pstmt = conn.getSqlConnection().prepareStatement(retrieveColumnsSql);
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(getClassName() + ".retrieveColumns()", "Retrieving partition columns using:\n" +
-          SqlUtil.replaceParameters(retrieveColumnsSql, table.getSchema(), table.getObjectName()));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, retrieveColumnsSql, table.getSchema(), table.getObjectName());
 
       pstmt.setString(1, SqlUtil.removeObjectQuotes(table.getSchema()));
       pstmt.setString(2, SqlUtil.removeObjectQuotes(table.getObjectName()));
@@ -334,12 +330,16 @@ public abstract class AbstractOraclePartition
         columns.add(rs.getString("COLUMN_NAME"));
       }
     }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, retrieveColumnsSql, table.getSchema(), table.getObjectName());
+    }
     finally
     {
       SqlUtil.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("AbstractOraclePartition.retrieveColumns()", "Retrieving partition columns for " + table.getObjectName() + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving partition columns for " + table.getObjectName() + " took: " + duration + "ms");
   }
 
   private void retrieveSubColumns(DbObject dbObject, WbConnection conn)
@@ -352,11 +352,7 @@ public abstract class AbstractOraclePartition
     try
     {
       pstmt = conn.getSqlConnection().prepareStatement(retrieveSubColumns);
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(getClassName() + ".retrieveSubColumns()", "Using SQL=\n" +
-          SqlUtil.replaceParameters(retrieveSubColumns, dbObject.getSchema(), dbObject.getObjectName()));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "sub-partition columns", retrieveSubColumns, dbObject.getSchema(), dbObject.getObjectName());
 
       pstmt.setString(1, SqlUtil.removeObjectQuotes(dbObject.getSchema()));
       pstmt.setString(2, SqlUtil.removeObjectQuotes(dbObject.getObjectName()));
@@ -368,12 +364,17 @@ public abstract class AbstractOraclePartition
         subColumns.add(rs.getString("COLUMN_NAME"));
       }
     }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "sub-partition columns", retrieveSubColumns, dbObject.getSchema(), dbObject.getObjectName());
+      throw ex;
+    }
     finally
     {
       SqlUtil.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("AbstractOraclePartition.retrieveSubColumns()", "Retrieving sub partition columns for " + dbObject.getObjectName() + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving sub partition columns for " + dbObject.getObjectName() + " took: " + duration + "ms");
   }
 
   private OraclePartitionDefinition findPartition(String name)
@@ -400,11 +401,7 @@ public abstract class AbstractOraclePartition
     try
     {
       pstmt = conn.getSqlConnection().prepareStatement(retrieveSubPartitions);
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(getClassName() + ".retrieveSubPartitions()", "Using SQL=\n" +
-          SqlUtil.replaceParameters(retrieveSubPartitions, object.getSchema(), object.getObjectName()));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "sub-partitions", retrieveSubPartitions, object.getSchema(), object.getObjectName());
 
       pstmt.setString(1, SqlUtil.removeObjectQuotes(object.getSchema()));
       pstmt.setString(2, SqlUtil.removeObjectQuotes(object.getObjectName()));
@@ -433,12 +430,17 @@ public abstract class AbstractOraclePartition
         }
       }
     }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "sub-partitions", retrieveSubPartitions, object.getSchema(), object.getObjectName());
+      throw ex;
+    }
     finally
     {
       SqlUtil.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("AbstractOraclePartition.retrieveSubPartitions()", "Retrieving sub partitions " + object.getObjectName() + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving sub partitions " + object.getObjectName() + " took: " + duration + "ms");
   }
 
 
@@ -460,11 +462,7 @@ public abstract class AbstractOraclePartition
     try
     {
       pstmt = conn.getSqlConnection().prepareStatement(retrievePartitionSQL);
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(getClassName() + ".retrievePartitions()", "Using SQL=\n" +
-          SqlUtil.replaceParameters(retrievePartitionSQL, object.getSchema(), object.getObjectName()));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "partitions", retrievePartitionSQL, object.getSchema(), object.getObjectName());
 
       pstmt.setString(1, SqlUtil.removeObjectQuotes(object.getSchema()));
       pstmt.setString(2, SqlUtil.removeObjectQuotes(object.getObjectName()));
@@ -488,24 +486,23 @@ public abstract class AbstractOraclePartition
         partitions.add(def);
       }
     }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "partitions", retrievePartitionSQL, object.getSchema(), object.getObjectName());
+      throw ex;
+    }
     finally
     {
       SqlUtil.closeAll(rs, pstmt);
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("AbstractOraclePartition.retrievePartitions()", "Retrieving partitions " + object.getObjectName() + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving partitions " + object.getObjectName() + " took: " + duration + "ms");
 
     if (defaultSubpartitionCount <= 1 && subColumns != null)
     {
       retrieveSubPartitions(object, conn);
     }
-  }
-
-  private String getClassName()
-  {
-    String clsname = getClass().getName();
-    return clsname.substring(clsname.lastIndexOf('.') + 1);
   }
 
 }
