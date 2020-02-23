@@ -151,7 +151,7 @@ import workbench.util.CharSequenceReader;
 wsp = [ \r\n\t\f]+
 
 keyword=(
-(BEGIN{wsp}TRANSACTION)|(BEGIN{wsp}TRAN)|
+(BEGIN{wsp}TRANSACTION)|(BEGIN{wsp}TRAN)
 (ALTER{wsp}SESSION)|
 
 (PRIMARY{wsp}KEY)|
@@ -167,8 +167,8 @@ keyword=(
 
 (IS{wsp}NOT{wsp}NULL)|
 
-
-
+(MATERIALIZED{wsp}VIEW)|
+(MATERIALIZED{wsp}VIEW{wsp}LOG)|
 
 (OUTER{wsp}JOIN)|
 (CROSS{wsp}JOIN)|

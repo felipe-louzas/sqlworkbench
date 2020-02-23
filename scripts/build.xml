@@ -842,12 +842,12 @@
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|" value='"LIMIT|OFFSET|CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|'/>
       <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|"/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
+      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
       <replacefilter token="(PACKAGE{wsp}BODY)|"/>
-      <replacefilter token="(TYPE{wsp}BODY)|"/>
-      <replacefilter token="(SNAPSHOT{wsp}LOG)|"/>
+      <replacefilter token="(TYPE{wsp}BODY)|(FOREIGN{wsp}TABLE)"/>
+      <replacefilter token="(SNAPSHOT{wsp}LOG)|(ACCESS{wsp}METHOD)"/>
       <replacefilter token="(CONNECT{wsp}BY)|"/>
-      <replacefilter token='"VARCHAR2"|'/>
+      <replacefilter token='"VARCHAR2"|"STATISTICS"'/>
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
       <replacefilter token="(DATABASE{wsp}LINK)|"/>
       <replacefilter token='"SYSDATE"|'/>
@@ -892,9 +892,9 @@
         <replacetoken>"UPDATE"|</replacetoken>
         <replacevalue>"UPDATE"|"(UPDATE{wsp}STATISTICS)"|</replacevalue>
       </replacefilter>
-      <replacefilter token="XXXX_DBMS_XXXX|" value="(BEGIN{wsp}TRANSACTION)|(BEGIN{wsp}TRAN)|"/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW)|"/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|"/>
+      <replacefilter token="XXXX_DBMS_XXXX|" value="(BEGIN{wsp}TRANSACTION)|(BEGIN{wsp}TRAN)"/>
+      <replacefilter token="(MATERIALIZED{wsp}VIEW)|(PARTITION{wsp}FUNCTION)"/>
+      <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|(PARTITION{wsp}SCHEME)"/>
       <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
       <replacefilter token="(PACKAGE{wsp}BODY)|"/>
       <replacefilter token="(TYPE{wsp}BODY)|"/>

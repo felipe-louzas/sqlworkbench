@@ -157,7 +157,7 @@ public class SqlServerTableSourceBuilder
       pstmt.setString(1, tname);
       rs = pstmt.executeQuery();
       int colNr = 0;
-      String columns = null;
+      String columns = "";
       while (rs.next())
       {
         if (colNr == 0)
@@ -194,12 +194,12 @@ public class SqlServerTableSourceBuilder
     if (function != null)
     {
       table.getSourceOptions().appendAdditionalSql("-- partitioning details");
-      table.getSourceOptions().appendAdditionalSql(function.getSource() + ";");
+      table.getSourceOptions().appendAdditionalSql(function.getSource());
     }
     PartitionScheme scheme = reader.getSchemeForTable(table);
     if (scheme != null)
     {
-      table.getSourceOptions().appendAdditionalSql("\n" + scheme.getSource() + ";");
+      table.getSourceOptions().appendAdditionalSql("\n" + scheme.getSource());
     }
   }
 
