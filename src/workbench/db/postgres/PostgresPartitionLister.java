@@ -55,7 +55,7 @@ public class PostgresPartitionLister
     List<PostgresPartition> mainPartitions = new ArrayList<>();
     for (PostgresPartition partition : partitions)
     {
-      partition.setHasSubPartitions(SubPartitionState.none);
+      partition.setSubPartitionState(SubPartitionState.none);
       if (!partition.isSubPartition())
       {
         mainPartitions.add(partition);
@@ -63,7 +63,7 @@ public class PostgresPartitionLister
         if (subs.size() > 0)
         {
           partition.setSubPartitions(subs);
-          partition.setHasSubPartitions(SubPartitionState.yes);
+          partition.setSubPartitionState(SubPartitionState.yes);
         }
       }
     }
@@ -79,7 +79,7 @@ public class PostgresPartitionLister
     {
       if (p.getParentTable() != null && p.getParentTable().getRawTableName().equals(main))
       {
-        p.setHasSubPartitions(SubPartitionState.none);
+        p.setSubPartitionState(SubPartitionState.none);
         subs.add(p);
       }
     }

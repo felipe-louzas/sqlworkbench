@@ -74,8 +74,8 @@ public class OraclePartitionLister
       {
         TablePartition partition = new TablePartition();
         partition.setSchema(table.getRawSchema());
-        partition.setPartitionName(oraPart.getName());
-        partition.setHasSubPartitions(state);
+        partition.setName(oraPart.getName());
+        partition.setSubPartitionState(state);
         result.add(partition);
       }
     }
