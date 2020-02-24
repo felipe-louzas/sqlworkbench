@@ -106,11 +106,11 @@ public class PostgresPartitionReaderTest
     List<PostgresPartition> partitions = reader.getTablePartitions();
     assertNotNull(partitions);
     assertEquals(3, partitions.size());
-    assertEquals("range_table_p1", partitions.get(0).getName());
+    assertEquals("range_table_p1", partitions.get(0).getObjectName());
     assertEquals("FOR VALUES FROM (MINVALUE) TO ('2018-01-01')", partitions.get(0).getDefinition());
-    assertEquals("range_table_p2", partitions.get(1).getName());
+    assertEquals("range_table_p2", partitions.get(1).getObjectName());
     assertEquals("FOR VALUES FROM ('2018-01-01') TO ('2019-01-01')", partitions.get(1).getDefinition());
-    assertEquals("range_table_p3", partitions.get(2).getName());
+    assertEquals("range_table_p3", partitions.get(2).getObjectName());
     assertEquals("FOR VALUES FROM ('2019-01-01') TO ('2020-01-01')", partitions.get(2).getDefinition());
 
     String ddl = reader.getCreatePartitions();
@@ -182,9 +182,9 @@ public class PostgresPartitionReaderTest
     List<PostgresPartition> partitions = reader.getTablePartitions();
     assertNotNull(partitions);
     assertEquals(2, partitions.size());
-    assertEquals("list_table_p1", partitions.get(0).getName());
+    assertEquals("list_table_p1", partitions.get(0).getObjectName());
     assertEquals("FOR VALUES IN (1, 2, 3, 4)", partitions.get(0).getDefinition());
-    assertEquals("list_table_p2", partitions.get(1).getName());
+    assertEquals("list_table_p2", partitions.get(1).getObjectName());
     assertEquals("FOR VALUES IN (5, 6, 7, 8)", partitions.get(1).getDefinition());
 
     String ddl = reader.getCreatePartitions();
@@ -356,9 +356,9 @@ public class PostgresPartitionReaderTest
     List<PostgresPartition> partitions = reader.getTablePartitions();
     assertNotNull(partitions);
     assertEquals(2, partitions.size());
-    assertEquals("hash_table_p01", partitions.get(0).getName());
+    assertEquals("hash_table_p01", partitions.get(0).getObjectName());
     assertEquals("FOR VALUES WITH (modulus 2, remainder 0)", partitions.get(0).getDefinition());
-    assertEquals("hash_table_p02", partitions.get(1).getName());
+    assertEquals("hash_table_p02", partitions.get(1).getObjectName());
     assertEquals("FOR VALUES WITH (modulus 2, remainder 1)", partitions.get(1).getDefinition());
 
     String ddl = reader.getCreatePartitions();

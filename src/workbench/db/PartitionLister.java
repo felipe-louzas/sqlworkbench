@@ -33,8 +33,8 @@ public interface PartitionLister
 {
   public static final String PARTITION_TYPE_NAME = "PARTITION";
 
-  List<? extends DbObject> getPartitions(TableIdentifier table);
-  List<? extends DbObject> getSubPartitions(TableIdentifier baseTable, DbObject mainPartition);
+  List<? extends TablePartition> getPartitions(TableIdentifier table);
+  List<? extends TablePartition> getSubPartitions(TableIdentifier baseTable, DbObject mainPartition);
   boolean supportsSubPartitions();
 
   public static class Factory

@@ -116,7 +116,7 @@ public class PostgresPartitionReader
 
     String tableOf = parent == null ? baseTable : parent.getTableExpression(dbConnection);
 
-    TableIdentifier name = new TableIdentifier(partition.getSchema(), partition.getName());
+    TableIdentifier name = new TableIdentifier(partition.getSchema(), partition.getObjectName());
     String partSQL =
       "CREATE TABLE " + name.getTableExpression(dbConnection) + "\n" +
       "  PARTITION OF " + tableOf + "\n  " + partition.getDefinition();

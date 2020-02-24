@@ -26,7 +26,9 @@ import java.util.List;
 
 import workbench.db.DbObject;
 import workbench.db.PartitionLister;
+import workbench.db.SubPartitionState;
 import workbench.db.TableIdentifier;
+import workbench.db.TablePartition;
 import workbench.db.WbConnection;
 
 /**
@@ -53,11 +55,16 @@ public class PostgresPartitionLister
     List<PostgresPartition> mainPartitions = new ArrayList<>();
     for (PostgresPartition partition : partitions)
     {
+      partition.setHasSubPartitions(SubPartitionState.none);
       if (!partition.isSubPartition())
       {
         mainPartitions.add(partition);
         List<PostgresPartition> subs = extractSubPartitions(partitions, partition);
-        partition.setSubPartitions(subs);
+        if (subs.size() > 0)
+        {
+          partition.setSubPartitions(subs);
+          partition.setHasSubPartitions(SubPartitionState.yes);
+        }
       }
     }
     return mainPartitions;
@@ -67,11 +74,12 @@ public class PostgresPartitionLister
   {
     List<PostgresPartition> subs = new ArrayList<>();
 
-    String main = mainPartition.getName();
+    String main = mainPartition.getObjectName();
     for (PostgresPartition p : all)
     {
       if (p.getParentTable() != null && p.getParentTable().getRawTableName().equals(main))
       {
+        p.setHasSubPartitions(SubPartitionState.none);
         subs.add(p);
       }
     }
@@ -79,7 +87,7 @@ public class PostgresPartitionLister
   }
 
   @Override
-  public List<PostgresPartition> getSubPartitions(TableIdentifier baseTable, DbObject partition)
+  public List<? extends TablePartition> getSubPartitions(TableIdentifier baseTable, DbObject partition)
   {
     if (partition instanceof PostgresPartition)
     {

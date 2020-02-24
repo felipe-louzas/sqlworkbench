@@ -1062,11 +1062,11 @@ public class TreeLoader
     DbObject partition = partitionNode.getDbObject();
 
     TableIdentifier baseTable = findTableParent(partitionNode);
-    List<? extends DbObject> subPartitions = partitionLister.getSubPartitions(baseTable, partition);
+    List<? extends TablePartition> subPartitions = partitionLister.getSubPartitions(baseTable, partition);
     partitionNode.setChildrenLoaded(true);
     if (CollectionUtil.isEmpty(subPartitions)) return;
 
-    for (DbObject obj : subPartitions)
+    for (TablePartition obj : subPartitions)
     {
       ObjectTreeNode node = new ObjectTreeNode(obj);
       node.setAllowsChildren(false);
@@ -1078,27 +1078,18 @@ public class TreeLoader
   private void loadTablePartitions(DbObject table, ObjectTreeNode partNode)
   {
     if (this.partitionLister == null) return;
-    List<? extends DbObject> partitions = partitionLister.getPartitions((TableIdentifier)table);
+    List<? extends TablePartition> partitions = partitionLister.getPartitions((TableIdentifier)table);
     partNode.setChildrenLoaded(true);
     if (CollectionUtil.isEmpty(partitions)) return;
 
-    boolean supportsSubPartitions = partitionLister.supportsSubPartitions();
-    for (DbObject obj : partitions)
+    for (TablePartition part : partitions)
     {
-      ObjectTreeNode node = new ObjectTreeNode(obj);
-      if (obj instanceof TablePartition)
+      ObjectTreeNode node = new ObjectTreeNode(part);
+      boolean hasSubPartitions = part.getSubPartitionState() != SubPartitionState.none;
+      node.setAllowsChildren(hasSubPartitions);
+      if (hasSubPartitions)
       {
-        TablePartition part = (TablePartition)obj;
-        boolean hasSubPartitions = part.getSubPartitionState() != SubPartitionState.none;
-        node.setAllowsChildren(hasSubPartitions);
-        if (hasSubPartitions)
-        {
-          node.setIconKey("partitions");
-        }
-      }
-      else
-      {
-        node.setAllowsChildren(supportsSubPartitions);
+        node.setIconKey("partitions");
       }
       partNode.add(node);
     }

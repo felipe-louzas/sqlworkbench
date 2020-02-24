@@ -39,7 +39,7 @@ public class TablePartition
   private String partitionName;
   private String comment;
   private boolean isSubPartition;
-  private List<TablePartition> subPartitions;
+  private List<? extends TablePartition> subPartitions;
   private SubPartitionState hasSubPartitions = SubPartitionState.unknown;
   private DbObject nativePartitionObject;
 
@@ -99,7 +99,7 @@ public class TablePartition
     return isSubPartition;
   }
 
-  public void setSubPartitions(List<TablePartition> partitions)
+  public void setSubPartitions(List<? extends TablePartition> partitions)
   {
     if (partitions == null)
     {
@@ -111,7 +111,7 @@ public class TablePartition
     }
   }
 
-  public List<TablePartition> getSubPartitions()
+  public List<? extends TablePartition> getSubPartitions()
   {
     if (subPartitions == null) return null;
     return Collections.unmodifiableList(subPartitions);
