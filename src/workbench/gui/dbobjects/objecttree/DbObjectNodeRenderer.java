@@ -74,6 +74,11 @@ public class DbObjectNodeRenderer
     iconMap.put(TreeLoader.TYPE_TRIGGERS_NODE, "db_type");
     iconMap.put(TreeLoader.TYPE_DEPENDENCY_USED, "deps-used");
     iconMap.put(TreeLoader.TYPE_DEPENDENCY_USING, "deps-using");
+    iconMap.put(TreeLoader.TYPE_COLUMN_LIST, "folder");
+    iconMap.put(TreeLoader.TYPE_INDEX_LIST, "folder");
+    iconMap.put(TreeLoader.TYPE_REF_LIST, "folder");
+    iconMap.put(TreeLoader.TYPE_FK_LIST, "folder");
+    iconMap.put(TreeLoader.TYPE_PARTITIONS_NODE, "partitions");
     iconMap.put("procedure", "sproc");
     iconMap.put("trigger", "bullet_black");
     iconMap.put("index", "index");
@@ -83,6 +88,10 @@ public class DbObjectNodeRenderer
 
     iconMapOpen.put(TreeLoader.TYPE_SCHEMA, "folder-open");
     iconMapOpen.put(TreeLoader.TYPE_CATALOG, "folder-open-db");
+    iconMapOpen.put(TreeLoader.TYPE_COLUMN_LIST, "folder-open");
+    iconMapOpen.put(TreeLoader.TYPE_INDEX_LIST, "folder-open");
+    iconMapOpen.put(TreeLoader.TYPE_REF_LIST, "folder-open");
+    iconMapOpen.put(TreeLoader.TYPE_FK_LIST, "folder-open");
     setLeafIcon(IconMgr.getInstance().getLabelIcon("bullet_black"));
   }
 
@@ -164,9 +173,21 @@ public class DbObjectNodeRenderer
 
         if (expanded)
         {
-          key = iconMapOpen.get(type);
+          key = node.getIconKeyOpen();
+          if (key == null)
+          {
+            key = iconMapOpen.get(type);
+          }
         }
-        if (key == null) key = iconMap.get(type);
+
+        if (key == null)
+        {
+          key = node.getIconKey();
+          if (key == null)
+          {
+            key = iconMap.get(type);
+          }
+        }
 
         if (key != null)
         {

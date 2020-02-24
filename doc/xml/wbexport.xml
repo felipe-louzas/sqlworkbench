@@ -401,8 +401,8 @@
               <para>
                 Defines the encoding in which the file should be
                 written. Common encodings are ISO-8859-1, ISO-8859-15, UTF-8 (or UTF8).
-                To get a list of available encodings, execut <literal>WbExport</literal>
-                with the parameter <literal>-showencoding</literal>. This parameter is ignored
+                To get a list of available encodings, execute <literal>WbExport</literal>
+                with the parameter <literal>-showEncodings</literal>. This parameter is ignored
                 for XLS, XLSX and ODS exports.
               </para>
               <para>

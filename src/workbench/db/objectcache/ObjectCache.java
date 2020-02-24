@@ -733,16 +733,7 @@ class ObjectCache
   {
     if (definition == null) return;
     TableIdentifier table = definition.getTable();
-    String tbName = table.getTableExpression(SqlUtil.getCatalogSeparator(conn), SqlUtil.getSchemaSeparator(conn));
-    List<ColumnIdentifier> old = this.objects.put(definition.getTable(), definition.getColumns());
-    if (old == null)
-    {
-      LogMgr.logDebug(new CallerInfo(){}, "Added table definition for " + tbName);
-    }
-    else
-    {
-      LogMgr.logDebug(new CallerInfo(){}, "Replaced existing table definition for " + tbName);
-    }
+    this.objects.put(definition.getTable(), definition.getColumns());
   }
 
   /**

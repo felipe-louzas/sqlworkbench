@@ -25,9 +25,9 @@ import java.util.Collections;
 import java.util.List;
 
 import workbench.db.DbObject;
+import workbench.db.PartitionLister;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-import workbench.db.PartitionLister;
 
 /**
  *
@@ -44,7 +44,7 @@ public class PostgresPartitionLister
   }
 
   @Override
-  public List<? extends DbObject> getPartitions(TableIdentifier table)
+  public List<PostgresPartition> getPartitions(TableIdentifier table)
   {
     PostgresPartitionReader reader = new PostgresPartitionReader(table, conn);
 
@@ -79,7 +79,7 @@ public class PostgresPartitionLister
   }
 
   @Override
-  public List<? extends DbObject> getSubPartitions(TableIdentifier baseTable, DbObject partition)
+  public List<PostgresPartition> getSubPartitions(TableIdentifier baseTable, DbObject partition)
   {
     if (partition instanceof PostgresPartition)
     {

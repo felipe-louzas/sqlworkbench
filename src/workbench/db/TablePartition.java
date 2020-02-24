@@ -38,8 +38,10 @@ public class TablePartition
   private String schema;
   private String partitionName;
   private String comment;
-  boolean isSubPartition;
+  private boolean isSubPartition;
   private List<TablePartition> subPartitions;
+  private SubPartitionState hasSubPartitions = SubPartitionState.unknown;
+  private DbObject nativePartitionObject;
 
   public void setCatalog(String catalog)
   {
@@ -51,9 +53,35 @@ public class TablePartition
     this.schema = schema;
   }
 
+  @Override
+  public void setName(String name)
+  {
+    setPartitionName(name);
+  }
+
   public void setPartitionName(String partitionName)
   {
     this.partitionName = partitionName;
+  }
+
+  public DbObject getNativePartitionObject()
+  {
+    return nativePartitionObject;
+  }
+
+  public void setNativePartitionObject(DbObject partition)
+  {
+    this.nativePartitionObject = partition;
+  }
+
+  public SubPartitionState getSubPartitionState()
+  {
+    return hasSubPartitions;
+  }
+
+  public void setHasSubPartitions(SubPartitionState state)
+  {
+    this.hasSubPartitions = state == null ? SubPartitionState.unknown : state;
   }
 
   public void setComments(String comments)
@@ -88,7 +116,6 @@ public class TablePartition
     if (subPartitions == null) return null;
     return Collections.unmodifiableList(subPartitions);
   }
-
 
   @Override
   public String getCatalog()
@@ -137,6 +164,10 @@ public class TablePartition
   public CharSequence getSource(WbConnection con)
     throws SQLException
   {
+    if (this.nativePartitionObject != null && nativePartitionObject.supportsGetSource())
+    {
+      return nativePartitionObject.getSource(con);
+    }
     return null;
   }
 
@@ -167,6 +198,10 @@ public class TablePartition
   @Override
   public boolean supportsGetSource()
   {
+    if (this.nativePartitionObject != null)
+    {
+      return nativePartitionObject.supportsGetSource();
+    }
     return false;
   }
 

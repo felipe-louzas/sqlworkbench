@@ -69,6 +69,8 @@ public class ObjectTreeNode
   private DbObject originalObject;
   private String display;
   private String tooltip;
+  private String iconKey;
+  private String iconKeyOpen;
 
   public ObjectTreeNode(DbObject dbo)
   {
@@ -94,6 +96,26 @@ public class ObjectTreeNode
   {
     nodeType = type;
     nodeName = name;
+  }
+
+  public void setIconKey(String iconKey)
+  {
+    this.iconKey = iconKey;
+  }
+
+  public void setIconKeyOpen(String iconKeyOpen)
+  {
+    this.iconKeyOpen = iconKeyOpen;
+  }
+
+  public String getIconKey()
+  {
+    return iconKey;
+  }
+
+  public String getIconKeyOpen()
+  {
+    return iconKeyOpen;
   }
 
   public String getNodeName()

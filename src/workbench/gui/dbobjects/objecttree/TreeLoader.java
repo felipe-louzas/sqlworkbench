@@ -45,9 +45,11 @@ import workbench.db.ObjectNameSorter;
 import workbench.db.PartitionLister;
 import workbench.db.ProcedureDefinition;
 import workbench.db.SchemaIdentifier;
+import workbench.db.SubPartitionState;
 import workbench.db.TableDefinition;
 import workbench.db.TableDependency;
 import workbench.db.TableIdentifier;
+import workbench.db.TablePartition;
 import workbench.db.TriggerDefinition;
 import workbench.db.TriggerReader;
 import workbench.db.TriggerReaderFactory;
@@ -830,7 +832,6 @@ public class TreeLoader
   private void addTableSubNodes(ObjectTreeNode node)
   {
     addIndexNode(node);
-    addPartitionsNode(node);
 
     ObjectTreeNode fk = new ObjectTreeNode(ResourceMgr.getString("TxtDbExplorerFkColumns"), TYPE_FK_LIST);
     fk.setAllowsChildren(true);
@@ -840,6 +841,7 @@ public class TreeLoader
     ref.setAllowsChildren(true);
     node.add(ref);
 
+    addPartitionsNode(node);
     addDependencyNodes(node);
 
     ObjectTreeNode trg = new ObjectTreeNode(ResourceMgr.getString("TxtDbExplorerTriggers"), TYPE_TRIGGERS_NODE);
@@ -1077,15 +1079,30 @@ public class TreeLoader
   {
     if (this.partitionLister == null) return;
     List<? extends DbObject> partitions = partitionLister.getPartitions((TableIdentifier)table);
+    partNode.setChildrenLoaded(true);
+    if (CollectionUtil.isEmpty(partitions)) return;
+
     boolean supportsSubPartitions = partitionLister.supportsSubPartitions();
     for (DbObject obj : partitions)
     {
       ObjectTreeNode node = new ObjectTreeNode(obj);
-      node.setAllowsChildren(supportsSubPartitions);
+      if (obj instanceof TablePartition)
+      {
+        TablePartition part = (TablePartition)obj;
+        boolean hasSubPartitions = part.getSubPartitionState() != SubPartitionState.none;
+        node.setAllowsChildren(hasSubPartitions);
+        if (hasSubPartitions)
+        {
+          node.setIconKey("partitions");
+        }
+      }
+      else
+      {
+        node.setAllowsChildren(supportsSubPartitions);
+      }
       partNode.add(node);
     }
     model.nodeStructureChanged(partNode);
-    partNode.setChildrenLoaded(true);
   }
 
   private void loadForeignKeys(DbObject dbo, ObjectTreeNode fkNode, boolean showIncoming)

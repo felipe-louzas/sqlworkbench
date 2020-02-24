@@ -41,13 +41,20 @@ public interface PartitionLister
   {
     public static PartitionLister createReader(WbConnection conn)
     {
-      DBID dbid = DBID.fromConnection(conn);
-      switch (dbid)
+      try
       {
-        case Postgres:
-          return new PostgresPartitionLister(conn);
-        case Oracle:
-          return new OraclePartitionLister(conn);
+        DBID dbid = DBID.fromConnection(conn);
+        switch (dbid)
+        {
+          case Postgres:
+            return new PostgresPartitionLister(conn);
+          case Oracle:
+            return new OraclePartitionLister(conn);
+        }
+      }
+      catch (Throwable th)
+      {
+        // ignore
       }
       return null;
     }

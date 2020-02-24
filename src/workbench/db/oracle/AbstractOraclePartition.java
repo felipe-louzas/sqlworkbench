@@ -110,6 +110,11 @@ public abstract class AbstractOraclePartition
     return Collections.unmodifiableList(partitions);
   }
 
+  public boolean hasSubPartitions()
+  {
+    return !StringUtil.equalStringIgnoreCase(subType, "NONE");
+  }
+
   public boolean isPartitioned()
   {
     return columns != null && !columns.isEmpty();
@@ -443,20 +448,18 @@ public abstract class AbstractOraclePartition
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving sub partitions " + object.getObjectName() + " took: " + duration + "ms");
   }
 
-
   protected boolean shouldRetrievePartitions()
   {
     return true;
   }
 
-  private void retrievePartitions(DbObject object, WbConnection conn)
+  protected List<OraclePartitionDefinition> loadPartitions(DbObject object, WbConnection conn)
     throws SQLException
   {
-    if (!shouldRetrievePartitions()) return;
-
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     String retrievePartitionSQL = getRetrievePartitionsSql();
+    List<OraclePartitionDefinition> result = new ArrayList<>();
 
     long start = System.currentTimeMillis();
     try
@@ -468,7 +471,6 @@ public abstract class AbstractOraclePartition
       pstmt.setString(2, SqlUtil.removeObjectQuotes(object.getObjectName()));
       rs = pstmt.executeQuery();
 
-      partitions = new ArrayList<>();
 
       while (rs.next())
       {
@@ -483,7 +485,7 @@ public abstract class AbstractOraclePartition
         OraclePartitionDefinition def = new OraclePartitionDefinition(name, type, position);
         def.setPartitionValue(value);
         def.setCompressOption(compress);
-        partitions.add(def);
+        result.add(def);
       }
     }
     catch (SQLException ex)
@@ -498,6 +500,15 @@ public abstract class AbstractOraclePartition
 
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving partitions " + object.getObjectName() + " took: " + duration + "ms");
+    return result;
+  }
+
+  private void retrievePartitions(DbObject object, WbConnection conn)
+    throws SQLException
+  {
+    if (!shouldRetrievePartitions()) return;
+
+    partitions = loadPartitions(object, conn);
 
     if (defaultSubpartitionCount <= 1 && subColumns != null)
     {

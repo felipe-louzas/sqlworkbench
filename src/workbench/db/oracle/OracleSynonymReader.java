@@ -58,7 +58,11 @@ public class OracleSynonymReader
   public TableIdentifier getSynonymTable(WbConnection con, String catalog, String owner, String synonym)
     throws SQLException
   {
-    boolean readComments = OracleUtils.getRemarksReporting(con);
+    boolean readComments = con.getDbSettings().getBoolProperty("synonym.target.retrieve.comments", false);
+    if (readComments)
+    {
+      readComments = OracleUtils.getRemarksReporting(con);
+    }
 
     String sql =
       "-- SQL Workbench \n" +
@@ -67,7 +71,13 @@ public class OracleSynonymReader
     if (readComments)
     {
       // the scalar sub-select seems to be way faster than an outer join
-      sql += ", (select tc.comments from all_tab_comments tc where tc.table_name = o.object_name AND tc.owner = o.owner) as comments ";
+      // we don't need to lookup comments for Oracle objects
+      // For some reasons, the sub-select sometimes fails with a "single-row subquery returns more than one row"
+      // I could not identify the real cause, so adding a rownum <= 1 will prevent that in any case
+      sql += ", case " +
+             "    when o.owner IN ('PUBLIC','SYS','SYSTEM') then null " +
+             "    else (select tc.comments from all_tab_comments tc where tc.table_name = o.object_name AND tc.owner = o.owner AND rownum <= 1) " +
+             "  end as comments ";
     }
 
     // the outer join to all_objects is necessary to also see synonyms that point to no longer existing tables
