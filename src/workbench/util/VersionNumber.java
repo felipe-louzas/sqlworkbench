@@ -174,6 +174,12 @@ public class VersionNumber
     return Integer.toString(major) + "." + Integer.toString(minor) + "." + Integer.toString(patchLevel);
   }
 
+  private static String cleanup(String input)
+  {
+    if (input == null) return input;
+    return input.replaceAll("[^0-9]", "");
+  }
+
   public static VersionNumber getJavaVersion()
   {
     String version = System.getProperty("java.version", null);
@@ -189,11 +195,11 @@ public class VersionNumber
       {
         if (elements[0].equals("1"))
         {
-          return new VersionNumber(Integer.valueOf(elements[1]), 0);
+          return new VersionNumber(Integer.valueOf(cleanup(elements[1])), 0);
         }
-        return new VersionNumber(Integer.valueOf(elements[0]), Integer.valueOf(elements[1]));
+        return new VersionNumber(Integer.valueOf(cleanup(elements[0])), Integer.valueOf(cleanup(elements[1])));
       }
-      return new VersionNumber(Integer.valueOf(elements[0]), 0);
+      return new VersionNumber(Integer.valueOf(cleanup(elements[0])), 0);
     }
     catch (Throwable th)
     {

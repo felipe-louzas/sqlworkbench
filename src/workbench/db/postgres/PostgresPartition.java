@@ -34,7 +34,6 @@ import workbench.db.WbConnection;
 public class PostgresPartition
   extends TablePartition
 {
-  private String definition;
   private String subPartitionDefinition;
   private String subPartitionStrategy;
 
@@ -121,15 +120,5 @@ public class PostgresPartition
   public void setParentTable(TableIdentifier parentTable)
   {
     this.parentPartition = parentTable;
-  }
-
-  public void setDefinition(String partitionDefinition)
-  {
-    this.definition = partitionDefinition;
-  }
-
-  public String getDefinition()
-  {
-    return definition;
   }
 }

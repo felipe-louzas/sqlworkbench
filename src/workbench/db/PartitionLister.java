@@ -23,6 +23,7 @@ package workbench.db;
 import java.util.List;
 
 import workbench.db.oracle.OraclePartitionLister;
+import workbench.db.oracle.OracleUtils;
 import workbench.db.postgres.PostgresPartitionLister;
 
 /**
@@ -34,27 +35,28 @@ public interface PartitionLister
   public static final String PARTITION_TYPE_NAME = "PARTITION";
 
   List<? extends TablePartition> getPartitions(TableIdentifier table);
-  List<? extends TablePartition> getSubPartitions(TableIdentifier baseTable, DbObject mainPartition);
+  List<? extends TablePartition> getSubPartitions(TableIdentifier baseTable, TablePartition mainPartition);
   boolean supportsSubPartitions();
 
   public static class Factory
   {
     public static PartitionLister createReader(WbConnection conn)
     {
-      try
+      if (conn == null) return null;
+      
+      DBID dbid = DBID.fromConnection(conn);
+      switch (dbid)
       {
-        DBID dbid = DBID.fromConnection(conn);
-        switch (dbid)
-        {
-          case Postgres:
+        case Postgres:
+          if (JdbcUtils.hasMinimumServerVersion(conn, "10"))
+          {
             return new PostgresPartitionLister(conn);
-          case Oracle:
+          }
+        case Oracle:
+          if (OracleUtils.supportsPartitioning(conn))
+          {
             return new OraclePartitionLister(conn);
-        }
-      }
-      catch (Throwable th)
-      {
-        // ignore
+          }
       }
       return null;
     }

@@ -36,6 +36,7 @@ public class OraclePartitionDefinition
 {
 
   private String type;
+  private String subPartitionType;
 
   /**
    * The name of the partition
@@ -88,6 +89,16 @@ public class OraclePartitionDefinition
       this.subPartitions = new ArrayList<>();
     }
     subPartitions.add(subPartition);
+  }
+
+  public String getSubPartitionType()
+  {
+    return subPartitionType;
+  }
+
+  public void setSubPartitionType(String type)
+  {
+    this.subPartitionType = type;
   }
 
   public String getType()

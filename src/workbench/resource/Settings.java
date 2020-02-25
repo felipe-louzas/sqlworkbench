@@ -2275,7 +2275,10 @@ public class Settings
 
 	public String getBackupDir()
 	{
-		return FileDialogUtil.replaceConfigDir(getProperty("workbench.workspace.backup.dir", null));
+		String dir = FileDialogUtil.replaceConfigDir(getProperty("workbench.workspace.backup.dir", null));
+    if (StringUtil.isBlank(dir)) return null;
+    WbFile f = new WbFile(dir);
+    return f.getAbsolutePath();
 	}
 
 	public boolean getCreateProfileBackup()

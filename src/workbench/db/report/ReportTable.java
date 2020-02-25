@@ -53,7 +53,9 @@ import workbench.db.TriggerReader;
 import workbench.db.TriggerReaderFactory;
 import workbench.db.WbConnection;
 import workbench.db.oracle.OracleTablePartition;
+import workbench.db.oracle.OracleUtils;
 import workbench.db.postgres.PostgresPartitionReader;
+import workbench.db.postgres.PostgresUtil;
 import workbench.db.sqltemplates.ConstraintNameTester;
 
 import workbench.util.CollectionUtil;
@@ -247,7 +249,7 @@ public class ReportTable
   {
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(conn);
 
-    if (conn.getMetadata().isOracle() && includePartitions)
+    if (includePartitions && OracleUtils.supportsPartitioning(conn))
     {
       OracleTablePartition partition = new OracleTablePartition(conn);
       partition.retrieve(this.table, conn);
@@ -259,7 +261,7 @@ public class ReportTable
       }
       builder.setIncludePartitions(false); // no need to retrieve it twice
     }
-    else if (conn.getMetadata().isPostgres() && includePartitions)
+    else if (includePartitions && PostgresUtil.supportsPartitioning(conn))
     {
       PostgresPartitionReader reader = new PostgresPartitionReader(table, conn);
       reader.readPartitionInformation();

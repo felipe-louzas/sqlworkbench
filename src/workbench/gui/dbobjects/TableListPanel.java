@@ -94,6 +94,7 @@ import workbench.db.DropType;
 import workbench.db.GenericObjectDropper;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
+import workbench.db.PartitionLister;
 import workbench.db.SequenceReader;
 import workbench.db.SynonymDDLHandler;
 import workbench.db.TableColumnsDatastore;
@@ -184,6 +185,7 @@ public class TableListPanel
 
   protected TableDataPanel tableData;
   protected ObjectDependencyPanel dependencyPanel;
+  protected TablePartitionsPanel partitionsPanel;
 
   private TableIndexPanel indexPanel;
   private final TriggerDisplayPanel triggers;
@@ -217,6 +219,7 @@ public class TableListPanel
   protected boolean shouldRetrieveProjections;
   protected boolean shouldRetrieveExportedKeys;
   protected boolean shouldRetrieveImportedKeys;
+  protected boolean shouldRetrievePartitions;
   protected boolean shouldRetrieveTableData;
 
   protected boolean busy;
@@ -580,9 +583,11 @@ public class TableListPanel
     tableData.dispose();
     tableSource.dispose();
     findPanel.dispose();
+    dependencyPanel.dispose();
     if (indexes != null) indexes.dispose();
     if (indexPanel != null) indexPanel.dispose();
     if (projections != null) projections.dispose();
+    if (partitionsPanel != null) partitionsPanel.dispose();
     WbAction.dispose(compileAction,rowCountAction,rowCountWindowAction,reloadAction,renameAction,spoolData,toggleTableSource);
     Settings.getInstance().removePropertyChangeListener(this);
   }
@@ -590,7 +595,6 @@ public class TableListPanel
 
   private void extendPopupMenu()
   {
-
     if (DbExplorerSettings.showRowCountsInline())
     {
       rowCountAction = new ShowRowCountAction(this, this, summaryStatusBarLabel);
@@ -684,6 +688,7 @@ public class TableListPanel
         displayTab.add(ResourceMgr.getString("TxtDbExplorerReferencedColumns"), exportedKeys);
         addTriggerPanel();
         addDependencyPanelIfSupported();
+        addPartitionsPanelIfSupported();
         restoreIndex(index);
       }
       finally
@@ -755,6 +760,7 @@ public class TableListPanel
         showTriggerIfSupported();
 
         addDependencyPanelIfSupported();
+        addPartitionsPanelIfSupported();
 
         dependencyPanel.reset();
         exportedKeys.reset();
@@ -793,6 +799,29 @@ public class TableListPanel
     {
       displayTab.add(ResourceMgr.getString("TxtDeps"), dependencyPanel);
     }
+  }
+
+  private void addPartitionsPanelIfSupported()
+  {
+    if (dbConnection == null) return;
+    PartitionLister lister = PartitionLister.Factory.createReader(dbConnection);
+    if (lister != null)
+    {
+      TablePartitionsPanel panel = getPartitionsPanel();
+      panel.reset();
+      panel.setCurrentTable(selectedTable);
+      displayTab.add(ResourceMgr.getString("TxtPartitions"), panel);
+    }
+  }
+
+  private synchronized TablePartitionsPanel getPartitionsPanel()
+  {
+    if (this.partitionsPanel == null)
+    {
+      this.partitionsPanel = new TablePartitionsPanel();
+      this.partitionsPanel.setConnection(dbConnection);
+    }
+    return this.partitionsPanel;
   }
 
   private boolean viewTriggersSupported()
@@ -894,6 +923,10 @@ public class TableListPanel
       this.tableData.setConnection(null);
       this.tableTypes.removeAllItems();
       this.tableDefinition.setConnection(null);
+      if (partitionsPanel != null)
+      {
+        partitionsPanel.setConnection(null);
+      }
     }
     finally
     {
@@ -937,6 +970,10 @@ public class TableListPanel
       tableSource.reset();
       tableData.reset();
       tableList.reset();
+      if (partitionsPanel != null)
+      {
+        partitionsPanel.reset();
+      }
       resetTableHistory();
     });
   }
@@ -968,12 +1005,17 @@ public class TableListPanel
         this.tableData.reset();
       }
     }
+    if (this.partitionsPanel != null)
+    {
+      this.partitionsPanel.setCurrentTable(selectedTable);
+    }
     shouldRetrieveTableSource = true;
     shouldRetrieveTriggers = true;
     shouldRetrieveIndexes = true;
     shouldRetrieveExportedKeys = true;
     shouldRetrieveImportedKeys = true;
     shouldRetrieveProjections = true;
+    shouldRetrievePartitions = true;
   }
 
   private void setupSingleSelectTypes()
@@ -1101,6 +1143,10 @@ public class TableListPanel
     triggers.setConnection(connection);
     tableSource.setDatabaseConnection(connection);
     dependencyPanel.setConnection(connection);
+    if (partitionsPanel != null)
+    {
+      partitionsPanel.setConnection(connection);
+    }
 
     renameAction.setConnection(dbConnection);
     validator.setConnection(dbConnection);
@@ -1120,7 +1166,6 @@ public class TableListPanel
     this.tableTypes.addActionListener(this);
     this.displayTab.addChangeListener(this);
     this.compileAction.setConnection(connection);
-//    this.countAction.setConnection(connection);
     initVertica();
   }
 
@@ -2118,6 +2163,10 @@ public class TableListPanel
     else if (panel == dependencyPanel && shouldRetrieveTriggers)
     {
       dependencyPanel.doLoad();
+    }
+    else if (panel == partitionsPanel && shouldRetrievePartitions)
+    {
+      partitionsPanel.doLoad();
     }
   }
 

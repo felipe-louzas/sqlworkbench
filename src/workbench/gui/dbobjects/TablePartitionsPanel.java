@@ -26,28 +26,30 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.sql.Types;
 import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import workbench.interfaces.Reloadable;
+import workbench.interfaces.Resettable;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 
-import workbench.db.DbMetadata;
-import workbench.db.DbObject;
-import workbench.db.PackageDefinition;
-import workbench.db.ProcedureDefinition;
+import workbench.db.PartitionLister;
+import workbench.db.TableIdentifier;
+import workbench.db.TablePartition;
 import workbench.db.WbConnection;
-import workbench.db.dependency.DependencyReader;
-import workbench.db.dependency.DependencyReaderFactory;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.ReloadAction;
@@ -64,48 +66,48 @@ import workbench.util.WbThread;
  *
  * @author Thomas Kellerer
  */
-public class ObjectDependencyPanel
+public class TablePartitionsPanel
   extends JPanel
-  implements Reloadable
+  implements Reloadable, Resettable, ListSelectionListener
 {
-  private DbObject currentObject;
+  private TableIdentifier currentTable;
   private ReloadAction reload;
 
   private WbConnection dbConnection;
-  private DependencyReader reader;
+  private PartitionLister reader;
 
   private JScrollPane usedScroll;
-  private WbTable objectsUsed;
-  private WbTable usedByObjects;
+  private WbTable mainPartitions;
+  private WbTable subPartitions;
 
   private boolean isRetrieving;
   private WbSplitPane split;
-  private JLabel usingLabel;
-  private JLabel usedByLabel;
+  private JLabel partitionLabel;
+  private JLabel subPartitionLabel;
 
-  public ObjectDependencyPanel()
+  public TablePartitionsPanel()
   {
     super(new BorderLayout());
-    objectsUsed = new WbTable(false, false, false);
-    usedByObjects = new WbTable(false, false, false);
+    mainPartitions = new WbTable(false, false, false);
+    subPartitions = new WbTable(false, false, false);
 
     split = new WbSplitPane(JSplitPane.VERTICAL_SPLIT);
 
     JPanel usesPanel = new JPanel(new BorderLayout());
-    usingLabel = createTitleLabel("TxtDepsUses");
-    usesPanel.add(usingLabel, BorderLayout.PAGE_START);
-    usedScroll = new JScrollPane(objectsUsed);
+    partitionLabel = createTitleLabel("TxtPartitions");
+    usesPanel.add(partitionLabel, BorderLayout.PAGE_START);
+    usedScroll = new JScrollPane(mainPartitions);
     usesPanel.add(usedScroll, BorderLayout.CENTER);
     split.setTopComponent(usesPanel);
 
     JPanel usingPanel = new JPanel(new BorderLayout());
-    usedByLabel = createTitleLabel("TxtDepsUsedBy");
+    subPartitionLabel = createTitleLabel("TxtSubPartitions");
 
-    usingPanel.add(usedByLabel, BorderLayout.PAGE_START);
-    JScrollPane scroll2 = new JScrollPane(usedByObjects);
+    usingPanel.add(subPartitionLabel, BorderLayout.PAGE_START);
+    JScrollPane scroll2 = new JScrollPane(subPartitions);
     usingPanel.add(scroll2, BorderLayout.CENTER);
     split.setBottomComponent(usingPanel);
-    split.setDividerLocation(150);
+    split.setDividerLocation(0.5);
     split.setDividerSize((int)(IconMgr.getInstance().getSizeForLabel() / 2));
     split.setDividerBorder(new EmptyBorder(0, 0, 0, 0));
 
@@ -117,6 +119,14 @@ public class ObjectDependencyPanel
     WbToolbar toolbar = new WbToolbar();
     toolbar.add(reload);
     add(toolbar, BorderLayout.PAGE_START);
+    mainPartitions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    mainPartitions.getSelectionModel().addListSelectionListener(this);
+  }
+
+  @Override
+  public void valueChanged(ListSelectionEvent e)
+  {
+    loadSubPartitions();
   }
 
   private JLabel createTitleLabel(String key)
@@ -141,41 +151,33 @@ public class ObjectDependencyPanel
 
   public void dispose()
   {
-    if (objectsUsed != null) objectsUsed.dispose();
-    if (usedByObjects != null) usedByObjects.dispose();
-  }
-
-  public void setCurrentObject(DbObject object)
-  {
-    currentObject = object;
     reset();
-    checkPackage();
+    if (mainPartitions != null) mainPartitions.dispose();
+    if (subPartitions != null) subPartitions.dispose();
   }
 
-  private void checkPackage()
+  public void setCurrentTable(TableIdentifier tbl)
   {
-    if (currentObject instanceof ProcedureDefinition)
-    {
-      ProcedureDefinition proc = (ProcedureDefinition)currentObject;
-      if (proc.isPackageProcedure())
-      {
-        currentObject = new PackageDefinition(proc.getSchema(), proc.getPackageName());
-      }
-    }
+    currentTable = tbl;
+    reset();
   }
 
   public void setConnection(WbConnection conn)
   {
     reset();
     dbConnection = conn;
-    reader = DependencyReaderFactory.getReader(dbConnection);
-    reload.setEnabled(true);
+    reader = PartitionLister.Factory.createReader(conn);
+    reload.setEnabled(reader != null);
   }
 
+  @Override
   public void reset()
   {
-    objectsUsed.reset();
-    usedByObjects.reset();
+    WbSwingUtilities.invoke(() ->
+    {
+      mainPartitions.reset();
+      subPartitions.reset();
+    });
   }
 
   public void cancel()
@@ -189,7 +191,7 @@ public class ObjectDependencyPanel
 
     if (!WbSwingUtilities.isConnectionIdle(this, dbConnection)) return;
 
-    WbThread loader = new WbThread(this::doLoad, "DependencyLoader Thread");
+    WbThread loader = new WbThread(this::doLoad, "Partition Retrieval Thread");
     loader.start();
   }
 
@@ -203,19 +205,12 @@ public class ObjectDependencyPanel
       isRetrieving = true;
       reload.setEnabled(false);
       WbSwingUtilities.showWaitCursor(this);
-      final List<DbObject> using = reader.getUsedObjects(dbConnection, currentObject);
+
+      List<? extends TablePartition> partitions = reader.getPartitions(currentTable);
 
       EventQueue.invokeLater(() ->
       {
-        showResult(using, objectsUsed);
-      });
-
-      final List<DbObject> used = reader.getUsedBy(dbConnection, currentObject);
-
-      EventQueue.invokeLater(() ->
-      {
-        showResult(used, usedByObjects);
-        invalidate();
+        showPartitions(partitions, mainPartitions);
       });
 
       EventQueue.invokeLater(this::calculateSplit);
@@ -228,27 +223,70 @@ public class ObjectDependencyPanel
     }
   }
 
+  private void loadSubPartitions()
+  {
+    this.subPartitions.reset();
+    if (reader == null) return;
+
+    if (!WbSwingUtilities.isConnectionIdle(this, dbConnection)) return;
+
+    WbThread loader = new WbThread(this::doRetrieveSubPartitions, "SubPartition Retrieval Thread");
+    loader.start();
+  }
+
+  private void doRetrieveSubPartitions()
+  {
+    if (isRetrieving) return;
+    int selectedRow = mainPartitions.getSelectedRow();
+    if (selectedRow < 0) return;
+
+    TablePartition mainPart = (TablePartition)mainPartitions.getDataStore().getRow(selectedRow).getUserObject();
+    if (mainPart == null) return;
+
+    try
+    {
+      isRetrieving = true;
+      reload.setEnabled(false);
+      WbSwingUtilities.showWaitCursor(this);
+
+      List<? extends TablePartition> partitions = reader.getSubPartitions(currentTable, mainPart);
+
+      EventQueue.invokeLater(() ->
+      {
+        showPartitions(partitions, subPartitions);
+      });
+    }
+    finally
+    {
+      WbSwingUtilities.showDefaultCursor(this);
+      reload.setEnabled(true);
+      isRetrieving = false;
+    }
+  }
+
   private void calculateSplit()
   {
     invalidate();
-    int rows = Math.max(objectsUsed.getRowCount() + 2, 5);
-    int height = (int)((objectsUsed.getRowHeight() * rows) * 1.10);
+    int rows = Math.max(mainPartitions.getRowCount() + 2, 5);
+    int height = (int)((mainPartitions.getRowHeight() * rows) * 1.10);
     int minHeight = (int)getHeight() / 5;
     split.setDividerLocation(Math.max(minHeight, height));
     doLayout();
   }
 
-  private void showResult(List<DbObject> objects, WbTable display)
+  private void showPartitions(List<? extends TablePartition> partitions, WbTable display)
   {
-    DataStore ds = dbConnection.getMetadata().createTableListDataStore();
-    for (DbObject dbo : objects)
+    String[] columns = new String[] {"PARTITION", "DEFINITION"};
+    int[] sizes = new int[] {30, 60 };
+    int[] types = new int[] {Types.VARCHAR, Types.VARCHAR };
+
+    DataStore ds = new DataStore(columns, types, sizes);
+    for (TablePartition part : partitions)
     {
       int row = ds.addRow();
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, dbo.getCatalog());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, dbo.getSchema());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, dbo.getObjectName());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, dbo.getObjectType());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, dbo.getComment());
+      ds.setValue(row, 0, part.getObjectName());
+      ds.setValue(row, 1, part.getDefinition());
+      ds.getRow(row).setUserObject(part);
     }
     ds.resetStatus();
     DataStoreTableModel model = new DataStoreTableModel(ds);

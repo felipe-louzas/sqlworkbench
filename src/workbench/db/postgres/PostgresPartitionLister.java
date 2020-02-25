@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import workbench.db.DbObject;
 import workbench.db.PartitionLister;
 import workbench.db.SubPartitionState;
 import workbench.db.TableIdentifier;
@@ -87,7 +86,7 @@ public class PostgresPartitionLister
   }
 
   @Override
-  public List<? extends TablePartition> getSubPartitions(TableIdentifier baseTable, DbObject partition)
+  public List<? extends TablePartition> getSubPartitions(TableIdentifier baseTable, TablePartition partition)
   {
     if (partition instanceof PostgresPartition)
     {

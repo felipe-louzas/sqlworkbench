@@ -72,12 +72,11 @@ public abstract class AbstractOraclePartition
   }
 
   protected AbstractOraclePartition(WbConnection conn, boolean retrieveCompression)
-    throws SQLException
   {
     boolean is11r1 = JdbcUtils.hasMinimumServerVersion(conn, "11.1");
     useCompression = retrieveCompression && is11r1;
     supportsIntervals = is11r1;
-    currentUser = conn.getMetadata().getCurrentSchema();
+    currentUser = conn.getCurrentUser();
     supportsRefPartitions = is11r1;
   }
 
@@ -129,6 +128,11 @@ public abstract class AbstractOraclePartition
   public boolean isRefPartition()
   {
     return "REFERENCE".equalsIgnoreCase(type);
+  }
+
+  public String getSubPartitionType()
+  {
+    return subType;
   }
 
   public String getPartitionType()
@@ -483,6 +487,7 @@ public abstract class AbstractOraclePartition
           compress = rs.getString("COMPRESSION");
         }
         OraclePartitionDefinition def = new OraclePartitionDefinition(name, type, position);
+        def.setSubPartitionType(subType);
         def.setPartitionValue(value);
         def.setCompressOption(compress);
         result.add(def);

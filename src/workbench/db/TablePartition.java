@@ -41,6 +41,8 @@ public class TablePartition
   private boolean isSubPartition;
   private List<? extends TablePartition> subPartitions;
   private SubPartitionState subPartitionState = SubPartitionState.unknown;
+  private String definition;
+  private String subPartitionsType;
 
   public void setCatalog(String catalog)
   {
@@ -50,6 +52,27 @@ public class TablePartition
   public void setSchema(String schema)
   {
     this.schema = schema;
+  }
+
+  public String getSubPartitionType()
+  {
+    return subPartitionsType;
+  }
+
+  public void setSubPartitionType(String type)
+  {
+    this.subPartitionsType = type;
+  }
+
+
+  public String getDefinition()
+  {
+    return definition;
+  }
+
+  public void setDefinition(String definition)
+  {
+    this.definition = definition;
   }
 
   @Override
@@ -148,7 +171,7 @@ public class TablePartition
   public CharSequence getSource(WbConnection con)
     throws SQLException
   {
-    return null;
+    return definition;
   }
 
   @Override
@@ -178,7 +201,7 @@ public class TablePartition
   @Override
   public boolean supportsGetSource()
   {
-    return false;
+    return definition != null;
   }
 
 }

@@ -21,7 +21,6 @@
  */
 package workbench.db.oracle;
 
-import java.sql.SQLException;
 
 import workbench.db.WbConnection;
 
@@ -35,14 +34,12 @@ public class OracleTablePartition
 {
 
   public OracleTablePartition(WbConnection conn)
-    throws SQLException
   {
     super(conn, true);
     isIndex = false;
   }
 
   protected OracleTablePartition(WbConnection conn, boolean retrieveCompression)
-    throws SQLException
   {
     super(conn, retrieveCompression);
     isIndex = false;

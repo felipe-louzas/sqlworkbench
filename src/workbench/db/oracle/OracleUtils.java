@@ -148,6 +148,20 @@ public class OracleUtils
   }
 
   /**
+   * Returns true if the current connection is an Oracle connection that supports partitioning.
+   *
+   * If the connection is to an Express Edition, this returns false.
+   */
+  public static boolean supportsPartitioning(WbConnection conn)
+  {
+    if (conn == null) return false;
+    if (!conn.getMetadata().isOracle()) return false;
+    String info = conn.getDatabaseProductVersion();
+    if (StringUtil.isBlank(info)) return false;
+    return !info.toLowerCase().contains("express edition");
+  }
+
+  /**
    * Checks if the given connection enables the reporting of table comments in MySQL
    *
    * @param con the connection to test

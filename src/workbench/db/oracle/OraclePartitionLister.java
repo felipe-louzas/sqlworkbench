@@ -29,7 +29,6 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.db.DbObject;
 import workbench.db.PartitionLister;
 import workbench.db.SubPartitionState;
 import workbench.db.TableIdentifier;
@@ -49,7 +48,6 @@ public class OraclePartitionLister
   private final WbConnection conn;
 
   public OraclePartitionLister(WbConnection conn)
-    throws SQLException
   {
     super(conn, true);
     this.conn = conn;
@@ -73,6 +71,12 @@ public class OraclePartitionLister
       for (OraclePartitionDefinition oraPart : partitions)
       {
         TablePartition partition = new TablePartition();
+        CharSequence definition = oraPart.getSource(true, 0, "");
+        if (definition != null)
+        {
+          partition.setDefinition(definition.toString());
+        }
+        partition.setSubPartitionType(oraPart.getSubPartitionType());
         partition.setSchema(table.getRawSchema());
         partition.setName(oraPart.getName());
         partition.setSubPartitionState(state);
@@ -87,18 +91,19 @@ public class OraclePartitionLister
   }
 
   @Override
-  public List<TablePartition> getSubPartitions(TableIdentifier baseTable, DbObject partition)
+  public List<TablePartition> getSubPartitions(TableIdentifier baseTable, TablePartition partition)
   {
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     String sql =
         "-- SQL Workbench \n" +
-        "select subpartition_name \n" +
-        "from all_tab_subpartitions \n" +
-        "where table_owner = ? \n" +
-        "  and table_name = ? \n" +
-        "  and partition_name = ? \n" +
-        "order by subpartition_position";
+        "select sub.subpartition_name, sub.high_value, sub.subpartition_position, tbl.subpartitioning_type \n" +
+        "from all_tab_subpartitions sub \n" +
+        "  join all_part_tables tbl on tbl.owner = sub.table_owner and tbl.table_name = sub.table_name \n" +
+        "where sub.table_owner = ? \n" +
+        "  and sub.table_name = ? \n" +
+        "  and sub.partition_name = ? \n" +
+        "order by sub.subpartition_position";
 
     List<TablePartition> result = new ArrayList<>();
 
@@ -117,7 +122,18 @@ public class OraclePartitionLister
       while (rs.next())
       {
         String name = rs.getString("subpartition_name");
+        String value = rs.getString("high_value");
+        int pos = rs.getInt("subpartition_position");
+        String type = rs.getString("subpartitioning_type");
+        OraclePartitionDefinition oraPart = new OraclePartitionDefinition(name, type, pos);
+        oraPart.setIsSubpartition(true);
+        oraPart.setPartitionValue(value);
+        CharSequence source = oraPart.getSource(true, 0, "");
         TablePartition part = new TablePartition();
+        if (source != null)
+        {
+          part.setDefinition(source.toString());
+        }
         part.setName(name);
         part.setSchema(baseTable.getRawSchema());
         result.add(part);

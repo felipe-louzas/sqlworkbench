@@ -732,7 +732,6 @@ class ObjectCache
   public synchronized void addTable(TableDefinition definition, WbConnection conn)
   {
     if (definition == null) return;
-    TableIdentifier table = definition.getTable();
     this.objects.put(definition.getTable(), definition.getColumns());
   }
 

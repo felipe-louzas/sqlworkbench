@@ -1059,7 +1059,7 @@ public class TreeLoader
   private void loadSubPartitions(ObjectTreeNode partitionNode)
   {
     if (this.partitionLister == null) return;
-    DbObject partition = partitionNode.getDbObject();
+    TablePartition partition = (TablePartition)partitionNode.getDbObject();
 
     TableIdentifier baseTable = findTableParent(partitionNode);
     List<? extends TablePartition> subPartitions = partitionLister.getSubPartitions(baseTable, partition);

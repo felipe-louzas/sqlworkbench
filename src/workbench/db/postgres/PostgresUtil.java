@@ -55,6 +55,15 @@ public class PostgresUtil
   public static final String APP_NAME_PROPERTY = "ApplicationName";
 
   /**
+   * Returns true if the current connection is a Postgres connection to a server with version 10 or later.
+   */
+  public static boolean supportsPartitioning(WbConnection conn)
+  {
+    if (conn == null) return false;
+    return conn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(conn, "10");
+  }
+
+  /**
    * Sets the application name for pg_stat_activity.
    * To set the name, the autocommit will be turned off, and the transaction will be committed afterwards.
    * The name will only be set if the PostgreSQL version is >= 9.0
