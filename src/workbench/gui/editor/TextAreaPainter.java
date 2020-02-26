@@ -65,7 +65,7 @@ public class TextAreaPainter
   protected boolean selectionHighlightIgnoreCase;
 
   protected int tabSize = -1;
-  protected FontMetrics fm;
+  // protected FontMetrics fm;
 
   protected boolean showLineNumbers;
   protected int gutterWidth = 0;
@@ -386,11 +386,7 @@ public class TextAreaPainter
    */
   public FontMetrics getFontMetrics()
   {
-    if (fm == null)
-    {
-      this.fm = getFontMetrics(getFont());
-    }
-    return fm;
+    return getFontMetrics(getFont());
   }
 
   /**
@@ -405,7 +401,6 @@ public class TextAreaPainter
   {
     super.setFont(font);
     currentLineTokens = null;
-    this.fm = getFontMetrics(getFont());
     synchronized (stylesLockMonitor)
     {
       if (styles != null)
@@ -485,7 +480,7 @@ public class TextAreaPainter
 
     int firstInvalid = firstVisible;
     int lastInvalid = firstVisible + visibleCount;
-    int fheight = fm.getHeight();
+    int fheight = getFontMetrics().getHeight();
 
     if (clipRect != null)
     {
@@ -502,7 +497,6 @@ public class TextAreaPainter
       if (firstInvalid > 1) firstInvalid --;
       lastInvalid = firstVisible + ((clipRect.y + clipRect.height) / fheight);
     }
-
 
     Graphics2D g2d = (Graphics2D) gfx;
     if (renderingHints != null)
@@ -530,6 +524,7 @@ public class TextAreaPainter
       int gutterX = this.gutterWidth - GUTTER_MARGIN;
 
       final int caretLine = textArea.getCaretLine();
+      final FontMetrics fm = getFontMetrics();
 
       for (int line = firstVisible; line <= endLine; line++)
       {
@@ -566,7 +561,7 @@ public class TextAreaPainter
 
           if (line == caretLine)
           {
-            if  (this.currentLineColor != null)
+            if (this.currentLineColor != null)
             {
               gfx.setColor(currentLineColor);
               gfx.fillRect(0, y + fm.getMaxDescent(), editorWidth, fheight);
@@ -597,6 +592,7 @@ public class TextAreaPainter
    */
   public final void invalidateLine(int line)
   {
+    final FontMetrics fm = getFontMetrics();
     repaint(0, textArea.lineToY(line) + fm.getMaxDescent(), getWidth(), fm.getHeight());
   }
 
@@ -612,6 +608,7 @@ public class TextAreaPainter
    */
   public final void invalidateLineRange(int firstLine, int lastLine)
   {
+    final FontMetrics fm = getFontMetrics();
     repaint(0, textArea.lineToY(firstLine) + fm.getMaxDescent(), getWidth(), (lastLine - firstLine + 1) * fm.getHeight());
   }
 
@@ -665,6 +662,7 @@ public class TextAreaPainter
 
   protected void paintPlainLine(Graphics gfx, int line, Font defaultFont, Color defaultColor, int x, int y)
   {
+    final FontMetrics fm = getFontMetrics(defaultFont);
     textArea.getLineText(line, currentLine);
 
     paintHighlight(gfx, line, y);
@@ -678,6 +676,7 @@ public class TextAreaPainter
 
   protected void paintSyntaxLine(Graphics gfx, TokenMarker tokenMarker, int line, Font defaultFont, Color defaultColor, int x, int y)
   {
+    final FontMetrics fm = getFontMetrics(defaultFont);
     textArea.getLineText(line,currentLine);
 
     currentLineTokens = tokenMarker.markTokens(currentLine, line);
@@ -692,6 +691,7 @@ public class TextAreaPainter
 
   protected void paintHighlight(Graphics gfx, int line, int y)
   {
+    final FontMetrics fm = getFontMetrics();
     int height = fm.getHeight();
     y += fm.getMaxDescent();
 
@@ -789,6 +789,7 @@ public class TextAreaPainter
       x--;
     }
 
+    final FontMetrics fm = getFontMetrics();
     // as only fixed width fonts are allowed for the editor
     // the width can be calculated using a single character
     int width = fm.charWidth('(') + 1;
@@ -817,9 +818,10 @@ public class TextAreaPainter
       paintBracketHighlight(gfx, line, y, height, offset + charOffset);
     }
 
+    final FontMetrics fm = getFontMetrics();
     if (textArea.isCaretVisible())
     {
-      int caretX = textArea._offsetToX(line, offset);
+      int caretX = textArea.offsetToX(line, offset);
 
       int caretWidth = (textArea.isOverwriteEnabled() ? fm.charWidth('w') : 2);
 

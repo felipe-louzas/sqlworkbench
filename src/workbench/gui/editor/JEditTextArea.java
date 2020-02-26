@@ -1089,14 +1089,9 @@ public class JEditTextArea
    * @param line The line
    * @param offset The offset, from the start of the line
    */
-  private int lastOffset = -1;
-  private int lastLine = -1;
   public int _offsetToX(int line, int offset)
   {
     TokenMarker tokenMarker = getTokenMarker();
-
-    lastOffset = offset;
-    lastLine = line;
 
     getLineText(line, lineSegment);
 
