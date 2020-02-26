@@ -35,7 +35,6 @@ public class PostgresPartition
   extends TablePartition
 {
   private String subPartitionDefinition;
-  private String subPartitionStrategy;
 
   // for sub-partitions
   private TableIdentifier parentPartition;
@@ -48,16 +47,6 @@ public class PostgresPartition
     this.baseTable = baseTable;
     setName(partitionName);
     setSchema(partitionSchema);
-  }
-
-  public String getSubPartitionStrategy()
-  {
-    return subPartitionStrategy;
-  }
-
-  public void setSubPartitionStrategy(String subPartitionStrategy)
-  {
-    this.subPartitionStrategy = subPartitionStrategy;
   }
 
   /**

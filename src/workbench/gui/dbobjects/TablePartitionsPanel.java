@@ -47,6 +47,7 @@ import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.PartitionLister;
+import workbench.db.SubPartitionState;
 import workbench.db.TableIdentifier;
 import workbench.db.TablePartition;
 import workbench.db.WbConnection;
@@ -60,6 +61,8 @@ import workbench.gui.components.WbToolbar;
 
 import workbench.storage.DataStore;
 
+import workbench.util.CollectionUtil;
+import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
 /**
@@ -84,6 +87,7 @@ public class TablePartitionsPanel
   private WbSplitPane split;
   private JLabel partitionLabel;
   private JLabel subPartitionLabel;
+  private JPanel subPanel;
 
   public TablePartitionsPanel()
   {
@@ -93,20 +97,20 @@ public class TablePartitionsPanel
 
     split = new WbSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-    JPanel usesPanel = new JPanel(new BorderLayout());
+    JPanel mainPanel = new JPanel(new BorderLayout());
     partitionLabel = createTitleLabel("TxtPartitions");
-    usesPanel.add(partitionLabel, BorderLayout.PAGE_START);
+    mainPanel.add(partitionLabel, BorderLayout.PAGE_START);
     usedScroll = new JScrollPane(mainPartitions);
-    usesPanel.add(usedScroll, BorderLayout.CENTER);
-    split.setTopComponent(usesPanel);
+    mainPanel.add(usedScroll, BorderLayout.CENTER);
+    split.setTopComponent(mainPanel);
 
-    JPanel usingPanel = new JPanel(new BorderLayout());
+    subPanel = new JPanel(new BorderLayout());
     subPartitionLabel = createTitleLabel("TxtSubPartitions");
 
-    usingPanel.add(subPartitionLabel, BorderLayout.PAGE_START);
+    subPanel.add(subPartitionLabel, BorderLayout.PAGE_START);
     JScrollPane scroll2 = new JScrollPane(subPartitions);
-    usingPanel.add(scroll2, BorderLayout.CENTER);
-    split.setBottomComponent(usingPanel);
+    subPanel.add(scroll2, BorderLayout.CENTER);
+    split.setBottomComponent(subPanel);
     split.setDividerLocation(0.5);
     split.setDividerSize((int)(IconMgr.getInstance().getSizeForLabel() / 2));
     split.setDividerBorder(new EmptyBorder(0, 0, 0, 0));
@@ -138,7 +142,6 @@ public class TablePartitionsPanel
     title.setHorizontalTextPosition(SwingConstants.LEADING);
     Font f = title.getFont();
     Font f2 = f.deriveFont(Font.BOLD);
-    //title.setBorder();
     FontMetrics fm = title.getFontMetrics(f2);
     int fontHeight = fm.getHeight();
 
@@ -207,19 +210,62 @@ public class TablePartitionsPanel
       WbSwingUtilities.showWaitCursor(this);
 
       List<? extends TablePartition> partitions = reader.getPartitions(currentTable);
+      boolean hasSubPartitions = mightHaveSubPartitions(partitions);
+      if (hasSubPartitions)
+      {
+        showSubPartitions();
+      }
+      else
+      {
+        hideSubPartitions();
+      }
 
       EventQueue.invokeLater(() ->
       {
         showPartitions(partitions, mainPartitions);
       });
-
-      EventQueue.invokeLater(this::calculateSplit);
     }
     finally
     {
       WbSwingUtilities.showDefaultCursor(this);
       reload.setEnabled(true);
       isRetrieving = false;
+    }
+  }
+
+  private boolean mightHaveSubPartitions(List<? extends TablePartition> partitions)
+  {
+    if (CollectionUtil.isEmpty(partitions)) return false;
+    for (TablePartition p : partitions)
+    {
+      SubPartitionState state = p.getSubPartitionState();
+      if (state == SubPartitionState.unknown || state == SubPartitionState.yes) return true;
+    }
+    return false;
+  }
+
+  private void hideSubPartitions()
+  {
+    if (subPanel.isVisible())
+    {
+      WbSwingUtilities.invoke(() ->
+      {
+        subPanel.setVisible(false);
+        split.doLayout();
+      });
+    }
+  }
+
+  private void showSubPartitions()
+  {
+    if (!subPanel.isVisible())
+    {
+      WbSwingUtilities.invoke(() ->
+      {
+        subPanel.setVisible(true);
+        split.setDividerLocation(0.5);
+        split.doLayout();
+      });
     }
   }
 
@@ -249,12 +295,24 @@ public class TablePartitionsPanel
       reload.setEnabled(false);
       WbSwingUtilities.showWaitCursor(this);
 
-      List<? extends TablePartition> partitions = reader.getSubPartitions(currentTable, mainPart);
+      final List<? extends TablePartition> partitions;
 
-      EventQueue.invokeLater(() ->
+      if (mainPart.getSubPartitionState() == SubPartitionState.yes && mainPart.getSubPartitions() != null)
       {
-        showPartitions(partitions, subPartitions);
-      });
+        partitions = mainPart.getSubPartitions();
+      }
+      else
+      {
+        partitions = reader.getSubPartitions(currentTable, mainPart);
+      }
+
+      if (CollectionUtil.isNonEmpty(partitions))
+      {
+        EventQueue.invokeLater(() ->
+        {
+          showPartitions(partitions, subPartitions);
+        });
+      }
     }
     finally
     {
@@ -264,28 +322,19 @@ public class TablePartitionsPanel
     }
   }
 
-  private void calculateSplit()
-  {
-    invalidate();
-    int rows = Math.max(mainPartitions.getRowCount() + 2, 5);
-    int height = (int)((mainPartitions.getRowHeight() * rows) * 1.10);
-    int minHeight = (int)getHeight() / 5;
-    split.setDividerLocation(Math.max(minHeight, height));
-    doLayout();
-  }
-
   private void showPartitions(List<? extends TablePartition> partitions, WbTable display)
   {
-    String[] columns = new String[] {"PARTITION", "DEFINITION"};
-    int[] sizes = new int[] {30, 60 };
-    int[] types = new int[] {Types.VARCHAR, Types.VARCHAR };
+    String[] columns = new String[] {"PARTITION", "TYPE", "DEFINITION"};
+    int[] sizes = new int[] {30, 20, 60 };
+    int[] types = new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR };
 
     DataStore ds = new DataStore(columns, types, sizes);
     for (TablePartition part : partitions)
     {
       int row = ds.addRow();
       ds.setValue(row, 0, part.getObjectName());
-      ds.setValue(row, 1, part.getDefinition());
+      ds.setValue(row, 1, part.getPartitionStrategy());
+      ds.setValue(row, 2, StringUtil.trim(part.getDefinition()));
       ds.getRow(row).setUserObject(part);
     }
     ds.resetStatus();

@@ -76,9 +76,10 @@ public class OraclePartitionLister
         {
           partition.setDefinition(definition.toString());
         }
-        partition.setSubPartitionType(oraPart.getSubPartitionType());
+        partition.setSubPartitionStrategy(oraPart.getSubPartitionType());
         partition.setSchema(table.getRawSchema());
         partition.setName(oraPart.getName());
+        partition.setPartitionStrategy(oraPart.getType());
         partition.setSubPartitionState(state);
         result.add(partition);
       }
@@ -134,6 +135,8 @@ public class OraclePartitionLister
         {
           part.setDefinition(source.toString());
         }
+        part.setIsSubPartition(true);
+        part.setPartitionStrategy(type);
         part.setName(name);
         part.setSchema(baseTable.getRawSchema());
         result.add(part);

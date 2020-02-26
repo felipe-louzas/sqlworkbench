@@ -101,6 +101,11 @@ public class OraclePartitionDefinition
     this.subPartitionType = type;
   }
 
+  /**
+   * Return the partitioning strategy.
+   *
+   * e.g. LIST, RANGE, HASH
+   */
   public String getType()
   {
     return type;

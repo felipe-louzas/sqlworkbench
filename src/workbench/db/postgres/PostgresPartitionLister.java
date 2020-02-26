@@ -48,8 +48,8 @@ public class PostgresPartitionLister
   public List<PostgresPartition> getPartitions(TableIdentifier table)
   {
     PostgresPartitionReader reader = new PostgresPartitionReader(table, conn);
-
-    List<PostgresPartition> partitions = reader.loadTablePartitions();
+    reader.readPartitionInformation();
+    List<PostgresPartition> partitions = reader.getTablePartitions();
 
     List<PostgresPartition> mainPartitions = new ArrayList<>();
     for (PostgresPartition partition : partitions)
@@ -79,6 +79,9 @@ public class PostgresPartitionLister
       if (p.getParentTable() != null && p.getParentTable().getRawTableName().equals(main))
       {
         p.setSubPartitionState(SubPartitionState.none);
+        p.setIsSubPartition(true);
+        p.setPartitionStrategy(mainPartition.getSubPartitionStrategy());
+        p.setSubPartitionStrategy(null);
         subs.add(p);
       }
     }

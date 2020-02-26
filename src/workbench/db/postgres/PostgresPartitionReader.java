@@ -211,6 +211,7 @@ public class PostgresPartitionReader
         PostgresPartition partition = new PostgresPartition(this.table, schema, partName);
         partition.setDefinition(partExpr);
         partition.setComment(remarks);
+        partition.setPartitionStrategy(strategy);
         String subPartStrategy = rs.getString("sub_partition_strategy");
         if (subPartStrategy != null)
         {

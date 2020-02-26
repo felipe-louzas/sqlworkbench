@@ -42,7 +42,8 @@ public class TablePartition
   private List<? extends TablePartition> subPartitions;
   private SubPartitionState subPartitionState = SubPartitionState.unknown;
   private String definition;
-  private String subPartitionsType;
+  private String subPartitionsStrategy;
+  private String partitionStrategy;
 
   public void setCatalog(String catalog)
   {
@@ -54,16 +55,25 @@ public class TablePartition
     this.schema = schema;
   }
 
-  public String getSubPartitionType()
+  public String getSubPartitionStrategy()
   {
-    return subPartitionsType;
+    return subPartitionsStrategy;
   }
 
-  public void setSubPartitionType(String type)
+  public void setSubPartitionStrategy(String type)
   {
-    this.subPartitionsType = type;
+    this.subPartitionsStrategy = type;
   }
 
+  public String getPartitionStrategy()
+  {
+    return partitionStrategy;
+  }
+
+  public void setPartitionStrategy(String partitionStrategy)
+  {
+    this.partitionStrategy = partitionStrategy;
+  }
 
   public String getDefinition()
   {

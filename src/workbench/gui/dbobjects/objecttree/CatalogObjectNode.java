@@ -41,11 +41,12 @@ import static workbench.gui.dbobjects.objecttree.TreeLoader.*;
 public class CatalogObjectNode
     extends ObjectTreeNode
 {
-  private String catalog;
+  private final String catalog;
 
   public CatalogObjectNode(String catalog, String objectType)
   {
     super(objectType, TYPE_DBO_TYPE_NODE);
+    this.catalog = catalog;
     setAllowsChildren(true);
   }
 
