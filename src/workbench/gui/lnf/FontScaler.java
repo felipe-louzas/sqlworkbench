@@ -26,6 +26,7 @@ package workbench.gui.lnf;
 import java.awt.Font;
 import java.awt.Toolkit;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -34,14 +35,14 @@ import workbench.resource.Settings;
  *
  * The reference (i.e. a scale of 1.0) is assumed to be 96 DPI.
  *
- * If the user configured a customized scale factor 
+ * If the user configured a customized scale factor
  *
  * @author Thomas Kellerer
  * @see Settings#getScaleFactor()
  */
 public class FontScaler
 {
-  private boolean scaleFont;
+  private final boolean scaleFont;
   private final int dpi;
   private final int defaultDPI;
   private final float scaleFactor;
@@ -73,9 +74,21 @@ public class FontScaler
     }
   }
 
+  public boolean doScaleFonts()
+  {
+    return scaleFont;
+  }
+  
   public void logSettings()
   {
-    LogMgr.logInfo("FontScaler.logSettings()", "Current DPI: "  + dpi + ", Default DPI: " + defaultDPI + ", scale factor: " + scaleFactor);
+    if (scaleFont)
+    {
+      LogMgr.logInfo(new CallerInfo(){}, "Current DPI: "  + dpi + ", Default DPI: " + defaultDPI + ", scale factor: " + scaleFactor);
+    }
+    else
+    {
+      LogMgr.logInfo(new CallerInfo(){}, "Current DPI: "  + dpi + ", Default DPI: " + defaultDPI);
+    }
   }
 
   public float getScaleFactor()

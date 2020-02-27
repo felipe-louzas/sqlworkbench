@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+
 import javax.swing.JComponent;
 
 /**
@@ -97,8 +98,11 @@ public class SyntaxStyle
     {
       return lastStyledFont;
     }
+    int fontBold = font.isBold() ? Font.BOLD : 0;
+    int fontItalic = font.isItalic() ? Font.ITALIC : 0;
+
     lastFont = font;
-    lastStyledFont = new Font(font.getFamily(), (bold ? Font.BOLD : 0) | (italic ? Font.ITALIC : 0), font.getSize());
+    lastStyledFont = new Font(font.getFamily(), (bold ? Font.BOLD : fontBold) | (italic ? Font.ITALIC : fontItalic), font.getSize());
     return lastStyledFont;
   }
 

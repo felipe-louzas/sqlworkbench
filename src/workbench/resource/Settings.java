@@ -1413,7 +1413,7 @@ public class Settings
 	public boolean getScaleFonts()
 	{
     // always scale if the user configured a scale factor
-    if (getScaleFactor() > 0) return true;
+    if (getScaleFactor() > 1) return true;
 
 		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
 		// 120 DPI is the "125% scale" setting in Windows

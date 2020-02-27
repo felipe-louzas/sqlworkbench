@@ -340,10 +340,10 @@ public class JEditTextArea
     int y = (line - firstLine + 1) * fm.getHeight();
     if (y <= 0) y = 0;
     y += 4;
-    int x = offsetToX(line, pos);
+    float x = offsetToX(line, pos);
     if (x < 0) x = 0;
     x += this.getPainter().getGutterWidth();
-    return new Point(x,y);
+    return new Point(Math.round(x),y);
   }
 
   private String fixLinefeed(String input)
@@ -1030,7 +1030,7 @@ public class JEditTextArea
       }
     }
 
-    int x = _offsetToX(line, offset);
+    int x = (int)offsetToX(line, offset);
     int width = painter.getFontMetrics().charWidth('w');
     int pwidth = painter.getWidth();
 
@@ -1069,27 +1069,12 @@ public class JEditTextArea
   }
 
   /**
-   * Converts an offset in a line into an x co-ordinate. This is a
-   * slow version that can be used any time.
-   * @param line The line
-   * @param offset The offset, from the start of the line
-   */
-  public final int offsetToX(int line, int offset)
-  {
-    // don't use cached tokens
-    painter.currentLineTokens = null;
-    return _offsetToX(line,offset);
-  }
-
-  /**
-   * Converts an offset in a line into an x co-ordinate. This is a
-   * fast version that should only be used if no changes were made
-   * to the text since the last repaint.
+   * Converts an offset in a line into an x co-ordinate.
    *
    * @param line The line
    * @param offset The offset, from the start of the line
    */
-  public int _offsetToX(int line, int offset)
+  public final int offsetToX(int line, int offset)
   {
     TokenMarker tokenMarker = getTokenMarker();
 

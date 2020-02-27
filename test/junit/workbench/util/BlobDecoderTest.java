@@ -26,8 +26,6 @@ package workbench.util;
 
 import java.util.Base64;
 
-import javax.xml.bind.DatatypeConverter;
-
 import workbench.db.exporter.BlobMode;
 
 import workbench.storage.BlobFormatterFactory;
@@ -56,7 +54,7 @@ public class BlobDecoderTest
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
     };
 
-    String base64 = DatatypeConverter.printBase64Binary(data);
+    String base64 = Base64.getEncoder().encodeToString(data);
     byte[] result = decoder.decodeString(base64, BlobLiteralType.base64);
     assertTrue(RowData.objectsAreEqual(data, result));
 
@@ -107,8 +105,18 @@ public class BlobDecoderTest
     byte[] converted = (byte[])result;
     assertArrayEquals(data, converted);
 
-    String hex = DatatypeConverter.printHexBinary(data);
+    String hex = hexString(data);
     converted = (byte[])decoder.decodeBlob(hex, BlobMode.AnsiLiteral);
     assertArrayEquals(data, converted);
+  }
+
+  private String hexString(byte[] data)
+  {
+    String result = "";
+    for (byte b : data)
+    {
+      result += StringUtil.hexString(b, 2);
+    }
+    return result;
   }
 }

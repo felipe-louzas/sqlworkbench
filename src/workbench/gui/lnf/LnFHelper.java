@@ -199,6 +199,7 @@ public class LnFHelper
     FontScaler scaler = new FontScaler();
     scaler.logSettings();
     if (!Settings.getInstance().getScaleFonts()) return;
+    if (!scaler.doScaleFonts()) return;
 
     LogMgr.logInfo(new CallerInfo(){}, "Scaling default fonts by: " + scaler.getScaleFactor());
 
