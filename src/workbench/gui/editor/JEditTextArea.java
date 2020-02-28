@@ -16,6 +16,7 @@ import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -1030,7 +1031,7 @@ public class JEditTextArea
       }
     }
 
-    int x = (int)offsetToX(line, offset);
+    int x = offsetToX(line, offset);
     int width = painter.getFontMetrics().charWidth('w');
     int pwidth = painter.getWidth();
 
@@ -1076,26 +1077,37 @@ public class JEditTextArea
    */
   public final int offsetToX(int line, int offset)
   {
-    TokenMarker tokenMarker = getTokenMarker();
+    return offsetToX((Graphics2D)painter.getGraphics(), line, offset);
+  }
 
+  public final int offsetToX(Graphics2D gfx, int line, int offset)
+  {
+    TokenMarker tokenMarker = getTokenMarker();
+    Token token = null;
+
+    if (tokenMarker != null)
+    {
+      getLineText(line, lineSegment);
+      token = tokenMarker.markTokens(lineSegment, line);
+    }
+    return offsetToX(gfx, line, offset, token);
+  }
+
+  public final int offsetToX(Graphics2D gfx, int line, int offset, Token token)
+  {
     getLineText(line, lineSegment);
 
     int segmentOffset = lineSegment.offset;
-    int x = horizontalOffset;
+    float x = horizontalOffset;
 
-    /* If syntax coloring is disabled, do simple translation */
-    if (tokenMarker == null)
+    if (token == null)
     {
       lineSegment.count = offset;
       FontMetrics fm = painter.getFontMetrics();
-      return x + Utilities.getTabbedTextWidth(lineSegment, fm, x, painter, 0);
+      return (int)x + Utilities.getTabbedTextWidth(lineSegment, fm, (int)x, painter, 0);
     }
     else
     {
-      // If syntax coloring is enabled, we have to do this because
-      // tokens can vary in width
-      Token token = tokenMarker.markTokens(lineSegment, line);
-
       while (token != null)
       {
         FontMetrics styledMetrics = painter.getStyleFontMetrics(token.id);
@@ -1104,19 +1116,19 @@ public class JEditTextArea
         if (offset + segmentOffset < lineSegment.offset + length)
         {
           lineSegment.count = offset - (lineSegment.offset - segmentOffset);
-          x += Utilities.getTabbedTextWidth(lineSegment, styledMetrics, x, painter, 0);
+          x += SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
           break;
         }
         else
         {
           lineSegment.count = length;
-          x += Utilities.getTabbedTextWidth(lineSegment, styledMetrics, x, painter, 0);
+          x += SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
           lineSegment.offset += length;
         }
         token = token.next;
       }
     }
-    return x;
+    return (int)x;
   }
 
   /**

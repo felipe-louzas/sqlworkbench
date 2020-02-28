@@ -49,7 +49,7 @@ public class TextAreaPainter
   extends JComponent
   implements TabExpander, PropertyChangeListener
 {
-  private Segment currentLine;
+  private final Segment currentLine;
 
   protected JEditTextArea textArea;
   protected SyntaxStyle[] styles;
@@ -465,8 +465,10 @@ public class TextAreaPainter
   }
 
   @Override
-  public void paint(Graphics gfx)
+  public void paint(Graphics g)
   {
+    Graphics2D gfx = (Graphics2D)g;
+
     gfx.setFont(getFont());
     calculateGutterWidth(gfx);
 
@@ -500,10 +502,9 @@ public class TextAreaPainter
       lastInvalid = firstVisible + ((clipRect.y + clipRect.height) / fheight);
     }
 
-    Graphics2D g2d = (Graphics2D) gfx;
     if (renderingHints != null)
     {
-      g2d.addRenderingHints(renderingHints);
+      gfx.addRenderingHints(renderingHints);
     }
 
     if (lastInvalid > lastLine)
@@ -517,15 +518,14 @@ public class TextAreaPainter
 
     try
     {
-      TokenMarker tokenMarker = textArea.getDocument().getTokenMarker();
-      int x = textArea.getHorizontalOffset();
+      final int x = textArea.getHorizontalOffset();
 
       int endLine = firstVisible + visibleCount + 1;
       if (endLine > lastLine) endLine = lastLine;
 
-      int gutterX = this.gutterWidth - GUTTER_MARGIN;
-
+      final int gutterX = this.gutterWidth - GUTTER_MARGIN;
       final int caretLine = textArea.getCaretLine();
+      TokenMarker tokenMarker = textArea.getDocument().getTokenMarker();
 
       for (int line = firstVisible; line <= endLine; line++)
       {
@@ -544,7 +544,6 @@ public class TextAreaPainter
 
           // make sure the line numbers do not show up outside the gutter
           gfx.setClip(0, 0, gutterWidth, editorHeight);
-
           gfx.setColor(gutterTextColor);
           gfx.drawString(s, gutterX - w, y);
         }
@@ -557,6 +556,9 @@ public class TextAreaPainter
             gfx.translate(this.gutterWidth,0);
           }
 
+          textArea.getLineText(line, currentLine);
+          Token tokens =  tokenMarker == null ? null : tokenMarker.markTokens(currentLine, line);
+
           if (line == caretLine)
           {
             if (this.currentLineColor != null)
@@ -565,10 +567,10 @@ public class TextAreaPainter
               gfx.fillRect(0, y + fm.getMaxDescent(), editorWidth, fheight);
               gfx.setColor(getBackground());
             }
-            paintCaret(gfx, line, y + fm.getMaxDescent(), fheight);
+            paintCaret(gfx, currentLine, line, y + fm.getMaxDescent(), fheight, tokens);
           }
 
-          paintLine(gfx, tokenMarker, line, y, x);
+          paintLine(gfx, currentLine, tokens, line, y, x);
 
           if (this.showLineNumbers)
           {
@@ -578,7 +580,7 @@ public class TextAreaPainter
         }
       }
     }
-    catch (Exception e)
+    catch (Throwable e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error repainting line range {" + firstInvalid + "," + lastInvalid + "}", e);
     }
@@ -643,51 +645,47 @@ public class TextAreaPainter
     return (ntabs + 1) * tabSize + offset;
   }
 
-  protected void paintLine(Graphics gfx, TokenMarker tokenMarker, int line, int y, int x)
+  protected void paintLine(Graphics2D gfx, Segment lineSegment, Token token, int line, int y, int x)
   {
     Font defaultFont = gfx.getFont();
     Color defaultColor = getForeground();
 
-    if (tokenMarker == null)
+    if (token == null)
     {
-      paintPlainLine(gfx, line, defaultFont, defaultColor, x, y);
+      paintPlainLine(gfx, lineSegment, line, defaultFont, defaultColor, x, y);
     }
     else
     {
-      paintSyntaxLine(gfx, tokenMarker, line, defaultFont, defaultColor, x, y);
+      paintSyntaxLine(gfx, lineSegment, token, line, defaultFont, defaultColor, x, y);
     }
   }
 
-  protected void paintPlainLine(Graphics gfx, int line, Font defaultFont, Color defaultColor, int x, int y)
+  protected void paintPlainLine(Graphics2D gfx, Segment lineSegment, int line, Font defaultFont, Color defaultColor, int x, int y)
   {
     final FontMetrics fm = getFontMetrics(defaultFont);
-    textArea.getLineText(line, currentLine);
 
-    paintHighlight(gfx, line, y);
+    paintHighlight(gfx, lineSegment, line, y, null);
 
     gfx.setFont(defaultFont);
     gfx.setColor(defaultColor);
 
     y += fm.getHeight();
-    Utilities.drawTabbedText(currentLine, x, y, gfx, this, 0);
+    Utilities.drawTabbedText(lineSegment, x, y, gfx, this, 0);
   }
 
-  protected void paintSyntaxLine(Graphics gfx, TokenMarker tokenMarker, int line, Font defaultFont, Color defaultColor, int x, int y)
+  protected void paintSyntaxLine(Graphics2D gfx, Segment lineSegment, Token tokens, int line, Font defaultFont, Color defaultColor, int x, int y)
   {
     final FontMetrics fm = getFontMetrics(defaultFont);
-    textArea.getLineText(line,currentLine);
 
-    Token tokens = tokenMarker.markTokens(currentLine, line);
-
-    paintHighlight(gfx, line, y);
+    paintHighlight(gfx, lineSegment, line, y, tokens);
 
     gfx.setFont(defaultFont);
     gfx.setColor(defaultColor);
     y += fm.getHeight();
-    SyntaxUtilities.paintSyntaxLine(currentLine, tokens, styles, this, gfx, x, y, 0);
+    SyntaxUtilities.paintSyntaxLine(lineSegment, tokens, styles, this, gfx, x, y, 0);
   }
 
-  protected void paintHighlight(Graphics gfx, int line, int y)
+  protected void paintHighlight(Graphics2D gfx, Segment lineSegment, int line, int y, Token token)
   {
     final FontMetrics fm = getFontMetrics(gfx.getFont());
     int height = fm.getHeight();
@@ -695,34 +693,34 @@ public class TextAreaPainter
 
     if (line >= textArea.getSelectionStartLine()  && line <= textArea.getSelectionEndLine())
     {
-      paintLineHighlight(gfx, line, y, height);
+      paintLineHighlight(gfx, lineSegment, line, y, height, token);
     }
 
     if (bracketHighlight && line == textArea.getBracketLine())
     {
-      paintBracketHighlight(gfx, line, y, height, textArea.getBracketPosition());
+      paintBracketHighlight(gfx, lineSegment, line, y, height, textArea.getBracketPosition(), token);
     }
 
     if (this.highlighText != null)
     {
-      int pos = SyntaxUtilities.findMatch(currentLine, highlighText, 0, selectionHighlightIgnoreCase);
+      int pos = SyntaxUtilities.findMatch(lineSegment, highlighText, 0, selectionHighlightIgnoreCase);
       int lineStart = textArea.getLineStartOffset(line);
       while (pos > -1)
       {
         if (pos + lineStart != textArea.getSelectionStart())
         {
-          int x = textArea.offsetToX(line, pos);
-          int width = textArea.offsetToX(line, pos + highlighText.length()) - x;
+          int x = textArea.offsetToX(gfx, line, pos);
+          int width = textArea.offsetToX(gfx, line, pos + highlighText.length()) - x;
           gfx.setColor(occuranceHighlightColor);
           gfx.fillRect(x, y, width, height);
           gfx.setColor(getBackground());
         }
-        pos = SyntaxUtilities.findMatch(currentLine, highlighText, pos + 1, selectionHighlightIgnoreCase);
+        pos = SyntaxUtilities.findMatch(lineSegment, highlighText, pos + 1, selectionHighlightIgnoreCase);
       }
     }
   }
 
-  protected void paintLineHighlight(Graphics gfx, int line, int y, int height)
+  protected void paintLineHighlight(Graphics2D gfx, Segment lineSegment, int line, int y, int height, Token token)
   {
     int selectionStart = textArea.getSelectionStart();
     int selectionEnd = textArea.getSelectionEnd();
@@ -747,24 +745,24 @@ public class TextAreaPainter
     if (textArea.isSelectionRectangular())
     {
       int lineLen = textArea.getLineLength(line);
-      x1 = textArea.offsetToX(line,Math.min(lineLen,selectionStart - textArea.getLineStartOffset(selectionStartLine)));
-      x2 = textArea.offsetToX(line,Math.min(lineLen,selectionEnd - textArea.getLineStartOffset(selectionEndLine)));
+      x1 = textArea.offsetToX(gfx, line, Math.min(lineLen,selectionStart - textArea.getLineStartOffset(selectionStartLine)), token);
+      x2 = textArea.offsetToX(gfx, line, Math.min(lineLen,selectionEnd - textArea.getLineStartOffset(selectionEndLine)), token);
       if (x1 == x2) x2++;
     }
     else if (selectionStartLine == selectionEndLine)
     {
-      x1 = textArea.offsetToX(line,selectionStart - lineStart);
-      x2 = textArea.offsetToX(line,selectionEnd - lineStart);
+      x1 = textArea.offsetToX(gfx, line, selectionStart - lineStart, token);
+      x2 = textArea.offsetToX(gfx, line, selectionEnd - lineStart, token);
     }
     else if (line == selectionStartLine)
     {
-      x1 = textArea.offsetToX(line,selectionStart - lineStart);
+      x1 = textArea.offsetToX(gfx, line, selectionStart - lineStart, token);
       x2 = getWidth();
     }
     else if (line == selectionEndLine)
     {
       x1 = 0;
-      x2 = textArea.offsetToX(line,selectionEnd - lineStart);
+      x2 = textArea.offsetToX(gfx, line, selectionEnd - lineStart, token);
     }
     else
     {
@@ -777,11 +775,20 @@ public class TextAreaPainter
 
   }
 
-  protected void paintBracketHighlight(Graphics gfx, int line, int y, int height, int position)
+  protected void paintBracketHighlight(Graphics2D gfx, Segment lineSegment, int line, int y, int height, int position, Token token)
   {
     if (position == -1) return;
 
-    int x = textArea.offsetToX(line, position);
+    if (token == null)
+    {
+      TokenMarker tokenMarker = textArea.getDocument().getTokenMarker();
+      if (tokenMarker != null)
+      {
+        token = tokenMarker.markTokens(lineSegment, line);
+      }
+    }
+
+    int x = textArea.offsetToX(gfx, line, position, token);
     if (x > 1)
     {
       x--;
@@ -803,7 +810,7 @@ public class TextAreaPainter
     }
   }
 
-  protected void paintCaret(Graphics gfx, int line, int y, int height)
+  protected void paintCaret(Graphics2D gfx, Segment lineSegment, int line, int y, int height, Token token)
   {
     int offset = textArea.getCaretPosition() - textArea.getLineStartOffset(line);
 
@@ -811,18 +818,17 @@ public class TextAreaPainter
     {
       boolean matchBefore = Settings.getInstance().getBracketHighlightLeft();
       int charOffset = matchBefore ? -1 : 0;
-      paintBracketHighlight(gfx, line, y, height, offset + charOffset);
+      paintBracketHighlight(gfx, lineSegment, line, y, height, offset + charOffset, token);
     }
 
-    final FontMetrics fm = gfx.getFontMetrics();
+    int caretX = textArea.offsetToX(gfx, line, offset, token);
     if (textArea.isCaretVisible())
     {
-      int caretX = textArea.offsetToX(line, offset);
-
       gfx.setColor(caretColor);
 
       if (textArea.isOverwriteEnabled())
       {
+        final FontMetrics fm = gfx.getFontMetrics();
         gfx.fillRect(caretX, y + height - 2,  fm.getMaxAdvance(), 2);
       }
       else

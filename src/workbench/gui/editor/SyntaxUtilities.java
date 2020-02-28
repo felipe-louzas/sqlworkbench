@@ -8,11 +8,11 @@ package workbench.gui.editor;
  * permitted, in both source and binary form, provided that this notice
  * remains intact in all source distributions of this package.
  */
-
-
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.text.Segment;
 import javax.swing.text.TabExpander;
@@ -75,10 +75,11 @@ public class SyntaxUtilities
   /**
    * Checks if a subregion of a <code>Segment</code> is equal to a
    * character array.
+   *
    * @param ignoreCase True if case should be ignored, false otherwise
-   * @param text The segment
-   * @param offset The offset into the segment
-   * @param match The character array to match
+   * @param text       The segment
+   * @param offset     The offset into the segment
+   * @param match      The character array to match
    */
   public static boolean regionMatches(boolean ignoreCase, Segment text, int offset, char[] match)
   {
@@ -88,7 +89,7 @@ public class SyntaxUtilities
     {
       return false;
     }
-    for (int i = offset,  j = 0; i < length; i++, j++)
+    for (int i = offset, j = 0; i < length; i++, j++)
     {
       char c1 = textArray[i];
       char c2 = match[j];
@@ -116,33 +117,34 @@ public class SyntaxUtilities
 
     Settings sett = Settings.getInstance();
 
-    styles[Token.COMMENT1] = new SyntaxStyle(sett.getColor("workbench.editor.color.comment1", Color.GRAY),true,false);
-    styles[Token.COMMENT2] = new SyntaxStyle(sett.getColor("workbench.editor.color.comment2", Color.GRAY),true,false);
-    styles[Token.KEYWORD1] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword1", Color.BLUE),false,false);
-    styles[Token.KEYWORD2] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword2", Color.MAGENTA),false,false);
-    styles[Token.KEYWORD3] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword3", new Color(0x009600)),false,false);
-    styles[Token.LITERAL1] = new SyntaxStyle(sett.getColor("workbench.editor.color.literal1", new Color(0x650099)),false,false);
-    styles[Token.LITERAL2] = new SyntaxStyle(sett.getColor("workbench.editor.color.literal2", new Color(0x650099)),false,false);
-    styles[Token.DATATYPE] = new SyntaxStyle(sett.getEditorDatatypeColor(),false,false);
-    styles[Token.OPERATOR] = new SyntaxStyle(sett.getColor("workbench.editor.color.operator", Color.BLACK),false,false);
-    styles[Token.INVALID] = new SyntaxStyle(sett.getColor("workbench.editor.color.invalid", Color.RED),false,true);
+    styles[Token.COMMENT1] = new SyntaxStyle(sett.getColor("workbench.editor.color.comment1", Color.GRAY), true, false);
+    styles[Token.COMMENT2] = new SyntaxStyle(sett.getColor("workbench.editor.color.comment2", Color.GRAY), true, false);
+    styles[Token.KEYWORD1] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword1", Color.BLUE), false, false);
+    styles[Token.KEYWORD2] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword2", Color.MAGENTA), false, false);
+    styles[Token.KEYWORD3] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword3", new Color(0x009600)), false, false);
+    styles[Token.LITERAL1] = new SyntaxStyle(sett.getColor("workbench.editor.color.literal1", new Color(0x650099)), false, false);
+    styles[Token.LITERAL2] = new SyntaxStyle(sett.getColor("workbench.editor.color.literal2", new Color(0x650099)), false, false);
+    styles[Token.DATATYPE] = new SyntaxStyle(sett.getEditorDatatypeColor(), false, false);
+    styles[Token.OPERATOR] = new SyntaxStyle(sett.getColor("workbench.editor.color.operator", Color.BLACK), false, false);
+    styles[Token.INVALID] = new SyntaxStyle(sett.getColor("workbench.editor.color.invalid", Color.RED), false, true);
 
     return styles;
   }
 
-
   /**
    * Paints the specified line onto the graphics context. Note that this
    * method munges the offset and count values of the segment.
-   * @param line The line segment
-   * @param tokens The token list for the line
-   * @param styles The syntax style list
+   *
+   * @param line     The line segment
+   * @param tokens   The token list for the line
+   * @param styles   The syntax style list
    * @param expander The tab expander used to determine tab stops. May
-   * be null
-   * @param gfx The graphics context
-   * @param x The x co-ordinate
-   * @param y The y co-ordinate
+   *                 be null
+   * @param gfx      The graphics context
+   * @param x        The x co-ordinate
+   * @param y        The y co-ordinate
    * @param addwidth Additional spacing to be added to the line width
+   *
    * @return The x co-ordinate, plus the width of the painted string
    */
   public static int paintSyntaxLine(Segment line, Token tokens, SyntaxStyle[] styles, TabExpander expander, Graphics gfx, int x, int y, int addwidth)
@@ -180,6 +182,34 @@ public class SyntaxUtilities
     return x;
   }
 
-  // private members
-  private SyntaxUtilities() {}
+  public static float getTabbedTextWidth(Segment s, Graphics2D gfx, FontMetrics metrics, float x, TabExpander expander, int startOffset)
+  {
+    float nextX = x;
+    final char[] txt = s.array;
+    String txtStr = new String(txt);
+    int txtOffset = s.offset;
+    int n = s.offset + s.count;
+    int charCount = 0;
+
+    for (int i = txtOffset; i < n; i++)
+    {
+      if (txt[i] == '\t')
+      {
+        nextX = expander.nextTabStop(nextX, startOffset + i - txtOffset);
+        charCount = 0;
+      }
+      else if (txt[i] == '\n')
+      {
+        nextX += metrics.getStringBounds(txtStr, i - charCount, i, gfx).getWidth();
+        charCount = 0;
+      }
+      else
+      {
+        charCount++;
+      }
+    }
+    nextX += metrics.getStringBounds(txtStr, n - charCount, n, gfx).getWidth();
+    return nextX - x;
+  }
+
 }
