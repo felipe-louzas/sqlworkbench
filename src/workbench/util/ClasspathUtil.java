@@ -53,6 +53,8 @@ public class ClasspathUtil
   public List<File> checkLibsToMove()
   {
     final File jarFile = getJarFile();
+    if (jarFile == null) return Collections.emptyList();
+
     final File jarDir = jarFile.getParentFile();
     if (jarDir == null)
     {
@@ -145,7 +147,13 @@ public class ClasspathUtil
         return f;
       }
     }
-    return new WbFile(getJarFile().getParentFile(), EXT_DIR);
+    File jarFile = getJarFile();
+    if (jarFile == null)
+    {
+      // This can happen when running from within the IDE
+      return new WbFile(".", EXT_DIR);
+    }
+    return new WbFile(jarFile.getParentFile(), EXT_DIR);
   }
 
   public List<File> getClassPath()
@@ -189,6 +197,13 @@ public class ClasspathUtil
   public File getJarFile()
   {
     URL url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+
+    // This can happen when loading forms in the NetBeans GUI designer
+    if (url == null)
+    {
+      return new File(".");
+    }
+
     File f;
     try
     {

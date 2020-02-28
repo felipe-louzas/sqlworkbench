@@ -96,7 +96,7 @@ public class EditorColorsPanel
     Color op = sett.getColor("workbench.editor.color.operator", defaultStyles[Token.OPERATOR].getColor());
     operators.setSelectedColor(op);
 
-    Color dt = sett.getEditorDatatypeColor();
+    Color dt = sett.getColor("workbench.editor.color.datatype", defaultStyles[Token.DATATYPE].getColor());
     datatypes.setSelectedColor(dt);
 
     errorColor.setSelectedColor(Settings.getInstance().getEditorErrorColor());
@@ -117,6 +117,7 @@ public class EditorColorsPanel
     sett.setColor("workbench.editor.color.literal1", literals.getSelectedColor());
     sett.setColor("workbench.editor.color.literal2", quotedIds.getSelectedColor());
     sett.setColor("workbench.editor.color.operator", operators.getSelectedColor());
+    sett.setColor("workbench.editor.color.datatype", datatypes.getSelectedColor());
 
     sett.setEditorErrorColor(errorColor.getSelectedColor());
     sett.setEditorCurrentLineColor(currLineColor.getSelectedColor());
@@ -124,7 +125,6 @@ public class EditorColorsPanel
     sett.setEditorBackgroundColor(bgColor.getSelectedColor());
     sett.setEditorTextColor(textColor.getSelectedColor());
     sett.setEditorCursorColor(cursorColor.getSelectedColor());
-    sett.setEditorDatatypeColor(datatypes.getSelectedColor());
   }
 
   /** This method is called from within the constructor to

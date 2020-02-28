@@ -115,20 +115,26 @@ public class SyntaxUtilities
   {
     SyntaxStyle[] styles = new SyntaxStyle[Token.ID_COUNT];
 
-    Settings sett = Settings.getInstance();
-
-    styles[Token.COMMENT1] = new SyntaxStyle(sett.getColor("workbench.editor.color.comment1", Color.GRAY), true, false);
-    styles[Token.COMMENT2] = new SyntaxStyle(sett.getColor("workbench.editor.color.comment2", Color.GRAY), true, false);
-    styles[Token.KEYWORD1] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword1", Color.BLUE), false, false);
-    styles[Token.KEYWORD2] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword2", Color.MAGENTA), false, false);
-    styles[Token.KEYWORD3] = new SyntaxStyle(sett.getColor("workbench.editor.color.keyword3", new Color(0x009600)), false, false);
-    styles[Token.LITERAL1] = new SyntaxStyle(sett.getColor("workbench.editor.color.literal1", new Color(0x650099)), false, false);
-    styles[Token.LITERAL2] = new SyntaxStyle(sett.getColor("workbench.editor.color.literal2", new Color(0x650099)), false, false);
-    styles[Token.DATATYPE] = new SyntaxStyle(sett.getEditorDatatypeColor(), false, false);
-    styles[Token.OPERATOR] = new SyntaxStyle(sett.getColor("workbench.editor.color.operator", Color.BLACK), false, false);
-    styles[Token.INVALID] = new SyntaxStyle(sett.getColor("workbench.editor.color.invalid", Color.RED), false, true);
+    styles[Token.COMMENT1] = getStyle("comment1", Color.GRAY, true, false);
+    styles[Token.COMMENT2] = getStyle("comment2", Color.GRAY, true, false);
+    styles[Token.KEYWORD1] = getStyle("keyword1", Color.BLUE, false, false);
+    styles[Token.KEYWORD2] = getStyle("keyword2", Color.MAGENTA, false, false);
+    styles[Token.KEYWORD3] = getStyle("keyword3", new Color(0x009600), false, false);
+    styles[Token.LITERAL1] = getStyle("literal1", new Color(0x650099), false, false);
+    styles[Token.LITERAL2] = getStyle("literal2", new Color(0x650099), false, false);
+    styles[Token.DATATYPE] = getStyle("datatype", new Color(0x990033), false, false);
+    styles[Token.OPERATOR] = getStyle("operator", Color.BLACK, false, false);
+    styles[Token.INVALID] = getStyle("invalid", Color.RED, false, true);
 
     return styles;
+  }
+
+  private static SyntaxStyle getStyle(String suffix, Color defaultColor, boolean defaultItalic, boolean defaultBold)
+  {
+    Color color = Settings.getInstance().getColor("workbench.editor.color." + suffix, defaultColor);
+    boolean italic = Settings.getInstance().getBoolProperty("workbench.editor.syntax.italic." + suffix, defaultItalic);
+    boolean bold = Settings.getInstance().getBoolProperty("workbench.editor.syntax.bold." + suffix, defaultBold);
+    return new SyntaxStyle(color, italic, bold);
   }
 
   /**

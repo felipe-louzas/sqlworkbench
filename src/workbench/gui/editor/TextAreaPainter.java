@@ -106,7 +106,6 @@ public class TextAreaPainter
       Settings.PROPERTY_EDITOR_FG_COLOR,
       Settings.PROPERTY_EDITOR_BG_COLOR,
       Settings.PROPERTY_EDITOR_CURSOR_COLOR,
-      Settings.PROPERTY_EDITOR_DATATYPE_COLOR,
       Settings.PROPERTY_EDITOR_CURRENT_LINE_COLOR,
       Settings.PROPERTY_EDITOR_SELECTION_COLOR,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_COLOR,
@@ -125,6 +124,7 @@ public class TextAreaPainter
       "workbench.editor.color.literal2",
       "workbench.editor.color.operator",
       "workbench.editor.color.invalid",
+      "workbench.editor.color.datatype",
       Settings.PROPERTY_SHOW_LINE_NUMBERS);
 
     if (Settings.getInstance().getBoolProperty("workbench.editor.desktophints.enabled", true))
