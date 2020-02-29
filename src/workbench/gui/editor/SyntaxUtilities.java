@@ -21,6 +21,8 @@ import javax.swing.text.Utilities;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import static workbench.gui.editor.SyntaxStyle.*;
+
 /**
  * Class with several utility functions used by jEdit's syntax colorizing
  * subsystem.
@@ -115,25 +117,41 @@ public class SyntaxUtilities
   {
     SyntaxStyle[] styles = new SyntaxStyle[Token.ID_COUNT];
 
-    styles[Token.COMMENT1] = getStyle("comment1", Color.GRAY, true, false);
-    styles[Token.COMMENT2] = getStyle("comment2", Color.GRAY, true, false);
-    styles[Token.KEYWORD1] = getStyle("keyword1", Color.BLUE, false, false);
-    styles[Token.KEYWORD2] = getStyle("keyword2", Color.MAGENTA, false, false);
-    styles[Token.KEYWORD3] = getStyle("keyword3", new Color(0x009600), false, false);
-    styles[Token.LITERAL1] = getStyle("literal1", new Color(0x650099), false, false);
-    styles[Token.LITERAL2] = getStyle("literal2", new Color(0x650099), false, false);
-    styles[Token.DATATYPE] = getStyle("datatype", new Color(0x990033), false, false);
-    styles[Token.OPERATOR] = getStyle("operator", Color.BLACK, false, false);
-    styles[Token.INVALID] = getStyle("invalid", Color.RED, false, true);
+    // Block comments
+    styles[Token.COMMENT1] = getStyle(COMMENT1, Color.GRAY, true, false);
+
+    // Single line comments
+    styles[Token.COMMENT2] = getStyle(COMMENT2, Color.GRAY, true, false);
+
+    // Standard SQL Keywords
+    styles[Token.KEYWORD1] = getStyle(KEYWORD1, Color.BLUE, false, false);
+
+    // workbench commands
+    styles[Token.KEYWORD2] = getStyle(KEYWORD2, Color.MAGENTA, false, false);
+
+    // functions
+    styles[Token.KEYWORD3] = getStyle(KEYWORD3, new Color(0x009600), false, false);
+
+    // String literals
+    styles[Token.LITERAL1] = getStyle(LITERAL1, new Color(0x650099), false, false);
+
+    // Quoted identifiers
+    styles[Token.LITERAL2] = getStyle(LITERAL2, new Color(0x650099), false, false);
+
+    styles[Token.DATATYPE] = getStyle(DATATYPE, new Color(0x990033), false, false);
+    styles[Token.OPERATOR] = getStyle(OPERATOR, Color.BLACK, false, false);
+
+    // Not used
+    styles[Token.INVALID] = getStyle(INVALID, Color.RED, false, false);
 
     return styles;
   }
 
   private static SyntaxStyle getStyle(String suffix, Color defaultColor, boolean defaultItalic, boolean defaultBold)
   {
-    Color color = Settings.getInstance().getColor("workbench.editor.color." + suffix, defaultColor);
-    boolean italic = Settings.getInstance().getBoolProperty("workbench.editor.syntax.italic." + suffix, defaultItalic);
-    boolean bold = Settings.getInstance().getBoolProperty("workbench.editor.syntax.bold." + suffix, defaultBold);
+    Color color = Settings.getInstance().getColor(PREFIX_COLOR + suffix, defaultColor);
+    boolean italic = Settings.getInstance().getBoolProperty(PREFIX_ITALIC + suffix, defaultItalic);
+    boolean bold = Settings.getInstance().getBoolProperty(PREFIX_BOLD + suffix, defaultBold);
     return new SyntaxStyle(color, italic, bold);
   }
 
@@ -192,9 +210,8 @@ public class SyntaxUtilities
   {
     float nextX = x;
     final char[] txt = s.array;
-    String txtStr = new String(txt);
-    int txtOffset = s.offset;
-    int n = s.offset + s.count;
+    final int txtOffset = s.offset;
+    final int n = s.offset + s.count;
     int charCount = 0;
 
     for (int i = txtOffset; i < n; i++)
@@ -206,7 +223,7 @@ public class SyntaxUtilities
       }
       else if (txt[i] == '\n')
       {
-        nextX += metrics.getStringBounds(txtStr, i - charCount, i, gfx).getWidth();
+        nextX += metrics.getStringBounds(txt, i - charCount, i, gfx).getBounds2D().getWidth();
         charCount = 0;
       }
       else
@@ -214,7 +231,7 @@ public class SyntaxUtilities
         charCount++;
       }
     }
-    nextX += metrics.getStringBounds(txtStr, n - charCount, n, gfx).getWidth();
+    nextX += metrics.getStringBounds(txt, n - charCount, n, gfx).getBounds2D().getWidth();
     return nextX - x;
   }
 

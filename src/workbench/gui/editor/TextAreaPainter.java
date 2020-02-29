@@ -115,16 +115,33 @@ public class TextAreaPainter
       Settings.PROPERTY_EDITOR_BRACKET_HILITE_LEFT,
       Settings.PROPERTY_EDITOR_BRACKET_HILITE_REC,
       Settings.PROPERTY_EDITOR_BRACKET_HILITE_BOTH,
-      "workbench.editor.color.comment1",
-      "workbench.editor.color.comment2",
-      "workbench.editor.color.keyword1",
-      "workbench.editor.color.keyword2",
-      "workbench.editor.color.keyword3",
-      "workbench.editor.color.literal1",
-      "workbench.editor.color.literal2",
-      "workbench.editor.color.operator",
-      "workbench.editor.color.invalid",
-      "workbench.editor.color.datatype",
+      SyntaxStyle.PROP_COMMENT1,
+      SyntaxStyle.PROP_COMMENT2,
+      SyntaxStyle.PROP_KEYWORD1,
+      SyntaxStyle.PROP_KEYWORD2,
+      SyntaxStyle.PROP_KEYWORD3,
+      SyntaxStyle.PROP_LITERAL1,
+      SyntaxStyle.PROP_LITERAL2,
+      SyntaxStyle.PROP_OPERATOR,
+      SyntaxStyle.PROP_DATATYPE,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.COMMENT1,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.COMMENT2,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.KEYWORD1,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.KEYWORD2,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.KEYWORD3,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.LITERAL1,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.LITERAL2,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.OPERATOR,
+      SyntaxStyle.PREFIX_ITALIC + SyntaxStyle.DATATYPE,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.COMMENT1,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.COMMENT2,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.KEYWORD1,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.KEYWORD2,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.KEYWORD3,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.LITERAL1,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.LITERAL2,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.OPERATOR,
+      SyntaxStyle.PREFIX_BOLD + SyntaxStyle.DATATYPE,
       Settings.PROPERTY_SHOW_LINE_NUMBERS);
 
     if (Settings.getInstance().getBoolProperty("workbench.editor.desktophints.enabled", true))
@@ -132,7 +149,6 @@ public class TextAreaPainter
       Toolkit tk = Toolkit.getDefaultToolkit();
       renderingHints = (Map) tk.getDesktopProperty("awt.font.desktophints");
     }
-
   }
 
   @Override
@@ -516,6 +532,9 @@ public class TextAreaPainter
       lastInvalid++;
     }
 
+    Font defaultFont = gfx.getFont();
+    Color defaultColor = getForeground();
+
     try
     {
       final int x = textArea.getHorizontalOffset();
@@ -570,7 +589,14 @@ public class TextAreaPainter
             paintCaret(gfx, currentLine, line, y + fm.getMaxDescent(), fheight, tokens);
           }
 
-          paintLine(gfx, currentLine, tokens, line, y, x);
+          if (tokenMarker == null)
+          {
+            paintPlainLine(gfx, currentLine, line, defaultFont, defaultColor, x, y);
+          }
+          else
+          {
+            paintSyntaxLine(gfx, currentLine, tokens, line, defaultFont, defaultColor, x, y);
+          }
 
           if (this.showLineNumbers)
           {
@@ -643,21 +669,6 @@ public class TextAreaPainter
     int offset = textArea.getHorizontalOffset();
     int ntabs = ((int)x - offset) / tabSize;
     return (ntabs + 1) * tabSize + offset;
-  }
-
-  protected void paintLine(Graphics2D gfx, Segment lineSegment, Token token, int line, int y, int x)
-  {
-    Font defaultFont = gfx.getFont();
-    Color defaultColor = getForeground();
-
-    if (token == null)
-    {
-      paintPlainLine(gfx, lineSegment, line, defaultFont, defaultColor, x, y);
-    }
-    else
-    {
-      paintSyntaxLine(gfx, lineSegment, token, line, defaultFont, defaultColor, x, y);
-    }
   }
 
   protected void paintPlainLine(Graphics2D gfx, Segment lineSegment, int line, Font defaultFont, Color defaultColor, int x, int y)
@@ -772,21 +783,11 @@ public class TextAreaPainter
 
     // "inlined" min/max()
     gfx.fillRect(x1 > x2 ? x2 : x1,y,x1 > x2 ? (x1 - x2) : (x2 - x1),height);
-
   }
 
   protected void paintBracketHighlight(Graphics2D gfx, Segment lineSegment, int line, int y, int height, int position, Token token)
   {
     if (position == -1) return;
-
-    if (token == null)
-    {
-      TokenMarker tokenMarker = textArea.getDocument().getTokenMarker();
-      if (tokenMarker != null)
-      {
-        token = tokenMarker.markTokens(lineSegment, line);
-      }
-    }
 
     int x = textArea.offsetToX(gfx, line, position, token);
     if (x > 1)

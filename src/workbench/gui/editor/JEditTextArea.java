@@ -16,6 +16,7 @@ import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.datatransfer.Clipboard;
@@ -54,7 +55,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.Segment;
-import javax.swing.text.Utilities;
 
 import workbench.WbManager;
 import workbench.interfaces.ClipboardSupport;
@@ -1099,12 +1099,13 @@ public class JEditTextArea
 
     int segmentOffset = lineSegment.offset;
     float x = horizontalOffset;
+//    System.out.print("line: " + line);
 
     if (token == null)
     {
       lineSegment.count = offset;
-      FontMetrics fm = painter.getFontMetrics();
-      return (int)x + Utilities.getTabbedTextWidth(lineSegment, fm, (int)x, painter, 0);
+      FontMetrics fm = gfx.getFontMetrics();
+      return Math.round(x + SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, fm, x, painter, 0));
     }
     else
     {
@@ -1116,19 +1117,23 @@ public class JEditTextArea
         if (offset + segmentOffset < lineSegment.offset + length)
         {
           lineSegment.count = offset - (lineSegment.offset - segmentOffset);
-          x += SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
+          float tokenWidth = SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
+          x += Math.round(tokenWidth);
+//          System.out.println(", token: \"" + lineSegment.toString() + "\", tokenWidth: " + tokenWidth + ", newWidth: " + x);
           break;
         }
         else
         {
           lineSegment.count = length;
-          x += SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
+          float tokenWidth = SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
+          x += Math.round(tokenWidth);
+//          System.out.print(", token: \"" + lineSegment.toString() + "\", tokenWidth: " + tokenWidth + ", newWidth: " + x);
           lineSegment.offset += length;
         }
         token = token.next;
       }
     }
-    return (int)x;
+    return Math.round(x);
   }
 
   /**
@@ -1146,29 +1151,29 @@ public class JEditTextArea
     int segmentOffset = lineSegment.offset;
     int segmentCount = lineSegment.count;
 
-    int width = horizontalOffset;
+    float width = horizontalOffset;
 
+    Graphics gfx = painter.getGraphics();
     if (tokenMarker == null)
     {
       FontMetrics fm = painter.getFontMetrics();
 
       for (int i = 0; i < segmentCount; i++)
       {
-        char c = segmentArray[i + segmentOffset];
-        int charWidth;
+        int charIndex = i + segmentOffset;
+        char c = segmentArray[charIndex];
+        double charWidth;
 
         if (c == '\t')
         {
-          charWidth = (int) painter.nextTabStop(width,i) - width;
+          charWidth = painter.nextTabStop(width,i) - width;
         }
         else
         {
-          charWidth = fm.charWidth(c);
+          charWidth = fm.getStringBounds(segmentArray, charIndex, charIndex + 1, gfx).getBounds2D().getWidth();
         }
-        if (x - charWidth / 2 <= width)
-        {
-          return i;
-        }
+        if (width + charWidth/2 > x) return i;
+
         width += charWidth;
       }
 
@@ -1177,9 +1182,9 @@ public class JEditTextArea
     else
     {
       Token tokens = tokenMarker.markTokens(lineSegment, line);
-
       int offset = 0;
 
+//      System.out.println("line: " + line + ", x: " + x + ", offset: " + offset);
       while (tokens != null)
       {
         FontMetrics styledMetrics = painter.getStyleFontMetrics(tokens.id);
@@ -1188,15 +1193,20 @@ public class JEditTextArea
 
         for (int i = 0; i < length; i++)
         {
-          char c = segmentArray[segmentOffset + offset + i];
-          int charWidth = styledMetrics.charWidth(c);
-
+          int charIndex = segmentOffset + offset + i;
+          char c = segmentArray[charIndex];
+          double charWidth;
           if (c == '\t')
           {
-            charWidth = (int)painter.nextTabStop(width, offset + i) - width;
+            charWidth = painter.nextTabStop(width, offset + i) - width;
           }
+          else
+          {
+            charWidth = styledMetrics.getStringBounds(segmentArray, charIndex, charIndex + 1, gfx).getBounds2D().getWidth();
+          }
+//          System.out.println("  current char: " + c + ", index: " + charIndex + ", currentWidth: " + width + ", charWidth: " + charWidth);
 
-          if (x - charWidth / 2 <= width) return offset + i;
+          if (width + charWidth/2 > x) return offset + i;
 
           width += charWidth;
         }
@@ -1206,7 +1216,6 @@ public class JEditTextArea
       }
       return offset;
     }
-
   }
 
   /**

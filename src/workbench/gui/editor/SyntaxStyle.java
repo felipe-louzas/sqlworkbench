@@ -24,6 +24,110 @@ import javax.swing.JComponent;
  */
 public class SyntaxStyle
 {
+  /**
+   * The property prefix for storing a color in the settings file.
+   */
+  public static final String PREFIX_COLOR = "workbench.editor.color.";
+
+  /**
+   * The property prefix for storing the italic flag in the settings file.
+   * This needs to be combined with the actual style keyword, e.g.
+   * <code>PREFIX_ITALIC + COMMENT1</code>
+   */
+  public static final String PREFIX_ITALIC = "workbench.editor.syntax.italic.";
+
+  /**
+   * The property prefix for storing the boldflag in the settings file.
+   * This needs to be combined with the actual style keyword, e.g.
+   * <code>PREFIX_BOLD + KEYWORD1</code>
+   */
+  public static final String PREFIX_BOLD = "workbench.editor.syntax.bold.";
+
+  /**
+   * The property suffix for storing the block comment style.
+   * This needs to be combined with the color, italic or bold prefix.
+   */
+  public static final String COMMENT1 = "comment1";
+  /**
+   * The full property key for the block comment style.
+   */
+  public static final String PROP_COMMENT1 = PREFIX_COLOR + COMMENT1;
+
+  /**
+   * The property suffix for storing the style for block comments.
+   */
+  public static final String COMMENT2 = "comment2";
+  /**
+   * The full property key for the line comment style.
+   */
+  public static final String PROP_COMMENT2 = PREFIX_COLOR + COMMENT2;
+
+  /**
+   * The property suffix for the keyword1 style.
+   */
+  public static final String KEYWORD1 = "keyword1";
+  /**
+   * The full property key for the keyword1 style.
+   */
+  public static final String PROP_KEYWORD1 = PREFIX_COLOR + KEYWORD1;
+
+  /**
+   * The property suffix for the keyword2 style.
+   */
+  public static final String KEYWORD2 = "keyword2";
+  /**
+   * The full property key for the keyword2 style.
+   */
+  public static final String PROP_KEYWORD2 = PREFIX_COLOR + KEYWORD2;
+
+  /**
+   * The property suffix for the keyword3 style.
+   */
+  public static final String KEYWORD3 = "keyword3";
+  /**
+   * The full property key for the keyword3 style.
+   */
+  public static final String PROP_KEYWORD3 = PREFIX_COLOR + KEYWORD3;
+
+  /**
+   * The property suffix for the literal1 style.
+   */
+  public static final String LITERAL1 = "literal1";
+  /**
+   * The full property key for the literal1 style.
+   */
+  public static final String PROP_LITERAL1 = PREFIX_COLOR + LITERAL1;
+
+  /**
+   * The property suffix for the literal2 style.
+   */
+  public static final String LITERAL2 = "literal2";
+  /**
+   * The full property key for the literal2 style.
+   */
+  public static final String PROP_LITERAL2 = PREFIX_COLOR + LITERAL2;
+
+  /**
+   * The property suffix for the operator style.
+   */
+  public static final String OPERATOR = "operator";
+  /**
+   * The full property key for the operator style.
+   */
+  public static final String PROP_OPERATOR = PREFIX_COLOR + OPERATOR;
+
+  /**
+   * The property suffix for the datatype style.
+   */
+  public static final String DATATYPE = "datatype";
+  /**
+   * The full property key for the datatype style.
+   */
+  public static final String PROP_DATATYPE = PREFIX_COLOR + DATATYPE;
+
+  public static final String INVALID = "invalid";
+
+
   // private members
   private Color color;
   private boolean italic;
