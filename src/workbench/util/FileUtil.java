@@ -816,11 +816,7 @@ public class FileUtil
     FileVersioner version = new FileVersioner(maxVersions, dir, sep);
     try
     {
-      File bck = version.createBackup(f);
-      if (bck != null)
-      {
-        LogMgr.logInfo(new CallerInfo(){}, "Created " + bck.getAbsolutePath() + " as a backup of: " + f.getFullPath());
-      }
+      version.createBackup(f);
     }
     catch (Exception e)
     {

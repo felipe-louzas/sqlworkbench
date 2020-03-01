@@ -26,6 +26,7 @@ package workbench.util;
 import java.io.File;
 import java.io.IOException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -106,11 +107,12 @@ public class FileVersioner
     if (toBackup == null) return null;
     if (!toBackup.exists()) return null;
 
+    long start = System.currentTimeMillis();
     int nextVersion = findNextIndex(toBackup);
     File dir = getTargetDir(toBackup);
     if (dir == null)
     {
-      LogMgr.logWarning("FileVersioner.createBackup()", "Could not determine target directory. Using current directory");
+      LogMgr.logWarning(new CallerInfo(){}, "Could not determine target directory. Using current directory");
       dir = new File(".");
     }
 
@@ -118,13 +120,14 @@ public class FileVersioner
     {
       if (!dir.mkdirs())
       {
-        LogMgr.logError("FileVersioner.createBackup()", "Could not create backup dir: " + dir.getAbsolutePath() + ", using workspace directory: " + toBackup.getParentFile().getAbsolutePath(), null);
+        LogMgr.logError(new CallerInfo(){}, "Could not create backup dir: " + dir.getAbsolutePath() + ", using directory: " + toBackup.getParentFile().getAbsolutePath(), null);
         dir = toBackup.getParentFile();
       }
     }
     File backup = new File(dir, toBackup.getName() + versionSeparator + nextVersion);
     FileUtil.copy(toBackup, backup);
-    LogMgr.logDebug("FileVersioner.createBackup()", "Created backup file: " + backup.getAbsolutePath());
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Created file \"" + backup.getAbsolutePath() + "\" as a backup of \"" + toBackup + "\" in " + duration + "ms");
     return backup;
   }
 

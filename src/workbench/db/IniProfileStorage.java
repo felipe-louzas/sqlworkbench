@@ -313,6 +313,7 @@ public class IniProfileStorage
     LogMgr.logDebug(new CallerInfo(){}, "Saving profiles to: " + filename);
     WbProperties props = new WbProperties(2);
 
+    long start = System.currentTimeMillis();
     // This comparator sorts the "name" attribute at the first place inside the keys for one profile
     // This is just for convenience, so that it's easier to read the properties file
     Comparator<String> comp = (String o1, String o2) ->
@@ -347,6 +348,8 @@ public class IniProfileStorage
     {
       LogMgr.logError(new CallerInfo(){}, "Error saving profiles to: " + filename, ex);
     }
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Saved " + profiles.size() + " profiles to " + filename + " in " + duration + "ms");
   }
 
   private void storeProfile(String key, ConnectionProfile profile, WbProperties props)

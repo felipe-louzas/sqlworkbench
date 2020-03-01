@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import workbench.interfaces.MacroChangeListener;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -167,7 +168,7 @@ public class MacroStorage
       }
       catch (IOException e)
       {
-        LogMgr.logWarning("MacroStorage.createBackup()", "Error when creating backup for: " + f.getAbsolutePath(), e);
+        LogMgr.logWarning(new CallerInfo(){}, "Error when creating backup for: " + f.getAbsolutePath(), e);
       }
     }
     return f.makeBackup();
@@ -207,6 +208,7 @@ public class MacroStorage
 
     String savedFilter = currentFilter;
 
+    long start = System.currentTimeMillis();
     synchronized (lock)
     {
       if (currentFilter != null)
@@ -220,11 +222,11 @@ public class MacroStorage
         {
           backupFile = createBackup(sourceFile);
           sourceFile.delete();
-          LogMgr.logDebug("MacroStorage.saveMacros()", "All macros from " + sourceFile.getFullPath()+ " were removed. Macro file deleted.");
+          LogMgr.logDebug(new CallerInfo(){}, "All macros from " + sourceFile.getFullPath()+ " were removed. Macro file deleted.");
         }
         else
         {
-          LogMgr.logDebug("MacroStorage.saveMacros()", "No macros defined, nothing to save");
+          LogMgr.logDebug(new CallerInfo(){}, "No macros defined, nothing to save");
         }
       }
       else
@@ -235,11 +237,12 @@ public class MacroStorage
         try
         {
           writer.writeObject(this.groups);
-          LogMgr.logDebug("MacroStorage.saveMacros()", "Saved " + allMacros.size() + " macros to " + sourceFile.getFullPath());
+          long duration = System.currentTimeMillis() - start;
+          LogMgr.logDebug(new CallerInfo(){}, "Saved " + allMacros.size() + " macros to " + sourceFile.getFullPath() + " in " + duration + "ms");
         }
         catch (Throwable th)
         {
-          LogMgr.logError("MacroManager.saveMacros()", "Error saving macros to " + sourceFile.getFullPath(), th);
+          LogMgr.logError(new CallerInfo(){}, "Error saving macros to " + sourceFile.getFullPath(), th);
           restoreBackup = true;
         }
 
@@ -247,17 +250,17 @@ public class MacroStorage
         {
           if (restoreBackup)
           {
-            LogMgr.logWarning("MacroManager.saveMacros()", "Restoring the old macro file from backup: " + backupFile.getAbsolutePath());
+            LogMgr.logWarning(new CallerInfo(){}, "Restoring the old macro file from backup: " + backupFile.getAbsolutePath());
             FileUtil.copySilently(backupFile, sourceFile);
           }
           else if (deleteBackup)
           {
-            LogMgr.logDebug("MacroStorage.saveMacros()", "Deleting temporary backup file: " + backupFile.getAbsolutePath());
+            LogMgr.logDebug(new CallerInfo(){}, "Deleting temporary backup file: " + backupFile.getAbsolutePath());
             backupFile.delete();
           }
         }
-
       }
+
       if (savedFilter != null)
       {
         applyFilter(savedFilter);
@@ -344,13 +347,13 @@ public class MacroStorage
   {
     if (sourceFile == null)
     {
-      LogMgr.logDebug("MacroManager.loadMacros()", "No macro file specified. No Macros loaded");
+      LogMgr.logDebug(new CallerInfo(){}, "No macro file specified. No Macros loaded");
       return;
     }
 
     if (!sourceFile .exists())
     {
-      LogMgr.logDebug("MacroManager.loadMacros()", "Macro file " + sourceFile + " not found. No Macros loaded");
+      LogMgr.logDebug(new CallerInfo(){}, "Macro file " + sourceFile + " not found. No Macros loaded");
       return;
     }
 
@@ -392,7 +395,7 @@ public class MacroStorage
     }
     catch (Exception e)
     {
-      LogMgr.logError("MacroManager.loadMacros()", "Error loading macro file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error loading macro file", e);
     }
     resetModified();
   }

@@ -3421,6 +3421,8 @@ public class MainWindow
       currentWorkspace.prepareForSaving();
     }
 
+    long start = System.currentTimeMillis();
+
     File backupFile = null;
     boolean deleteBackup = false;
     boolean restoreBackup = false;
@@ -3493,8 +3495,8 @@ public class MainWindow
 
       currentWorkspace.openForWriting();
       currentWorkspace.save();
-
-      LogMgr.logDebug(ci, "Workspace " + workspaceFile + " saved");
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logDebug(ci, "Workspace " + workspaceFile + " saved in " + duration + "ms");
       if (deleteBackup && backupFile != null)
       {
         LogMgr.logDebug(ci, "Deleting temporary backup file: " + backupFile.getAbsolutePath());
@@ -3527,6 +3529,7 @@ public class MainWindow
 
     this.updateWindowTitle();
     this.checkWorkspaceActions();
+
     return true;
   }
 

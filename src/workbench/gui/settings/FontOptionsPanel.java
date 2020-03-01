@@ -54,6 +54,7 @@ public class FontOptionsPanel
     initComponents();
     standardFont.setAllowFontReset(true);
     editorFont.setAllowFontReset(true);
+    editorFont.setListMonospacedOnly(true);
     dataFont.setAllowFontReset(true);
     msgLogFont.setAllowFontReset(true);
     if (!PlatformHelper.isWindows())

@@ -104,6 +104,7 @@ public class XmlProfileStorage
   @Override
   public void saveProfiles(List<ConnectionProfile> profiles, WbFile storage)
   {
+    long start = System.currentTimeMillis();
     WbPersistence writer = new WbPersistence(storage.getFullPath());
     try
     {
@@ -113,6 +114,8 @@ public class XmlProfileStorage
     {
       LogMgr.logError(new CallerInfo(){}, "Error saving profiles to: " + storage, e);
     }
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Saved " + profiles.size() + " profiles to " + storage + " in " + duration + "ms");
   }
 
 }

@@ -91,8 +91,11 @@ public class DbObjectCacheFactory
   {
     if (useLocalCacheStorage(connection))
     {
+      long start = System.currentTimeMillis();
       ObjectCachePersistence persistence = new ObjectCachePersistence();
       persistence.saveToLocalFile(cache, connection);
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logDebug(new CallerInfo(){}, "Saving cache for " + connection.toString() + " took " + duration + "ms");
     }
   }
 
@@ -127,7 +130,6 @@ public class DbObjectCacheFactory
     {
       ObjectCache cache = caches.get(key);
       if (cache == null) return;
-      LogMgr.logDebug(new CallerInfo(){}, "Saving cache for: " + connection.toString());
       saveCache(cache, connection);
     }
   }
