@@ -716,7 +716,7 @@ public class ConnectionMgr
         ConnectionProfile profile = conn.getProfile();
         sshManager.decrementUsage(profile.getSshConfig());
       }
-      long duration = System.currentTimeMillis();
+      long duration = System.currentTimeMillis() - start;
       LogMgr.logDebug(new CallerInfo(){}, "Disconnecting connection with ID=" + conn.toString() + " took " + duration + "ms");
     }
     catch (Exception e)
