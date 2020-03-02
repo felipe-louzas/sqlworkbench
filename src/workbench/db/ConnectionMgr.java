@@ -686,6 +686,7 @@ public class ConnectionMgr
 
     try
     {
+      long start = System.currentTimeMillis();
       if (conn.getProfile() != null)
       {
         LogMgr.logInfo(new CallerInfo(){}, "Disconnecting: [" + conn.getProfile().getName() + "], ID=" + conn.getId());
@@ -715,6 +716,8 @@ public class ConnectionMgr
         ConnectionProfile profile = conn.getProfile();
         sshManager.decrementUsage(profile.getSshConfig());
       }
+      long duration = System.currentTimeMillis();
+      LogMgr.logDebug(new CallerInfo(){}, "Disconnecting connection with ID=" + conn.toString() + " took " + duration + "ms");
     }
     catch (Exception e)
     {
