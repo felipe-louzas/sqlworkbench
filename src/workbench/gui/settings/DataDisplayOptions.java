@@ -40,6 +40,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.FontStyleComboBoxModel;
 import workbench.gui.components.NumberField;
 
 import workbench.util.DisplayLocale;
@@ -62,13 +63,7 @@ public class DataDisplayOptions
     ComboBoxModel model = new DefaultComboBoxModel(new String[] {ResourceMgr.getString("TxtTabRight"), ResourceMgr.getString("TxtTabLeft") });
     alignmentDropDown.setModel(model);
 
-    ComboBoxModel fontModel = new DefaultComboBoxModel(
-      new String[] {
-        ResourceMgr.getString("TxtFntNormal"),
-        ResourceMgr.getString("TxtFntBold"),
-        ResourceMgr.getString("TxtFntItalic"),
-        ResourceMgr.getString("TxtFntBoldItalic") });
-    nullFontStyle.setModel(fontModel);
+    nullFontStyle.setModel(new FontStyleComboBoxModel());
 
     WbSwingUtilities.setMinimumSizeFromCols(defMaxRows);
     WbSwingUtilities.setMinimumSizeFromCols(nullString);

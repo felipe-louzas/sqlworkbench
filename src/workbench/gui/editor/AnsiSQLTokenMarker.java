@@ -67,7 +67,7 @@ public class AnsiSQLTokenMarker
     addWbCommands();
     addKeywordList(dataTypes, Token.DATATYPE);
     addKeywordList(functions, Token.KEYWORD3);
-    addKeywordList(operators, Token.KEYWORD1);
+    addKeywordList(operators, Token.OPERATOR);
   }
 
   private void addWbCommands()

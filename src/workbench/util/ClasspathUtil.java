@@ -196,10 +196,19 @@ public class ClasspathUtil
    */
   public File getJarFile()
   {
-    URL url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+    URL url = null;
+
+    try
+    {
+      url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+    }
+    catch (Throwable th)
+    {
+      // ignore
+    }
 
     // This can happen when loading forms in the NetBeans GUI designer
-    if (url == null)
+    if (url == null || StringUtil.isBlank(url.getFile()))
     {
       return new File(".");
     }
@@ -213,7 +222,7 @@ public class ClasspathUtil
       String p = URLDecoder.decode(url.getFile(), "UTF-8");
       f = new File(p);
     }
-    catch (Exception e)
+    catch (Throwable e)
     {
       // Fallback, should not happen
       String p = url.getFile().replace("%20", " ");

@@ -19,6 +19,7 @@ import javax.swing.text.TabExpander;
 import javax.swing.text.Utilities;
 
 import workbench.log.LogMgr;
+import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import static workbench.gui.editor.SyntaxStyle.*;
@@ -118,41 +119,40 @@ public class SyntaxUtilities
     SyntaxStyle[] styles = new SyntaxStyle[Token.ID_COUNT];
 
     // Block comments
-    styles[Token.COMMENT1] = getStyle(COMMENT1, Color.GRAY, true, false);
+    styles[Token.COMMENT1] = getStyle(COMMENT1, Color.GRAY, Font.ITALIC);
 
     // Single line comments
-    styles[Token.COMMENT2] = getStyle(COMMENT2, Color.GRAY, true, false);
+    styles[Token.COMMENT2] = getStyle(COMMENT2, Color.GRAY, Font.ITALIC);
 
     // Standard SQL Keywords
-    styles[Token.KEYWORD1] = getStyle(KEYWORD1, Color.BLUE, false, false);
+    styles[Token.KEYWORD1] = getStyle(KEYWORD1, Color.BLUE, Font.PLAIN);
 
     // workbench commands
-    styles[Token.KEYWORD2] = getStyle(KEYWORD2, Color.MAGENTA, false, false);
+    styles[Token.KEYWORD2] = getStyle(KEYWORD2, Color.MAGENTA, Font.PLAIN);
 
     // functions
-    styles[Token.KEYWORD3] = getStyle(KEYWORD3, new Color(0x009600), false, false);
+    styles[Token.KEYWORD3] = getStyle(KEYWORD3, new Color(0x009600), Font.PLAIN);
 
     // String literals
-    styles[Token.LITERAL1] = getStyle(LITERAL1, new Color(0x650099), false, false);
+    styles[Token.LITERAL1] = getStyle(LITERAL1, new Color(0x650099), Font.PLAIN);
 
     // Quoted identifiers
-    styles[Token.LITERAL2] = getStyle(LITERAL2, new Color(0x650099), false, false);
+    styles[Token.LITERAL2] = getStyle(LITERAL2, new Color(0x650099), Font.PLAIN);
 
-    styles[Token.DATATYPE] = getStyle(DATATYPE, new Color(0x990033), false, false);
-    styles[Token.OPERATOR] = getStyle(OPERATOR, Color.BLACK, false, false);
+    styles[Token.DATATYPE] = getStyle(DATATYPE, new Color(0x990033), Font.PLAIN);
+    styles[Token.OPERATOR] = getStyle(OPERATOR, Color.BLACK, Font.PLAIN);
 
     // Not used
-    styles[Token.INVALID] = getStyle(INVALID, Color.RED, false, false);
+    styles[Token.INVALID] = getStyle(INVALID, Color.RED, Font.PLAIN);
 
     return styles;
   }
 
-  private static SyntaxStyle getStyle(String suffix, Color defaultColor, boolean defaultItalic, boolean defaultBold)
+  private static SyntaxStyle getStyle(String suffix, Color defaultColor, int defaultStyle)
   {
     Color color = Settings.getInstance().getColor(PREFIX_COLOR + suffix, defaultColor);
-    boolean italic = Settings.getInstance().getBoolProperty(PREFIX_ITALIC + suffix, defaultItalic);
-    boolean bold = Settings.getInstance().getBoolProperty(PREFIX_BOLD + suffix, defaultBold);
-    return new SyntaxStyle(color, italic, bold);
+    int style = GuiSettings.getFontStyle(PREFIX_STYLE + suffix, defaultStyle);
+    return new SyntaxStyle(color, style);
   }
 
   /**

@@ -117,8 +117,7 @@ public class EditorColorsPanel
   {
     Settings sett = Settings.getInstance();
     sett.setColor(PREFIX_COLOR + type, picker.getSelectedColor());
-    sett.setProperty(PREFIX_BOLD + type, picker.isBold());
-    sett.setProperty(PREFIX_ITALIC + type, picker.isItalic());
+    sett.setProperty(PREFIX_STYLE + type, picker.getFontStyle());
   }
 
   /** This method is called from within the constructor to

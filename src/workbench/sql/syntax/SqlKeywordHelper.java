@@ -182,7 +182,7 @@ public class SqlKeywordHelper
     Set<String> toRemove = CollectionUtil.caseInsensitiveSet();
     for (String value : items)
     {
-      if (value.charAt(0) == '-')
+      if (value.charAt(0) == '-' && items.contains(value.substring(1)))
       {
         toRemove.add(value.substring(1));
         toRemove.add(value);

@@ -941,6 +941,16 @@ public class GuiSettings
   /**
    * Return the style transformation to be used to display the NULL string.
    *
+   * @see #getFontStyle(String)
+   */
+	public static int getDisplayNullFontStyle()
+  {
+    return getFontStyle("workbench.gui.renderer.null.fontstyle", 0);
+  }
+
+  /**
+   * Return the style transformation to be used for a font.
+   *
    * Valid values are:
    *
    * <ul>
@@ -951,9 +961,13 @@ public class GuiSettings
    * </ul>
    * @return the style to be used for Font.deriveFont()
    */
-	public static int getDisplayNullFontStyle()
+	public static int getFontStyle(String property, int defaultStyle)
 	{
-    String styleValue = Settings.getInstance().getProperty("workbench.gui.renderer.null.fontstyle", null);
+    String styleValue = Settings.getInstance().getProperty(property, null);
+    if (styleValue == null)
+    {
+      return defaultStyle;
+    }
 
     if ("italic".equalsIgnoreCase(styleValue)) return Font.ITALIC;
     if ("bold".equalsIgnoreCase(styleValue)) return Font.BOLD;

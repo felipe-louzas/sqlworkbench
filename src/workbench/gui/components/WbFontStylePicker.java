@@ -31,9 +31,10 @@ import java.awt.event.ActionListener;
 import java.io.Serializable;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -58,6 +59,9 @@ public class WbFontStylePicker
   {
     super();
     initComponents();
+
+    fontStyle.setModel(new FontStyleComboBoxModel());
+
     int iconSize = IconMgr.getInstance().getSizeForLabel();
     int buttonSize = (int)(iconSize * 1.5);
 
@@ -69,21 +73,15 @@ public class WbFontStylePicker
     sampleColor.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
   }
 
-  public boolean isBold()
+  public int getFontStyle()
   {
-    return cbxBold.isSelected();
+    return fontStyle.getSelectedIndex();
   }
-  public boolean isItalic()
+
+  public void setFontStyle(int styleNumber)
   {
-    return cbxItalic.isSelected();
-  }
-  public void setBold(boolean flag)
-  {
-    this.cbxBold.setSelected(flag);
-  }
-  public void setItalic(boolean flag)
-  {
-    this.cbxItalic.setSelected(flag);
+    if (styleNumber < 0 || styleNumber > 3) return;
+    fontStyle.setSelectedIndex(styleNumber);
   }
 
   private void setButtonSize(JComponent button, Dimension d)
@@ -105,8 +103,7 @@ public class WbFontStylePicker
     infoPanel = new JPanel();
     sampleColor = new JLabel();
     selectColorButton = new FlatButton();
-    cbxItalic = new JCheckBox();
-    cbxBold = new JCheckBox();
+    fontStyle = new JComboBox<>();
 
     setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
@@ -128,11 +125,8 @@ public class WbFontStylePicker
 
     add(infoPanel);
 
-    cbxItalic.setText(ResourceMgr.getString("LblItalic")); // NOI18N
-    add(cbxItalic);
-
-    cbxBold.setText(ResourceMgr.getString("TxtFntBold")); // NOI18N
-    add(cbxBold);
+    fontStyle.setModel(new DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    add(fontStyle);
   }// </editor-fold>//GEN-END:initComponents
 
   private void selectColorButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_selectColorButtonActionPerformed
@@ -149,9 +143,9 @@ public class WbFontStylePicker
   public void setStyle(SyntaxStyle style)
   {
     if (style == null) return;
+
     setSelectedColor(style.getColor());
-    setBold(style.isBold());
-    setItalic(style.isItalic());
+    fontStyle.setSelectedIndex(style.getFontStyle());
   }
 
   public void setSelectedColor(Color c)
@@ -168,8 +162,7 @@ public class WbFontStylePicker
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private JCheckBox cbxBold;
-  private JCheckBox cbxItalic;
+  private JComboBox<String> fontStyle;
   private JPanel infoPanel;
   private JLabel sampleColor;
   private JButton selectColorButton;

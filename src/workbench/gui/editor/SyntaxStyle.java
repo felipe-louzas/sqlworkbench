@@ -30,18 +30,11 @@ public class SyntaxStyle
   public static final String PREFIX_COLOR = "workbench.editor.color.";
 
   /**
-   * The property prefix for storing the italic flag in the settings file.
+   * The property prefix for storing the font style (bold, ital) flag in the settings file.
    * This needs to be combined with the actual style keyword, e.g.
-   * <code>PREFIX_ITALIC + COMMENT1</code>
+   * <code>PREFIX_STYLE + COMMENT1</code>
    */
-  public static final String PREFIX_ITALIC = "workbench.editor.syntax.italic.";
-
-  /**
-   * The property prefix for storing the boldflag in the settings file.
-   * This needs to be combined with the actual style keyword, e.g.
-   * <code>PREFIX_BOLD + KEYWORD1</code>
-   */
-  public static final String PREFIX_BOLD = "workbench.editor.syntax.bold.";
+  public static final String PREFIX_STYLE = "workbench.editor.syntax.style.";
 
   /**
    * The property suffix for storing the block comment style.
@@ -130,8 +123,7 @@ public class SyntaxStyle
 
   // private members
   private Color color;
-  private boolean italic;
-  private boolean bold;
+  private final int style;
   private Font lastFont;
   private Font lastStyledFont;
   private FontMetrics fontMetrics;
@@ -142,11 +134,17 @@ public class SyntaxStyle
    * @param italic True if the text should be italics
    * @param bold True if the text should be bold
    */
-  public SyntaxStyle(Color color, boolean italic, boolean bold)
+  public SyntaxStyle(Color color, int fontStyle)
   {
     this.color = color;
-    this.italic = italic;
-    this.bold = bold;
+    if (fontStyle < 0 || fontStyle > 3)
+    {
+      this.style = 0;
+    }
+    else
+    {
+      this.style = fontStyle;
+    }
   }
 
   /**
@@ -168,28 +166,9 @@ public class SyntaxStyle
     return color;
   }
 
-  /**
-   * Returns true if no font styles are enabled.
-   */
-  public boolean isPlain()
+  public int getFontStyle()
   {
-    return !(bold || italic);
-  }
-
-  /**
-   * Returns true if italics is enabled for this style.
-   */
-  public boolean isItalic()
-  {
-    return italic;
-  }
-
-  /**
-   * Returns true if boldface is enabled for this style.
-   */
-  public boolean isBold()
-  {
-    return bold;
+    return style;
   }
 
   /**
@@ -202,11 +181,8 @@ public class SyntaxStyle
     {
       return lastStyledFont;
     }
-    int fontBold = font.isBold() ? Font.BOLD : 0;
-    int fontItalic = font.isItalic() ? Font.ITALIC : 0;
-
     lastFont = font;
-    lastStyledFont = new Font(font.getFamily(), (bold ? Font.BOLD : fontBold) | (italic ? Font.ITALIC : fontItalic), font.getSize());
+    lastStyledFont = new Font(font.getFamily(), style, font.getSize());
     return lastStyledFont;
   }
 
@@ -236,15 +212,6 @@ public class SyntaxStyle
     Font _font = getStyledFont(font);
     gfx.setFont(_font);
     gfx.setColor(color);
-  }
-
-  /**
-   * Returns a string representation of this object.
-   */
-  @Override
-  public String toString()
-  {
-    return getClass().getName() + "[color=" + color + (italic ? ",italic" : "") + (bold ? ",bold" : "") + "]";
   }
 
 }
