@@ -1192,6 +1192,12 @@ public class DbMetadata
         SqlKeywordHelper helper = new SqlKeywordHelper(dbId);
         reservedWords.addAll(helper.getReservedWords());
         reservedWords.addAll(helper.getOperators());
+        if (dbSettings.getAliasId() != null)
+        {
+          SqlKeywordHelper aliasHelper = new SqlKeywordHelper(dbSettings.getAliasId());
+          reservedWords.addAll(aliasHelper.getReservedWords());
+          reservedWords.addAll(aliasHelper.getOperators());
+        }
       }
       return this.reservedWords.contains(name);
     }
@@ -1208,6 +1214,13 @@ public class DbMetadata
         keywords.addAll(helper.getKeywords());
         keywords.addAll(helper.getOperators());
 
+        if (dbSettings.getAliasId() != null)
+        {
+          SqlKeywordHelper aliasHelper = new SqlKeywordHelper(dbSettings.getAliasId());
+          keywords.addAll(aliasHelper.getKeywords());
+          keywords.addAll(aliasHelper.getOperators());
+        }
+
         try
         {
           String words = metaData.getSQLKeywords();
@@ -1217,7 +1230,7 @@ public class DbMetadata
             keywords.addAll(driverKeywords);
           }
         }
-        catch (SQLException sql)
+        catch (Throwable sql)
         {
 					LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Could not read SQL keywords from driver", sql);
         }

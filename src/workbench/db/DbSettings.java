@@ -137,6 +137,15 @@ public class DbSettings
     readMaxRowVerbs();
   }
 
+  public String getAliasId()
+  {
+    if (aliasSettings != null)
+    {
+      return aliasSettings.getDbId();
+    }
+    return null;
+  }
+
   public final String getDbId()
   {
     return this.dbId;
