@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.util.StringUtil;
 
 /**
@@ -46,6 +47,7 @@ public class RowDataListSorter
   public RowDataListSorter(SortDefinition sortDef)
   {
     this.definition = sortDef.createCopy();
+    this.ignoreCase = sortDef.getIgnoreCase();
     initCollator();
   }
 

@@ -421,6 +421,11 @@ public class DbExplorerSettings
     return Settings.getInstance().getBoolProperty("workbench.dbexplorer.sort.natural", true);
   }
 
+  public static boolean sortIgnoreCase()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.sort.ignorecase", true);
+  }
+
   public static boolean enableExtendedObjectFilter()
   {
     return Settings.getInstance().getBoolProperty("workbench.dbexplorer.extended.objectfilter.enabled", true);

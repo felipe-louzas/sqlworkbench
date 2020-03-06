@@ -323,6 +323,7 @@ public class TableListPanel
     this.tableList.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     this.tableList.setAdjustToColumnLabel(true);
     this.tableList.addTableModelListener(this);
+    this.tableList.setSortIgnoreCase(DbExplorerSettings.sortIgnoreCase());
 
     this.spoolData = new SpoolDataAction(this);
     this.tableList.addPopupAction(spoolData, true);
@@ -1329,6 +1330,7 @@ public class TableListPanel
       dbConnection.getObjectCache().addTableList(ds, currentSchema);
       tableList.setOriginalOrder(ds);
       final DataStoreTableModel model = new DataStoreTableModel(ds);
+      model.setSortIgnoreCase(DbExplorerSettings.sortIgnoreCase());
 
       // by applying the sort definition to the table model we ensure
       // that the sorting is retained when filtering the objects
@@ -1347,6 +1349,7 @@ public class TableListPanel
       {
         SortDefinition sort = SortDefinition.getTableListSort();
         sort.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
+        sort.setIgnoreCase(DbExplorerSettings.sortIgnoreCase());
         model.setSortDefinition(sort);
       }
 
@@ -1630,10 +1633,14 @@ public class TableListPanel
       tableList.setNewColumnOrder(StringUtil.stringToList(colString, ","));
     }
     String sortString = props.getProperty(prefix + "tablelist.sort", null);
-    if (sortString != null)
+    if (StringUtil.isNonBlank(sortString))
     {
       savedSort = parseDefinitionString(sortString);
-      savedSort.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
+      if (savedSort != null)
+      {
+        savedSort.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
+        savedSort.setIgnoreCase(DbExplorerSettings.sortIgnoreCase());
+      }
     }
     if (filterMgr != null)
     {

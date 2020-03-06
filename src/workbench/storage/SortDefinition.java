@@ -98,6 +98,7 @@ public class SortDefinition
       System.arraycopy(this.sortAscending, 0, copy.sortAscending, 0, this.sortAscending.length);
     }
     copy.ignoreCase = this.ignoreCase;
+    copy.naturalSort = this.naturalSort;
     return copy;
   }
 
@@ -362,6 +363,7 @@ public class SortDefinition
     def.addSortColumn(COLUMN_IDX_TABLE_LIST_CATALOG, true);
     def.addSortColumn(COLUMN_IDX_TABLE_LIST_SCHEMA, true);
     def.addSortColumn(COLUMN_IDX_TABLE_LIST_NAME, true);
+    def.setIgnoreCase(true);
     return def;
   }
 

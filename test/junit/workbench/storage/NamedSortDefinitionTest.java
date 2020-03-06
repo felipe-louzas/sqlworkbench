@@ -50,7 +50,7 @@ public class NamedSortDefinitionTest
     NamedSortDefinition def = new NamedSortDefinition(columns, asc);
 
     String result = def.getDefinitionString();
-    String expected = "\"lastname;a\",\"firstname;d\"";
+    String expected = "ignoreCase:false,\"lastname;a\",\"firstname;d\"";
     assertEquals(expected, result);
 
     NamedSortDefinition newDef = NamedSortDefinition.parseDefinitionString(result);

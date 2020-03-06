@@ -163,7 +163,8 @@ public class NamedSortDefinition
   public String getDefinitionString()
   {
     if (sortColumns == null || sortColumns.length == 0) return "";
-    StringBuilder result = new StringBuilder(sortColumns.length * 10);
+    StringBuilder result = new StringBuilder(sortColumns.length * 10 + 16);
+    result.append("ignoreCase:" + this.ignoreCase + ",");
     for (int i=0; i < sortColumns.length; i++)
     {
       if (i > 0) result.append(',');
@@ -178,6 +179,13 @@ public class NamedSortDefinition
 
   public static NamedSortDefinition parseDefinitionString(String definition)
   {
+    if (StringUtil.isBlank(definition)) return null;
+    boolean ignoreCase = false;
+    if (definition.startsWith("ignoreCase:"))
+    {
+      ignoreCase = definition.startsWith("ignoreCase:true");
+      definition = definition.replaceFirst("ignoreCase\\:(true|false),", "");
+    }
     List<String> elements = StringUtil.stringToList(definition, ",", true, true, false);
     if (CollectionUtil.isEmpty(elements)) return null;
 
@@ -204,7 +212,9 @@ public class NamedSortDefinition
         ascending[i] = true;
       }
     }
-    return new NamedSortDefinition(columns, ascending);
+    NamedSortDefinition def = new NamedSortDefinition(columns, ascending);
+    def.setIgnoreCase(ignoreCase);
+    return def;
   }
 
 }

@@ -27,6 +27,7 @@ import java.sql.SQLException;
 
 import workbench.console.ConsoleSettings;
 import workbench.console.RowDisplay;
+import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
 
 import workbench.storage.DataStore;
@@ -92,7 +93,10 @@ public class WbList
     {
       resultList.setResultName(ResourceMgr.getString("TxtObjList"));
       resultList.setGeneratingSql(sql);
-      resultList.sort(SortDefinition.getTableListSort());
+      SortDefinition sort = SortDefinition.getTableListSort();
+      sort.setIgnoreCase(DbExplorerSettings.sortIgnoreCase());
+      sort.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
+      resultList.sort(sort);
       result.addDataStore(resultList);
 
       if (currentConnection.getDbSettings().supportsSchemas() && lister.getSchemaUsed() != null)

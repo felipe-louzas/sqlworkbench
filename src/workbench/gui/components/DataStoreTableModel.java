@@ -113,7 +113,7 @@ public class DataStoreTableModel
 
   public void setSortIgnoreCase(boolean flag)
   {
-    sortDefinition.setIgnoreCase(true);
+    sortDefinition.setIgnoreCase(flag);
   }
 
   public boolean isColumnModified(int row, int column)
