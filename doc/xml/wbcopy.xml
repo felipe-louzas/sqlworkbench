@@ -130,6 +130,23 @@
 							is ignored if JDBC batching (<literal>-batchSize</literal>) is used.
 						</entry>
 					</row>
+					<row>
+						<entry id="copy-maxrows">-maxRows</entry>
+						<entry>
+              <para>
+                Limit the number of rows read from the source table(s) if the value for this
+                parameter is greater than 0 (zero). This limit is always applied to all tables
+                which are specified.
+              <para>
+                The limiting of rows is done without adding an <literal>ORDER BY</literal> to the source
+                query. This means that the sample of the rows is not deterministic, when running the statement
+                again, a different set of rows might be selected.
+              </para>
+              <para>
+                This option is primarily intended for testing purposes.
+              </para>
+						</entry>
+					</row>
 
 					<row>
 						<entry id="copy-delete-target">-deleteTarget</entry>
