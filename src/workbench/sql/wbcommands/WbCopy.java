@@ -28,6 +28,7 @@ import java.util.List;
 
 import workbench.AppArguments;
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -79,6 +80,8 @@ public class WbCopy
   public static final String PARAM_SOURCE_CONN = "sourceConnection";
   public static final String PARAM_TARGET_CONN = "targetConnection";
   public static final String PARAM_ADJUST_NAMES = "fixTableNameCase";
+  public static final String PARAM_INCLUDE_VIEWS = "includeViews";
+  public static final String PARAM_MAX_ROWS = "maxRows";
 
   /**
    * If PARAM_CREATETARGET is set to true, this parameter defines
@@ -131,6 +134,8 @@ public class WbCopy
     cmdLine.addArgument(PARAM_TARGETPROFILE_GROUP);
     cmdLine.addArgument(PARAM_COLUMNS);
     cmdLine.addArgument(PARAM_SOURCEWHERE);
+    cmdLine.addArgument(PARAM_INCLUDE_VIEWS, ArgumentType.BoolArgument);
+    cmdLine.addArgument(PARAM_MAX_ROWS);
     cmdLine.addArgument(PARAM_ADJUST_NAMES, ArgumentType.BoolArgument);
     cmdLine.addArgument(CommonArgs.ARG_DELETE_TARGET, ArgumentType.BoolArgument);
     cmdLine.addArgument(CommonArgs.ARG_TRUNCATE_TABLE, ArgumentType.BoolArgument);
@@ -228,7 +233,7 @@ public class WbCopy
     WbConnection targetCon = targetHandler.getConnection(result, currentConnection, getBaseDir(), ID_PREFIX + "-Target-"+ runId + "$");
     if (targetCon == null || !result.isSuccess())
     {
-      LogMgr.logError("WbCopy.execute()", "Could not create target connection!", null);
+      LogMgr.logError(new CallerInfo(){}, "Could not create target connection!", null);
       return result;
     }
 
@@ -236,16 +241,25 @@ public class WbCopy
     WbConnection sourceCon = sourceHandler.getConnection(result, currentConnection, getBaseDir(), ID_PREFIX + "-Source-" + runId + "$");
     if (sourceCon == null || !result.isSuccess())
     {
-      LogMgr.logError("WbCopy.execute()", "Could not create source connection!", null);
+      LogMgr.logError(new CallerInfo(){}, "Could not create source connection!", null);
       return result;
     }
 
+    boolean includeSourceViews = cmdLine.getBoolean(PARAM_INCLUDE_VIEWS, false);
     List<TableIdentifier> tablesToExport = null;
     SourceTableArgument sourceTables = null;
     try
     {
       String excluded = cmdLine.getValue(CommonArgs.ARG_EXCLUDE_TABLES);
-      String[] types = sourceCon.getMetadata().getTableTypesArray();
+      String[] types;
+      if (includeSourceViews)
+      {
+        types = sourceCon.getMetadata().getTablesAndViewTypes();
+      }
+      else
+      {
+        types = sourceCon.getMetadata().getTableTypesArray();
+      }
       sourceTables = new SourceTableArgument(sourcetable, excluded, sourceSchema, types, sourceCon);
       tablesToExport = sourceTables.getTables();
       if (tablesToExport.isEmpty() && sourceTables.wasWildcardArgument())
@@ -256,7 +270,7 @@ public class WbCopy
     }
     catch (SQLException e)
     {
-      LogMgr.logError("WbExport.runTableExports()", "Could not retrieve table list", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve table list", e);
       result.addErrorMessage(ExceptionUtil.getDisplay(e));
       return result;
     }
@@ -316,7 +330,7 @@ public class WbCopy
     }
     catch (SQLException e)
     {
-      LogMgr.logError("WbCopy.execute()", "SQL Error when copying data", e);
+      LogMgr.logError(new CallerInfo(){}, "SQL Error when copying data", e);
       CharSequence msg = copier.getMessages();
       if (msg.length() == 0)
       {
@@ -330,7 +344,7 @@ public class WbCopy
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbCopy.execute()", "Error when copying data", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when copying data", e);
       result.setFailure();
       addErrorInfo(result, sql, e);
       result.addMessage(copier.getMessages());
@@ -372,7 +386,7 @@ public class WbCopy
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbCopy.execute()", "Error when disconnecting source connection", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when disconnecting source connection", e);
     }
 
     try
@@ -384,7 +398,7 @@ public class WbCopy
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbCopy.execute()", "Error when disconnecting target connection", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when disconnecting target connection", e);
     }
   }
 
@@ -413,11 +427,11 @@ public class WbCopy
   {
     DataCopier copier = new DataCopier();
     copier.setIgnoreColumnDefaults(cmdLine.getBoolean(WbCopy.PARAM_REMOVE_DEFAULTS, false));
+    copier.setMaxRows(cmdLine.getIntValue(WbCopy.PARAM_MAX_ROWS, -1));
     if (cmdLine.isArgPresent(WbExport.ARG_TRIM_CHARDATA))
     {
       copier.setTrimCharData(cmdLine.getBoolean(WbExport.ARG_TRIM_CHARDATA, false));
     }
-
     copier.setPerTableStatements(new TableStatements(cmdLine));
     copier.setTransactionControl(cmdLine.getBoolean(CommonArgs.ARG_TRANS_CONTROL, true));
     copier.setIgnoreIdentityColumns(cmdLine.getBoolean(CommonArgs.ARG_IGNORE_IDENTITY, false));

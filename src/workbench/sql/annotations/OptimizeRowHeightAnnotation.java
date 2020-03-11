@@ -55,4 +55,10 @@ public class OptimizeRowHeightAnnotation
     return lines;
   }
 
+  @Override
+  public boolean needsValue()
+  {
+    return false;
+  }
+
 }

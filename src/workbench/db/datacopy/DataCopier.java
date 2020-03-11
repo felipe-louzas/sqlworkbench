@@ -101,6 +101,7 @@ public class DataCopier
   private boolean doSyncDelete;
   private boolean ignoreColumnDefaultsForCreate;
   private boolean trimCharData;
+  private int maxRows = -1;
 
   public DataCopier()
   {
@@ -129,6 +130,11 @@ public class DataCopier
   public void setAdjustSequences(boolean flag)
   {
     this.importer.setAdjustSequences(flag);
+  }
+
+  public void setMaxRows(int maxRows)
+  {
+    this.maxRows = maxRows;
   }
 
   /**
@@ -698,7 +704,7 @@ public class DataCopier
       cols.add(tid);
     }
 
-    String select = builder.getSelectForColumns(sourceTable, sourceCols, -1);
+    String select = builder.getSelectForColumns(sourceTable, sourceCols, this.maxRows);
     sql.append(select);
 
     if (StringUtil.isNonBlank(addWhere))
@@ -719,6 +725,7 @@ public class DataCopier
   private void initQuerySource(String sql)
   {
     QueryCopySource source = new QueryCopySource(this.sourceConnection, sql);
+    source.setMaxRows(maxRows);
     source.setTrimCharData(trimCharData);
     this.sourceData = source;
     this.importer.setProducer(source);

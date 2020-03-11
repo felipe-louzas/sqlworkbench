@@ -75,6 +75,7 @@ public class QueryCopySource
   private RowData currentRow;
   private ResultBufferingController resultBuffer;
   private boolean trimCharData;
+  private int maxRows;
 
   public QueryCopySource(WbConnection source, String sql)
   {
@@ -86,6 +87,11 @@ public class QueryCopySource
   public void setTrimCharData(boolean trim)
   {
     this.trimCharData = trim;
+  }
+
+  public void setMaxRows(int maxRows)
+  {
+    this.maxRows = maxRows;
   }
 
   @Override
@@ -135,6 +141,10 @@ public class QueryCopySource
       this.retrieveStatement = this.sourceConnection.createStatementForQuery();
       resultBuffer.initializeStatement(retrieveStatement);
 
+      if (this.maxRows > -1)
+      {
+        this.retrieveStatement.setMaxRows(maxRows);
+      }
       rs = this.retrieveStatement.executeQuery(this.retrieveSql);
       ResultInfo info = new ResultInfo(rs.getMetaData(), this.sourceConnection);
       reader = RowDataReaderFactory.createReader(info, sourceConnection);
