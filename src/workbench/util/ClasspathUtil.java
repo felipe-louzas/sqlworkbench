@@ -231,6 +231,13 @@ public class ClasspathUtil
     return f;
   }
 
+  public File getJarDir()
+  {
+    File jarFile = getJarFile();
+    if (jarFile == null || jarFile.getParentFile() == null) return new File("");
+    return getJarFile().getParentFile();
+  }
+
   /**
    * Returns the directory in which the application is installed.
    *
@@ -239,7 +246,9 @@ public class ClasspathUtil
    */
   public String getJarPath()
   {
-    WbFile parent = new WbFile(getJarFile().getParentFile());
+    File jarFile = getJarFile();
+    if (jarFile == null || jarFile.getParentFile() == null) return ".";
+    WbFile parent = new WbFile(jarFile.getParentFile());
     return parent.getFullPath();
   }
 }

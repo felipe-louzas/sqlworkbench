@@ -23,6 +23,8 @@
  */
 package workbench.db.mssql;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,6 +36,7 @@ import workbench.log.LogMgr;
 import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
+import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -47,6 +50,7 @@ import workbench.util.StringUtil;
  */
 public class SqlServerUtil
 {
+  private static final String MS_AUTH_DLL = "sqljdbc_auth";
   private static final String IS_ENTERPRISE_PROP = "isEnterprise";
 
   public static boolean isMicrosoftDriver(WbConnection conn)
@@ -254,4 +258,33 @@ public class SqlServerUtil
 
     return version;
   }
+
+  public static boolean authDLLExists(File dir)
+  {
+    if (dir == null) return false;
+    FilenameFilter filter = (File sdir, String name) -> name != null && name.toLowerCase().contains(MS_AUTH_DLL) && name.endsWith("dll");
+    String[] files = dir.list(filter);
+    if (files == null || files.length == 0) return false;
+    return true;
+  }
+
+  public static boolean isAuthDLLAvailable()
+  {
+    ClasspathUtil cp = new ClasspathUtil();
+
+    if (authDLLExists(cp.getJarDir()))
+    {
+      return true;
+    }
+    String libPath = System.getProperty("java.library.path");
+    String separator = StringUtil.quoteRegexMeta(File.pathSeparator);
+    String[] pathElements = libPath.split(separator);
+    for (String dir : pathElements)
+    {
+      File fdir = new File(dir);
+      if (authDLLExists(fdir)) return true;
+    }
+    return false;
+  }
+
 }

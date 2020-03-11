@@ -130,23 +130,6 @@
 							is ignored if JDBC batching (<literal>-batchSize</literal>) is used.
 						</entry>
 					</row>
-					<row>
-						<entry id="copy-maxrows">-maxRows</entry>
-						<entry>
-              <para>
-                Limit the number of rows read from the source table(s) if the value for this
-                parameter is greater than 0 (zero). This limit is always applied to all tables
-                which are specified.
-              <para>
-                The limiting of rows is done without adding an <literal>ORDER BY</literal> to the source
-                query. This means that the sample of the rows is not deterministic, when running the statement
-                again, a different set of rows might be selected.
-              </para>
-              <para>
-                This option is primarily intended for testing purposes.
-              </para>
-						</entry>
-					</row>
 
 					<row>
 						<entry id="copy-delete-target">-deleteTarget</entry>
@@ -309,6 +292,25 @@
 						</entry>
 					</row>
 
+					<row>
+						<entry id="copy-maxrows">-maxRows</entry>
+						<entry>
+              <para>
+                Limit the number of rows read from the source table(s) if the value for this
+                parameter is greater than 0 (zero). This limit is always applied to all tables
+                which are specified.
+              </para>
+              <para>
+                The limiting of rows is done without adding an <literal>ORDER BY</literal> to the source
+                query. This means that the sample of the rows is not deterministic, when running the statement
+                again, a different set of rows might be selected.
+              </para>
+              <para>
+                This option is primarily intended for testing purposes.
+              </para>
+						</entry>
+					</row>
+
           <row>
             <entry id="copy-trim-char-data">-trimCharData</entry>
 
@@ -343,7 +345,7 @@
 				</thead>
 				<tbody valign="top">
 					<row>
-					 <entry>-sourceSchema</entry>
+					 <entry id="copy-source-schema">-sourceSchema</entry>
 						<entry>
               <para>
                 The name of the schema to be copied. When using this parameter, all tables
@@ -354,7 +356,7 @@
 					</row>
 
 					<row>
-						<entry>-sourceTable</entry>
+						<entry id="copy-source-table">-sourceTable</entry>
 						<entry>
               <para>
                 The name of the table(s) to be copied. You can either specifiy a
@@ -363,6 +365,20 @@
                 all tables accessible to the user. If more than one table is specified
                 using this parameter, the <literal>-targetTable</literal> parameter is
                 ignored.
+              </para>
+						</entry>
+					</row>
+
+					<row>
+						<entry id="copy-include-views">-includeViews</entry>
+						<entry>
+							<para>
+                Valid values are <literal>true</literal> or <literal>false</literal>.
+							</para>
+              <para>
+                By default only regular tables are taken into account if the source tables are specified through a wildcard.
+                Using <literal>-includeViews=true</literal>, the search for matching names will include views (in addition
+                to regular tables).
               </para>
 						</entry>
 					</row>
@@ -386,8 +402,11 @@
           </row>
 
 					<row>
-						<entry>-checkDependencies</entry>
+						<entry id="copy-check-dependencies">-checkDependencies</entry>
 						<entry>
+							<para>
+                Valid values are <literal>true</literal> or <literal>false</literal>.
+							</para>
 							<para>
 								When copying more than one file into tables with foreign key constraints,
 								this switch can be used to import the files in the correct order (child tables first).
@@ -398,7 +417,7 @@
 					</row>
 
 					<row>
-					 <entry>-targetSchema</entry>
+					 <entry id="copy-target-schema">-targetSchema</entry>
 						<entry>
               The name of the target schema into which the tables should be copied. When this
               parameter is not specified, the default schema of the target connection is used.
@@ -406,14 +425,14 @@
 					</row>
 
 					<row>
-						<entry>-sourceWhere</entry>
+						<entry id="copy-source-where">-sourceWhere</entry>
 						<entry>
 							A <literal>WHERE</literal> condition that is applied to the source table.
 						</entry>
 					</row>
 
 					<row>
-						<entry>-targetTable</entry>
+						<entry id="copy-target-table">-targetTable</entry>
 						<entry>
 							The name of the table into which the data should be written.
 							This parameter is ignored if more than one table is copied.
@@ -467,7 +486,7 @@
 					</row>
 
 					<row>
-						<entry>-removeDefaults</entry>
+						<entry id="copy-remove-defaults">-removeDefaults</entry>
 						<entry>
 							<para>
                 Valid values are <literal>true</literal> or <literal>false</literal>.
@@ -517,7 +536,7 @@
           </row>
 
 					<row>
-						<entry>-dropTarget</entry>
+						<entry id="copy-drop-target">-dropTarget</entry>
 						<entry>
               <para>Possible values: <literal>false</literal>, <literal>true</literal>, <literal>cascade</literal></para>
               <para>
@@ -533,7 +552,7 @@
 					</row>
 
 					<row>
-						<entry>-columns</entry>
+						<entry id="copy-columns">-columns</entry>
 						<entry>
 							<para>
 								Defines the columns to be copied. If this parameter is not specified, then
@@ -586,7 +605,7 @@ Please check <link linkend="command-copy-query">Copying data based on a SQL quer
 				</thead>
 				<tbody>
 					<row>
-						<entry>-sourceQuery</entry>
+						<entry id="copy-source-query">-sourceQuery</entry>
 						<entry>
               <para>The SQL query to be used as the source data (instead of a table).</para>
               <para>
@@ -596,7 +615,7 @@ Please check <link linkend="command-copy-query">Copying data based on a SQL quer
             </entry>
 					</row>
 					<row>
-						<entry>-columns</entry>
+						<entry id="copy-source-query-columns">-columns</entry>
 						<entry>
 							<para>
 								The <emphasis>list</emphasis> of columns from the target table, in the order in which they appear in the source query.

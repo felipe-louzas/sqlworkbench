@@ -43,6 +43,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.mssql.SqlServerUtil;
 import workbench.db.postgres.PostgresUtil;
 
 import workbench.util.ClasspathUtil;
@@ -73,7 +74,6 @@ public class DbDriver
   private List<String> libraryList;
   private boolean isTemporary;
   private String sampleUrl;
-  private static final String MS_AUTHDLL = "sqljdbc_auth.dll";
 
   public DbDriver()
   {
@@ -161,7 +161,7 @@ public class DbDriver
     if (driverClass.equals("com.microsoft.sqlserver.jdbc.SQLServerDriver"))
     {
       // if the DLL is already available on the library.path, there is no need to change it
-      return FileUtil.isDLLAvailable(MS_AUTHDLL) == false;
+      return SqlServerUtil.isAuthDLLAvailable() == false;
     }
 
     boolean fixDefault = Settings.getInstance().getBoolProperty("workbench.dbdriver.fixlibrarypath", false);
@@ -177,6 +177,11 @@ public class DbDriver
     WbFile f = buildFile(libraryList.get(0));
     String jarDir = f.getAbsoluteFile().getParent();
 
+    if (SqlServerUtil.authDLLExists(new File(jarDir)))
+    {
+      return jarDir;
+    }
+
     String archDir = is64Bit ? "x64" : "x86";
     WbFile authDir = new WbFile(jarDir, "auth\\" + archDir);
 
@@ -185,12 +190,7 @@ public class DbDriver
       // newer builds of the driver put the jar files into a sub-directory
       authDir = new WbFile(jarDir, "..\\auth\\" + archDir);
     }
-    File authDLL = new File(authDir, MS_AUTHDLL);
-
-    // we don not need to check the jar file's directory.
-    // That will be added anyway
-
-    if (authDLL.exists())
+    if (SqlServerUtil.authDLLExists(authDir))
     {
       return authDir.getFullPath();
     }

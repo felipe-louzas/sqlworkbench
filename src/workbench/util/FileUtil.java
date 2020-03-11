@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,6 +37,7 @@ import java.io.Writer;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -749,26 +751,6 @@ public class FileUtil
     return null;
   }
 
-  public static boolean isDLLAvailable(String dllName)
-  {
-    ClasspathUtil cp = new ClasspathUtil();
-    String jarPath = cp.getJarPath();
-    WbFile dll = new WbFile(jarPath, dllName);
-    if (dll.exists())
-    {
-      return true;
-    }
-    String libPath = System.getProperty("java.library.path");
-    String separator = StringUtil.quoteRegexMeta(File.pathSeparator);
-    String[] pathElements = libPath.split(separator);
-    for (String dir : pathElements)
-    {
-      File f = new File(dir, dllName);
-      if (f.exists()) return true;
-    }
-    return false;
-  }
-
   public static boolean isDirectoryOnLibraryPath(File toTest)
   {
     if (toTest == null) return false;
@@ -795,7 +777,7 @@ public class FileUtil
       return null;
     }
 
-    LogMgr.logDebug("FileUtil.searchFile()", "Searching file: " + toSearch + " in: " + Arrays.toString(dirs));
+    LogMgr.logDebug(new CallerInfo(){}, "Searching file: " + toSearch + " in: " + Arrays.toString(dirs));
 
     for (File dir : dirs)
     {
