@@ -23,6 +23,7 @@
  */
 package workbench.storage;
 
+import java.sql.Array;
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
@@ -102,7 +103,11 @@ public class RowDataListSorter
   {
     Object o1 = row1.getValue(column);
     Object o2 = row2.getValue(column);
+    return compareValues(o1,o2);
+  }
 
+  protected int compareValues(Object o1, Object o2)
+  {
     if  (o1 == null && o2 == null)
     {
       return 0;
@@ -117,7 +122,6 @@ public class RowDataListSorter
     }
 
     // Special handling for String columns
-
     if (o1 instanceof String && o2 instanceof String)
     {
       if (defaultCollator != null)
@@ -137,18 +141,48 @@ public class RowDataListSorter
     int result = 0;
     try
     {
-      result = ((Comparable)o1).compareTo(o2);
+      if (o1 instanceof Comparable && o2 instanceof Comparable)
+      {
+        result = ((Comparable)o1).compareTo(o2);
+      }
+      else if (o1 instanceof Array && o2 instanceof Array)
+      {
+        result = compareArrays((Array)o1, (Array)o2);
+      }
+      else
+      {
+        String v1 = o1.toString();
+        String v2 = o2.toString();
+        result = v1.compareTo(v2);
+      }
     }
     catch (Throwable e)
     {
-      // If one of the objects did not implement
-      // the comparable interface, we'll use the
-      // toString() values to compare them
+      // Fallback in case of error
       String v1 = o1.toString();
       String v2 = o2.toString();
       result = v1.compareTo(v2);
     }
     return result;
+  }
+
+  private int compareArrays(Array a1, Array a2)
+    throws Exception
+  {
+    Object[] o1 = (Object[])a1.getArray();
+    Object[] o2 = (Object[])a2.getArray();
+    int len1 = o1.length;
+    int len2 = o2.length;
+    int max = Math.min(len1, len2);
+
+    for (int i=0; i < max; i++)
+    {
+      Object e1 = o1[i];
+      Object e2 = o2[i];
+      int compare = compareValues(e1,e2);
+      if (compare != 0) return compare;
+    }
+    return len1 - len2;
   }
 
   @Override
