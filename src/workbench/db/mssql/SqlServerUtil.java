@@ -50,7 +50,7 @@ import workbench.util.StringUtil;
  */
 public class SqlServerUtil
 {
-  private static final String MS_AUTH_DLL = "sqljdbc_auth";
+  private static final String MS_AUTH_DLL = "jdbc_auth";
   private static final String IS_ENTERPRISE_PROP = "isEnterprise";
 
   public static boolean isMicrosoftDriver(WbConnection conn)
