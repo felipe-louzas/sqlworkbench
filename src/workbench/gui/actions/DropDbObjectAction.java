@@ -195,19 +195,15 @@ public class DropDbObjectAction
 
     if (dropperUI.success() && !dropperUI.dialogWasCancelled())
     {
-      EventQueue.invokeLater(new Runnable()
+      EventQueue.invokeLater(() ->
       {
-        @Override
-        public void run()
+        if (data != null)
         {
-          if (data != null)
-          {
-            data.reload();
-          }
-          if (dropListener != null)
-          {
-            dropListener.objectsDropped(objects);
-          }
+          data.reload();
+        }
+        if (dropListener != null)
+        {
+          dropListener.objectsDropped(objects);
         }
       });
     }

@@ -21,7 +21,13 @@
 
 package workbench.gui.editor;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+
+import javax.swing.JTextField;
 import javax.swing.text.Segment;
+import javax.swing.text.TabExpander;
 
 import org.junit.Test;
 
@@ -64,4 +70,61 @@ public class SyntaxUtilitiesTest
   }
 
 
+  @Test
+
+  public void testGetTabbedWidth()
+    throws Exception {
+
+    //                     12345678901
+    String text =         "123456\t";
+    String textExpanded = "123456  ";
+    testGetTabbedWidth(text, textExpanded, 2);
+
+    //                     12345678901
+    text =         "12345678\t";
+    textExpanded = "12345678  ";
+    testGetTabbedWidth(text, textExpanded, 2);
+
+    //                     12345678901
+    text =         "1234\t56\t";
+    textExpanded = "1234    56  ";
+    testGetTabbedWidth(text, textExpanded, 4);
+  }
+
+  public void testGetTabbedWidth(String text, String textExpanded, int tabSize)
+    throws Exception
+  {
+    JTextField  p = new JTextField();
+    Font f = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+    p.setFont(f);
+    Graphics2D g = (Graphics2D)p.getGraphics();
+    FontMetrics fm = p.getFontMetrics(f);
+    final int tabChars = fm.charWidth(' ') * tabSize;
+    TabExpander expander = new TabExpander()
+    {
+      @Override
+      public float nextTabStop(float x, int tabOffset)
+      {
+        try
+        {
+          int ntabs = ((int)x) / tabChars;
+          return (ntabs + 1) * tabChars;
+        }
+        catch (Throwable th)
+        {
+          th.printStackTrace();
+          return 0;
+        }
+      }
+    };
+
+    Segment sTab = new Segment(text.toCharArray(), 0, text.length());
+    double width = SyntaxUtilities.getTabbedTextWidth(sTab, g, fm, 0, expander, 0);
+//    System.out.println("width tabs \"" + text.trim() + "\": " + width);
+
+    Segment s2 = new Segment(textExpanded.toCharArray(), 0, textExpanded.length());
+    double width2 = SyntaxUtilities.getTabbedTextWidth(s2, g, fm, 0, expander, 0);
+//    System.out.println("width expanded \"" + textExpanded + "\": " + width2);
+    assertEquals(width2, width, 0.1);
+  }
 }
