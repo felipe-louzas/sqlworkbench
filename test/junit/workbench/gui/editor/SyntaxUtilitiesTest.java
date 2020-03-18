@@ -24,6 +24,7 @@ package workbench.gui.editor;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 
 import javax.swing.JTextField;
 import javax.swing.text.Segment;
@@ -71,21 +72,19 @@ public class SyntaxUtilitiesTest
 
 
   @Test
-
   public void testGetTabbedWidth()
     throws Exception {
 
-    //                     12345678901
+    if (GraphicsEnvironment.isHeadless()) return;
+
     String text =         "123456\t";
     String textExpanded = "123456  ";
     testGetTabbedWidth(text, textExpanded, 2);
 
-    //                     12345678901
     text =         "12345678\t";
     textExpanded = "12345678  ";
     testGetTabbedWidth(text, textExpanded, 2);
 
-    //                     12345678901
     text =         "1234\t56\t";
     textExpanded = "1234    56  ";
     testGetTabbedWidth(text, textExpanded, 4);
