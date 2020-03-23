@@ -24,6 +24,8 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="7" type="fix">For PostgreSQL, using the JDBC driver 42.2.11, the value for columns defined as "timestamp with time zone" could not be retrieved any longer.</entry>
+    <entry dev-build="7" type="fix">The cursor position wasn't calculated correctly, if real tabs where used in the editor (regression from 125.6)</entry>
     <entry dev-build="7" type="fix">Sorting columns defined as arrays in the result did not work properly.</entry>
     <entry dev-build="6" type="fix">The new Windows launcher (introduced in 125.5) did not work if run from a directory with spaces in the name</entry>
     <entry dev-build="6" type="fix">Fixed some problems with the cursor position in the editor with High-DPI displays (on Windows)</entry>

@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -47,6 +48,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.swing.Action;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -56,6 +58,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
@@ -1914,10 +1917,16 @@ public class MainWindow
   {
     String[] options = new String[] { ResourceMgr.getString("LblCreateWorkspace"), ResourceMgr.getString("LblLoadWorkspace"), ResourceMgr.getString("LblIgnore")};
     JOptionPane ignorePane = new JOptionPane(title, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_CANCEL_OPTION, null, options);
+
+    // Prevent closing through ESC
+    InputMap im = ignorePane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "none");
+
     JDialog dialog = ignorePane.createDialog(this, ResourceMgr.TXT_PRODUCT_NAME);
     try
     {
-      dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+      // "Disable" the close buttin in the window title bar
+      dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
       dialog.setResizable(true);
       dialog.pack();
       dialog.setVisible(true);
