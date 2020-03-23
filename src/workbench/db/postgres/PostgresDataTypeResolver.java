@@ -141,11 +141,11 @@ public class PostgresDataTypeResolver
   public int fixColumnType(int type, String dbmsType)
   {
     if (type == Types.BIT && "bool".equals(dbmsType)) return Types.BOOLEAN;
-    if (fixTimestampTZ && type == Types.TIMESTAMP && "timestamptz".equals(dbmsType))
+    if (fixTimestampTZ && type == Types.TIMESTAMP && ("timestamptz".equals(dbmsType) || "timestamp with time zone".equals(dbmsType)))
     {
       return Types.TIMESTAMP_WITH_TIMEZONE;
     }
-    if (type == Types.TIME && "timetz".equals(dbmsType))
+    if (type == Types.TIME && ("timetz".equals(dbmsType) || "time with time zone".equals(dbmsType)))
     {
       return Types.TIME_WITH_TIMEZONE;
     }
