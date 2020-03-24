@@ -316,7 +316,7 @@ public class DataStore
   private void addColumn(int index, RowDataList... storage)
   {
     if (storage == null) return;
-    
+
     for (RowDataList rd : storage)
     {
       if (rd == null) continue;
@@ -1012,7 +1012,7 @@ public class DataStore
       }
       catch (Exception e)
       {
-        LogMgr.logError("DataStore.getValueAsString()", "Error converting BLOB to String", e);
+        LogMgr.logError(new CallerInfo(){}, "Error converting BLOB to String", e);
         return null;
       }
     }
@@ -1138,7 +1138,7 @@ public class DataStore
       if (!resultInfo.isUpdateable(colIndex) || resultInfo.getColumn(colIndex).isReadonly())
       {
         boolean isComputed = resultInfo.getColumn(colIndex).getComputedColumnExpression() != null;
-        LogMgr.logWarning("DataStore.setValue()",
+        LogMgr.logWarning(new CallerInfo(){},
               "Discarding new value for column " + tname + "." + col + " because column is marked as not updateable. " +
               "(isUpdateable: " + resultInfo.isUpdateable(colIndex) +
               ", isReadonly: " + resultInfo.getColumn(colIndex).isReadonly() +
@@ -1147,7 +1147,7 @@ public class DataStore
       }
       else if (!columnBelongsToUpdateTable(colIndex))
       {
-        LogMgr.logWarning("DataStore.restoreModifiedNotUpdateableColumns()",
+        LogMgr.logWarning(new CallerInfo(){},
           "Restoring original value for column " + tname + "." + col + " because column does not belong to the detected update table: " + updateTable.getTableExpression());
         return;
       }
@@ -1156,7 +1156,7 @@ public class DataStore
     RowData row = this.getRow(rowNumber);
     if (row == null)
     {
-      LogMgr.logError("DataStore.setValue()", "Could not find specified row!", new Exception("Invalid row specified"));
+      LogMgr.logError(new CallerInfo(){}, "Could not find specified row!", new Exception("Invalid row specified"));
       return;
     }
 
@@ -1410,7 +1410,7 @@ public class DataStore
       }
       catch (SQLException e)
       {
-        LogMgr.logError("DataStore.initData()", "Error while retrieving ResultSetMetaData", e);
+        LogMgr.logError(new CallerInfo(){}, "Error while retrieving ResultSetMetaData", e);
         throw e;
       }
     }
@@ -1434,6 +1434,7 @@ public class DataStore
       this.data = createData();
     }
 
+    final CallerInfo ci = new CallerInfo(){};
     try
     {
       RowDataReader reader = RowDataReaderFactory.createReader(resultInfo, originalConnection);
@@ -1466,7 +1467,7 @@ public class DataStore
 
         if (bufferData && rowCount % checkInterval == 0 && MemoryWatcher.isMemoryLow(false))
         {
-          LogMgr.logError("DataStore.initData()", "Memory is running low. Aborting reading...", null);
+          LogMgr.logError(ci, "Memory is running low. Aborting reading...", null);
           lowMemory = true;
           break;
         }
@@ -1480,20 +1481,20 @@ public class DataStore
         // some JDBC drivers will throw an exception when cancel() is called
         // as we silently want to use the data that has been retrieved so far
         // the Exception should not be passed to the caller
-        LogMgr.logInfo("DataStore.initData()", "Retrieve cancelled");
+        LogMgr.logInfo(ci, "Retrieve cancelled");
         // do not resetChangedFlags the cancelRetrieve flag, because this is checked
         // by the caller!
       }
       else
       {
-        LogMgr.logError("DataStore.initData()", "SQL Error during retrieve", e);
+        LogMgr.logError(ci, "SQL Error during retrieve", e);
         throw e;
       }
     }
     catch (Exception e)
     {
       this.cancelRetrieve = false;
-      LogMgr.logError("DataStore.initData()", "Error during retrieve", e);
+      LogMgr.logError(ci, "Error during retrieve", e);
       throw new SQLException(ExceptionUtil.getDisplay(e));
     }
     finally
@@ -1594,11 +1595,11 @@ public class DataStore
       List<Alias> tables = SqlUtil.getTables(this.sql, false, aConn);
       if (tables.size() != 1)
       {
-        LogMgr.logWarning("DataStore.checkUpdateTable()", "More than one table found in the original query. No update table will be set.");
+        LogMgr.logWarning(new CallerInfo(){}, "More than one table found in the original query. No update table will be set.");
         return false;
       }
       String table = tables.get(0).getObjectName();
-      LogMgr.logDebug("DataStore.checkUpdateTable()", "Using table name: " + table);
+      LogMgr.logDebug(new CallerInfo(){}, "Using table name: " + table);
       this.setUpdateTable(table, aConn);
     }
     return this.updateTable != null;

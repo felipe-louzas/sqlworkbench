@@ -623,32 +623,6 @@ public class SqlCommand
     return false;
   }
 
-  /**
-   * Tries to process any "pending" results from the last statement that was
-   * executed, but only if the current DBMS supports multiple SQL statements
-   * in a single execute() call.
-   *
-   * In all other cases the current SqlCommand will process results properly.
-   *
-   * If the DBMS does not support "batched" statements, then only possible
-   * warnings are stored in the result object
-   *
-   * @see #processResults(StatementRunnerResult, boolean, ResultSet)
-   * @see #appendWarnings(workbench.sql.StatementRunnerResult, boolean)
-   */
-  protected void processMoreResults(String sql, StatementRunnerResult result, boolean hasResult)
-    throws SQLException
-  {
-    if (this.isMultiple(sql))
-    {
-      processResults(result, hasResult, null);
-    }
-    else
-    {
-      appendWarnings(result, true);
-    }
-  }
-
   protected void processResults(StatementRunnerResult result, boolean hasResult)
     throws SQLException
   {
@@ -686,9 +660,9 @@ public class SqlCommand
 
     appendOutput(result);
 
-    // Postgres obviously clears the warnings if the getMoreResults() is called,
-    // so we add the warnings before calling getMoreResults(). This doesn't seem
-    // to do any harm for other DBMS as well.
+    // The Postgres JDBC driver clears the warnings if getMoreResults() is called.
+    // So we add the warnings before calling getMoreResults().
+    // This doesn't seem to do any harm for other DBMS.
     appendWarnings(result, true);
 
     if (!runner.getStatementHook().fetchResults())
@@ -968,7 +942,7 @@ public class SqlCommand
   public boolean needConfirmation(WbConnection con, String sql)
   {
     if (con == null || con.isClosed()) return false;
-    
+
     // Avoid calling isUpdatingCommand() if it's not necessary.
     if (con.confirmUpdatesInSession())
     {
@@ -1235,37 +1209,9 @@ public class SqlCommand
     }
     catch (Throwable th)
     {
-      LogMgr.logError("SqlCommand.addErrorPosition()", "Could not retrieve error position!", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve error position!", th);
       result.addErrorMessage(ExceptionUtil.getAllExceptions(e).toString());
     }
-  }
-
-  /**
-   * Check if the passed SQL is a "batched" statement.
-   * <br/>
-   * Returns true if the passed SQL string could be a "batched"
-   * statement that actually contains more than one statement.
-   * SQL Server supports these kind of "batches". If this is the case
-   * affected rows will always be shown, because we cannot know
-   * if the statement did not update anything or if it actually
-   * updated only 0 rows (for some reason SQL Server seems to
-   * return 0 as the updatecount even if no update was involved).
-   * <br/>
-   * Currently this is only checking for newlines in the passed string.
-   *
-   * @param sql the statement/script to check
-   * @return true if the passed sql could contain more than one (independent) statements
-   */
-  protected boolean isMultiple(String sql)
-  {
-    if (this.currentConnection == null) return false;
-    if (this.currentConnection.getMetadata() == null) return false;
-    DbSettings settings = currentConnection.getDbSettings();
-    if (settings.supportsBatchedStatements())
-    {
-      return (sql.indexOf('\n') > -1);
-    }
-    return false;
   }
 
   @Override

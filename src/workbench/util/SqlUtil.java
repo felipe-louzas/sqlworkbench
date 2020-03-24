@@ -787,12 +787,12 @@ public class SqlUtil
           meta = pstmt.getMetaData();
           if (meta == null)
           {
-            LogMgr.logDebug("SqlUtil.getResultInfoFromQuery()", "No ResultSetMetaData returned from the PreparedStatement");
+            LogMgr.logDebug(new CallerInfo(){}, "No ResultSetMetaData returned from the PreparedStatement");
           }
         }
         catch (Exception e)
         {
-          LogMgr.logError("SqlUtil.getResultInfoFromQuery()", "Could not obtain result info from prepared statement for:\n" + sql, e);
+          LogMgr.logError(new CallerInfo(){}, "Could not obtain result info from prepared statement for:\n" + sql, e);
           closeStatement(pstmt);
           pstmt = null;
           meta = null;
@@ -986,7 +986,7 @@ public class SqlUtil
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlUtil.getColumnsFromSelect()", "Error parsing SELECT statement", e);
+      LogMgr.logError(new CallerInfo(){}, "Error parsing SELECT statement", e);
       return Collections.emptyList();
     }
 
@@ -1683,7 +1683,7 @@ public class SqlUtil
         // prevent endless loop
         if (count > maxLoops)
         {
-          LogMgr.logWarning("SqlUtil.getWarnings()", "Breaking out of loop because" + maxLoops + " iterations reached!");
+          LogMgr.logWarning(new CallerInfo(){}, "Breaking out of loop because" + maxLoops + " iterations reached!");
           break;
         }
 
@@ -1714,7 +1714,7 @@ public class SqlUtil
         // prevent endless loop
         if (count > maxLoops)
         {
-          LogMgr.logWarning("SqlUtil.getWarnings()", "Breaking out of loop because" + maxLoops + " iterations reached!");
+          LogMgr.logWarning(new CallerInfo(){}, "Breaking out of loop because" + maxLoops + " iterations reached!");
           break;
         }
         // prevent endless loop
@@ -1729,7 +1729,7 @@ public class SqlUtil
     }
     catch (Throwable e)
     {
-      LogMgr.logWarning("SqlUtil.getWarnings()", "Error retrieving warnings", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error retrieving warnings", e);
       return null;
     }
   }
@@ -2085,11 +2085,11 @@ public class SqlUtil
         out.append(meta.getColumnName(col));
         out.append(']');
       }
-      LogMgr.logDebug("SqlUtil.dumpResultSetInfo()", out.toString());
+      LogMgr.logDebug(new CallerInfo(){}, out.toString());
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("SqlUtil.dumpResultSetInfo()", "Could not access ResultSetMetaData", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not access ResultSetMetaData", e);
     }
   }
 
@@ -2287,7 +2287,7 @@ public class SqlUtil
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("SqlUtil.getResult()", "Could not retrieve results", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve results", ex);
     }
     return new DataStore(new String[]{}, new int[]{});
   }

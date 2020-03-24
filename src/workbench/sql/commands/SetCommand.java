@@ -105,7 +105,7 @@ public class SetCommand
     }
     catch (Exception e)
     {
-      LogMgr.logError("SetCommand.execute()", "Could not parse statement", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not parse statement", e);
       result = new StatementRunnerResult();
       result.addErrorMessage(ExceptionUtil.getDisplay(e));
       return result;
@@ -231,7 +231,7 @@ public class SetCommand
       // Using a generic execute ensures that DBMS which can process more than one statement with a single SQL
       // are treated correctly. E.g. when sending a SET and a SELECT as one statement for SQL Server
       boolean hasResult = this.currentStatement.execute(toExecute);
-      processMoreResults(toExecute, result, hasResult);
+      processResults(result, hasResult);
       result.setSuccess();
 
       if (schemaChange)

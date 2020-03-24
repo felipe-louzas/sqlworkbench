@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -112,7 +113,7 @@ public class DdlCommand
     if (useSavepoint && !this.currentConnection.supportsSavepoints())
     {
       useSavepoint = false;
-      LogMgr.logWarning("DdlCommand.execute()", "A savepoint should be used for this DDL command, but the driver does not support savepoints!");
+      LogMgr.logWarning(new CallerInfo(){}, "A savepoint should be used for this DDL command, but the driver does not support savepoints!");
     }
 
     DdlObjectInfo info = SqlUtil.getDDLObjectInfo(sql, currentConnection);
@@ -159,7 +160,7 @@ public class DdlCommand
       // Using a generic execute and result processing ensures that DBMS that
       // can process more than one statement with a single SQL are treated correctly.
       // e.g. when sending a SELECT and other statements as a "batch" with SQL Server
-      processMoreResults(sql, result, hasResult);
+      processResults(result, hasResult);
 
       // processMoreResults() will have added any warnings and set the warning flag
       if (result.hasWarning())

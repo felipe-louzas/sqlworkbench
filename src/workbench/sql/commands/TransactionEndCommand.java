@@ -25,6 +25,7 @@ package workbench.sql.commands;
 
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.SavepointStrategy;
@@ -102,7 +103,7 @@ public class TransactionEndCommand
 
       appendSuccessMessage(result);
       result.setSuccess();
-      processMoreResults(sql, result, false);
+      processResults(result, false);
     }
     catch (Exception e)
     {
@@ -170,12 +171,12 @@ public class TransactionEndCommand
   {
     try
     {
-      LogMgr.logInfo("TransactionEndCommand.handleTransactionEnd()", "Transaction end detected. Turning auto commit back on");
+      LogMgr.logInfo(new CallerInfo(){}, "Transaction end detected. Turning auto commit back on");
       runner.getConnection().setAutoCommit(true);
     }
     catch (Exception ex)
     {
-      LogMgr.logError("TransactionEndCommand.handleTransactionEnd()", "Could disable auto commit!", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could disable auto commit!", ex);
     }
 
     String strategy = runner.getSessionAttribute(TransactionStartCommand.PREVIOUS_SP_STRATEGY);

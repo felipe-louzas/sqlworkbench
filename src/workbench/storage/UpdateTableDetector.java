@@ -466,12 +466,22 @@ public class UpdateTableDetector
           return findTable(table);
         }
       }
-      tbl.setSchema(conn.getMetadata().getCurrentSchema());
+      String schema = conn.getMetadata().getCurrentSchema();
+      if (schema != null)
+      {
+        LogMgr.logDebug(new CallerInfo(){}, "Using current schema " + schema + " for update table " + table.getObjectName());
+      }
+      tbl.setSchema(schema);
     }
 
     if (tbl.getCatalog() == null)
     {
-      tbl.setCatalog(conn.getMetadata().getCurrentCatalog());
+      String catalog = conn.getMetadata().getCurrentCatalog();
+      if (catalog != null)
+      {
+        LogMgr.logDebug(new CallerInfo(){}, "Using current catalog " + catalog + " for update table " + table.getObjectName());
+      }
+      tbl.setCatalog(catalog);
     }
     return tbl;
   }
