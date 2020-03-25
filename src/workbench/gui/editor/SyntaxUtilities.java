@@ -210,16 +210,14 @@ public class SyntaxUtilities
     final int txtOffset = s.offset;
     final int n = s.offset + s.count;
     int charCount = 0;
-    int lastTabPosition = 0;
 
     for (int i = txtOffset; i < n; i++)
     {
       if (txt[i] == '\t')
       {
-        nextX += metrics.getStringBounds(txt, lastTabPosition, n, gfx).getBounds2D().getWidth();
+        nextX += metrics.getStringBounds(txt, i - charCount, i, gfx).getBounds2D().getWidth();
         nextX = expander.nextTabStop(nextX, startOffset + i - txtOffset);
         charCount = 0;
-        lastTabPosition = i;
       }
       else if (txt[i] == '\n')
       {

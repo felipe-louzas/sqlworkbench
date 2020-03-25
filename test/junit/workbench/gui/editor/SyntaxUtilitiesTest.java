@@ -29,6 +29,7 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.JTextField;
 import javax.swing.text.Segment;
 import javax.swing.text.TabExpander;
+import javax.swing.text.Utilities;
 
 import org.junit.Test;
 
@@ -88,6 +89,10 @@ public class SyntaxUtilitiesTest
     text =         "1234\t56\t";
     textExpanded = "1234    56  ";
     testGetTabbedWidth(text, textExpanded, 4);
+
+    text =         "123\t456";
+    textExpanded = "123   456";
+    testGetTabbedWidth(text, textExpanded, 6);
   }
 
   public void testGetTabbedWidth(String text, String textExpanded, int tabSize)
@@ -118,6 +123,7 @@ public class SyntaxUtilitiesTest
     };
 
     Segment sTab = new Segment(text.toCharArray(), 0, text.length());
+    double widthX = Utilities.getTabbedTextWidth(sTab, fm, 0, expander, 0);
     double width = SyntaxUtilities.getTabbedTextWidth(sTab, g, fm, 0, expander, 0);
 //    System.out.println("width tabs \"" + text.trim() + "\": " + width);
 
