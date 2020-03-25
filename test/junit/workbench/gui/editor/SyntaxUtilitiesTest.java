@@ -94,6 +94,14 @@ public class SyntaxUtilitiesTest
     textExpanded = "123   456";
     testGetTabbedWidth(text, textExpanded, 6);
 
+    text =         "123\t456\t789";
+    textExpanded = "123   456   789";
+    testGetTabbedWidth(text, textExpanded, 6);
+
+    text =         "\t123\t456\t789";
+    textExpanded = "      123   456   789";
+    testGetTabbedWidth(text, textExpanded, 6);
+
     text =         "123456";
     textExpanded = "123456";
     testGetTabbedWidth(text, textExpanded, 6);
