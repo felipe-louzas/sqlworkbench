@@ -2,6 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2020-03-08">
+    <entry dev-build="7" type="enh">The result panel is now automatically displayed if it was minimized before running a statement.</entry>
     <entry dev-build="6" type="enh">It's now possible to configure italic and bold for syntax highlighting</entry>
     <entry dev-build="6" type="enh">For SQL Server, partitioning information about a table is now included in the generated DDL</entry>
     <entry dev-build="6" type="enh">WbImport can now import all sheets of a spreadsheet into the same table when -sheetName=* is specified together with -table</entry>
@@ -24,6 +25,7 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="7" type="fix">For Redshift, finding tables on the search path was no longer working.</entry>
     <entry dev-build="7" type="fix">For PostgreSQL, using the JDBC driver 42.2.11, the value for columns defined as "timestamp with time zone" could not be retrieved any longer.</entry>
     <entry dev-build="7" type="fix">The cursor position wasn't calculated correctly, if real tabs where used in the editor (regression from 125.6)</entry>
     <entry dev-build="7" type="fix">Sorting columns defined as arrays in the result did not work properly.</entry>
