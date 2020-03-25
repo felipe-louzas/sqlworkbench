@@ -183,9 +183,6 @@ import workbench.gui.actions.UndoExpandAction;
 import workbench.gui.actions.UpdateDatabaseAction;
 import workbench.gui.actions.ViewMessageLogAction;
 import workbench.gui.actions.WbAction;
-
-import workbench.sql.annotations.BookmarkAnnotation;
-
 import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.components.ConnectionInfo;
 import workbench.gui.components.DataStoreTableModel;
@@ -226,6 +223,7 @@ import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
 import workbench.sql.VariablePool;
 import workbench.sql.annotations.AppendResultAnnotation;
+import workbench.sql.annotations.BookmarkAnnotation;
 import workbench.sql.annotations.ResultAsTextAnnotation;
 import workbench.sql.annotations.ResultAsTextMode;
 import workbench.sql.annotations.UseTabAnnotation;
@@ -251,7 +249,6 @@ import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbThread;
 import workbench.util.WbWorkspace;
-
 
 /**
  * A panel with an SQL editor (EditorPanel), a log panel and
@@ -4295,6 +4292,10 @@ public class SqlPanel
       });
     }
 
+    if (count > 0 && contentPanel.getExpander().isUpperPartExpanded())
+    {
+      contentPanel.getExpander().undoExpand();
+    }
     return count;
   }
 

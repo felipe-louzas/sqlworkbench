@@ -42,17 +42,29 @@ public class SplitPaneExpander
     this.contentPanel = client;
   }
 
+  public boolean isUpperPartExpanded()
+  {
+    int location = contentPanel.getDividerLocation();
+    return location >= contentPanel.getHeight() - contentPanel.getDividerSize();
+  }
+
   public void undoExpand()
   {
+    int newLocation = -1;
+
     if (lastDivider != -1)
     {
-      this.contentPanel.setDividerLocation(this.lastDivider);
+      newLocation = lastDivider;
+    }
+    else if (contentPanel.getLastDividerLocation() > -1)
+    {
+      newLocation = contentPanel.getLastDividerLocation();
     }
     else
     {
-      int newLoc = this.contentPanel.getHeight() / 2;
-      this.contentPanel.setDividerLocation(newLoc);
+      newLocation = this.contentPanel.getHeight() / 2;
     }
+    this.contentPanel.setDividerLocation(newLocation);
     this.lastDivider = -1;
     repaintClient();
   }

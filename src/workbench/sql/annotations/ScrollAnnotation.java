@@ -52,7 +52,8 @@ public class ScrollAnnotation
 
   public static boolean scrollToEnd(String value)
   {
-    return END_KEYWORDS.contains(value);
+    if (value == null) return false;
+    return END_KEYWORDS.contains(StringUtil.trim(value));
   }
 
   public static int scrollToLine(String value)

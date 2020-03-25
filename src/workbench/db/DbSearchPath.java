@@ -28,6 +28,7 @@ import java.util.List;
 
 import workbench.db.ibm.Db2SearchPath;
 import workbench.db.postgres.PostgresUtil;
+import workbench.db.redshift.RedshiftSearchPathHandler;
 
 /**
  *
@@ -88,8 +89,9 @@ public interface DbSearchPath
       {
         case Postgres:
         case Greenplum:
-        case Redshift:
           return PG_HANDLER;
+        case Redshift:
+          return new RedshiftSearchPathHandler();
         case DB2_ISERIES:
           return new Db2SearchPath();
         default:

@@ -30,6 +30,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 
@@ -39,7 +40,6 @@ import workbench.gui.PanelReloader;
 import workbench.gui.components.CompoundIcon;
 
 import workbench.util.StringUtil;
-
 
 /**
  *
@@ -106,7 +106,7 @@ public class AutomaticRefreshMgr
     entry.reloader = loader;
     panels.add(entry);
     timer.start();
-    LogMgr.logDebug("AutomaticRefreshMgr.addRefresh()", "Registered panel: " + panel.getName() + ", id=" + id + ", interval=" + KeepAliveDaemon.getTimeDisplay(milliSeconds));
+    LogMgr.logDebug(new CallerInfo(){}, "Registered panel: " + panel.getName() + ", id=" + id + ", interval=" + KeepAliveDaemon.getTimeDisplay(milliSeconds));
   }
 
   @Override
@@ -124,13 +124,13 @@ public class AutomaticRefreshMgr
     if (panel == null)
     {
       // the panel seems to be gone, so remove this entry
-      LogMgr.logWarning("AutomaticRefreshMgr.actionPerformed()", "Panel with id=" + id + " is no longer valid");
+      LogMgr.logWarning(new CallerInfo(){}, "Panel with id=" + id + " is no longer valid");
       int index = getIndexForId(id);
       removePanel(index);
     }
     else
     {
-      LogMgr.logDebug("AutomaticRefreshMgr.actionPerformed()", "Refreshing panel id=" + id);
+      LogMgr.logDebug(new CallerInfo(){}, "Refreshing panel id=" + id);
       entry.reloader.startReloadPanel(panel);
     }
   }
@@ -223,7 +223,7 @@ public class AutomaticRefreshMgr
     }
     entry.timer = null;
     entry.panel = null;
-    LogMgr.logDebug("AutomaticRefreshMgr.disposePanel()", "Un-Registered panel with id:" + entry.panelId);
+    LogMgr.logDebug(new CallerInfo(){}, "Un-Registered panel with id:" + entry.panelId);
   }
 
   private PanelEntry findEntry(int id)

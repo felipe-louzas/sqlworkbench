@@ -89,7 +89,6 @@ import workbench.util.WbProperties;
 import workbench.util.WbThread;
 import workbench.util.WbWorkspace;
 
-
 /**
  * The main container panel for the DbExplorer.
  *
@@ -614,6 +613,7 @@ public class DbExplorerPanel
   private void initConnection()
   {
     if (this.dbConnection == null) return;
+    if (this.tables == null) return;
     try
     {
       this.tables.setConnection(this.dbConnection);
@@ -938,7 +938,7 @@ public class DbExplorerPanel
     };
     t.start();
   }
-  
+
   @Override
   public void setTabName(String name)
   {
