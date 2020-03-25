@@ -93,9 +93,13 @@ public class SyntaxUtilitiesTest
     text =         "123\t456";
     textExpanded = "123   456";
     testGetTabbedWidth(text, textExpanded, 6);
+
+    text =         "123456";
+    textExpanded = "123456";
+    testGetTabbedWidth(text, textExpanded, 6);
   }
 
-  public void testGetTabbedWidth(String text, String textExpanded, int tabSize)
+  private void testGetTabbedWidth(String text, String textExpanded, int tabSize)
     throws Exception
   {
     JTextField  p = new JTextField();
@@ -123,13 +127,20 @@ public class SyntaxUtilitiesTest
     };
 
     Segment sTab = new Segment(text.toCharArray(), 0, text.length());
-    double widthX = Utilities.getTabbedTextWidth(sTab, fm, 0, expander, 0);
     double width = SyntaxUtilities.getTabbedTextWidth(sTab, g, fm, 0, expander, 0);
 //    System.out.println("width tabs \"" + text.trim() + "\": " + width);
 
     Segment s2 = new Segment(textExpanded.toCharArray(), 0, textExpanded.length());
+    double widthX = Utilities.getTabbedTextWidth(sTab, fm, 0, expander, 0);
     double width2 = SyntaxUtilities.getTabbedTextWidth(s2, g, fm, 0, expander, 0);
 //    System.out.println("width expanded \"" + textExpanded + "\": " + width2);
     assertEquals(width2, width, 0.1);
+    assertEquals(width2, widthX, 0.1);
+
+    if (text.indexOf('\t') < 0)
+    {
+      double widthFm = fm.charsWidth(s2.array, 0, text.length());
+      assertEquals(width2, widthFm, 0.1);
+    }
   }
 }
