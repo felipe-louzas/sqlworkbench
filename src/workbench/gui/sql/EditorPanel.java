@@ -233,7 +233,7 @@ public class EditorPanel
     this.addKeyBinding(redo);
 
     Settings.getInstance().addFontChangedListener(this);
-    Settings.getInstance().addPropertyChangeListener(this, Settings.PROPERTY_EDITOR_TAB_WIDTH, Settings.PROPERTY_EDITOR_ELECTRIC_SCROLL);
+    Settings.getInstance().addPropertyChangeListener(this, Settings.PROPERTY_EDITOR_ELECTRIC_SCROLL);
 
     this.setRightClickMovesCursor(Settings.getInstance().getRightClickMovesCursor());
 
@@ -1067,24 +1067,13 @@ public class EditorPanel
     return this.unCommentAction;
   }
 
-  /**
-   * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-   */
   @Override
   public void propertyChange(PropertyChangeEvent evt)
   {
     super.propertyChange(evt);
-    if (Settings.PROPERTY_EDITOR_TAB_WIDTH.equals(evt.getPropertyName()))
-    {
-      this.setTabSize(Settings.getInstance().getEditorTabWidth());
-    }
-    else if (Settings.PROPERTY_EDITOR_ELECTRIC_SCROLL.equals(evt.getPropertyName()))
+    if (Settings.PROPERTY_EDITOR_ELECTRIC_SCROLL.equals(evt.getPropertyName()))
     {
       this.setElectricScroll(Settings.getInstance().getElectricScroll());
-    }
-    if (this.isReallyVisible())
-    {
-      WbSwingUtilities.repaintNow(this);
     }
   }
 

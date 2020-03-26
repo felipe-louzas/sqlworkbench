@@ -64,7 +64,7 @@ public class PoiHelper
         v = v.substring(0, pos);
       }
       VersionNumber version = new VersionNumber(v);
-      VersionNumber needed = new VersionNumber(3, 5);
+      VersionNumber needed = new VersionNumber(4, 1);
       LogMgr.logInfo(new CallerInfo(){}, "POI version: " + v + " available");
       available = version.isNewerOrEqual(needed);
       if (!available)

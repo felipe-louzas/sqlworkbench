@@ -857,7 +857,7 @@ public final class WbManager
   {
     if (cmdLine.isArgPresent(AppArguments.ARG_VARDEF))
     {
-      String msg = "Using " + AppArguments.ARG_VARDEF + " is deprecated. Please use " + AppArguments.ARG_VARIABLE + " or " + AppArguments.ARG_VAR_FILE + "instead";
+      String msg = "Using -" + AppArguments.ARG_VARDEF + " is deprecated. Please use -" + AppArguments.ARG_VARIABLE + " or -" + AppArguments.ARG_VAR_FILE + " instead";
       LogMgr.logWarning(new CallerInfo(){}, msg);
     }
 

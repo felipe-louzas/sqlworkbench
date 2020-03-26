@@ -25,6 +25,7 @@ package workbench.db;
 
 import java.util.regex.PatternSyntaxException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.oracle.OracleErrorPositionReader;
@@ -88,7 +89,7 @@ public interface ErrorPositionReader
       if (conn == null) return dummyReader;
       DbMetadata meta = conn.getMetadata();
       DbSettings dbs = conn.getDbSettings();
-      
+
       if (dbs == null) return dummyReader;
       if (meta == null) return dummyReader;
 
@@ -108,7 +109,7 @@ public interface ErrorPositionReader
         {
           RegexErrorPositionReader reader = new RegexErrorPositionReader(posRegex);
           reader.setNumbersAreOneBased(zeroBased);
-          LogMgr.logDebug("ErrorPositionReader.Factory.createPositionReader()", "Initialized reader for dbid=" + conn.getDbId() + " using: positionRegex: " + posRegex);
+          LogMgr.logDebug(new CallerInfo(){}, "Initialized reader for dbid=" + conn.getDbId() + " using: positionRegex: " + posRegex);
           return reader;
         }
         catch (PatternSyntaxException pse)
@@ -122,12 +123,12 @@ public interface ErrorPositionReader
         {
           RegexErrorPositionReader reader = new RegexErrorPositionReader(lineRegex, colRegex);
           reader.setNumbersAreOneBased(zeroBased);
-          LogMgr.logDebug("ErrorPositionReader.Factory.createPositionReader()", "Initialized reader for dbid=" + conn.getDbId() + " using: lineRegex: " + lineRegex + ", columnRegex:" + colRegex);
+          LogMgr.logDebug(new CallerInfo(){}, "Initialized reader for dbid=" + conn.getDbId() + " using: lineRegex: " + lineRegex + ", columnRegex:" + colRegex);
           return reader;
         }
         catch (PatternSyntaxException pse)
         {
-          LogMgr.logError("ErrorPositionReader.Factory.createPositionReader()", "Could not initialize regex based reader using: lineRegex: " + lineRegex + ", columnRegex:" + colRegex, pse);
+          LogMgr.logError(new CallerInfo(){}, "Could not initialize regex based reader using: lineRegex: " + lineRegex + ", columnRegex:" + colRegex, pse);
         }
       }
       return dummyReader;

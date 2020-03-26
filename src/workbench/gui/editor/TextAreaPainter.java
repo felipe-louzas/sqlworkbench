@@ -22,7 +22,6 @@ import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.UIManager;
-import javax.swing.text.PlainDocument;
 import javax.swing.text.Segment;
 import javax.swing.text.TabExpander;
 import javax.swing.text.Utilities;
@@ -184,18 +183,20 @@ public class TextAreaPainter
   {
     if (Settings.PROPERTY_EDITOR_TAB_WIDTH.equals(evt.getPropertyName()))
     {
-      calculateTabSize();
+      if (textArea != null)
+      {
+        textArea.setTabSize(Integer.valueOf(Settings.getInstance().getEditorTabWidth()));
+      }
+      WbSwingUtilities.invoke(this::calculateTabSize);
     }
     else if (Settings.PROPERTY_SHOW_LINE_NUMBERS.equals(evt.getPropertyName()))
     {
       showLineNumbers = Settings.getInstance().getShowLineNumbers();
-      invalidate();
     }
     else if (evt.getPropertyName().startsWith(Settings.PROPERTY_EDITOR_BRACKET_HILITE_BASE))
     {
       readBracketSettings();
       textArea.invalidateBracketLine();
-      invalidate();
     }
     else if (Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_IGNORE_CASE.equals(evt.getPropertyName()))
     {
@@ -204,9 +205,9 @@ public class TextAreaPainter
     else
     {
       WbSwingUtilities.invoke(this::setColors);
-      invalidate();
-      WbSwingUtilities.repaintLater(this);
     }
+    invalidate();
+    WbSwingUtilities.repaintLater(this);
   }
 
   private void readBracketSettings()
@@ -457,17 +458,7 @@ public class TextAreaPainter
     FontMetrics cfm = getFontMetrics();
     if (cfm == null) return;
 
-    Object tab = textArea.getDocument().getProperty(PlainDocument.tabSizeAttribute);
-    int t = -1;
-    if (tab == null)
-    {
-      t = Settings.getInstance().getEditorTabWidth();
-    }
-    else
-    {
-      Integer tsize = (Integer)tab;
-      t = tsize.intValue();
-    }
+    int t = Settings.getInstance().getEditorTabWidth();
     this.tabSize = cfm.charWidth(' ') * t;
   }
 

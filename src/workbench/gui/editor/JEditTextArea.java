@@ -733,14 +733,13 @@ public class JEditTextArea
   }
 
   /**
-   * Sets the number of lines from the top and bottom of the text
-   * area that are always visible
-   * @param electricScroll The number of lines always visible from
-   * the top or bottom
+   * Sets the number of lines from the top and bottom that are always visible.
+   *
+   * @param scrollValue The new value for the electric scroll property
    */
-  public final void setElectricScroll(int electricScroll)
+  public final void setElectricScroll(int scrollValue)
   {
-    this.electricScroll = electricScroll;
+    this.electricScroll = scrollValue;
   }
 
   /**

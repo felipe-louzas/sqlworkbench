@@ -450,6 +450,16 @@ public class DbSettings
     }
   }
 
+  public boolean ignoreCommitInAutocommitMode()
+  {
+    return getBoolProperty("transaction.control.ignore.autocommit", false);
+  }
+
+  public boolean showFeedbackForIgnoredCommit()
+  {
+    return getBoolProperty("transaction.control.ignore.feedback", false);
+  }
+
   /**
    * Returns true if object names should never be quoted.
    *

@@ -73,6 +73,17 @@ public class TransactionEndCommand
   {
     StatementRunnerResult result = new StatementRunnerResult(sql);
 
+    if (shouldIgnore())
+    {
+      result.setSuccess();
+      if (currentConnection.getDbSettings().showFeedbackForIgnoredCommit())
+      {
+        result.addMessageByKey("MsgTransControlIgnored", this.getVerb());
+      }
+      LogMgr.logInfo(new CallerInfo(){}, this.getVerb() + " not sent to database as connection is in auto-commit mode");
+      return result;
+    }
+
     try
     {
       if (currentConnection.useJdbcCommit())
@@ -108,7 +119,7 @@ public class TransactionEndCommand
     catch (Exception e)
     {
       addErrorInfo(result, sql, e);
-      LogMgr.logUserSqlError("SingleVerbCommand.execute()", sql, e);
+      LogMgr.logUserSqlError(new CallerInfo(){}, sql, e);
     }
     finally
     {
@@ -122,6 +133,14 @@ public class TransactionEndCommand
   public String getVerb()
   {
     return verb;
+  }
+
+
+  private boolean shouldIgnore()
+  {
+    if (this.currentConnection == null) return true;
+    if (this.currentConnection.getDbSettings() == null) return false;
+    return this.currentConnection.getDbSettings().ignoreCommitInAutocommitMode() && currentConnection.getAutoCommit();
   }
 
   private boolean isManualTransaction()
