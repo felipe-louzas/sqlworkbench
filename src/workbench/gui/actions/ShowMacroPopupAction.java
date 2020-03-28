@@ -29,6 +29,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -69,7 +70,7 @@ public class ShowMacroPopupAction
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ShowMacroPopupAction.showPopup()", "Could not display macro popup", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not display macro popup", th);
     }
   }
 
@@ -96,7 +97,6 @@ public class ShowMacroPopupAction
       macroWindow = new MacroPopup(client);
       client.addWindowFocusListener(ShowMacroPopupAction.this);
       macroWindow.addWindowListener(ShowMacroPopupAction.this);
-      LogMgr.logDebug("ShowMacroPopupAction.createPopup()", "MacroPopup created.");
     }
   }
 
@@ -113,14 +113,7 @@ public class ShowMacroPopupAction
     {
       macroWindow.setVisible(true);
       client.requestFocus();
-      EventQueue.invokeLater(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          client.requestEditorFocus();
-        }
-      });
+      EventQueue.invokeLater(client::requestEditorFocus);
     }
   }
 
@@ -139,7 +132,6 @@ public class ShowMacroPopupAction
   @Override
   public void windowOpened(WindowEvent e)
   {
-    LogMgr.logDebug("ShowMacroPopupAction.showPopup()", "MacroPopup displayed.");
   }
 
   @Override

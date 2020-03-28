@@ -23,11 +23,6 @@
  */
 package workbench.sql;
 
-import workbench.sql.annotations.WbAnnotation;
-import workbench.sql.annotations.RemoveResultAnnotation;
-import workbench.sql.annotations.RemoveEmptyResultsAnnotation;
-import workbench.sql.annotations.CrossTabAnnotation;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
@@ -58,6 +53,10 @@ import workbench.storage.DataStore;
 import workbench.storage.DatastoreTransposer;
 import workbench.storage.RowActionMonitor;
 
+import workbench.sql.annotations.CrossTabAnnotation;
+import workbench.sql.annotations.RemoveEmptyResultsAnnotation;
+import workbench.sql.annotations.RemoveResultAnnotation;
+import workbench.sql.annotations.WbAnnotation;
 import workbench.sql.commands.AlterSessionCommand;
 import workbench.sql.commands.SetCommand;
 import workbench.sql.commands.TransactionEndCommand;
@@ -634,6 +633,11 @@ public class StatementRunner
       if (ds.getRowCount() == 0)
       {
         itr.remove();
+        if (Settings.getInstance().showRemovedResultMessage())
+        {
+          String query = StringUtil.getMaxSubstring(SqlUtil.makeCleanSql(ds.getGeneratingSql(), false, false, true, currentConnection), 150, " [...]");
+          result.addMessageByKey("MsgResultRemoved", query);
+        }
       }
     }
   }

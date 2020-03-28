@@ -170,7 +170,7 @@ public class WbDefineVar
     if (cmdLine.isArgPresent(ARG_VAR_NAME))
     {
       varName = cmdLine.getValue(ARG_VAR_NAME);
-      varNames = CollectionUtil.arrayList(varName);
+      varNames = StringUtil.stringToList(varName, ",", true, true);
     }
 
     if (cmdLine.isArgPresent(ARG_VAR_NAME) && cmdLine.isArgPresent(ARG_LOOKUP_VALUES))

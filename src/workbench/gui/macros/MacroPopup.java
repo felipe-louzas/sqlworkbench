@@ -40,6 +40,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeSelectionEvent;
@@ -50,17 +51,22 @@ import workbench.interfaces.MacroChangeListener;
 import workbench.interfaces.MainPanel;
 import workbench.interfaces.PropertyStorage;
 import workbench.resource.GuiSettings;
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.actions.CollapseTreeAction;
 import workbench.gui.actions.DeleteListEntryAction;
 import workbench.gui.actions.EditMacroAction;
 import workbench.gui.actions.EscAction;
+import workbench.gui.actions.ExpandTreeAction;
 import workbench.gui.actions.RunMacroAction;
 import workbench.gui.actions.SaveListFileAction;
 import workbench.gui.actions.WbAction;
+import workbench.gui.components.DividerBorder;
+import workbench.gui.components.WbToolbar;
 import workbench.gui.editor.MacroExpander;
 import workbench.gui.sql.SqlPanel;
 
@@ -167,11 +173,21 @@ public class MacroPopup
     MacroManager.getInstance().addChangeListener(this, parent.getMacroClientId());
     ToolTipManager.sharedInstance().registerComponent(tree);
 
-    if (GuiSettings.getShowFilterInMacroPopup())
+    if (GuiSettings.getShowToolbarInMacroPopup())
     {
+      int gap = (int)(IconMgr.getInstance().getSizeForLabel() / 3);
+      JPanel toolPanel = new JPanel(new BorderLayout(gap, 0));
+      JToolBar toolbar = new WbToolbar();
+      toolbar.add(new ExpandTreeAction(tree));
+      toolbar.add(new CollapseTreeAction(tree));
+
       filterHandler = new MacroTreeQuickFilter(tree);
       JPanel filterPanel = filterHandler.createFilterPanel();
-      add(filterPanel, BorderLayout.PAGE_START);
+      filterPanel.setBorder(new DividerBorder(DividerBorder.LEFT));
+
+      toolPanel.add(filterPanel, BorderLayout.CENTER);
+      toolPanel.add(toolbar, BorderLayout.WEST);
+      add(toolPanel, BorderLayout.PAGE_START);
     }
   }
 

@@ -94,10 +94,10 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="showQuickFilter">
+        <Component class="javax.swing.JCheckBox" name="showToolbar">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="language/wbstrings.properties" key="LblMacroPopFilter" replaceFormat="ResourceMgr.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="language/wbstrings.properties" key="LblMacroPopToolbar" replaceFormat="ResourceMgr.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Constraints>

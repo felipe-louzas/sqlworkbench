@@ -161,9 +161,12 @@ public class MacroTreeQuickFilter
         break;
 
       case KeyEvent.VK_ESCAPE:
-        e.consume();
-        keySelectionInProgress = false;
-        resetFilter();
+        if (isFiltered())
+        {
+          e.consume();
+          keySelectionInProgress = false;
+          resetFilter();
+        }
         break;
 
       default:
@@ -174,6 +177,11 @@ public class MacroTreeQuickFilter
   @Override
   public void keyReleased(KeyEvent e)
   {
+  }
+
+  private boolean isFiltered()
+  {
+    return tree.getModel().isFiltered();
   }
 
   @Override

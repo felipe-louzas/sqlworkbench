@@ -89,9 +89,8 @@ import workbench.util.WbLocale;
 import workbench.util.WbNumberFormatter;
 import workbench.util.WbProperties;
 
-
 /**
- * The singleton to manage configuration settings for SQL Workbench/J
+ * The singleton to manage configuration settings for SQL Workbench/J.
  *
  * Configuration properties are read from the file workbench.settings
  *
@@ -3995,6 +3994,11 @@ public class Settings
   public boolean useMarkDownForConsolePrint()
   {
     return getBoolProperty("workbench.console.print.use.markdown", false);
+  }
+
+  public boolean showRemovedResultMessage()
+  {
+    return getBoolProperty("workbench.gui.remove.empty.show.warning", true);
   }
 
 }
