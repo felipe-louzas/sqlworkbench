@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import workbench.interfaces.BatchCommitter;
 import workbench.interfaces.Committer;
@@ -63,6 +62,7 @@ import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
 import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
+import workbench.db.PkDefinition;
 import workbench.db.SequenceAdjuster;
 import workbench.db.TableCreator;
 import workbench.db.TableIdentifier;
@@ -86,7 +86,6 @@ import workbench.util.MemoryWatcher;
 import workbench.util.MessageBuffer;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
-
 
 /**
  * Import data that is provided from a {@link RowDataProducer} into
@@ -2378,8 +2377,16 @@ public class DataImporter
   {
     try
     {
+      // The order of the PK columns might be important, e.g. when generating an IGNORE_DUP_KEY hint for Oracle
+      // so we need to retrieve the PK definition and the list of columns
       List<ColumnIdentifier> cols = this.dbConn.getMetadata().getTableColumns(targetTable);
-      this.keyColumns = cols.stream().filter( col -> col.isPkColumn()).collect(Collectors.toList());
+      PkDefinition pk = this.dbConn.getMetadata().getIndexReader().getPrimaryKey(targetTable);
+      this.keyColumns = new ArrayList<>();
+      for (String colName : pk.getColumns())
+      {
+        ColumnIdentifier pkCol = ColumnIdentifier.findColumnInList(cols, colName);
+        this.keyColumns.add(pkCol);
+      }
     }
     catch (Exception e)
     {

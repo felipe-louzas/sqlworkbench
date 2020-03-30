@@ -81,7 +81,6 @@ public class DdlCommand
   }
 
   private String verb;
-  private Savepoint ddlSavepoint;
   private final Set<String> typesToRemember = CollectionUtil.caseInsensitiveSet("procedure", "function", "trigger", "package", "package body", "type");
   private Pattern alterDropPattern;
   private Pattern pgDropOwned;
@@ -110,10 +109,11 @@ public class DdlCommand
 
     boolean useSavepoint = runner.useSavepointForDDL();
 
+    final CallerInfo ci = new CallerInfo(){};
     if (useSavepoint && !this.currentConnection.supportsSavepoints())
     {
       useSavepoint = false;
-      LogMgr.logWarning(new CallerInfo(){}, "A savepoint should be used for this DDL command, but the driver does not support savepoints!");
+      LogMgr.logWarning(ci, "A savepoint should be used for this DDL command, but the driver does not support savepoints!");
     }
 
     DdlObjectInfo info = SqlUtil.getDDLObjectInfo(sql, currentConnection);
@@ -134,6 +134,7 @@ public class DdlCommand
 
     boolean isDrop = false;
     boolean ignoreDropError = false;
+    Savepoint ddlSavepoint = null;
     try
     {
       this.currentStatement = currentConnection.createStatement();
@@ -149,7 +150,7 @@ public class DdlCommand
 
       if (useSavepoint)
       {
-        this.ddlSavepoint = currentConnection.setSavepoint();
+        ddlSavepoint = currentConnection.setSavepoint(ci);
       }
 
       isDrop = isDropCommand(sql);
@@ -174,7 +175,7 @@ public class DdlCommand
         result.addMessage(buildSuccessMessage(info, sql));
       }
 
-      this.currentConnection.releaseSavepoint(ddlSavepoint);
+      this.currentConnection.releaseSavepoint(ddlSavepoint, ci);
 
       if (isDrop && result.isSuccess())
       {
@@ -183,7 +184,7 @@ public class DdlCommand
     }
     catch (Exception e)
     {
-      this.currentConnection.rollback(ddlSavepoint);
+      this.currentConnection.rollback(ddlSavepoint, ci);
 
       if (ignoreDropError)
       {
@@ -211,7 +212,7 @@ public class DdlCommand
           addErrorPosition(result, sql, e);
         }
 
-        LogMgr.logUserSqlError("DdlCommand.execute()", sql, e);
+        LogMgr.logUserSqlError(ci, sql, e);
       }
     }
     finally
@@ -251,7 +252,6 @@ public class DdlCommand
   public void done()
   {
     super.done();
-    this.ddlSavepoint = null;
   }
 
   public boolean isDropCommand(String sql)

@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import workbench.interfaces.MainPanel;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -72,7 +73,7 @@ public class BookmarkManager
   public synchronized void clearBookmarksForWindow(String windowId)
   {
     bookmarks.remove(windowId);
-    LogMgr.logDebug("BookmarkManager.clearBookmarksForWindow()", "Removed all bookmarks for window: " + windowId);
+    LogMgr.logDebug(new CallerInfo(){}, "Removed all bookmarks for window: " + windowId);
   }
 
   public synchronized void clearBookmarksForPanel(String windowId, String panelId)
@@ -96,8 +97,8 @@ public class BookmarkManager
         win.getPanel(i).filter(MainPanel::supportsBookmarks).ifPresent(panel -> updateBookmarks(win, panel));
       }
     }
-    long end = System.currentTimeMillis();
-    LogMgr.logDebug("BookmarkManager.updateBookmarks()", "Parsing bookmarks for " + count + " tabs took: " + (end - start) + "ms");
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Parsing bookmarks for " + count + " tabs took: " + duration + "ms");
   }
 
   private BookmarkGroup updateBookmarks(MainWindow win, MainPanel panel)
@@ -238,8 +239,8 @@ public class BookmarkManager
 
        if (updated != null)
        {
-          LogMgr.logDebug("BookmarkManager.updateInBackground()",
-             "Panel '" + panel.getTabTitle() + "' was updated in " + duration + " (" + updated.getBookmarks().size() + " bookmarks)");
+         LogMgr.logDebug(new CallerInfo(){},
+             "Panel '" + panel.getTabTitle() + "' was updated in " + duration.toMillis() + "ms (" + updated.getBookmarks().size() + " bookmarks)");
        }
     }, "Update bookmarks for " + panel.getId()).start();
   }

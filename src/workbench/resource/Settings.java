@@ -57,6 +57,7 @@ import workbench.interfaces.FontChangedListener;
 import workbench.interfaces.PropertyStorage;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.log.SimpleLogger;
 
 import workbench.db.ConnectionProfile;
 import workbench.db.IniProfileStorage;
@@ -400,10 +401,10 @@ public class Settings
 		String level = getProperty("workbench.log.level", "INFO");
 		LogMgr.setLevel(level);
 
-		String defaultFormat = "{timestamp} {type} {message} {error}";
+		String defaultFormat = SimpleLogger.DEFAULT_FORMAT;
 		if (LogMgr.isDebugEnabled())
 		{
-			defaultFormat = "{timestamp} {type} {source} {message} {error}";
+			defaultFormat = SimpleLogger.DEFAULT_DEBUG_FORMAT;
 		}
 
 		String format = getProperty("workbench.log.format", defaultFormat);

@@ -405,7 +405,7 @@ public class StatementRunner
 
     if (!shouldEndTransactionForCommand(currentCommand)) return;
 
-    if (currentConnection.endReadOnlyTransaction())
+    if (currentConnection.endReadOnlyTransaction(new CallerInfo(){}))
     {
       LogMgr.logInfo(new CallerInfo(){}, "Ended the current transaction started by: " + currentCommand);
     }
@@ -825,7 +825,7 @@ public class StatementRunner
 
     try
     {
-      this.savepoint = this.currentConnection.setSavepoint();
+      this.savepoint = this.currentConnection.setSavepoint(new CallerInfo(){});
     }
     catch (SQLException e)
     {
@@ -844,7 +844,7 @@ public class StatementRunner
     if (this.savepoint == null || this.currentConnection == null) return;
     try
     {
-      this.currentConnection.releaseSavepoint(savepoint);
+      this.currentConnection.releaseSavepoint(savepoint, new CallerInfo(){});
     }
     finally
     {
@@ -857,7 +857,7 @@ public class StatementRunner
     if (this.savepoint == null) return;
     try
     {
-      this.currentConnection.rollback(savepoint);
+      this.currentConnection.rollback(savepoint, new CallerInfo(){});
     }
     finally
     {

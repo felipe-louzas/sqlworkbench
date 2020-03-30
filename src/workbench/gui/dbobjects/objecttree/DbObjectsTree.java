@@ -465,7 +465,7 @@ public class DbObjectsTree
         });
       }
     }
-    catch (SQLException ex)
+    catch (Exception ex)
     {
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(ex));
       LogMgr.logError(new CallerInfo(){}, "Could not load tree", ex);
@@ -509,7 +509,7 @@ public class DbObjectsTree
   public void selectCurrentSchema()
   {
     WbConnection conn = loader.getConnection();
-    if (conn == null || conn.isBusy()) return;
+    if (conn == null || conn.isBusy() || conn.isClosed()) return;
     try
     {
       String schema = conn.getCurrentSchema();
@@ -518,7 +518,7 @@ public class DbObjectsTree
     }
     finally
     {
-      loader.endTransaction();
+      loader.endTransaction(new CallerInfo(){});
     }
   }
 

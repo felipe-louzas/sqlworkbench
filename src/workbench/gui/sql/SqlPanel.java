@@ -1471,6 +1471,7 @@ public class SqlPanel
   {
     WbConnection con = getConnection();
     if (con == null) return true;
+    if (con.isClosed()) return true;
     if (con.isBusy()) return true;
 
     TransactionChecker checker = con.getTransactionChecker();

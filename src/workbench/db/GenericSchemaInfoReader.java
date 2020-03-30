@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -141,11 +142,12 @@ public class GenericSchemaInfoReader
     ResultSet rs = null;
     Statement stmt = null;
 
+    final CallerInfo ci = new CallerInfo(){};
     try
     {
       if (useSavepoint)
       {
-        sp = connection.setSavepoint();
+        sp = connection.setSavepoint(ci);
       }
 
       if (reuseStmt)
@@ -169,12 +171,12 @@ public class GenericSchemaInfoReader
         currentSchema = rs.getString(1);
       }
       if (currentSchema != null) currentSchema = currentSchema.trim();
-      connection.releaseSavepoint(sp);
+      connection.releaseSavepoint(sp, ci);
     }
     catch (Exception e)
     {
-      connection.rollback(sp);
-      LogMgr.logWarning("GenericSchemaInfoReader.getCurrentSchema()", "Error reading current schema using query: " + schemaQuery, e);
+      connection.rollback(sp, ci);
+      LogMgr.logWarning(ci, "Error reading current schema using query: " + schemaQuery, e);
       currentSchema = null;
     }
     finally
@@ -201,8 +203,7 @@ public class GenericSchemaInfoReader
     }
     catch (Throwable sql)
     {
-      LogMgr.logWarning("GenericSchemaInformationReader.setQueryTimeout()", "Could not set query timeout to " + timeout +
-        " Please adjust the value of the property: " + queryProp, sql);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not set query timeout to " + timeout + " Please adjust the value of the property: " + queryProp, sql);
     }
   }
 

@@ -39,7 +39,10 @@ import workbench.util.StringUtil;
 public class SimpleLogger
 	implements WbLogger
 {
-	private LogLevel level = LogLevel.info;
+  public static final String DEFAULT_FORMAT = "{timestamp} {type} {message} {error}";
+  public static final String DEFAULT_DEBUG_FORMAT = "{timestamp} {type} {source} {message} {error}";
+
+  private LogLevel level = LogLevel.info;
 	private PrintStream logOut = null;
 	private boolean logSystemErr = false;
 	private String messageFormat;
@@ -71,7 +74,12 @@ public class SimpleLogger
 	@Override
 	public void setRootLevel(LogLevel lvl)
 	{
+    boolean change = this.level != lvl;
 		level = lvl;
+    if (change && level == LogLevel.debug)
+    {
+      setMessageFormat(DEFAULT_DEBUG_FORMAT);
+    }
 	}
 
 	@Override

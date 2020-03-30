@@ -129,6 +129,8 @@ public class WbConnection
   private boolean shared = false;
   private String switchedUrl;
 
+  private boolean logSavepoints;
+
   /**
    * Create a new wrapper connection around the original SQL connection.
    *
@@ -147,7 +149,6 @@ public class WbConnection
     setSqlConnection(aConn);
 
     supportsSavepoints = supportsSavepoints();
-
     initKeepAlive();
 
     // removeComments and removeNewLines are properties that are needed each time a SQL statement is executed
@@ -161,6 +162,7 @@ public class WbConnection
     {
       DbSettings db = metaData.getDbSettings();
       removeNewLines = db.removeNewLinesInSQL();
+      logSavepoints = db.getBoolProperty("savepoints.debug", true);
     }
 
     if (profile != null)
@@ -728,7 +730,7 @@ public class WbConnection
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning("WbConnection.clearWarnings()", "Error resetting warnings!", th);
+      LogMgr.logWarning(new CallerInfo(){}, "Error resetting warnings!", th);
     }
   }
 
@@ -752,7 +754,37 @@ public class WbConnection
     }
   }
 
+  private String debugString(Savepoint sp)
+  {
+    if (sp == null) return "null";
+
+    try
+    {
+      return Integer.toString(sp.getSavepointId());
+    }
+    catch (Throwable th)
+    {
+      return "n/a";
+    }
+  }
+
+  private void logSavepoint(CallerInfo ci, String what, Savepoint sp)
+  {
+    if (sp == null) return;
+    if (ci == null) return;
+    if (logSavepoints && LogMgr.isDebugEnabled())
+    {
+      LogMgr.logDebug(ci, what + " savepoint " + debugString(sp) + " for connection " + getId());
+    }
+
+  }
   public Savepoint setSavepoint()
+    throws SQLException
+  {
+    return setSavepoint(null);
+  }
+
+  public Savepoint setSavepoint(CallerInfo context)
     throws SQLException
   {
     if (this.getAutoCommit()) return null;
@@ -760,7 +792,9 @@ public class WbConnection
 
     try
     {
-      return this.sqlConnection.setSavepoint();
+      Savepoint sp = this.sqlConnection.setSavepoint();
+      logSavepoint(context, "Set", sp);
+      return sp;
     }
     catch (SQLFeatureNotSupportedException ex)
     {
@@ -779,11 +813,17 @@ public class WbConnection
    */
   public void rollback(Savepoint sp)
   {
+    rollback(sp, null);
+  }
+
+  public void rollback(Savepoint sp, CallerInfo context)
+  {
     if (sp == null) return;
     if (this.sqlConnection == null) return;
 
     try
     {
+      logSavepoint(context, "Rollback", sp);
       this.sqlConnection.rollback(sp);
     }
     catch (Throwable e)
@@ -797,11 +837,17 @@ public class WbConnection
    */
   public void releaseSavepoint(Savepoint sp)
   {
+    releaseSavepoint(sp, null);
+  }
+
+  public void releaseSavepoint(Savepoint sp, CallerInfo context)
+  {
     if (sp == null) return;
     if (getAutoCommit()) return;
 
     try
     {
+      logSavepoint(context, "Release", sp);
       this.sqlConnection.releaseSavepoint(sp);
     }
     catch (Throwable e)
@@ -816,10 +862,14 @@ public class WbConnection
   public void rollback()
     throws SQLException
   {
-    if (sqlConnection == null) return;
+    if (isClosed()) return;
     if (getAutoCommit()) return;
     if (!getDbSettings().supportsTransactions()) return;
 
+    if (logSavepoints)
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "Rollback all savepoints");
+    }
     this.sqlConnection.rollback();
   }
 
@@ -992,7 +1042,7 @@ public class WbConnection
     disconnect.start();
   }
 
-  private void shutdown(boolean withRollback)
+  private synchronized void shutdown(boolean withRollback)
   {
     if (this.keepAlive != null)
     {
@@ -1006,7 +1056,7 @@ public class WbConnection
       this.preparedStatementPool.done();
     }
 
-    if (withRollback && this.profile != null && this.profile.getRollbackBeforeDisconnect() && this.sqlConnection != null && getAutoCommit() == false)
+    if (withRollback && this.profile != null && this.profile.getRollbackBeforeDisconnect())
     {
       try
       {
@@ -1026,10 +1076,6 @@ public class WbConnection
     {
       LogMgr.logWarning(ci, "Error when releasing metadata", th);
     }
-    finally
-    {
-      this.metaData = null;
-    }
 
     try
     {
@@ -1042,6 +1088,7 @@ public class WbConnection
     finally
     {
       this.sqlConnection = null;
+      this.metaData = null;
     }
 
     LogMgr.logDebug(ci, "Connection " + this.getId() + " closed.");
@@ -1780,6 +1827,11 @@ public class WbConnection
   }
 
 	public boolean endReadOnlyTransaction()
+  {
+    return endReadOnlyTransaction(null);
+  }
+
+  public boolean endReadOnlyTransaction(CallerInfo context)
 	{
 		if (this.getAutoCommit()) return true;
     if (this.getDbSettings() == null) return false;
@@ -1801,7 +1853,17 @@ public class WbConnection
 
       if (!transactionChecker.hasUncommittedChanges(this))
       {
-        LogMgr.logInfo(new CallerInfo(){}, "Sending a " + endTransType.name() + " to end the current transaction");
+        Exception ex = null;
+        if (LogMgr.isTraceEnabled())
+        {
+          ex = new Exception("Backtrace");
+        }
+        String msg = "Sending a " + endTransType.name() + " to end the current transaction";
+        if (context != null)
+        {
+          msg += " <" + context + ">";
+        }
+        LogMgr.logInfo(new CallerInfo(){}, msg, ex);
         if (endTransType == EndReadOnlyTrans.commit)
         {
           commit();

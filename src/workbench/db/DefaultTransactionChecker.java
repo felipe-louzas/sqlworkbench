@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.SqlUtil;
@@ -39,8 +40,8 @@ import workbench.util.SqlUtil;
 public class DefaultTransactionChecker
   implements TransactionChecker
 {
+  private final String query;
 
-  private String query;
   public DefaultTransactionChecker(String sql)
   {
     query = sql;
@@ -49,15 +50,22 @@ public class DefaultTransactionChecker
   @Override
   public boolean hasUncommittedChanges(WbConnection con)
   {
+    if (con == null) return false;
+    if (con.isClosed()) return false;
+    if (con.getAutoCommit()) return false;
+
     Savepoint sp = null;
     ResultSet rs = null;
     Statement stmt = null;
     int count = 0;
+
+    final CallerInfo ci = new CallerInfo(){};
     try
     {
+      long start = System.currentTimeMillis();
       if (con.getDbSettings().useSavePointForDML())
       {
-        sp = con.setSavepoint();
+        sp = con.setSavepoint(ci);
       }
       stmt = con.createStatementForQuery();
       rs = stmt.executeQuery(query);
@@ -65,12 +73,18 @@ public class DefaultTransactionChecker
       {
         count = rs.getInt(1);
       }
-      con.releaseSavepoint(sp);
+      con.releaseSavepoint(sp, ci);
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logDebug(ci, "Checking for pending transactions took " + duration + "ms");
     }
     catch (SQLException sql)
     {
-      LogMgr.logDebug(getClass().getSimpleName() + ".hasUncommittedChanges()", "Could not retrieve transaction state", sql);
+      LogMgr.logWarning(ci, "Could not retrieve transaction state", sql);
       con.rollback(sp);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logDebug(ci, "Error when retrieving transaction state", th);
     }
     finally
     {

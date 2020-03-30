@@ -2704,7 +2704,7 @@ public class DbMetadata
 
     Set<String> types = CollectionUtil.caseInsensitiveSet();
     ResultSet rs = null;
-
+    String ignoredTypes = "";
     try
     {
       rs = this.metaData.getTableTypes();
@@ -2717,9 +2717,12 @@ public class DbMetadata
         // I'm assuming it doesn't hurt for other DBMS to trim the returned value always
         type = type.trim();
 
+
+        // Some drivers return index "types" as well when calling getTableTypes()
         if (ignoreIndexTypes && isIndexType(type))
         {
-					LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Ignoring table type: " + type);
+          if (!ignoredTypes.isEmpty()) ignoredTypes += ",";
+          ignoredTypes += type;
           continue;
         }
         types.add(type.toUpperCase());
@@ -2732,6 +2735,11 @@ public class DbMetadata
     finally
     {
       SqlUtil.closeResult(rs);
+    }
+
+    if (!ignoredTypes.isEmpty())
+    {
+      LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Ignoring \"table\" types: " + ignoredTypes);
     }
 
     if (types.isEmpty() && useDefaults)

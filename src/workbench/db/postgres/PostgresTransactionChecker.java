@@ -25,6 +25,7 @@ import java.sql.Connection;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import workbench.db.DefaultTransactionChecker;
 import workbench.db.WbConnection;
@@ -42,11 +43,15 @@ public class PostgresTransactionChecker
   public PostgresTransactionChecker(String sql)
   {
     super(sql);
+    this.usePgTransactionState = Settings.getInstance().getBoolProperty("workbench.db.postgresql.transactioncheck.driver", true);
   }
 
   @Override
   public boolean hasUncommittedChanges(WbConnection con)
   {
+    if (con.isClosed()) return false;
+    if (con.getAutoCommit()) return false;
+
     if (usePgTransactionState)
     {
       Boolean isOpen = isStateOpen(con);
@@ -62,10 +67,13 @@ public class PostgresTransactionChecker
   {
     try
     {
+      long start = System.currentTimeMillis();
       Connection pgCon = con.getSqlConnection();
       Method getState = pgCon.getClass().getMethod("getTransactionState");
       Object state = getState.invoke(pgCon);
       if (state == null) return null;
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logDebug(new CallerInfo(){}, "Calling PGConnection.getTransactionState() took: " + duration + "ms");
       return state.toString().equalsIgnoreCase("open");
     }
     catch (Throwable th)

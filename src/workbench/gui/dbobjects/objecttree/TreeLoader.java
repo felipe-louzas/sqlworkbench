@@ -304,17 +304,29 @@ public class TreeLoader
   {
     boolean loaded = false;
 
-    if (connection == null) return;
-
-    Savepoint sp = null;
-
-    if (connection.getDbSettings().useSavePointForDML() && !connection.getAutoCommit())
+    final CallerInfo ci = new CallerInfo(){};
+    if (connection == null)
     {
-      sp = connection.setSavepoint();
+      LogMgr.logWarning(ci, "TreeLoader.load() called without connection!", new Exception("Backtrace"));
+      return;
     }
 
+    if (connection.isBusy())
+    {
+      LogMgr.logWarning(ci, "TreeLoader.load() called even though connection is busy!", new Exception("Backtrace"));
+    }
+
+    Savepoint sp = null;
+    if (connection.getDbSettings().useSavePointForDML() && !connection.getAutoCommit())
+    {
+      sp = connection.setSavepoint(ci);
+    }
+
+    boolean wasBusy = connection.isBusy();
     try
     {
+      connection.setBusy(true);
+
       if (CollectionUtil.isNonEmpty(connection.getDbSettings().getGlobalObjectTypes()))
       {
         if (DbTreeSettings.applyTypeFilterForGlobalObjects())
@@ -351,20 +363,21 @@ public class TreeLoader
         root.setChildrenLoaded(true);
         model.nodeStructureChanged(root);
       }
-      connection.releaseSavepoint(sp);
+      connection.releaseSavepoint(sp, ci);
     }
     catch (SQLException ex)
     {
-      connection.rollback(sp);
+      connection.rollback(sp, ci);
       throw ex;
     }
     finally
     {
-      endTransaction();
+      connection.setBusy(wasBusy);
+      endTransaction(ci);
     }
   }
 
-  public void endTransaction()
+  public void endTransaction(CallerInfo context)
   {
     if (connection == null) return;
 
@@ -372,7 +385,7 @@ public class TreeLoader
     {
       if (DbTreeSettings.useTabConnection() || connection.isShared())
       {
-        connection.endReadOnlyTransaction();
+        connection.endReadOnlyTransaction(context);
       }
       else
       {
@@ -570,7 +583,7 @@ public class TreeLoader
     }
     finally
     {
-      endTransaction();
+      endTransaction(new CallerInfo(){});
     }
   }
 
@@ -1189,9 +1202,10 @@ public class TreeLoader
 
     Savepoint sp = null;
 
+    final CallerInfo ci = new CallerInfo(){};
     if (connection.getDbSettings().useSavePointForDML())
     {
-      sp = connection.setSavepoint();
+      sp = connection.setSavepoint(ci);
     }
     try
     {
@@ -1292,18 +1306,18 @@ public class TreeLoader
       {
         reloadTableNode(node);
       }
-      connection.releaseSavepoint(sp);
+      connection.releaseSavepoint(sp, ci);
     }
     catch (SQLException ex)
     {
-      connection.rollback(sp);
+      connection.rollback(sp, ci);
       throw ex;
     }
     finally
     {
       connection.setBusy(false);
       levelChanger.restoreIsolationLevel(connection);
-      endTransaction();
+      endTransaction(ci);
     }
   }
 }

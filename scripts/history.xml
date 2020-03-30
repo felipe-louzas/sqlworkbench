@@ -25,6 +25,7 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="8" type="fix">For Oracle, the generated IGNORE_DUP_KEY hint was incorrect if the order of the PK columns was different to the column order of the table.</entry>
     <entry dev-build="7" type="fix">Assigning multiple variables with WbVarDef was not possible if -variable was used.</entry>
     <entry dev-build="7" type="fix">For Redshift, finding tables on the search path was no longer working.</entry>
     <entry dev-build="7" type="fix">For PostgreSQL, using the JDBC driver 42.2.11, the value for columns defined as "timestamp with time zone" could not be retrieved any longer.</entry>
