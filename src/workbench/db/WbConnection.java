@@ -37,8 +37,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import workbench.interfaces.DbExecutionListener;
@@ -130,6 +132,7 @@ public class WbConnection
   private String switchedUrl;
 
   private boolean logSavepoints;
+  private final Set<Integer> usedSavepoints = new HashSet<>(2);
 
   /**
    * Create a new wrapper connection around the original SQL connection.
@@ -764,20 +767,20 @@ public class WbConnection
     }
     catch (Throwable th)
     {
-      return "n/a";
+      return sp.toString();
     }
   }
 
   private void logSavepoint(CallerInfo ci, String what, Savepoint sp)
   {
     if (sp == null) return;
-    if (ci == null) return;
     if (logSavepoints && LogMgr.isDebugEnabled())
     {
-      LogMgr.logDebug(ci, what + " savepoint " + debugString(sp) + " for connection " + getId());
+      if (ci == null) ci = new CallerInfo(){};
+      LogMgr.logDebug(ci, what + " savepoint #" + debugString(sp) + ", connection: [" + id + "]");
     }
-
   }
+
   public Savepoint setSavepoint()
     throws SQLException
   {
@@ -793,10 +796,11 @@ public class WbConnection
     try
     {
       Savepoint sp = this.sqlConnection.setSavepoint();
+      usedSavepoints.add(sp.getSavepointId());
       logSavepoint(context, "Set", sp);
       return sp;
     }
-    catch (SQLFeatureNotSupportedException ex)
+    catch (SQLFeatureNotSupportedException | AbstractMethodError ex)
     {
       LogMgr.logWarning(new CallerInfo(){}, "Savepoints not supported", ex);
       supportsSavepoints = false;
@@ -820,15 +824,25 @@ public class WbConnection
   {
     if (sp == null) return;
     if (this.sqlConnection == null) return;
-
+    if (this.getAutoCommit()) return;
+    int spId = -1;
     try
     {
+      spId = sp.getSavepointId();
+      if (!usedSavepoints.contains(spId))
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Rollback for non existing savepoint with ID=" + spId + " on connection [" + id + "] called. Context: " + context);
+      }
       logSavepoint(context, "Rollback", sp);
-      this.sqlConnection.rollback(sp);
+      sqlConnection.rollback(sp);
     }
     catch (Throwable e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error releasing savepoint", e);
+      LogMgr.logError(new CallerInfo(){}, "Error rolling back savepoint (context: " + context + ") for connection: " + id, e);
+    }
+    finally
+    {
+      usedSavepoints.remove(spId);
     }
   }
 
@@ -843,16 +857,27 @@ public class WbConnection
   public void releaseSavepoint(Savepoint sp, CallerInfo context)
   {
     if (sp == null) return;
+    if (this.sqlConnection == null) return;
     if (getAutoCommit()) return;
 
+    int spId = -1;
     try
     {
+      spId = sp.getSavepointId();
+      if (!usedSavepoints.contains(spId))
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Release for non existing savepoint with ID=" + spId + " on connection [" + id + "] called. Context: " + context);
+      }
       logSavepoint(context, "Release", sp);
-      this.sqlConnection.releaseSavepoint(sp);
+      sqlConnection.releaseSavepoint(sp);
     }
     catch (Throwable e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error releasing savepoint", e);
+      LogMgr.logError(new CallerInfo(){}, "Error releasing savepoint (context: " + context + ") for connection: " + id, e);
+    }
+    finally
+    {
+      usedSavepoints.remove(spId);
     }
   }
 
@@ -868,7 +893,12 @@ public class WbConnection
 
     if (logSavepoints)
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Rollback all savepoints");
+      LogMgr.logDebug(new CallerInfo(){}, "Rollback all savepoints for connection: " + id);
+      if (!usedSavepoints.isEmpty())
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Rollback called with pending savepoints: " + usedSavepoints);
+        usedSavepoints.clear();
+      }
     }
     this.sqlConnection.rollback();
   }

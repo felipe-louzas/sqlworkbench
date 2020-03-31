@@ -32,6 +32,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 
 /**
  *
@@ -44,7 +45,7 @@ public class DefaultTransactionChecker
 
   public DefaultTransactionChecker(String sql)
   {
-    query = sql;
+    query = StringUtil.trimToNull(sql);
   }
 
   @Override
@@ -53,6 +54,7 @@ public class DefaultTransactionChecker
     if (con == null) return false;
     if (con.isClosed()) return false;
     if (con.getAutoCommit()) return false;
+    if (query == null) return false;
 
     Savepoint sp = null;
     ResultSet rs = null;
@@ -63,7 +65,7 @@ public class DefaultTransactionChecker
     try
     {
       long start = System.currentTimeMillis();
-      if (con.getDbSettings().useSavePointForDML())
+      if (con.getDbSettings().useSavePointForTransactionCheck())
       {
         sp = con.setSavepoint(ci);
       }

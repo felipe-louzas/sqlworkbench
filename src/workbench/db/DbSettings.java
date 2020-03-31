@@ -2029,6 +2029,11 @@ public class DbSettings
     return getBoolProperty("objectinfo.includedeps", global);
   }
 
+  public boolean useSavePointForTransactionCheck()
+  {
+    return getBoolProperty("opentransaction.usesavepoint", false);
+  }
+
   public String checkOpenTransactionsQuery()
   {
     return getProperty("opentransaction.query", null);
