@@ -29,6 +29,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -263,16 +264,18 @@ public class DefaultViewReader
   }
 
   /**
-   *  Return the source of a view definition as it is stored in the database.
-   *  <br/>
-   *  Usually (depending on how the meta data is stored in the database) the DBMS
-   *  only stores the underlying SELECT statement (but not a full CREATE VIEW),
-   *  and that will be returned by this method.
-   *  <br/>
-   *  To create a complete SQL to re-create a view, use {@link #getExtendedViewSource(workbench.db.TableIdentifier) }
+   * Return the source of a view definition as it is stored in the database.
+   * <br/>
+   * Usually (depending on how the meta data is stored in the database) the DBMS
+   * only stores the underlying SELECT statement (but not a full CREATE VIEW),
+   * and that will be returned by this method.
+   * <br/>
+   * To create a complete SQL to re-create a view, use {@link #getExtendedViewSource(workbench.db.TableIdentifier) }
    *
-   *  @return the view source as stored in the database.
-   *  @throws NoConfigException if no SQL was configured in ViewSourceStatements.xml
+   * @return the view source as stored in the database.
+   *
+   * @throws NoConfigException if no SQL was configured in ViewSourceStatements.xml
+   * @see DbSettings#getFormatViewSource()
    */
   @Override
   public CharSequence getViewSource(TableIdentifier viewId)
@@ -310,6 +313,7 @@ public class DefaultViewReader
       if (sql.isPreparedStatement())
       {
         query = sql.getBaseSql();
+        LogMgr.logMetadataSql(new CallerInfo(){}, "view source", query, tbl.getRawCatalog(), tbl.getRawSchema(), tbl.getRawTableName());
         PreparedStatement pstmt = sql.prepareStatement(connection, tbl.getRawCatalog(), tbl.getRawSchema(), tbl.getRawTableName());
         rs = pstmt.executeQuery();
       }
@@ -317,13 +321,9 @@ public class DefaultViewReader
       {
         stmt = connection.createStatementForQuery();
         query = sql.getSql();
-        if (Settings.getInstance().getDebugMetadataSql())
-        {
-          LogMgr.logInfo("DefaultViewReader.getViewSource()", "Retrieving view source using query=\n" + query);
-        }
+        LogMgr.logMetadataSql(new CallerInfo(){}, "view source", query);
         rs = stmt.executeQuery(query);
       }
-
 
       while (rs.next())
       {
@@ -353,7 +353,7 @@ public class DefaultViewReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("DefaultViewReader.getViewSource()", "Could not retrieve view definition for " + viewId.getTableExpression() + " using SQL:\n" + query, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "view source", query);
       source = new StringBuilder(ExceptionUtil.getDisplay(e));
       connection.rollback(sp);
     }
