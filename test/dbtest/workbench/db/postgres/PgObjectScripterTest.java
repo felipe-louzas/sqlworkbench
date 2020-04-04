@@ -86,7 +86,7 @@ public class PgObjectScripterTest
     String script = scripter.getScript();
     ScriptParser parser = new ScriptParser(ParserType.Postgres);
     parser.setScript(script);
-    System.out.println("****\n" + script);
+    // System.out.println("****\n" + script);
     assertEquals(4, parser.getSize()); // three statements and a COMMIT
     assertTrue(parser.getCommand(0).startsWith("CREATE SEQUENCE code_seq"));
     assertTrue(parser.getCommand(1).contains("nextval('code_seq'"));

@@ -45,7 +45,7 @@ import workbench.util.WbFile;
 
 
 /**
- * Display the source code of a table.
+ * Display the grants made for database objects.
  *
  * @author Thomas Kellerer
  */
@@ -58,8 +58,8 @@ public class WbObjectGrants
   {
     super();
     cmdLine = new ArgumentParser();
-    cmdLine.addArgument(CommonArgs.ARG_TABLES);
-    cmdLine.addArgument(CommonArgs.ARG_VIEWS);
+    cmdLine.addArgument(CommonArgs.ARG_TABLES, ArgumentType.TableArgument);
+    cmdLine.addArgument(CommonArgs.ARG_VIEWS, ArgumentType.ViewArgument);
     cmdLine.addArgument(CommonArgs.ARG_OUTPUT_DIR, ArgumentType.DirName);
     cmdLine.addArgument(CommonArgs.ARG_OUTPUT_FILE, ArgumentType.Filename);
   }
@@ -74,7 +74,7 @@ public class WbObjectGrants
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult();
+    StatementRunnerResult result = new StatementRunnerResult(messageLogger);
     String args = getCommandLine(sql);
     cmdLine.parse(args);
 

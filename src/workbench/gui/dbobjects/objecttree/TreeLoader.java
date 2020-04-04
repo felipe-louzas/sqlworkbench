@@ -311,21 +311,20 @@ public class TreeLoader
       return;
     }
 
-    if (connection.isBusy())
+    boolean wasBusy = connection.setBusy(true);
+    if (wasBusy)
     {
-      LogMgr.logWarning(ci, "TreeLoader.load() called even though connection is busy!", new Exception("Backtrace"));
+      LogMgr.logError(ci, "TreeLoader.load() called even though connection is busy!", new Exception("Backtrace"));
     }
 
     Savepoint sp = null;
-    if (connection.getDbSettings().useSavePointForDML() && !connection.getAutoCommit())
-    {
-      sp = connection.setSavepoint(ci);
-    }
 
-    boolean wasBusy = connection.isBusy();
     try
     {
-      connection.setBusy(true);
+      if (connection.getDbSettings().useSavePointForDML() && !connection.getAutoCommit())
+      {
+        sp = connection.setSavepoint(ci);
+      }
 
       if (CollectionUtil.isNonEmpty(connection.getDbSettings().getGlobalObjectTypes()))
       {

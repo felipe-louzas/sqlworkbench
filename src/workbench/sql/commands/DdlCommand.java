@@ -105,7 +105,7 @@ public class DdlCommand
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql);
+    StatementRunnerResult result = new StatementRunnerResult(sql, messageLogger);
 
     boolean useSavepoint = runner.useSavepointForDDL();
 

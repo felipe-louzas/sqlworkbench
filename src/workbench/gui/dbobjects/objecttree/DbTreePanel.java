@@ -347,6 +347,12 @@ public class DbTreePanel
       this.tree.setConnection(this.connection);
       this.isPrivateConnection = false;
 
+      if (connection.isBusy())
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Not loading tree, because connection is busy", new Exception("Backtrace"));
+        return;
+      }
+
       WbThread th = new WbThread("Tree Loader")
       {
         @Override

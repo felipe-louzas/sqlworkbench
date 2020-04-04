@@ -416,7 +416,7 @@ public class StatementRunner
     this.rowMonitor = monitor;
   }
 
-  public void setResultLogger(ResultLogger logger)
+  public void setMessageLogger(ResultLogger logger)
   {
     this.resultLogger = logger;
   }
@@ -475,7 +475,7 @@ public class StatementRunner
 
     this.currentCommand.setStatementRunner(this);
     this.currentCommand.setRowMonitor(this.rowMonitor);
-    this.currentCommand.setResultLogger(this.resultLogger);
+    this.currentCommand.setMessageLogger(this.resultLogger);
     if (currentConsumer != null && currentConsumer.ignoreMaxRows())
     {
       this.currentCommand.setMaxRows(0);

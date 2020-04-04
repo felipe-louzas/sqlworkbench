@@ -1154,12 +1154,12 @@ public class BatchRunner
     this.checkEscapedQuotes = flag;
   }
 
-  public void setResultLogger(ResultLogger logger)
+  public void setMessageLogger(ResultLogger logger)
   {
     this.resultDisplay = logger;
     if (this.stmtRunner != null)
     {
-      this.stmtRunner.setResultLogger(logger);
+      this.stmtRunner.setMessageLogger(logger);
     }
   }
 

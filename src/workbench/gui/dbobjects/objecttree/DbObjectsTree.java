@@ -422,7 +422,7 @@ public class DbObjectsTree
     reload(selection);
   }
 
-  public void reload(TreePath selection)
+  public synchronized void reload(TreePath selection)
   {
     load(false);
     try
@@ -436,7 +436,7 @@ public class DbObjectsTree
     }
   }
 
-  public void load(boolean selectDefaultNamespace)
+  public synchronized void load(boolean selectDefaultNamespace)
   {
     if (loader == null) return;
 

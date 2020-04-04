@@ -23,17 +23,11 @@
  */
 package workbench.db.oracle;
 
-
-import org.junit.AfterClass;
-
-import static org.junit.Assert.*;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import workbench.TestUtil;
 import workbench.WbTestCase;
+import workbench.resource.Settings;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -41,12 +35,14 @@ import workbench.db.TableSourceBuilder;
 import workbench.db.TableSourceBuilderFactory;
 import workbench.db.WbConnection;
 
-import workbench.resource.Settings;
-
-import workbench.db.DbObjectFinder;
-
 import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -123,6 +119,7 @@ public class OracleTableSourceBuilderTest
       TestUtil.executeScript(con, "drop table iot1 cascade constraints purge");
     }
   }
+
   @Test
   public void testReadOnly()
     throws Exception
@@ -229,6 +226,41 @@ public class OracleTableSourceBuilderTest
         "drop table subpart_test cascade constraints purge; \n" +
         "purge recyclebin;";
       TestUtil.executeScript(con, cleanup);
+    }
+  }
+
+  @Test
+  public void testIdentity2()
+    throws Exception
+  {
+    WbConnection con = OracleTestUtil.getOracleConnection();
+    assertNotNull("Oracle not available", con);
+
+    if (!JdbcUtils.hasMinimumServerVersion(con, "12.1"))
+    {
+      System.out.println("No Oracle 12c available, skipping test");
+      return;
+    }
+    String sql =
+      "CREATE TABLE sample \n" +
+      "(\n" +
+      "  id NUMBER GENERATED ALWAYS AS IDENTITY,\n" +
+      "  sno GENERATED ALWAYS AS (CONCAT('SNO_#', to_char(id, 'FM000000'))) VIRTUAL\n" +
+      ");";
+
+    try
+    {
+      TestUtil.executeScript(con, sql);
+
+      TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
+      TableDefinition def = con.getMetadata().getTableDefinition(new TableIdentifier("SAMPLE"));
+
+      String source = builder.getTableSource(def.getTable(), def.getColumns());
+      System.out.println(source);
+    }
+    finally
+    {
+      TestUtil.executeScript(con, "drop table sample cascade constraints purge;");
     }
   }
 
@@ -381,7 +413,7 @@ public class OracleTableSourceBuilderTest
     TestUtil.executeScript(con, sql);
     TableIdentifier foo = new DbObjectFinder(con).findTable(new TableIdentifier("FOO"));
     String source = foo.getSource(con).toString().trim();
-    System.out.println(source);
+//    System.out.println(source);
     assertTrue(source.contains("LOB (B1) STORE AS SECUREFILE (DISABLE STORAGE IN ROW RETENTION NONE COMPRESS MEDIUM NOCACHE)"));
     assertTrue(source.contains("LOB (B2) STORE AS SECUREFILE (ENABLE STORAGE IN ROW RETENTION AUTO COMPRESS HIGH CACHE READS)"));
     assertTrue(source.contains("LOB (B3) STORE AS SECUREFILE (ENABLE STORAGE IN ROW RETENTION MIN 1000 NOCOMPRESS CACHE)"));

@@ -272,7 +272,7 @@ public abstract class ExecuteSqlPanel
       runner.setErrorStatementLogging(ErrorReportLevel.none);
 
       // Make sure nothing is written to system.out
-      runner.setResultLogger(ResultLogger.DEV_NULL_LOGGER);
+      runner.setMessageLogger(ResultLogger.DEV_NULL_LOGGER);
       runner.getConnection().setBusy(true);
 
       setButtonsEnabled(false);

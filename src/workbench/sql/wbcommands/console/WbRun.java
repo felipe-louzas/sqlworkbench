@@ -106,7 +106,7 @@ public class WbRun
       String dir = file.getCanonicalFile().getParent();
       batchRunner.setBaseDir(dir);
       batchRunner.setConnection(currentConnection);
-      batchRunner.setResultLogger(this.resultLogger);
+      batchRunner.setMessageLogger(this.messageLogger);
       batchRunner.setRowMonitor(null);
       batchRunner.setVerboseLogging(false);
       batchRunner.setIgnoreDropErrors(defaultIgnore);

@@ -154,7 +154,7 @@ public class WbCommandAnalyzer
 
     // some WbCommand have different parameters depending on the connection
     cmd.setConnection(this.dbConnection);
-    
+
     ArgumentParser args = cmd.getArgumentParser();
     if (args == null)
     {
@@ -194,6 +194,11 @@ public class WbCommandAnalyzer
       else if (type == ArgumentType.TableArgument)
       {
         this.context = CONTEXT_TABLE_LIST;
+        this.namespaceForTableList = getNamespaceFromCurrentWord();
+      }
+      else if (type == ArgumentType.ViewArgument)
+      {
+        this.context = CONTEXT_VIEW_LIST;
         this.namespaceForTableList = getNamespaceFromCurrentWord();
       }
       else if (type == ArgumentType.ListArgument)

@@ -140,7 +140,7 @@ public class OracleIndexReader
   {
     if (this.indexStatement != null)
     {
-      LogMgr.logWarning("OracleIndexReader.getIndexInfo()", "getIndexInfo() called with pending results!");
+      LogMgr.logWarning(new CallerInfo(){}, "getIndexInfo() called with pending results!");
       indexInfoProcessed();
     }
 

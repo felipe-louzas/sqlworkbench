@@ -92,7 +92,7 @@ public class SqlCommand
   protected RowActionMonitor rowMonitor;
   protected boolean isUpdatingCommand;
   protected ErrorReportLevel errorLevel;
-  protected ResultLogger resultLogger;
+  protected ResultLogger messageLogger;
   protected StatementRunner runner;
   protected int queryTimeout;
   protected int maxRows;
@@ -108,9 +108,9 @@ public class SqlCommand
     this.rowMonitor = monitor;
   }
 
-  public void setResultLogger(ResultLogger logger)
+  public void setMessageLogger(ResultLogger logger)
   {
-    this.resultLogger = logger;
+    this.messageLogger = logger;
   }
 
   public ArgumentParser getArgumentParser()
@@ -562,7 +562,7 @@ public class SqlCommand
   public StatementRunnerResult execute(String sql)
     throws SQLException, Exception
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql);
+    StatementRunnerResult result = new StatementRunnerResult(sql, messageLogger);
 
     this.currentStatement = this.currentConnection.createStatement();
     this.isCancelled = false;

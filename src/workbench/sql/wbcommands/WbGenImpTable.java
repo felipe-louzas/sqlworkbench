@@ -317,7 +317,7 @@ public class WbGenImpTable
     batchRunner.setRowMonitor(rowMonitor);
 
     StringResultLogger logger = new StringResultLogger();
-    batchRunner.setResultLogger(logger);
+    batchRunner.setMessageLogger(logger);
     batchRunner.setConnection(currentConnection);
 
     StatementRunnerResult result = new StatementRunnerResult();

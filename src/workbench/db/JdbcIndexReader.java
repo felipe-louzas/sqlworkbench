@@ -155,7 +155,7 @@ public class JdbcIndexReader
     catch (Exception sql)
     {
       metaData.getWbConnection().rollback(sp);
-      LogMgr.logWarning("JdbcIndexReader.getIndexInfo()", "Error calling DatabaseMetaData.getIndexInfo()", sql);
+      LogMgr.logWarning(new CallerInfo(){}, "Error calling DatabaseMetaData.getIndexInfo()", sql);
     }
     finally
     {
@@ -191,6 +191,7 @@ public class JdbcIndexReader
     // other drivers (e.g. MonetDB) do not return the information when the column index is used.
     // Therefor we need a switch for this.
     boolean useColumnNames = metaData.getDbSettings().useColumnNameForMetadata();
+    final CallerInfo ci = new CallerInfo(){};
 
     if (this.metaData.getDbSettings().supportsGetPrimaryKeys())
     {
@@ -204,7 +205,6 @@ public class JdbcIndexReader
       long start = System.currentTimeMillis();
 
       Savepoint sp = null;
-
       try
       {
         if (metaData.getDbSettings().useSavePointForDML())
@@ -233,16 +233,15 @@ public class JdbcIndexReader
           int sequence = useColumnNames ? keysRs.getInt("KEY_SEQ") : keysRs.getInt(5);
           if (sequence < 1)
           {
-            LogMgr.logWarning("JdbcIndexReader.getPrimaryKey()", "Invalid column sequence '" + sequence + "' for key column " + tbl.getTableName() + "." + colName + " received!");
+            LogMgr.logWarning(ci, "Invalid column sequence '" + sequence + "' for key column " + tbl.getTableName() + "." + colName + " received!");
           }
-
           cols.add(new IndexColumn(quoteIndexColumn(colName), sequence));
         }
       }
       catch (Exception e)
       {
         metaData.getWbConnection().rollback(sp);
-        LogMgr.logWarning("JdbcIndexReader.getPrimaryKey()", "Error retrieving PK information", e);
+        LogMgr.logWarning(ci, "Error retrieving PK information", e);
       }
       finally
       {
@@ -252,7 +251,7 @@ public class JdbcIndexReader
       }
 
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug("JdbcIndexreader.getPrimaryKey()", "PK Information for " + tbl.getTableName() + ", PK Name=" + pkName + ", PK Index=" + pkIndexName + ", columns=" + cols + " (" + duration + "ms)");
+      LogMgr.logDebug(ci, "PK Information for " + tbl.getTableName() + ", PK Name=" + pkName + ", PK Index=" + pkIndexName + ", columns=" + cols + " (" + duration + "ms)");
 
       if (cols.size() > 0)
       {
@@ -267,7 +266,7 @@ public class JdbcIndexReader
 
     if (pk == null && metaData.getDbSettings().pkIndexHasTableName())
     {
-      LogMgr.logDebug("JdbcIndexreader.getPrimaryKey()", "No primary key returned from the driver, checking the unique indexes");
+      LogMgr.logDebug(ci, "No primary key returned from the driver, checking the unique indexes");
       pk = findPKFromIndexList(tbl);
     }
 
@@ -306,7 +305,7 @@ public class JdbcIndexReader
     {
       if (idx.isPrimaryKeyIndex())
       {
-        LogMgr.logInfo("JdbcIndexreader.findPKFromIndexList()", "Using unique index " + idx.getObjectName() + " as a primary key");
+        LogMgr.logInfo(new CallerInfo(){}, "Using unique index " + idx.getObjectName() + " as a primary key");
         PkDefinition pk = new PkDefinition(idx.getObjectName(), idx.getColumns());
         pk.setPkIndexDefinition(idx);
         return pk;
@@ -321,7 +320,7 @@ public class JdbcIndexReader
     if (pkName != null) return pkName;
     if (indexName != null) return indexName;
     String name = "pk_" + SqlUtil.cleanupIdentifier(tbl.getRawTableName()).toLowerCase();
-    LogMgr.logInfo("JdbcIndexReader.getPkName()","Using generated PK name " + name + " for " + tbl.getTableName());
+    LogMgr.logInfo(new CallerInfo(){},"Using generated PK name " + name + " for " + tbl.getTableName());
     return name;
   }
 
@@ -454,10 +453,7 @@ public class JdbcIndexReader
     sql = TableSourceBuilder.replacePlaceHolder(sql, MetaDataSqlManager.TABLE_NAME_PLACEHOLDER, table.getTableName(), needQuotes, metaData);
     sql = TableSourceBuilder.replacePlaceHolder(sql, MetaDataSqlManager.FQ_TABLE_NAME_PLACEHOLDER, table.getFullyQualifiedName(conn), false, metaData);
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("JdbcIndexReader.getNativeIndexSource()", "Using query to retrieve index definition=" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "index definition", sql);
     Statement stmt = null;
     ResultSet rs = null;
     try
@@ -472,7 +468,7 @@ public class JdbcIndexReader
     }
     catch (Exception se)
     {
-      LogMgr.logError("JdbcIndexReader.getNativeIndexSource()", "Error retrieving table source using query: " + sql + "\n", se);
+      LogMgr.logMetadataError(new CallerInfo(){}, se, "index definition", sql);
       return null;
     }
     finally
@@ -858,12 +854,12 @@ public class JdbcIndexReader
       idxRs = getIndexInfo(tbl, uniqueOnly);
       result = processIndexResult(idxRs, pk, tbl);
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug("JdbcIndexReader.getTableIndexList()", "Retrieving index information for table " + table.getTableExpression() + " took: " + duration + "ms");
+      LogMgr.logDebug(new CallerInfo(){}, "Retrieving index information for table " + table.getTableExpression() + " took: " + duration + "ms");
     }
     catch (Exception e)
     {
       conn.rollback(sp);
-      LogMgr.logWarning("JdbcIndexReader.getTableIndexInformation()", "Could not retrieve indexes", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve indexes", e);
       result = new ArrayList<>(0);
     }
     finally
@@ -918,7 +914,7 @@ public class JdbcIndexReader
     {
       SqlUtil.dumpResultSetInfo("DatabaseMetaData.processIndexResult()", idxRs.getMetaData());
     }
-
+    final CallerInfo ci = new CallerInfo(){};
     while (idxRs != null && idxRs.next())
     {
       String tableCat = useColumnNames ? idxRs.getString("TABLE_CAT"): idxRs.getString(1);
@@ -937,7 +933,7 @@ public class JdbcIndexReader
       {
         ignoredIndexes.add(indexName);
         TableIdentifier owner = new TableIdentifier(tableCat, tableSchema, tableName);
-        LogMgr.logInfo("JdbcIndexReader.processIndexResult()", "Ignoring index " + indexName + " because it belongs to " + owner.getFullyQualifiedName(metaData.getWbConnection()) + " and not to " + tbl.getFullyQualifiedName(metaData.getWbConnection()));
+        LogMgr.logInfo(ci, "Ignoring index " + indexName + " because it belongs to " + owner.getFullyQualifiedName(metaData.getWbConnection()) + " and not to " + tbl.getFullyQualifiedName(metaData.getWbConnection()));
         continue;
       }
 
@@ -953,7 +949,7 @@ public class JdbcIndexReader
 
       if (ignoreZeroOrdinalPos && ordinal < 1)
       {
-        LogMgr.logDebug("JdbcIndexReader.processIndexResult()", "Ignoring column " + colName + " for index " + indexName + " because ordinal_position was: " + ordinal);
+        LogMgr.logDebug(ci, "Ignoring column " + colName + " for index " + indexName + " because ordinal_position was: " + ordinal);
         continue;
       }
 
@@ -1170,10 +1166,7 @@ public class JdbcIndexReader
     sqlDef.setObjectName(indexNamePattern);
 
     String sql = sqlDef.getSql();
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("JdbcIndexReader.getIndexes()", "Retrieving index list using:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "index list", sql);
 
     List<IndexDefinition> result = new ArrayList<>();
     Statement stmt = null;
@@ -1235,7 +1228,7 @@ public class JdbcIndexReader
     catch (Exception e)
     {
       metaData.getWbConnection().rollback(sp);
-      LogMgr.logError("JdbcIndexReader.getIndexes()", "Error retrieving index list using: " + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "index list", sql);
     }
     finally
     {

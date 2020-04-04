@@ -306,7 +306,7 @@ public class WbImport
   public StatementRunnerResult execute(final String sqlCommand)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult(sqlCommand);
+    StatementRunnerResult result = new StatementRunnerResult(sqlCommand, messageLogger);
     String options = getCommandLine(sqlCommand);
     cmdLine.parse(options);
 

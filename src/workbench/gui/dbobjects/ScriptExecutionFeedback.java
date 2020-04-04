@@ -144,7 +144,7 @@ public class ScriptExecutionFeedback
     runner.setErrorStatementLogging(ErrorReportLevel.none);
     runner.setAbortOnError(true);
     runner.setStoreErrors(true);
-    runner.setResultLogger(resultLogger);
+    runner.setMessageLogger(resultLogger);
 
     ExecutionStatus status = ExecutionStatus.Error;
 

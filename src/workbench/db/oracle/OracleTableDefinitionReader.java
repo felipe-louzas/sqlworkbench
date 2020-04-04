@@ -264,14 +264,11 @@ public class OracleTableDefinitionReader
     ResultSet rs = null;
     PreparedStatement pstmt = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("OracleTableDefinitionReader.retrieveIdentityColumns()", "Retrieving identity columns for " + owner + "." + table + " using:\n" +
-        SqlUtil.replaceParameters(sql, table, owner));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "identity columns", sql, table, owner);
 
     long start = System.currentTimeMillis();
 
+    OracleIdentityOptionParser parser = new OracleIdentityOptionParser();
     try
     {
       pstmt = dbConnection.getSqlConnection().prepareStatement(sql);
@@ -281,6 +278,7 @@ public class OracleTableDefinitionReader
         pstmt.setString(2, owner);
       }
       rs = pstmt.executeQuery();
+
       while (rs.next())
       {
         String column = rs.getString("column_name");
@@ -290,8 +288,8 @@ public class OracleTableDefinitionReader
           String type = rs.getString("GENERATION_TYPE");
           String exp = "GENERATED " + type + " AS IDENTITY";
           String options = rs.getString("IDENTITY_OPTIONS");
-          String addOptions = getIdentitySequenceOptions(options);
-          if (addOptions != null)
+          String addOptions = parser.getIdentitySequenceOptions(options);
+          if (StringUtil.isNonBlank(addOptions))
           {
             exp += " " + addOptions;
           }
@@ -302,57 +300,15 @@ public class OracleTableDefinitionReader
     }
     catch (Exception ex)
     {
-      LogMgr.logWarning("OracleTableDefinitionReader.retrieveIdentityColumns()", "Could not retrieve identity column information using: \n" +
-        SqlUtil.replaceParameters(sql, table, owner), ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "identity columns", sql, table, owner);
     }
     finally
     {
       SqlUtil.closeAll(rs, pstmt);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug("OracleTableDefinitionReader.retrieveIdentityColumns()",
-        "Retrieving identity information for " + owner + "." + table + " took " + duration + "ms");
-    }
-
-  }
-
-  private String getIdentitySequenceOptions(String options)
-  {
-    if (options == null)
-    {
-      return null;
-    }
-
-    final String defaultOptions = "START WITH: 1, INCREMENT BY: 1, MAX_VALUE: 9999999999999999999999999999, MIN_VALUE: 1, CYCLE_FLAG: N, CACHE_SIZE: 20, ORDER_FLAG: N";
-
-    if (defaultOptions.equalsIgnoreCase(options))
-    {
-      return null;
-    }
-    String result = options.trim().toUpperCase().replace(", ", " ");
-    // convert the "property syntax" into the correct one.
-    result = result.replace("START WITH: ", "START WITH ");
-    result = result.replace("MIN_VALUE: ", "MINVALUE ");
-    result = result.replace("MAX_VALUE: ", "MAXVALUE ");
-    result = result.replace("INCREMENT BY: ", "INCREMENT BY ");
-    result = result.replace("CYCLE_FLAG: N", "NOCYCLE");
-    result = result.replace("CYCLE_FLAG: Y", "CYCLE");
-    result = result.replace("ORDER_FLAG: N", "NOORDER");
-    result = result.replace("ORDER_FLAG: Y", "ORDER");
-    result = result.replace("CACHE_SIZE: ", "CACHE ");
-
-    // remove default values of the options to make the SQL a bit more readable
-    result = result.replace("START WITH 1 ", "");
-    result = result.replace("MAXVALUE 9999999999999999999999999999 ", "");
-    result = result.replace("MINVALUE 1 ", "");
-    result = result.replace("INCREMENT BY 1 ", "");
-    result = result.replace("NOCYCLE ", "");
-    result = result.replace("NOORDER", "");
-    result = result.replace("CACHE 20 ", "");
-    return result.trim();
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving identity column information for " + owner + "." + table + " took " + duration + "ms");
   }
 
   public static String getDecodeForDataType(String colname, boolean mapDateToTimestamp)

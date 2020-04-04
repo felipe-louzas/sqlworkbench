@@ -288,21 +288,22 @@ public class ColumnDefinitionTemplate
 
     final String defaultTemplate = ColumnChanger.PARAM_DATATYPE + " " + ColumnChanger.PARAM_DEFAULT_VALUE + " " + PARAM_NOT_NULL + " " + PARAM_COL_CONSTRAINTS;
     String sql;
+    
+    if (isAutoincrement)
+    {
+      sql = getProperty("coldef.autoinc", null);
+      if (sql != null) return sql;
+    }
+
     if (computedColumn)
     {
-      sql = getProperty("coldef.computed", null);
-      if (sql != null) return sql;
-
       if (isAutoincrement)
       {
         sql = getProperty("coldef.computed.autoinc", null);
         if (sql != null) return sql;
       }
-    }
 
-    if (isAutoincrement)
-    {
-      sql = getProperty("coldef.autoinc", null);
+      sql = getProperty("coldef.computed", null);
       if (sql != null) return sql;
     }
 

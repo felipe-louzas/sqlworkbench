@@ -536,12 +536,19 @@ public class TestUtil
       }
       catch (SQLException e)
       {
-        if (printError)
+        if (sql.trim().toLowerCase().startsWith("drop"))
         {
-          System.out.println("**** Error executing statement at index= " + i + ", sql=" + sql + ", error: " + e.getMessage());
-          e.printStackTrace();
+          System.out.println("Ignoring error " + e.getMessage() + " for DROP statement: " + sql);
         }
-        throw e;
+        else
+        {
+          if (printError)
+          {
+            System.out.println("**** Error executing statement at index= " + i + ", sql=" + sql + ", error: " + e.getMessage());
+            e.printStackTrace();
+          }
+          throw e;
+        }
       }
       finally
       {

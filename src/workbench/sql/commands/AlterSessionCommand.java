@@ -66,7 +66,7 @@ public class AlterSessionCommand
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult();
+    StatementRunnerResult result = new StatementRunnerResult(messageLogger);
     result.setSuccess();
 
     String oldSchema = null;

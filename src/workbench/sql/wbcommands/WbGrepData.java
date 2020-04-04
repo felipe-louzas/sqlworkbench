@@ -114,7 +114,7 @@ public class WbGrepData
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    searchResult = new StatementRunnerResult();
+    searchResult = new StatementRunnerResult(messageLogger);
     String args = getCommandLine(sql);
     cmdLine.parse(args);
 

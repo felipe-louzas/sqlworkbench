@@ -751,6 +751,7 @@ public class WbConnection
       return;
     }
 
+    usedSavepoints.clear();
     if (getDbSettings().supportsTransactions())
     {
       this.sqlConnection.commit();
@@ -820,7 +821,7 @@ public class WbConnection
     rollback(sp, null);
   }
 
-  public void rollback(Savepoint sp, CallerInfo context)
+  public synchronized void rollback(Savepoint sp, CallerInfo context)
   {
     if (sp == null) return;
     if (this.sqlConnection == null) return;
@@ -854,7 +855,7 @@ public class WbConnection
     releaseSavepoint(sp, null);
   }
 
-  public void releaseSavepoint(Savepoint sp, CallerInfo context)
+  public synchronized void releaseSavepoint(Savepoint sp, CallerInfo context)
   {
     if (sp == null) return;
     if (this.sqlConnection == null) return;
@@ -868,8 +869,11 @@ public class WbConnection
       {
         LogMgr.logWarning(new CallerInfo(){}, "Release for non existing savepoint with ID=" + spId + " on connection [" + id + "] called. Context: " + context);
       }
-      logSavepoint(context, "Release", sp);
-      sqlConnection.releaseSavepoint(sp);
+      else
+      {
+        logSavepoint(context, "Release", sp);
+        sqlConnection.releaseSavepoint(sp);
+      }
     }
     catch (Throwable e)
     {
@@ -887,13 +891,20 @@ public class WbConnection
   public void rollback()
     throws SQLException
   {
+    rollback((CallerInfo)null);
+  }
+
+  public synchronized void rollback(CallerInfo context)
+    throws SQLException
+  {
     if (isClosed()) return;
     if (getAutoCommit()) return;
     if (!getDbSettings().supportsTransactions()) return;
 
     if (logSavepoints)
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Rollback all savepoints for connection: " + id);
+      String ctx = context == null ? "" : ", context: " + context;
+      LogMgr.logDebug(new CallerInfo(){}, "Rollback all savepoints for connection: " + id + ctx);
       if (!usedSavepoints.isEmpty())
       {
         LogMgr.logWarning(new CallerInfo(){}, "Rollback called with pending savepoints: " + usedSavepoints);
@@ -905,9 +916,14 @@ public class WbConnection
 
   public void rollbackSilently()
   {
+    rollbackSilently(null);
+  }
+
+  public void rollbackSilently(CallerInfo context)
+  {
     try
     {
-      rollback();
+      rollback(context);
     }
     catch (Exception e)
     {
@@ -960,6 +976,7 @@ public class WbConnection
     boolean old = this.getAutoCommit();
     if (old != flag)
     {
+      usedSavepoints.clear();
       sqlConnection.setAutoCommit(flag);
       fireConnectionStateChanged(PROP_AUTOCOMMIT, Boolean.toString(old), Boolean.toString(flag));
       lastAutocommitState = flag;
@@ -1772,15 +1789,22 @@ public class WbConnection
     return this.busy;
   }
 
-  public void setBusy(boolean flag)
+  /**
+   * Marks or unmarks this connection as busy
+   * @param flag   the new state
+   * @return the old state of the busy flag
+   */
+  public boolean setBusy(boolean flag)
   {
-    String oldValue = Boolean.toString(this.busy);
+    boolean wasBusy = this.busy;
+    String oldValue = Boolean.toString(wasBusy);
     this.busy = flag;
     if (flag && this.keepAlive != null)
     {
       this.keepAlive.setLastDbAction(System.currentTimeMillis());
     }
     fireConnectionStateChanged(PROP_BUSY, oldValue, Boolean.toString(this.busy));
+    return wasBusy;
   }
 
   @Override
@@ -1883,17 +1907,12 @@ public class WbConnection
 
       if (!transactionChecker.hasUncommittedChanges(this))
       {
-        Exception ex = null;
-        if (LogMgr.isTraceEnabled())
-        {
-          ex = new Exception("Backtrace");
-        }
         String msg = "Sending a " + endTransType.name() + " to end the current transaction";
         if (context != null)
         {
           msg += " <" + context + ">";
         }
-        LogMgr.logInfo(new CallerInfo(){}, msg, ex);
+        LogMgr.logInfo(new CallerInfo(){}, msg);
         if (endTransType == EndReadOnlyTrans.commit)
         {
           commit();

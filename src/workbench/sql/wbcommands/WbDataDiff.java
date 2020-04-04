@@ -184,7 +184,7 @@ public class WbDataDiff
   public StatementRunnerResult execute(String sql)
     throws SQLException, Exception
   {
-    StatementRunnerResult result = new StatementRunnerResult();
+    StatementRunnerResult result = new StatementRunnerResult(messageLogger);
 
     this.cmdLine.parse(getCommandLine(sql));
 
@@ -336,7 +336,7 @@ public class WbDataDiff
     {
       dataDiff.setClobAsFile(encoding, cmdLine.getIntValue(WbExport.ARG_CLOB_THRESHOLD, -1));
     }
-    
+
     dataDiff.setRowMonitor(rowMonitor);
 
     if (rowMonitor != null)

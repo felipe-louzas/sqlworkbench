@@ -66,10 +66,23 @@ public class StatementRunnerResult
   private long executionTime = -1;
   private static final DurationFormatter TIMING_FORMATTER = new DurationFormatter();
   private ErrorDescriptor errorDetails;
+  private ResultLogger messageLogger;
 
   public StatementRunnerResult()
   {
     this.messages = new MessageBuffer();
+  }
+
+  public StatementRunnerResult(ResultLogger logger)
+  {
+    if (logger != null && logger != ResultLogger.DEV_NULL_LOGGER)
+    {
+      this.messageLogger = logger;
+    }
+    else
+    {
+      this.messages = new MessageBuffer();
+    }
   }
 
   public StatementRunnerResult(String aCmd)
@@ -78,11 +91,17 @@ public class StatementRunnerResult
     this.sourceCommand = aCmd;
   }
 
+  public StatementRunnerResult(String aCmd, ResultLogger logger)
+  {
+    this(logger);
+    this.sourceCommand = aCmd;
+  }
+
   public MessagePriority getMessagePriority()
   {
     return messagePrio;
   }
-  
+
   public void setMessagePriority(MessagePriority prio)
   {
     this.messagePrio = prio;
@@ -181,6 +200,7 @@ public class StatementRunnerResult
   public void appendMessages(ResultLogger log)
   {
     if (this.messages == null) return;
+    if (this.messageLogger == log) return;
     messages.appendTo(log);
   }
 
@@ -335,12 +355,27 @@ public class StatementRunnerResult
   public void addMessage(MessageBuffer buffer)
   {
     if (buffer == null) return;
-    this.messages.append(buffer);
+    if (messageLogger != null)
+    {
+      messageLogger.appendToLog("\n");
+      buffer.appendTo(messageLogger);
+    }
+    else if (this.messages != null)
+    {
+      this.messages.append(buffer);
+    }
   }
 
   public void addMessageNewLine()
   {
-    this.messages.appendNewLine();
+    if (messageLogger != null)
+    {
+      messageLogger.appendToLog("\n");
+    }
+    else if (this.messages != null)
+    {
+      this.messages.appendNewLine();
+    }
   }
 
   public void addWarning(CharSequence msg)
@@ -363,7 +398,14 @@ public class StatementRunnerResult
 
   public void addMessage(CharSequence msgBuffer)
   {
+    if (messageLogger != null)
+    {
+      messageLogger.appendToLog(msgBuffer.toString());
+      messageLogger.appendToLog("\n");
+      return;
+    }
     if (msgBuffer == null) return;
+    if (messages == null) return;
     if (messages.getLength() > 0) messages.appendNewLine();
     messages.append(msgBuffer);
   }
@@ -461,7 +503,7 @@ public class StatementRunnerResult
 
   public void clearMessageBuffer()
   {
-    this.messages.clear();
+    if (this.messages != null) this.messages.clear();
   }
 
   public void clear()

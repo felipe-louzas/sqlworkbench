@@ -74,7 +74,7 @@ public class WbXslt
   public StatementRunnerResult execute(String aSql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult();
+    StatementRunnerResult result = new StatementRunnerResult(messageLogger);
     String parm = SqlUtil.stripVerb(aSql);
 
     cmdLine.parse(parm);

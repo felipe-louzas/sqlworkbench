@@ -119,7 +119,7 @@ public class WbSchemaDiff
   public StatementRunnerResult execute(final String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult();
+    StatementRunnerResult result = new StatementRunnerResult(messageLogger);
 
     cmdLine.parse(getCommandLine(sql));
 

@@ -48,6 +48,13 @@ public enum ArgumentType
   TableArgument,
 
   /**
+   * A parameter that selects views. If this is set
+   * the auto completion for this parameter will
+   * show a view list
+   */
+  ViewArgument,
+
+  /**
    * A parameter that accepts a fixed set of values. The
    * values can be registered using ArgumentParser.addArgument(String, List)
    * @see ArgumentParser#addArgument(java.lang.String, java.util.List)

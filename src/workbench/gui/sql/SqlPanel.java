@@ -474,7 +474,7 @@ public class SqlPanel
     stmtRunner.setMacroClientId(macroClientId);
     stmtRunner.setRowMonitor(this.rowMonitor);
     stmtRunner.setMessagePrinter(this);
-    stmtRunner.setResultLogger(this);
+    stmtRunner.setMessageLogger(this);
     stmtRunner.setRetryHandler(this);
 
     tabDropHandler = new ResultTabDropHandler(this, resultTab, log);
@@ -1747,7 +1747,7 @@ public class SqlPanel
     if (this.stmtRunner != null)
     {
       this.stmtRunner.setConnection(aConnection);
-      this.stmtRunner.setResultLogger(this);
+      this.stmtRunner.setMessageLogger(this);
       this.stmtRunner.setHistoryProvider(this.historyStatements);
     }
 
@@ -1784,12 +1784,12 @@ public class SqlPanel
           }
 
           // avoid the <IDLE> in transaction for Postgres that is caused by retrieving the current schema.
-          // the second check for isBusy() is to prevent the situation where the user manages
+          // the isBusy() is to prevent the situation where the user manages
           // to manually run a statement between the above setBusy(false) and this point)
-          if (dbConnection != null && doRollbackOnSetConnection())
+          if (doRollbackOnSetConnection())
           {
             LogMgr.logDebug(ci, "Sending a rollback to end the current transaction");
-            dbConnection.rollbackSilently();
+            dbConnection.rollbackSilently(ci);
           }
         }
         finally
@@ -1804,15 +1804,13 @@ public class SqlPanel
   private boolean doRollbackOnSetConnection()
   {
     if (dbConnection == null) return false;
+    if (dbConnection.getAutoCommit()) return false;
+    if (dbConnection.isBusy()) return false;
     DbSettings dbs = dbConnection.getDbSettings();
     if (dbs != null)
     {
       if (!dbs.endTransactionAfterConnect()) return false;
     }
-    if (dbConnection.getAutoCommit()) return false;
-    if (dbConnection.isBusy()) return false;
-    if (dbConnection.getProfile() == null) return false;
-
     // if we are using a separate connection, we always need to do the rollback
     if (dbConnection.isShared() == false) return true;
 

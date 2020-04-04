@@ -74,7 +74,8 @@ public class OracleTableDefinitionReaderTest
     WbConnection con = OracleTestUtil.getOracleConnection();
     if (con == null) return;
 
-    String sql = "create table person (id integer primary key, first_name varchar(100), last_name varchar(100), check (id > 0));\n" +
+    String sql =
+      "create table person (id integer primary key, first_name varchar(100), last_name varchar(100), check (id > 0));\n" +
       "create view v_person (id, full_name) as select id, first_name || ' ' || last_name from person;\n" +
       "create synonym syn_person for person;\n" +
       "create materialized view mv_person as select * from person;\n" +

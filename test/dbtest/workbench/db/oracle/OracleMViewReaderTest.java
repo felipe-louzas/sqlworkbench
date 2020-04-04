@@ -123,13 +123,13 @@ public class OracleMViewReaderTest
       "  enable query rewrite \n" +
       "as\n" +
       "select * from person;";
-    TestUtil.executeScript(con, sql);
+    TestUtil.executeScript(con, sql, true);
     DbObjectFinder finder = new DbObjectFinder(con);
     TableIdentifier mview = finder.findObject(new TableIdentifier("V_PERSON"));
     TableDefinition def = con.getMetadata().getTableDefinition(mview);
     OracleMViewReader reader = new OracleMViewReader();
     String source = reader.getMViewSource(con, def, null, DropType.none, true).toString();
-    System.out.println(source);
+//    System.out.println(source);
     String expected =
       "CREATE MATERIALIZED VIEW V_PERSON\n" +
       "(\n" +
@@ -214,8 +214,8 @@ public class OracleMViewReaderTest
       "  DISABLE QUERY REWRITE\n" +
       "AS\n" +
       "SELECT PERSON.ID ID,PERSON.NAME NAME FROM PERSON PERSON;";
-    System.out.println(source.trim() +"\n*********\n" +expected);
-//    assertEquals(expected, source.trim());
+//    System.out.println(source.trim() +"\n*********\n" +expected);
+    assertEquals(expected, source.trim());
   }
 
   @Test

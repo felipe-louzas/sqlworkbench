@@ -95,7 +95,7 @@ public class WbSysExec
   public StatementRunnerResult execute(String sql)
     throws SQLException, Exception
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql);
+    StatementRunnerResult result = new StatementRunnerResult(sql, messageLogger);
     String command = getCommandLine(sql);
 
     if (StringUtil.isBlank(command))
@@ -203,14 +203,7 @@ public class WbSysExec
       String out = stdIn.readLine();
       while (out != null)
       {
-        if (resultLogger != null)
-        {
-          resultLogger.appendToLog(out + "\n");
-        }
-        else
-        {
-          result.addMessage(out);
-        }
+        result.addMessage(out);
         out = stdIn.readLine();
       }
 

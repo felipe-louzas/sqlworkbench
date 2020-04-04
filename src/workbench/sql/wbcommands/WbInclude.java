@@ -229,7 +229,7 @@ public class WbInclude
       batchRunner = new BatchRunner(allFiles);
       batchRunner.setConnection(currentConnection);
       batchRunner.setDelimiter(delim);
-      batchRunner.setResultLogger(this.resultLogger);
+      batchRunner.setMessageLogger(this.messageLogger);
       batchRunner.setVerboseLogging(verbose);
       if (showProgress)
       {
