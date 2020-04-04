@@ -2,6 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2020-03-28">
+    <entry dev-build="8" type="enh">WbCopy now supports views as the source by using -includeViews=true.</entry>
     <entry dev-build="7" type="enh">The result panel is now automatically displayed if it was minimized before running a statement.</entry>
     <entry dev-build="6" type="enh">It's now possible to configure italic and bold for syntax highlighting</entry>
     <entry dev-build="6" type="enh">For SQL Server, partitioning information about a table is now included in the generated DDL</entry>
@@ -25,6 +26,8 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="8" type="fix">For Oracle 18c and later, index information weren't displayed correctly.</entry>
+    <entry dev-build="8" type="fix">For Oracle 18c and later, DDL for identity columns wasn't generated correctly.</entry>
     <entry dev-build="8" type="fix">For Oracle, the generated IGNORE_DUP_KEY hint was incorrect if the order of the PK columns was different to the column order of the table.</entry>
     <entry dev-build="7" type="fix">Assigning multiple variables with WbVarDef was not possible if -variable was used.</entry>
     <entry dev-build="7" type="fix">For Redshift, finding tables on the search path was no longer working.</entry>
