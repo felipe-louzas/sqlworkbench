@@ -175,7 +175,7 @@ public class WbDateFormatter
         // remove the .SSSSS from the pattern so that we can re-add it with a variable length using appendFraction
         String patternStart = pattern.substring(0, start);
         String patternEnd = pattern.substring(end);
-        builder = new DateTimeFormatterBuilder().appendPattern(patternStart);
+        builder = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(patternStart);
         int len = end - start;
         builder.appendFraction(ChronoField.MICRO_OF_SECOND, 0, len - 1, true);
         if (patternEnd != null)
@@ -187,7 +187,7 @@ public class WbDateFormatter
 
     if (builder == null)
     {
-      builder = new DateTimeFormatterBuilder().appendPattern(pattern);
+      builder = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern);
     }
 
     DateTimeFormatter dtf = null;

@@ -279,7 +279,7 @@ public class TextAreaPainter
     }
     else
     {
-      return styles[tokenId].getFontMetrics(getFont(), this);
+      return this.getFontMetrics(styles[tokenId].getStyledFont(getFont()));
     }
   }
 

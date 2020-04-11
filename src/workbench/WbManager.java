@@ -23,6 +23,8 @@ package workbench;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -624,7 +626,28 @@ public final class WbManager
 
   private void openNewWindow(boolean checkCmdLine)
   {
-    final MainWindow main = new MainWindow();
+    GraphicsConfiguration screenToUse = null;
+    if (checkCmdLine)
+    {
+      // checkCmdLine will be true for the first window that is opened
+      // check the screen on which to open the window only then
+      String key = MainWindow.class.getName() + ".screen";
+      String lastScreen = Settings.getInstance().getProperty(key, null);
+      if (lastScreen != null)
+      {
+        GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        for (GraphicsDevice screen : screens)
+        {
+          if (lastScreen.equals(screen.getIDstring()))
+          {
+            screenToUse = screen.getDefaultConfiguration();
+            break;
+          }
+        }
+      }
+    }
+
+    final MainWindow main = new MainWindow(screenToUse);
     mainWindows.add(main);
     main.display();
     boolean connected = false;

@@ -26,7 +26,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.Point;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -206,7 +210,7 @@ public class MainWindow
   extends JFrame
   implements MouseListener, WindowListener, ChangeListener,
              MacroChangeListener, DbExecutionListener, Connectable, PropertyChangeListener,
-             Moveable, RenameableTab, TabCloser, FilenameChangeListener
+             Moveable, RenameableTab, TabCloser, FilenameChangeListener, ComponentListener
 {
   private static final String DEFAULT_WORKSPACE = "Default.wksp";
   private static final String RECENTMACROS_NAME = "recent-macros";
@@ -214,7 +218,7 @@ public class MainWindow
 
   private static int instanceCount;
   private final int windowId;
-
+  private String deviceId;
   private boolean exitOnCancel = false;
 
   private WbConnection currentConnection;
@@ -287,9 +291,9 @@ public class MainWindow
 
   private final ClosedTabManager closedTabHistory;
 
-  public MainWindow()
+  public MainWindow(GraphicsConfiguration graphics)
   {
-    super(ResourceMgr.TXT_PRODUCT_NAME);
+    super(ResourceMgr.TXT_PRODUCT_NAME, graphics);
 
     closedTabHistory = new ClosedTabManager(this);
 
@@ -338,6 +342,7 @@ public class MainWindow
     }
 
     addWindowListener(this);
+    addComponentListener(this);
 
     dropHandler = new DropHandler(this, sqlTab);
     sqlTab.enableDragDropReordering(this);
@@ -358,6 +363,13 @@ public class MainWindow
       GuiSettings.PROP_TITLE_SHOW_URL_USER
     );
     ShortcutManager.getInstance().addChangeListener(this);
+  }
+
+  private String getCurrentDeviceID()
+  {
+    GraphicsConfiguration config = this.getGraphicsConfiguration();
+    GraphicsDevice device = config.getDevice();
+    return device.getIDstring();
   }
 
   protected final void updateTabPolicy()
@@ -1592,6 +1604,7 @@ public class MainWindow
     Settings sett = Settings.getInstance();
     int state = this.getExtendedState();
     sett.setProperty(this.getClass().getName() + ".state", state);
+    sett.setProperty(this.getClass().getName() + ".screen", deviceId);
 
     if (state != MAXIMIZED_BOTH)
     {
@@ -1603,8 +1616,34 @@ public class MainWindow
   }
 
   @Override
+  public void componentResized(ComponentEvent e)
+  {
+  }
+
+  @Override
+  public void componentMoved(ComponentEvent e)
+  {
+    GraphicsConfiguration config = this.getGraphicsConfiguration();
+    if (config == null) return;
+    GraphicsDevice device = config.getDevice();
+    if (device == null) return;
+    this.deviceId = device.getIDstring();
+  }
+
+  @Override
+  public void componentShown(ComponentEvent e)
+  {
+  }
+
+  @Override
+  public void componentHidden(ComponentEvent e)
+  {
+  }
+
+  @Override
   public void windowOpened(WindowEvent windowEvent)
   {
+    this.deviceId = getCurrentDeviceID();
   }
 
   @Override

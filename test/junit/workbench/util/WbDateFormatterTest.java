@@ -82,6 +82,19 @@ public class WbDateFormatterTest
   }
 
   @Test
+  public void testMonthName()
+  {
+    WbDateFormatter formatter = new WbDateFormatter();
+    formatter.setLocale(Locale.ENGLISH);
+    formatter.applyPattern("dd-MMM-yyyy");
+    LocalDate dt = formatter.parseDate("19-JAN-2020").toLocalDate();
+    assertNotNull(dt);
+    assertEquals(2020, dt.getYear());
+    assertEquals(1, dt.getMonthValue());
+    assertEquals(19, dt.getDayOfMonth());
+  }
+
+  @Test
   public void testFormat()
   {
     Calendar cal = Calendar.getInstance();

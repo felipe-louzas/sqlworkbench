@@ -31,6 +31,7 @@ import java.util.Map;
 import workbench.interfaces.BatchCommitter;
 import workbench.interfaces.Committer;
 import workbench.interfaces.ProgressReporter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -374,7 +375,7 @@ public class CommonArgs
       catch (Exception ex)
       {
         locale = null;
-        LogMgr.logWarning("CommmonArgs.getLocale()", "Illegale locale " + localeName + " ignored", ex);
+        LogMgr.logWarning(new CallerInfo(){}, "Illegale locale " + localeName + " ignored", ex);
         String msg = ResourceMgr.getFormattedString("ErrIllegalLocaleIgnore", localeName);
         result.addWarning(msg);
       }

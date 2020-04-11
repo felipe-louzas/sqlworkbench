@@ -10,14 +10,13 @@ package workbench.gui.editor;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 
-import javax.swing.JComponent;
 
 /**
- * A simple text style class. It can specify the color, italic flag,
- * and bold flag of a run of text.
+ * A simple text style class.
+ *
+ * It can specify the color, italic flag, and bold flag of a run of text.
  *
  * @author Slava Pestov
  * @author Thomas Kellerer
@@ -120,13 +119,10 @@ public class SyntaxStyle
 
   public static final String INVALID = "invalid";
 
-
-  // private members
   private Color color;
   private final int style;
   private Font lastFont;
   private Font lastStyledFont;
-  private FontMetrics fontMetrics;
 
   /**
    * Creates a new SyntaxStyle.
@@ -149,13 +145,13 @@ public class SyntaxStyle
 
   /**
    * Clear cached font information.
+   *
    * This has to be called when the font of the TextAreaPainter is changed.
    */
   public void clearFontCache()
   {
     lastFont = null;
     lastStyledFont = null;
-    fontMetrics = null;
   }
 
   /**
@@ -187,23 +183,8 @@ public class SyntaxStyle
   }
 
   /**
-   * Returns the font metrics for the styled font.
-   */
-  public FontMetrics getFontMetrics(Font font, JComponent painter)
-  {
-    if (font.equals(lastFont) && fontMetrics != null)
-    {
-      return fontMetrics;
-    }
-
-    Font styled = getStyledFont(font);
-    fontMetrics = painter.getFontMetrics(styled);
-    return fontMetrics;
-  }
-
-  /**
-   * Sets the foreground color and font of the specified graphics
-   * context to that specified in this style.
+   * Sets the foreground color and font of the specified graphics context to that specified in this style.
+   *
    * @param gfx The graphics context
    * @param font The font to add the styles to
    */

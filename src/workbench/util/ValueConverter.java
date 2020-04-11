@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -306,7 +307,7 @@ public class ValueConverter
   {
     if (CollectionUtil.isEmpty(trueValues) || CollectionUtil.isEmpty(falseValues))
     {
-      LogMgr.logWarning("ValueConverter.setBooleanLiterals()", "Ignoring attempt to set boolean literals because at least one collection is empty or null");
+      LogMgr.logWarning(new CallerInfo(){}, "Ignoring attempt to set boolean literals because at least one collection is empty or null");
       readConfiguredBooleanValues();
     }
     else
@@ -633,7 +634,7 @@ public class ValueConverter
         this.formatter.applyPattern(timeFormat);
         parsed = this.formatter.parseTime(time);
 
-        LogMgr.logDebug("ValueConverter.parseTime()", "Succeeded parsing the time string [" + time + "] using the format: " + formatter.toPattern());
+        LogMgr.logDebug(new CallerInfo(){}, "Succeeded parsing the time string [" + time + "] using the format: " + formatter.toPattern());
         break;
       }
       catch (Exception e)
@@ -682,7 +683,7 @@ public class ValueConverter
       {
         if (logWarnings)
         {
-          LogMgr.logWarning("ValueConverter.parseTimestampTZ()", "Could not parse '" + timestampInput + "' as a timestamp with time zone using the format: " + this.timestampFormatter.toPattern(), null);
+          LogMgr.logWarning(new CallerInfo(){}, "Could not parse '" + timestampInput + "' as a timestamp with time zone using the format: " + this.timestampFormatter.toPattern(), null);
         }
         throw new ParseException("Could not convert [" + timestampInput + "] to a timestamp with timezone value!", 0);
       }
@@ -723,14 +724,14 @@ public class ValueConverter
       }
       catch (Exception e)
       {
-        if (logWarnings) LogMgr.logWarning("ValueConverter.parseTimestamp()", "Could not parse '" + timestampInput + "' using default format " + this.timestampFormatter.toPattern() + ". Trying to recognize the format...", null);
+        if (logWarnings) LogMgr.logWarning(new CallerInfo(){}, "Could not parse '" + timestampInput + "' using default format " + this.timestampFormatter.toPattern() + ". Trying to recognize the format...", null);
         result = null;
       }
     }
 
     if (result == null && illegalDateIsNull)
     {
-      LogMgr.logInfo("ValueConverter.parseTimestamp()", "Illegal timestamp value '" + timestampInput + "' set to null");
+      LogMgr.logInfo(new CallerInfo(){}, "Illegal timestamp value '" + timestampInput + "' set to null");
       return null;
     }
 
@@ -742,7 +743,7 @@ public class ValueConverter
         {
           this.formatter.applyPattern(format, true);
           result = this.formatter.parseTimestamp(timestampInput);
-          LogMgr.logDebug("ValueConverter.parseTimestamp()", "Succeeded parsing '" + timestampInput + "' using the format: " + format);
+          LogMgr.logDebug(new CallerInfo(){}, "Succeeded parsing '" + timestampInput + "' using the format: " + format);
           if (useFirstMatching)
           {
             this.defaultTimestampFormat = format;
@@ -779,6 +780,7 @@ public class ValueConverter
 
     java.sql.Date result = null;
 
+    final CallerInfo ci = new CallerInfo(){};
     dateFormatter.setIllegalDateIsNull(illegalDateIsNull);
 
     if (this.defaultDateFormat != null)
@@ -797,14 +799,14 @@ public class ValueConverter
       }
       catch (Exception e)
       {
-        if (logWarnings) LogMgr.logWarning("ValueConverter.parseDate()", "Could not parse [" + dateInput + "] using: " + this.dateFormatter.toPattern(), null);
+        if (logWarnings) LogMgr.logWarning(ci, "Could not parse [" + dateInput + "] using: " + this.dateFormatter.toPattern(), null);
         result = null;
       }
     }
 
     if (result == null && illegalDateIsNull)
     {
-      LogMgr.logInfo("ValueConverter.parseDate()", "Illegal date value '" + dateInput + "' set to null");
+      LogMgr.logInfo(ci, "Illegal date value '" + dateInput + "' set to null");
       return null;
     }
 
@@ -817,7 +819,7 @@ public class ValueConverter
       }
       catch (DateTimeParseException e)
       {
-        if (logWarnings) LogMgr.logWarning("ValueConverter.parseDate()", "Could not parse [" + dateInput + "] using: " + this.timestampFormatter.toPattern() + ". Trying to recognize the format...", null);
+        if (logWarnings) LogMgr.logWarning(ci, "Could not parse [" + dateInput + "] using: " + this.timestampFormatter.toPattern() + ". Trying to recognize the format...", null);
       }
     }
 
@@ -834,7 +836,7 @@ public class ValueConverter
           {
             this.defaultDateFormat = format;
           }
-          if (logWarnings) LogMgr.logDebug("ValueConverter.parseDate()", "Succeeded parsing [" + dateInput + "] using the format: " + format);
+          if (logWarnings) LogMgr.logDebug(ci, "Succeeded parsing [" + dateInput + "] using the format: " + format);
           break;
         }
       }
@@ -853,7 +855,7 @@ public class ValueConverter
             {
               this.defaultDateFormat = format;
             }
-            if (logWarnings) LogMgr.logDebug("ValueConverter.parseDate()", "Succeeded parsing [" + dateInput + "] using the format: " + format);
+            if (logWarnings) LogMgr.logDebug(ci, "Succeeded parsing [" + dateInput + "] using the format: " + format);
             break;
           }
         }
