@@ -26,7 +26,8 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
-    <entry dev-build="8" type="fix">For Oracle 18c and later, index information weren't displayed correctly.</entry>
+    <entry dev-build="8" type="fix">Month names were case sensitive when using -dateFormat or -timestampFormat with WbImport</entry>
+    <entry dev-build="8" type="fix">For Oracle 18c and later, index information wasn't displayed correctly.</entry>
     <entry dev-build="8" type="fix">For Oracle 18c and later, DDL for identity columns wasn't generated correctly.</entry>
     <entry dev-build="8" type="fix">For Oracle, the generated IGNORE_DUP_KEY hint was incorrect if the order of the PK columns was different to the column order of the table.</entry>
     <entry dev-build="7" type="fix">Assigning multiple variables with WbVarDef was not possible if -variable was used.</entry>

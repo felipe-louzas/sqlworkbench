@@ -1098,7 +1098,6 @@ public class JEditTextArea
 
     int segmentOffset = lineSegment.offset;
     float x = horizontalOffset;
-//    System.out.print("line: " + line);
 
     if (token == null)
     {
@@ -1118,7 +1117,6 @@ public class JEditTextArea
           lineSegment.count = offset - (lineSegment.offset - segmentOffset);
           float tokenWidth = SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
           x += Math.round(tokenWidth);
-//          System.out.println(", token: \"" + lineSegment.toString() + "\", tokenWidth: " + tokenWidth + ", newWidth: " + x);
           break;
         }
         else
@@ -1126,7 +1124,6 @@ public class JEditTextArea
           lineSegment.count = length;
           float tokenWidth = SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
           x += Math.round(tokenWidth);
-//          System.out.print(", token: \"" + lineSegment.toString() + "\", tokenWidth: " + tokenWidth + ", newWidth: " + x);
           lineSegment.offset += length;
         }
         token = token.next;
