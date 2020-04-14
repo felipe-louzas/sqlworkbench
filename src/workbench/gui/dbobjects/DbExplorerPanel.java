@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -54,6 +55,7 @@ import workbench.interfaces.Connectable;
 import workbench.interfaces.DbExecutionListener;
 import workbench.interfaces.MainPanel;
 import workbench.interfaces.Reloadable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.GuiSettings;
@@ -375,25 +377,35 @@ public class DbExplorerPanel
     this.selectorPanel.add(this.selectConnectionButton);
   }
 
-  private final Object busyLock = new Object();
+  private final ReentrantReadWriteLock busyLock = new ReentrantReadWriteLock();
 
   private void setBusy(boolean flag)
   {
-    synchronized (busyLock)
+    busyLock.writeLock().lock();
+    try
     {
       busy = flag;
       schemaSelector.setEnabled(!flag);
       catalogSelector.setEnabled(!flag);
       reloadButton.setEnabled(!flag);
     }
+    finally
+    {
+      busyLock.writeLock().unlock();
+    }
   }
 
   @Override
   public boolean isBusy()
   {
-    synchronized (busyLock)
+    busyLock.readLock().lock();
+    try
     {
       return this.busy;
+    }
+    finally
+    {
+      busyLock.readLock().unlock();
     }
   }
 
@@ -527,7 +539,7 @@ public class DbExplorerPanel
       }
       catch (Exception ex)
       {
-        LogMgr.logError("DbExplorerPanel.readSchemas()", "Could not read catalogs", ex);
+        LogMgr.logError(new CallerInfo(){}, "Could not read catalogs", ex);
       }
 
       String catalog = getSelectedCatalog();
@@ -536,7 +548,7 @@ public class DbExplorerPanel
     }
     catch (Throwable e)
     {
-      LogMgr.logError("DbExplorer.readSchemas()", "Could not retrieve list of schemas", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve list of schemas", e);
     }
     finally
     {
@@ -575,7 +587,7 @@ public class DbExplorerPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("MainWindow.showDbExplorer()", "Error getting new connection for DbExplorer tab.", e);
+      LogMgr.logError(new CallerInfo(){}, "Error getting new connection for DbExplorer tab.", e);
       String error = ExceptionUtil.getDisplay(e);
       WbSwingUtilities.showErrorMessage(this, error);
     }
@@ -625,7 +637,7 @@ public class DbExplorerPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbExplorerPanel.initConnection()", "Error during init",e);
+      LogMgr.logError(new CallerInfo(){}, "Error during init",e);
     }
   }
 
@@ -639,8 +651,6 @@ public class DbExplorerPanel
   @Override
   public void setConnection(WbConnection aConnection)
   {
-    if (this.isBusy()) return;
-
     this.dbConnection = aConnection;
     setSwitchCatalog(false);
 
@@ -650,6 +660,11 @@ public class DbExplorerPanel
     {
       this.reset();
       this.connectionInitPending = false;
+      return;
+    }
+
+    if (this.isBusy())
+    {
       return;
     }
 
@@ -696,7 +711,7 @@ public class DbExplorerPanel
     {
       this.retrievePending = true;
       this.schemaRetrievePending = true;
-      LogMgr.logError("DbExplorerPanel.setConnection()", "Error during connection init", th);
+      LogMgr.logError(new CallerInfo(){}, "Error during connection init", th);
     }
   }
 
@@ -868,7 +883,7 @@ public class DbExplorerPanel
         }
         catch (SQLException ex)
         {
-          LogMgr.logError("DbExplorerPanel.actionPerformed()", "Could not switch catalog", ex);
+          LogMgr.logError(new CallerInfo(){}, "Could not switch catalog", ex);
           WbSwingUtilities.showErrorMessage(this, ExceptionUtil.getDisplay(ex));
         }
       }
@@ -926,7 +941,7 @@ public class DbExplorerPanel
         }
         catch (Exception ex)
         {
-          LogMgr.logError(DbExplorerPanel.this, "Could not set schema", ex);
+          LogMgr.logError(new CallerInfo(){}, "Could not set schema", ex);
         }
         finally
         {
@@ -1029,7 +1044,7 @@ public class DbExplorerPanel
   {
     if (this.dbConnection != null)
     {
-      if (this.dbConnection.isShared() == false) // getProfile().getUseSeparateConnectionPerTab() || DbExplorerSettings.getAlwaysUseSeparateConnForDbExpWindow())
+      if (this.dbConnection.isShared() == false)
       {
         try { this.dbConnection.disconnect(); } catch (Throwable th) {}
       }
@@ -1146,7 +1161,7 @@ public class DbExplorerPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbExplorerPanel.readFromWorkspace()", "Error loading workspace", e);
+      LogMgr.logError(new CallerInfo(){}, "Error loading workspace", e);
     }
 
     EventQueue.invokeLater(this::updateTabTitle);

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
@@ -70,6 +71,7 @@ public class DbObjectsTree
   private DbObjectNodeRenderer renderer;
   private Map<ObjectTreeNode, Runnable> afterLoadProcess = new ConcurrentHashMap<>();
   private boolean ignoreEvents;
+  private final ReentrantLock loadLock = new ReentrantLock();
 
   public DbObjectsTree(WbStatusLabel status)
   {
@@ -422,7 +424,7 @@ public class DbObjectsTree
     reload(selection);
   }
 
-  public synchronized void reload(TreePath selection)
+  public void reload(TreePath selection)
   {
     load(false);
     try
@@ -436,9 +438,15 @@ public class DbObjectsTree
     }
   }
 
-  public synchronized void load(boolean selectDefaultNamespace)
+  public void load(boolean selectDefaultNamespace)
   {
     if (loader == null) return;
+
+    if (!loadLock.tryLock())
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "Could not obtain lock for loading the DbTree", new Exception("Backtrace"));
+      return;
+    }
 
     clear();
 
@@ -469,6 +477,10 @@ public class DbObjectsTree
     {
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(ex));
       LogMgr.logError(new CallerInfo(){}, "Could not load tree", ex);
+    }
+    finally
+    {
+      loadLock.unlock();
     }
   }
 

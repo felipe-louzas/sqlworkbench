@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,6 +47,7 @@ import javax.swing.table.TableModel;
 import workbench.interfaces.DbData;
 import workbench.interfaces.IndexChangeListener;
 import workbench.interfaces.Resettable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.GuiSettings;
@@ -106,7 +108,7 @@ public class TableDefinitionPanel
   public static final String INDEX_PROP = "index";
   public static final String DEFINITION_PROP = "tableDefinition";
 
-  private final Object connectionLock = new Object();
+  private final ReentrantLock connectionLock = new ReentrantLock();
   private final Object busyLock = new Object();
 
   private WbTable tableDefinition;
@@ -354,77 +356,81 @@ public class TableDefinitionPanel
     throws SQLException
   {
     if (this.isBusy()) return;
+    if (currentTable == null) return;
 
-    synchronized (connectionLock)
+    if (!connectionLock.tryLock())
     {
-      if (currentTable == null) return;
+      LogMgr.logWarning(new CallerInfo(){}, "Concurrent table definition retrieval in process", new Exception("Backtrace"));
+      this.reset();
+      return;
+    }
 
-      try
+    try
+    {
+      WbSwingUtilities.invoke(() ->
       {
-        WbSwingUtilities.invoke(() ->
-        {
-          tableDefinition.reset();
-          reloadAction.setEnabled(false);
-          String msg = " " + ResourceMgr.getString("TxtRetrieveTableDef") + " " + currentTable.getTableName();
-          tableNameLabel.setText(msg);
-        });
+        tableDefinition.reset();
+        reloadAction.setEnabled(false);
+        String msg = " " + ResourceMgr.getString("TxtRetrieveTableDef") + " " + currentTable.getTableName();
+        tableNameLabel.setText(msg);
+      });
 
-        DbMetadata meta = this.dbConnection.getMetadata();
-        DataStore def = null;
-        if (dbConnection.getDbSettings().isSynonymType(currentTable.getType()) && !GuiSettings.showSynonymTargetInDbExplorer())
-        {
-          def = ObjectInfo.getPlainSynonymInfo(dbConnection, currentTable);
-        }
-        else
-        {
-          def = meta.getObjectDetails(currentTable);
-        }
-
-        final TableModel model = def == null ? EmptyTableModel.EMPTY_MODEL : new DataStoreTableModel(def) ;
-
-        if (def instanceof TableColumnsDatastore)
-        {
-          DataStoreTableModel dsModel = (DataStoreTableModel)model;
-          // Make sure some columns are not modified by the user
-          // to avoid the impression that e.g. the column's position
-          // can be changed by editing that column
-          dsModel.setValidator(validator);
-
-          int typeIndex = dsModel.findColumn(TableColumnsDatastore.JAVA_SQL_TYPE_COL_NAME);
-          int posIndex = dsModel.findColumn("POSITION");
-          int pkIndex = dsModel.findColumn("PK");
-          dsModel.setNonEditableColums(typeIndex, posIndex, pkIndex);
-
-          if (meta.isTableType(currentTable.getType()) || meta.isViewType(currentTable.getType()))
-          {
-            List<ColumnIdentifier> cols = TableColumnsDatastore.createColumnIdentifiers(meta, def);
-            TableDefinition tbl = new TableDefinition(currentTable, cols);
-            dbConnection.getObjectCache().addTable(tbl);
-          }
-        }
-
-        alterButton.setVisible(dbConnection.getDbSettings().columnCommentAllowed(currentTable.getType()));
-
-        WbSwingUtilities.invoke(() ->
-        {
-          applyTableModel(model);
-          tableDefinition.adjustColumns();
-        });
-        alterColumnsAction.setSourceTable(dbConnection, currentTable);
-        alterColumnsAction.setEnabled(false);
-        boolean canAddColumn = dbConnection.getDbSettings().getAddColumnSql() != null && DbExplorerSettings.allowAlterInDbExplorer();
-        addColumn.setEnabled(canAddColumn && isTable());
-      }
-      catch (SQLException e)
+      DbMetadata meta = this.dbConnection.getMetadata();
+      DataStore def = null;
+      if (dbConnection.getDbSettings().isSynonymType(currentTable.getType()) && !GuiSettings.showSynonymTargetInDbExplorer())
       {
-        tableNameLabel.setText(ExceptionUtil.getDisplay(e));
-        throw e;
+        def = ObjectInfo.getPlainSynonymInfo(dbConnection, currentTable);
       }
-      finally
+      else
       {
-        reloadAction.setEnabled(true);
-        setBusy(false);
+        def = meta.getObjectDetails(currentTable);
       }
+
+      final TableModel model = def == null ? EmptyTableModel.EMPTY_MODEL : new DataStoreTableModel(def) ;
+
+      if (def instanceof TableColumnsDatastore)
+      {
+        DataStoreTableModel dsModel = (DataStoreTableModel)model;
+        // Make sure some columns are not modified by the user
+        // to avoid the impression that e.g. the column's position
+        // can be changed by editing that column
+        dsModel.setValidator(validator);
+
+        int typeIndex = dsModel.findColumn(TableColumnsDatastore.JAVA_SQL_TYPE_COL_NAME);
+        int posIndex = dsModel.findColumn("POSITION");
+        int pkIndex = dsModel.findColumn("PK");
+        dsModel.setNonEditableColums(typeIndex, posIndex, pkIndex);
+
+        if (meta.isTableType(currentTable.getType()) || meta.isViewType(currentTable.getType()))
+        {
+          List<ColumnIdentifier> cols = TableColumnsDatastore.createColumnIdentifiers(meta, def);
+          TableDefinition tbl = new TableDefinition(currentTable, cols);
+          dbConnection.getObjectCache().addTable(tbl);
+        }
+      }
+
+      alterButton.setVisible(dbConnection.getDbSettings().columnCommentAllowed(currentTable.getType()));
+
+      WbSwingUtilities.invoke(() ->
+      {
+        applyTableModel(model);
+        tableDefinition.adjustColumns();
+      });
+      alterColumnsAction.setSourceTable(dbConnection, currentTable);
+      alterColumnsAction.setEnabled(false);
+      boolean canAddColumn = dbConnection.getDbSettings().getAddColumnSql() != null && DbExplorerSettings.allowAlterInDbExplorer();
+      addColumn.setEnabled(canAddColumn && isTable());
+    }
+    catch (SQLException e)
+    {
+      tableNameLabel.setText(ExceptionUtil.getDisplay(e));
+      throw e;
+    }
+    finally
+    {
+      connectionLock.unlock();
+      reloadAction.setEnabled(true);
+      setBusy(false);
     }
   }
 

@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.swing.ActionMap;
@@ -242,7 +243,7 @@ public class TableListPanel
   private final SummaryLabel summaryStatusBarLabel;
   private String tableTypeToSelect;
 
-  private final Object connectionLock = new Object();
+  private final ReentrantLock connectionLock = new ReentrantLock();
 
   private TableChangeValidator validator = new TableChangeValidator();
   private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
@@ -2104,6 +2105,14 @@ public class TableListPanel
     int index = this.displayTab.getSelectedIndex();
 
     this.setBusy(true);
+
+    if (!connectionLock.tryLock())
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Concurrent table list retrieval in process", new Exception("Backtrace"));
+      this.invalidateData();
+      return;
+    }
+
     try
     {
       if (dbConnection.isShared() == false)
@@ -2111,10 +2120,7 @@ public class TableListPanel
         levelChanger.changeIsolationLevel(dbConnection);
       }
 
-      synchronized (this.connectionLock)
-      {
-        retrieveSelectedPanel();
-      }
+      retrieveSelectedPanel();
     }
     catch (Throwable ex)
     {
@@ -2122,6 +2128,7 @@ public class TableListPanel
     }
     finally
     {
+      connectionLock.unlock();
       WbSwingUtilities.showDefaultCursor(this);
       this.setBusy(false);
       this.repaint();

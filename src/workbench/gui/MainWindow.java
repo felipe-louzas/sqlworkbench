@@ -3374,7 +3374,7 @@ public class MainWindow
   {
     if (this.currentWorkspace == null) return;
     if (this.currentProfile == null) return;
-    FileDialogUtil util = new FileDialogUtil();
+    
     String filename = FileDialogUtil.removeConfigDir(currentWorkspace.getFilename());
     currentProfile.setWorkspaceFile(filename);
 
