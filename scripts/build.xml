@@ -34,15 +34,6 @@
   <property name="coverage.report.dir" value="${junitdir}/coverage" />
   <property name="instrumented.dir" value="${root}/build/instrumented" />
 
-  <property name="cobertura.dir" value="${junitlibs}/cobertura" />
-
-  <path id="cobertura.path">
-    <fileset dir="${cobertura.dir}">
-      <include name="*.jar" />
-    </fileset>
-  </path>
-  <taskdef classpathref="cobertura.path" resource="tasks.properties" />
-
   <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="xmltask-v1.16.jar"/>
 
   <target name="init">

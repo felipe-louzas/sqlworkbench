@@ -21,9 +21,14 @@
 package workbench.storage.reader;
 
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -39,11 +44,16 @@ import workbench.storage.ResultInfo;
 class PostgresRowDataReader
   extends RowDataReader
 {
-  private boolean useJava8Time;
+  private final boolean useJava8Time;
+  private boolean adjustTimeTZ = true;
 
   PostgresRowDataReader(ResultInfo info, WbConnection conn)
   {
     super(info, conn);
+    if (conn != null)
+    {
+      adjustTimeTZ = conn.getDbSettings().getBoolProperty("timetz.adjust", true);
+    }
     useJava8Time = TimestampTZHandler.Factory.supportsJava8Time(conn);
     if (useJava8Time)
     {
@@ -58,7 +68,18 @@ class PostgresRowDataReader
   protected Object readTimeTZValue(ResultHolder rs, int column)
     throws SQLException
   {
-    return rs.getTime(column);
+    Time time = rs.getTime(column);
+    if (time == null) return time;
+
+    if (adjustTimeTZ)
+    {
+      TimeZone tz = Calendar.getInstance().getTimeZone();
+      long offset = tz.getRawOffset();
+      LocalTime lt = time.toLocalTime();
+      return lt.plus(offset, ChronoUnit.MILLIS);
+    }
+
+    return time;
   }
 
   @Override
