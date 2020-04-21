@@ -23,6 +23,7 @@
  */
 package workbench.util;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -57,12 +58,12 @@ public class DeadlockMonitor
 
       if (duration > minLogDuration)
       {
-        LogMgr.logInfo("DeadlockMonitor.run()", "Checking for deadlocks took: " + duration + "ms");
+        LogMgr.logInfo(new CallerInfo(){}, "Checking for deadlocks took: " + duration + "ms");
       }
 
       if (dump != null)
       {
-        LogMgr.logError("DeadlockMonitor.run()", "Deadlock detected:\n" + dump, null);
+        LogMgr.logError(new CallerInfo(){}, "Deadlock detected:\n" + dump, null);
       }
 
       if (keepRunning)

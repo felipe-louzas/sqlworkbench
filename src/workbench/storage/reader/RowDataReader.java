@@ -70,20 +70,21 @@ import workbench.util.StringUtil;
 /**
  * A class to read the data from a ResultSet.
  *
- * Different data types are handled correctly and different strategies for "extended" types (BLOB, CLOB XML, ...) can
- * be chosen.
- * <br/>
- * Errors during the retrieval of one row are re-thrown to be shown in the frontend. This behaviour can
+ * <p>Different data types are handled correctly and different strategies for "extended" types (BLOB, CLOB XML, ...) can
+ * be chosen.<br>
+ * If a {@link DataConverter} is available and claims to convert the data type for a column,
+ * the value obtained through {@code ResultSet.getObject()} will be passed to the converter, no specialized
+ * getter of the result set will be called in that case.
+ * </p>
+ * <p>Errors during the retrieval of one row are re-thrown to be shown in the frontend. This behaviour can
  * be disabled using the config property <tt>workbench.db.ignore.readerror</tt>.
+ * </p>
  *
  * @author Thomas Kellerer
  *
- * @see ResultInfo#treatLongVarcharAsClob()
- * @see ResultInfo#useGetBytesForBlobs()
- * @see ResultInfo#useGetStringForClobs()
- * @see ResultInfo#useGetStringForBit()
- * @see ResultInfo#useGetXML()
- * @see ResultInfo#getConvertArrays()
+ * @see PostgresRowDataReader
+ * @see OracleRowDataReader
+ * @see SqlServerRowDataReader
  */
 public class RowDataReader
 {

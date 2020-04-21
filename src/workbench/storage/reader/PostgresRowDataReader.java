@@ -26,9 +26,11 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -37,6 +39,8 @@ import workbench.db.WbConnection;
 
 import workbench.storage.ResultInfo;
 
+import static java.time.temporal.ChronoField.*;
+
 /**
  *
  * @author Thomas Kellerer
@@ -44,16 +48,37 @@ import workbench.storage.ResultInfo;
 class PostgresRowDataReader
   extends RowDataReader
 {
+  private final static int NO_ADJUST = 0;
+  private final static int ADJUST_OFFSET = 1;
+  private final static int PARSE_STRING = 2;
+
   private final boolean useJava8Time;
-  private boolean adjustTimeTZ = true;
+  private int timeTzStrategy = PARSE_STRING;
+
+  private final DateTimeFormatter timeParser = new DateTimeFormatterBuilder()
+      .parseLenient()
+      .appendValue(HOUR_OF_DAY, 2)
+      .appendLiteral(':')
+      .appendValue(MINUTE_OF_HOUR, 2)
+      .appendLiteral(':')
+      .appendValue(SECOND_OF_MINUTE, 2)
+      .appendFraction(NANO_OF_SECOND, 0, 9, true)
+      .appendOffset("+HHmm", "Z")
+      .toFormatter();
+
+  private long tzOffset = Calendar.getInstance().getTimeZone().getRawOffset();
 
   PostgresRowDataReader(ResultInfo info, WbConnection conn)
   {
     super(info, conn);
-    if (conn != null)
+
+    timeTzStrategy = getTimeTZStrategy(conn);
+    if (timeTzStrategy != NO_ADJUST)
     {
-      adjustTimeTZ = conn.getDbSettings().getBoolProperty("timetz.adjust", true);
+      LogMgr.logInfo(new CallerInfo(){}, "Adjusting timetz values to LocalTime by " +
+        (timeTzStrategy == PARSE_STRING ? "parsing the string value" : "adjusting the time zone offset"));
     }
+
     useJava8Time = TimestampTZHandler.Factory.supportsJava8Time(conn);
     if (useJava8Time)
     {
@@ -64,21 +89,56 @@ class PostgresRowDataReader
     }
   }
 
+  private int getTimeTZStrategy(WbConnection conn)
+  {
+    if (conn == null) return NO_ADJUST;
+    String type = conn.getDbSettings().getProperty("timetz.adjustment", "parse_string");
+    if (type == null) return NO_ADJUST;
+    if ("parse_string".equalsIgnoreCase(type)) return PARSE_STRING;
+    if ("adjust_offset".equalsIgnoreCase(type)) return ADJUST_OFFSET;
+    return NO_ADJUST;
+  }
+
   @Override
   protected Object readTimeTZValue(ResultHolder rs, int column)
     throws SQLException
   {
-    Time time = rs.getTime(column);
-    if (time == null) return time;
-
-    if (adjustTimeTZ)
+    if (timeTzStrategy == PARSE_STRING)
     {
-      TimeZone tz = Calendar.getInstance().getTimeZone();
-      long offset = tz.getRawOffset();
-      LocalTime lt = time.toLocalTime();
-      return lt.plus(offset, ChronoUnit.MILLIS);
+      // the String returned by getString() returns the proper time (and time zone) information.
+      // This is however slower than adjusting the time based on the current time zone (see below)
+      // But it seems more reliable that dealing with TimeZone.getRawOffset()
+      String timeStr = rs.getString(column);
+      if (timeStr == null) return null;
+
+      try
+      {
+        TemporalAccessor temp = timeParser.parse(timeStr);
+        return LocalTime.from(temp);
+      }
+      catch (Throwable ex)
+      {
+        LogMgr.logDebug(new CallerInfo(){}, "Could not parse time string: " + timeStr, ex);
+        // Apparently our parser doesn't match the string returned by the driver so don't try this again
+        timeTzStrategy = ADJUST_OFFSET;
+      }
     }
 
+    Time time = rs.getTime(column);
+    if (time == null) return null;
+
+    if (timeTzStrategy == ADJUST_OFFSET)
+    {
+      try
+      {
+        return time.toLocalTime().plus(tzOffset, ChronoUnit.MILLIS);
+      }
+      catch (Throwable th)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Could not adjust java.sql.Time to LocalTime", th);
+        timeTzStrategy = NO_ADJUST;
+      }
+    }
     return time;
   }
 

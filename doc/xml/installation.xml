@@ -95,8 +95,8 @@
     </para>
 
     <para>
-      When using Windows<superscript>&reg;</superscript>, you can either use the batch file <ltieral>sqlworkbench.cmd>/</ltieral>
-      or <literal>SQLWorkbench.exe</literal> to starts &wb-productname;.
+      When using Windows<superscript>&reg;</superscript>, you can either use the batch file <literal>sqlworkbench.cmd></literal>
+      or <literal>SQLWorkbench.exe</literal> to start &wb-productname;.
     </para>
     <para>
       Details on using the Windows<superscript>&reg;</superscript> launcher can be found

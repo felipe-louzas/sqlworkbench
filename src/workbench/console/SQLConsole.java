@@ -30,12 +30,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
-
 import workbench.AppArguments;
 import workbench.RunMode;
 import workbench.WbManager;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
@@ -44,15 +45,11 @@ import workbench.db.WbConnection;
 import workbench.gui.WindowTitleBuilder;
 import workbench.gui.profiles.ProfileKey;
 
-import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
-
 import workbench.sql.BatchRunner;
 import workbench.sql.CommandRegistry;
 import workbench.sql.OutputPrinter;
-import workbench.sql.annotations.RefreshAnnotation;
 import workbench.sql.StatementHistory;
+import workbench.sql.annotations.RefreshAnnotation;
 import workbench.sql.macros.MacroManager;
 import workbench.sql.wbcommands.CommandTester;
 import workbench.sql.wbcommands.WbConnInfo;
@@ -75,6 +72,9 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbThread;
+
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 /**
  * A simple console interface for SQL Workbench/J
@@ -239,7 +239,7 @@ public class SQLConsole
           catch (Throwable th)
           {
             System.err.println(ExceptionUtil.getDisplay(th));
-            LogMgr.logError("SQLConsole.main()", "Error running statement", th);
+            LogMgr.logError(new CallerInfo(){}, "Error running statement", th);
           }
           finally
           {
@@ -336,7 +336,7 @@ public class SQLConsole
 
   private void showStartupMessage(AppArguments cmdLine)
   {
-    LogMgr.logInfo("SQLConsole.main()", "SQL Workbench/J Console interface started");
+    LogMgr.logInfo(new CallerInfo(){}, "SQL Workbench/J Console interface started");
     System.out.println(ResourceMgr.getFormattedString("MsgConsoleStarted", ResourceMgr.getBuildNumber().toString()));
     WbFile f = new WbFile(Settings.getInstance().getConfigDir());
     System.out.println(ResourceMgr.getFormattedString("MsgConfigDir", f.getFullPath()));
@@ -525,7 +525,7 @@ public class SQLConsole
   {
     history.clear();
     WbFile histFile = getHistoryFile();
-    LogMgr.logDebug("SQLConsole.loadHistory()", "Loading history file: " + histFile.getFullPath());
+    LogMgr.logDebug(new CallerInfo(){}, "Loading history file: " + histFile.getFullPath());
     history.readFrom(histFile);
     WbConsole console = WbConsoleFactory.getConsole();
     console.clearHistory();
@@ -552,7 +552,7 @@ public class SQLConsole
   private void adjustHistoryDisplay(BatchRunner runner)
   {
     int columns = WbConsoleFactory.getConsole().getColumns();
-    LogMgr.logDebug("SQLConsole.adjustHistoryDisplay()", "Console width: " + columns);
+    LogMgr.logDebug(new CallerInfo(){}, "Console width: " + columns);
     if (columns < 0)
     {
       columns = Settings.getInstance().getIntProperty("workbench.console.history.displaylength", 100);
@@ -663,7 +663,7 @@ public class SQLConsole
     {
       try
       {
-        LogMgr.logInfo("SQLConsole.cancelStatement()", "Trying to forcefully abort current statement");
+        LogMgr.logInfo(new CallerInfo(){}, "Trying to forcefully abort current statement");
         printMessage(ResourceMgr.getString("MsgAbortStmt"));
         cancelThread.interrupt();
         cancelThread.stop();
@@ -674,7 +674,7 @@ public class SQLConsole
       }
       catch (Exception ex)
       {
-        LogMgr.logWarning("SQLConsole.cancelStatement()", "Could not cancel statement", ex);
+        LogMgr.logWarning(new CallerInfo(){}, "Could not cancel statement", ex);
       }
       finally
       {
@@ -696,7 +696,7 @@ public class SQLConsole
         @Override
         public void run()
         {
-          LogMgr.logInfo("SQLConsole.cancelStatement()", "Trying to cancel the current statement");
+          LogMgr.logInfo(new CallerInfo(){}, "Trying to cancel the current statement");
           printMessage(ResourceMgr.getString("MsgCancellingStmt"));
           runner.cancel();
         }
@@ -710,7 +710,7 @@ public class SQLConsole
       catch (Exception ex)
       {
         printMessage(ResourceMgr.getString("MsgAbortStmt"));
-        LogMgr.logWarning("SQLConsole.cancelStatement()", "Could not cancel statement. Trying to forcefully abort the statemnt", ex);
+        LogMgr.logWarning(new CallerInfo(){}, "Could not cancel statement. Trying to forcefully abort the statemnt", ex);
         abortStatement();
       }
       cancelThread = null;
@@ -719,14 +719,14 @@ public class SQLConsole
 
   public void exit()
   {
-    LogMgr.logWarning("SQLConsole.shutdownHook()", "SQL Workbench/J process has been interrupted.");
+    LogMgr.logWarning(new CallerInfo(){}, "SQL Workbench/J process has been interrupted.");
 
     cancelStatement();
 
     boolean exitImmediately = Settings.getInstance().getBoolProperty("workbench.exitonbreak", true);
     if (exitImmediately)
     {
-      LogMgr.logWarning("SQLConsole.shutdownHook()", "Aborting process...");
+      LogMgr.logWarning(new CallerInfo(){}, "Aborting process...");
       LogMgr.shutdown();
       Runtime.getRuntime().halt(15); // exit() doesn't work properly from inside a shutdownhook!
     }
@@ -756,11 +756,11 @@ public class SQLConsole
       {
         Signal signal = new Signal(name.toUpperCase());
         Signal.handle(signal, this);
-        LogMgr.logInfo("SQLConsole.installSignalHandler()", "Installed signal handler for " + name);
+        LogMgr.logInfo(new CallerInfo(){}, "Installed signal handler for " + name);
       }
       catch (Throwable th)
       {
-        LogMgr.logInfo("SQLConsole.installSignalHandler()", "could not register signal handler for: " + name, th);
+        LogMgr.logInfo(new CallerInfo(){}, "could not register signal handler for: " + name, th);
       }
     }
   }
@@ -768,7 +768,7 @@ public class SQLConsole
   @Override
   public void handle(Signal signal)
   {
-    LogMgr.logDebug("SQLConsole.handl()", "Received signal: " + signal.getName());
+    LogMgr.logDebug(new CallerInfo(){}, "Received signal: " + signal.getName());
     if (signal.getName().equals("INT"))
     {
       cancelStatement();
