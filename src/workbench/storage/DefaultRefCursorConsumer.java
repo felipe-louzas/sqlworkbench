@@ -80,7 +80,11 @@ public class DefaultRefCursorConsumer
 
     if (name == null)
     {
-      name = "[" + ResourceMgr.getString("LblTabResult") + " " + getResults().size() + "]";
+      name = "[" + ResourceMgr.getString("LblTabResult") + " " + (refCursorData.size() + 1) + "]";
+    }
+    else
+    {
+      name += " [" + (refCursorData.size() + 1) + "]";
     }
 
     ResultSet refCursor = null;

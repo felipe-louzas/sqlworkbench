@@ -115,6 +115,8 @@ public class ClasspathUtil
     {
       return true;
     }
+    // this is essentially a file created with new File("ext")
+    if (EXT_DIR.equals(jarfile.getName()) && jarfile.getParent() == null) return true;
 
     if (jarfile.isAbsolute())
     {

@@ -275,10 +275,29 @@ public class DbDriver
     }
   }
 
-  public List<String> getLibraryList()
+  public List<String> getRealLibraryList()
   {
     if (CollectionUtil.isEmpty(this.libraryList)) return Collections.emptyList();
     return Collections.unmodifiableList(libraryList);
+  }
+
+  public List<String> getLibraryList()
+  {
+    if (CollectionUtil.isEmpty(this.libraryList)) return Collections.emptyList();
+    List<String> result = new ArrayList<>(this.libraryList.size());
+    ClasspathUtil cp = new ClasspathUtil();
+    for (String entry : libraryList)
+    {
+      if (entry.endsWith(ClasspathUtil.EXT_DIR))
+      {
+        result.add(ClasspathUtil.EXT_DIR);
+      }
+      else
+      {
+        result.add(entry);
+      }
+    }
+    return result;
   }
 
   public static List<String> splitLibraryList(String libList)
@@ -321,7 +340,11 @@ public class DbDriver
       for (String lib : libraryList)
       {
         String realLib = Settings.getInstance().replaceLibDirKey(lib);
+        if (ClasspathUtil.EXT_DIR.equals(realLib)) return true;
+
         File f = new File(realLib);
+        if (f.equals(extDir)) return true;
+
         if (f.getParentFile() == null)
         {
           f = new File(Settings.getInstance().getLibDir(), realLib);
@@ -369,6 +392,7 @@ public class DbDriver
     for (String fname : libraryList)
     {
       if (fname.contains(Settings.LIB_DIR_KEY)) return false;
+      if (fname.equals(ClasspathUtil.EXT_DIR)) return true;
       File f = new File(fname);
       if (f.getParentFile() == null || f.isAbsolute())
       {
