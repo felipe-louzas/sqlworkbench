@@ -180,9 +180,6 @@
         <void property="schemaField">
           <string>owner</string>
         </void>
-        <void property="useUpperCase">
-          <boolean>true</boolean>
-        </void>
       </object>
     </void>
 
