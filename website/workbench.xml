@@ -636,23 +636,12 @@ WHERE id=42;</p>
 
   <page link="wb_news.xml" title="RSS Feed"/>
 
-  <page name="source-svn" title="Subversion Repository" toc="small">
+  <page name="source-repos" title="Git Repository" toc="small">
     <title>SQL Workbench/J</title>
     <subtitle>Access to the source code</subtitle>
     <content>
       <p>
-        In addition to the source archive from a release, the source code is
-        hosted on a public subversion repository kindly sponsored  by <a href="http://www.mgm-tp.com">mgm technology partners</a>.
-      </p>
-      <p>
-        The repository is located at <a href="http://sqlworkbench.mgm-tp.com">http://sqlworkbench.mgm-tp.com</a> and
-        can be accessed through a web-browser or by checking it out with svn.
-      </p>
-      <p>
-        To read or checkout the sources you don't need a username.
-      </p>
-      <p>
-        To check out the source use the URL: <tt style="white-space:nowrap;">http://sqlworkbench.mgm-tp.com/sqlworkbench/trunk/sqlworkbench</tt>
+        The public Git repository is located at <a href="https://codeberg.org/sql-workbench/workbench">Codeberg</a>
       </p>
     </content>
   </page>
