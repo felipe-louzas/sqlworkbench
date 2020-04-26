@@ -27,6 +27,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.text.BadLocationException;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.editor.JEditTextArea;
@@ -66,8 +68,13 @@ public class DuplicateCurrentLine
     }
     else
     {
-      dupeText = textArea.getLineText(currentLine) + Settings.getInstance().getInternalEditorLineEnding();
+      String le = Settings.getInstance().getInternalEditorLineEnding();
+      dupeText = textArea.getLineText(currentLine) + le;
       insertPoint = textArea.getLineEndOffset(currentLine);
+      if (currentLine == textArea.getLineCount())
+      {
+        insertPoint += le.length();
+      }
     }
 
     try
@@ -76,7 +83,7 @@ public class DuplicateCurrentLine
     }
     catch (BadLocationException bl)
     {
-      bl.printStackTrace();
+      LogMgr.logError(new CallerInfo(){}, "Could not duplicate line", bl);
     }
 
     if (wasSelected)
