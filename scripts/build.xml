@@ -2,13 +2,10 @@
 <project basedir="." default="make-dev-jar" name="Workbench">
 
   <property name="root" value=".."/>
-  <property name="doc" value="../doc"/>
-  <property name="pdfwork" value="../build/pdfwork"/>
   <property name="src" value="../src"/>
   <property name="testsrc" value="../test"/>
   <property name="unittest" value="../test/junit"/>
   <property name="dbtest" value="../test/dbtest"/>
-  <property name="csrc" value="../launcher"/>
   <property name="junitdir" value="../build/junit"/>
   <property name="junitlibs" value="../libs/junit"/>
   <property name="scriptsrc" value="."/>
@@ -20,21 +17,7 @@
   <property name="javadocdir" value="../javadoc"/>
   <property name="srczipname" value="WorkbenchSrc.zip"/>
   <property name="srczip" value="${root}/${srczipname}"/>
-  <property name="doczip" value="${root}/release/html-manual.zip"/>
-  <property name="html-stylesheet" value="html-publish.css"/>
-  <property name="html-outdir" value="${distdir}/manual"/>
-  <property name="html-resource-dir" value="./images"/>
   <property name="target.version" value="1.8"/>
-
-  <!-- location of the docbook installation and the FOP installation -->
-  <property name="docbook.root" value="../etc/docbook"/>
-  <property name="docbook.dtd" value="../etc/dtd"/>
-  <property name="fop.root" value="../etc/fop"/>
-
-  <property name="coverage.report.dir" value="${junitdir}/coverage" />
-  <property name="instrumented.dir" value="${root}/build/instrumented" />
-
-  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="xmltask-v1.16.jar"/>
 
   <target name="init">
     <tstamp>
@@ -44,19 +27,6 @@
       <format pattern="yyyy-MM-dd HH:mm" property="build_timestamp"/>
     </tstamp>
   </target>
-
-  <path id="xalan.path">
-    <fileset dir="${fop.root}/lib">
-      <include name="*.jar"/>
-    </fileset>
-  </path>
-
-  <path id="fop.path">
-    <fileset dir="${fop.root}/lib">
-      <include name="**/*.jar"/>
-    </fileset>
-    <pathelement location="${fop.root}/build/fop.jar"/>
-  </path>
 
   <target name="set-build-number" depends="prepare">
     <buildnumber file="build.number"/>
@@ -95,7 +65,6 @@
   </target>
 
   <target name="clean">
-    <delete dir="${html-outdir}" failonerror="false"/>
     <delete dir="${build}" failonerror="false"/>
     <delete dir="${instrumented.dir}" failonerror="false"/>
     <delete dir="${build.test}"/>
@@ -110,7 +79,6 @@
   </target>
 
   <target name="clean-junit">
-    <delete dir="${coverage.report.dir}" failonerror="false"/>
     <delete failonerror="false">
       <fileset dir="${junitdir}">
         <include name="**/*.txt"/>
@@ -120,11 +88,8 @@
   </target>
 
   <target name="prepare" depends="init">
-    <mkdir dir="${pdfwork}"/>
     <mkdir dir="${build}"/>
     <mkdir dir="${distdir}"/>
-    <mkdir dir="${html-outdir}"/>
-    <mkdir dir="${html-outdir}/images"/>
   </target>
 
   <target name="copy-resources" depends="init">
@@ -193,285 +158,6 @@
 
   </target>
 
-  <!-- Manual related tasks -->
-
-  <!-- Create the FO file which will in turn be transformed
-       into the PDF manual by the target "pdf" -->
-  <target name="fop" depends="init, docbook-history">
-
-    <!-- fop seems to require absolute pathnames... -->
-    <dirname property="admondir" file="${docbook.root}/images/note.svg"/>
-    <dirname property="imgdir" file="${src}/workbench/resource/images/filter16.png"/>
-
-    <copy overwrite="true" todir="${pdfwork}">
-      <fileset dir="${doc}/xml">
-        <include name="*.xml"/>
-      </fileset>
-
-      <filterset begintoken="@" endtoken="@">
-        <filter token="BUILD_NUMBER" value="${build.number}"/>
-        <filter token="IMAGE_DIR" value="${imgdir}"/>
-      </filterset>
-    </copy>
-
-    <copy file="docbook-history.xml" todir="${pdfwork}"/>
-
-    <xslt classpathref="xalan.path"
-          in="${pdfwork}/Manual.xml"
-          out="${pdfwork}/manual.fo"
-          style="${doc}/xsl/workbench-pdf.xsl">
-      <xmlcatalog>
-        <dtd publicId="-//OASIS//DTD DocBook XML V4.5//EN"
-             location="${docbook.dtd}/docbookx.dtd"/>
-      </xmlcatalog>
-      <param name="text-indent" expression="0.2cm"/>
-      <param name="paper.type" expression="A4"/>
-      <param name="page.margin.bottom" expression="2cm"/>
-      <param name="page.margin.top" expression="1.5cm"/>
-      <param name="page.margin.outer" expression="2cm"/>
-      <param name="page.margin.inner" expression="2cm"/>
-      <param name="generate.section.toc.level" expression="3"/>
-      <param name="default.image.width" expression="16"/>
-      <param name="ignore.image.scaling" expression="0"/>
-      <param name="admon.graphics" expression="1"/>
-      <param name="admon.graphics.path" expression="${admondir}/"/>
-      <param name="admon.graphics.extension" expression=".svg"/>
-      <param name="admon.graphic.width" expression="0"/>
-      <param name="admon.textlabel" expression="0"/>
-      <param name="body.font.master" expression="10"/>
-      <param name="toc.indent.width" expression="24"/>
-      <param name="toc.max.depth" expression="3"/>
-      <param name="toc.section.depth" expression="2"/>
-      <param name="title.margin.left" expression="0pt"/>
-      <param name="body.start.indent" expression="0pt"/>
-      <param name="section.autolabel" expression="1"/>
-      <param name="section.autolabel.max.depth" expression="3"/>
-      <param name="alignment" expression="left"/>
-      <param name="fop1.extensions" expression="1"/>
-      <param name="use.extensions" expression="1"/>
-      <param name="tablecolumns.extension" expression="0"/>
-      <param name="menuchoice.separator" expression=" &#187; "/>
-      <param name="menuchoice.menu.separator" expression=" &#187; "/>
-      <param name="ulink.show" expression="0"/>
-      <param name="ulink.footnotes" expression="0"/>
-      <param name="insert.link.page.number" expression="no"/>
-      <param name="insert.olink.page.number" expression="no"/>
-
-      <param name="generate.index" expression="1"/>
-      <param name="index.prefer.titleabbrev" expression="1"/>
-      <param name="column.count.index" expression="2"/>
-      <param name="use.svg" expression="1"/>
-
-      <!-- <param name="axf.extensions" expression="1"/> -->
-    </xslt>
-
-  </target>
-
-  <!-- Create the pdf version of the manual -->
-  <target name="pdf" depends="fop">
-    <property name="inputFile" location="${pdfwork}/manual.fo"/>
-    <property name="outputFile" location="${distdir}/SQLWorkbench-Manual.pdf"/>
-
-    <java failonerror="true"
-          maxmemory="512m"
-          fork="true"
-          dir="${fop.root}" classname="org.apache.fop.cli.Main" classpathref="fop.path">
-      <arg line="-q -fo ${inputFile} -pdf ${outputFile}"/>
-      <sysproperty key="org.apache.fop.level" value="SEVERE"/>
-    </java>
-  </target>
-
-  <target name="publish" depends="build-html"/>
-
-  <target name="publish-dev" depends="get-dev-build, set-dev-prop, publish"/>
-
-  <target name="publish-single" depends="get-dev-build, single-html, post-html"/>
-
-  <target name="prepare-html" depends="prepare, docbook-history">
-
-    <copy todir="${html-outdir}/${html-resource-dir}" flatten="true">
-      <fileset dir="${src}/workbench/resource/images">
-        <include name="colfilter16.png"/>
-        <include name="execute_sel16.png"/>
-        <include name="delete16.png"/>
-        <include name="filter16.png"/>
-        <include name="new-profile16.png"/>
-        <include name="append_result16.png"/>
-        <include name="folder_new16.png"/>
-        <include name="copy-profile16.png"/>
-        <include name="open16.png"/>
-      </fileset>
-      <fileset dir="${docbook.root}/images">
-        <include name="note.png"/>
-        <include name="caution.png"/>
-        <include name="important.png"/>
-        <include name="note.svg"/>
-        <include name="caution.svg"/>
-        <include name="important.svg"/>
-      </fileset>
-    </copy>
-
-    <echo message="Generating HTML in ${html-outdir}"/>
-
-    <copy overwrite="true" todir="${html-outdir}">
-      <fileset dir="${doc}/xml">
-        <include name="*.xml"/>
-      </fileset>
-
-      <filterset begintoken="@" endtoken="@">
-        <filter token="build_timestamp" value="${build_timestamp}"/>
-        <filter token="BUILD_NUMBER" value="${build.number}"/>
-        <filter token="IMAGE_DIR" value="${html-resource-dir}"/>
-      </filterset>
-    </copy>
-
-    <copy file="docbook-history.xml" todir="${html-outdir}"/>
-
-  </target>
-
-  <target name="docbook-history" depends="set-history-build-date">
-    <xslt in="history.xml"
-          out="docbook-history.xml"
-          includes="history.xml"
-          style="history2docbook.xslt">
-    </xslt>
-  </target>
-
-  <target name="html-history" depends="set-history-build-date">
-    <xslt in="history.xml"
-          out="history.html"
-          style="history2html.xslt">
-    </xslt>
-  </target>
-
-  <target name="build-html" depends="prepare-html">
-    <antcall target="chunk-html"/>
-    <antcall target="post-html"/>
-  </target>
-
-  <target name="chunk-html">
-
-    <xslt classpathref="xalan.path"
-          basedir="${html-outdir}"
-          includes="Manual.xml"
-          style="${docbook.root}/html/chunkfast.xsl"
-          destdir="${html-outdir}">
-
-      <xmlcatalog>
-        <dtd publicId="-//OASIS//DTD DocBook XML V4.5//EN" location="${docbook.dtd}/docbookx.dtd"/>
-      </xmlcatalog>
-
-      <param name="use.extensions" expression="0"/>
-      <param name="textinsert.extension" expression="1"/>
-      <param name="root.filename" expression="workbench-manual"/>
-      <param name="html.stylesheet" expression="${html-stylesheet}"/>
-      <param name="html.extra.head.links" expression="1"/>
-      <param name="admon.graphics.path" expression="${html-resource-dir}/"/>
-      <param name="admon.graphics.extension" expression=".png"/>
-      <param name="admon.graphics" expression="1"/>
-      <param name="admon.textlabel" expression="0"/>
-      <param name="ulink.target" expression="_blank"/>
-
-      <param name="generate.index" expression="1"/>
-      <param name="index.prefer.titleabbrev" expression="1"/>
-
-      <param name="index.method" expression="'default'"/>
-      <param name="chunk.tocs.and.lots" expression="0"/>
-      <param name="chunk.tocs.and.lots.has.title" expression="1"/>
-      <param name="chunk.fast" expression="1"/>
-      <param name="generate.id.attributes" expression="1"/>
-      <param name="chunk.quietly" expression="1"/>
-      <param name="chunk.first.sections" expression="1"/>
-      <param name="chunker.output.indent" expression="no"/>
-      <param name="use.id.as.filename" expression="1"/>
-      <param name="section.autolabel" expression="1"/>
-      <param name="chunker.output.indent" expression="yes"/>
-      <param name="generate.section.toc.level" expression="1"/>
-      <param name="toc.max.depth" expression="3"/>
-      <param name="toc.section.depth" expression="2"/>
-
-      <param name="table.borders.with.css" expression="1"/>
-      <param name="table.cell.border.style" expression="solid"/>
-      <param name="table.cell.border.thickness" expression="1px"/>
-      <param name="table.frame.border.style" expression="solid"/>
-      <param name="table.frame.border.thickness" expression="1px"/>
-      <param name="make.valid.html" expression="1"/>
-      <param name="html.cleanup" expression="1"/>
-      <param name="navig.showtitles" expression="1"/>
-      <param name="css.decoration" expression="1"/>
-      <param name="use.svg" expression="1"/>
-    </xslt>
-
-    <delete>
-      <fileset dir="${html-outdir}">
-        <include name="Manual.html"/>
-      </fileset>
-    </delete>
-
-  </target>
-
-  <target name="single-html" depends="prepare-html">
-    <antcall target="prepare-html"/>
-
-    <dirname property="docdir" file="${docbook.root}/images/note.png"/>
-
-    <xslt classpathref="xalan.path"
-          in="${html-outdir}/Manual.xml"
-          out="${html-outdir}/workbench-manual-single.html"
-          style="${docbook.root}/html/docbook.xsl">
-
-      <xmlcatalog>
-        <dtd publicId="-//OASIS//DTD DocBook XML V4.5//EN" location="${docbook.dtd}/docbookx.dtd"/>
-      </xmlcatalog>
-
-      <param name="use.extensions" expression="0"/>
-      <param name="textinsert.extension" expression="1"/>
-      <param name="html.stylesheet" expression="${html-stylesheet}"/>
-      <param name="admon.graphics.path" expression="${docdir}/"/>
-      <param name="admon.graphics.extension" expression=".gif"/>
-      <param name="admon.graphics" expression="1"/>
-      <param name="admon.textlabel" expression="0"/>
-      <param name="generate.index" expression="0"/>
-      <param name="index.method" expression="'default'"/>
-      <param name="generate.id.attributes" expression="1"/>
-      <param name="use.id.as.filename" expression="1"/>
-      <param name="section.autolabel" expression="1"/>
-      <param name="ulink.target" expression="_blank"/>
-
-      <param name="generate.section.toc.level" expression="1"/>
-      <param name="toc.max.depth" expression="3"/>
-      <param name="toc.section.depth" expression="2"/>
-
-      <param name="table.borders.with.css" expression="1"/>
-      <param name="table.cell.border.style" expression="solid"/>
-      <param name="table.cell.border.thickness" expression="1px"/>
-      <param name="table.frame.border.style" expression="solid"/>
-      <param name="table.frame.border.thickness" expression="1px"/>
-      <param name="make.valid.html" expression="1"/>
-      <param name="html.cleanup" expression="1"/>
-      <param name="navig.showtitles" expression="1"/>
-      <param name="css.decoration" expression="1"/>
-      <param name="use.svg" expression="1"/>
-    </xslt>
-  </target>
-
-  <target name="post-html">
-    <delete>
-      <fileset dir="${html-outdir}">
-        <include name="*.xml"/>
-      </fileset>
-    </delete>
-
-    <copy overwrite="true" todir="${html-outdir}" file="${doc}/css/${html-stylesheet}"/>
-
-    <replace dir="${html-outdir}" summary="true">
-      <replacetoken><![CDATA[href="mailto:support@sql-workbench.eu">support@sql-workbench.eu</a>]]></replacetoken>
-      <replacevalue><![CDATA[href=mailto:&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#115;&#113;&#108;&#45;&#119;&#111;&#114;&#107;&#98;&#101;&#110;&#99;&#104;&#46;&#110;&#101;&#116;>&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#115;&#113;&#108;&#45;&#119;&#111;&#114;&#107;&#98;&#101;&#110;&#99;&#104;&#46;&#110;&#101;&#116;</a>]]></replacevalue>
-    </replace>
-
-  </target>
-
-
   <target name="-make-jar" depends="prepare,compile">
 
     <jar compress="true" level="9" jarfile="${distdir}/${jarfile}">
@@ -515,12 +201,13 @@
     <delete file="${srczip}"/>
 
     <zip zipfile="${srczip}">
+      
       <zipfileset dir="${src}" prefix="src">
         <include name="**/*.*"/>
         <exclude name="**/*.class"/>
         <exclude name="**/*.java~"/>
         <exclude name="**/workbench.settings"/>
-        <exclude name="**/.svn/**"/>
+        <exclude name="**/.git/**"/>
         <exclude name="**/.nb*"/>
         <exclude name="**/tags"/>
         <exclude name="**/Test/*"/>
@@ -542,16 +229,11 @@
         <exclude name="**/.nb*"/>
       </zipfileset>
 
-      <zipfileset dir="${doc}" prefix="doc">
+      <zipfileset dir="../../manual" prefix="doc">
         <include name="**/*.*"/>
-        <exclude name="**/.nb*"/>
-        <exclude name="html/**/*.*"/>
-        <exclude name="openoffice/**/*.*"/>
-        <exclude name="documentation.project"/>
-        <exclude name="*docbook*/**"/>
-        <exclude name="manual/**/*.*"/>
-        <exclude name="**/*pdf*/*.*"/>
-        <exclude name="dtd/**/*.*"/>
+        <exclude name=".gitignore"/>
+        <exclude name="./dist/**"/>
+        <exclude name="./build/**"/>
       </zipfileset>
 
       <zipfileset dir="../website" prefix="website">
