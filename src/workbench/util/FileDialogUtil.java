@@ -33,6 +33,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -183,7 +184,7 @@ public class FileDialogUtil
     }
     catch (Throwable e)
     {
-      LogMgr.logError("FileDialogUtil.getBlobFile()", "Error selecting file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
       return null;
     }
@@ -245,7 +246,7 @@ public class FileDialogUtil
     }
     catch (Throwable e)
     {
-      LogMgr.logError("FileDialogUtil.getWorkspaceFilename()", "Error selecting file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
       return null;
     }
@@ -352,7 +353,7 @@ public class FileDialogUtil
     }
     catch (Throwable e)
     {
-      LogMgr.logError("FileDialogUtil.selectPkMapFile()", "Error selecting file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
       return null;
     }

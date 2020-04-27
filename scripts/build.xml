@@ -16,7 +16,7 @@
   <property name="jarfile" value="sqlworkbench.jar"/>
   <property name="javadocdir" value="../javadoc"/>
   <property name="srczipname" value="WorkbenchSrc.zip"/>
-  <property name="srczip" value="${root}/${srczipname}"/>
+  <property name="srczip" value="${root}/../${srczipname}"/>
   <property name="target.version" value="1.8"/>
 
   <target name="init">
@@ -124,14 +124,14 @@
 
   <target name="compile" depends="prepare">
 
-    <!-- compile the starter class with target=1.2 so that it can be loaded by
+    <!-- compile the starter class with target=1.6 so that it can be loaded by
          older JVMs as well and is able to display the error message -->
     <javac debug="on"
            debuglevel="source,lines"
            destdir="${build}"
            srcdir="${src}"
-           target="1.4"
-           source="1.4"
+           target="1.6"
+           source="1.6"
            encoding="ISO-8859-1"
            includeantruntime="false"
            includes="workbench/WbStarter.java"/>
@@ -201,8 +201,8 @@
     <delete file="${srczip}"/>
 
     <zip zipfile="${srczip}">
-      
-      <zipfileset dir="${src}" prefix="src">
+
+      <zipfileset dir="${src}" prefix="workbench/src">
         <include name="**/*.*"/>
         <exclude name="**/*.class"/>
         <exclude name="**/*.java~"/>
@@ -214,7 +214,7 @@
         <exclude name="**/*.tws"/>
       </zipfileset>
 
-      <zipfileset dir="${scriptsrc}" prefix="scripts">
+      <zipfileset dir="${scriptsrc}" prefix="workbench/scripts">
         <exclude name="**/.nb*"/>
         <exclude name="**/.new"/>
         <exclude name="**/*test*"/>
@@ -225,28 +225,28 @@
         <exclude name="docbook-history.xml"/>
       </zipfileset>
 
-      <zipfileset dir="${testsrc}" prefix="test">
+      <zipfileset dir="${testsrc}" prefix="workbench/test">
         <exclude name="**/.nb*"/>
       </zipfileset>
 
-      <zipfileset dir="../../manual" prefix="doc">
+      <zipfileset dir="../../manual" prefix="manual">
         <include name="**/*.*"/>
         <exclude name=".gitignore"/>
         <exclude name="./dist/**"/>
         <exclude name="./build/**"/>
       </zipfileset>
 
-      <zipfileset dir="../website" prefix="website">
+      <zipfileset dir="../website" prefix="workbench/website">
         <include name="**/*.*"/>
         <exclude name="*.html"/>
         <exclude name="test*.*"/>
         <exclude name="*.jar"/>
         <exclude name="*.png"/>
       </zipfileset>
-      <zipfileset dir="../xslt" prefix="xslt">
+      <zipfileset dir="../xslt" prefix="workbench/xslt">
         <include name="**/*.*"/>
       </zipfileset>
-      <zipfileset dir="../launcher" prefix="launcher">
+      <zipfileset dir="../../launcher" prefix="launcher">
         <include name="**/*.*"/>
         <exclude name="*.exe"/>
         <exclude name="*.cmd"/>
@@ -254,8 +254,16 @@
     </zip>
   </target>
 
+  <target name="make-release-manual">
+    <ant antfile="../../manual/build.xml" inheritall="false" target="publish,publish-single,pdf"/>
+  </target>
+
+  <target name="make-dev-manual">
+    <ant antfile="../../manual/build.xml" inheritall="false" target="publish-dev,publish-dev-single,pdf"/>
+  </target>
+
   <!-- build a full release -->
-  <target name="release" depends="generate-lexer, clean, compile, test, set-build-number, set-history-release-number, set-history-build-date, -make-jar, pdf, publish, publish-single, release-src-zip, release-package, -make-sha1">
+  <target name="release" depends="generate-lexer, clean, compile, test, set-build-number, set-history-release-number, set-history-build-date, make-release-manual, -make-jar, release-src-zip, release-package, -make-sha1">
     <tstamp>
       <format pattern="yyyy-MM-dd" property="today"/>
     </tstamp>
@@ -292,7 +300,7 @@
   <target name="make-dev-jar" depends="set-dev-prop, clean, copy-resources, compile, test, get-dev-build, replace-build-number, -make-jar"/>
 
   <!-- build a development release -->
-  <target name="dev-release" depends="clean, compile, test, set-dev-build, set-history-build-date, -make-jar, pdf, publish, publish-single, release-package, release-src-zip, -make-sha1">
+  <target name="dev-release" depends="clean, compile, test, set-dev-build, set-history-build-date, make-dev-manual, -make-jar, release-package, release-src-zip, -make-sha1">
     <tstamp>
       <format pattern="yyyy-MM-dd" property="today"/>
     </tstamp>
@@ -320,7 +328,7 @@
     <ant antfile="../website/build.xml" inheritall="false" target="release"/>
   </target>
 
-  <target name="release-package" depends="fixshellscripts,html-history">
+  <target name="release-package" depends="fixshellscripts">
 
     <zip zipfile="${distdir}/Workbench-Build${build.number}.zip">
       <zipfileset dir="${distdir}">
@@ -481,7 +489,7 @@
       </zipfileset>
     </zip>
   </target>
-  
+
   <target name="generate-lexer">
 
     <copy quiet="true" overwrite="true"

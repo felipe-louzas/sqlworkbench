@@ -138,14 +138,7 @@ public class DataColorOptions
     if (blend < 0 || blend > 256)
     {
       WbSwingUtilities.showErrorMessage(this, ResourceMgr.getString("TxtError"), errMsg);
-      EventQueue.invokeLater(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          field.requestFocusInWindow();
-        }
-      });
+      EventQueue.invokeLater(field::requestFocusInWindow);
       return false;
     }
     return true;

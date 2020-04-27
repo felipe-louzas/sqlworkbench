@@ -48,9 +48,9 @@ import static java.time.temporal.ChronoField.*;
 class PostgresRowDataReader
   extends RowDataReader
 {
-  private final static int NO_ADJUST = 0;
-  private final static int ADJUST_OFFSET = 1;
-  private final static int PARSE_STRING = 2;
+  private static final int NO_ADJUST = 0;
+  private static final int ADJUST_OFFSET = 1;
+  private static final int PARSE_STRING = 2;
 
   private final boolean useJava8Time;
   private int timeTzStrategy = PARSE_STRING;
