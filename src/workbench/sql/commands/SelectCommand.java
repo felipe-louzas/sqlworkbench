@@ -66,7 +66,7 @@ public class SelectCommand
   {
     this.isCancelled = false;
 
-    final StatementRunnerResult result = new StatementRunnerResult(sql, messageLogger);
+    final StatementRunnerResult result = createResult(sql);
     final CallerInfo ci = new CallerInfo(){};
 
     try

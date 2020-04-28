@@ -107,6 +107,7 @@ public class StatementRunner
   private int maxRows = -1;
   private int queryTimeout = -1;
   private boolean showDataLoadingProgress = true;
+  private boolean useMessageLoggerForResult = true;
 
   private final Map<String, String> sessionAttributes = new HashMap<>();
   private final CrossTabAnnotation crossTab = new CrossTabAnnotation();
@@ -218,6 +219,12 @@ public class StatementRunner
     String value = sessionAttributes.get(name);
     return StringUtil.stringToBool(value);
   }
+
+  public void setUseMessageLoggerForResult(boolean flag)
+  {
+    this.useMessageLoggerForResult = flag;
+  }
+
 
   @Override
   public void propertyChange(PropertyChangeEvent evt)
@@ -476,6 +483,7 @@ public class StatementRunner
     this.currentCommand.setStatementRunner(this);
     this.currentCommand.setRowMonitor(this.rowMonitor);
     this.currentCommand.setMessageLogger(this.resultLogger);
+    this.currentCommand.setUseMessageLoggerForResults(this.useMessageLoggerForResult);
     if (currentConsumer != null && currentConsumer.ignoreMaxRows())
     {
       this.currentCommand.setMaxRows(0);

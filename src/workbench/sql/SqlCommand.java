@@ -23,7 +23,6 @@
  */
 package workbench.sql;
 
-
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -72,7 +71,6 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
-
 /**
  * A single SQL command.
  *
@@ -102,6 +100,7 @@ public class SqlCommand
   protected boolean includeStatementInError;
   protected boolean showDataLoading = true;
   protected boolean alwaysBufferResults;
+  protected boolean useMessageLoggerForResults = true;
 
   public void setRowMonitor(RowActionMonitor monitor)
   {
@@ -117,6 +116,26 @@ public class SqlCommand
   {
     return this.cmdLine;
   }
+
+  public void setUseMessageLoggerForResults(boolean flag)
+  {
+    this.useMessageLoggerForResults = flag;
+  }
+
+  protected StatementRunnerResult createResult()
+  {
+    return createResult(null);
+  }
+
+  protected StatementRunnerResult createResult(String sql)
+  {
+    if (useMessageLoggerForResults)
+    {
+      return new StatementRunnerResult(sql, messageLogger);
+    }
+    return new StatementRunnerResult(sql);
+  }
+
 
   public void setErrorReportLevel(ErrorReportLevel level)
   {
@@ -562,7 +581,7 @@ public class SqlCommand
   public StatementRunnerResult execute(String sql)
     throws SQLException, Exception
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql, messageLogger);
+    StatementRunnerResult result = createResult(sql);
 
     this.currentStatement = this.currentConnection.createStatement();
     this.isCancelled = false;

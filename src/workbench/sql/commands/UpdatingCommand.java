@@ -86,7 +86,7 @@ public class UpdatingCommand
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql);
+    StatementRunnerResult result = createResult(sql);
     LobFileStatement lob = null;
 
     result.ignoreUpdateCounts(currentConnection.getDbSettings().verbsWithoutUpdateCount().contains(verb));

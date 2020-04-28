@@ -145,6 +145,7 @@ public class BatchRunner
   public BatchRunner()
   {
     this.stmtRunner = new StatementRunner();
+    this.stmtRunner.setUseMessageLoggerForResult(false);
     this.stmtRunner.setErrorReportLevel(ErrorReportLevel.full);
     this.stmtRunner.addChangeListener(this);
   }

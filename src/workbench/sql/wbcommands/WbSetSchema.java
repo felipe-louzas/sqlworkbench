@@ -45,7 +45,7 @@ public class WbSetSchema
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql);
+    StatementRunnerResult result = createResult(sql);
     try
     {
       // everything after the WbSetSchema command is the catalog name

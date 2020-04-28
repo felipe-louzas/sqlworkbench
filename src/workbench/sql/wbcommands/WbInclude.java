@@ -123,7 +123,7 @@ public class WbInclude
   public StatementRunnerResult execute(String aSql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult(aSql);
+    StatementRunnerResult result = createResult(aSql);
     result.setSuccess();
 
     boolean checkParms = true;

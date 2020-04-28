@@ -59,7 +59,7 @@ public class UseCommand
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql);
+    StatementRunnerResult result = createResult(sql);
     try
     {
       // everything after the USE command is the catalog name

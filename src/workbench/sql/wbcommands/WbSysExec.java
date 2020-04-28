@@ -95,7 +95,7 @@ public class WbSysExec
   public StatementRunnerResult execute(String sql)
     throws SQLException, Exception
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql, messageLogger);
+    StatementRunnerResult result = createResult(sql);
     String command = getCommandLine(sql);
 
     if (StringUtil.isBlank(command))

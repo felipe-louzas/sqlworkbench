@@ -73,7 +73,7 @@ public class WbRun
   public StatementRunnerResult execute(String sql)
     throws SQLException
   {
-    StatementRunnerResult result = new StatementRunnerResult(sql);
+    StatementRunnerResult result = createResult(sql);
     result.setSuccess();
 
     String clean = getCommandLine(sql);
