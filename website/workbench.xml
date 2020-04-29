@@ -634,8 +634,9 @@ WHERE id=42;</p>
     </content>
   </page>
 
-  <page link="wb_news.xml" title="RSS Feed"/>
+  <page link="https://codeberg.org/sql-workbench/workbench" title="Git Repository" toc="small" target="_blank"/>
 
+  <!-- 
   <page name="source-repos" title="Git Repository" toc="small">
     <title>SQL Workbench/J</title>
     <subtitle>Access to the source code</subtitle>
@@ -645,7 +646,8 @@ WHERE id=42;</p>
       </p>
     </content>
   </page>
-
+  -->
+  
   <page name="disclaimer" title="Disclaimer" toc="small">
     <title>SQL Workbench/J</title>
     <subtitle>Disclaimer</subtitle>
@@ -697,8 +699,8 @@ WHERE id=42;</p>
       <a href="https://blog.sql-workbench.eu">My blog about SQL topics.</a>
     </content>
   </page>
-  <page link="dbms_comparison.html" title="DBMS feature comparison" toc="small"/>
-  <page link="https://blog.sql-workbench.eu" title="My blog about SQL" toc="small"/>
+  <page link="dbms_comparison.html" title="DBMS comparison" toc="small"  target="_blank"/>
+  <page link="https://blog.sql-workbench.eu" title="My blog about SQL" toc="small" target="_blank"/>
 
   <!-- ======================== WinZip note ========================== -->
   <page name="winzip" title="WinZip" toc="false">

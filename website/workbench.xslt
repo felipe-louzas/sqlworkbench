@@ -112,6 +112,9 @@
             <xsl:value-of select="'active'"/>
           </xsl:attribute>
         </xsl:if>
+        <xsl:if test="@link">
+          <xsl:attribute name="target"><xsl:value-of select="@target"/></xsl:attribute>
+        </xsl:if>
         <xsl:value-of select="$pageTitle"/>
       </A>
     </li>
