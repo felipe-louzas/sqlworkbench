@@ -6,3 +6,4 @@ uniqueidentifier
 varbinary
 datetimeoffset
 datetime2
+xml
