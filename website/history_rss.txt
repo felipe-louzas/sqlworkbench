@@ -1,0 +1,8 @@
+<![CDATA[<p>Changes from build 125.7 to build 125.8</p><p>Enhancements</p><ul>
+<li>WbCopy now supports views as the source by using -includeViews=true.</li>
+</ul><p>Bug Fixes</p><ul>
+<li>Month names were case sensitive when using -dateFormat or -timestampFormat with WbImport</li>
+<li>For Oracle 18c and later, index information wasn't displayed correctly.</li>
+<li>For Oracle 18c and later, DDL for identity columns wasn't generated correctly.</li>
+<li>For Oracle, the generated IGNORE_DUP_KEY hint was incorrect if the order of the PK columns was different to the column order of the table.</li>
+</ul>]]>

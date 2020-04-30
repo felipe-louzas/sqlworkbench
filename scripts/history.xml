@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2020-03-28">
+  <release build="-1" date="2020-04-30">
     <entry dev-build="8" type="enh">WbCopy now supports views as the source by using -includeViews=true.</entry>
     <entry dev-build="7" type="enh">The result panel is now automatically displayed if it was minimized before running a statement.</entry>
     <entry dev-build="6" type="enh">It's now possible to configure italic and bold for syntax highlighting</entry>

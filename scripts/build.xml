@@ -19,6 +19,8 @@
   <property name="srczip" value="${root}/../${srczipname}"/>
   <property name="target.version" value="1.8"/>
 
+  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="../../manual/libs/xmltask-v1.16.jar"/>
+
   <target name="init">
     <tstamp>
       <format pattern="yyyy-MM-dd" property="today"/>
@@ -255,11 +257,11 @@
   </target>
 
   <target name="make-release-manual">
-    <ant antfile="../../manual/build.xml" inheritall="false" target="publish,publish-single,pdf"/>
+    <ant antfile="../../manual/build.xml" inheritall="false" target="publish"/>
   </target>
 
   <target name="make-dev-manual">
-    <ant antfile="../../manual/build.xml" inheritall="false" target="publish-dev,publish-dev-single,pdf"/>
+    <ant antfile="../../manual/build.xml" inheritall="false" target="publish-dev"/>
   </target>
 
   <!-- build a full release -->
@@ -300,7 +302,7 @@
   <target name="make-dev-jar" depends="set-dev-prop, clean, copy-resources, compile, test, get-dev-build, replace-build-number, -make-jar"/>
 
   <!-- build a development release -->
-  <target name="dev-release" depends="clean, compile, test, set-dev-build, set-history-build-date, make-dev-manual, -make-jar, release-package, release-src-zip, -make-sha1">
+    <target name="dev-release" depends="clean, compile, set-dev-build, set-history-build-date, make-dev-manual, -make-jar, release-package, release-src-zip, -make-sha1">
     <tstamp>
       <format pattern="yyyy-MM-dd" property="today"/>
     </tstamp>
@@ -335,7 +337,7 @@
         <include name="${jarfile}"/>
         <include name="SQLWorkbench-Manual.pdf"/>
       </zipfileset>
-      <zipfileset dir="../launcher">
+      <zipfileset dir="../../launcher/autoit">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
         <include name="SQLWorkbench.cfg.sample"/>
@@ -364,8 +366,9 @@
       <zipfileset dir="${src}/workbench/resource/images">
         <include name="workbench32.png"/>
       </zipfileset>
-      <zipfileset dir="${distdir}/manual" prefix="manual">
+      <zipfileset dir="../../manual/dist" prefix="manual">
         <include name="**/*.*"/>
+        <exclude name="**/*.xml"/>
       </zipfileset>
       <zipfileset dir="../xslt" prefix="xslt">
         <include name="**/*.xslt"/>
@@ -389,7 +392,7 @@
       <zipfileset dir="../libs/lnf" prefix="ext">
         <include name="*.jar"/>
       </zipfileset>
-      <zipfileset dir="../launcher">
+      <zipfileset dir="../../launcher/autoit">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
         <include name="SQLWorkbench.cfg.sample"/>
@@ -412,7 +415,7 @@
       <zipfileset dir="${src}/workbench/resource/images">
         <include name="workbench32.png"/>
       </zipfileset>
-      <zipfileset dir="${distdir}/manual" prefix="manual">
+      <zipfileset dir="../../manual/dist" prefix="manual">
         <include name="**/*.*"/>
       </zipfileset>
       <zipfileset dir="../xslt" prefix="xslt">
@@ -469,10 +472,11 @@
         <exclude name="**/*test*"/>
       </zipfileset>
 
-      <zipfileset dir="${doc}" prefix="doc">
+      <zipfileset dir="../../manual" prefix="doc">
         <include name="css/*.*"/>
         <include name="xml/*.*"/>
         <include name="xsl/*.*"/>
+        <include name="*.*"/>
         <exclude name="**/.nb*"/>
         <exclude name="**/tags"/>
         <exclude name="**/*.tws"/>
@@ -482,7 +486,7 @@
         <include name="*.*"/>
       </zipfileset>
 
-      <zipfileset dir="../launcher" prefix="launcher">
+      <zipfileset dir="../../launcher/autoit" prefix="launcher">
         <include name="*.au3"/>
         <include name="*.ico"/>
         <include name="SQLWorkbench.cfg.sample"/>
