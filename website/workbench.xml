@@ -460,7 +460,6 @@ WHERE id=42;</p>
             You can subscribe to the <a href="wb_news.xml">RSS Feed</a> to receive information about new releases
         </p>
         <p>If you are having problems unzipping the distribution archive with WinZip, please read <a href="winzip.html">this</a>.</p>
-        <p><a href="macos.html">A note to Mac OS X users</a></p>
         <dev-build-info/>
     </content>
   </page>
