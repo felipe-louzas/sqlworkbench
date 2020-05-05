@@ -421,13 +421,12 @@ public class WbProperties
   public void addPropertyDefinition(String line, String comment)
   {
     if (line == null) return;
-    if (StringUtil.isBlank(line)) return;
     if (line.charAt(0) == '#') return;
     int pos = line.indexOf('=');
     if (pos == -1) return;
     String key = line.substring(0, pos);
     String value = line.substring(pos + 1);
-    this.setProperty(key, value.trim());
+    this.setProperty(key, value);
     comments.put(key, comment);
   }
 
@@ -511,12 +510,15 @@ public class WbProperties
         if (lineFragment != null)
         {
           lineFragment += "\n" + line;
-          this.addPropertyDefinition(StringUtil.decodeUnicode(lineFragment), lastComment);
+          if (StringUtil.isNonBlank(lineFragment))
+          {
+            this.addPropertyDefinition(StringUtil.decodeUnicode(lineFragment.trim()), lastComment);
+          }
           lineFragment = null;
         }
-        else
+        else if (StringUtil.isNonBlank(line))
         {
-          this.addPropertyDefinition(StringUtil.decodeUnicode(line), lastComment);
+          this.addPropertyDefinition(StringUtil.decodeUnicode(line.trim()), lastComment);
         }
         lastComment = null;
       }

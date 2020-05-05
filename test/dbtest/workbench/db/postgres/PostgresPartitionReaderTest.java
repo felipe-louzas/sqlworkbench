@@ -36,7 +36,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -222,7 +221,8 @@ public class PostgresPartitionReaderTest
       "create table sub_expr_table_p1 \n" +
       "  partition of sub_expr_table \n" +
       "  for values in (1,2,3,4)\n" +
-      "  partition by range (lower(data), c1, (code * 2));";
+      "  partition by range (lower(data), c1, (code * 2));\n" +
+      "commit;";
 
     TestUtil.executeScript(conn, sql);
 
