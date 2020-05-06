@@ -69,7 +69,11 @@ public class DataStoreWriter
   public void flush()
     throws IOException
   {
-    appendCurrentLine(false);
+    // Prevent creating an empty line in the output
+    if (currentLine.length() > 0)
+    {
+      appendCurrentLine(false);
+    }
     result.resetStatus();
   }
 

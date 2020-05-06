@@ -379,13 +379,17 @@ public class DbDriver
   public Class loadClassFromDriverLib(String className)
     throws ClassNotFoundException
   {
+    if (this.isExtDriver())
+    {
+      return Class.forName(className);
+    }
     if (this.classLoader == null) return null;
     Thread.currentThread().setContextClassLoader(classLoader);
     Class clz = this.classLoader.loadClass(className);
     return clz;
   }
 
-  private boolean isExtDriver()
+  public boolean isExtDriver()
   {
     if (this.libraryList == null) return false;
     ClasspathUtil cpUtil = new ClasspathUtil();
