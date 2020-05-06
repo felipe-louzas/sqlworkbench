@@ -727,39 +727,16 @@ WHERE id=42;</p>
     <title>Building SQL Workbench/J from Source</title>
     <content>
       <h3>Building the jar file</h3>
-      <p>This page describes the necessary step to build SQL Workbench/J from the source distribution.</p>
-      <p style="margin:25px">
-        The source distribution does not contain all needed libraries. If you want to build SQL Workbench/J yourself
-        it is highly recommended to check out the Subversion repository to automatically get everything you need.
-      </p>
-
-      <p style="margin-top:15px">
-        If you do not want to check out the Subversion repository, you need to unzip the source archive into a
-        directory of your choice. This directory will be referenced as <tt>${wbroot}</tt> in this description.
-      </p>
-
-      <p>To prepare your environment to build SQL Workbench/J from source distribution archive you will need to</p>
-      <ul>
-        <li>Download and install a Java8 <b>JDK</b>. The Java runtime (JRE) does not contain a compiler, therefor the JDK is required.</li>
-        <li>Download and install Ant 1.7 (or later) from <a href="http://ant.apache.org/">http://ant.apache.org</a></li>
-        <li>
-          Download the <a href="https://java.net/projects/appbundler">AppBundler Ant task</a>. As the appbundler library is referenced from within <tt>build.xml</tt>,
-          the jar file is needed even when you don't want to build the Mac release. Then copy the
-          files <tt>appbundler-1.0.jar</tt> and <tt>JavaApplicationStub</tt> to <tt>${wbroot}/libs/appbundler</tt>.
-        </li>
-        <li>Download Apache POI from <a href="http://poi.apache.org">http://poi.apache.org</a> unzip the distribution to ${wbroot}/libs/poi</li>
-        <li>Download the ODF Simple libraries from <a href="https://incubator.apache.org/odftoolkit/simple/index.html">http://incubator.apache.org</a> copy all jar files to ${wbroot}/libs/odf</li>
-        <li>Download Apache Log4J 1.2.x from <a href="http://logging.apache.org/log4j/">http://logging.apache.org/log4j/</a> and copy the jar file into the directory <tt>${wbroot}/libs/log4j</tt></li>
-        <li>Download the Postgres JDBC driver from <a href="http://jdbc.postgresql.org/download.html">http://jdbc.postgresql.org/download.html</a> and copy the jar file into <tt>${wbroot}/junit</tt> (Not needed if you get everything from the SVN repository)</li>
-        <li>Download HSQLDB from <a href="http://www.hsqldb.org">http://www.hsqldb.org</a> (Required to run the JUnit test. Not needed if you get everything from the SVN repository)</li>
-        <li>Download H2 Database from <a href="http://www.h2database.com">http://www.h2database.com</a> (Required to run the JUnit test. Not needed if you get everything from the SVN repository)</li>
-        <li>Download the Jemmy library from <a href="http://java.net/projects/jemmy">http://java.net/projects/jemmy</a> (Required to run the GUI tests. Not needed if you get everything from the SVN repository)</li>
-        <li>Copy the files <tt>hsqldb.jar</tt>, <tt>h2.jar</tt> and <tt>jemmy.jar</tt> into <tt>${wbroot}/junit</tt> (Not needed if you get everything from the SVN repository)</li>
-      </ul>
 
       <p>
-        Now you can build the jar file by typing <tt>ant</tt> while the <tt>scripts</tt> directory
-        is your current directory. If the build is successful, <tt>${wbroot}/dist/sqlworkbench.jar</tt>
+        The source distribution does not contain all needed libraries. If you want to build SQL Workbench/J yourself
+        it is highly recommended to clone or download the <a target="42" href="https://codeberg.org/sql-workbench/workbench">Git repository</a>
+        to automatically get everything you need.
+      </p>
+
+      <p>
+        To build the jar file, use <tt>ant</tt> while the <tt>scripts</tt> directory
+        is your current directory. If the build is successful, <tt>dist/sqlworkbench.jar</tt>
         will be created.
       </p>
 
@@ -768,17 +745,20 @@ WHERE id=42;</p>
       </p>
       <h3>Building the manual</h3>
       <p>
+         To build the manual, please clone or download the corresponding <a target="42" href="https://codeberg.org/sql-workbench/manual">Git repository</a>.
+      </p>
+      <p>
         To build the manual you need to download the <a href="http://sourceforge.net/projects/docbook/">Docbook XSL</a> package
         (e.g. <tt>docbook-xsl-1.78.1.zip</tt>) and <a href="http://xmlgraphics.apache.org/fop/">FOP</a> (Version 0.95, newer
         version don't work with Docbook XSL).
       </p>
       <ul>
-        <li>Copy the Docbook distribution to <tt>${wbroot}/etc/docbook</tt></li>
-        <li>Copy the FOP distribution to <tt>${wbroot}/etc/fop</tt></li>
+        <li>Copy the Docbook distribution to <tt>etc/docbook</tt> on the same level where the <tt>manual</tt> subdirectory is</li>
+        <li>Copy the FOP distribution to <tt>etc/fop</tt> on the same level where the <tt>manual</tt> subdirectory is</li>
       </ul>
       <p>
-        Now you can build the PDF manual by typing <tt>ant pdf</tt> or HTML manual
-        by typing <tt>ant publish-dev</tt>.
+        Go into the <tt>manual</tt> subdirectory and type <tt>ant pdf</tt> to build the PDF or 
+        <tt>ant publish-dev</tt> to build the HTML manual.
       </p>
     </content>
   </page>
