@@ -39,7 +39,7 @@ import workbench.util.SqlUtil;
  */
 public class PreparedStatementPool
 {
-  private Map<String, StatementParameters> statements = new HashMap<String, StatementParameters>();
+  private Map<String, StatementParameters> statements = new HashMap<>();
   private WbConnection dbConnection;
 
   public PreparedStatementPool(WbConnection conn)

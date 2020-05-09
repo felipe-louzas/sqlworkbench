@@ -1517,12 +1517,11 @@ public class WbSwingUtilities
     if (f != null)
     {
       FontMetrics fm = button.getFontMetrics(f);
-      if (fm != null)
+      if (fm != null && StringUtil.isNonEmpty(button.getText()))
       {
         Rectangle2D bounds = f.getStringBounds(button.getText(), fm.getFontRenderContext());
         int width = (int)bounds.getWidth() + 2;
         int height = Math.max((int)bounds.getHeight(), minHeight);
-        Dimension pref = button.getPreferredSize();
         Dimension dim = new Dimension(Math.max(width, minWidth), Math.max(height, minHeight));
         button.setPreferredSize(dim);
         button.setMinimumSize(dim);

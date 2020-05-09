@@ -151,7 +151,7 @@ public class CommandMapper
   {
     this(Settings.getInstance().getBoolProperty("workbench.sql.allow.abbreviation", false));
   }
-  
+
   public CommandMapper(boolean allowAbbreviations)
   {
     cmdDispatch = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
@@ -396,7 +396,7 @@ public class CommandMapper
       addDBMSCommand(show.getVerb(), show);
     }
 
-    List<String> startTrans = Settings.getInstance().getListProperty("workbench.db." + metaData.getDbId() + ".start_transaction", false, "");
+    List<String> startTrans = aConn.getDbSettings().getListProperty("start_transaction");
     for (String sql : startTrans)
     {
       sql = SqlUtil.makeCleanSql(sql, false, false);
@@ -419,7 +419,7 @@ public class CommandMapper
       addDBMSCommand("CALL", wbcall);
     }
 
-    List<String> verbs = Settings.getInstance().getListProperty("workbench.db.ignore." + metaData.getDbId(), false, "");
+    List<String> verbs = aConn.getDbSettings().getListProperty("ignore");
     for (String verb : verbs)
     {
       if (verb == null) continue;
@@ -427,7 +427,7 @@ public class CommandMapper
       addDBMSCommand(verb, cmd);
     }
 
-    List<String> passVerbs = Settings.getInstance().getListProperty("workbench.db." + metaData.getDbId() + ".passthrough", false, "");
+    List<String> passVerbs = aConn.getDbSettings().getListProperty("passthrough");
     passThrough.clear();
     if (passVerbs != null)
     {

@@ -29,6 +29,7 @@ import java.util.Collection;
 import workbench.WbManager;
 import workbench.console.ConsoleSettings;
 import workbench.console.RowDisplay;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.SqlCommand;
@@ -135,7 +136,7 @@ public class WbDescribeObject
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbDescribeObject.execute()", "Error getting object details", e);
+      LogMgr.logError(new CallerInfo(){}, "Error getting object details", e);
       StatementRunnerResult result = new StatementRunnerResult(sql);
       result.addErrorMessage(ExceptionUtil.getDisplay(e));
       return result;

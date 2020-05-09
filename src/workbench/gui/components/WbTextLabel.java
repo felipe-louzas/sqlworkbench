@@ -40,6 +40,8 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import workbench.util.StringUtil;
+
 /**
  * Displays a Label left or right aligned with no further overhead in painting
  * (Faster then JLabel) this is used in DwStatusBar to speed up processes that
@@ -101,7 +103,7 @@ public class WbTextLabel
       int minWidth = charWidth * minCharacters;
 
       int textWidth = minWidth;
-      if (text != null)
+      if (StringUtil.isNonEmpty(text))
       {
         Rectangle2D bounds = fm.getStringBounds(text, getGraphics());
         textWidth = (int)bounds.getWidth();
