@@ -25,10 +25,6 @@ package workbench.gui.editor.actions;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.text.BadLocationException;
-
-import workbench.log.CallerInfo;
-import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.editor.JEditTextArea;
@@ -57,7 +53,7 @@ public class DuplicateCurrentLine
     int currentColumn = textArea.getCaretPositionInLine(currentLine);
 
     boolean wasSelected = false;
-
+    boolean doAppend = false;
     String dupeText = textArea.getSelectedText();
 
     if (dupeText != null)
@@ -69,21 +65,25 @@ public class DuplicateCurrentLine
     else
     {
       String le = Settings.getInstance().getInternalEditorLineEnding();
-      dupeText = textArea.getLineText(currentLine) + le;
       insertPoint = textArea.getLineEndOffset(currentLine);
-      if (currentLine == textArea.getLineCount())
+      doAppend = currentLine == textArea.getLineCount() - 1;
+      if (doAppend)
       {
-        insertPoint += le.length();
+        dupeText = le + textArea.getLineText(currentLine);
+      }
+      else
+      {
+        dupeText = textArea.getLineText(currentLine) + le;
       }
     }
 
-    try
+    if (doAppend)
     {
-      textArea.getDocument().insertString(insertPoint, dupeText, null);
+      textArea.appendLine(dupeText);
     }
-    catch (BadLocationException bl)
+    else
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not duplicate line", bl);
+      textArea.insertText(insertPoint, dupeText);
     }
 
     if (wasSelected)
