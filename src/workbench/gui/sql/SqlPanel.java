@@ -2657,9 +2657,9 @@ public class SqlPanel
   }
 
   @Override
-  public void printMessage(String trace)
+  public void printMessage(String msg)
   {
-    appendMessage(trace, "\n");
+    appendMessage(msg, "\n");
   }
 
   @Override
@@ -3320,7 +3320,7 @@ public class SqlPanel
 
       if (count == 0)
       {
-        this.appendToLog(ResourceMgr.getString("ErrNoCommand"));
+        this.printMessage(ResourceMgr.getString("ErrNoCommand"));
         this.showLogPanel();
         return;
       }
@@ -3370,7 +3370,7 @@ public class SqlPanel
           }
           else
           {
-            this.appendToLog(ResourceMgr.getString("ErrNoCurrentStatement"));
+            this.printMessage(ResourceMgr.getString("ErrNoCurrentStatement"));
             this.showLogPanel();
             return;
           }
@@ -3491,8 +3491,7 @@ public class SqlPanel
         if (statementResult.stopScript())
         {
           String cancelMsg = ResourceMgr.getString("MsgScriptCancelled");
-          this.appendToLog(cancelMsg);
-          this.appendToLog("\n");
+          this.printMessage(cancelMsg);
           this.showLogPanel();
           break;
         }
@@ -3548,8 +3547,7 @@ public class SqlPanel
 
           if (logmsg.length() > 0)
           {
-            appendToLog(logmsg.toString());
-            appendToLog("\n");
+            printMessage(logmsg.toString());
           }
         }
         else if (statementResult.hasWarning())
@@ -3557,7 +3555,7 @@ public class SqlPanel
           // Warnings should always be shown, even if the log output is "compressed"
           String verb = stmtRunner.getParsingUtil().getSqlVerb(currentSql);
           String warn = StringUtil.replace(ResourceMgr.getString("MsgStmtCompletedWarn"), "%verb%", verb);
-          this.appendToLog(warn + "\n");
+          this.printMessage(warn);
         }
 
         if (count > 1)
@@ -3586,8 +3584,7 @@ public class SqlPanel
           // if it is not enabled the messages have been appended to the log already
           if (logWasCompressed)
           {
-            appendToLog(statementResult.getMessages().toString());
-            appendToLog("\n");
+            printMessage(statementResult.getMessages().toString());
           }
 
           // When cancelling a statement some JDBC drivers throw an exception as well.

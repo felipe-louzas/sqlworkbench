@@ -357,7 +357,7 @@ public class PostgresColumnEnhancer
         {
           option += " INCREMENT BY " + inc;
         }
-        if (max != 2147483647)
+        if (max != Integer.MAX_VALUE && max != Long.MAX_VALUE)
         {
           option += " MAXVALUE " + max;
         }

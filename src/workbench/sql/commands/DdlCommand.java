@@ -106,6 +106,7 @@ public class DdlCommand
     throws SQLException
   {
     StatementRunnerResult result = createResult(sql);
+    result.ignoreUpdateCounts(true);
 
     boolean useSavepoint = runner.useSavepointForDDL();
 
@@ -129,7 +130,6 @@ public class DdlCommand
       // remember the last "object" in order to be able to show the errors but only for "PL/SQL" objects.
       // The last error is not overwritten by creating a table or a view
       currentConnection.setLastDDLObject(info);
-      result.ignoreUpdateCounts(true);
     }
 
     boolean isDrop = false;

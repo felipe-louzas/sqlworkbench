@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -267,6 +268,7 @@ public class WbOraShow
   private StatementRunnerResult showRecycleBin()
   {
     StatementRunnerResult result = new StatementRunnerResult("SHOW RECYCLEBIN");
+    result.ignoreUpdateCounts(true);
     String sql =
       "SELECT original_name as \"ORIGINAL NAME\", \n" +
       "       object_name as \"RECYCLEBIN NAME\", \n" +
@@ -456,11 +458,9 @@ public class WbOraShow
     }
     query += "order by name";
     StatementRunnerResult result = new StatementRunnerResult(query);
+    result.ignoreUpdateCounts(true);
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("WbOraShow.getParameterValues()", "Retrieving system parameters using:\n" + query);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "system parameters", query);
 
     try
     {
@@ -489,6 +489,7 @@ public class WbOraShow
     }
     catch (SQLException ex)
     {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "system parameters", query);
       result.addErrorMessage(ex.getMessage());
     }
     finally

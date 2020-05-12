@@ -225,6 +225,7 @@ public class SetCommand
         oldSchema = currentConnection.getCurrentSchema();
       }
       result = new StatementRunnerResult();
+      result.ignoreUpdateCounts(true);
       String toExecute = getSqlToExecute(userSql);
       this.currentStatement = currentConnection.createStatement();
 

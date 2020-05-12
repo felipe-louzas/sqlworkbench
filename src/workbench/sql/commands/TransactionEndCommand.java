@@ -72,6 +72,7 @@ public class TransactionEndCommand
     throws SQLException
   {
     StatementRunnerResult result = new StatementRunnerResult(sql);
+    result.ignoreUpdateCounts(true);
 
     if (shouldIgnore())
     {
@@ -134,7 +135,6 @@ public class TransactionEndCommand
   {
     return verb;
   }
-
 
   private boolean shouldIgnore()
   {
