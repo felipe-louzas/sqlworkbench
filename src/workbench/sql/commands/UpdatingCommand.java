@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -182,7 +183,7 @@ public class UpdatingCommand
         result.addMessage(msg);
       }
       addErrorInfo(result, sql, e);
-      LogMgr.logUserSqlError("UpdatingCommnad.execute()", sql, e);
+      LogMgr.logUserSqlError(new CallerInfo(){}, sql, e);
     }
     finally
     {

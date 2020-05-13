@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -150,7 +151,7 @@ public class AlterSessionCommand
     catch (Exception e)
     {
       addErrorInfo(result, sql, e);
-      LogMgr.logUserSqlError("AlterSessionCommand.execute()", sql, e);
+      LogMgr.logUserSqlError(new CallerInfo(){}, sql, e);
     }
 
     return result;
@@ -201,7 +202,7 @@ public class AlterSessionCommand
       try
       {
         String zone = StringUtil.trimQuotes(tz);
-        LogMgr.logDebug("AlterSessionCommand.changeOracleTimeZone()", "Calling Oracle's setSessionTimeZone");
+        LogMgr.logDebug(new CallerInfo(){}, "Calling Oracle's setSessionTimeZone");
         setTimezone.setAccessible(true);
         setTimezone.invoke(sqlCon, new Object[] { zone });
         result.addMessage(ResourceMgr.getString("MsgTimezoneChanged") + " " + zone);
@@ -211,7 +212,7 @@ public class AlterSessionCommand
       catch (Exception e)
       {
         result.addErrorMessage(ExceptionUtil.getDisplay(e));
-        LogMgr.logError("AlterSessionCommand.changeOracleTimeZone()", "Error setting timezone", e);
+        LogMgr.logError(new CallerInfo(){}, "Error setting Oracle timezone", e);
       }
     }
     return false;

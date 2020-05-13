@@ -42,6 +42,7 @@ import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
 import workbench.interfaces.ResultLogger;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
@@ -295,7 +296,7 @@ public abstract class ExecuteSqlPanel
     catch (Exception ex)
     {
       // this should not happen
-      LogMgr.logUserSqlError("ExecuteSqlPanel.runSQL()", "Could not run SQL script", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not run SQL script", ex);
       WbSwingUtilities.showErrorMessage(ex.getMessage());
     }
     finally

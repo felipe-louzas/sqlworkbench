@@ -182,7 +182,7 @@ public class LogMgr
 		logChainedException(LogLevel.error, th);
 	}
 
-	public static void logUserSqlError(Object caller, String sql, Throwable th)
+	public static void logUserSqlError(CallerInfo caller, String sql, Throwable th)
 	{
 		String logMsg = "Error executing:\n" + sql + "\n  ";
     if (th instanceof java.sql.SQLFeatureNotSupportedException)

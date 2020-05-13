@@ -23,6 +23,7 @@ package workbench.sql.wbcommands;
 import java.io.StringReader;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.postgres.PgCopyManager;
@@ -107,12 +108,25 @@ public class PgCopyCommand
     {
       runner.setSavepoint();
       PgCopyManager pgCopy = new PgCopyManager(currentConnection);
-      DataStore ds = pgCopy.copyToStdOut(sql);
-      if (ds != null)
+      if (currentConnection.getDbSettings().getBoolProperty("copy.stdout.text", true))
       {
-        result.addDataStore(ds);
-        result.setSuccess();
-        appendSuccessMessage(result);
+        String out = pgCopy.copyStdOutToString(sql);
+        if (out != null)
+        {
+          result.addMessage(out);
+          result.setSuccess();
+          appendSuccessMessage(result);
+        }
+      }
+      else
+      {
+        DataStore ds = pgCopy.copyStdOutToDataStore(sql);
+        if (ds != null)
+        {
+          result.addDataStore(ds);
+          result.setSuccess();
+          appendSuccessMessage(result);
+        }
       }
       runner.releaseSavepoint();
     }
@@ -120,7 +134,7 @@ public class PgCopyCommand
     {
       runner.rollbackSavepoint();
       addErrorInfo(result, sql, ex);
-      LogMgr.logUserSqlError("PgCopyCommand.processCopyOut()", sql, ex);
+      LogMgr.logUserSqlError(new CallerInfo(){}, sql, ex);
     }
     return result;
   }
@@ -146,7 +160,7 @@ public class PgCopyCommand
     {
       runner.rollbackSavepoint();
       addErrorInfo(result, copy, ex);
-      LogMgr.logUserSqlError("PgCopyCommand.processCopyIn()", copy, ex);
+      LogMgr.logUserSqlError(new CallerInfo(){}, copy, ex);
     }
     return result;
   }

@@ -24,6 +24,7 @@ package workbench.db.postgres;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -338,7 +339,23 @@ public class PgCopyManager
     return copySql.toString();
   }
 
-  public DataStore copyToStdOut(String sql)
+  public DataStore copyStdOutToDataStore(String sql)
+    throws SQLException
+  {
+    DataStoreWriter writer = new DataStoreWriter("output");
+    runCopyToStdOut(sql, writer);
+    return writer.getResult();
+  }
+
+  public String copyStdOutToString(String sql)
+    throws SQLException
+  {
+    StringWriter writer = new StringWriter(1000);
+    runCopyToStdOut(sql, writer);
+    return writer.toString();
+  }
+
+  private void runCopyToStdOut(String sql, Writer output)
     throws SQLException
   {
     try
@@ -348,19 +365,23 @@ public class PgCopyManager
         initialize();
       }
       Method copyOut = copyManager.getClass().getMethod("copyOut", String.class, Writer.class);
-      DataStoreWriter writer = new DataStoreWriter("output");
-      copyOut.invoke(copyManager, sql, writer);
-      writer.flush();
-      return writer.getResult();
+      copyOut.invoke(copyManager, sql, output);
+      output.flush();
     }
     catch (Throwable th)
     {
-      if (th instanceof SQLException)
+      Throwable realError = th;
+      if (th instanceof InvocationTargetException)
       {
-        throw (SQLException)th;
+        realError = th.getCause();
+      }
+      if (realError instanceof SQLException)
+      {
+        throw (SQLException)realError;
       }
       LogMgr.logError(new CallerInfo(){}, "Could not call copyOut()", th);
+      throw new SQLException("Error running COPY command", realError);
     }
-    return null;
   }
+
 }

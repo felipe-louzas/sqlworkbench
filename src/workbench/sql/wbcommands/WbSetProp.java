@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import workbench.console.ConsoleSettings;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -161,7 +162,7 @@ public class WbSetProp
         {
           Settings.getInstance().setProperty(prop, value);
           result.addMessage(prop  + " permanently set to \""  + value + "\"");
-          LogMgr.logInfo("WbSetConfig.execute()", "Changed configuration property: " + prop + "=" + value);
+          LogMgr.logInfo(new CallerInfo(){}, "Changed configuration property: " + prop + "=" + value);
           Settings.getInstance().setCreatBackupOnSave(true);
         }
         else

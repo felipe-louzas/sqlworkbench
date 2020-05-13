@@ -2632,7 +2632,7 @@ public class SqlPanel
         }
         catch (Throwable e)
         {
-          LogMgr.logError("SqlPanel.runImporter() - worker thread", "Error when importing data", e);
+          LogMgr.logError(new CallerInfo(){}, "Error when importing data", e);
         }
         finally
         {
