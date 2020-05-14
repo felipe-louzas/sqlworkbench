@@ -1717,6 +1717,7 @@ public class ConnectionEditorPanel
       checkOracle();
       checkUncommitted();
       checkPromptUsername();
+      syncColor();
     }
     catch (Exception e)
     {
@@ -1802,6 +1803,31 @@ public class ConnectionEditorPanel
     }
   }
 
+  private Color getContrastColor(Color color)
+  {
+    // Taken from https://stackoverflow.com/a/36888120
+    // Calculate the perceptive luminance (aka luma) - human eye favors green color...
+    double luma = ((0.299 * color.getRed()) + (0.587 * color.getGreen()) + (0.114 * color.getBlue())) / 255;
+
+    // Return black for bright colors, white for dark colors
+    return luma > 0.5 ? Color.BLACK : Color.WHITE;
+  }
+
+  private void syncColor()
+  {
+    Color color = infoColor.getSelectedColor();
+    if (color == null)
+    {
+      this.groupNameLabel.setBackground(Color.WHITE);
+      this.groupNameLabel.setForeground(Color.BLACK);
+    }
+    else
+    {
+      this.groupNameLabel.setBackground(color);
+      this.groupNameLabel.setForeground(getContrastColor(color));
+    }
+  }
+
   @Override
   public void actionPerformed(java.awt.event.ActionEvent e)
   {
@@ -1854,6 +1880,7 @@ public class ConnectionEditorPanel
     else if (e.getSource() == this.infoColor && this.currentProfile != null)
     {
       this.currentProfile.setInfoDisplayColor(this.infoColor.getSelectedColor());
+      syncColor();
     }
     else if (e.getSource() == cbxPromptUsername)
     {
