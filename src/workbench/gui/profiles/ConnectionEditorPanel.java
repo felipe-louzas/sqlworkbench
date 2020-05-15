@@ -66,6 +66,7 @@ import workbench.interfaces.SimplePropertyEditor;
 import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -1803,16 +1804,6 @@ public class ConnectionEditorPanel
     }
   }
 
-  private Color getContrastColor(Color color)
-  {
-    // Taken from https://stackoverflow.com/a/36888120
-    // Calculate the perceptive luminance (aka luma) - human eye favors green color...
-    double luma = ((0.299 * color.getRed()) + (0.587 * color.getGreen()) + (0.114 * color.getBlue())) / 255;
-
-    // Return black for bright colors, white for dark colors
-    return luma > 0.5 ? Color.BLACK : Color.WHITE;
-  }
-
   private void syncColor()
   {
     Color color = infoColor.getSelectedColor();
@@ -1824,7 +1815,10 @@ public class ConnectionEditorPanel
     else
     {
       this.groupNameLabel.setBackground(color);
-      this.groupNameLabel.setForeground(getContrastColor(color));
+      if (GuiSettings.useContrastColor())
+      {
+        this.groupNameLabel.setForeground(WbSwingUtilities.getContrastColor(color));
+      }
     }
   }
 

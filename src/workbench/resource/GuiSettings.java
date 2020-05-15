@@ -1614,4 +1614,13 @@ public class GuiSettings
   {
     return Settings.getInstance().getIntProperty("workbench.gui.editor.caret.width", 1);
   }
+
+  public static boolean useContrastColor()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.infocolor.use.contrast", true);
+  }
+  public static int getConstrastColorFormula()
+  {
+    return Settings.getInstance().getIntProperty("workbench.gui.infocolor.contrast.type", 1);
+  }
 }

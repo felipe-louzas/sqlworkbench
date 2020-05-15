@@ -38,7 +38,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
+import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.ssh.SshConfig;
@@ -181,6 +183,7 @@ public class ConnectionInfo
     this.sourceConnection = aConnection;
 
     Color bkg = null;
+    Color fg = null;
 
     if (this.sourceConnection != null)
     {
@@ -189,6 +192,10 @@ public class ConnectionInfo
       if (p != null)
       {
         bkg = p.getInfoDisplayColor();
+        if (GuiSettings.useContrastColor() && bkg != null)
+        {
+          fg = WbSwingUtilities.getContrastColor(bkg);
+        }
       }
     }
 
@@ -204,6 +211,8 @@ public class ConnectionInfo
     }
 
     final Color background = bkg;
+    final Color foreground = fg;
+
     EventQueue.invokeLater(() ->
     {
       showInfoAction.setEnabled(sourceConnection != null);
@@ -219,6 +228,15 @@ public class ConnectionInfo
       else
       {
         contentPanel.setBackground(background);
+      }
+
+      if (foreground == null)
+      {
+        infoText.setForeground(UIManager.getDefaults().getColor("Label.foreground"));
+      }
+      else
+      {
+        infoText.setForeground(foreground);
       }
     });
   }
