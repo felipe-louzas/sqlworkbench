@@ -23,6 +23,7 @@
  */
 package workbench.gui.completion;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.TableIdentifier;
@@ -79,7 +80,7 @@ public class AlterTableAnalyzer
     }
     catch (Exception e)
     {
-      LogMgr.logError("AlterTableAnalyzer", "Error parsing SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error parsing SQL", e);
     }
 
     namespaceForTableList = getNamespaceFromCurrentWord();

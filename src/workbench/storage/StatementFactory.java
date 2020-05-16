@@ -26,6 +26,8 @@ package workbench.storage;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbSettings;
@@ -34,9 +36,12 @@ import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.sql.formatter.FormatterUtil;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -225,7 +230,7 @@ public class StatementFactory
     {
       if (!includeIdentityColumns)
       {
-        LogMgr.logDebug("StatementFactory.includeInsertColumn()", "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is an auto-increment/identity column");
+        LogMgr.logDebug(new CallerInfo(){}, "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is an auto-increment/identity column");
         return false;
       }
     }
@@ -235,13 +240,13 @@ public class StatementFactory
 
       if (colId.getComputedColumnExpression() != null)
       {
-        LogMgr.logDebug("StatementFactory.includeInsertColumn()", "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is a computed column");
+        LogMgr.logDebug(new CallerInfo(){}, "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is a computed column");
         return false;
       }
 
       if (!colId.isUpdateable() || colId.isReadonly())
       {
-        LogMgr.logDebug("StatementFactory.includeInsertColumn()", "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is marked as not updateable");
+        LogMgr.logDebug(new CallerInfo(){}, "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is marked as not updateable");
         return false;
       }
     }
@@ -336,7 +341,7 @@ public class StatementFactory
 
     if (realColcount == 0)
     {
-      LogMgr.logError("StatementFactory.createInsertStatement()", "No columns included in the INSERT statement for the table " + getTableNameToUse() + " Please turn on DEBUG logging to see why the columns where excluded", null);
+      LogMgr.logError(new CallerInfo(){}, "No columns included in the INSERT statement for the table " + getTableNameToUse() + " Please turn on DEBUG logging to see why the columns where excluded", null);
     }
     return dml;
   }

@@ -29,8 +29,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
@@ -67,10 +67,7 @@ public class IngresSynonymReader
       sql.append(" WHERE synonym_owner = ?");
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("IngresSynonymReader.getSynonymList()", "Query to retrieve synonyms:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonyms", sql);
 
     try
     {
@@ -91,7 +88,7 @@ public class IngresSynonymReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("OracleMetaData.getSynonymList()", "Error when retrieving synonyms using SQL:\n" + sql,e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "synonyms", sql);
     }
     finally
     {
@@ -114,10 +111,7 @@ public class IngresSynonymReader
     stmt.setString(1, aSynonym);
     stmt.setString(2, anOwner);
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("IngresSynonymReader.getSynonymTable()", "Query to retrieve synonym table:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonym table", sql);
 
     ResultSet rs = stmt.executeQuery();
     String table = null;
@@ -134,6 +128,11 @@ public class IngresSynonymReader
           result = new TableIdentifier(null, owner, table);
         }
       }
+    }
+    catch (SQLException e)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "synonym table", sql);
+      throw e;
     }
     finally
     {

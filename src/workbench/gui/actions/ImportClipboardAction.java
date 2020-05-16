@@ -31,6 +31,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -98,11 +99,11 @@ public class ImportClipboardAction
       }
     }
 
-    LogMgr.logDebug("ImportClipboardAction.getClipboardContents()", "Supported formats of the clipboard: " + info);
+    LogMgr.logDebug(new CallerInfo(){}, "Supported formats of the clipboard: " + info);
 
     if (!content.isDataFlavorSupported(DataFlavor.stringFlavor))
     {
-      LogMgr.logError("ImportClipboardAction.getClipboardContents()", "The clipboard does not contain a format compatible with a string. Clipboard format is: " + info, null);
+      LogMgr.logError(new CallerInfo(){}, "The clipboard does not contain a format compatible with a string. Clipboard format is: " + info, null);
       WbSwingUtilities.showErrorMessageKey(client, "MsgClipInvalid");
       return null;
     }
@@ -113,17 +114,17 @@ public class ImportClipboardAction
     }
     catch (UnsupportedFlavorException ufe)
     {
-      LogMgr.logError("ImportClipboardAction.getClipboardContents()", "The current clipboard content cannot be used as a String", ufe);
+      LogMgr.logError(new CallerInfo(){}, "The current clipboard content cannot be used as a String", ufe);
       WbSwingUtilities.showErrorMessageKey(client, "MsgClipInvalid");
     }
     catch (IOException io)
     {
-      LogMgr.logError("ImportClipboardAction.getClipboardContents()", "The current clipboard content can no longer be accessed", io);
+      LogMgr.logError(new CallerInfo(){}, "The current clipboard content can no longer be accessed", io);
       WbSwingUtilities.showErrorMessage(client, "<html>" + ResourceMgr.getString("MsgClipInvalid") + "<br>(" + ExceptionUtil.getDisplay(io) + ")</html>");
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ImportClipboardAction.getClipboardContents()", "Error accessing clipboard", e);
+      LogMgr.logError(new CallerInfo(){}, "Error accessing clipboard", e);
     }
     return null;
   }

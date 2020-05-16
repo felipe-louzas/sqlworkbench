@@ -25,6 +25,7 @@ package workbench.gui.renderer;
 
 import javax.swing.JLabel;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.JdbcProcedureReader;
@@ -56,7 +57,7 @@ public class ProcStatusRenderer
     }
     catch (ClassCastException cce)
     {
-      LogMgr.logWarning("ProdStatusRenderer.prepareDisplay()", "The current value (" + value + ") is not an Integer!", cce);
+      LogMgr.logWarning(new CallerInfo(){}, "The current value (" + value + ") is not an Integer!", cce);
       this.displayValue = (value == null ? "" : value.toString());
     }
   }

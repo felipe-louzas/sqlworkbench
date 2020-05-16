@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
@@ -107,7 +108,7 @@ public class MySQLExplainAnalyzer
     }
     catch (Exception e)
     {
-      LogMgr.logError("MySQLExplainAnalyzer.checkContext()", "Error getting optiosn", e);
+      LogMgr.logError(new CallerInfo(){}, "Error getting optiosn", e);
       this.elements = new ArrayList<>();
       this.context = NO_CONTEXT;
     }

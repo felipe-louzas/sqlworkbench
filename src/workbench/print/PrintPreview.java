@@ -56,6 +56,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.MatteBorder;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
@@ -280,7 +281,7 @@ public class PrintPreview
 			}
 			catch (PrinterException e)
 			{
-				LogMgr.logError("PrintPreview.updateDisplay()", "Error when creating preview", e);
+        LogMgr.logError(new CallerInfo(){}, "Error when creating preview", e);
 				WbSwingUtilities.showErrorMessage(this, ResourceMgr.getString("MsgPrintPreviewError") + "\n" + e.getMessage());
 			}
 		}
@@ -327,7 +328,7 @@ public class PrintPreview
 		}
 		catch (PrinterException ex)
 		{
-			LogMgr.logError("PrintPreview.doPrint()", "Error when printing", ex);
+			LogMgr.logError(new CallerInfo(){}, "Error when printing", ex);
 		}
 	}
 
@@ -440,7 +441,7 @@ public class PrintPreview
 		}
 		catch (Throwable th)
 		{
-			LogMgr.logError("PrintPreview.changeZoom()", "Error when changing the zoom factor", th);
+			LogMgr.logError(new CallerInfo(){}, "Error when changing the zoom factor", th);
 		}
 		finally
 		{

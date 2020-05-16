@@ -32,6 +32,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 import workbench.interfaces.SimplePropertyEditor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -79,7 +80,7 @@ public class NumberPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("NumberPropertyEditor.setSourceObject()", "Error during init", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during init", e);
     }
     doc = this.getDocument();
     if (doc != null) doc.addDocumentListener(this);
@@ -100,7 +101,7 @@ public class NumberPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("NumberPropertyEditor.applyChanges", "Error applying changes", e);
+      LogMgr.logError(new CallerInfo(){}, "Error applying changes", e);
     }
   }
 

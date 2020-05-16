@@ -23,12 +23,15 @@ package workbench.db.hana;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
+
 import workbench.util.SqlUtil;
-import workbench.util.StringUtil;
 
 /**
  *
@@ -63,7 +66,7 @@ public class HanaUtil
     }
     catch (Exception ex)
     {
-      LogMgr.logError("HanaUtil.getObjectDefinition()", "Could not read object source for " + dbo.getObjectExpression(connection), ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read object source for " + dbo.getObjectExpression(connection), ex);
     }
     finally
     {

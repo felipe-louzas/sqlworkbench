@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -98,15 +99,12 @@ public class FirebirdIndexReader
   {
     if (this.indexStatement != null)
     {
-      LogMgr.logWarning("FirebirdIndexReader.getIndexInfo()", "getIndexInfo() called with pending results!");
+      LogMgr.logWarning(new CallerInfo(){}, "getIndexInfo() called with pending results!");
       indexInfoProcessed();
     }
     WbConnection con = this.metaData.getWbConnection();
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("FirebirdIndexReader.getIndexInfo()", "Using SQL:\n " + SqlUtil.replaceParameters(GET_INDEX_INFO, table.getTableName()));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "index info", GET_INDEX_INFO, table.getTableName());
 
     this.indexStatement = con.getSqlConnection().prepareStatement(GET_INDEX_INFO);
     this.indexStatement.setString(1, table.getRawTableName());

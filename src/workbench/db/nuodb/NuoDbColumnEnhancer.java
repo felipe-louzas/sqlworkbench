@@ -27,8 +27,8 @@ package workbench.db.nuodb;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
@@ -67,10 +67,7 @@ public class NuoDbColumnEnhancer
       "and schema = ? \n" +
       "and generator_sequence is not null ";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("NuoDbColumnEnhancer.readIdentityColumns()", "Query to retrieve identity columns:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "identity columns", sql);
 
     try
     {
@@ -92,7 +89,7 @@ public class NuoDbColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("NuoDbColumnEnhancer.readIdentityColumns()", "Error retrieving computed columns", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "identity columns", sql);
     }
     finally
     {

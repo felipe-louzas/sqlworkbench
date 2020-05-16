@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -131,10 +132,7 @@ public class DerbySequenceReader
       SqlUtil.appendExpression(sql, "seq.sequencename", namePattern, null);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("DerbySequenceReader.getRawSequenceDefinition()", "Using query=\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -147,7 +145,7 @@ public class DerbySequenceReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("DerbySequenceReader.getRawSequenceDefinition()", "Error when retrieving sequence definition", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql);
     }
     finally
     {

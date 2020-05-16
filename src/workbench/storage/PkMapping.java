@@ -36,12 +36,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+
+import workbench.log.CallerInfo;
+
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
@@ -117,7 +122,7 @@ public class PkMapping
     File f = new File(filename);
     if (!f.exists())
     {
-      LogMgr.logWarning("PkConfig.readMappingFile()", "Mapping file '" + filename + "' not found! Please check workbench.settings", null);
+      LogMgr.logWarning(new CallerInfo(){}, "Mapping file '" + filename + "' not found! Please check workbench.settings", null);
       return;
     }
     InputStream in = null;
@@ -128,7 +133,7 @@ public class PkMapping
     }
     catch (Exception e)
     {
-      LogMgr.logError("PkMapping.readMappingFile()", "Error reading mapping file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading mapping file", e);
       this.columnMapping.clear();
     }
     finally
@@ -136,7 +141,7 @@ public class PkMapping
       FileUtil.closeQuietely(in);
     }
 
-    LogMgr.logInfo("PkMapping.readMappingFile()", "Using PK mappings from " + f.getAbsolutePath());
+    LogMgr.logInfo(new CallerInfo(){}, "Using PK mappings from " + f.getAbsolutePath());
 
     Iterator<Entry<Object, Object>> itr = props.entrySet().iterator();
     while (itr.hasNext())
@@ -188,7 +193,7 @@ public class PkMapping
     if (columns != null)
     {
       cols = StringUtil.stringToList(columns, ",", true, true);
-      LogMgr.logInfo("PkMapping.getPKColumns()", "Using PK Columns [" + columns + "]" + " for table [" + tbl.getTableExpression() + "]");
+      LogMgr.logInfo(new CallerInfo(){}, "Using PK Columns [" + columns + "]" + " for table [" + tbl.getTableExpression() + "]");
     }
     return cols;
   }
@@ -223,7 +228,7 @@ public class PkMapping
     }
     catch (Exception e)
     {
-      LogMgr.logError("PkMapping.saveMapping()", "Error saving mapping to properties file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error saving mapping to properties file", e);
     }
     finally
     {

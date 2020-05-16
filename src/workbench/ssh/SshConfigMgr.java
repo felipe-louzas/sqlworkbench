@@ -260,11 +260,11 @@ public class SshConfigMgr
 
       loaded = true;
       changed = false;
-      LogMgr.logInfo("SshConfigMgr.loadConfigs()", "Loaded global SSH host configurations from " + configFile.getFullPath());
+      LogMgr.logInfo(new CallerInfo(){}, "Loaded global SSH host configurations from " + configFile.getFullPath());
     }
     catch (Exception ex)
     {
-      LogMgr.logWarning("SshConfigMgr.loadConfigs()", "Could not load global SSH host configurations", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not load global SSH host configurations", ex);
       loaded = false;
     }
   }

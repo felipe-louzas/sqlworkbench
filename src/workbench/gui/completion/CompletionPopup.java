@@ -54,6 +54,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import workbench.interfaces.ResultSetter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ColumnSortType;
 import workbench.resource.GeneratedIdentifierCase;
@@ -246,7 +247,7 @@ public class CompletionPopup
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("CompletionPopup.showPopup()", "Error displaying popup window",e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error displaying popup window",e);
     }
   }
 

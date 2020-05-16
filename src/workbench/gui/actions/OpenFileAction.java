@@ -32,6 +32,7 @@ import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.TextFileContainer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.PlatformShortcuts;
@@ -225,7 +226,7 @@ public class OpenFileAction
     }
     catch (Throwable th)
     {
-      LogMgr.logError("EditorPanel.openFile()", "Error selecting file", th);
+      LogMgr.logError(new CallerInfo(){}, "Error selecting file", th);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(th));
     }
   }

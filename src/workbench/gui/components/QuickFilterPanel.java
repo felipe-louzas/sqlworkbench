@@ -52,6 +52,7 @@ import javax.swing.border.Border;
 import workbench.interfaces.CriteriaPanel;
 import workbench.interfaces.PropertyStorage;
 import workbench.interfaces.QuickFilter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -425,13 +426,13 @@ public class QuickFilterPanel
         catch (PatternSyntaxException e)
         {
           searchTable.resetFilter();
-          LogMgr.logError("QuickFilterPanel.applyQuickFilter()", "Cannot apply filter expression", e);
+          LogMgr.logError(new CallerInfo(){}, "Cannot apply filter expression", e);
           String msg = ResourceMgr.getFormattedString("ErrBadRegex", filterExpression);
           WbSwingUtilities.showErrorMessage(this, msg);
         }
         catch (Throwable ex)
         {
-          LogMgr.logError("QuickFilterPanel.applyQuickFilter()", "Cannot apply filter expression", ex);
+          LogMgr.logError(new CallerInfo(){}, "Cannot apply filter expression", ex);
           WbSwingUtilities.showErrorMessage(this, ex.getLocalizedMessage());
         }
       }

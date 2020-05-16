@@ -35,6 +35,7 @@ import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.BadLocationException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 
@@ -122,7 +123,7 @@ public class RowHeightOptimizer
     }
     catch (Throwable th)
     {
-      LogMgr.logDebug("RowHeightOptimizer.countWrappedLines()", "Error when counting lines", th);
+      LogMgr.logDebug(new CallerInfo(){}, "Error when counting lines", th);
       numLines = 1;
     }
     return numLines;
@@ -144,7 +145,7 @@ public class RowHeightOptimizer
     {
       // if something goes wrong because the TextArea wasn't initialized properly,
       // fall back to the less accurate method
-      LogMgr.logDebug("RowHeightOptimizer.countVisibleLines()", "Error when counting lines", th);
+      LogMgr.logDebug(new CallerInfo(){}, "Error when counting lines", th);
       lineCount = countWrappedLines(edit, colWidth - 32);
     }
     return lineCount;
@@ -242,7 +243,7 @@ public class RowHeightOptimizer
     }
     catch (BadLocationException e)
     {
-      LogMgr.logError("RowHeightOptimizer.getLineCount()", "Error when calculating lines", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when calculating lines", e);
       return lines;
     }
     return line + 1;

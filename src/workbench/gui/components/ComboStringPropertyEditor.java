@@ -38,6 +38,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import workbench.interfaces.SimplePropertyEditor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 
@@ -84,7 +85,7 @@ public class ComboStringPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("ComboStringPropertyEditor.setSourceObject()", "Error during init", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during init", e);
     }
     startEvents();
   }
@@ -153,7 +154,7 @@ public class ComboStringPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("ComboStringPropertyEditor.intiData", "Error", e);
+      LogMgr.logError(new CallerInfo(){}, "Error", e);
     }
   }
 
@@ -182,7 +183,7 @@ public class ComboStringPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("ComboStringPropertyEditor.setSourceObject()", "Error during init", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during init", e);
     }
   }
 

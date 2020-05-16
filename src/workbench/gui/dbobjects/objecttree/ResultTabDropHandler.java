@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -199,7 +200,7 @@ public class ResultTabDropHandler
       }
       catch (Exception ex)
       {
-        LogMgr.logError("ResultTabDropHandler.dragEnter()", "Error processing drag event", ex);
+        LogMgr.logError(new CallerInfo(){}, "Error processing drag event", ex);
       }
     }
 
@@ -234,7 +235,7 @@ public class ResultTabDropHandler
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ResultTabDropHandler.drop()", "Error processing drop event", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error processing drop event", ex);
       dropTargetDropEvent.rejectDrop();
     }
   }

@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
@@ -88,10 +88,7 @@ public class H2ConstantReader
     }
     sql.append(" ORDER BY 1, 2 ");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("H2ConstantReader.getSql()", "Using SQL=\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "constants", sql);
 
     return sql.toString();
   }
@@ -126,7 +123,7 @@ public class H2ConstantReader
     catch (SQLException e)
     {
       connection.rollback(sp);
-      LogMgr.logError("H2ConstantReader.getConstantsList()", "Could not read constants", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read constants", e);
     }
     finally
     {

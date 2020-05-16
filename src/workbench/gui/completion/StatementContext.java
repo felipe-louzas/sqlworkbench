@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DBID;
@@ -302,7 +303,7 @@ public class StatementContext
     }
     catch (Exception e)
     {
-      LogMgr.logError("StatementContenxt.inSubSelect()", "Error when checking sub-select", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when checking sub-select", e);
     }
 
     return null;

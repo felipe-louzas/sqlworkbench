@@ -42,6 +42,7 @@ import javax.swing.event.ListSelectionListener;
 import workbench.interfaces.Interruptable;
 import workbench.interfaces.Reloadable;
 import workbench.interfaces.Resettable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.IconMgr;
@@ -252,7 +253,7 @@ public class FkDisplayPanel
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("FkDisplayPanel.reloadTable()", "Could not reload constraints", sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not reload constraints", sql);
     }
   }
 
@@ -368,7 +369,7 @@ public class FkDisplayPanel
     final TableIdentifier tbl = getReferencedTable(selected);
     if (tbl == null) return;
 
-    LogMgr.logDebug("FkDisplayPanel.actionPerformed()", "Trying to select table: " + tbl.getTableName());
+    LogMgr.logDebug(new CallerInfo(){}, "Trying to select table: " + tbl.getTableName());
     WbSwingUtilities.invokeLater(() ->
     {
       tables.selectTable(tbl);

@@ -31,6 +31,7 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -129,7 +130,7 @@ public class ViewLogfileAction
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ViewLogFileAction.openWithSystem()", "Error when opening logfile", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error when opening logfile", ex);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(ex));
     }
     return false;
@@ -151,7 +152,7 @@ public class ViewLogfileAction
         }
         catch (Exception e)
         {
-          LogMgr.logError("ViewLogFileAction.executeAction()", "Error displaying the log file", e);
+          LogMgr.logError(new CallerInfo(){}, "Error displaying the log file", e);
           WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
         }
       }

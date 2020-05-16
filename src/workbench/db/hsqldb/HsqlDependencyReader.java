@@ -28,8 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbObject;
 import workbench.db.TableIdentifier;
@@ -100,11 +100,8 @@ public class HsqlDependencyReader
 
     List<DbObject> result = new ArrayList<>();
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      String s = SqlUtil.replaceParameters(sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
-      LogMgr.logDebug("HsqlDependencyReader.retrieveObjects()", "Retrieving dependent objects using query:\n" + s);
-    }
+    String s = SqlUtil.replaceParameters(sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", s);
 
     try
     {
@@ -127,8 +124,7 @@ public class HsqlDependencyReader
     }
     catch (Exception ex)
     {
-      String s = SqlUtil.replaceParameters(sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
-      LogMgr.logError("HsqlDependencyReader.retrieveObjects()", "Could not read object dependency using:\n" + s, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", s);
     }
     finally
     {

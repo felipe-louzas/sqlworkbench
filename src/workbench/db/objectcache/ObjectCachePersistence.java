@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
@@ -82,7 +83,7 @@ class ObjectCachePersistence
     long age = System.currentTimeMillis() - cacheFile.lastModified();
     if (age >= maxAge || age < 0)
     {
-      LogMgr.logInfo("ObjectCachePersistence.loadFromLocalFile()", "Cache file " + cacheFile.getFullPath() + " was discarded because it is too old (max. age=" + maxAgeValue + ").");
+      LogMgr.logInfo(new CallerInfo(){}, "Cache file " + cacheFile.getFullPath() + " was discarded because it is too old (max. age=" + maxAgeValue + ").");
       cacheFile.delete();
       return;
     }
@@ -161,7 +162,7 @@ class ObjectCachePersistence
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ObjectCachePersistence.loadFromCache()", "Could not read local storage", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not read local storage", th);
       // Something went wrong during loading. Consider the cache file corrupt and delete it
       cacheFile.delete();
     }
@@ -173,7 +174,7 @@ class ObjectCachePersistence
       }
       catch (Throwable th)
       {
-        LogMgr.logError("ObjectCachePersistence.loadFromCache()", "Could not close local storage file", th);
+        LogMgr.logError(new CallerInfo(){}, "Could not close local storage file", th);
       }
     }
   }
@@ -186,7 +187,7 @@ class ObjectCachePersistence
     {
       if (cacheFile.delete())
       {
-        LogMgr.logInfo("ObjectCachePersistence.deleteCacheFile()", "Deleted local storage file: " + cacheFile.getFullPath());
+        LogMgr.logInfo(new CallerInfo(){}, "Deleted local storage file: " + cacheFile.getFullPath());
       }
     }
     catch (Throwable th)
@@ -235,7 +236,7 @@ class ObjectCachePersistence
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ObjectCachePersistence.saveCache()", "Could not write cache file", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not write cache file", ex);
       cacheFile.delete();
     }
     finally
@@ -246,11 +247,11 @@ class ObjectCachePersistence
       }
       catch (Exception io)
       {
-        LogMgr.logError("ObjectCachePersistence.saveCache()", "Could not close ZIP archive", io);
+        LogMgr.logError(new CallerInfo(){}, "Could not close ZIP archive", io);
         cacheFile.delete();
       }
     }
-    LogMgr.logDebug("ObjectCachePersistence.saveCache()", "Current object cache written to: " + cacheFile.getFullPath());
+    LogMgr.logDebug(new CallerInfo(){}, "Current object cache written to: " + cacheFile.getFullPath());
   }
 
   private void writeObject(ZipOutputStream zout, String filename, Object toWrite)
@@ -265,7 +266,7 @@ class ObjectCachePersistence
     }
     catch (InvalidClassException | NotSerializableException ice)
     {
-      LogMgr.logError("ObjectCachePersistence.writeObject()", "Could not write cache entry: " + filename, ice);
+      LogMgr.logError(new CallerInfo(){}, "Could not write cache entry: " + filename, ice);
     }
   }
 
@@ -296,11 +297,11 @@ class ObjectCachePersistence
     {
       if (cacheDir.mkdirs())
       {
-        LogMgr.logInfo("ObjectCachePersistence.getCacheFile()", "Created cache directory for local cache storage: " + cacheDir.getFullPath());
+        LogMgr.logInfo(new CallerInfo(){}, "Created cache directory for local cache storage: " + cacheDir.getFullPath());
       }
       else
       {
-        LogMgr.logWarning("ObjectCachePersistence.getCacheFile()", "Could not create cache directory \"" + cacheDir.getFullPath() + "\". Using config directory: " + configDir.getFullPath());
+        LogMgr.logWarning(new CallerInfo(){}, "Could not create cache directory \"" + cacheDir.getFullPath() + "\". Using config directory: " + configDir.getFullPath());
         cacheDir = configDir;
       }
     }

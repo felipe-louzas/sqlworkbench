@@ -167,7 +167,7 @@ public class InformixColumnEnhancer
 
           String dbms = SqlUtil.getPlainTypeName(col.getDbmsType());
           String newType = dbms + " " + typeDesc;
-          LogMgr.logDebug("InformixColumnEnhancer.updateDateColumns()",
+          LogMgr.logDebug(new CallerInfo(){},
             "Column " + tablename + "." + colname + " has collength of: " + colLength + ". Changing type '" + col.getDbmsType() + "' to '" + newType + "'");
           col.setDbmsType(newType);
         }

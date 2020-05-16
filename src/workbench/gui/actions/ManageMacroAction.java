@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
@@ -69,7 +70,7 @@ public class ManageMacroAction
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ManageMacroAction.executeAction()", "Could not open MacroManagerDialog", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not open MacroManagerDialog", th);
     }
   }
 

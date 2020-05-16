@@ -21,12 +21,18 @@
 package workbench.sql.wbcommands;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
+
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.WbConnection;
+
 import workbench.gui.profiles.ProfileKey;
+
 import workbench.log.LogMgr;
+
 import workbench.sql.StatementRunnerResult;
+
 import workbench.util.ArgumentParser;
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
@@ -67,13 +73,13 @@ public class CommandLineConnectionHandler
       }
       catch (InvalidConnectionDescriptor icd)
       {
-        LogMgr.logError("CommandLineConnectionHandler.getConnection()", "Error connecting to database", icd);
+        LogMgr.logError(new CallerInfo(){}, "Error connecting to database", icd);
         result.addErrorMessage(icd.getLocalizedMessage());
         return null;
       }
       catch (Exception e)
       {
-        LogMgr.logError("CommandLineConnectionHandler.getConnection()", "Error connecting to database", e);
+        LogMgr.logError(new CallerInfo(){}, "Error connecting to database", e);
         result.addMessageByKey("ErrConnectDescriptor", desc);
         result.addErrorMessage(ExceptionUtil.getDisplay(e));
         return null;
@@ -108,7 +114,7 @@ public class CommandLineConnectionHandler
       }
       catch (Exception e)
       {
-        LogMgr.logError("CommandLineConnectionHandler.getConnectionFromKey()", "Error connecting to database", e);
+        LogMgr.logError(new CallerInfo(){}, "Error connecting to database", e);
         result.addMessageByKey("ErrConnectProfile", profileKey.toString());
         result.addErrorMessage(ExceptionUtil.getDisplay(e));
         return null;

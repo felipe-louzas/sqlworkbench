@@ -290,7 +290,7 @@ public class JdbcUtils
     catch (Throwable ex)
     {
       dbConnection.rollback(sp);
-      LogMgr.logError("JdbcUtils.runStatement()", "Error running statement", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error running statement", ex);
     }
     return rs;
   }

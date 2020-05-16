@@ -43,6 +43,7 @@ import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSelectBuilder;
 import workbench.db.WbConnection;
+
 import workbench.gui.MainWindow;
 import workbench.gui.actions.CreateSnippetAction;
 import workbench.gui.actions.WbAction;
@@ -50,9 +51,12 @@ import workbench.gui.components.WbMenu;
 import workbench.gui.components.WbMenuItem;
 import workbench.gui.sql.PanelContentSender;
 import workbench.gui.sql.PasteType;
+
 import workbench.interfaces.FilenameChangeListener;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+
 import workbench.util.CollectionUtil;
 import workbench.util.NumberStringCache;
 
@@ -217,7 +221,7 @@ public class EditorTabSelectMenu
     }
     catch (Exception e)
     {
-      LogMgr.logError("TableListPanel.fileNameChanged()", "Error when updating the popup menu", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when updating the popup menu", e);
     }
   }
 
@@ -271,7 +275,7 @@ public class EditorTabSelectMenu
     }
     catch (Exception ex)
     {
-      LogMgr.logError("EditorTabSelectMenu.showTableData()", "Could not build SELECT statement", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not build SELECT statement", ex);
     }
   }
 
@@ -308,7 +312,7 @@ public class EditorTabSelectMenu
       }
       catch (Exception ex)
       {
-        LogMgr.logError("TableListPanel().actionPerformed()", "Error when accessing editor tab", ex);
+        LogMgr.logError(new CallerInfo(){}, "Error when accessing editor tab", ex);
       }
     }
     else if (CMD_CLIPBOARD.equals(command))

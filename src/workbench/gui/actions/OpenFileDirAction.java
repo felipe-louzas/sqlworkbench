@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import workbench.interfaces.TextFileContainer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.gui.WbSwingUtilities;
@@ -55,7 +56,7 @@ public class OpenFileDirAction
       desktopAvailable = Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN);
       if (!desktopAvailable)
       {
-        LogMgr.logWarning("OpenFileDirAction", "Desktop or Desktop.open() not supported!");
+        LogMgr.logWarning(new CallerInfo(){}, "Desktop or Desktop.open() not supported!");
       }
     }
     this.setEnabled(hasFile && desktopAvailable);

@@ -21,6 +21,7 @@
  */
 package workbench.util;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -49,7 +50,7 @@ public class WbThread
   @Override
   public void uncaughtException(Thread thread, Throwable error)
   {
-    LogMgr.logError("WbThread.uncaughtException()", "Thread + " + thread.getName() + " caused an exception", error);
+    LogMgr.logError(new CallerInfo(){}, "Thread + " + thread.getName() + " caused an exception", error);
   }
 
   /**
@@ -79,7 +80,7 @@ public class WbThread
     }
     catch (InterruptedException ie)
     {
-      LogMgr.logWarning("WbThread.runWithTimeout()", "Waiting was interrupted", ie);
+      LogMgr.logWarning(new CallerInfo(){}, "Waiting was interrupted", ie);
     }
   }
 }

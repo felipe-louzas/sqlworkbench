@@ -25,6 +25,7 @@ package workbench.gui.completion;
 
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.TableIdentifier;
@@ -135,7 +136,7 @@ public class CreateAnalyzer
     }
     catch (Exception e)
     {
-      LogMgr.logError("CreateAnalyzer", "Error parsing SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error parsing SQL", e);
     }
 
     if (showTables)

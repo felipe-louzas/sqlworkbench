@@ -24,6 +24,7 @@
 package workbench.gui.editor;
 
 import workbench.interfaces.SqlTextContainer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.gui.WbSwingUtilities;
@@ -143,7 +144,7 @@ public class TextFormatter
       }
       catch (Exception e)
       {
-        LogMgr.logError("EditorPanel.reformatSql()", "Error when formatting SQL", e);
+        LogMgr.logError(new CallerInfo(){}, "Error when formatting SQL", e);
       }
     }
 

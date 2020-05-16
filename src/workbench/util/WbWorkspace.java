@@ -349,7 +349,7 @@ public class WbWorkspace
     }
     catch (Exception ex)
     {
-      LogMgr.logError("WbWorkspace.readVariables()", "Could not read variables file", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read variables file", ex);
     }
   }
 
@@ -423,7 +423,7 @@ public class WbWorkspace
     }
     catch (IOException ex)
     {
-      LogMgr.logError("WbWorkspace.saveVariables()", "Could not write variables", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not write variables", ex);
       throw ex;
     }
     finally
@@ -447,7 +447,7 @@ public class WbWorkspace
     }
     catch (IOException ex)
     {
-      LogMgr.logError("WbWorkspace.saveToolProperties()", "Could not write variables", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not write variables", ex);
       throw ex;
     }
     finally
@@ -472,7 +472,7 @@ public class WbWorkspace
         }
         catch (IOException ex)
         {
-          LogMgr.logError("WbWorkspace.saveHistory()", "Could not history for tab index: " + historyEntry.getKey(), ex);
+          LogMgr.logError(new CallerInfo(){}, "Could not history for tab index: " + historyEntry.getKey(), ex);
           throw ex;
         }
         finally
@@ -496,7 +496,7 @@ public class WbWorkspace
     }
     catch (IOException ex)
     {
-      LogMgr.logError("WbWorkspace.saveToolProperties()", "Could not write variables", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not write variables", ex);
       throw ex;
     }
     finally
@@ -525,7 +525,7 @@ public class WbWorkspace
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbWorkspace.readProperties()", "Could not read property file: " + entry.getName(), e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read property file: " + entry.getName(), e);
     }
     return props;
   }

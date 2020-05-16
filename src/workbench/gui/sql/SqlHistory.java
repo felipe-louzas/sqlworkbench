@@ -32,6 +32,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -137,7 +138,7 @@ public class SqlHistory
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlHistory.addContent(editor)", "Could not add entry", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not add entry", e);
     }
     checkActions();
   }
@@ -297,7 +298,7 @@ public class SqlHistory
     }
     catch (IOException e)
     {
-      LogMgr.logError("SqlHistory.writeToStream()", "Could not write history!", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not write history!", e);
     }
   }
 
@@ -337,7 +338,7 @@ public class SqlHistory
           }
           catch (Exception e)
           {
-            LogMgr.logError("SqlHistory.readFromStream()", "Error when creating SqlHistoryEntry", e);
+            LogMgr.logError(new CallerInfo(){}, "Error when creating SqlHistoryEntry", e);
           }
         }
         else if (line.startsWith(KEY_POS))
@@ -367,7 +368,7 @@ public class SqlHistory
     }
     catch (IOException e)
     {
-      LogMgr.logError("SqlHistory.readFromStream()", "Could not read history!", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read history!", e);
     }
 
     if (content.length() > 0)

@@ -29,6 +29,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.FileActions;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -65,7 +66,7 @@ public class DeleteListEntryAction
     }
     catch (Exception ex)
     {
-      LogMgr.logError(this, "Error saving profiles", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error saving profiles", ex);
     }
   }
 

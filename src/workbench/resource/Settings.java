@@ -319,18 +319,20 @@ public class Settings
 			System.setProperty("workbench.config.dir", configfile.getParentFile().getAbsolutePath());
 		}
 
+    final CallerInfo ci = new CallerInfo(){};
+
 		if (configLoaded || isTestMode())
 		{
 			initLogging();
 
 			// These messages should not be logged before initLogging() has been called!
-			LogMgr.logInfo("Settings.initialize()", "Using configdir: " + configfile.getParentFile().getAbsolutePath());
-			LogMgr.logDebug("Settings.initialize()", "Using default xstlDir: " + getDefaultXsltDirectory());
-			LogMgr.logDebug("Settings.initialize()", "Last modification time of loaded config file: " + this.fileTime);
+			LogMgr.logInfo(ci, "Using configdir: " + configfile.getParentFile().getAbsolutePath());
+			LogMgr.logDebug(ci, "Using default xstlDir: " + getDefaultXsltDirectory());
+			LogMgr.logDebug(ci, "Last modification time of loaded config file: " + this.fileTime);
 
 			if (getBoolProperty("workbench.db.resetdefaults"))
 			{
-				LogMgr.logInfo("Settings.initialize()", "Resetting database properties to built-in defaults");
+				LogMgr.logInfo(ci, "Resetting database properties to built-in defaults");
 				resetDefaults();
 			}
 		}
@@ -339,7 +341,7 @@ public class Settings
 		{
       FileAttributeChanger changer = new FileAttributeChanger();
 			// For some reason the settings are not properly saved under Windows 7 if the config directory is hidden
-			LogMgr.logDebug("Settings.initialize()", "Removing hidden attribute of the configuration directory");
+			LogMgr.logDebug(ci, "Removing hidden attribute of the configuration directory");
 			changer.removeHidden(cfd);
 		}
 	}
@@ -448,7 +450,7 @@ public class Settings
 
 			if (configuredFile != null)
 			{
-				LogMgr.logWarning("Settings.initLogging()", "Could not write requested logfile '" + configuredFile + "'");
+				LogMgr.logWarning(new CallerInfo(){}, "Could not write requested logfile '" + configuredFile + "'");
 			}
 		}
 		catch (Throwable e)
@@ -582,7 +584,7 @@ public class Settings
 			}
 			catch (Exception e)
 			{
-				LogMgr.logError("Settings.getLanguages()", "Invalid locale specified: " + c, e);
+				LogMgr.logError(new CallerInfo(){}, "Invalid locale specified: " + c, e);
 			}
 		}
 		return result;
@@ -598,7 +600,7 @@ public class Settings
 		}
 		catch (Exception e)
 		{
-			LogMgr.logError("Settings.getLanguage()", "Error creating Locale for language=" + lanCode, e);
+			LogMgr.logError(new CallerInfo(){}, "Error creating Locale for language=" + lanCode, e);
 			l = new Locale("en");
 		}
 		return l;
@@ -1396,7 +1398,7 @@ public class Settings
     }
     catch (Throwable th)
     {
-      LogMgr.logError("Setting.getScaleFactor()", "Invalid font scale factor specified: " + scaleFactor, th);
+      LogMgr.logError(new CallerInfo(){}, "Invalid font scale factor specified: " + scaleFactor, th);
     }
     return factor;
   }
@@ -3158,7 +3160,7 @@ public class Settings
 		}
 		catch (Exception e)
 		{
-			LogMgr.logError("Settings.getSortLocale()", "Error creating collation", e);
+			LogMgr.logError(new CallerInfo(){}, "Error creating collation", e);
 			l = Locale.getDefault();
 		}
 		return l;
@@ -3272,7 +3274,7 @@ public class Settings
       }
       catch (Throwable e)
       {
-        LogMgr.logWarning("Settings.getEnumProperty()", "Invalid enum value '" + value + "' specified");
+        LogMgr.logWarning(new CallerInfo(){}, "Invalid enum value '" + value + "' specified");
       }
     }
     return defaultValue;
@@ -3510,11 +3512,11 @@ public class Settings
     Rectangle toDisplay = new Rectangle(x, y, target.getWidth(), target.getHeight());
 		if (WbSwingUtilities.isOutsideOfScreen(toDisplay))
 		{
-			LogMgr.logInfo("Settings.restoreWindowPosition()", "Stored window position " + WbSwingUtilities.displayString(toDisplay) + " not restored because it is outside the current screen size: " + WbSwingUtilities.displayString(screen));
+			LogMgr.logInfo(new CallerInfo(){}, "Stored window position " + WbSwingUtilities.displayString(toDisplay) + " not restored because it is outside the current screen size: " + WbSwingUtilities.displayString(screen));
 			return false;
 		}
 
-		LogMgr.logDebug("Settings.restoreWindowPosition()", "Restoring window position for '" + id + "', " +
+		LogMgr.logDebug(new CallerInfo(){}, "Restoring window position for '" + id + "', " +
 			"current screen size: " + WbSwingUtilities.displayString(screen)  + ", requested position: " + WbSwingUtilities.displayString(toDisplay));
 
 		WbSwingUtilities.invoke(() ->
@@ -3599,7 +3601,7 @@ public class Settings
 		}
 		for (Map.Entry<String, String> entry : toChange.entrySet())
 		{
-			LogMgr.logDebug("Settings.replacePartialKey", "Renaming: " + entry.getKey() + " to " + entry.getValue());
+			LogMgr.logDebug(new CallerInfo(){}, "Renaming: " + entry.getKey() + " to " + entry.getValue());
 			renameProperty(entry.getKey(), entry.getValue());
 		}
 	}
@@ -3771,7 +3773,7 @@ public class Settings
 		}
 		catch (Throwable e)
 		{
-			LogMgr.logWarning("Settings.removeObsolete()", "Error when removing obsolete properties", e);
+			LogMgr.logWarning(new CallerInfo(){}, "Error when removing obsolete properties", e);
 		}
 	}
 
@@ -3785,7 +3787,7 @@ public class Settings
 		}
 		catch (IOException e)
 		{
-			LogMgr.logError(this, "Could not read default settings", e);
+			LogMgr.logError(new CallerInfo(){}, "Could not read default settings", e);
 		}
 		finally
 		{
@@ -3803,7 +3805,7 @@ public class Settings
 		}
 		catch (IOException e)
 		{
-			LogMgr.logError(this, "Could not read default settings", e);
+			LogMgr.logError(new CallerInfo(){}, "Could not read default settings", e);
 		}
 		finally
 		{
@@ -3823,17 +3825,17 @@ public class Settings
 
 		if (time <= 0)
 		{
-			LogMgr.logWarning("Settings.wasExternallyModified()", "ConfigFile lastModified(): " + time);
+			LogMgr.logWarning(new CallerInfo(){}, "ConfigFile lastModified(): " + time);
 		}
 
 		if (time < this.fileTime)
 		{
-			LogMgr.logWarning("Settings.wasExternallyModified()", "Current modified time: " + time + " original modified time: " + fileTime);
+			LogMgr.logWarning(new CallerInfo(){}, "Current modified time: " + time + " original modified time: " + fileTime);
 		}
 		boolean wasModified = time > this.fileTime;
 		if (wasModified)
 		{
-			LogMgr.logInfo("Settings.wasExternallyModified()", "Config file was externally modified. Current time: " + time + " original time: " + fileTime);
+			LogMgr.logInfo(new CallerInfo(){}, "Config file was externally modified. Current time: " + time + " original time: " + fileTime);
 		}
 		return wasModified;
 	}
@@ -3866,14 +3868,14 @@ public class Settings
 	{
 		if (this.props == null)
 		{
-			LogMgr.logWarning("Settings.saveSettings()", "saveSettings() called but properties are null!");
+			LogMgr.logWarning(new CallerInfo(){}, "saveSettings() called but properties are null!");
 			return;
 		}
 
 		// Never save settings in test mode
 		if (isTestMode())
 		{
-			LogMgr.logTrace("Settings.saveSettings()", "Test mode active. Settings are not saved.");
+			LogMgr.logTrace(new CallerInfo(){}, "Test mode active. Settings are not saved.");
 			return;
 		}
 
@@ -3888,7 +3890,7 @@ public class Settings
 		if (renameExistingFile || (createBackup && !makeVersionedBackups))
 		{
       WbFile bck = this.configfile.makeBackup();
-			LogMgr.logInfo("Settings.saveSettings()", "Created backup of global settings file: " + bck);
+			LogMgr.logInfo(new CallerInfo(){}, "Created backup of global settings file: " + bck);
 		}
 
 		if (makeVersionedBackups)
@@ -3904,20 +3906,20 @@ public class Settings
 		if (!cfd.exists())
 		{
 			// this can happen in console mode
-			LogMgr.logInfo("Settings.saveSettings()", "Creating config directory to store settings");
+			LogMgr.logInfo(new CallerInfo(){}, "Creating config directory to store settings");
 			cfd.mkdirs();
 		}
 
 		try
 		{
 			WbProperties defaults = getDefaultProperties();
-			LogMgr.logDebug("Settings.saveSettings()", "Saving global settings to: " + configfile.getFullPath());
+			LogMgr.logDebug(new CallerInfo(){}, "Saving global settings to: " + configfile.getFullPath());
 			this.props.saveToFile(this.configfile, defaults);
 			fileTime = configfile.lastModified();
 		}
 		catch (Throwable th)
 		{
-			LogMgr.logError(this, "Error saving Settings file '" + configfile.getFullPath() + "'", th);
+			LogMgr.logError(new CallerInfo(){}, "Error saving Settings file '" + configfile.getFullPath() + "'", th);
 		}
 
 		if (this.getPKMappingFilename() != null && PkMapping.isInitialized())

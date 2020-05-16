@@ -30,6 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ConnectionMgr;
@@ -56,7 +57,7 @@ public class OracleTZHandler
     }
     catch (Throwable t)
     {
-      LogMgr.logWarning("OracleRowDataReader.initialize()", "Class oracle.sql.TIMESTAMPTZ not available!");
+      LogMgr.logWarning(new CallerInfo(){}, "Class oracle.sql.TIMESTAMPTZ not available!");
     }
   }
 
@@ -89,7 +90,7 @@ public class OracleTZHandler
     }
     catch (Throwable th)
     {
-      LogMgr.logError("OracleTZHandler.convertTimestampTZ()", "Error converting input to TIMESTAMPTZ", th);
+      LogMgr.logError(new CallerInfo(){}, "Error converting input to TIMESTAMPTZ", th);
     }
 
     return input;

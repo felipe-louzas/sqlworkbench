@@ -32,6 +32,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import workbench.interfaces.SimplePropertyEditor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -80,7 +81,7 @@ public class PasswordPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("PasswordPropertyEditor.setSourceObject()", "Error during init", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during init", e);
     }
     this.getDocument().addDocumentListener(this);
   }
@@ -102,7 +103,7 @@ public class PasswordPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("PasswordPropertyEditor.applyChanges", "Error applying changes", e);
+      LogMgr.logError(new CallerInfo(){}, "Error applying changes", e);
     }
   }
 

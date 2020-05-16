@@ -87,6 +87,7 @@ import workbench.interfaces.Disposable;
 import workbench.interfaces.FontChangedListener;
 import workbench.interfaces.ListSelectionControl;
 import workbench.interfaces.Resettable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.PlatformShortcuts;
@@ -1407,7 +1408,7 @@ public class WbTable
     if (!SwingUtilities.isEventDispatchThread())
     {
       Exception e = new Exception("Wrong thread!");
-      LogMgr.logWarning("WbTable.setModel()", "setModel() not called in EDT!", e);
+      LogMgr.logWarning(new CallerInfo(){}, "setModel() not called in EDT!", e);
     }
     removeListeners();
     rowHeightWasOptimized = false;
@@ -1433,7 +1434,7 @@ public class WbTable
     }
     catch (Throwable th)
     {
-      LogMgr.logError("WbTable.setModel()", "Error setting table model", th);
+      LogMgr.logError(new CallerInfo(){}, "Error setting table model", th);
     }
 
     this.currentFilter = null;
@@ -1997,7 +1998,7 @@ public class WbTable
       }
       catch (Throwable th)
       {
-        LogMgr.logWarning("WbTable.isBlobColumn()","Error checking for converted blob", th);
+        LogMgr.logWarning(new CallerInfo(){},"Error checking for converted blob", th);
         return true;
       }
     }
@@ -2553,7 +2554,7 @@ public class WbTable
       }
       catch (SQLException e)
       {
-        LogMgr.logError("WbTable.selectKeyColumns()", "Error when retrieving key columns", e);
+        LogMgr.logError(new CallerInfo(){}, "Error when retrieving key columns", e);
       }
     }
 
@@ -2597,7 +2598,7 @@ public class WbTable
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbTable.detectDefinedPkColumns()", "Could not read PK columns", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read PK columns", e);
       return false;
     }
     return ds.hasPkColumns();
@@ -2695,7 +2696,7 @@ public class WbTable
     }
     if (!hasPK)
     {
-      LogMgr.logWarning("WbTable.checkPkColumns()", "Could not find key columns for updating table " + ds.getUpdateTable());
+      LogMgr.logWarning(new CallerInfo(){}, "Could not find key columns for updating table " + ds.getUpdateTable());
     }
     return hasPK;
   }

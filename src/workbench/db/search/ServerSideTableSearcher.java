@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 
 import workbench.WbManager;
 import workbench.interfaces.TableSearchConsumer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
@@ -107,7 +108,7 @@ public class ServerSideTableSearcher
     }
     catch (Throwable e)
     {
-      LogMgr.logWarning("TableSearcher.cancelSearc()", "Error when cancelling", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error when cancelling", e);
     }
   }
 
@@ -148,7 +149,7 @@ public class ServerSideTableSearcher
     }
     catch (Throwable th)
     {
-      LogMgr.logError("TableSearcher.doSearch()", "Error searching database", th);
+      LogMgr.logError(new CallerInfo(){}, "Error searching database", th);
     }
     finally
     {
@@ -183,7 +184,7 @@ public class ServerSideTableSearcher
         }
         catch (SQLException e)
         {
-          LogMgr.logWarning("TableSearcher.searchTable()", "Could not create savepoint", e);
+          LogMgr.logWarning(new CallerInfo(){}, "Could not create savepoint", e);
           sp = null;
           useSavepoint = false;
         }
@@ -213,7 +214,7 @@ public class ServerSideTableSearcher
     }
     catch (Exception e)
     {
-      LogMgr.logError("TableSearcher.searchTable()", "Error retrieving data for " + table.getTableExpression(), e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving data for " + table.getTableExpression(), e);
       if (this.display != null) this.display.error(ExceptionUtil.getDisplay(e));
       if (sp != null)
       {
@@ -317,7 +318,7 @@ public class ServerSideTableSearcher
     }
     if (colcount == 0)
     {
-      LogMgr.logWarning("TableSearcher.buildSqlForTable()", "Table " + def.getTable().getTableExpression() + " not beeing searched because no character columns were found");
+      LogMgr.logWarning(new CallerInfo(){}, "Table " + def.getTable().getTableExpression() + " not beeing searched because no character columns were found");
       return null;
     }
     else
@@ -339,11 +340,11 @@ public class ServerSideTableSearcher
 
     // upper() lower() is for Oracle, Postgres, Firebird/Interbase and MS SQL Server
     // lcase, ucase is for Access and HSQLDB
-    if (func.indexOf("upper") > -1 || func.indexOf("ucase") > -1)
+    if (func.contains("upper") || func.contains("ucase"))
     {
       return this.criteria.toUpperCase().equals(this.criteria);
     }
-    if (func.indexOf("lower") > -1 || func.indexOf("lcase") > -1)
+    if (func.contains("lower") || func.contains("lcase"))
     {
       return this.criteria.toLowerCase().equals(this.criteria);
     }
@@ -361,12 +362,12 @@ public class ServerSideTableSearcher
         this.columnFunction = null;
         setResult = true;
       }
-      else if (aColFunc.indexOf("$col$") > -1)
+      else if (aColFunc.contains("$col$"))
       {
         this.columnFunction = aColFunc;
         setResult = true;
       }
-      else if (aColFunc.indexOf("$COL$") > -1)
+      else if (aColFunc.contains("$COL$"))
       {
         this.columnFunction = StringUtil.replace(aColFunc, "$COL$", "$col$");
         setResult = true;

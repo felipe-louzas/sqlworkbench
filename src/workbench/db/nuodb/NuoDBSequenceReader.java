@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -95,10 +95,7 @@ public class NuoDBSequenceReader
       SqlUtil.appendExpression(query, "SCHEMA", StringUtil.trimQuotes(schema), null);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("NuoDBSequenceReader.getRawSequenceDefinition()", "Query to retrieve sequence:" + query);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequences", query);
 
     DataStore result = null;
     try
@@ -107,7 +104,7 @@ public class NuoDBSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("NuoDbSequenceReader.getSequenceDefinition()", "Error when retrieving sequence definition", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequences", query);
     }
     return result;
   }

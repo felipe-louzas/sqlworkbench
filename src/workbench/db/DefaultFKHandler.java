@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.storage.DataStore;
@@ -186,7 +187,7 @@ public class DefaultFKHandler
       {
         if (cancel)
         {
-          LogMgr.logWarning("DefaultFKHandler.processResult()", "Processing of rows has been cancelled");
+          LogMgr.logWarning(new CallerInfo(){}, "Processing of rows has been cancelled");
           break;
         }
         int row = ds.addRow();
@@ -372,7 +373,7 @@ public class DefaultFKHandler
 
         if (cancel)
         {
-          LogMgr.logWarning("DefaultFKHandler.getKeyList()", "Processing of rows has been cancelled");
+          LogMgr.logWarning(new CallerInfo(){}, "Processing of rows has been cancelled");
           break;
         }
       }
@@ -380,7 +381,7 @@ public class DefaultFKHandler
     }
     catch (Exception e)
     {
-      LogMgr.logError("FKHandler.getKeyList()", "Error when retrieving foreign keys", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when retrieving foreign keys", e);
       ds.reset();
     }
     return ds;

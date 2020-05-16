@@ -629,7 +629,7 @@ public class TableDataPanel
       }
       catch (Throwable th)
       {
-        LogMgr.logError("TableDataPanel.cancelRowCountRetrieve()", "Error when cancelling row count retrieve", th);
+        LogMgr.logError(new CallerInfo(){}, "Error when cancelling row count retrieve", th);
       }
     }
   }

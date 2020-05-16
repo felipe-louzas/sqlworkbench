@@ -1081,7 +1081,7 @@ public class TableListPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("TableListPanel.setConnection()", "Error when setting table types", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when setting table types", e);
     }
   }
 
@@ -1586,7 +1586,7 @@ public class TableListPanel
     }
     catch (Throwable th)
     {
-      LogMgr.logError("TableListPanel.storeSettings()", "Error storing settings", th);
+      LogMgr.logError(new CallerInfo(){}, "Error storing settings", th);
     }
   }
 

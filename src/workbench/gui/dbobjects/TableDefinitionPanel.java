@@ -587,7 +587,7 @@ public class TableDefinitionPanel
         }
         catch (SQLException ex)
         {
-          LogMgr.logError("TableDefinitionPanel.reload()", "Error loading table definition", ex);
+          LogMgr.logError(new CallerInfo(){}, "Error loading table definition", ex);
         }
       }
     };

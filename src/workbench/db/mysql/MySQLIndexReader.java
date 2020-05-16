@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
@@ -97,7 +98,7 @@ public class MySQLIndexReader
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("MySQLIndexReader.processIndexList()", "Could not read indexed definition", sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not read indexed definition", sql);
     }
     finally
     {

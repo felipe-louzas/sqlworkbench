@@ -33,6 +33,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import workbench.interfaces.SimplePropertyEditor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 
@@ -110,7 +111,7 @@ public class StringPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("StringPropertyEditor.setSourceObject()", "Error during init", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during init", e);
     }
     this.getDocument().addDocumentListener(this);
   }
@@ -130,7 +131,7 @@ public class StringPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("StringPropertyEditor.setSourceObject()", "Error when applying changes", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when applying changes", e);
     }
   }
 

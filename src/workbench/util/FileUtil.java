@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +36,6 @@ import java.io.Writer;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,7 +79,7 @@ public class FileUtil
       }
       catch (Exception ex)
       {
-        LogMgr.logWarning("FileUtil.closeStreams()", "Error when closing stream", ex);
+        LogMgr.logWarning(new CallerInfo(){}, "Error when closing stream", ex);
       }
     }
   }
@@ -143,7 +141,7 @@ public class FileUtil
     }
     catch (Exception e)
     {
-      LogMgr.logError("FileUtil.getLines", "Error reading lines", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading lines", e);
     }
     finally
     {
@@ -380,7 +378,7 @@ public class FileUtil
     }
     catch (Exception ex)
     {
-      LogMgr.logError("FileUtil.copySilently()", "Error when copying file: " + fromFile + " to " + toFile, ex);
+      LogMgr.logError(new CallerInfo(){}, "Error when copying file: " + fromFile + " to " + toFile, ex);
     }
   }
 
@@ -718,7 +716,7 @@ public class FileUtil
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning("FileUtil.deleteSilently()", "Could not delete file: " + toDelete);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not delete file: " + toDelete);
       return false;
     }
   }

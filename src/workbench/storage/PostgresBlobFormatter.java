@@ -27,9 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.exporter.BlobMode;
+
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.util.FileUtil;
 import workbench.util.NumberStringCache;
 
@@ -211,7 +215,7 @@ public class PostgresBlobFormatter
       }
       catch (IOException io)
       {
-        LogMgr.logError("PostgresBlobFormatter.getBytes()", "Could not read input stream", io);
+        LogMgr.logError(new CallerInfo(){}, "Could not read input stream", io);
       }
     }
     return null;

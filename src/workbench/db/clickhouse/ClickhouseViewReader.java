@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -68,7 +69,7 @@ public class ClickhouseViewReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logInfo("ClickhouseViewReader.createFullViewSource()", "Retrieving view source using using:\n" + sql);
+        LogMgr.logInfo(new CallerInfo(){}, "Retrieving view source using using:\n" + sql);
       }
 
       rs = stmt.executeQuery(sql);

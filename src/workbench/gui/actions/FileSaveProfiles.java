@@ -26,6 +26,7 @@ package workbench.gui.actions;
 import java.awt.event.ActionEvent;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -59,7 +60,7 @@ public class FileSaveProfiles
     }
     catch (Exception ex)
     {
-      LogMgr.logError("FileSaveProfiles.executeAction()", "Error saving profiles", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error saving profiles", ex);
       WbSwingUtilities.showMessage(WbManager.getInstance().getCurrentWindow(), ResourceMgr.getString("ErrSavingProfiles") + "\n" + ExceptionUtil.getDisplay(ex));
     }
   }

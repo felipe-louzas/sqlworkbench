@@ -64,6 +64,7 @@ import workbench.interfaces.FontChangedListener;
 import workbench.interfaces.FormattableSql;
 import workbench.interfaces.SqlTextContainer;
 import workbench.interfaces.TextFileContainer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -370,7 +371,7 @@ public class EditorPanel
 
         if (reloadType != FileReloadType.none)
         {
-          LogMgr.logDebug("EditorPanel", "File " + fname + " has been modified externally. currentFileTime=" + currentFileTime + ", saved lastModifiedTime=" + fileModifiedTime);
+          LogMgr.logDebug(new CallerInfo(){}, "File " + fname + " has been modified externally. currentFileTime=" + currentFileTime + ", saved lastModifiedTime=" + fileModifiedTime);
         }
 
         if (reloadType == FileReloadType.automatic)
@@ -772,7 +773,7 @@ public class EditorPanel
     if (StringUtil.isEmptyString(encoding))
     {
       encoding = Settings.getInstance().getDefaultFileEncoding();
-      LogMgr.logWarning("EditorPanel.readFile()", "No encoding specified or detected for file \"" + toLoad.getAbsolutePath() + "\". Using default encoding: " + encoding);
+      LogMgr.logWarning(new CallerInfo(){}, "No encoding specified or detected for file \"" + toLoad.getAbsolutePath() + "\". Using default encoding: " + encoding);
     }
 
     try
@@ -790,7 +791,7 @@ public class EditorPanel
       }
       catch (UnsupportedEncodingException e)
       {
-        LogMgr.logError("EditorPanel.readFile()", "Unsupported encoding: " + encoding + " requested.", e);
+        LogMgr.logError(new CallerInfo(){}, "Unsupported encoding: " + encoding + " requested.", e);
         WbSwingUtilities.showErrorMessage(this, ResourceMgr.getFormattedString("ErrWrongEncoding", encoding));
         return false;
       }
@@ -848,7 +849,7 @@ public class EditorPanel
     }
     catch (BadLocationException | IOException bl)
     {
-      LogMgr.logError("EditorPanel.readFile()", "Error reading file " + toLoad.getAbsolutePath(), bl);
+      LogMgr.logError(new CallerInfo(){}, "Error reading file " + toLoad.getAbsolutePath(), bl);
     }
     catch (OutOfMemoryError mem)
     {
@@ -1024,7 +1025,7 @@ public class EditorPanel
     }
     catch (IOException e)
     {
-      LogMgr.logError("EditorPanel.saveFile()", "Error saving file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error saving file", e);
       throw e;
     }
     finally
@@ -1150,7 +1151,7 @@ public class EditorPanel
     }
     catch (IOException | UnsupportedFlavorException ex)
     {
-      LogMgr.logDebug("EditorPanel.drop()", "Error when processing drop event", ex);
+      LogMgr.logDebug(new CallerInfo(){}, "Error when processing drop event", ex);
       evt.rejectDrop();
     }
   }

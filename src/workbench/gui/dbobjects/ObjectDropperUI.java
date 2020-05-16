@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import workbench.interfaces.ObjectDropper;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -121,7 +122,7 @@ public class ObjectDropperUI
       final String msg = ex.getMessage();
       success = false;
       WbSwingUtilities.showErrorMessage(dialog, msg);
-      LogMgr.logError("ObjectDropperUI.doDrop()", "Error when dropping objects", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error when dropping objects", ex);
     }
     finally
     {
@@ -281,7 +282,7 @@ public class ObjectDropperUI
     }
     catch (Exception e)
     {
-      LogMgr.logError("ObjectDropperUI", "Error when cancelling drop", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when cancelling drop", e);
     }
     finally
     {
@@ -555,7 +556,7 @@ private void checkFKButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       }
       catch (Exception e)
       {
-        LogMgr.logError("TableDeleterUI.checkFK()", "Error checking FK dependencies", e);
+        LogMgr.logError(new CallerInfo(){}, "Error checking FK dependencies", e);
         WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
         sorted = null;
       }

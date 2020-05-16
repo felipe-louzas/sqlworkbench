@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -124,15 +125,13 @@ public class Db2iObjectListEnhancer
 
     Map<String, String> remarks = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
     String type = null;
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql);
+
     try
     {
       for (String requestedType : requestedTypes)
       {
         type = requestedType;
-        if (Settings.getInstance().getDebugMetadataSql())
-        {
-          LogMgr.logInfo("Db2iObjectListEnhancer.updateObjectRemarks()", "Retrieving table remarks using:\n" + sql);
-        }
         stmt = con.createStatementForQuery();
         rs = stmt.executeQuery(sql.toString());
         while (rs.next())
@@ -149,7 +148,7 @@ public class Db2iObjectListEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("Db2iObjectListEnhancer.updateObjectRemarks()", "Error retrieving remarks using:\n " + SqlUtil.replaceParameters(sql, schema, type), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql);
     }
     finally
     {

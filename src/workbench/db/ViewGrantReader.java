@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -119,10 +120,8 @@ public abstract class ViewGrantReader
 
     String sql = this.getViewGrantSql();
     if (sql == null) return Collections.emptyList();
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo(getClass().getName() + ".getViewGrants()", "Using SQL: " + sql);
-    }
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "view grants", sql);
 
     ResultSet rs = null;
     PreparedStatement stmt = null;
@@ -153,7 +152,7 @@ public abstract class ViewGrantReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("ViewGrantReader", "Error when reading view grants", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "view grants", sql);
     }
     finally
     {

@@ -41,6 +41,7 @@ import workbench.WbManager;
 import workbench.interfaces.ScriptGenerationMonitor;
 import workbench.interfaces.Scripter;
 import workbench.interfaces.TextOutput;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -242,7 +243,7 @@ public class DeleteScriptGenerator
     }
 
     long duration = System.currentTimeMillis() - retrieveStart;
-    LogMgr.logDebug("DeleteScriptGenerator.createStatements()", "Retrieving dependency hierarchy for " +  dependency.getRootNode().getTable() + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving dependency hierarchy for " +  dependency.getRootNode().getTable() + " took: " + duration + "ms");
 
     Map<Integer, Set<DependencyNode>> levels = buildLevelsTopDown(dependency.getRootNode(), 1);
 
@@ -265,7 +266,7 @@ public class DeleteScriptGenerator
       moved = adjustLevels(levels);
     }
     duration = System.currentTimeMillis() - adjustStart;
-    LogMgr.logDebug("DeleteScriptGenerator.createStatements()", "Adjusting level hierarchy in " + loops + " iterations took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Adjusting level hierarchy in " + loops + " iterations took: " + duration + "ms");
 
     for (Map.Entry<Integer, Set<DependencyNode>> entry : levels.entrySet())
     {
@@ -424,7 +425,7 @@ public class DeleteScriptGenerator
     }
     catch (Throwable th)
     {
-      LogMgr.logError("DeleteScriptGenerator.addParentWhere()", "Error during script generation", th);
+      LogMgr.logError(new CallerInfo(){}, "Error during script generation", th);
     }
   }
 
@@ -595,7 +596,7 @@ public class DeleteScriptGenerator
     if (this.connection.isBusy())
     {
       Exception e = new Exception("Connection is busy");
-      LogMgr.logError("DeleteScriptGenerator.generateScript()", "Connection is busy!", e);
+      LogMgr.logError(new CallerInfo(){}, "Connection is busy!", e);
     }
 
     ds.checkUpdateTable();
@@ -625,7 +626,7 @@ public class DeleteScriptGenerator
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlPanel.generateDeleteScript", "Error generating delete script", e);
+      LogMgr.logError(new CallerInfo(){}, "Error generating delete script", e);
     }
     finally
     {
@@ -657,11 +658,11 @@ public class DeleteScriptGenerator
           if (otherLevel == entry.getKey() && otherLevel > 1)
           {
             otherLevel --;
-            LogMgr.logTrace("DeleteScriptGenerator.adjustLevels()" , "Entry for table: " + node.getTable() + " (" + node.getFkName() + ") should be moved to the same level (" + entry.getKey() + "). Moving to " + otherLevel);
+            LogMgr.logTrace(new CallerInfo(){}, "Entry for table: " + node.getTable() + " (" + node.getFkName() + ") should be moved to the same level (" + entry.getKey() + "). Moving to " + otherLevel);
           }
           if (otherLevel != entry.getKey())
           {
-            LogMgr.logTrace("DeleteScriptGenerator.adjustLevels()" , "Moving entry for table: " + node.getTable() + " (" + node.getFkName() + ") from level " + entry.getKey() + " to level " + otherLevel);
+            LogMgr.logTrace(new CallerInfo(){}, "Moving entry for table: " + node.getTable() + " (" + node.getFkName() + ") from level " + entry.getKey() + " to level " + otherLevel);
             newLevels.put(node, otherLevel);
             itr.remove();
           }

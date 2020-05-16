@@ -28,6 +28,7 @@ import java.sql.Types;
 import java.util.List;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -170,7 +171,7 @@ public class ObjectInfo
       }
       catch (Exception e)
       {
-        LogMgr.logError("ObjectInfo.getObjectInfo()", "Error retrieving procedures", e);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving procedures", e);
       }
     }
 
@@ -281,6 +282,7 @@ public class ObjectInfo
   {
     if (toDescribe == null || connection.getMetadata().isTableType(toDescribe.getType()) == false) return;
 
+    final CallerInfo ci = new CallerInfo(){};
     try
     {
       IndexReader idxReader = connection.getMetadata().getIndexReader();
@@ -293,7 +295,7 @@ public class ObjectInfo
     }
     catch (Exception e)
     {
-      LogMgr.logError("ObjectInfo.appendTableDependencies()", "Error retrieving index info for " + toDescribe, e);
+      LogMgr.logError(ci, "Error retrieving index info for " + toDescribe, e);
     }
 
     try
@@ -308,7 +310,7 @@ public class ObjectInfo
     }
     catch (Exception e)
     {
-      LogMgr.logError("ObjectInfo.appendTableDependencies()", "Error retrieving triggers for " + toDescribe, e);
+      LogMgr.logError(ci, "Error retrieving triggers for " + toDescribe, e);
     }
 
     if (connection.getDbSettings().objectInfoWithFK())
@@ -319,7 +321,7 @@ public class ObjectInfo
       }
       catch (Exception e)
       {
-        LogMgr.logError("ObjectInfo.appendTableDependencies()", "Error retrieving foreign keys for " + toDescribe, e);
+        LogMgr.logError(ci, "Error retrieving foreign keys for " + toDescribe, e);
       }
     }
   }
@@ -430,7 +432,7 @@ public class ObjectInfo
 
       if (dbObject.getSchema() == null && !searchPath.isEmpty())
       {
-        LogMgr.logDebug("ObjectInfo.findObject()", "Searching schemas: " + searchPath + " for " + dbObject.getTableName());
+        LogMgr.logDebug(new CallerInfo(){}, "Searching schemas: " + searchPath + " for " + dbObject.getTableName());
         for (String schema : searchPath)
         {
           TableIdentifier tb = dbObject.createCopy();
@@ -569,7 +571,7 @@ public class ObjectInfo
     }
     catch (Exception e)
     {
-      LogMgr.logError("ObjectInfo.getObjectInfo()", "Error retrieving sequences", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving sequences", e);
     }
     return false;
   }

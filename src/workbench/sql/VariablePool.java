@@ -196,7 +196,7 @@ public class VariablePool
           }
           catch (IllegalArgumentException e)
           {
-            LogMgr.logError("SqlParameterPool.init()", "Error setting variable", e);
+            LogMgr.logError(new CallerInfo(){}, "Error setting variable", e);
           }
         }
       }
@@ -617,7 +617,7 @@ public class VariablePool
     }
     catch (IllegalArgumentException e)
     {
-      LogMgr.logWarning("SqlParameterPool.parseSingleDefinition()", "Ignoring definition: " + parameter);
+      LogMgr.logWarning(new CallerInfo(){}, "Ignoring definition: " + parameter);
     }
   }
 
@@ -705,6 +705,6 @@ public class VariablePool
       }
     }
     String msg = ResourceMgr.getFormattedString("MsgVarDefFileLoaded", f.getAbsolutePath());
-    LogMgr.logInfo("SqlParameterPool.readFromFile", msg);
+    LogMgr.logInfo(new CallerInfo(){}, msg);
   }
 }

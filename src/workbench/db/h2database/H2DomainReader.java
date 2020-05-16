@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -94,10 +95,7 @@ public class H2DomainReader
     }
     sql.append(" ORDER BY 1, 2 ");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("H2DomainReader.getSql()", "Using SQL=\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "domains", sql);
 
     return sql.toString();
   }
@@ -137,7 +135,7 @@ public class H2DomainReader
     catch (SQLException e)
     {
       connection.rollback(sp);
-      LogMgr.logError("H2DomainReader.getDomainList()", "Could not read domains", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read domains", e);
     }
     finally
     {

@@ -29,6 +29,7 @@ import javax.swing.SwingWorker;
 
 import workbench.interfaces.Interruptable;
 import workbench.interfaces.ResultLogger;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -155,7 +156,7 @@ public class ScriptExecutionFeedback
     catch (Exception e)
     {
       status = ExecutionStatus.Error;
-      LogMgr.logError("RunScriptPanel.runScript()", "Error when running script", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when running script", e);
       final String error = ExceptionUtil.getDisplay(e);
       resultLogger.appendToLog("\n" + error);
     }

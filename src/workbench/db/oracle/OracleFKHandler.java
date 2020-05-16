@@ -135,7 +135,7 @@ public class OracleFKHandler
     }
     catch (Exception e)
     {
-      LogMgr.logError("OracleFKHandler.getRawKeyList()", "Could not retrieve foreign keys", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve foreign keys", e);
     }
     // something went wrong, use the driver's implementation
     return super.getRawKeyList(tbl, exported);

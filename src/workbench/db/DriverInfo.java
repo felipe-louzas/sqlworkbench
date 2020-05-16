@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.storage.DataStore;
@@ -127,7 +128,7 @@ public class DriverInfo
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("DriverInfo.fillMap()", "Could not obtain MetaData", sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not obtain MetaData", sql);
     }
 
     if (metaData == null) return;
@@ -181,7 +182,7 @@ public class DriverInfo
     }
     catch (Throwable th)
     {
-      LogMgr.logDebug("DriverInfo.getValue()", "Could not retrieve property: " + methodName, th);
+      LogMgr.logDebug(new CallerInfo(){}, "Could not retrieve property: " + methodName, th);
       return "n/a";
     }
   }

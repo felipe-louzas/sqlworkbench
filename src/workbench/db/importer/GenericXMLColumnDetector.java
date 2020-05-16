@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.FileUtil;
@@ -85,7 +86,7 @@ public class GenericXMLColumnDetector
     }
     catch (SAXException e)
     {
-      LogMgr.logError("XmlDataTableParser.parseTableStructure()", "Error reading table structure", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading table structure", e);
       throw e;
     }
     finally

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import workbench.AppArguments;
+import workbench.log.CallerInfo;
 
 import workbench.db.DbSettings;
 import workbench.db.DropType;
@@ -180,7 +181,7 @@ class SchemaCopy
           {
             messages.appendMessageKey("MsgSkipTbl");
             messages.appendNewLine();
-            LogMgr.logWarning("SchemaCopy.copyData()", "Skipping table " + sourceTable + " due to previous error");
+            LogMgr.logWarning(new CallerInfo(){}, "Skipping table " + sourceTable + " due to previous error");
           }
           else
           {
@@ -315,7 +316,7 @@ class SchemaCopy
           if (skipTargetCheck)
           {
             targetTable = sourceTable.createCopy();
-            LogMgr.logWarning("SchemaCopy.mapTables()", "Table " + sourceTable.getFullyQualifiedName(sourceConnection) + " not found in target. Assuming same structure and name");
+            LogMgr.logWarning(new CallerInfo(){}, "Table " + sourceTable.getFullyQualifiedName(sourceConnection) + " not found in target. Assuming same structure and name");
           }
           else
           {
@@ -325,7 +326,7 @@ class SchemaCopy
           }
         }
       }
-      LogMgr.logTrace("SchemaCopy.mapTables()", "Copying " + sourceTable.getFullyQualifiedName(sourceConnection) + " to "  + targetTable.getFullyQualifiedName(targetConnection));
+      LogMgr.logTrace(new CallerInfo(){}, "Copying " + sourceTable.getFullyQualifiedName(sourceConnection) + " to "  + targetTable.getFullyQualifiedName(targetConnection));
       targetToSourceMap.put(targetTable, sourceTable);
 
       if (cancel)
@@ -421,7 +422,7 @@ class SchemaCopy
     }
     catch (Exception e)
     {
-      LogMgr.logError("SchemaCopy.sortTables()", "Error when checking FK dependencies", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when checking FK dependencies", e);
     }
     finally
     {

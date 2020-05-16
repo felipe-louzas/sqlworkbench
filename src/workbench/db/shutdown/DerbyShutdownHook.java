@@ -24,11 +24,16 @@
 package workbench.db.shutdown;
 
 import java.sql.SQLException;
+
+import workbench.log.CallerInfo;
+
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbDriver;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
+
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 
@@ -73,18 +78,18 @@ public class DerbyShutdownHook
     try
     {
       DbDriver drv = ConnectionMgr.getInstance().findDriverByName(drvClass, drvName);
-      LogMgr.logInfo("ConnectionMgr.shutdownDerby()", "Local Derby connection detected. Shutting down engine...");
+      LogMgr.logInfo(new CallerInfo(){}, "Local Derby connection detected. Shutting down engine...");
       drv.commandConnect(command);
     }
     catch (SQLException e)
     {
       // This exception is expected!
       // Cloudscape/Derby reports the shutdown success through an exception
-      LogMgr.logInfo("ConnectionMgr.shutdownDerby()", ExceptionUtil.getDisplay(e));
+      LogMgr.logInfo(new CallerInfo(){}, ExceptionUtil.getDisplay(e));
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ConnectionMgr.shutdownDerby()", "Error when shutting down Cloudscape/Derby", th);
+      LogMgr.logError(new CallerInfo(){}, "Error when shutting down Cloudscape/Derby", th);
     }
   }
 

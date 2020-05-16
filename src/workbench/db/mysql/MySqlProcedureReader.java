@@ -26,6 +26,7 @@ package workbench.db.mysql;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -65,11 +66,7 @@ public class MySqlProcedureReader
       " WHERE routine_schema = ? \n" +
       "  and  routine_name = ? \n";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("MySqlProcedureReader.getProcedureHeader()", "Using query=\n" +
-        SqlUtil.replaceParameters(sql, def.getCatalog(), def.getProcedureName()));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedure header", sql, def.getCatalog(), def.getProcedureName());
 
     String nl = Settings.getInstance().getInternalEditorLineEnding();
     PreparedStatement stmt = null;
@@ -133,7 +130,7 @@ public class MySqlProcedureReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("MySqlProcedureReader.getProcedureHeader()", "Error retrieving procedure header", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedure header", sql, def.getCatalog(), def.getProcedureName());
       source = StringUtil.emptyBuilder();
     }
     finally

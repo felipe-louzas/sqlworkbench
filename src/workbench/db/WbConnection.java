@@ -359,7 +359,7 @@ public class WbConnection
     }
     catch (Throwable th)
     {
-      LogMgr.logError("" ,"Could not change read only flag", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not change read only flag", th);
     }
   }
 
@@ -394,7 +394,7 @@ public class WbConnection
     }
     catch (Throwable sql)
     {
-      LogMgr.logWarning("WbConnection.getIsolationLevel()", "Could not retrieve isolation level", sql);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve isolation level", sql);
       return Connection.TRANSACTION_NONE;
     }
   }
@@ -410,7 +410,7 @@ public class WbConnection
     }
     catch (Throwable sql)
     {
-      LogMgr.logWarning("WbConnection.setIsolationLevel()", "Could not set isolation level", sql);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not set isolation level", sql);
     }
   }
 
@@ -428,7 +428,7 @@ public class WbConnection
     }
     catch (Throwable e)
     {
-      LogMgr.logError("WbConnection.getIsolationLevel()", "Error retrieving isolation level", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving isolation level", e);
     }
     return "n/a";
   }

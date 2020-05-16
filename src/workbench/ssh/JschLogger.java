@@ -21,13 +21,14 @@
  */
 package workbench.ssh;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import com.jcraft.jsch.Logger;
 
 /**
  *
- * @author tkellerer
+ * @author Thomas Kellerer
  */
 public class JschLogger
   implements Logger
@@ -52,7 +53,7 @@ public class JschLogger
   {
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     StackTraceElement e = stack[2];
-    String ci = "JSch" + getSimpleClassName(e) + "." + e.getMethodName() + "()";
+    final CallerInfo ci = new CallerInfo(){};
 
     switch (level)
     {
@@ -70,13 +71,4 @@ public class JschLogger
         LogMgr.logError(ci, message, null);
     }
   }
-
-  private String getSimpleClassName(StackTraceElement e)
-  {
-    if (e == null) return "";
-    String cls = e.getClassName();
-    int pos = cls.lastIndexOf('.');
-    return cls.substring(pos);
-  }
-
 }

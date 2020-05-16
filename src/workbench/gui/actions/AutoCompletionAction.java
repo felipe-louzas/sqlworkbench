@@ -29,6 +29,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.StatusBar;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -84,7 +85,7 @@ public class AutoCompletionAction
       }
       catch (Exception e)
       {
-        LogMgr.logError("AutoCompletionAction.setConnection()", "Error setting connection", e);
+        LogMgr.logError(new CallerInfo(){}, "Error setting connection", e);
       }
     }
 

@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 
@@ -55,7 +56,7 @@ public class FileAttributeChanger
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning("FileAttributeChanger.removeAttribute()", "Could not remove hidden attribute of config dir: " + dir.getAbsolutePath(), th);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not remove hidden attribute of config dir: " + dir.getAbsolutePath(), th);
     }
   }
 

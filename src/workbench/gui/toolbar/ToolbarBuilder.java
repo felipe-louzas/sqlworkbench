@@ -23,6 +23,7 @@ package workbench.gui.toolbar;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -114,7 +115,7 @@ public class ToolbarBuilder
     toolbar = new MainToolbar();
     List<String> commands = getConfiguredToolbarCommands();
 
-    LogMgr.logTrace("ToolbarBuilder.createToolbar()", "Using toolbar list: " + commands);
+    LogMgr.logTrace(new CallerInfo(){}, "Using toolbar list: " + commands);
     for (String cmd : commands)
     {
       if (cmd.equals(SEPARATOR_KEY))
@@ -137,7 +138,7 @@ public class ToolbarBuilder
           }
           else
           {
-            LogMgr.logWarning("ToolbarBuilder.createToolbar()", "Action: " + cmd + " not found!");
+            LogMgr.logWarning(new CallerInfo(){}, "Action: " + cmd + " not found!");
           }
         }
       }

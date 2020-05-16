@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -174,7 +175,7 @@ public class WbSysExec
 
       // it seems that Windows actually needs IBM437...
       String encoding = cmdLine.getValue(ARG_ENCODING, System.getProperty("file.encoding"));
-      LogMgr.logDebug("WbSysExec.execute()", "Using encoding: " + encoding);
+      LogMgr.logDebug(new CallerInfo(){}, "Using encoding: " + encoding);
 
       ProcessBuilder pb = new ProcessBuilder(args);
       Map<String, String> envArgs = cmdLine.getMapValue(ARG_ENV);
@@ -194,7 +195,7 @@ public class WbSysExec
         pb.directory(cwd);
       }
 
-      LogMgr.logDebug("WbSysExec.execute()", "Running program: " + pb.command());
+      LogMgr.logDebug(new CallerInfo(){}, "Running program: " + pb.command());
       this.task = pb.start();
 
       stdIn = new BufferedReader(new InputStreamReader(task.getInputStream(), encoding));
@@ -228,7 +229,7 @@ public class WbSysExec
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbExec.execute()", "Error calling external program", e);
+      LogMgr.logError(new CallerInfo(){}, "Error calling external program", e);
       result.addMessage(ExceptionUtil.getDisplay(e));
       result.setFailure();
     }

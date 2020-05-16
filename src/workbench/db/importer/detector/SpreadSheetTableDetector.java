@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
@@ -172,7 +173,7 @@ public class SpreadSheetTableDetector
     }
     catch (Throwable th)
     {
-      LogMgr.logError("SpreadSheetTableDetector.analyzeSpreadSheet()", "Error reading spreadsheet", th);
+      LogMgr.logError(new CallerInfo(){}, "Error reading spreadsheet", th);
       messages.append(ExceptionUtil.getDisplay(th));
     }
     finally

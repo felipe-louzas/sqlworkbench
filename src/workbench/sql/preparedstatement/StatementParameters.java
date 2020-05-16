@@ -27,8 +27,13 @@ import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+
+import workbench.log.CallerInfo;
+
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
+
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 
@@ -63,7 +68,7 @@ public class StatementParameters
     }
     catch (Exception e)
     {
-      LogMgr.logError("StatementParameter.<init>", "Error when checking parameters", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when checking parameters", e);
       if (e instanceof SQLException) throw (SQLException)e;
       else throw new SQLException("Error retrieving statement parameters: " + e.getClass().getName());
     }

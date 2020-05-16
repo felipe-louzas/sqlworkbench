@@ -45,6 +45,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -110,7 +111,7 @@ public class ImagePanel
     catch (Exception e)
     {
       displayImage = null;
-      LogMgr.logError("ImagePanel.readImageData", "Error reading image", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading image", e);
     }
     finally
     {

@@ -35,13 +35,19 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+
+import workbench.log.CallerInfo;
+
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.storage.DataStore;
 
 /**
@@ -51,7 +57,7 @@ import workbench.storage.DataStore;
  */
 public class ColumnOrderMgr
 {
-  private Map<String, List<String>> columnOrders;
+  private final Map<String, List<String>> columnOrders = new HashMap<>();
 
   protected static class LazyInstanceHolder
   {
@@ -65,7 +71,6 @@ public class ColumnOrderMgr
 
   private ColumnOrderMgr()
   {
-     columnOrders = new HashMap<String, List<String>>();
      load();
   }
 
@@ -162,7 +167,7 @@ public class ColumnOrderMgr
         return o1.getModelIndex() - o2.getModelIndex();
       }
     };
-    List<TableColumn> old = new ArrayList<TableColumn>(current.getColumnCount());
+    List<TableColumn> old = new ArrayList<>(current.getColumnCount());
     for (int i=0; i < current.getColumnCount(); i++)
     {
       old.add(current.getColumn(i));
@@ -195,7 +200,7 @@ public class ColumnOrderMgr
       {
         // getColumnIndex() throws an IllegalArgumentException rather than returning -1
         // so we can safely ignore this here.
-        LogMgr.logDebug("ColumnOrderMgr.applyColumnOrder()", "Column '" + colname + "' not found.");
+        LogMgr.logDebug(new CallerInfo(){}, "Column '" + colname + "' not found.");
       }
     }
 
@@ -227,7 +232,7 @@ public class ColumnOrderMgr
   public List<String> getColumnOrder(WbTable table)
   {
     TableColumnModel current = table.getColumnModel();
-    List<String> cols = new ArrayList<String>(current.getColumnCount());
+    List<String> cols = new ArrayList<>(current.getColumnCount());
     for (int i=0; i < current.getColumnCount(); i++)
     {
       String name = current.getColumn(i).getIdentifier().toString();
@@ -254,14 +259,9 @@ public class ColumnOrderMgr
     else if (columnOrders.size() > 0)
     {
       FileOutputStream out = new FileOutputStream(f);
-      XMLEncoder e = new XMLEncoder(out);
-      try
+      try (XMLEncoder e = new XMLEncoder(out))
       {
         e.writeObject(columnOrders);
-      }
-      finally
-      {
-        e.close();
       }
     }
   }
@@ -271,17 +271,18 @@ public class ColumnOrderMgr
     File f = Settings.getInstance().getColumnOrderStorage();
     if (!f.exists()) return;
 
+    this.columnOrders.clear();
     XMLDecoder e = null;
     try
     {
       FileInputStream in = new FileInputStream(f);
       e = new XMLDecoder(in);
       Object result = e.readObject();
-      this.columnOrders = (Map)result;
+      this.columnOrders.putAll((Map)result);
     }
     catch (Exception ex)
     {
-      LogMgr.logError("TableColumnSorter.readFromStream()", "Could not read column order definition", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read column order definition", ex);
     }
     finally
     {

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -165,7 +166,7 @@ public class SqlServerTypeReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("SqlServerTypeReader.getTypeList()", "Could not read domains", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read domains", e);
     }
     finally
     {
@@ -264,7 +265,7 @@ public class SqlServerTypeReader
     sql.append("\n ORDER BY 1, 2");
     if (Settings.getInstance().getDebugMetadataSql())
     {
-      LogMgr.logDebug("SqlServerTypeReader.getSql()", "Using SQL=\n" + sql);
+      LogMgr.logDebug(new CallerInfo(){}, "Using SQL=\n" + sql);
     }
     return sql.toString();
   }
@@ -291,7 +292,7 @@ public class SqlServerTypeReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("SqlServerTypeReader.getTypeList()", "Could not read domains", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read domains", e);
     }
     finally
     {
@@ -327,6 +328,8 @@ public class SqlServerTypeReader
 
     sql += "order by col.column_id";
     List<ColumnIdentifier> columns = new ArrayList<>();
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table type source", sql);
 
     try
     {
@@ -366,7 +369,7 @@ public class SqlServerTypeReader
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("SqlServerTypeReader.getTableTypeSource()", "Could not read columns for type " + type.getObjectName(), ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read columns for type " + type.getObjectName(), ex);
       return "";
     }
     finally

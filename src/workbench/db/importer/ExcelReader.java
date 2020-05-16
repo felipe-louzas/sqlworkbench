@@ -285,7 +285,7 @@ public class ExcelReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ExcelReader.load()", "Could not refresh formulas!", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not refresh formulas!", ex);
     }
   }
 
@@ -384,7 +384,7 @@ public class ExcelReader
 
       if (row == null || colCount == 0)
       {
-        LogMgr.logError("ExcelReader.getHeaderColumns()", "Cannot retrieve column names because no data is available in the first row of the sheet: " + dataSheet.getSheetName(), null);
+        LogMgr.logError(new CallerInfo(){}, "Cannot retrieve column names because no data is available in the first row of the sheet: " + dataSheet.getSheetName(), null);
         String msg = ResourceMgr.getFormattedString("ErrExportNoCols", dataSheet.getSheetName());
         messages.append(msg);
         messages.appendNewLine();
@@ -503,7 +503,7 @@ public class ExcelReader
       // treat rows with merged cells as "empty"
       if (isMerged(cell))
       {
-        LogMgr.logDebug("ExcelReader.getRowValues()", dataSheet.getSheetName() + ": column:" + cell.getColumnIndex() + ", row:" + cell.getRowIndex() + " is merged. Ignoring row!");
+        LogMgr.logDebug(new CallerInfo(){}, dataSheet.getSheetName() + ": column:" + cell.getColumnIndex() + ", row:" + cell.getRowIndex() + " is merged. Ignoring row!");
         return Collections.emptyList();
       }
 

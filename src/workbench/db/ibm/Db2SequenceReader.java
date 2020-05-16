@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -242,11 +243,7 @@ public class Db2SequenceReader
       sql = sql.replace(" ORDER ", " \"ORDER\" ");
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("Db2SequenceReader.getRawSequenceDefinition()", "Query to retrieve sequence:\n" +
-        SqlUtil.replaceParameters(sql, schema, namePattern));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence", sql, schema, namePattern);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -261,8 +258,7 @@ public class Db2SequenceReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("OracleMetaData.getSequenceDefinition()",
-        "Error when retrieving sequence definition using: " + SqlUtil.replaceParameters(sql, schema, namePattern), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence", sql, schema, namePattern);
     }
     finally
     {

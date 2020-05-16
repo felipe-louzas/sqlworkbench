@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
@@ -184,7 +185,7 @@ public class ImportDMLStatementBuilder
       boolean hasPK = hasRealPK();
       if (!hasPK)
       {
-        LogMgr.logInfo("ImportDMLStatementBuilder.supportsUpsert()", "Cannot use upsert without a primary key.");
+        LogMgr.logInfo(new CallerInfo(){}, "Cannot use upsert without a primary key.");
       }
       return hasPK;
     }
@@ -213,7 +214,7 @@ public class ImportDMLStatementBuilder
           boolean hasPK = hasRealPK();
           if (!hasPK)
           {
-            LogMgr.logInfo("ImportDMLStatementBuilder.isModeSupported()", "Cannot use insertIgnore without a primary key.");
+            LogMgr.logInfo(new CallerInfo(){}, "Cannot use insertIgnore without a primary key.");
           }
           return hasPK;
         }

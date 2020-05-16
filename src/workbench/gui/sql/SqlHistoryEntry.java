@@ -26,6 +26,7 @@ package workbench.gui.sql;
 
 import java.awt.EventQueue;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -137,7 +138,7 @@ public class SqlHistoryEntry
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("SqlHistoryEntry.applyTo()", "Error applying " + this.toString(), e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error applying " + this.toString(), e);
     }
   }
 

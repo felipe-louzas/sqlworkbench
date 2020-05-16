@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.mssql.SqlServerTableSourceBuilder;
@@ -322,7 +323,7 @@ public class DbObjectChanger
         }
         catch (SQLException e)
         {
-          LogMgr.logError("DbObjectChanger.generateDropPK()", "Error retrieving table definition", e);
+          LogMgr.logError(new CallerInfo(){}, "Error retrieving table definition", e);
           return null;
         }
       }

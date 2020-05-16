@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
@@ -103,7 +104,7 @@ public class SelectTabAction
       }
       catch (Exception ex)
       {
-        LogMgr.logError("SelectTabAction.executeAction()", "Error when selecting tab " + this.index, ex);
+        LogMgr.logError(new CallerInfo(){}, "Error when selecting tab " + this.index, ex);
       }
     }
   }

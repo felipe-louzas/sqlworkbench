@@ -24,8 +24,13 @@
 package workbench.sql.wbcommands;
 
 import java.util.regex.PatternSyntaxException;
+
+import workbench.log.CallerInfo;
+
 import workbench.db.exporter.RegexReplacingModifier;
+
 import workbench.log.LogMgr;
+
 import workbench.util.ArgumentParser;
 import workbench.util.StringUtil;
 
@@ -59,7 +64,7 @@ public class RegexModifierParameter
       }
       catch (PatternSyntaxException ex)
       {
-        LogMgr.logError("RegexModifierParameter.parseParameterValue()", "Could not create modifier", ex);
+        LogMgr.logError(new CallerInfo(){}, "Could not create modifier", ex);
       }
     }
     return null;

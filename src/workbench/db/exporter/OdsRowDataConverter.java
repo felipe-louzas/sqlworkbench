@@ -33,6 +33,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.report.TagWriter;
@@ -191,7 +192,7 @@ public class OdsRowDataConverter
     }
     catch (IOException ex)
     {
-      LogMgr.logError("OdsRowDataConverter.getStart()", "Error creating archive!", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error creating archive!", ex);
     }
 
     return null;
@@ -235,7 +236,7 @@ public class OdsRowDataConverter
     }
     catch (Exception e)
     {
-      LogMgr.logError("OdsRowDataConverter.writeSettings()", "Error writing settings", e);
+      LogMgr.logError(new CallerInfo(){}, "Error writing settings", e);
     }
     finally
     {
@@ -278,7 +279,7 @@ public class OdsRowDataConverter
     }
     catch (Exception e)
     {
-      LogMgr.logError("OdsRowDataConverter.writeMeta()", "Error writing meta data", e);
+      LogMgr.logError(new CallerInfo(){}, "Error writing meta data", e);
     }
     finally
     {
@@ -404,7 +405,7 @@ public class OdsRowDataConverter
     }
     catch (Exception e)
     {
-      LogMgr.logError("OdsRowDataConverter.getEnd()", "Error writing end of worksheet", e);
+      LogMgr.logError(new CallerInfo(){}, "Error writing end of worksheet", e);
     }
     return null;
   }
@@ -473,7 +474,7 @@ public class OdsRowDataConverter
     }
     catch (IOException e)
     {
-      LogMgr.logError("OdsRowDataConverter.convertRowData()", "Error writing row " + rowIndex, e);
+      LogMgr.logError(new CallerInfo(){}, "Error writing row " + rowIndex, e);
     }
     return null;
   }

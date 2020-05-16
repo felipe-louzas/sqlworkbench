@@ -43,6 +43,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
@@ -165,7 +166,7 @@ public class ToolTipRenderer
       }
       catch (Exception e)
       {
-        LogMgr.logError("ToolTipRenderer.getDefaultInsets()", "Error reading default insets from settings: " + prop, e);
+        LogMgr.logError(new CallerInfo(){}, "Error reading default insets from settings: " + prop, e);
         result = null;
       }
     }

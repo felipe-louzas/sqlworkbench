@@ -20,6 +20,7 @@
  */
 package workbench.gui.dbobjects.objecttree.vertica;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -71,7 +72,7 @@ public class ProjectionColumnsNode
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ProjectionColumnsNode.loadProjectionColumns()", "Could not load projection columns", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not load projection columns", ex);
     }
   }
 

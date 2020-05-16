@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -71,10 +72,7 @@ public class VerticaTableReader
     Statement stmt = null;
     ResultSet tableRs = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("VerticaTableReader.getInternalTables()", "Query to retrieve tables in v_internal schema:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "internal tables", sql);
 
     try
     {
@@ -93,7 +91,7 @@ public class VerticaTableReader
     }
     catch (SQLException se)
     {
-      LogMgr.logError("VerticaTableReader.extendObjectList()", "Could not retrieve internal tables", se);
+      LogMgr.logMetadataError(new CallerInfo(){}, se, "internal tables", sql);
     }
     finally
     {

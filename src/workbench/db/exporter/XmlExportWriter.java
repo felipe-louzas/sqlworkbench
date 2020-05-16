@@ -23,6 +23,7 @@
  */
 package workbench.db.exporter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
@@ -104,7 +105,7 @@ public class XmlExportWriter
       }
       catch (Exception e)
       {
-        LogMgr.logError("DataSpooler.startExport()", "Error when transforming " + output + " using " + xsltFile, e);
+        LogMgr.logError(new CallerInfo(){}, "Error when transforming " + output + " using " + xsltFile, e);
         exporter.addError(transformer.getAllOutputs(e));
       }
     }

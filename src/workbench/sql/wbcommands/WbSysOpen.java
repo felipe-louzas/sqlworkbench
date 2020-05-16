@@ -26,6 +26,7 @@ package workbench.sql.wbcommands;
 import java.awt.Desktop;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.SqlCommand;
@@ -77,7 +78,7 @@ public class WbSysOpen
     }
     catch (Exception ex)
     {
-      LogMgr.logError("WbSysOpen.execute()", "Could not open file " + getCommandLine(sql), ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not open file " + getCommandLine(sql), ex);
       result.setFailure();
       result.addMessage(ex.getLocalizedMessage());
     }

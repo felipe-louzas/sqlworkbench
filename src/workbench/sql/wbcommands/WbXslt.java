@@ -26,6 +26,7 @@ package workbench.sql.wbcommands;
 import java.sql.SQLException;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.SqlCommand;
@@ -153,9 +154,9 @@ public class WbXslt
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbXslt.execute()", "Error when transforming '" + inputFile + "' to '" + outputFile + "' using " + xsltFile, e);
+      LogMgr.logError(new CallerInfo(){}, "Error when transforming '" + inputFile + "' to '" + outputFile + "' using " + xsltFile, e);
       String msg = transformer.getAllOutputs(e);
-      LogMgr.logError("WbXslt.execute()", msg, null);
+      LogMgr.logError(new CallerInfo(){}, msg, null);
       result.addErrorMessage(msg);
     }
     return result;

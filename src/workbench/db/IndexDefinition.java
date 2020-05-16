@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.SqlUtil;
@@ -249,7 +250,7 @@ public class IndexDefinition
   {
     if (constraint != null && constraint.getConstraintType() != ConstraintType.Unique)
     {
-      LogMgr.logError("IndexDefinition.setUniqueConstraint()", "setUniqueConstraint() called with a different constraint type", new IllegalArgumentException("Invalid type: " + constraint.getConstraintType()));
+      LogMgr.logError(new CallerInfo(){}, "setUniqueConstraint() called with a different constraint type", new IllegalArgumentException("Invalid type: " + constraint.getConstraintType()));
     }
     this.uniqueConstraint = constraint;
   }

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import workbench.interfaces.Committer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -186,7 +187,7 @@ public class SqlRowDataConverter
         this.errorReporter.addWarning(msg);
       }
 
-      LogMgr.logWarning("SqlRowDataConverter.setResultInfo()", "No key columns found" + tbl + " reverting back to INSERT generation");
+      LogMgr.logWarning(new CallerInfo(){}, "No key columns found" + tbl + " reverting back to INSERT generation");
       this.sqlTypeToUse = ExportType.SQL_INSERT;
     }
   }
@@ -444,7 +445,7 @@ public class SqlRowDataConverter
     TableIdentifier tableName = alternateUpdateTable != null ? alternateUpdateTable : this.metaData.getUpdateTable();
     if (tableName == null)
     {
-      LogMgr.logError("SqlRowDataConverter.getStart()", "Cannot write create table without update table!",null);
+      LogMgr.logError(new CallerInfo(){}, "Cannot write create table without update table!",null);
       return null;
     }
 

@@ -85,6 +85,7 @@ import javax.swing.text.DocumentFilter;
 
 import workbench.WbManager;
 import workbench.interfaces.SimplePropertyEditor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -188,7 +189,7 @@ public class WbSwingUtilities
       counter++;
       if (counter > tries)
       {
-        LogMgr.logDebug("WbSwingUtilities.waitForEmptyQueue()", "Queue still not empty after " + tries + " tries!");
+        LogMgr.logDebug(new CallerInfo(){}, "Queue still not empty after " + tries + " tries!");
         break;
       }
     }
@@ -238,7 +239,7 @@ public class WbSwingUtilities
       }
       catch (Exception e)
       {
-        LogMgr.logError("WbSwingUtilities.invoke()", "Error executing on EventQueue", e);
+        LogMgr.logError(new CallerInfo(){}, "Error executing on EventQueue", e);
       }
     }
   }
@@ -437,7 +438,7 @@ public class WbSwingUtilities
       }
       catch (Exception e)
       {
-        LogMgr.logWarning("WbSwingUtilities.getLocationToCenter()", "Error getting parent location!", e);
+        LogMgr.logWarning(new CallerInfo(){}, "Error getting parent location!", e);
       }
     }
 
@@ -561,7 +562,7 @@ public class WbSwingUtilities
   {
     if (WbManager.getInstance().isBatchMode())
     {
-      LogMgr.logError("showErrorMessage() - " + title, message, null);
+      LogMgr.logError(new CallerInfo(){}, title + " - " + message, null);
       return;
     }
 
@@ -586,7 +587,7 @@ public class WbSwingUtilities
   {
     if (WbManager.getInstance().isBatchMode())
     {
-      LogMgr.logError("showMultiLineError()", message, null);
+      LogMgr.logError(new CallerInfo(){}, message, null);
       return;
     }
 
@@ -1005,7 +1006,7 @@ public class WbSwingUtilities
     }
     catch (Throwable th)
     {
-      LogMgr.logError("WbSwingUtilities.getCommitRollbackQuestion()", "Could not detect string width", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not detect string width", th);
       w = 300;
     }
 

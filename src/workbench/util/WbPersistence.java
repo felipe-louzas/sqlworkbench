@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -118,7 +119,7 @@ public class WbPersistence
   @Override
   public void exceptionThrown(Exception e)
   {
-    LogMgr.logError("WbPersistence", "Error reading file " + filename, e);
+    LogMgr.logError(new CallerInfo(){}, "Error reading file " + filename, e);
   }
 
 }

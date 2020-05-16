@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -79,7 +80,7 @@ public class WbFilePicker
       this.tfFilename.setText(f.toString());
     }
   }
-  
+
   public boolean getSelectDirectoryOnly()
   {
     return selectDirectory;
@@ -233,7 +234,7 @@ public class WbFilePicker
     }
     catch (Throwable e)
     {
-      LogMgr.logError("WbFilePicker.selectFileButtonActionPerformed()", "Error selecting file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
     }
   }//GEN-LAST:event_selectFileButtonActionPerformed

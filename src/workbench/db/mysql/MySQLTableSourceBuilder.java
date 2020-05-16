@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -101,7 +102,7 @@ public class MySQLTableSourceBuilder
     }
     catch (SQLException ex)
     {
-      LogMgr.logDebug("MySQLTableSourceBuilder.readTableOptions()", "Could not read table status", ex);
+      LogMgr.logDebug(new CallerInfo(){}, "Could not read table status", ex);
     }
     finally
     {
@@ -142,7 +143,7 @@ public class MySQLTableSourceBuilder
     }
     catch (SQLException ex)
     {
-      LogMgr.logDebug("MySQLTableSourceBuilder.getDefaultCollation()", "Could not read collation", ex);
+      LogMgr.logDebug(new CallerInfo(){}, "Could not read collation", ex);
     }
     finally
     {

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -190,14 +191,14 @@ public class ImageUtil
           }
           else
           {
-            LogMgr.logWarning("ImageUtil.getIcons()", "Ignoring invalid icon file: " + f.getAbsolutePath());
+            LogMgr.logWarning(new CallerInfo(){}, "Ignoring invalid icon file: " + f.getAbsolutePath());
           }
         }
       }
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ImageUtil.getIcons()", "Could not retrieve list of icon files", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve list of icon files", e);
       iconFiles.clear();
     }
     return iconFiles;

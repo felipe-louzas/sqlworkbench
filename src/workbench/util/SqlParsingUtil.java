@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
@@ -144,7 +145,7 @@ public class SqlParsingUtil
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlKeywordUtil.stripStartingComment()", "Error cleaning up SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error cleaning up SQL", e);
       result = "";
     }
     return result;
@@ -303,7 +304,7 @@ public class SqlParsingUtil
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlKeywordUtil.stripVerb()", "Error cleaning up SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error cleaning up SQL", e);
       result = "";
     }
     return result;

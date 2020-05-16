@@ -572,7 +572,7 @@ public class OracleIndexReader
 
     if (pkStament != null)
     {
-      LogMgr.logDebug("OracleIndexReader.getPrimaryKeyInfo()", "getPrimeryKeys() called with pending statement!");
+      LogMgr.logDebug(new CallerInfo(){}, "getPrimeryKeys() called with pending statement!");
       primaryKeysResultDone();
     }
 

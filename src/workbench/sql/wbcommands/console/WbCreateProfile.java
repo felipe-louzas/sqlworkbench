@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import workbench.AppArguments;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ConnectionMgr;
@@ -134,7 +135,7 @@ public class WbCreateProfile
     }
     catch (InvalidConnectionDescriptor icd)
     {
-      LogMgr.logError("WbCreateProfile.execute()", "Invalid connection descriptor specified", icd);
+      LogMgr.logError(new CallerInfo(){}, "Invalid connection descriptor specified", icd);
       result.addErrorMessageByKey("ErrInvalidConnection");
     }
     return result;

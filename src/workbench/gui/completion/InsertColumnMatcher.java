@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -199,7 +200,7 @@ public class InsertColumnMatcher
       {
         columns = Collections.emptyList();
       }
-      LogMgr.logError("InsertColumnMatcher.analyzeStatemet()", "Could not analyze statement: " + sql, e);
+      LogMgr.logError(new CallerInfo(){}, "Could not analyze statement: " + sql, e);
     }
   }
 

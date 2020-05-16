@@ -26,10 +26,14 @@ package workbench.db;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.report.TagWriter;
+
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.ssh.SshConfig;
+
 import workbench.util.StringUtil;
 
 /**
@@ -136,7 +140,7 @@ public class ConnectionInfoBuilder
     }
     catch (SQLException e)
     {
-      LogMgr.logError("ConnectionInfoBuilder.getDisplay()", "Could not retrieve display", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve display", e);
       return e.getMessage();
     }
   }

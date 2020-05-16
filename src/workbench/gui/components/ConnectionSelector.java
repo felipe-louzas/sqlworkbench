@@ -30,6 +30,7 @@ import java.util.List;
 
 import workbench.interfaces.Connectable;
 import workbench.interfaces.StatusBar;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -107,7 +108,7 @@ public class ConnectionSelector
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ConnectionSelector.selectConnection()", "Error during connect", th);
+      LogMgr.logError(new CallerInfo(){}, "Error during connect", th);
     }
     finally
     {
@@ -119,7 +120,7 @@ public class ConnectionSelector
   {
     if (this.isConnectInProgress())
     {
-      LogMgr.logWarning("ConnectionSelector.connectTo()", "connectTo() called while a connect is still in progress");
+      LogMgr.logWarning(new CallerInfo(){}, "connectTo() called while a connect is still in progress");
       return;
     }
 
@@ -184,7 +185,7 @@ public class ConnectionSelector
   {
     if (this.isConnectInProgress())
     {
-      LogMgr.logWarning("ConnectionSelector.doConnect()", "doConnect() called while a connect is still in progress");
+      LogMgr.logWarning(new CallerInfo(){}, "doConnect() called while a connect is still in progress");
       return;
     }
 
@@ -197,7 +198,7 @@ public class ConnectionSelector
       }
       catch (Throwable th)
       {
-        LogMgr.logError("ConnectionSelector.doConnect()", "Could not set window icon", th);
+        LogMgr.logError(new CallerInfo(){}, "Could not set window icon", th);
         ResourceMgr.setWindowIcons(this.parent, "workbench");
       }
     }
@@ -233,7 +234,7 @@ public class ConnectionSelector
     catch (NoConnectionException noConn)
     {
       conn = null;
-      LogMgr.logError("ConnectionSelector.doConnect()", "No connection returned for profile "+ aProfile.getKey(), noConn);
+      LogMgr.logError(new CallerInfo(){}, "No connection returned for profile "+ aProfile.getKey(), noConn);
       error = ResourceMgr.getString("ErrNoConnReturned");
     }
     catch (UnsupportedClassVersionError ucv)
@@ -261,11 +262,11 @@ public class ConnectionSelector
       }
       error = logmsg.toString();
 
-      LogMgr.logError("ConnectionSelector.doConnect()", "SQL Exception when connecting", se);
+      LogMgr.logError(new CallerInfo(){}, "SQL Exception when connecting", se);
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ConnectionSelector.doConnect()", "Error when connecting to the database", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when connecting to the database", e);
       conn = null;
       error = ExceptionUtil.getDisplay(e);
     }
@@ -301,7 +302,7 @@ public class ConnectionSelector
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ConnectionSelector.doConnect()", "Error ending connection process", th);
+      LogMgr.logError(new CallerInfo(){}, "Error ending connection process", th);
     }
     finally
     {

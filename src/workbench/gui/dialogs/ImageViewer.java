@@ -39,6 +39,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -113,7 +114,7 @@ public class ImageViewer
     }
     catch (Exception e)
     {
-      LogMgr.logError("ImageViewer.setData()", "Error reading image", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading image", e);
     }
   }
 

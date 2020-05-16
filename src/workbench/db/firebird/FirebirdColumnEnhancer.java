@@ -28,8 +28,8 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
@@ -80,10 +80,7 @@ public class FirebirdColumnEnhancer
              "  and r.rdb$relation_name = ? ";
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("FirebirdColumnEnhancer.updateColumnDefinition()", "Query to retrieve column information:\n " + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column details", sql);
     Map<String, String> expressions = new HashMap<>();
     Map<String, String> identityCols = new HashMap<>();
     try
@@ -120,7 +117,7 @@ public class FirebirdColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("FirebirdColumnEnhancer.updateColumnDefinition()", "Error retrieving column information using sql:\n" + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "column details", sql);
     }
     finally
     {

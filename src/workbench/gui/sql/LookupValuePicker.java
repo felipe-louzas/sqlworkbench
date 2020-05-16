@@ -71,6 +71,7 @@ import workbench.interfaces.Restoreable;
 import workbench.interfaces.ResultSetter;
 import workbench.interfaces.StatusBar;
 import workbench.interfaces.ValidatingComponent;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
@@ -520,7 +521,7 @@ public class LookupValuePicker
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("LookupValuePicker.loadData()", "Could not load lookup data", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not load lookup data", ex);
     }
     finally
     {
@@ -690,7 +691,7 @@ public class LookupValuePicker
         }
         catch (SQLException sql)
         {
-          LogMgr.logError("LookupValuePicker.openPicker()", "Could not retrieve lookup information", sql);
+          LogMgr.logError(new CallerInfo(){}, "Could not retrieve lookup information", sql);
         }
         finally
         {
@@ -775,7 +776,7 @@ public class LookupValuePicker
 
     if (baseTable == null)
     {
-      LogMgr.logWarning("LookupValuePicker.openPicker()", "No update table available for the current table. Cannot open FK dialog");
+      LogMgr.logWarning(new CallerInfo(){}, "No update table available for the current table. Cannot open FK dialog");
       return;
     }
 

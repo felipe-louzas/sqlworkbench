@@ -61,6 +61,7 @@ import javax.swing.table.TableColumnModel;
 import workbench.interfaces.MainPanel;
 import workbench.interfaces.Reloadable;
 import workbench.interfaces.ValidatingComponent;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -282,7 +283,7 @@ public class BookmarkSelector
         }
         else
         {
-          LogMgr.logWarning("BookmarkSelector.<init>", "Invalid sort definition saved: " + sort);
+          LogMgr.logWarning(new CallerInfo(){}, "Invalid sort definition saved: " + sort);
           savedSort = null;
         }
       }
@@ -479,7 +480,7 @@ public class BookmarkSelector
       keyHandler.selectRow(0);
 
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug("BookmarkSelector.loadBookmarks()", "Loading bookmarks took: " + duration + "ms");
+      LogMgr.logDebug(new CallerInfo(){}, "Loading bookmarks took: " + duration + "ms");
 
       filterValue.requestFocusInWindow();
       WbSwingUtilities.showDefaultCursorOnWindow(BookmarkSelector.this);
@@ -726,7 +727,7 @@ public class BookmarkSelector
   {
     if (window == null)
     {
-      LogMgr.logError("BookmarkSelector.selectBookmark()", "selectBookmark() called with a NULL window!", new Exception("Invalid window"));
+      LogMgr.logError(new CallerInfo(){}, "selectBookmark() called with a NULL window!", new Exception("Invalid window"));
       return;
     }
 

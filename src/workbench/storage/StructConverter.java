@@ -34,7 +34,9 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -228,7 +230,7 @@ public class StructConverter
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning("StructConverter.getOracleArrayType()", "Could not get data type name", th);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not get data type name", th);
     }
     return null;
   }

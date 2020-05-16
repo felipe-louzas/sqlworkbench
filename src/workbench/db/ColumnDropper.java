@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import workbench.interfaces.ObjectDropper;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.sqltemplates.TemplateHandler;
@@ -167,14 +168,14 @@ public class ColumnDropper
 
     if (this.columns == null || this.columns.isEmpty())
     {
-      LogMgr.logWarning("ColumnDropper.dropObjects()", "No columns to drop!");
+      LogMgr.logWarning(new CallerInfo(){}, "No columns to drop!");
       return;
     }
 
     List<String> statements = getSql(table, columns, conn);
     if (statements.isEmpty())
     {
-      LogMgr.logWarning("ColumnDropper.dropObjects()", "No statements generated!");
+      LogMgr.logWarning(new CallerInfo(){}, "No statements generated!");
       return;
     }
 
@@ -185,7 +186,7 @@ public class ColumnDropper
       for (String sql : statements)
       {
         if (cancelDrop) break;
-        LogMgr.logDebug("ColumnDropper.dropObjects()", "Statement to drop column(s): " + sql);
+        LogMgr.logDebug(new CallerInfo(){}, "Statement to drop column(s): " + sql);
         this.currentStatement.executeUpdate(sql);
       }
 

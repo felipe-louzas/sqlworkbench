@@ -26,6 +26,7 @@ package workbench.gui.actions;
 import java.awt.event.ActionEvent;
 
 import workbench.interfaces.FileActions;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -55,7 +56,7 @@ public class CopyProfileAction
     }
     catch (Exception ex)
     {
-      LogMgr.logError("NewListEntryAction.executeAction()", "Error copying profile", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error copying profile", ex);
     }
   }
 

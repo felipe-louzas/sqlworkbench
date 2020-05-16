@@ -34,10 +34,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.oracle.OracleTableGrantReader;
 import workbench.db.redshift.RedshiftTableGrantReader;
+
 import workbench.resource.Settings;
 
 import workbench.util.StringUtil;
@@ -85,7 +87,7 @@ public class TableGrantReader
       tbl.adjustCase(dbConnection);
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug("TableGrantReader.getTableGrants()", "Calling DatabaseMetaData.getTablePrivileges() using: " + tbl.getRawCatalog() + ", " + tbl.getRawSchema() + ", " + tbl.getRawTableName());
+        LogMgr.logDebug(new CallerInfo(){}, "Calling DatabaseMetaData.getTablePrivileges() using: " + tbl.getRawCatalog() + ", " + tbl.getRawSchema() + ", " + tbl.getRawTableName());
       }
       rs = dbConnection.getSqlConnection().getMetaData().getTablePrivileges(tbl.getRawCatalog(), tbl.getRawSchema(), tbl.getRawTableName());
       boolean useColumnNames = dbConnection.getDbSettings().useColumnNameForMetadata();
@@ -105,14 +107,14 @@ public class TableGrantReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("DbMetadata.getTableGrants()", "Error when retrieving table privileges",e);
+      LogMgr.logError(new CallerInfo(){}, "Error when retrieving table privileges",e);
     }
     finally
     {
       try { rs.close(); } catch (Throwable th) {}
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("TableGrantReader.getTableGrants()", "Calling DatabaseMetaData.getTablePrivileges() took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Calling DatabaseMetaData.getTablePrivileges() took: " + duration + "ms");
     return result;
   }
 

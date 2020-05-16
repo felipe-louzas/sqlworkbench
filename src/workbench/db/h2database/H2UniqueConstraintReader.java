@@ -30,8 +30,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ConstraintDefinition;
 import workbench.db.IndexDefinition;
@@ -61,11 +61,7 @@ public class H2UniqueConstraintReader
         "from information_schema.constraints \n" +
         "where (table_catalog, table_schema, table_name) = (?,?,?)";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("H2UniqueConstraintReader.readUniqueConstraints()",
-        "Using:\n" + SqlUtil.replaceParameters(baseSql, table.getCatalog(), table.getSchema(), table.getTableName()));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", baseSql, table.getCatalog(), table.getSchema(), table.getTableName());
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -92,8 +88,7 @@ public class H2UniqueConstraintReader
     }
     catch (SQLException se)
     {
-      LogMgr.logError("H2UniqueConstraintReader.readUniqueConstraints()",
-        "Could not retrieve unique constraint definition using:\n" + SqlUtil.replaceParameters(baseSql, table.getCatalog(), table.getSchema(), table.getTableName()), se);
+      LogMgr.logMetadataError(new CallerInfo(){}, se, "unique constraints", baseSql, table.getCatalog(), table.getSchema(), table.getTableName());
     }
     finally
     {

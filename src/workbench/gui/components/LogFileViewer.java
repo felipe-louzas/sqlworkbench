@@ -36,6 +36,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.text.BadLocationException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogListener;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
@@ -214,7 +215,7 @@ public class LogFileViewer
     }
     catch (Exception ex)
     {
-      LogMgr.logError("LogFileViewer.load()", "Could not load logfile", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not load logfile", ex);
       display.setText(ExceptionUtil.getDisplay(ex));
     }
     finally

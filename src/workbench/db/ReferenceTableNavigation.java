@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.storage.ColumnData;
@@ -137,7 +138,7 @@ public class ReferenceTableNavigation
     }
     catch (Exception e)
     {
-      LogMgr.logError("TableNavigation.getSelectsForParents()", "Error retrieving parent tables", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving parent tables", e);
     }
     return result;
   }

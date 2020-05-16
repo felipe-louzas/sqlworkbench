@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.CsvLineParser;
@@ -119,7 +120,7 @@ public class TextFileTableDetector
     catch (IOException io)
     {
       messages.append(io.getLocalizedMessage());
-      LogMgr.logError("TextFileTableDetector.readLines()", "Could not read file " + inputFile.getAbsolutePath(), io);
+      LogMgr.logError(new CallerInfo(){}, "Could not read file " + inputFile.getAbsolutePath(), io);
     }
     finally
     {

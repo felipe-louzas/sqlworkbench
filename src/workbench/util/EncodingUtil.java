@@ -43,6 +43,7 @@ import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -200,7 +201,7 @@ public class EncodingUtil
       i++;
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("EncodingUtil.getEncodings()", "Retrieving encodings took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving encodings took: " + duration + "ms");
     return result;
   }
 
@@ -248,7 +249,7 @@ public class EncodingUtil
       {
         // Fall back to default encoding
         pw = new BufferedWriter(new OutputStreamWriter(stream), buffSize);
-        LogMgr.logError("EncodingUtil.createWriter()", "Invalid encoding: " + encoding, e);
+        LogMgr.logError(new CallerInfo(){}, "Invalid encoding: " + encoding, e);
       }
     }
     return pw;

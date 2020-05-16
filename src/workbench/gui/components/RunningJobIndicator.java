@@ -33,6 +33,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
@@ -171,7 +172,7 @@ public class RunningJobIndicator
       }
       catch (AWTException ex)
       {
-        LogMgr.logWarning("RunningJobIndicator.jobEnded()", "Could not install tray icon", ex);
+        LogMgr.logWarning(new CallerInfo(){}, "Could not install tray icon", ex);
       }
     }
   }

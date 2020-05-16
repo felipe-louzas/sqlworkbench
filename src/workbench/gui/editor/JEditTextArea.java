@@ -62,6 +62,7 @@ import workbench.interfaces.EditorStatusbar;
 import workbench.interfaces.TextChangeListener;
 import workbench.interfaces.TextSelectionListener;
 import workbench.interfaces.Undoable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
@@ -751,7 +752,7 @@ public class JEditTextArea
   {
     if (!EventQueue.isDispatchThread())
     {
-      LogMgr.logDebug("JEditTextArea.updateScrollbars()", "updateScrollbars() not called from within the EDT!", new Exception());
+      LogMgr.logDebug(new CallerInfo(){}, "updateScrollbars() not called from within the EDT!", new Exception());
       EventQueue.invokeLater(this::updateScrollBars);
       return;
     }
@@ -1429,7 +1430,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.getText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
       return null;
     }
   }
@@ -1476,7 +1477,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.appendLine()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
     }
     finally
     {
@@ -1512,7 +1513,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.setText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
     }
     finally
     {
@@ -1557,7 +1558,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.getText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
       return null;
     }
   }
@@ -1578,7 +1579,7 @@ public class JEditTextArea
     }
     catch(BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.getText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
       segment.offset = 0;
       segment.count = 0;
     }
@@ -2162,7 +2163,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.setSelectedText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
       throw new InternalError("Cannot replace selection");
     }
     finally
@@ -2181,7 +2182,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.setSelectedText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
       throw new InternalError("Cannot replace selection");
     }
     finally
@@ -2282,7 +2283,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.setSelectedText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
       throw new InternalError("Cannot replace selection");
     }
     finally
@@ -2339,7 +2340,7 @@ public class JEditTextArea
     }
     catch (Exception e)
     {
-      LogMgr.logError("JEditTextArea.insertText()", "Error setting text", e);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", e);
     }
     finally
     {
@@ -2462,7 +2463,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.overwriteSelectedText()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
     }
     finally
     {
@@ -2611,7 +2612,7 @@ public class JEditTextArea
       {
         Clipboard clipboard = getToolkit().getSystemClipboard();
         Transferable content = clipboard.getContents(this);
-        LogMgr.logTrace("JEditTextArea.paste()", "Received flavors: " + WbSwingUtilities.getFlavors(content));
+        LogMgr.logTrace(new CallerInfo(){}, "Received flavors: " + WbSwingUtilities.getFlavors(content));
         Object data = content.getTransferData(DataFlavor.stringFlavor);
         if (data != null)
         {
@@ -2626,7 +2627,7 @@ public class JEditTextArea
       }
       catch(Throwable th)
       {
-        LogMgr.logError("JEditTextArea.paste()", "Could not get string data from clipboard", th);
+        LogMgr.logError(new CallerInfo(){}, "Could not get string data from clipboard", th);
       }
     }
   }
@@ -2799,7 +2800,7 @@ public class JEditTextArea
     }
     catch (BadLocationException bl)
     {
-      LogMgr.logError("JEditTextArea.updateBracketHighlight()", "Error setting text", bl);
+      LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
     }
 
     bracketLine = -1;
@@ -3132,7 +3133,7 @@ public class JEditTextArea
           }
           catch(BadLocationException bl)
           {
-            LogMgr.logError("MouseHandler.mousePressed()", "Error setting text", bl);
+            LogMgr.logError(new CallerInfo(){}, "Error setting text", bl);
           }
           break;
         case 3:
@@ -3178,7 +3179,7 @@ public class JEditTextArea
       }
       catch (BadLocationException bl)
       {
-        LogMgr.logError("JEditTextArea.doDoubleClick()", "Error", bl);
+        LogMgr.logError(new CallerInfo(){}, "Error", bl);
       }
 
       // Ok, it's not a bracket... select the word

@@ -20,6 +20,7 @@
  */
 package workbench.gui.dbobjects.objecttree.vertica;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -74,7 +75,7 @@ public class ProjectionListNode
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ProjectionListNode.loadTableProjections()", "Could not load projections", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not load projections", ex);
     }
   }
 

@@ -36,6 +36,7 @@ import javax.swing.border.EmptyBorder;
 import workbench.interfaces.Disposable;
 import workbench.interfaces.Restoreable;
 import workbench.interfaces.ValidatingComponent;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -107,7 +108,7 @@ public class OptionPanelPage
       }
       catch (Exception e)
       {
-        LogMgr.logError("OptionPanelPage.getPanel()", "Could not create panel", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not create panel", e);
         panel = new JPanel();
         panel.add(new JLabel(ExceptionUtil.getDisplay(e)));
       }
@@ -136,7 +137,7 @@ public class OptionPanelPage
     }
     catch (Exception e)
     {
-      LogMgr.logError("OptionPanelPage.restoreSettings()", "Could not save panel settings", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not save panel settings", e);
     }
   }
 

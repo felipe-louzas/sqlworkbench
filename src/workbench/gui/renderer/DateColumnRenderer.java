@@ -25,6 +25,7 @@ package workbench.gui.renderer;
 
 import javax.swing.SwingConstants;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.WbDateFormatter;
@@ -67,7 +68,7 @@ public class DateColumnRenderer
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("DateColumnRenderer.setFormat()", "Error when setting date format [" + aDateFormat + "] default format [" + DEFAULT_FORMAT + "] will be used instead", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error when setting date format [" + aDateFormat + "] default format [" + DEFAULT_FORMAT + "] will be used instead", e);
       this.dateFormatter.applyPattern(DEFAULT_FORMAT);
     }
   }

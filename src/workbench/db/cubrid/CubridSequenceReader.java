@@ -30,6 +30,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -102,7 +103,7 @@ public class CubridSequenceReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("CubridSequenceReader.getSequenceSource()", "Error reading sequence definition", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading sequence definition", e);
     }
 
     def.setSource(buf);
@@ -137,10 +138,7 @@ public class CubridSequenceReader
     }
     SqlUtil.appendExpression(sql, "name", namePattern, dbConnection);
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("CubridSequenceReader.getSequences()", "Query to retrieve sequences:\n" + sql.toString());
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequences", sql);
 
     try
     {
@@ -152,7 +150,7 @@ public class CubridSequenceReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("CubridSequenceReader.getSequences()", "Error retrieving sequences", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequences", sql);
     }
     return result;
   }
@@ -203,7 +201,7 @@ public class CubridSequenceReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("CubridSequenceReader.getRawSequenceDefinition()", "Error retrieving sequences using SQL:\n" + sql, e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving sequences using SQL:\n" + sql, e);
       return null;
     }
     finally

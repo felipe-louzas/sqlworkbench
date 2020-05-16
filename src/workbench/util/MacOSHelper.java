@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -61,14 +62,15 @@ public class MacOSHelper
   public void installApplicationHandler()
   {
     if (!isMacOS()) return;
+    final CallerInfo ci = new CallerInfo(){};
     try
     {
-      LogMgr.logDebug("MacOSHelper.installApplicationHandler()", "Trying to install Mac OS ApplicationListener");
+      LogMgr.logDebug(ci, "Trying to install Mac OS ApplicationListener");
       Class appClass = Class.forName("com.apple.eawt.Application");
       Object application = appClass.newInstance();
       if (application != null)
       {
-        LogMgr.logDebug("MacOSHelper.installApplicationHandler()", "Obtained Application object");
+        LogMgr.logDebug(ci, "Obtained Application object");
 
         // Create a dynamic Proxy that can be registered as the ApplicationListener
         Class listener = Class.forName("com.apple.eawt.ApplicationListener");
@@ -79,22 +81,22 @@ public class MacOSHelper
           // Register the proxy as the ApplicationListener. Calling events on the Listener
           // will result in calling the invoke method from this class.
           add.invoke(application, this.proxy);
-          LogMgr.logInfo("MacOSHelper.installApplicationHandler()", "Mac OS ApplicationListener installed");
+          LogMgr.logInfo(ci, "Mac OS ApplicationListener installed");
         }
 
         // Now register for the Preferences... menu
         Method enablePrefs = appClass.getMethod("setEnabledPreferencesMenu", boolean.class);
         enablePrefs.invoke(application, Boolean.TRUE);
-        LogMgr.logDebug("MacOSHelper.installApplicationHandler()", "Registered for Preferences event");
+        LogMgr.logDebug(ci, "Registered for Preferences event");
       }
       else
       {
-        LogMgr.logError("MacOSHelper.installApplicationHandler()", "Could not create com.apple.eawt.Application",null);
+        LogMgr.logError(ci, "Could not create com.apple.eawt.Application",null);
       }
     }
     catch (Exception e)
     {
-      LogMgr.logError("MacOSHelper.installApplicationHandler()", "Could not install ApplicationListener", e);
+      LogMgr.logError(ci, "Could not install ApplicationListener", e);
     }
 
   }
@@ -103,15 +105,16 @@ public class MacOSHelper
   public Object invoke(Object prx, Method method, Object[] args)
     throws Throwable
   {
+    final CallerInfo ci = new CallerInfo(){};
     if (prx != proxy)
     {
-      LogMgr.logWarning("MacOSHelper.invoke()", "Different Proxy object passed to invoke!");
+      LogMgr.logWarning(ci, "Different Proxy object passed to invoke!");
     }
 
     try
     {
       String methodName = method.getName();
-      LogMgr.logDebug("MacOSHelper.invoke()", "ApplicationEvent [" + methodName + "] received. Arguments: " + getArguments(args));
+      LogMgr.logDebug(ci, "ApplicationEvent [" + methodName + "] received. Arguments: " + getArguments(args));
       if ("handleQuit".equals(methodName))
       {
         // Apparently MacOS sometimes terminates the application before
@@ -135,14 +138,14 @@ public class MacOSHelper
         boolean immediate = Settings.getInstance().getBoolProperty("workbench.osx.quit.immediate", true);
         if (immediate)
         {
-          LogMgr.logDebug("MacOSHelper.invoke()", "Calling exitWorkbench()");
+          LogMgr.logDebug(ci, "Calling exitWorkbench()");
           WbManager.getInstance().exitWorkbench(false);
         }
         else
         {
           EventQueue.invokeLater(() ->
           {
-            LogMgr.logDebug("MacOSHelper.invoke()", "Calling exitWorkbench()");
+            LogMgr.logDebug(ci, "Calling exitWorkbench()");
             WbManager.getInstance().exitWorkbench(false);
           });
         }
@@ -158,13 +161,13 @@ public class MacOSHelper
       }
       else
       {
-        LogMgr.logInfo("MacOSHelper.invoke()", "Ignoring unknown event: " + method.getName());
+        LogMgr.logInfo(ci, "Ignoring unknown event: " + method.getName());
       }
     }
     catch (Throwable e)
     {
-      LogMgr.logError("MacOSHelper.invoke()", "Error during callback", e);
-      LogMgr.logDebug("MacOSHelper.invoke()", "Arguments: " + getArguments(args));
+      LogMgr.logError(ci, "Error during callback", e);
+      LogMgr.logDebug(ci, "Arguments: " + getArguments(args));
     }
     return null;
   }
@@ -198,20 +201,21 @@ public class MacOSHelper
 
   private void setHandled(Object event, boolean flag)
   {
+    final CallerInfo ci = new CallerInfo(){};
     if (event == null)
     {
-      LogMgr.logError("MacOSHelper.setHandled()", "No event object passed!", null);
+      LogMgr.logError(ci, "No event object passed!", null);
       return;
     }
     try
     {
       Method setHandled = event.getClass().getMethod("setHandled", boolean.class);
-      LogMgr.logDebug("MacOSHelper.setHandled()", "Setting handled=" + flag + " for event: " + event.toString());
+      LogMgr.logDebug(ci, "Setting handled=" + flag + " for event: " + event.toString());
       setHandled.invoke(event, Boolean.valueOf(flag));
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("MacOSHelper.setHandled()", "Could not call setHandled() on class " + event.getClass().getName(), e);
+      LogMgr.logWarning(ci, "Could not call setHandled() on class " + event.getClass().getName(), e);
     }
   }
 

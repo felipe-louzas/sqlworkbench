@@ -25,9 +25,14 @@ package workbench.db.shutdown;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import workbench.log.CallerInfo;
+
 import workbench.db.ConnectionMgr;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -65,7 +70,7 @@ public class HsqlShutdownHook
       try
       {
         stmt = con.createStatement();
-        LogMgr.logInfo("HsqlShutdownHook.shutdown()", "Local HSQL connection detected. Sending SHUTDOWN to the engine before disconnecting");
+        LogMgr.logInfo(new CallerInfo(){}, "Local HSQL connection detected. Sending SHUTDOWN to the engine before disconnecting");
         stmt.executeUpdate("SHUTDOWN");
       }
       finally

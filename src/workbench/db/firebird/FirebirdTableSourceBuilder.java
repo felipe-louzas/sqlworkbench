@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
@@ -71,6 +72,7 @@ public class FirebirdTableSourceBuilder
     ResultSet rs = null;
 
     StringBuilder options = new StringBuilder(50);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table options", sql);
     try
     {
       stmt = dbConnection.getSqlConnection().prepareStatement(sql);
@@ -102,7 +104,7 @@ public class FirebirdTableSourceBuilder
     }
     catch (Exception ex)
     {
-      LogMgr.logError("FirebirdTableSourceBuilder.readTableOptions()", "Could not read table options using query:\n" + sql, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "table options", sql);
     }
     finally
     {

@@ -57,6 +57,7 @@ import javax.swing.ListSelectionModel;
 import workbench.interfaces.JobErrorHandler;
 import workbench.interfaces.StatusBar;
 import workbench.interfaces.TableDeleteListener;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -356,7 +357,7 @@ public class TableDeleterUI
         }
         catch (Exception e)
         {
-          LogMgr.logError("TableDeleterUI.checkFK()", "Error checking FK dependencies", e);
+          LogMgr.logError(new CallerInfo(){}, "Error checking FK dependencies", e);
           WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
           sorted = null;
         }
@@ -428,7 +429,7 @@ public class TableDeleterUI
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("TableDeleterUI.cancel()", "Error when trying to kill delete Thread", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error when trying to kill delete Thread", e);
     }
 
     try
@@ -441,7 +442,7 @@ public class TableDeleterUI
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("TableDeleterUI.cancel()", "Error when trying to kill check thread", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error when trying to kill check thread", e);
     }
 
     try

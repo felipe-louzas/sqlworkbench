@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.DbObject;
 import workbench.db.ProcedureDefinition;
 import workbench.db.SequenceDefinition;
@@ -34,8 +36,10 @@ import workbench.db.TableIdentifier;
 import workbench.db.TriggerDefinition;
 import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
+
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 
@@ -99,11 +103,7 @@ public class HanaDependencyReader
     ResultSet rs = null;
     List<DbObject> result = new ArrayList<>();
 
-    String debugSql = SqlUtil.replaceParameters(sql, base.getSchema(), base.getObjectName());
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("HanaDependencyReader.retrieveObjects()", "Retrieving dependent objects using query:\n" + debugSql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, base.getSchema(), base.getObjectName());
 
     boolean isTable = connection.getMetadata().isTableType(base.getObjectType());
 
@@ -152,7 +152,7 @@ public class HanaDependencyReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("HanaDependencyReader.retrieveObjects()", "Could not read object dependency using:\n" + debugSql, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, base.getSchema(), base.getObjectName());
     }
     finally
     {

@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
@@ -142,7 +143,7 @@ public class HsqlColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("HsqlColumnEnhancer.updateComputedColumns()", "Error updating column information", e);
+      LogMgr.logError(new CallerInfo(){}, "Error updating column information", e);
     }
     finally
     {
@@ -193,7 +194,7 @@ public class HsqlColumnEnhancer
     catch (SQLException sql)
     {
       supportColumnSequence = false;
-      LogMgr.logError("HsqlColumnEnhancer.getColumnSequence()", "Error retrieving sequence for column", sql);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving sequence for column", sql);
     }
     finally
     {

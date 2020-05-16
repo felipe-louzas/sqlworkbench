@@ -33,6 +33,7 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -257,7 +258,7 @@ public class ImportFileDialog
       }
       catch (Throwable th)
       {
-        LogMgr.logError("ImportFileDialog.propertyChange", "Error: ", th);
+        LogMgr.logError(new CallerInfo(){}, "Error: ", th);
       }
       finally
       {

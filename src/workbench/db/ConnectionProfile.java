@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -932,12 +933,12 @@ public class ConnectionProfile
       String pwd = System.getenv("PGPASSWORD");
       if (pwd != null)
       {
-        LogMgr.logDebug("ConnectionProfile.getPgPassPassword()", "Using password from environment variable PGPASSWORD");
+        LogMgr.logDebug(new CallerInfo(){}, "Using password from environment variable PGPASSWORD");
         return pwd;
       }
 
       PgPassReader reader = new PgPassReader(url, getLoginUser());
-      LogMgr.logDebug("ConnectionProfile.getPgPassPassword()", "Using password from " + PgPassReader.getPgPassFile());
+      LogMgr.logDebug(new CallerInfo(){}, "Using password from " + PgPassReader.getPgPassFile());
       return reader.getPasswordFromFile();
     }
     return null;

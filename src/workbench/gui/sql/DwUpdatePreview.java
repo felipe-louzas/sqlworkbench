@@ -33,15 +33,21 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
+
 import workbench.db.WbConnection;
+
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ValidatingDialog;
+
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
 import workbench.storage.DataStore;
 import workbench.storage.DmlStatement;
 import workbench.storage.SqlLiteralFormatter;
+
 import workbench.util.ExceptionUtil;
 import workbench.util.MemoryWatcher;
 import workbench.util.MessageBuffer;
@@ -75,7 +81,7 @@ public class DwUpdatePreview
       int maxStatements = Settings.getInstance().getIntProperty("workbench.db.previewsql.maxstatements", 5000);
       if (maxStatements < stmts.size())
       {
-        LogMgr.logWarning("DwUpdatePreview.confirmUpdate()", "Only " + maxStatements + " of " + stmts.size() + " statments displayed. To view all statements increase the value of the property 'workbench.db.previewsql.maxstatements'");
+        LogMgr.logWarning(new CallerInfo(){}, "Only " + maxStatements + " of " + stmts.size() + " statments displayed. To view all statements increase the value of the property 'workbench.db.previewsql.maxstatements'");
       }
       buffer = new MessageBuffer(maxStatements);
 
@@ -116,7 +122,7 @@ public class DwUpdatePreview
     }
     catch (SQLException e)
     {
-      LogMgr.logError("DwUpdatePreview.confirmUpdate()", "Error when previewing SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when previewing SQL", e);
       String msg = ExceptionUtil.getDisplay(e);
       WbSwingUtilities.showErrorMessage(win, msg);
       return false;
@@ -133,7 +139,7 @@ public class DwUpdatePreview
     }
     catch (Throwable th)
     {
-      LogMgr.logError("DwUpdatePreview.confirmUpdate()", "Error when previewing SQL", th);
+      LogMgr.logError(new CallerInfo(){}, "Error when previewing SQL", th);
       WbSwingUtilities.showErrorMessage(caller, ExceptionUtil.getDisplay(th));
       return false;
     }

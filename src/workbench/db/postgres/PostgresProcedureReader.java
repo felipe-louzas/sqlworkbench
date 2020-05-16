@@ -1010,7 +1010,7 @@ public class PostgresProcedureReader
       }
       else
       {
-        LogMgr.logWarning("PostgresProcedureReader.getProcedureHeader()", "No columns returned for procedure: " + procname.getName(), null);
+        LogMgr.logWarning(new CallerInfo(){}, "No columns returned for procedure: " + procname.getName(), null);
         return super.getProcedureColumns(catalog, schema, procname.getName(), null);
       }
 
@@ -1019,8 +1019,7 @@ public class PostgresProcedureReader
     catch (Exception e)
     {
       connection.rollback(sp);
-      LogMgr.logError("PostgresProcedureReader.getProcedureHeader()", "Error retrieving procedure columns using:\n" +
-        SqlUtil.replaceParameters(sql, schema, procname.getName()), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedure columns", sql, schema, procname.getName());
       return super.getProcedureColumns(catalog, schema, procname.getName(), null);
     }
     finally

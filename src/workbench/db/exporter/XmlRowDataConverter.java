@@ -27,6 +27,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -496,7 +497,7 @@ public class XmlRowDataConverter
         }
         catch (SQLException sql)
         {
-          LogMgr.logError("XmlRowDataConverter.getMetaDataAsXml()", "Error retrieving table definition", sql);
+          LogMgr.logError(new CallerInfo(){}, "Error retrieving table definition", sql);
         }
       }
     }

@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -66,11 +67,7 @@ public class ExasolTableSourceBuilder
     ResultSet rs = null;
     try
     {
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug("ExasolTableSourceBuilder.readTableOptions()",
-          "Retrieving table source options using:\n" + SqlUtil.replaceParameters(sql, tbl.getSchema(), tbl.getTableName()));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "table source options", sql, tbl.getSchema(), tbl.getTableName());
 
       List<String> cols = new ArrayList<>(2);
       pstmt = dbConnection.getSqlConnection().prepareStatement(sql);
@@ -89,8 +86,7 @@ public class ExasolTableSourceBuilder
     }
     catch (Exception ex)
     {
-      LogMgr.logDebug("ExasolTableSourceBuilder.readTableOptions()",
-        "Could not retrieve table source options using:\n" + SqlUtil.replaceParameters(sql, tbl.getSchema(), tbl.getTableName()), ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "table source options", sql, tbl.getSchema(), tbl.getTableName());
     }
     finally
     {

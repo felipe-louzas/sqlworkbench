@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -53,7 +54,7 @@ public class GenericCatalogInformationReader
     {
       this.dbConnection.addChangeListener(this);
     }
-    LogMgr.logDebug("GenericCatalogInformationReader.<init>", dbConnection.getId() + ": Cache current schema: " + isCacheable);
+    LogMgr.logDebug(new CallerInfo(){}, dbConnection.getId() + ": Cache current schema: " + isCacheable);
   }
 
   /**
@@ -101,7 +102,7 @@ public class GenericCatalogInformationReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug("GenericCatalogInformationReader.getCurrentCatalog()", dbConnection.getId() + ": Retrieving current catalog using: " + query);
+        LogMgr.logDebug(new CallerInfo(){}, dbConnection.getId() + ": Retrieving current catalog using: " + query);
       }
 
       try
@@ -115,7 +116,7 @@ public class GenericCatalogInformationReader
       }
       catch (Exception e)
       {
-        LogMgr.logWarning("GenericCatalogInformationReader.getCurrentCatalog()", "Error retrieving current catalog using query: " + query, e);
+        LogMgr.logWarning(new CallerInfo(){}, "Error retrieving current catalog using query: " + query, e);
         catalog = null;
       }
       finally
@@ -132,7 +133,7 @@ public class GenericCatalogInformationReader
       }
       catch (Exception e)
       {
-        LogMgr.logWarning("GenericCatalogInformationReader.getCurrentCatalog()", "Could not retrieve catalog using getCatalog()", e);
+        LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve catalog using getCatalog()", e);
         catalog = null;
         supportsGetCatalog = false;
       }

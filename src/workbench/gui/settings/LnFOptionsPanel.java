@@ -278,7 +278,7 @@ public class LnFOptionsPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("LnFOptionsPanel.newItem()", "Error creating new item", e);
+      LogMgr.logError(new CallerInfo(){}, "Error creating new item", e);
     }
   }
 

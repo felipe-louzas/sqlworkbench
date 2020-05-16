@@ -114,7 +114,7 @@ public interface ErrorPositionReader
         }
         catch (PatternSyntaxException pse)
         {
-          LogMgr.logError("ErrorPositionReader.Factory.createPositionReader()", "Could not initialize regex based reader using positionRegex: " + posRegex, pse);
+          LogMgr.logError(new CallerInfo(){}, "Could not initialize regex based reader using positionRegex: " + posRegex, pse);
         }
       }
       else if (colRegex != null || lineRegex != null)

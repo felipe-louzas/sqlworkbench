@@ -39,6 +39,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.gui.actions.WbAction;
@@ -168,7 +169,7 @@ public class ShortcutManager
 				if (a != null && !a.equals(anAction))
 				{
 					Exception e = new Exception("Duplicate key mapping");
-					LogMgr.logError("ShortcutManager.registerAction", "Duplicate key assignment for keyStroke " + key + " from " + clazz + ", already registered for "+ a.getClass().getName(), e);
+					LogMgr.logError(new CallerInfo(){}, "Duplicate key assignment for keyStroke " + key + " from " + clazz + ", already registered for "+ a.getClass().getName(), e);
 				}
 				else
 				{

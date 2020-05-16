@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ConnectionMgr;
@@ -117,7 +118,7 @@ public class FirebirdStatementHook
     catch (Exception ex)
     {
       executionPlan = null;
-      LogMgr.logError("FirebirdStatementHook.getExecutionPlan()", "Could not retrieve execution plan", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve execution plan", ex);
     }
     finally
     {
@@ -163,7 +164,7 @@ public class FirebirdStatementHook
       }
       catch (Throwable t)
       {
-        LogMgr.logError("FirebirdStatementHook.initialize()", "Could not obtain getExecutionPlan method", t);
+        LogMgr.logError(new CallerInfo(){}, "Could not obtain getExecutionPlan method", t);
         getPlan = null;
       }
     }

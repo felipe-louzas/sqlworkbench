@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -278,7 +279,7 @@ public class WbSchemaDiff
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbSchemaDiff.execute()", "Error writing output file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error writing output file", e);
     }
     finally
     {
@@ -330,12 +331,12 @@ public class WbSchemaDiff
           }
           catch (FileNotFoundException fnf)
           {
-            LogMgr.logError("WbSchemaDiff.execute()", "Stylesheet " + xslt + " not found!", fnf);
+            LogMgr.logError(new CallerInfo(){}, "Stylesheet " + xslt + " not found!", fnf);
             result.addErrorMessageByKey("ErrXsltNotFound", xslt.getAbsolutePath());
           }
           catch (Exception e)
           {
-            LogMgr.logError("WbSchemaReport.execute()", "Error when transforming '" + output.getFullPath() + "' to '" + xsltOutput + "' using " + xslt, e);
+            LogMgr.logError(new CallerInfo(){}, "Error when transforming '" + output.getFullPath() + "' to '" + xsltOutput + "' using " + xslt, e);
             result.addErrorMessage(transformer.getAllOutputs(e));
           }
         }

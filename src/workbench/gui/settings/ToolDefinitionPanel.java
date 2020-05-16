@@ -30,17 +30,22 @@ import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.StringPropertyEditor;
 import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.components.WbFileChooser;
+
 import workbench.interfaces.SimplePropertyEditor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 import workbench.util.ToolDefinition;
@@ -213,7 +218,7 @@ public class ToolDefinitionPanel
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ToolDefinitionPanel.selectTool()", "Error selecting file", e);
+      LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
     }
   }//GEN-LAST:event_selectTool

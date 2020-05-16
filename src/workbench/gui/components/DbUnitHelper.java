@@ -23,6 +23,7 @@
  */
 package workbench.gui.components;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 
@@ -47,12 +48,12 @@ public class DbUnitHelper
     {
       tested = true;
       Class.forName("org.dbunit.dataset.ITable");
-      LogMgr.logInfo("DbUnitHelper.isDbUnitAvailable()", "DbUnit available");
+      LogMgr.logInfo(new CallerInfo(){}, "DbUnit available");
       available = true;
     }
     catch (Throwable th)
     {
-      LogMgr.logDebug("DbUnitHelper.isDbUnitAvailable()", "DbUnit not available");
+      LogMgr.logDebug(new CallerInfo(){}, "DbUnit not available");
       available = false;
     }
     return available;

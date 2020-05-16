@@ -33,6 +33,7 @@ import javax.swing.SwingConstants;
 
 import workbench.interfaces.Restoreable;
 import workbench.interfaces.ValidatingComponent;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DataTooltipType;
 import workbench.resource.GuiSettings;
@@ -224,7 +225,7 @@ public class DataDisplayOptions
     long start = System.currentTimeMillis();
     Locale[] locales = Locale.getAvailableLocales();
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("DataDisplayOptions.readLocales()", "Reading " + locales.length + " locales took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Reading " + locales.length + " locales took: " + duration + "ms");
 
     start = System.currentTimeMillis();
     Comparator<Locale> localeComp = new Comparator<Locale>()
@@ -238,7 +239,7 @@ public class DataDisplayOptions
     };
     Arrays.sort(locales, localeComp);
     duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug("DataDisplayOptions.readLocales()", "Sorting locales took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Sorting locales took: " + duration + "ms");
     return locales;
   }
 

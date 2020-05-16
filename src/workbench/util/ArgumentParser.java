@@ -41,6 +41,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.wbcommands.CommonArgs;
@@ -351,7 +352,7 @@ public class ArgumentParser
     }
     catch (Exception e)
     {
-      LogMgr.logError("ArgumentParser.parse()", "Error when parsing entries", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when parsing entries", e);
     }
   }
 

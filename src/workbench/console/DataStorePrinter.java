@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -192,7 +193,7 @@ public class DataStorePrinter
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataStorePrinter.printToSelected()", "Error when printing DataStore contents", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when printing DataStore contents", e);
     }
   }
 

@@ -45,6 +45,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -186,7 +187,7 @@ public class TablePrinter
 				}
 				catch (Exception e)
 				{
-					LogMgr.logWarning("TablePrinter.startPrint()", "Error during printing", e);
+					LogMgr.logWarning(new CallerInfo(){}, "Error during printing", e);
 				}
 			}
 		};

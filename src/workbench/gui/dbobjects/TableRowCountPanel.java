@@ -46,6 +46,7 @@ import workbench.WbManager;
 import workbench.interfaces.Interruptable;
 import workbench.interfaces.Reloadable;
 import workbench.interfaces.ToolWindow;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -146,7 +147,7 @@ public class TableRowCountPanel
       }
       catch (Exception cne)
       {
-        LogMgr.logError("TableRowCountPanel.checkConnection()", "Could not get connection", cne);
+        LogMgr.logError(new CallerInfo(){}, "Could not get connection", cne);
       }
       finally
       {
@@ -180,14 +181,14 @@ public class TableRowCountPanel
     cancel = true;
     if (currentStatement != null)
     {
-      LogMgr.logDebug("TableRowCountPanel.cancel()", "Trying to cancel the current statement");
+      LogMgr.logDebug(new CallerInfo(){}, "Trying to cancel the current statement");
       try
       {
         currentStatement.cancel();
       }
       catch (SQLException sql)
       {
-        LogMgr.logWarning("TableRowCountPanel.cancel()", "Could not cancel statement", sql);
+        LogMgr.logWarning(new CallerInfo(){}, "Could not cancel statement", sql);
       }
     }
   }
@@ -275,7 +276,7 @@ public class TableRowCountPanel
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("TableRowCountPanel.retrieveRowCounts()", "Error retrieving table count", sql);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving table count", sql);
     }
     finally
     {

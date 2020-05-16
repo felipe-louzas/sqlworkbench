@@ -32,6 +32,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import workbench.interfaces.Resettable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.Settings;
@@ -141,7 +142,7 @@ public class TriggerDisplayPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("TriggerDisplayPanel.readTriggers()", "Error retrieving triggers", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving triggers", e);
       this.reset();
     }
   }

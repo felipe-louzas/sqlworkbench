@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.event.ListSelectionListener;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -72,7 +73,7 @@ public class CreateDeleteScriptAction
     }
     catch (Exception ex)
     {
-      LogMgr.logError("SqlPanel.generateDeleteScript()", "Error initializing DeleteScriptGenerator", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error initializing DeleteScriptGenerator", ex);
     }
   }
 

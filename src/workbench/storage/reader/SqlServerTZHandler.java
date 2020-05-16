@@ -28,6 +28,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ConnectionMgr;
@@ -138,7 +139,7 @@ public class SqlServerTZHandler
     }
     catch (Throwable t)
     {
-      LogMgr.logWarning("SqlServerRowDataReader.initialize()", "Class microsoft.sql.DateTimeOffset not available!");
+      LogMgr.logWarning(new CallerInfo(){}, "Class microsoft.sql.DateTimeOffset not available!");
     }
   }
 

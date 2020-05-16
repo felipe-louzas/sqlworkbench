@@ -22,6 +22,7 @@ package workbench.console;
 
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -180,7 +181,7 @@ public class ConsoleRefresh
       }
       catch (Exception ex)
       {
-        LogMgr.logError("ConsoleRefresh", "Error refreshing last statement", ex);
+        LogMgr.logError(new CallerInfo(){}, "Error refreshing last statement", ex);
         break;
       }
     }

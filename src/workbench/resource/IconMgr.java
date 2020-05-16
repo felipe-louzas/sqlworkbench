@@ -269,13 +269,13 @@ public class IconMgr
 				{
 					if (imageSize > SMALL_ICON)
 					{
-						LogMgr.logDebug("IconMgr.getIcon()", "Icon " + fname + " not found. Scaling existing 16px image");
+						LogMgr.logDebug(new CallerInfo(){}, "Icon " + fname + " not found. Scaling existing 16px image");
 						ImageIcon small = retrieveImage(makeBaseFilename(baseName, isPng));
 						result = scale(small, imageSize);
 					}
 					else
 					{
-						LogMgr.logWarning("IconMgr.getIcon()", "Icon " + fname + " not found!");
+						LogMgr.logWarning(new CallerInfo(){}, "Icon " + fname + " not found!");
 					}
 				}
 				if (useCache) iconCache.put(fname, result);

@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 import workbench.interfaces.Interruptable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -267,7 +268,7 @@ public class SchemaReporter
     }
     catch (IOException io)
     {
-      LogMgr.logError("WbSchemaReport.execute()", "Error writing report", io);
+      LogMgr.logError(new CallerInfo(){}, "Error writing report", io);
       throw io;
     }
     finally
@@ -343,7 +344,7 @@ public class SchemaReporter
       }
       catch (Exception e)
       {
-        LogMgr.logError("SchemaReporter.writeXml()", "Error writing table: " + object, e);
+        LogMgr.logError(new CallerInfo(){}, "Error writing table: " + object, e);
       }
     }
 
@@ -515,7 +516,7 @@ public class SchemaReporter
     }
     catch (SQLException e)
     {
-      LogMgr.logError("SchemaReporter.retrieveProcedures()", "Error retrieving procedures", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving procedures", e);
     }
   }
 

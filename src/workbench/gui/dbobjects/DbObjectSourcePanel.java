@@ -38,6 +38,7 @@ import workbench.interfaces.Reloadable;
 import workbench.interfaces.Replaceable;
 import workbench.interfaces.Resettable;
 import workbench.interfaces.ResultLogger;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.IconMgr;
@@ -279,7 +280,7 @@ public class DbObjectSourcePanel
       }
       catch (Exception ex)
       {
-        LogMgr.logError("TableListPanel().actionPerformed()", "Error when accessing editor tab", ex);
+        LogMgr.logError(new CallerInfo(){}, "Error when accessing editor tab", ex);
       }
     }
   }
@@ -616,7 +617,7 @@ public class DbObjectSourcePanel
     }
     catch (Exception ex)
     {
-      LogMgr.logWarning("DbObjectSourcePanel.runScript()", "Error when running script", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Error when running script", ex);
     }
     finally
     {

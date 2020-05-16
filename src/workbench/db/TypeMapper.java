@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.SqlUtil;
@@ -177,7 +178,7 @@ public class TypeMapper
       }
       if (name != null)
       {
-        LogMgr.logInfo("TypeMapper.getTypeName()", "Could not find a direct mapping for java.sql.Types." + SqlUtil.getTypeName(type) + ", using DBMS type: " + name);
+        LogMgr.logInfo(new CallerInfo(){}, "Could not find a direct mapping for java.sql.Types." + SqlUtil.getTypeName(type) + ", using DBMS type: " + name);
       }
     }
 
@@ -224,12 +225,12 @@ public class TypeMapper
         try
         {
           Integer typeValue = Integer.parseInt(def[0]);
-          String old = this.userMapping.put(typeValue, def[1]);
-          LogMgr.logInfo("TypeMapp.parseUserTypeMap()", "Mapping java.sql.Types." + SqlUtil.getTypeName(typeValue) + " to usertype: " + def[1]) ;
+          this.userMapping.put(typeValue, def[1]);
+          LogMgr.logInfo(new CallerInfo(){}, "Mapping java.sql.Types." + SqlUtil.getTypeName(typeValue) + " to usertype: " + def[1]) ;
         }
         catch (Exception e)
         {
-          LogMgr.logError("TypeMapp.parseUserTypeMap()", "Could not parse entry: " + type, e);
+          LogMgr.logError(new CallerInfo(){}, "Could not parse entry: " + type, e);
         }
       }
     }
@@ -255,7 +256,7 @@ public class TypeMapper
 
     try
     {
-      LogMgr.logInfo("TypeMapper.createTypeMap()", "Reading type map for " + targetDb.getDbId());
+      LogMgr.logInfo(new CallerInfo(){}, "Reading type map for " + targetDb.getDbId());
       rs = this.targetDb.getSqlConnection().getMetaData().getTypeInfo();
       while (rs.next())
       {
@@ -271,7 +272,7 @@ public class TypeMapper
           String clean = m.replaceAll("");
           if (!clean.equals(name))
           {
-            LogMgr.logInfo("TypeMapper.createTypeMap()", "Using type name ["  + clean + "] instead of [" + name + "]");
+            LogMgr.logInfo(new CallerInfo(){}, "Using type name ["  + clean + "] instead of [" + name + "]");
             name = clean;
           }
         }
@@ -279,18 +280,18 @@ public class TypeMapper
         Integer key = Integer.valueOf(type);
         if (this.typeInfo.containsKey(key))
         {
-          LogMgr.logWarning("TypeMapper.createTypeMap()", "The mapping from java.sql.Types."  + SqlUtil.getTypeName(type) + " to  DBMS type " + name + " will be ignored. A mapping is already present.");
+          LogMgr.logWarning(new CallerInfo(){}, "The mapping from java.sql.Types."  + SqlUtil.getTypeName(type) + " to  DBMS type " + name + " will be ignored. A mapping is already present.");
         }
         else
         {
-          LogMgr.logInfo("TypeMapper.createTypeMap()", "Mapping java.sql.Types."  + SqlUtil.getTypeName(type) + " to DBMS type " + name);
+          LogMgr.logInfo(new CallerInfo(){}, "Mapping java.sql.Types."  + SqlUtil.getTypeName(type) + " to DBMS type " + name);
           this.typeInfo.put(key, name);
         }
       }
     }
     catch (SQLException e)
     {
-      LogMgr.logError("TypeMapper.createTypeMap()", "Error reading type info for target connection", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading type info for target connection", e);
       this.typeInfo = new HashMap<>();
     }
     finally
@@ -316,7 +317,7 @@ public class TypeMapper
     typeInfo.put(Types.TIMESTAMP, "timestamp");
     typeInfo.put(Types.TIME, "time");
     typeInfo.put(Types.CHAR, "char");
-
   }
+
 }
 

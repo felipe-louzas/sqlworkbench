@@ -40,6 +40,7 @@ import javax.swing.KeyStroke;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -126,7 +127,7 @@ public class ShowTipAction
     }
     catch (Exception e)
     {
-      LogMgr.logError("ShowTipAction.closeTooltip()", "Error when closing tip!", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when closing tip!", e);
     }
   }
 
@@ -146,7 +147,7 @@ public class ShowTipAction
     }
     else
     {
-      LogMgr.logDebug("ShowTipAction.mouseClicked()", "mouseListener was not removed!!", new Exception());
+      LogMgr.logDebug(new CallerInfo(){}, "mouseListener was not removed!!", new Exception());
     }
   }
 

@@ -26,6 +26,7 @@ package workbench.gui.actions;
 import java.awt.event.ActionEvent;
 
 import workbench.interfaces.FileActions;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -63,7 +64,7 @@ public class NewListEntryAction
     }
     catch (Exception ex)
     {
-      LogMgr.logError("NewListEntryAction.executeAction()", "Error creating new list entry", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error creating new list entry", ex);
     }
 
   }

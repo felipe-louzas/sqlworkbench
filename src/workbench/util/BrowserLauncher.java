@@ -67,7 +67,7 @@ public class BrowserLauncher
     else
     {
       uriConsumer = null;
-      LogMgr.logError("BrowserLauncher.openEmail()", "Desktop not supported!", null);
+      LogMgr.logError(new CallerInfo(){}, "Desktop not supported!", null);
       WbSwingUtilities.showErrorMessage("Desktop not supported by your Java version");
     }
 
@@ -103,7 +103,7 @@ public class BrowserLauncher
       }
       catch (Exception e)
       {
-        LogMgr.logError("BrowserLauncher.openEmail()", "Could not open email program", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not open email program", e);
         WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
       }
     }, "OpenBrowser");

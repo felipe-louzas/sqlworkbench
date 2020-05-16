@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import workbench.interfaces.ScriptGenerationMonitor;
 import workbench.interfaces.Scripter;
 import workbench.interfaces.TextOutput;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
@@ -284,7 +285,7 @@ public class ObjectScripter
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ObjectScript.generateScript()", "Could not generate script", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not generate script", ex);
     }
     finally
     {

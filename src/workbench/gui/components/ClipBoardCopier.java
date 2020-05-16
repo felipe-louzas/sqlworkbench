@@ -38,6 +38,7 @@ import javax.swing.table.TableColumnModel;
 import workbench.WbManager;
 import workbench.console.DataStorePrinter;
 import workbench.console.TextPrinter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.MultiRowInserts;
@@ -117,7 +118,7 @@ public class ClipBoardCopier
     if (this.data == null)
     {
       WbSwingUtilities.showErrorMessage(client, "No DataStore available!");
-      LogMgr.logError("ClipBoardCopier.copyDataToClipboard()", "Cannot copy without a DataStore!", null);
+      LogMgr.logError(new CallerInfo(){}, "Cannot copy without a DataStore!", null);
       return;
     }
 
@@ -208,7 +209,7 @@ public class ClipBoardCopier
         msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(ex));
         WbSwingUtilities.showErrorMessage(client, msg);
       }
-      LogMgr.logError("ClipboardCopier.copyDataToClipboard()", "Could not copy text data to clipboard", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not copy text data to clipboard", ex);
     }
     WbSwingUtilities.showDefaultCursorOnWindow(this.client);
   }
@@ -250,7 +251,7 @@ public class ClipBoardCopier
     {
       // Should not happen.
       WbSwingUtilities.showErrorMessage(client, "No DataStore available!");
-      LogMgr.logError("ClipBoardCopier.copyAsDbUnit()", "Cannot copy without a DataStore!", null);
+      LogMgr.logError(new CallerInfo(){}, "Cannot copy without a DataStore!", null);
       return;
     }
 
@@ -312,7 +313,7 @@ public class ClipBoardCopier
           WbSwingUtilities.showErrorMessage(client, msg);
         }
       }
-      LogMgr.logError("ClipboardCopier.doCopyAsDBUnitXML()", "Error when copying as SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when copying as SQL", e);
     }
     finally
     {
@@ -354,7 +355,7 @@ public class ClipBoardCopier
     {
       // Should not happen.
       WbSwingUtilities.showErrorMessage(client, "No DataStore available!");
-      LogMgr.logError("ClipBoardCopier.copyAsSql()", "Cannot copy without a DataStore!", null);
+      LogMgr.logError(new CallerInfo(){}, "Cannot copy without a DataStore!", null);
       return;
     }
 
@@ -413,7 +414,7 @@ public class ClipBoardCopier
       // Can't do anything if we don't have PK
       if (!pkOK)
       {
-        LogMgr.logError("ClipBoardCopier.createSqlString()", "Cannot create UPDATE or DELETE statements without a primary key!", null);
+        LogMgr.logError(new CallerInfo(){}, "Cannot create UPDATE or DELETE statements without a primary key!", null);
         if (!WbManager.isTest()) WbSwingUtilities.showErrorMessageKey(client, "ErrCopyNotAvailable");
         return null;
       }
@@ -450,7 +451,7 @@ public class ClipBoardCopier
 
       if (columnsToInclude != null && columnsToInclude.size() == keyColumns.size() && columnsToInclude.containsAll(keyColumns))
       {
-        LogMgr.logError("ClipBoardCopier.createSqlString()", "Cannot create UPDATE statement with only key columns!", null);
+        LogMgr.logError(new CallerInfo(){}, "Cannot create UPDATE statement with only key columns!", null);
         if (!WbManager.isTest()) WbSwingUtilities.showErrorMessageKey(client, "ErrCopyNoNonKeyCols");
         return null;
       }
@@ -567,7 +568,7 @@ public class ClipBoardCopier
         msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(e));
         if (!WbManager.isTest()) WbSwingUtilities.showErrorMessage(client, msg);
       }
-      LogMgr.logError("ClipboardCopier.createSqlString()", "Error when copying as SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when copying as SQL", e);
     }
     finally
     {

@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -524,7 +525,7 @@ public class GetMetaDataSql
     }
     if (Settings.getInstance().getDebugMetadataSql())
     {
-      LogMgr.logInfo("GetMetaDataSql.prepareStatement()", "Retrieving " + metaDataType + " using query=\n" + baseSql + "\n(" + params + ")");
+      LogMgr.logInfo(new CallerInfo(){}, "Retrieving " + metaDataType + " using query=\n" + baseSql + "\n(" + params + ")");
     }
     return pstmt;
   }

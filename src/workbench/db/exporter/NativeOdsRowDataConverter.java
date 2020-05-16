@@ -25,6 +25,7 @@ package workbench.db.exporter;
 
 import java.math.BigInteger;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.storage.RowData;
@@ -144,7 +145,7 @@ public class NativeOdsRowDataConverter
     }
     catch (Exception ex)
     {
-      LogMgr.logError("NativeOdsRowDataConverter.loadOdsFile()", "Could not load ODS file", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not load ODS file", ex);
       dataFile = null;
     }
   }

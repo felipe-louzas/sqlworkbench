@@ -54,7 +54,7 @@ public class SshManager
   {
     return initializeSSHSession(profile.getSshConfig(), profile.getUrl(), profile.getKey());
   }
-  
+
   public String initializeSSHSession(SshConfig config, String profileUrl, ProfileKey key)
     throws SshException
   {
@@ -71,7 +71,7 @@ public class SshManager
     }
 
     SshHostConfig hostConfig = config.getSshHostConfig();
-    String li = new CallerInfo(){}.toString();
+    CallerInfo li = new CallerInfo(){};
 
     try
     {
@@ -128,7 +128,7 @@ public class SshManager
     String filePath = keyFile.getFullPath();
 
     KeyPair kpair = null;
-    String li = new CallerInfo(){}.toString();
+    CallerInfo ci = new CallerInfo(){};
 
     try
     {
@@ -138,11 +138,11 @@ public class SshManager
       boolean encrypted = kpair.isEncrypted();
       long duration = System.currentTimeMillis() - start;
 
-      LogMgr.logDebug(li, "Checking for encrypted key file took: " + duration + "ms");
+      LogMgr.logDebug(ci, "Checking for encrypted key file took: " + duration + "ms");
 
       if (!encrypted)
       {
-        LogMgr.logInfo(li, "Key file " + filePath + " is not encrypted. Assuming no passphrase is required");
+        LogMgr.logInfo(ci, "Key file " + filePath + " is not encrypted. Assuming no passphrase is required");
       }
 
       return encrypted;
@@ -273,7 +273,7 @@ public class SshManager
 
   public static boolean canUseAgent()
   {
-    String li = new CallerInfo(){}.toString();
+    final CallerInfo ci = new CallerInfo(){};
     long start = System.currentTimeMillis();
 
     boolean available = false;
@@ -282,21 +282,21 @@ public class SshManager
       Connector connector = ConnectorFactory.getDefault().createConnector();
       if (connector != null)
       {
-        LogMgr.logInfo(li, "SSH agent connector " + connector.getName() + " available: " + connector.isAvailable());
+        LogMgr.logInfo(ci, "SSH agent connector " + connector.getName() + " available: " + connector.isAvailable());
       }
       else
       {
-        LogMgr.logInfo(li, "No agent connector available");
+        LogMgr.logInfo(ci, "No agent connector available");
       }
       available = connector != null;
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning(li, "Can not create agent connector (" + th.getClass().getName() + " " + th.getMessage() + ")");
+      LogMgr.logWarning(ci, "Can not create agent connector (" + th.getClass().getName() + " " + th.getMessage() + ")");
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(li, "Checking for SSH agent connector took: " + duration + "ms");
+    LogMgr.logDebug(ci, "Checking for SSH agent connector took: " + duration + "ms");
 
     return available;
   }

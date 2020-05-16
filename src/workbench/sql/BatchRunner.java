@@ -644,7 +644,7 @@ public class BatchRunner
       try
       {
         String msg = ResourceMgr.getString("MsgBatchProcessingFile") + " " + fo.getFullPath();
-        LogMgr.logInfo("BatchRunner.execute()", msg);
+        LogMgr.logInfo(new CallerInfo(){}, msg);
         if (this.resultDisplay != null && verboseLogging)
         {
           this.resultDisplay.appendToLog(msg);
@@ -1346,7 +1346,7 @@ public class BatchRunner
     }
     catch (Exception e)
     {
-      LogMgr.logError("BatchRunner.initFromCommandLine()", "Error creating temporary profile", e);
+      LogMgr.logError(new CallerInfo(){}, "Error creating temporary profile", e);
       result = null;
     }
     return result;

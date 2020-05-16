@@ -30,6 +30,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.*;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -105,7 +106,7 @@ public class StringSelectionAdapter
     }
     catch (Exception ex)
     {
-      LogMgr.logError("StringSelectionAdapter.createHtmlFragment()", "Could not create HTML fragment", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not create HTML fragment", ex);
       return null;
     }
   }

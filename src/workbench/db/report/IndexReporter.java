@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.IndexColumn;
@@ -214,7 +215,7 @@ public class IndexReporter
     }
     catch (SQLException sql)
     {
-      LogMgr.logWarning("IndexReporter.retrieveOracleOptions()", "Could not retrieve index options", sql);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve index options", sql);
     }
   }
 

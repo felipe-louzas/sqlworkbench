@@ -28,8 +28,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -109,10 +109,7 @@ public class IngresSequenceReader
     PreparedStatement stmt = null;
     List<SequenceDefinition> result = new ArrayList<>();
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("IngresSequenceReqder.getSquences()", "Query to retrieve sequence:" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequences", sql);
 
     try
     {
@@ -131,7 +128,7 @@ public class IngresSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("IngresMetaData.getSequences()", "Error when retrieving sequences",e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequences", sql);
     }
     finally
     {
@@ -168,6 +165,9 @@ public class IngresSequenceReader
     ResultSet rs = null;
     DataStore result = null;
     String sql = SELECT_SEQUENCE_DEF + " WHERE seq_owner = ? AND seq_name = ?";
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql, owner, sequence);
+
     try
     {
       stmt = this.dbConn.getSqlConnection().prepareStatement(sql);
@@ -180,7 +180,7 @@ public class IngresSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("IngresMetaData.getRawSequenceDefinition()", "Error when retrieving sequence definition", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql, owner, sequence);
     }
     finally
     {

@@ -33,6 +33,7 @@ import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -136,7 +137,7 @@ public class WbSelectBlob
       sql.append(sqlCommand.substring(token.getCharEnd() + 1));
     }
 
-    LogMgr.logDebug("WbSelectBlob.execute()", "Using SQL=" + sql + " for file: " + outputFile.getFullPath());
+    LogMgr.logDebug(new CallerInfo(){}, "Using SQL=" + sql + " for file: " + outputFile.getFullPath());
     ResultSet rs = null;
     OutputStream out = null;
     InputStream in = null;

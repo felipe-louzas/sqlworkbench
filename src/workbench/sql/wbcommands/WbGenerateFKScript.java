@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import workbench.interfaces.ScriptGenerationMonitor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -142,7 +143,7 @@ public class WbGenerateFKScript
       }
       catch (IOException io)
       {
-        LogMgr.logError("WbGenerateFKScript.execute()", "Could not write outputfile", io);
+        LogMgr.logError(new CallerInfo(){}, "Could not write outputfile", io);
         result.setFailure();
         result.addMessage(io.getLocalizedMessage());
       }

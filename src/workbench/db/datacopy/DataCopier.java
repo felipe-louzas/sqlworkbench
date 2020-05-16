@@ -36,6 +36,7 @@ import java.util.Set;
 import workbench.interfaces.BatchCommitter;
 import workbench.interfaces.ObjectDropper;
 import workbench.interfaces.ProgressReporter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -292,7 +293,7 @@ public class DataCopier
   private TableIdentifier findTargetTable()
   {
     DbObjectFinder finder = new DbObjectFinder(targetConnection);
-    LogMgr.logDebug("DataCopier.findTargetTable()", "Looking for table " + targetTable.getQualifiedName() + " in target database");
+    LogMgr.logDebug(new CallerInfo(){}, "Looking for table " + targetTable.getQualifiedName() + " in target database");
     TableIdentifier realTable = finder.findTable(targetTable, false);
     if (realTable == null)
     {
@@ -300,7 +301,7 @@ public class DataCopier
 
       toFind.setSchema(toFind.getSchemaToUse(targetConnection));
       toFind.setCatalog(toFind.getCatalogToUse(targetConnection));
-      LogMgr.logDebug("DataCopier.findTargetTable()", "Table " + targetTable.getQualifiedName() + " not found. Trying " + toFind.getQualifiedName());
+      LogMgr.logDebug(new CallerInfo(){}, "Table " + targetTable.getQualifiedName() + " not found. Trying " + toFind.getQualifiedName());
       realTable = finder.findTable(toFind, false);
     }
     return realTable;
@@ -324,7 +325,7 @@ public class DataCopier
 
       if (toDrop != null)
       {
-        LogMgr.logInfo("DataCopier.createTable()", "About to drop table " + toDrop.getQualifiedName());
+        LogMgr.logInfo(new CallerInfo(){}, "About to drop table " + toDrop.getQualifiedName());
         try
         {
           ObjectDropper dropper = new GenericObjectDropper();
@@ -350,7 +351,7 @@ public class DataCopier
       }
       else
       {
-        LogMgr.logInfo("DataCopier.createTable()", "Table " + targetTable.getQualifiedName() + " not dropped because it was not found in the target database");
+        LogMgr.logInfo(new CallerInfo(){}, "Table " + targetTable.getQualifiedName() + " not dropped because it was not found in the target database");
       }
     }
 
@@ -627,7 +628,7 @@ public class DataCopier
     }
     catch (Exception e)
     {
-      LogMgr.logError("DataCopier.start()", "Error when copying data", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when copying data", e);
       this.addError(ExceptionUtil.getDisplay(e));
       this.importer.tableImportError();
       throw e;
@@ -763,7 +764,7 @@ public class DataCopier
     }
     else
     {
-      LogMgr.logWarning("DataCopier.initColumnMapping()", "Column " + sourceCol.getColumnName() + " not found in target table " + this.targetTable + ". Ignoring mapping!");
+      LogMgr.logWarning(new CallerInfo(){}, "Column " + sourceCol.getColumnName() + " not found in target table " + this.targetTable + ". Ignoring mapping!");
       String msg = ResourceMgr.getFormattedString("ErrCopyTargetColumnNotFound", sourceCol.getColumnName());
       this.addMessage(msg);
     }
@@ -838,7 +839,7 @@ public class DataCopier
         }
         else
         {
-          LogMgr.logWarning("DataCopier.initColumnMapping()", "Column " + entry.getKey() + " not found in source table " + this.sourceTable + ". Ignoring mapping!");
+          LogMgr.logWarning(new CallerInfo(){}, "Column " + entry.getKey() + " not found in source table " + this.sourceTable + ". Ignoring mapping!");
           String msg = ResourceMgr.getFormattedString("ErrCopySourceColumnNotFound", entry.getKey());
           this.addMessage(msg);
         }

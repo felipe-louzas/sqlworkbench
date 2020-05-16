@@ -20,6 +20,7 @@
  */
 package workbench.sql.formatter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -58,12 +59,12 @@ public class SqlFormatterFactory
     {
       if (formatter.isUsable())
       {
-        LogMgr.logInfo("SqlFormatterFactory.createFormatter", "Using external formatter: " + formatter.toString() + " for DBID: " + dbId);
+        LogMgr.logInfo(new CallerInfo(){}, "Using external formatter: " + formatter.toString() + " for DBID: " + dbId);
         return formatter;
       }
       else if (!formatter.programExists())
       {
-        LogMgr.logInfo("SqlFormatterFactory.createFormatter", "External formatter executetable: " + formatter.getProgram() + " not found! Formatter for " + dbId + " not used.");
+        LogMgr.logInfo(new CallerInfo(){}, "External formatter executetable: " + formatter.getProgram() + " not found! Formatter for " + dbId + " not used.");
       }
     }
     return null;

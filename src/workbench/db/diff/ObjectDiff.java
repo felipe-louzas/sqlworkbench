@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.BaseObjectType;
@@ -89,7 +90,7 @@ public class ObjectDiff
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("ObjectDiff.isDifferent()", "Could not compare source", sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not compare source", sql);
     }
     return false;
   }

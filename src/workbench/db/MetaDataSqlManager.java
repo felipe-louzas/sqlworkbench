@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -184,7 +185,7 @@ public class MetaDataSqlManager
     GetMetaDataSql metaSql = getEntryByKey(dbIdKey, statements);
     if (metaSql != null)
     {
-      LogMgr.logInfo("DbMetadata.getEntry()", "Using template for " + sourceType + " based on DBID: [" + dbIdKey + "] instead of product name: " + productName);
+      LogMgr.logInfo(new CallerInfo(){}, "Using template for " + sourceType + " based on DBID: [" + dbIdKey + "] instead of product name: " + productName);
       metaSql.setMetaDataType(sourceType);
       return metaSql;
     }
@@ -239,7 +240,7 @@ public class MetaDataSqlManager
     }
     catch (Throwable e)
     {
-      LogMgr.logError("MetaDataSqlManager.readStatementTemplate()", "Error reading internal templates file " + aFilename,e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading internal templates file " + aFilename,e);
       value = null;
     }
 
@@ -269,11 +270,11 @@ public class MetaDataSqlManager
       {
         WbPersistence reader = new WbPersistence(f.getAbsolutePath());
         value = reader.readObject();
-        LogMgr.logInfo("DbMetadata.readStatementTemplates()", "Using SQL queries from user defined file " + f.getAbsolutePath());
+        LogMgr.logInfo(new CallerInfo(){}, "Using SQL queries from user defined file " + f.getAbsolutePath());
       }
       catch (Throwable e)
       {
-        LogMgr.logWarning("MetaDataSqlManager.readStatementTemplate()", "Error reading template file " + f.getAbsolutePath(), e);
+        LogMgr.logWarning(new CallerInfo(){}, "Error reading template file " + f.getAbsolutePath(), e);
       }
       if (value instanceof HashMap)
       {
@@ -291,7 +292,7 @@ public class MetaDataSqlManager
     }
     else if (Settings.getInstance().getDebugMetadataSql())
     {
-      LogMgr.logDebug("MetaDataSqlManager.readStatementTemplates()", "No user defined template file found for " + aFilename);
+      LogMgr.logDebug(new CallerInfo(){}, "No user defined template file found for " + aFilename);
     }
     return result;
   }

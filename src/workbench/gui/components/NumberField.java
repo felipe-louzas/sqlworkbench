@@ -34,6 +34,7 @@ import javax.swing.text.PlainDocument;
 
 import java.util.Locale;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -86,7 +87,7 @@ public class NumberField
     {
       // This should never happen because insertString allows
       // only properly formatted data to get in the field.
-      LogMgr.logError("NumberField.getValue()", "Invalid value entered", e);
+      LogMgr.logError(new CallerInfo(){}, "Invalid value entered", e);
     }
     return retVal;
   }

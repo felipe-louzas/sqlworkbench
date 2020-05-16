@@ -25,6 +25,7 @@ package workbench.db;
 
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -143,7 +144,7 @@ public class TableCommentReader
         }
         catch (Exception e)
         {
-          LogMgr.logError("TableCommentReader.getTableColumnCommentsSql()", "Error creating comments SQL for remark=" + comment, e);
+          LogMgr.logError(new CallerInfo(){}, "Error creating comments SQL for remark=" + comment, e);
         }
       }
     }

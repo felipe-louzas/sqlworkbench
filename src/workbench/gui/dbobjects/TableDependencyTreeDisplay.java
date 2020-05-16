@@ -45,6 +45,7 @@ import javax.swing.tree.TreePath;
 
 import workbench.WbManager;
 import workbench.interfaces.Resettable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -142,7 +143,7 @@ public class TableDependencyTreeDisplay
     }
     catch (Exception e)
     {
-      LogMgr.logError("TableDependencyTreeDisplay.readTree()", "Error reading three", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading three", e);
     }
     finally
     {

@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -71,10 +72,7 @@ public class HanaSynonymReader
       schema = con.getCurrentSchema();
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("HanaSynonymReader.getSynonymTable()", "Retrieving synonyms using:\n" + SqlUtil.replaceParameters(sql, schema, synonym));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonyms", sql, schema, synonym);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;

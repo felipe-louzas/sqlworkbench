@@ -30,6 +30,7 @@ import java.util.List;
 import javax.swing.*;
 
 import workbench.interfaces.StatusBar;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -119,7 +120,7 @@ public class JoinCompletionPopup
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("JoinCompletionPopup.doPaste()", "Could not retrieve join condition", sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve join condition", sql);
     }
   }
 }

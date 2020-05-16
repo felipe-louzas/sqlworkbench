@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -108,7 +109,7 @@ public class WbIsolationLevel
       }
       catch (SQLException e)
       {
-        LogMgr.logError("WbIsolationLevel.execute()", "Could not set isolation level", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not set isolation level", e);
         result.addMessage(ResourceMgr.getFormattedString("MsgLevelChangeError", e.getMessage()));
         result.setFailure();
       }

@@ -25,6 +25,7 @@ import java.util.Comparator;
 
 import javax.swing.table.AbstractTableModel;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -173,7 +174,7 @@ class MapDataModel
         }
         else
         {
-          LogMgr.logWarning("ColumnMapper.setValueAt()", "Unsupported data type " + aValue.getClass().getName());
+          LogMgr.logWarning(new CallerInfo(){}, "Unsupported data type " + aValue.getClass().getName());
         }
         break;
 
@@ -189,7 +190,7 @@ class MapDataModel
         }
         else
         {
-          LogMgr.logWarning("ColumnMapper.setValueAt()", "Unsupported data type " + aValue.getClass().getName());
+          LogMgr.logWarning(new CallerInfo(){}, "Unsupported data type " + aValue.getClass().getName());
         }
         break;
 

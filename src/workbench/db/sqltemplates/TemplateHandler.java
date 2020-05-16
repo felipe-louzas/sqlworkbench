@@ -25,6 +25,7 @@ package workbench.db.sqltemplates;
 
 import java.io.IOException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -68,12 +69,12 @@ public abstract class TemplateHandler
     String sql = null;
     try
     {
-      LogMgr.logDebug("TemplateHandler.readFile()", "Reading SQL template from: " + f.getAbsolutePath());
+      LogMgr.logDebug(new CallerInfo(){}, "Reading SQL template from: " + f.getAbsolutePath());
       sql = FileUtil.readFile(f, "UTF-8");
     }
     catch (IOException io)
     {
-      LogMgr.logError("TemplateHandler.readFile", "Could not read file: " + fname, io);
+      LogMgr.logError(new CallerInfo(){}, "Could not read file: " + fname, io);
       sql = null;
     }
     return sql;
@@ -193,7 +194,7 @@ public abstract class TemplateHandler
     {
       sql = replacePlaceholder(sql, MetaDataSqlManager.FQ_TABLE_NAME_PLACEHOLDER, table.getFullyQualifiedName(connection), addWhitespace);
     }
-    
+
     if (sql.contains(MetaDataSqlManager.FQ_NAME_PLACEHOLDER))
     {
       sql = replacePlaceholder(sql, MetaDataSqlManager.FQ_NAME_PLACEHOLDER, table.getFullyQualifiedName(connection), addWhitespace);

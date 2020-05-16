@@ -167,7 +167,7 @@ public class OracleRowDataReader
       }
       catch (Throwable t)
       {
-        LogMgr.logWarning("OracleRowDataReader.initialize()", "Class oracle.sql.TIMESTAMPTZ not available!", t);
+        LogMgr.logWarning(new CallerInfo(){}, "Class oracle.sql.TIMESTAMPTZ not available!", t);
       }
     }
     initSessionTimezone(conn);

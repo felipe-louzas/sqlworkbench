@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.swing.SwingConstants;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -338,7 +339,7 @@ public abstract class ConsolePrinter
     }
     catch (Exception e)
     {
-      LogMgr.logError("ConsolePrinter.printRow", "Error when printing DataStore contents", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when printing DataStore contents", e);
     }
   }
 

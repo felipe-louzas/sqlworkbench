@@ -324,7 +324,7 @@ public class SchemaDiff
       }
       else
       {
-        LogMgr.logWarning("SchemaDiff.setTableNames()", "Table combination not found: "
+        LogMgr.logWarning(new CallerInfo(){}, "Table combination not found: "
           + rname + " [" + rtbl + "] to " + tname + " [" + ttbl + "]");
       }
     }

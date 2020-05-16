@@ -25,6 +25,7 @@ package workbench.sql.wbcommands;
 
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.SqlCommand;
@@ -89,7 +90,7 @@ public class WbFeedback
       this.runner.setVerboseLogging(false);
       if (quiet)
       {
-        LogMgr.logInfo("WbFeedbac.execute()", "Feedback disabled");
+        LogMgr.logInfo(new CallerInfo(){}, "Feedback disabled");
       }
       else
       {
@@ -101,7 +102,7 @@ public class WbFeedback
       this.runner.setVerboseLogging(true);
       if (quiet)
       {
-        LogMgr.logInfo("WbFeedbac.execute()", "Feedback enabled");
+        LogMgr.logInfo(new CallerInfo(){}, "Feedback enabled");
       }
       else
       {

@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DependencyNode;
@@ -116,7 +117,7 @@ public class LookupDataLoader
     ResultSet rs = null;
     DataStore result = null;
 
-    LogMgr.logDebug("LookupDataLoader.getLookupData()", "Using sql: " + sql);
+    LogMgr.logDebug(new CallerInfo(){}, "Using sql: " + sql);
 
     try
     {

@@ -23,6 +23,7 @@
  */
 package workbench.db.exporter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -82,7 +83,7 @@ public class SqlExportWriter
     }
     catch (IllegalArgumentException e)
     {
-      LogMgr.logError("SqlExportWriter.createConverter()", "Illegal SQL type requested. Reverting to INSERT", null);
+      LogMgr.logError(new CallerInfo(){}, "Illegal SQL type requested. Reverting to INSERT", null);
       conv.setCreateInsert();
     }
 

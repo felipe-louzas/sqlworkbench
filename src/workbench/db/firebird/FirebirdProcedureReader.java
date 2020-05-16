@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -148,10 +149,7 @@ public class FirebirdProcedureReader
       SqlUtil.appendAndCondition(sql, "procedure_name", name, connection);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("FirebirdProcedureReader.getProceduresAndPackages()", "Retrieving procedures using:\n" + sql.toString());
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedures", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -182,6 +180,7 @@ public class FirebirdProcedureReader
     }
     catch (SQLException ex)
     {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "procedures", sql);
       throw ex;
     }
   }
@@ -299,7 +298,7 @@ public class FirebirdProcedureReader
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("FirebirdProcedureReader.getPackageSource()", "Could not retrieve package source using: \n" + SqlUtil.replaceParameters(sql, packageName), ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve package source using: \n" + SqlUtil.replaceParameters(sql, packageName), ex);
     }
     finally
     {
@@ -385,10 +384,7 @@ public class FirebirdProcedureReader
       type = "procedure";
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("FirebirdProcedureReader.retrieveProcedureColumns()", "Retrieving procedure parameters using:\n" + SqlUtil.replaceParameters(sql, def.getProcedureName(), type, def.getPackageName()));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedure parameter", sql, def.getProcedureName(), type, def.getPackageName());
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -447,7 +443,7 @@ public class FirebirdProcedureReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("FirebirdProcedureReader.getFunctionColumns()", "Could not retrieve procedure parameters", ex);
+    LogMgr.logMetadataError(new CallerInfo(){}, ex, "procedure parameter", sql, def.getProcedureName(), type, def.getPackageName());
     }
     finally
     {
@@ -483,7 +479,7 @@ public class FirebirdProcedureReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("OracleProcedureReader.getPackageProcedureSource", "Could not read procedure source", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read procedure source", ex);
     }
     return procSrc;
   }
@@ -493,62 +489,62 @@ public class FirebirdProcedureReader
   // --- the following code is copied from the Jaybird Source
   // --- as that is all defined as private, it can't be accessed from the outside
   // -----------------------------------------------------------------------------
-  private static final short smallint_type = 7;
-  private static final short integer_type = 8;
-  private static final short quad_type = 9;
-  private static final short float_type = 10;
-  private static final short d_float_type = 11;
-  private static final short date_type = 12;
-  private static final short time_type = 13;
-  private static final short char_type = 14;
-  private static final short int64_type = 16;
-  private static final short double_type = 27;
-  private static final short timestamp_type = 35;
-  private static final short varchar_type = 37;
-  private static final short blob_type = 261;
-  private static final short boolean_type = 23;
+  private static final short SMALLINT_TYPE = 7;
+  private static final short INTEGER_TYPE = 8;
+  private static final short QUAD_TYPE = 9;
+  private static final short FLOAT_TYPE = 10;
+  private static final short D_FLOAT_TYPE = 11;
+  private static final short DATE_TYPE = 12;
+  private static final short TIME_TYPE = 13;
+  private static final short CHAR_TYPE = 14;
+  private static final short INT64_TYPE = 16;
+  private static final short DOUBLE_TYPE = 27;
+  private static final short TIMESTAMP_TYPE = 35;
+  private static final short VARCHAR_TYPE = 37;
+  private static final short BLOB_TYPE = 261;
+  private static final short BOOLEAN_TYPE = 23;
 
   private static int getDataType(short fieldType, short fieldSubType, short fieldScale)
   {
     switch (fieldType)
     {
-      case smallint_type:
+      case SMALLINT_TYPE:
         if (fieldSubType == 1 || (fieldSubType == 0 && fieldScale < 0))
           return Types.NUMERIC;
         else if (fieldSubType == 2)
           return Types.DECIMAL;
         else
           return Types.SMALLINT;
-      case integer_type:
+      case INTEGER_TYPE:
         if (fieldSubType == 1 || (fieldSubType == 0 && fieldScale < 0))
           return Types.NUMERIC;
         else if (fieldSubType == 2)
           return Types.DECIMAL;
         else
           return Types.INTEGER;
-      case double_type:
-      case d_float_type:
+      case DOUBLE_TYPE:
+      case D_FLOAT_TYPE:
         return Types.DOUBLE;
-      case float_type:
+      case FLOAT_TYPE:
         return Types.FLOAT;
-      case char_type:
+      case CHAR_TYPE:
         return Types.CHAR;
-      case varchar_type:
+      case VARCHAR_TYPE:
         return Types.VARCHAR;
-      case timestamp_type:
+      case TIMESTAMP_TYPE:
         return Types.TIMESTAMP;
-      case time_type:
+      case TIME_TYPE:
         return Types.TIME;
-      case date_type:
+      case DATE_TYPE:
         return Types.DATE;
-      case int64_type:
+      case INT64_TYPE:
         if (fieldSubType == 1 || (fieldSubType == 0 && fieldScale < 0))
           return Types.NUMERIC;
         else if (fieldSubType == 2)
           return Types.DECIMAL;
         else
           return Types.BIGINT;
-      case blob_type:
+      case BLOB_TYPE:
         if (fieldSubType < 0)
           return Types.BLOB;
         else if (fieldSubType == 0)
@@ -557,9 +553,9 @@ public class FirebirdProcedureReader
           return Types.LONGVARCHAR;
         else
           return Types.OTHER;
-      case quad_type:
+      case QUAD_TYPE:
         return Types.OTHER;
-      case boolean_type:
+      case BOOLEAN_TYPE:
         return Types.BOOLEAN;
       default:
         return Types.NULL;
@@ -570,43 +566,43 @@ public class FirebirdProcedureReader
   {
     switch (sqltype)
     {
-      case smallint_type:
+      case SMALLINT_TYPE:
         if (sqlsubtype == 1 || (sqlsubtype == 0 && sqlscale < 0))
           return "NUMERIC";
         else if (sqlsubtype == 2)
           return "DECIMAL";
         else
           return "SMALLINT";
-      case integer_type:
+      case INTEGER_TYPE:
         if (sqlsubtype == 1 || (sqlsubtype == 0 && sqlscale < 0))
           return "NUMERIC";
         else if (sqlsubtype == 2)
           return "DECIMAL";
         else
           return "INTEGER";
-      case double_type:
-      case d_float_type:
+      case DOUBLE_TYPE:
+      case D_FLOAT_TYPE:
         return "DOUBLE PRECISION";
-      case float_type:
+      case FLOAT_TYPE:
         return "FLOAT";
-      case char_type:
+      case CHAR_TYPE:
         return "CHAR";
-      case varchar_type:
+      case VARCHAR_TYPE:
         return "VARCHAR";
-      case timestamp_type:
+      case TIMESTAMP_TYPE:
         return "TIMESTAMP";
-      case time_type:
+      case TIME_TYPE:
         return "TIME";
-      case date_type:
+      case DATE_TYPE:
         return "DATE";
-      case int64_type:
+      case INT64_TYPE:
         if (sqlsubtype == 1 || (sqlsubtype == 0 && sqlscale < 0))
           return "NUMERIC";
         else if (sqlsubtype == 2)
           return "DECIMAL";
         else
           return "BIGINT";
-      case blob_type:
+      case BLOB_TYPE:
         if (sqlsubtype < 0)
           return "BLOB SUB_TYPE <0";
         else if (sqlsubtype == 0)
@@ -615,9 +611,9 @@ public class FirebirdProcedureReader
           return "BLOB SUB_TYPE 1";
         else
           return "BLOB SUB_TYPE " + sqlsubtype;
-      case quad_type:
+      case QUAD_TYPE:
         return "ARRAY";
-      case boolean_type:
+      case BOOLEAN_TYPE:
         return "BOOLEAN";
       default:
         return "NULL";

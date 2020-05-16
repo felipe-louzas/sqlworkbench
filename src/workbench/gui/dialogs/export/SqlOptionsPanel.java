@@ -45,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -216,7 +217,7 @@ public class SqlOptionsPanel
     }
     catch (Exception e)
     {
-      LogMgr.logDebug("SqlOptionsPanel.getCommitEvery", "Could not retrieve commit frequency", e);
+      LogMgr.logDebug(new CallerInfo(){}, "Could not retrieve commit frequency", e);
     }
     return result;
   }

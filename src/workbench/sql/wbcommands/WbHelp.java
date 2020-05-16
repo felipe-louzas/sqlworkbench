@@ -26,10 +26,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.ResourcePath;
 import workbench.resource.Settings;
+
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
 
@@ -94,7 +96,7 @@ public class WbHelp
         }
         else
         {
-          LogMgr.logWarning("WbHelp.execute()", "Error getting command short help from ResourceBundle", e);
+          LogMgr.logWarning(new CallerInfo(){}, "Error getting command short help from ResourceBundle", e);
         }
       }
       msg.append('\n');

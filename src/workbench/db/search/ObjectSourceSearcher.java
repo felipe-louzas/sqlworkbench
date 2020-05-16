@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -231,7 +232,7 @@ public class ObjectSourceSearcher
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("ObjectSourceSearcher.searchObjects()", "Error retrieving objects", sql);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving objects", sql);
     }
     finally
     {
@@ -254,7 +255,7 @@ public class ObjectSourceSearcher
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ObjectSourceSearcher.changeCatalog()", "Could not change catalot to: " + newCatalog, ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not change catalot to: " + newCatalog, ex);
     }
     return false;
   }
@@ -298,7 +299,7 @@ public class ObjectSourceSearcher
           source = object.getSource(connection);
           if (StringUtil.isBlank(source))
           {
-            LogMgr.logWarning("ObjectSourceSearcher.searchObjects()", "Empty source returned for " + object.toString());
+            LogMgr.logWarning(new CallerInfo(){}, "Empty source returned for " + object.toString());
           }
 
           if (StringUtil.containsWords(source, searchValues, matchAll, ignoreCase, useRegex))
@@ -310,7 +311,7 @@ public class ObjectSourceSearcher
       }
       catch (SQLException sql)
       {
-        LogMgr.logError("ObjectSourceSearcher.searchObjects()", "Error retrieving object source", sql);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving object source", sql);
       }
       current ++;
     }

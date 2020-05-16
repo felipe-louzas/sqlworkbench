@@ -28,6 +28,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Types;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -85,10 +86,7 @@ public class MonetDbProcedureReader
 
     sql.append("\norder by 2,3");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("MonetDbProcedureReader.getProcedures()", "Query to retrieve procedures:" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedures", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -180,10 +178,7 @@ public class MonetDbProcedureReader
       SqlUtil.appendAndCondition(sql, "sch.name", schema, connection);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("MonetDbSequenceReader.getRawSequenceDefinition()", "Using query=" + sql.toString());
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedure columns",  sql);
 
     Statement stmt = connection.createStatementForQuery();
     try
@@ -251,10 +246,7 @@ public class MonetDbProcedureReader
     StringBuilder source = new StringBuilder(500);
 
     appendProcNameCondition(sql, def);
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("JdbcProcedureReader.getProcedureSource()", "Using query=\n" + sql.toString());
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedure source", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -282,7 +274,7 @@ public class MonetDbProcedureReader
     catch (SQLException e)
     {
       if (sp != null) this.connection.rollback(sp);
-      LogMgr.logError("MonetDbProcedureReader.getProcedureSource()", "Error retrieving procedure source", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedure source", sql);
       source = new StringBuilder(ExceptionUtil.getDisplay(e));
       this.connection.rollback(sp);
     }

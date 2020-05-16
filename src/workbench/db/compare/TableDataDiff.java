@@ -43,6 +43,7 @@ import workbench.db.exporter.BlobMode;
 
 import workbench.interfaces.ErrorReporter;
 import workbench.interfaces.ProgressReporter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -341,7 +342,7 @@ public class TableDataDiff
     referenceTable = refFinder.findSelectableObject(refTable);
     if (referenceTable == null)
     {
-      LogMgr.logError("TableDataDiff.setTableName()", "Reference table " + refTable.getTableName() + " not found!", null);
+      LogMgr.logError(new CallerInfo(){}, "Reference table " + refTable.getTableName() + " not found!", null);
       return TableDiffStatus.ReferenceNotFound;
     }
 
@@ -370,7 +371,7 @@ public class TableDataDiff
     tableToSync = sFinder.findSelectableObject(tableToVerify);
     if (tableToSync == null && !ignoreMissingTarget)
     {
-      LogMgr.logError("TableDataDiff.setTableName()", "Target table " + tableToVerify.getTableName() + " not found!", null);
+      LogMgr.logError(new CallerInfo(){}, "Target table " + tableToVerify.getTableName() + " not found!", null);
       return TableDiffStatus.TargetNotFound;
     }
 
@@ -386,7 +387,7 @@ public class TableDataDiff
         if (findTargetColumn(col) == null)
         {
           status = TableDiffStatus.ColumnMismatch;
-          LogMgr.logError("TableDataDiff.setTableName()", "Reference column " + col.getColumnName() + " not found in target table!", null);
+          LogMgr.logError(new CallerInfo(){}, "Reference column " + col.getColumnName() + " not found in target table!", null);
         }
       }
     }
@@ -411,7 +412,7 @@ public class TableDataDiff
   {
     String retrieve = "SELECT * FROM " + this.referenceTable.getTableExpression(this.reference);
 
-    LogMgr.logDebug("TableDataDiff.doSync()", "Using " + retrieve + " to retrieve rows from reference database");
+    LogMgr.logDebug(new CallerInfo(){}, "Using " + retrieve + " to retrieve rows from reference database");
 
     checkStatement = toSync.createStatementForQuery();
 
@@ -590,7 +591,7 @@ public class TableDataDiff
     }
     catch (SQLException e)
     {
-      LogMgr.logError("TableDataDiff.checkRows()", "Error when running check SQL " + sql, e);
+      LogMgr.logError(new CallerInfo(){}, "Error when running check SQL " + sql, e);
       throw e;
     }
     finally

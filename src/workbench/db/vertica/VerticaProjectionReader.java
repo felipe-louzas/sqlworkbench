@@ -27,8 +27,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -78,10 +78,7 @@ public class VerticaProjectionReader
       "group by 1,2,3,4,5,6,7 \n" +
       "ORDER BY 2, projection_basename";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("VerticaProjectionReader.getProjectionList()", "Query to retrieve projections for " + table.getTableExpression(dbConnection) + ":\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "projections", sql);
 
     PreparedStatement projectionStatement = null;
     ResultSet rs = null;
@@ -96,7 +93,7 @@ public class VerticaProjectionReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("Vertica", "error", ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "projections", sql);
     }
     finally
     {
@@ -126,10 +123,7 @@ public class VerticaProjectionReader
       "  and p.projection_schema = ? \n" +
       "ORDER BY p.projection_name, node ";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("VerticaProjectionReader.getProjectionCopies()", "Query to retrieve projection copies for " + projectionBasename + ":\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "projection copies", sql);
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -144,7 +138,7 @@ public class VerticaProjectionReader
     }
     catch (Exception ex)
     {
-      LogMgr.logDebug("VerticaProjectionReader.getProjectionColumns()", "Could not read projection columns", ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "projection copies", sql);
     }
     finally
     {
@@ -180,10 +174,7 @@ public class VerticaProjectionReader
       "GROUP BY 1,2,3,4,5,6,7,8,13,14 \n" +
       "ORDER BY pc.column_position ";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("VerticaProjectionReader.getProjectionColumns()", "Query to retrieve projection columns for " + projectionName + ":\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "projection columns", sql);
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -198,7 +189,7 @@ public class VerticaProjectionReader
     }
     catch (Exception ex)
     {
-      LogMgr.logDebug("VerticaProjectionReader.getProjectionColumns()", "Could not read projection columns", ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "projection columns", sql);
     }
     finally
     {

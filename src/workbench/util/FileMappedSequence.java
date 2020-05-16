@@ -31,7 +31,9 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+
 import workbench.interfaces.CharacterSequence;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -152,7 +154,7 @@ public class FileMappedSequence
         if (tries > 3)
         {
           // then something serious is wrong!
-          LogMgr.logError("FileMappedSequence.readNextChunk()", "Error reading file", cc);
+          LogMgr.logError(new CallerInfo(){}, "Error reading file", cc);
           throw new IllegalStateException("Could not read next chunk");
         }
         // This can happen if the chunk ends in the middle
@@ -163,7 +165,7 @@ public class FileMappedSequence
       }
       catch (IOException io)
       {
-        LogMgr.logError("FileMappedSequence.ensureWindow()", "Error reading file", io);
+        LogMgr.logError(new CallerInfo(){}, "Error reading file", io);
         throw new IllegalStateException("Could not read next chunk");
       }
     }
@@ -194,7 +196,7 @@ public class FileMappedSequence
         if (tries > 3)
         {
           // then something serious is wrong!
-          LogMgr.logError("FileMappedSequence.readPreviousChunk()", "Error when reading chunk from: " + newStart + " with size: " + chunkSize, io);
+          LogMgr.logError(new CallerInfo(){}, "Error when reading chunk from: " + newStart + " with size: " + chunkSize, io);
           throw new IllegalStateException("Could not read previous chunk");
         }
         // This can happen if the chunk ends in the middle
@@ -250,7 +252,7 @@ public class FileMappedSequence
     }
     catch (Exception e)
     {
-      LogMgr.logError("FileMappedSequence.done()", "Error closing input stream", e);
+      LogMgr.logError(new CallerInfo(){}, "Error closing input stream", e);
     }
   }
 

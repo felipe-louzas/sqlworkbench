@@ -121,7 +121,7 @@ public final class WbManager
   public void uncaughtException(Thread thread, Throwable error)
   {
     error.printStackTrace();
-    LogMgr.logError("WbManager.uncaughtException()", "Thread '" + thread.getName() + "' caused an exception!", error);
+    LogMgr.logError(new CallerInfo(){}, "Thread '" + thread.getName() + "' caused an exception!", error);
   }
 
   public AppArguments getCommandLine()
@@ -347,7 +347,7 @@ public final class WbManager
     }
     else
     {
-      LogMgr.logDebug("WbManager.canExit()", "saveWindowSettings() returned false!");
+      LogMgr.logDebug(new CallerInfo(){}, "saveWindowSettings() returned false!");
       return false;
     }
   }
@@ -449,7 +449,7 @@ public final class WbManager
   {
     if (!this.isGUIMode()) return;
 
-    LogMgr.logDebug("WbManager.closeAllWindows()", "Closing all open windows");
+    LogMgr.logDebug(new CallerInfo(){}, "Closing all open windows");
     synchronized (mainWindows)
     {
       for (MainWindow w : mainWindows)
@@ -707,7 +707,7 @@ public final class WbManager
 
   public void readParameters(String[] args, RunMode mode)
   {
-    String callerInfo = new CallerInfo(){}.toString();
+    CallerInfo callerInfo = new CallerInfo(){};
 
     try
     {

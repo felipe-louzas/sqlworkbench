@@ -25,6 +25,7 @@ package workbench.gui.actions;
 
 import java.awt.event.ActionEvent;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -52,7 +53,7 @@ public class FileDisconnectAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    LogMgr.logDebug("FileDisconnectAction.executeAction()", "Initiating disconnect.");
+    LogMgr.logDebug(new CallerInfo(){}, "Initiating disconnect.");
     if (isCtrlPressed(e) && invokedByMouse(e))
     {
       boolean doIt = WbSwingUtilities.getYesNo(window, ResourceMgr.getString("MsgAbortWarning"));

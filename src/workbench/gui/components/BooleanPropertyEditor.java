@@ -27,8 +27,11 @@ import java.awt.EventQueue;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.lang.reflect.Method;
+
 import javax.swing.JCheckBox;
+
 import workbench.interfaces.SimplePropertyEditor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 
@@ -92,7 +95,7 @@ public class BooleanPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("BooleanPropertyEditor.setSourceObject()", "Error during init", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during init", e);
     }
   }
 
@@ -128,7 +131,7 @@ public class BooleanPropertyEditor
     }
     catch (Exception e)
     {
-      LogMgr.logError("BooleanPropertyEditor.setSourceObject()", "Error when applying changes", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when applying changes", e);
     }
   }
 

@@ -36,14 +36,19 @@ import workbench.db.ProcedureReader;
 import workbench.db.TriggerDefinition;
 import workbench.db.TriggerReader;
 import workbench.db.TriggerReaderFactory;
+
 import workbench.interfaces.ScriptGenerationMonitor;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
+
 import workbench.sql.DelimiterDefinition;
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+
 import workbench.storage.RowActionMonitor;
+
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
 import workbench.util.CollectionUtil;
@@ -252,7 +257,7 @@ public class WbGenerateScript
       }
       catch (IOException io)
       {
-        LogMgr.logError("WbGenerateScript.execute()", "Could not write outputfile", io);
+        LogMgr.logError(new CallerInfo(){}, "Could not write outputfile", io);
         result.setFailure();
         result.addMessage(io.getLocalizedMessage());
       }

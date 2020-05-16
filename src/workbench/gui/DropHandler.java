@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.gui.components.ExtensionFileFilter;
@@ -105,7 +106,7 @@ class DropHandler
     }
     catch (IOException | UnsupportedFlavorException io)
     {
-      LogMgr.logError("MainWindow.drop()", "Error processing drop event", io);
+      LogMgr.logError(new CallerInfo(){}, "Error processing drop event", io);
       dropTargetDropEvent.rejectDrop();
     }
   }

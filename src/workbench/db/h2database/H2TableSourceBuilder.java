@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -78,10 +79,7 @@ public class H2TableSourceBuilder
 
     StringBuilder createSql = new StringBuilder(100);
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("H2TableSourceBuilder.getLinkedTableSource()", "Using statement: " + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "linked table source", sql);
 
     if (includeDrop)
     {
@@ -108,7 +106,7 @@ public class H2TableSourceBuilder
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("H2TableSourceBuilder.getLinkedTableSource()", "Error retrieving table source", ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "linked table source", sql);
       return null;
     }
     finally
@@ -139,10 +137,7 @@ public class H2TableSourceBuilder
       pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
       pstmt.setString(1, tbl.getTableName());
       pstmt.setString(2, tbl.getSchema());
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug("H2TableSourceBuilder.readTableConfigOptions()", "Using sql: " + pstmt.toString());
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "table options", sql, tbl.getTableName(), tbl.getSchema());
       rs = pstmt.executeQuery();
       if (rs.next())
       {
@@ -165,7 +160,7 @@ public class H2TableSourceBuilder
     }
     catch (SQLException e)
     {
-      LogMgr.logError("H2TableSourceBuilder.readTableConfigOptions()", "Error retrieving table options", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "table options", sql, tbl.getTableName(), tbl.getSchema());
     }
     finally
     {

@@ -28,8 +28,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.AbstractConstraintReader;
 import workbench.db.TableConstraint;
@@ -68,10 +68,7 @@ public class FirstSqlConstraintReader
     PreparedStatement pstmt = null;
     ResultSet rs = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("FirstSqlConstraintReader.getTableConstraints()", "Using query=\n" + SQL);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table constraints", SQL);
 
     List<TableConstraint> result = CollectionUtil.arrayList();
     TableIdentifier table = def.getTable();
@@ -90,7 +87,7 @@ public class FirstSqlConstraintReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("FirstSqlMetadata.getTableConstraints()", "Could not retrieve table constraints for " + table.getTableExpression(), e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "table constraints", SQL);
     }
     finally
     {

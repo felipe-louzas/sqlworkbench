@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -216,7 +217,7 @@ public class OracleControlFileWriter
     }
     catch (IOException io)
     {
-      LogMgr.logError("OracleControlFileWriter.writeFormatFile()", "Error opening outputfile", io);
+      LogMgr.logError(new CallerInfo(){}, "Error opening outputfile", io);
     }
     finally
     {

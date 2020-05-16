@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import workbench.interfaces.SqlHistoryProvider;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.wbcommands.WbHistory;
@@ -99,11 +100,11 @@ public class StatementHistory
         this.append(line);
         line = reader.readLine();
       }
-      LogMgr.logInfo("StatementHistory.readFrom()", "Loaded statement history from " + f.getAbsolutePath());
+      LogMgr.logInfo(new CallerInfo(){}, "Loaded statement history from " + f.getAbsolutePath());
     }
     catch (IOException io)
     {
-      LogMgr.logError("StatementHistory.readFrom()", "Could not save history", io);
+      LogMgr.logError(new CallerInfo(){}, "Could not save history", io);
     }
     finally
     {
@@ -125,11 +126,11 @@ public class StatementHistory
         writer.write(line);
         writer.write('\n');
       }
-      LogMgr.logInfo("StatementHistory.saveTo()", "Saved statement history to " + f.getAbsolutePath());
+      LogMgr.logInfo(new CallerInfo(){}, "Saved statement history to " + f.getAbsolutePath());
     }
     catch (IOException io)
     {
-      LogMgr.logError("StatementHistory.saveTo()", "Could not save history", io);
+      LogMgr.logError(new CallerInfo(){}, "Could not save history", io);
     }
     finally
     {

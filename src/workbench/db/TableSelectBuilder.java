@@ -26,6 +26,7 @@ package workbench.db;
 import java.sql.SQLException;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.sqltemplates.TemplateHandler;
@@ -129,7 +130,7 @@ public class TableSelectBuilder
   {
     if (table == null)
     {
-      LogMgr.logWarning("TableSelectBuilder.getSelectForColumns()", "Not table supplied!");
+      LogMgr.logWarning(new CallerInfo(){}, "Not table supplied!");
       return null;
     }
     String select = replacePlaceholders(table, "count(*)", -1);
@@ -201,7 +202,7 @@ public class TableSelectBuilder
   {
     if (table == null)
     {
-      LogMgr.logWarning("TableSelectBuilder.getSelectForColumns()", "No table supplied!");
+      LogMgr.logWarning(new CallerInfo(){}, "No table supplied!");
       return null;
     }
 
@@ -342,9 +343,9 @@ public class TableSelectBuilder
     }
 
     // If an expression without the placeholder was defined ignore the definition
-    if (expr.indexOf(COLUMN_PLACEHOLDER) == -1)
+    if (!expr.contains(COLUMN_PLACEHOLDER))
     {
-      LogMgr.logError("TableSelectBuilder.getColumnExpression()", "Expression without " + COLUMN_PLACEHOLDER + " specified for datatype '" + type + "': " + expr, null);
+      LogMgr.logError(new CallerInfo(){}, "Expression without " + COLUMN_PLACEHOLDER + " specified for datatype '" + type + "': " + expr, null);
       return colname;
     }
 

@@ -42,6 +42,7 @@ import javax.swing.event.ListSelectionListener;
 import workbench.interfaces.PropertyStorage;
 import workbench.interfaces.Reloadable;
 import workbench.interfaces.Resettable;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -192,7 +193,7 @@ public class VerticaProjectionPanel
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("VerticaProjectionPanel.reloadTable()", "Could not reload projections", sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not reload projections", sql);
     }
   }
 
@@ -260,7 +261,7 @@ public class VerticaProjectionPanel
     }
     catch (SQLException se)
     {
-      LogMgr.logError("VerticaProjectionPanel.retrieveProjectionCopies()", "Could not retrieve projection copies", se);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve projection copies", se);
     }
   }
 
@@ -281,7 +282,7 @@ public class VerticaProjectionPanel
     }
     catch (SQLException se)
     {
-      LogMgr.logError("VerticaProjectionPanel.retrieveProjectionColumns()", "Could not retrieve projection columns", se);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve projection columns", se);
     }
   }
 
@@ -347,7 +348,7 @@ public class VerticaProjectionPanel
     if (!initialized) return;
     if (e.getSource() != this.reloadProjections) return;
 
-    LogMgr.logDebug("VerticaProjectionPanel.actionPerformed()", "Trying to select projection copies");
+    LogMgr.logDebug(new CallerInfo(){}, "Trying to select projection copies");
     WbSwingUtilities.invokeLater(this::reload);
   }
 
@@ -364,7 +365,7 @@ public class VerticaProjectionPanel
     {
       projectionBuddies.reset();
       projectionColumns.reset();
-      LogMgr.logDebug("VerticaProjectionPanel.actionPerformed()", "Trying to select projection copies");
+      LogMgr.logDebug(new CallerInfo(){}, "Trying to select projection copies");
       WbSwingUtilities.invokeLater(this::reloadDetails);
     }
   }

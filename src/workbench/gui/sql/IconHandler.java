@@ -32,6 +32,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 
 import workbench.interfaces.TextChangeListener;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.Settings;
@@ -222,7 +223,7 @@ public class IconHandler
         }
         catch (Throwable th)
         {
-          LogMgr.logWarning("SqlPanel.setBusy()", "Error when setting busy icon!", th);
+          LogMgr.logWarning(new CallerInfo(){}, "Error when setting busy icon!", th);
         }
         tab.validate();
         tab.repaint();

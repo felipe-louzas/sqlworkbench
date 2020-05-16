@@ -27,6 +27,7 @@ import java.sql.SQLException;
 
 import workbench.AppArguments;
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ConnectionMgr;
@@ -175,7 +176,7 @@ public class WbConnect
       }
 
       newConn = ConnectionMgr.getInstance().getConnection(profile, id);
-      LogMgr.logInfo("WbConnect.execute()", "Connected to: " + newConn.getDisplayString());
+      LogMgr.logInfo(new CallerInfo(){}, "Connected to: " + newConn.getDisplayString());
 
       if (persistentChange)
       {

@@ -28,8 +28,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
@@ -71,10 +71,7 @@ public class HanaTableSourceBuilder
       pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
       pstmt.setString(1, tbl.getRawTableName());
       pstmt.setString(2, tbl.getRawSchema());
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug("HanaTableSourceBuilder.readTableConfigOptions()", "Retrieving table type using SQL: " + SqlUtil.replaceParameters(sql, tbl.getRawTableName(), tbl.getRawSchema()));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "table type", sql, tbl.getRawTableName(), tbl.getRawSchema());
       rs = pstmt.executeQuery();
       if (rs.next())
       {
@@ -82,11 +79,11 @@ public class HanaTableSourceBuilder
         tbl.getSourceOptions().setTypeModifier(type);
       }
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug("HanaTableSourceBuilder.readTableConfigOptions()", "Retrieving table type took: " + duration + "ms");
+      LogMgr.logDebug(new CallerInfo(){}, "Retrieving table type took: " + duration + "ms");
     }
     catch (SQLException e)
     {
-      LogMgr.logError("HanaTableSourceBuilder.readTableConfigOptions()", "Error retrieving table options", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "table type", sql, tbl.getRawTableName(), tbl.getRawSchema());
     }
     finally
     {

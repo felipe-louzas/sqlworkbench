@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -594,7 +595,7 @@ public abstract class BaseAnalyzer
     }
     catch (SQLException se)
     {
-      LogMgr.logError("BaseAnalyzer.retrieveSequences()", "Could not retrieve sequences", se);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve sequences", se);
     }
   }
 
@@ -721,15 +722,6 @@ public abstract class BaseAnalyzer
 
     String word = getCurrentWord();
     return StringUtil.removeTrailing(word, schemaSeparator);
-//    String word = StringUtil.getWordLeftOfCursor(this.sql, start, QUALIFIER_DELIM + schemaSeparator);
-//    if (word == null) return null;
-//    int dotPos= word.indexOf('.');
-//
-//    if (dotPos > -1)
-//    {
-//      return word.substring(0, dotPos);
-//    }
-//    return word;
   }
 
   public boolean isColumnList()

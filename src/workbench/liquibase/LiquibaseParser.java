@@ -29,6 +29,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -126,7 +127,7 @@ public class LiquibaseParser
 		}
 		catch (Exception ex)
 		{
-			LogMgr.logError("LiquibaseParser.getContentFromChangeSet()", "Could not parse file: " + changeLog.getFullPath(), ex);
+			LogMgr.logError(new CallerInfo(){}, "Could not parse file: " + changeLog.getFullPath(), ex);
 		}
 		return result;
 	}
@@ -159,7 +160,7 @@ public class LiquibaseParser
 		}
 		catch (Exception ex)
 		{
-			LogMgr.logError("LiquibaseParser.getChangeSets()", "Could not parse file: " + changeLog.getFullPath(), ex);
+			LogMgr.logError(new CallerInfo(){}, "Could not parse file: " + changeLog.getFullPath(), ex);
 		}
 		return result;
 	}
@@ -253,7 +254,7 @@ public class LiquibaseParser
 		{
 			String msg = ResourceMgr.getFormattedString("ErrFileNotFound", path);
 			messages.append(msg);
-			LogMgr.logError("LiquibaseParser.getContent()", "sqlFile=\"" + path + "\" not found!", null);
+			LogMgr.logError(new CallerInfo(){}, "sqlFile=\"" + path + "\" not found!", null);
 		}
 
 		return result;
@@ -343,7 +344,7 @@ public class LiquibaseParser
 		catch (Exception ex)
 		{
 			messages.append(ExceptionUtil.getDisplay(ex));
-			LogMgr.logError("LiquibaseParser.getContent()", "Could not read sqlFile=\"" + include.getFullPath() + "\"", ex);
+			LogMgr.logError(new CallerInfo(){}, "Could not read sqlFile=\"" + include.getFullPath() + "\"", ex);
 		}
 		return result;
 	}

@@ -379,7 +379,7 @@ public class ConnectionMgr
 
       if (db.getDriverClass() == null)
       {
-        LogMgr.logWarning("ConnectionMgr.findDriverByName()", "Got driver without a driver class: " + db.getName() + ", classpath=" + db.getLibraryList());
+        LogMgr.logWarning(new CallerInfo(){}, "Got driver without a driver class: " + db.getName() + ", classpath=" + db.getLibraryList());
         continue;
       }
 
@@ -403,7 +403,7 @@ public class ConnectionMgr
       return new DbDriver(driverName, drvClassName, null);
     }
 
-    LogMgr.logDebug("ConnectionMgr.findDriverByName()", "Did not find driver with name="+ driverName + ", using " + (firstMatch == null ? "(n/a)" : firstMatch.getName()));
+    LogMgr.logDebug(new CallerInfo(){}, "Did not find driver with name="+ driverName + ", using " + (firstMatch == null ? "(n/a)" : firstMatch.getName()));
 
     return firstMatch;
   }
@@ -431,7 +431,7 @@ public class ConnectionMgr
     {
       if (driver.getDriverClass() == null)
       {
-        LogMgr.logWarning("ConnectionMgr.findRegisteredDriver()", "Got driver without a driver class: " + driver.getName() + ", classpath=" + driver.getLibraryList());
+        LogMgr.logWarning(new CallerInfo(){}, "Got driver without a driver class: " + driver.getName() + ", classpath=" + driver.getLibraryList());
         continue;
       }
       if (drvClassName.equals(driver.getDriverClass()) && driver.canReadLibrary())
@@ -721,7 +721,7 @@ public class ConnectionMgr
     }
     catch (Exception e)
     {
-      LogMgr.logError(this, ResourceMgr.getString("ErrOnDisconnect"), e);
+      LogMgr.logError(new CallerInfo(){}, ResourceMgr.getString("ErrOnDisconnect"), e);
     }
   }
 

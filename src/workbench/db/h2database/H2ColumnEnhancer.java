@@ -26,11 +26,16 @@ package workbench.db.h2database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Set;
+
+import workbench.log.CallerInfo;
+
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
+
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -64,6 +69,7 @@ public class H2ColumnEnhancer
              "and is_computed = true \n";
 
     Set<String> computedCols = CollectionUtil.caseInsensitiveSet();
+    LogMgr.logMetadataSql(new CallerInfo(){}, "computed columns", sql, tablename, schema);
     try
     {
       stmt = conn.getSqlConnection().prepareStatement(sql);
@@ -78,7 +84,7 @@ public class H2ColumnEnhancer
     }
     catch (Exception e)
     {
-      LogMgr.logError("H2ColumnEnhancer.updateComputedColumns()", "Error retrieving column info", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "computed columns", sql, tablename, schema);
     }
     finally
     {

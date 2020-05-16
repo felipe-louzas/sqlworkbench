@@ -57,6 +57,7 @@ import workbench.interfaces.DbExecutionNotifier;
 import workbench.interfaces.PropertyStorage;
 import workbench.interfaces.ShareableDisplay;
 import workbench.interfaces.TableSearchConsumer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -292,9 +293,10 @@ public class TableSearchPanel
         }
         size.setSize(width1 - 20, (rows + 4) * height1);
         pane.setPreferredSize(size);
-      }catch (Exception e)
+      }
+      catch (Exception e)
       {
-        LogMgr.logError("TableSearchPanel.tableSearched()", "Error adding result.", e);
+        LogMgr.logError(new CallerInfo(){}, "Error adding result.", e);
       }
     });
   }
@@ -584,7 +586,7 @@ public class TableSearchPanel
   @Override
   public synchronized void addDbExecutionListener(DbExecutionListener l)
   {
-    if (this.execListener == null) this.execListener = Collections.synchronizedList(new ArrayList<DbExecutionListener>());
+    if (this.execListener == null) this.execListener = Collections.synchronizedList(new ArrayList<>());
     this.execListener.add(l);
   }
 

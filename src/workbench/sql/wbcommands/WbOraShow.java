@@ -563,7 +563,7 @@ public class WbOraShow
 
     if (Settings.getInstance().getDebugMetadataSql())
     {
-      LogMgr.logDebug("WbOraShow.getLogSource()", "Retrieving log source information using:\n" + sql);
+      LogMgr.logDebug(new CallerInfo(){}, "Retrieving log source information using:\n" + sql);
     }
 
     try
@@ -590,7 +590,7 @@ public class WbOraShow
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("WbOraShow.getLogSource()", "Could not retrieve log information using: " + sql, ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve log information using: " + sql, ex);
       result.addErrorMessage(ex.getMessage());
     }
     finally
@@ -623,10 +623,7 @@ public class WbOraShow
       sql = "SELECT *\nFROM v$sgainfo";
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("WbOraShow.getSGAInfo()", "Retrieving SGA Information using:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "SGA info", sql);
 
     try
     {
@@ -638,7 +635,7 @@ public class WbOraShow
     }
     catch (SQLException ex)
     {
-      LogMgr.logError("WbOraShow.getSGAInfo()", "Could not retrieve SGA info using: " + sql, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "SGA info", sql);
       result.addErrorMessage(ex.getMessage());
     }
     return result;

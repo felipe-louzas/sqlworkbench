@@ -75,7 +75,7 @@ public class GenericSchemaInfoReader
 
   private void logSettings()
   {
-    LogMgr.logDebug("GenericSchemaInfoReader.logSettings()", connection.getId() + ": Re-Use statement: " + reuseStmt + ", cache current schema: "+ isCacheable() + ", SQL: " + schemaQuery);
+    LogMgr.logDebug(new CallerInfo(){}, connection.getId() + ": Re-Use statement: " + reuseStmt + ", cache current schema: "+ isCacheable() + ", SQL: " + schemaQuery);
   }
 
   private boolean isCacheable()

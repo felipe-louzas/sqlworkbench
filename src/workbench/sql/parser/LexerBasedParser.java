@@ -29,6 +29,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.importer.RowDataProducer;
@@ -520,7 +521,7 @@ public class LexerBasedParser
     }
     catch (IOException io2)
     {
-      LogMgr.logError("LexerBasedParser.reset()", "Cannot re-open input stream", io2);
+      LogMgr.logError(new CallerInfo(){}, "Cannot re-open input stream", io2);
     }
   }
 

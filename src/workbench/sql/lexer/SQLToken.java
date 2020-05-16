@@ -19,6 +19,7 @@ package workbench.sql.lexer;
 
 import java.util.regex.Pattern;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -129,7 +130,7 @@ public class SQLToken
   private int state;
 
   private static final Pattern WHITESPACE = Pattern.compile("[ \t\r\n]+");
-  
+
   /**
    * Create a new token.
    * The constructor is typically called by the lexer
@@ -160,7 +161,7 @@ public class SQLToken
     // are part of the parsed string
     if (text.length() == 0 && tokenId != WHITE_SPACE)
     {
-      LogMgr.logDebug("SQLToken.<init>", "SQLToken with ID=" + Integer.toHexString(tokenId) + " but with length zero ");
+      LogMgr.logDebug(new CallerInfo(){}, "SQLToken with ID=" + Integer.toHexString(tokenId) + " but with length zero ");
       this.ID = WHITE_SPACE;
     }
     else

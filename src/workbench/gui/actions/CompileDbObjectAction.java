@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 
 import workbench.interfaces.WbSelectionListener;
 import workbench.interfaces.WbSelectionModel;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbObject;
@@ -114,7 +115,7 @@ public class CompileDbObjectAction
     }
     catch (SQLException e)
     {
-      LogMgr.logError("ProcedureListPanel.compileObjects()", "Error initializing ObjectCompilerUI", e);
+      LogMgr.logError(new CallerInfo(){}, "Error initializing ObjectCompilerUI", e);
     }
   }
 

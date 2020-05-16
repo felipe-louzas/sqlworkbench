@@ -36,6 +36,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import workbench.interfaces.StatusBar;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -105,7 +106,7 @@ public class CompletionHandler
     }
     catch (Throwable th)
     {
-      LogMgr.logError("CompletionHandler.showPopup()", "Error retrieving completion objects", th);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving completion objects", th);
       statusBar.clearStatusMessage();
     }
   }
@@ -158,12 +159,12 @@ public class CompletionHandler
       {
         debugString.append("\nNo command found at cursor position: " + cursorPos + ", commandIndex: " + index + ", cursor index in command: " + commandCursorPos);
       }
-      LogMgr.logDebug("CompletionHandler.updateSelectionList()", "Completion invoked for statement:\n" + debugString.toString());
+      LogMgr.logDebug(new CallerInfo(){}, "Completion invoked for statement:\n" + debugString.toString());
     }
 
     if (sql == null)
     {
-      LogMgr.logWarning("CompletionHandler.updateSelectionList()", "No SQL found!");
+      LogMgr.logWarning(new CallerInfo(){}, "No SQL found!");
       showNoObjectsFoundMessage();
       return false;
     }
@@ -189,7 +190,7 @@ public class CompletionHandler
         this.elements = ctx.getData();
 
         long duration = System.currentTimeMillis() - start;
-        LogMgr.logDebug("CompletionHandler.updateSelectionList()",
+        LogMgr.logDebug(new CallerInfo(){},
           "Auto-completion invoked for " + analyzer.getSqlVerb() +
             ", analyzer: " + analyzer.getClass().getSimpleName() +
             ", context: " + analyzer.contextToString() +
@@ -223,7 +224,7 @@ public class CompletionHandler
     }
     catch (Exception e)
     {
-      LogMgr.logError("CompletionHandler.updateSelectionList()", "Error retrieving objects", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving objects", e);
       result = false;
       showNoObjectsFoundMessage();
     }
@@ -270,7 +271,7 @@ public class CompletionHandler
     }
     catch (Exception e)
     {
-      LogMgr.logError("CompletionHandler.filterElements()", "Error when applying filter", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when applying filter", e);
       return -1;
     }
   }

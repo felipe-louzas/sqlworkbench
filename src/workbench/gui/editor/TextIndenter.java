@@ -24,8 +24,11 @@
 package workbench.gui.editor;
 
 import javax.swing.text.BadLocationException;
+
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.util.StringUtil;
 
 /**
@@ -105,7 +108,7 @@ public class TextIndenter
     }
     catch (BadLocationException e)
     {
-      LogMgr.logError("TextIndenter.shiftSelection()", "Error when shifting selection", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when shifting selection", e);
     }
     finally
     {

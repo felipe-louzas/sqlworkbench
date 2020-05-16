@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -138,28 +138,28 @@ public class FirebirdSequenceReader
     Statement stmt = null;
     ResultSet rs = null;
     DataStore ds = null;
+
+    StringBuilder sql = new StringBuilder(100);
+    sql.append(
+      "SELECT trim(rdb$generator_name) AS SEQUENCE_NAME, \n" +
+      "       trim(rdb$description) AS REMARKS \n" +
+      "FROM rdb$generators \n" +
+      "WHERE (rdb$system_flag = 0 OR rdb$system_flag IS NULL) \n");
+
+    SqlUtil.appendAndCondition(sql, "rdb$generator_name", sequence, dbConnection);
+    sql.append("\n ORDER BY 1");
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql);
+
     try
     {
-      StringBuilder sql = new StringBuilder(100);
-      sql.append(
-        "SELECT trim(rdb$generator_name) AS SEQUENCE_NAME, \n" +
-        "       trim(rdb$description) AS REMARKS \n" +
-        "FROM rdb$generators \n" +
-        "WHERE (rdb$system_flag = 0 OR rdb$system_flag IS NULL) \n");
-
-      SqlUtil.appendAndCondition(sql, "rdb$generator_name", sequence, dbConnection);
-      sql.append("\n ORDER BY 1");
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logInfo("FirebirdSequenceReader.getRawSequenceDefinition()", "Using query=\n" + sql);
-      }
       stmt = this.dbConnection.createStatement();
       rs = stmt.executeQuery(sql.toString());
       ds = new DataStore(rs, true);
     }
     catch (Exception e)
     {
-      LogMgr.logError("FirebirdSequenceReader.getRawSequenceDefinition()", "Error reading sequence definition", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql);
       ds = null;
     }
     finally

@@ -26,8 +26,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
@@ -213,10 +213,7 @@ public class Db2iVariableReader
     }
 
     select += " ORDER BY variable_schema, variable_name ";
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("Db2iVariableReader.getVariables()", "Query to retrieve variables:\n" + select);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "variables", select);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -242,7 +239,7 @@ public class Db2iVariableReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("Db2iVariableReader.getVariables()", "Could not retrieve list of variables using:\n" + select, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "variables", select);
     }
     finally
     {

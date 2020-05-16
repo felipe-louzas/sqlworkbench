@@ -29,7 +29,10 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+
 import workbench.util.NumberStringCache;
 import workbench.util.SqlUtil;
 import workbench.util.ValueConverter;
@@ -108,7 +111,7 @@ public class ParameterDefinition
     catch (Exception e)
     {
       this.valueValid = false;
-      LogMgr.logError("ParameterDefinition.setValue()", "Error applying value " + v + " for type " + SqlUtil.getTypeName(this.dataType), e);
+      LogMgr.logError(new CallerInfo(){}, "Error applying value " + v + " for type " + SqlUtil.getTypeName(this.dataType), e);
     }
     return this.valueValid;
   }

@@ -35,6 +35,7 @@ import java.util.Set;
 import workbench.WbManager;
 import workbench.interfaces.ProgressReporter;
 import workbench.interfaces.ResultSetConsumer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -425,7 +426,7 @@ public class WbExport
     if ("text".equals(type) && !CommonArgs.checkQuoteEscapting(cmdLine))
     {
       String msg = ResourceMgr.getString("WarnQuoteAlwaysEscape") + "\n";
-      LogMgr.logWarning("WbExport.execute()", msg, null);
+      LogMgr.logWarning(new CallerInfo(){}, msg, null);
       result.addWarning(msg);
     }
 
@@ -823,7 +824,7 @@ public class WbExport
       }
       if (cmdLine.isArgPresent(ARG_SOURCETABLE))
       {
-        LogMgr.logDebug("WbExport.execute()", "Exporting tables: " + StringUtil.listToString(tablesToExport, ','));
+        LogMgr.logDebug(new CallerInfo(){}, "Exporting tables: " + StringUtil.listToString(tablesToExport, ','));
       }
       List<String> notFound = argParser.getMissingTables();
       if (CollectionUtil.isNonEmpty(notFound))
@@ -832,12 +833,12 @@ public class WbExport
         String msg = ResourceMgr.getString("MsgTablesNotFound") + " " + tableList;
         result.addWarning(msg);
         result.addMessageNewLine();
-        LogMgr.logWarning("WbExport.execute()", "The following tables were not found: " + tableList);
+        LogMgr.logWarning(new CallerInfo(){}, "The following tables were not found: " + tableList);
       }
     }
     catch (SQLException e)
     {
-      LogMgr.logError("WbExport.runTableExports()", "Could not retrieve table list", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve table list", e);
       result.addErrorMessage(ExceptionUtil.getDisplay(e));
       return result;
     }
@@ -983,7 +984,7 @@ public class WbExport
       }
       catch (Exception e)
       {
-        LogMgr.logError("WbExport.execute()", "Error when running table export", e);
+        LogMgr.logError(new CallerInfo(){}, "Error when running table export", e);
         addErrorInfo(result, sql, e);
       }
     }
@@ -992,7 +993,7 @@ public class WbExport
     long before = MemoryWatcher.getFreeMemory();
     System.gc();
     long after  = MemoryWatcher.getFreeMemory();
-    LogMgr.logDebug("WbExport.execute()", "Memory before GC: " + before + ", after GC: " + after);
+    LogMgr.logDebug(new CallerInfo(){}, "Memory before GC: " + before + ", after GC: " + after);
     return result;
   }
 
@@ -1228,7 +1229,7 @@ public class WbExport
     {
       toConsume.addMessageByKey("ErrExportExecute");
       toConsume.addErrorMessage(ExceptionUtil.getAllExceptions(e).toString());
-      LogMgr.logError("WbExportCommand.consumeResult()", "Error exporting data", e);
+      LogMgr.logError(new CallerInfo(){}, "Error exporting data", e);
     }
     finally
     {

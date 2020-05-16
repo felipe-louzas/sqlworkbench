@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import workbench.WbManager;
 import workbench.console.DataStorePrinter;
 import workbench.console.TextPrinter;
+import workbench.log.CallerInfo;
 
 import workbench.db.ConnectionInfoBuilder;
 import workbench.db.DriverInfo;
@@ -105,7 +106,7 @@ public class ConnectionInfoPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("ConnectionInfoPanel", "Could not read connection properties", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read connection properties", e);
     }
   }
 

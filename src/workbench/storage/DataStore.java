@@ -835,7 +835,7 @@ public class DataStore
 
     String tname = resultInfo.getUpdateTable().getTableExpression();
 
-    String ci = new CallerInfo(){}.toString();
+    CallerInfo ci = new CallerInfo(){};
 
     for (int row=0; row < getRowCount(); row ++)
     {

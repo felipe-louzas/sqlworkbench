@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.ImageIcon;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.FileUtil;
@@ -127,7 +128,7 @@ public class ResourceMgr
 		}
 		catch (Exception e)
 		{
-			LogMgr.logError("ResourceMgr.getBuildDate()", "Err when parsing build date!", e);
+			LogMgr.logError(new CallerInfo(){}, "Err when parsing build date!", e);
 			result = new java.util.Date();
 		}
 		return result;
@@ -162,7 +163,7 @@ public class ResourceMgr
 		}
 		catch (Throwable ex)
 		{
-			LogMgr.logError("ResourceMgr.setWindowIcons()", "Could not set icons!", ex);
+			LogMgr.logError(new CallerInfo(){}, "Could not set icons!", ex);
 			setWindowIcons(window, "workbench");
 		}
 	}
@@ -249,7 +250,7 @@ public class ResourceMgr
 		}
 		catch (MissingResourceException e)
 		{
-			LogMgr.logWarning("ResourceMgr", "String with key=" + aKey + " not found in resource file!", e);
+			LogMgr.logWarning(new CallerInfo(){}, "String with key=" + aKey + " not found in resource file!", e);
 			return aKey;
 		}
 	}
@@ -335,7 +336,7 @@ public class ResourceMgr
 			}
 			catch (Exception ex)
 			{
-				LogMgr.logError("ResourceMgr.getResourceBundle()", "Could not read resource bundle "+ bundleName + " using UTF-8", ex);
+				LogMgr.logError(new CallerInfo(){}, "Could not read resource bundle "+ bundleName + " using UTF-8", ex);
 			}
 			finally
 			{
@@ -360,13 +361,13 @@ public class ResourceMgr
 			boolean setDefaultLocale = Settings.getInstance().getBoolProperty(PROP_CHANGE_LOCALE, true);
 			if (setDefaultLocale)
 			{
-				LogMgr.logInfo("ResourceMgr.getResources()", "Setting default locale to: " + l.toString());
+				LogMgr.logInfo(new CallerInfo(){}, "Setting default locale to: " + l.toString());
 				Locale.setDefault(l);
 			}
 			else
 			{
 				Locale def = Locale.getDefault();
-				LogMgr.logInfo("ResourceMgr.getResources()", "Default locale is : " + def.toString());
+				LogMgr.logInfo(new CallerInfo(){}, "Default locale is : " + def.toString());
 			}
 		}
 		else if (bundlePath != null)

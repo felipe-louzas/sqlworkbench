@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -162,7 +163,7 @@ public class ExceptionUtil
     }
     catch (Throwable th1)
     {
-      LogMgr.logError("ExceptionUtil.getDisplay()", "Error while creating display string", th1);
+      LogMgr.logError(new CallerInfo(){}, "Error while creating display string", th1);
       result.append("Exception: ");
       result.append(th.getClass().getName());
     }

@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -78,7 +79,7 @@ public class H2IndexReader
 
     if (primaryKeysStatement != null)
     {
-      LogMgr.logWarning("H2IndexReader.getPrimeryKeys()", "getPrimeryKeys() called with pending statement!");
+      LogMgr.logWarning(new CallerInfo(){}, "getPrimeryKeys() called with pending statement!");
       primaryKeysResultDone();
     }
 
@@ -100,10 +101,7 @@ public class H2IndexReader
     }
     sql += " AND table_name = '" + StringUtil.trimQuotes(table) + "'";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("H2IndexReader.getPrimaryKeys()", "Using query=\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "primary key info", sql);
     return primaryKeysStatement.executeQuery(sql);
   }
 

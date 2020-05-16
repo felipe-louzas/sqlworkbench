@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -109,7 +110,7 @@ public class SchemaReportAction
         }
         catch (Throwable e)
         {
-          LogMgr.logError("TableListPanel.saveReport()", "Error writing schema report", e);
+          LogMgr.logError(new CallerInfo(){}, "Error writing schema report", e);
           final String msg = ExceptionUtil.getDisplay(e);
           EventQueue.invokeLater(() ->
           {

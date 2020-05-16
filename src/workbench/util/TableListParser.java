@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.sql.lexer.SQLLexer;
@@ -185,7 +186,7 @@ public class TableListParser
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlUtil.getTable()", "Error parsing sql", e);
+      LogMgr.logError(new CallerInfo(){}, "Error parsing sql", e);
     }
     return result;
   }

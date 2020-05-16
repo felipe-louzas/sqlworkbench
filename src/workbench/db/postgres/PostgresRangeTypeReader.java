@@ -28,6 +28,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -103,10 +104,7 @@ public class PostgresRangeTypeReader
 
     select.append("\n ORDER BY 1,2 ");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("PostgresRangeTypeReader.getRangeTypes()", "Retrieving range types using: " + select);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "range types", select);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -132,7 +130,7 @@ public class PostgresRangeTypeReader
     catch (Exception e)
     {
       con.rollback(sp);
-      LogMgr.logError("PostgresRangeTypeReader.getTypes()", "Error retrieving range types using:\n" + select, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "range types", select);
     }
     finally
     {

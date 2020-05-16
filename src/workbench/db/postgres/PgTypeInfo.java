@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.Types;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
@@ -59,7 +60,7 @@ public class PgTypeInfo
     }
     catch (Throwable th)
     {
-      LogMgr.logError("PgTypeInfo.getSqlType()", "Could not initialize method information", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not initialize method information", th);
     }
     return Types.OTHER;
   }
@@ -76,7 +77,7 @@ public class PgTypeInfo
     }
     catch (Throwable th)
     {
-      LogMgr.logError("PgTypeInfo.getScale()", "Could not initialize method information", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not initialize method information", th);
     }
     return Types.OTHER;
   }
@@ -93,7 +94,7 @@ public class PgTypeInfo
     }
     catch (Throwable th)
     {
-      LogMgr.logError("PgTypeInfo.getPrecision()", "Could not initialize method information", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not initialize method information", th);
     }
     return Types.OTHER;
   }
@@ -110,7 +111,7 @@ public class PgTypeInfo
     }
     catch (Throwable th)
     {
-      LogMgr.logError("PgTypeInfo.getDisplaySize()", "Could not initialize method information", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not initialize method information", th);
     }
     return Types.OTHER;
   }
@@ -129,7 +130,7 @@ public class PgTypeInfo
     }
     catch (Throwable th)
     {
-      LogMgr.logError("PgTypeInfo.initMethods()", "Could not initialize method information", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not initialize method information", th);
     }
   }
 

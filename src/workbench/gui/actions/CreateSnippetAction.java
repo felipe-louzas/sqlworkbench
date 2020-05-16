@@ -35,6 +35,7 @@ import java.io.StringReader;
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.TextContainer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -139,7 +140,7 @@ public class CreateSnippetAction
 
         if (first) first = false;
         else result.append(indent);
-        
+
         result.append(quoteChar);
         if (removeSemicolon)
         {
@@ -172,7 +173,7 @@ public class CreateSnippetAction
     catch (Exception e)
     {
       result.append("(Error when creating Java code, see logfile for details)");
-      LogMgr.logError("CreateSnippetActions.makeJavaString()", "Error creating Java String", e);
+      LogMgr.logError(new CallerInfo(){}, "Error creating Java String", e);
     }
     finally
     {

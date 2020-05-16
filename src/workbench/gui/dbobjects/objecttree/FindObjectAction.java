@@ -24,6 +24,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 
 import workbench.interfaces.TextContainer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbObject;
@@ -94,13 +95,13 @@ public class FindObjectAction
     TableIdentifier tbl = null;
     if (editorConnection.isBusy())
     {
-      LogMgr.logWarning("FindObjectAction.executAction()", "Can not create full qualified table because the connection is busy");
+      LogMgr.logWarning(new CallerInfo(){}, "Can not create full qualified table because the connection is busy");
       tbl = new TableIdentifier(text, editorConnection);
     }
     else
     {
-      DbObjectFinder finder = new DbObjectFinder(editorConnection);
-      tbl = finder.searchObjectOnPath(new TableIdentifier(text, editorConnection), null);
+      DbObjectFinder dbFinder = new DbObjectFinder(editorConnection);
+      tbl = dbFinder.searchObjectOnPath(new TableIdentifier(text, editorConnection), null);
     }
     showTable(tbl);
   }

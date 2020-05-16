@@ -28,8 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
@@ -52,16 +52,16 @@ public class FirebirdDependencyReader
 {
   private final Set<String> supportedTypes = CollectionUtil.caseInsensitiveSet("table", "view");
 
-  private static final String typeCase =
+  private static final String TYPE_CASE =
     "when 0 then 'TABLE' when 1 then 'VIEW' end as type_name";
 
   private final String searchUsed =
-    "select distinct rdb$depended_on_name, case rdb$depended_on_type " + typeCase + " \n" +
+    "select distinct rdb$depended_on_name, case rdb$depended_on_type " + TYPE_CASE + " \n" +
     "from rdb$dependencies \n" +
     "where rdb$dependent_name = ?";
 
   private final String searchUsedBy =
-    "select distinct rdb$dependent_name, case rdb$dependent_type " + typeCase + " \n" +
+    "select distinct rdb$dependent_name, case rdb$dependent_type " + TYPE_CASE + " \n" +
     "from rdb$dependencies\n" +
     "where rdb$depended_on_name = ?";
 
@@ -110,11 +110,8 @@ public class FirebirdDependencyReader
 
     List<DbObject> result = new ArrayList<>();
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      String s = SqlUtil.replaceParameters(sql, base.getObjectName());
-      LogMgr.logDebug("FirebirdDependencyReader.retrieveObjects()", "Retrieving dependent objects using query:\n" + s);
-    }
+    String s = SqlUtil.replaceParameters(sql, base.getObjectName());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", s);
 
     Savepoint sp = null;
     try
@@ -144,8 +141,7 @@ public class FirebirdDependencyReader
     }
     catch (Exception ex)
     {
-      String s = SqlUtil.replaceParameters(sql, base.getObjectName());
-      LogMgr.logError("FirebirdDependencyReader.retrieveObjects()", "Could not read object dependency using:\n" + s, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", s, ex);
     }
     finally
     {

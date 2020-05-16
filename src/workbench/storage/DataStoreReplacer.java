@@ -26,8 +26,13 @@ package workbench.storage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import workbench.log.CallerInfo;
+
 import workbench.gui.editor.SearchAndReplace;
+
 import workbench.log.LogMgr;
+
 import workbench.util.ConverterException;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -125,7 +130,7 @@ public class DataStoreReplacer
     }
     catch (PatternSyntaxException e)
     {
-      LogMgr.logError("DataStoreReplacer.find()", "Error compiling search pattern", e);
+      LogMgr.logError(new CallerInfo(){}, "Error compiling search pattern", e);
       throw e;
     }
     return findPattern(p);
@@ -284,7 +289,7 @@ public class DataStoreReplacer
       }
       catch (ConverterException e)
       {
-        LogMgr.logError("DataStoreReplacer.replaceAll()", "Could not convert the replacement data", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not convert the replacement data", e);
         throw e;
       }
     }

@@ -26,10 +26,13 @@ package workbench.db.sqltemplates;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import workbench.db.PkDefinition;
+import workbench.log.CallerInfo;
+
 import workbench.db.TableIdentifier;
+
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -53,7 +56,7 @@ public class ConstraintNameTester
       catch (Exception ex)
       {
         sysNamePattern = null;
-        LogMgr.logError("ConstraintNameTester.isSystemConstraintName()", "Error in regex", ex);
+        LogMgr.logError(new CallerInfo(){}, "Error in regex", ex);
       }
     }
   }

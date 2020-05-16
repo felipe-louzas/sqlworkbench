@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -66,10 +67,7 @@ public class DerbyTypeReader
     Statement stmt = null;
     ResultSet rs = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("DerbyTypeReader.extendObjectList()", "Using sql=\n" + select);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "aliases", select);
 
     try
     {
@@ -93,7 +91,7 @@ public class DerbyTypeReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("DerbyTypeReader.extendObjectList()", "Error retrieving object types", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "aliases", select);
     }
     finally
     {
@@ -167,7 +165,7 @@ public class DerbyTypeReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("DerbyTypeReader.extendObjectList()", "Error retrieving object types", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving object types", e);
       return null;
     }
     finally

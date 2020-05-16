@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -165,7 +166,7 @@ public class GenericDiffLoader
     }
     catch (SQLException sql)
     {
-      LogMgr.logError("GenericDiffLoader.loadObjects()", "Could not load database objects", sql);
+      LogMgr.logError(new CallerInfo(){}, "Could not load database objects", sql);
     }
   }
 

@@ -24,6 +24,7 @@ package workbench.util;
 
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
@@ -164,7 +165,7 @@ public class DdlObjectInfo
     }
     catch (Exception e)
     {
-      LogMgr.logError("DdlObjectInfo.parseSQL()", "Error finding object info", e);
+      LogMgr.logError(new CallerInfo(){}, "Error finding object info", e);
       this.objectName = null;
       this.objectType = null;
     }

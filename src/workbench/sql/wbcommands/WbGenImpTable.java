@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -298,7 +299,7 @@ public class WbGenImpTable
     }
     catch (Throwable th)
     {
-      LogMgr.logError("WbGenImpTable.putToClipboard()", "Could not copy SQL to clipboard", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not copy SQL to clipboard", th);
     }
   }
 

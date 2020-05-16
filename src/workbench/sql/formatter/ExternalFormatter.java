@@ -127,7 +127,7 @@ public class ExternalFormatter
     }
     catch (IOException ex)
     {
-      LogMgr.logError("ExternalFormatter.format()", "Could not format SQL statement", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not format SQL statement", ex);
       return sql;
     }
   }
@@ -165,13 +165,13 @@ public class ExternalFormatter
     if (inputEncoding == null)
     {
       inputEncoding =  System.getProperty("file.encoding");
-      LogMgr.logInfo("ExternalFormatter.runFormatter()", "Using encoding for SQL formatter input file: " + inputEncoding);
+      LogMgr.logInfo(ci, "Using encoding for SQL formatter input file: " + inputEncoding);
     }
 
     if (outputEncoding == null)
     {
       outputEncoding = inputEncoding;
-      LogMgr.logInfo("ExternalFormatter.runFormatter()", "Using encoding for SQL formatter output file: " + outputEncoding);
+      LogMgr.logInfo(ci, "Using encoding for SQL formatter output file: " + outputEncoding);
     }
 
     try

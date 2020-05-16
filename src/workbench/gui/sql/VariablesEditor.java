@@ -39,6 +39,7 @@ import javax.swing.table.TableCellEditor;
 
 import workbench.WbManager;
 import workbench.interfaces.ValidatingComponent;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -221,7 +222,7 @@ public class VariablesEditor
       }
       catch (Exception e)
       {
-        LogMgr.logError("VariablesEditor.showVariablesDialog()", "Error when saving values", e);
+        LogMgr.logError(new CallerInfo(){}, "Error when saving values", e);
         result = false;
       }
     }

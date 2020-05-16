@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.JdbcUtils;
@@ -80,7 +81,7 @@ public class DbmsOutput
       enableStatement.executeUpdate();
       this.enabled = true;
       this.lastSize = size;
-      LogMgr.logDebug("DbmsOutput.enable()", "Support for DBMS_OUTPUT package enabled (max size=" + (size > 0 ? Long.toString(size) : "unlimited") + ")");
+      LogMgr.logDebug(new CallerInfo(){}, "Support for DBMS_OUTPUT package enabled (max size=" + (size > 0 ? Long.toString(size) : "unlimited") + ")");
     }
     finally
     {
@@ -233,7 +234,7 @@ public class DbmsOutput
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning("DbmsOutput", "Error when disabling dbms_output", th);
+      LogMgr.logWarning(new CallerInfo(){}, "Error when disabling dbms_output", th);
     }
   }
 

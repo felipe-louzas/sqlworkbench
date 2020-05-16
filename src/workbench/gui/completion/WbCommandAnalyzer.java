@@ -33,6 +33,7 @@ import java.util.TreeMap;
 
 import workbench.liquibase.ChangeSetIdentifier;
 import workbench.liquibase.LiquibaseParser;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -528,7 +529,7 @@ public class WbCommandAnalyzer
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbCommandAnalyzer.getSheetnames()", "Could not read spreadsheet: " + input.getFullPath(), e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read spreadsheet: " + input.getFullPath(), e);
     }
     finally
     {

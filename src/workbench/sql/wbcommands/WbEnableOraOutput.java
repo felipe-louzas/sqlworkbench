@@ -25,6 +25,7 @@ package workbench.sql.wbcommands;
 
 import java.sql.SQLException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -96,7 +97,7 @@ public class WbEnableOraOutput extends SqlCommand
     if (cmdLine.getBoolean(PARAM_QUIET))
     {
       runner.setSessionProperty(StatementRunner.SERVER_MSG_PROP, HIDE_HINT);
-      LogMgr.logDebug("WbEnableOraOutput.execute()", "Support for dbms_output enabled (limit=" + limit + ")");
+      LogMgr.logDebug(new CallerInfo(){}, "Support for dbms_output enabled (limit=" + limit + ")");
     }
     else
     {

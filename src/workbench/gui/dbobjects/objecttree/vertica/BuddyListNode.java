@@ -20,6 +20,7 @@
  */
 package workbench.gui.dbobjects.objecttree.vertica;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
@@ -77,7 +78,7 @@ public class BuddyListNode
     }
     catch (Exception ex)
     {
-      LogMgr.logError("BuddyListNode.readBuddies()", "Could not read buddies", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read buddies", ex);
     }
   }
 

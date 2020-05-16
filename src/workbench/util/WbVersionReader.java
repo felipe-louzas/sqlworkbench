@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import javax.swing.Timer;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -113,7 +114,7 @@ public class WbVersionReader
         referer += " (" + arch + "bit)";
       }
 
-      LogMgr.logDebug("WbVersionREader.readBuildInfo()", "Using referer: " + referer);
+      LogMgr.logDebug(new CallerInfo(){}, "Using referer: " + referer);
       conn.setRequestProperty("Referer", referer);
 
       in = conn.getInputStream();
@@ -128,11 +129,11 @@ public class WbVersionReader
       success = true;
 
       long end = System.currentTimeMillis();
-      LogMgr.logDebug("WbVersionReader.readBuildInfo()", "Retrieving version information took " + (end - start) + "ms");
+      LogMgr.logDebug(new CallerInfo(){}, "Retrieving version information took " + (end - start) + "ms");
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("WbVersionReader.readBuildInfo()","Could not read version information", e);
+      LogMgr.logWarning(new CallerInfo(){},"Could not read version information", e);
       success = false;
     }
     finally

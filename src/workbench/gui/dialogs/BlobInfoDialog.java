@@ -31,6 +31,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDialog;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -196,7 +197,7 @@ public class BlobInfoDialog
     }
     catch (Exception e)
     {
-      LogMgr.logError("BlobInfoDialog.openWithExternalViewer()", "Error running external program", e);
+      LogMgr.logError(new CallerInfo(){}, "Error running external program", e);
       String msg = ExceptionUtil.getDisplay(e);
       WbSwingUtilities.showErrorMessage(this, msg);
     }
@@ -414,7 +415,7 @@ public class BlobInfoDialog
     }
     catch (Exception e)
     {
-      LogMgr.logError("BlobInfoDialog.showHexButtonActionPerformed()", "Error showing hex data", e);
+      LogMgr.logError(new CallerInfo(){}, "Error showing hex data", e);
     }
   }//GEN-LAST:event_showHexButtonActionPerformed
 
@@ -446,7 +447,7 @@ public class BlobInfoDialog
     }
     catch (Exception ex)
     {
-      LogMgr.logError("WbTable.saveBlobContent", "Error when writing data file", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error when writing data file", ex);
       String msg = ResourceMgr.getString("ErrBlobSaveError");
       msg += "\n" + ExceptionUtil.getDisplay(ex);
       WbSwingUtilities.showErrorMessage(this, msg);

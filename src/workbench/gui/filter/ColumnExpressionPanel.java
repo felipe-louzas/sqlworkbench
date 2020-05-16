@@ -42,6 +42,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import workbench.interfaces.ValueProvider;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -268,7 +269,7 @@ public class ColumnExpressionPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("ColumnExpressionPanel.actionPerformed()", "Error when updating comparator", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when updating comparator", e);
     }
   }
 
@@ -378,7 +379,7 @@ public class ColumnExpressionPanel
       }
       catch (Exception e)
       {
-        LogMgr.logWarning("ColumnExpressionPanel.getFilterValue()", "Error converting input value", e);
+        LogMgr.logWarning(new CallerInfo(){}, "Error converting input value", e);
       }
     }
     return value;
@@ -394,7 +395,7 @@ public class ColumnExpressionPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("ColumnExpressionPanel.buildColumnComparatorDropwDown()", "Error finding column class", e);
+      LogMgr.logError(new CallerInfo(){}, "Error finding column class", e);
     }
   }
 
@@ -424,7 +425,7 @@ public class ColumnExpressionPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("ColumnExpressionPanel.buildColumnComparatorDropwDown()", "Error building dropdown", e);
+      LogMgr.logError(new CallerInfo(){}, "Error building dropdown", e);
     }
   }
 }

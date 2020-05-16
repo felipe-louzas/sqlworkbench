@@ -44,6 +44,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
@@ -256,7 +257,7 @@ public class TableSelectorPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("TableSelectorPanel.retrieveSchemas()", "Could not retrieve schema list", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve schema list", e);
     }
     finally
     {
@@ -319,7 +320,7 @@ public class TableSelectorPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("TableSelectorPanel.retrieveTables()", "Could not retrieve table list", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve table list", e);
     }
     finally
     {

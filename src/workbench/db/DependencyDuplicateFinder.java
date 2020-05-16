@@ -33,7 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 
@@ -63,7 +65,7 @@ class DependencyDuplicateFinder
         String path = getNodePath(info.node);
         if (LogMgr.isTraceEnabled())
         {
-          LogMgr.logTrace("DependencyDuplicateFinder.getDuplicates()", "Node " + path + " is redundant");
+          LogMgr.logTrace(new CallerInfo(){}, "Node " + path + " is redundant");
         }
         result.add(path);
       }

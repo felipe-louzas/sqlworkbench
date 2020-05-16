@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -51,12 +52,12 @@ public class WbDesCipher
         WbDesCipher wb = new WbDesCipher();
         if (wb.cipher == null)
         {
-          LogMgr.logWarning("WbDesCipher.getInstance()", "Could not create cipher. Using NullCipher!");
+          LogMgr.logWarning(new CallerInfo(){}, "Could not create cipher. Using NullCipher!");
           instance = new WbNullCipher();
         }
         else
         {
-          LogMgr.logDebug("WbDesCipher.getInstance()", "WbDesCipher created");
+          LogMgr.logDebug(new CallerInfo(){}, "WbDesCipher created");
           instance = wb;
         }
       }
@@ -72,7 +73,7 @@ public class WbDesCipher
     }
     catch (Exception e)
     {
-      LogMgr.logWarning("WbDesCipher.init()", "No encryption available!");
+      LogMgr.logWarning(new CallerInfo(){}, "No encryption available!");
       cipher = null;
     }
   }
@@ -92,7 +93,7 @@ public class WbDesCipher
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbDesCipher.decryptString()", "Could not decrypt", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not decrypt", e);
       return aValue;
     }
   }
@@ -111,7 +112,7 @@ public class WbDesCipher
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbDesCipher.encryptString()", "Could not encrypt", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not encrypt", e);
       return aValue;
     }
   }

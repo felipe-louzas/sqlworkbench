@@ -30,11 +30,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.DefaultFKHandler;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
 import workbench.log.LogMgr;
+
 import workbench.storage.DataStore;
+
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 
@@ -106,7 +111,7 @@ public class SqlServerFKHandler
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlServerFKHandler.readFkStatusForTable()", "Could not read FK status", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not read FK status", e);
     }
     finally
     {

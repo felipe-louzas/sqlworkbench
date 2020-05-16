@@ -43,6 +43,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import workbench.interfaces.ResultReceiver;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -496,7 +497,7 @@ public class ReferenceTableNavigator
         if (node == null)
         {
           error = "Could not find child table from menu item!";
-          LogMgr.logError("ReferenceTableNavigator.actionPerformed()", error, null);
+          LogMgr.logError(new CallerInfo(){}, error, null);
         }
         else
         {
@@ -510,7 +511,7 @@ public class ReferenceTableNavigator
         if (node == null)
         {
           error = "Could not find parent table from menu item!";
-          LogMgr.logError("ReferenceTableNavigator.actionPerformed()", error, null);
+          LogMgr.logError(new CallerInfo(){}, error, null);
         }
         else
         {
@@ -521,7 +522,7 @@ public class ReferenceTableNavigator
     }
     catch (Exception e)
     {
-      LogMgr.logError("ReferenceTableNavigator.actionPerformed", "Error when creating SQL", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when creating SQL", e);
       error = ExceptionUtil.getDisplay(e);
     }
 

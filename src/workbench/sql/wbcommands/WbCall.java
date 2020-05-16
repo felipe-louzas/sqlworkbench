@@ -327,7 +327,7 @@ public class WbCall
     {
       // SQL Server seems to return results from a stored procedure even if an error occurred.
       processResults(result, false);
-      LogMgr.logError("WbCall.execute()", "Error calling stored procedure using: " + sqlUsed, e);
+      LogMgr.logError(new CallerInfo(){}, "Error calling stored procedure using: " + sqlUsed, e);
       result.addMessageByKey("MsgExecuteError");
       result.addErrorMessage(ExceptionUtil.getDisplay(e));
     }
@@ -338,7 +338,7 @@ public class WbCall
 
     if (result.isSuccess())
     {
-      LogMgr.logDebug("WbCall.execute()", "Converted procedure call to JDBC syntax: " + sqlUsed);
+      LogMgr.logDebug(new CallerInfo(){}, "Converted procedure call to JDBC syntax: " + sqlUsed);
       String procname = null;
       SQLLexer l = SQLLexerFactory.createLexer(currentConnection, cleanSql);
       SQLToken t = l.getNextToken(false, false);

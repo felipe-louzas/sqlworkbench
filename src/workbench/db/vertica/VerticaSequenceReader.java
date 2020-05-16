@@ -30,6 +30,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -123,7 +124,7 @@ public class VerticaSequenceReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("VerticaSequenceReader.getSequenceSource()", "Error reading sequence definition", e);
+      LogMgr.logError(new CallerInfo(){}, "Error reading sequence definition", e);
     }
 
     def.setSource(buf);
@@ -174,7 +175,7 @@ public class VerticaSequenceReader
     catch (SQLException e)
     {
       this.dbConnection.rollback(sp);
-      LogMgr.logError("VerticaSequenceReader.getSequences()", "Error retrieving sequences using:\n" + sql, e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving sequences using:\n" + sql, e);
     }
     finally
     {
@@ -228,7 +229,7 @@ public class VerticaSequenceReader
     }
     catch (SQLException e)
     {
-      LogMgr.logDebug("VerticaSequenceReader.getSequenceDefinition()", "Error reading sequence definition", e);
+      LogMgr.logDebug(new CallerInfo(){}, "Error reading sequence definition", e);
     }
     return result;
   }
@@ -260,7 +261,7 @@ public class VerticaSequenceReader
       }
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug("VerticaSequenceReader.buildSql()", "Using SQL=\n" + sql);
+        LogMgr.logDebug(new CallerInfo(){}, "Using SQL=\n" + sql);
       }
     }
     return sql.toString();

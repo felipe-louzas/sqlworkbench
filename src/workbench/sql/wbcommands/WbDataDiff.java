@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -235,7 +236,7 @@ public class WbDataDiff
       else
       {
         result.addErrorMessageByKey("ErrCreateDir", outputDir.getFullPath());
-        LogMgr.logError("WbDataDiff.execute()", "Could not create output directory: " + outputDir.getFullPath(), null);
+        LogMgr.logError(new CallerInfo(){}, "Could not create output directory: " + outputDir.getFullPath(), null);
         return result;
       }
     }
@@ -295,7 +296,7 @@ public class WbDataDiff
 
     if (tableCount == 0)
     {
-      LogMgr.logWarning("WbDataDiff.execute()", "No tables found.");
+      LogMgr.logWarning(new CallerInfo(){}, "No tables found.");
       result.addWarningByKey("ErrNoTablesFound");
       close(targetCon);
       close(sourceCon);
@@ -441,7 +442,7 @@ public class WbDataDiff
             {
               // if the table does not have a PK, a warning was already added during the compare step
               // so there is nothing to do here.
-              LogMgr.logDebug("WbDataDiff.execute()", "No delete performed for " + targetTable.getTableName() + " because not PK was found");
+              LogMgr.logDebug(new CallerInfo(){}, "No delete performed for " + targetTable.getTableName() + " because not PK was found");
             }
           }
           finally
@@ -453,7 +454,7 @@ public class WbDataDiff
     }
     catch (Exception e)
     {
-      LogMgr.logError("WbDataDiff.execute()", "Error during diff", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during diff", e);
       result.addErrorMessage(ExceptionUtil.getDisplay(e));
     }
 
@@ -778,7 +779,7 @@ public class WbDataDiff
       }
       catch (Exception e)
       {
-        LogMgr.logWarning("WbDataDiff.execute()", "Could not disconnect target connection " + toClose.getId());
+        LogMgr.logWarning(new CallerInfo(){}, "Could not disconnect target connection " + toClose.getId());
       }
     }
   }

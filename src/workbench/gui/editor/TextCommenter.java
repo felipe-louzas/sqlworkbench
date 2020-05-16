@@ -25,6 +25,7 @@ package workbench.gui.editor;
 
 import javax.swing.text.BadLocationException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 
@@ -126,7 +127,7 @@ public class TextCommenter
     }
     catch (BadLocationException e)
     {
-      LogMgr.logError("TextManipulator.doComment()", "Error when processing comment", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when processing comment", e);
     }
     finally
     {

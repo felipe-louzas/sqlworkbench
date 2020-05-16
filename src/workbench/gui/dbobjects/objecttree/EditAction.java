@@ -27,14 +27,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.SwingUtilities;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.DbObject;
 import workbench.db.WbConnection;
+
 import workbench.gui.MainWindow;
 import workbench.gui.dbobjects.EditorTabSelectMenu;
 import workbench.gui.sql.PanelContentSender;
 import workbench.gui.sql.PasteType;
+
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+
 import workbench.util.WbThread;
 
 /**
@@ -117,7 +122,7 @@ public class EditAction
       }
       catch (Exception ex)
       {
-        LogMgr.logError("EditAction.actionPerformed()", "Could not retrieve object source for: " + dbo.getObjectExpression(dbTree.getConnection()), ex);
+        LogMgr.logError(new CallerInfo(){}, "Could not retrieve object source for: " + dbo.getObjectExpression(dbTree.getConnection()), ex);
       }
       return null;
     }

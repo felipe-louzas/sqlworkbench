@@ -119,7 +119,7 @@ public class LogMgr
 		return getLogger().levelEnabled(LogLevel.trace);
 	}
 
-	public static void logDebug(Object caller, CharSequence message)
+	public static void logDebug(CallerInfo caller, CharSequence message)
 	{
 		getLogger().logMessage(LogLevel.debug, caller, message, null);
 	}
@@ -139,44 +139,44 @@ public class LogMgr
     getLogger().logMessage(LogLevel.error, caller, msg, error);
 	}
 
-	public static void logTrace(Object caller, CharSequence message)
+	public static void logTrace(CallerInfo caller, CharSequence message)
 	{
 		getLogger().logMessage(LogLevel.trace, caller, message, null);
 	}
 
-	public static void logTrace(Object caller, CharSequence message, Throwable th)
+	public static void logTrace(CallerInfo caller, CharSequence message, Throwable th)
 	{
 		getLogger().logMessage(LogLevel.trace, caller, message, th);
 	}
 
-	public static void logDebug(Object caller, CharSequence message, Throwable th)
+	public static void logDebug(CallerInfo caller, CharSequence message, Throwable th)
 	{
 		getLogger().logMessage(LogLevel.debug, caller, message, th);
 		logChainedException(LogLevel.debug, th);
 	}
 
-	public static void logInfo(Object caller, CharSequence message)
+	public static void logInfo(CallerInfo caller, CharSequence message)
 	{
 		getLogger().logMessage(LogLevel.info, caller, message, null);
 	}
 
-	public static void logInfo(Object caller, CharSequence message, Throwable th)
+	public static void logInfo(CallerInfo caller, CharSequence message, Throwable th)
 	{
 		getLogger().logMessage(LogLevel.info, caller, message, th);
 	}
 
-	public static void logWarning(Object caller, CharSequence message)
+	public static void logWarning(CallerInfo caller, CharSequence message)
 	{
 		getLogger().logMessage(LogLevel.warning, caller, message, null);
 	}
 
-	public static void logWarning(Object caller, CharSequence message, Throwable th)
+	public static void logWarning(CallerInfo caller, CharSequence message, Throwable th)
 	{
 		getLogger().logMessage(LogLevel.warning, caller, message, th);
 		logChainedException(LogLevel.warning, th);
 	}
 
-	public static void logError(Object caller, CharSequence message, Throwable th)
+	public static void logError(CallerInfo caller, CharSequence message, Throwable th)
 	{
 		getLogger().logMessage(LogLevel.error, caller, message, th);
 		logChainedException(LogLevel.error, th);

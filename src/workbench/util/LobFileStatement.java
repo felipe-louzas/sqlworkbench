@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -48,7 +49,7 @@ import workbench.db.WbConnection;
  *
  * This class supports INSERT and UPDATE statements.
  * To retrieve a blob from the database {@link workbench.sql.wbcommands.WbSelectBlob} has to be used.
- * 
+ *
  * @author Thomas Kellerer
  */
 public class LobFileStatement
@@ -143,7 +144,7 @@ public class LobFileStatement
     }
     catch (SQLException sql)
     {
-      LogMgr.logWarning("LobFileStatement.prepareStatement()", "Cannot obtain parameter meta data", sql);
+      LogMgr.logWarning(new CallerInfo(){}, "Cannot obtain parameter meta data", sql);
     }
 
     final int buffSize = 64*1024;

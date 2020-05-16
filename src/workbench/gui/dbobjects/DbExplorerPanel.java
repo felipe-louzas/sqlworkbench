@@ -255,7 +255,7 @@ public class DbExplorerPanel
     }
     catch (Throwable e)
     {
-      LogMgr.logError(this, "Could not initialize DbExplorerPanel", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not initialize DbExplorerPanel", e);
     }
   }
 

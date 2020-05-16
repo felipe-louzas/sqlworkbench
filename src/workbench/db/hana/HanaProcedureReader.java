@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.JdbcProcedureReader;
@@ -90,7 +91,7 @@ public class HanaProcedureReader
     }
     catch (Exception ex)
     {
-      LogMgr.logError("HanaProcedureReader.appendFunctions()", "Could not read functions using: \n" + sql, ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read functions using: \n" + sql, ex);
     }
     finally
     {

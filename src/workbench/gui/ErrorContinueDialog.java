@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ErrorPromptType;
 import workbench.resource.GuiSettings;
@@ -118,7 +119,7 @@ public class ErrorContinueDialog
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ErrorContinueDialog.showDialog()", "Error displaying error dialog", th);
+      LogMgr.logError(new CallerInfo(){}, "Error displaying error dialog", th);
     }
     finally
     {
@@ -138,7 +139,7 @@ public class ErrorContinueDialog
       }
       catch (Throwable th)
       {
-        LogMgr.logError("ErrorContinueDialog.getMessage()", "Could not create message panel", th);
+        LogMgr.logError(new CallerInfo(){}, "Could not create message panel", th);
       }
     }
 
@@ -164,7 +165,7 @@ public class ErrorContinueDialog
     }
     else
     {
-      LogMgr.logWarning("ErrorContinueDialog.createMessagePanel()", "No font available for OptionPane.messageFont");
+      LogMgr.logWarning(new CallerInfo(){}, "No font available for OptionPane.messageFont");
     }
 
     messagePanel.setBorder(new EmptyBorder(0, 0, fontHeight/4, 0));

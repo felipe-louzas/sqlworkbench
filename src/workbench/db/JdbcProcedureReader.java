@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -99,7 +100,7 @@ public class JdbcProcedureReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug("JdbcProcedureReader.getProcedures()", "Calling getProcedures() using: catalog="+ catalog + ", schema=" + schema + ", name=" + name);
+        LogMgr.logDebug(new CallerInfo(){}, "Calling getProcedures() using: catalog="+ catalog + ", schema=" + schema + ", name=" + name);
       }
 
       ResultSet rs = this.connection.getSqlConnection().getMetaData().getProcedures(catalog, schema, name);
@@ -113,7 +114,7 @@ public class JdbcProcedureReader
 
       if (connection.getDbSettings().useGetFunctions())
       {
-        LogMgr.logDebug("JdbcProcedureReader.getProcedures()", "Calling getFunctions() to get additional functions");
+        LogMgr.logDebug(new CallerInfo(){}, "Calling getFunctions() to get additional functions");
 
         rs = this.connection.getSqlConnection().getMetaData().getProcedures(catalog, schema, name);
         if (Settings.getInstance().getBoolProperty("workbench.db.procreader.debug", false))
@@ -219,7 +220,7 @@ public class JdbcProcedureReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("JdbcProcedureReader.getProcedures()", "Error while retrieving procedures", e);
+      LogMgr.logError(new CallerInfo(){}, "Error while retrieving procedures", e);
     }
     finally
     {
@@ -624,7 +625,7 @@ public class JdbcProcedureReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logInfo("JdbcProcedureReader.getProcedureSource()", "Retrieving procedure source using query:\n" + query);
+        LogMgr.logInfo(new CallerInfo(){}, "Retrieving procedure source using query:\n" + query);
       }
 
       stmt = this.connection.createStatementForQuery();
@@ -642,7 +643,7 @@ public class JdbcProcedureReader
     catch (SQLException e)
     {
       if (sp != null) this.connection.rollback(sp);
-      LogMgr.logError("JdbcProcedureReader.getProcedureSource()", "Error retrieving procedure source", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving procedure source", e);
       source = new StringBuilder(ExceptionUtil.getDisplay(e));
       this.connection.rollback(sp);
     }
@@ -754,7 +755,7 @@ public class JdbcProcedureReader
     }
     catch (SQLException ex)
     {
-      LogMgr.logWarning("JdbcProcedureReader.findProcedureDefinition()", "Could not read procedures", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not read procedures", ex);
       return null;
     }
 

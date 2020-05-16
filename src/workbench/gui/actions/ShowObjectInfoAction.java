@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
@@ -144,7 +145,7 @@ public class ShowObjectInfoAction
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ShowObjectInfoAction.executeAcion()", "Error retrieving object info", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving object info", ex);
     }
     finally
     {

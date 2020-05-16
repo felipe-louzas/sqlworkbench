@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import workbench.interfaces.DataFileWriter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -302,7 +303,7 @@ public class SqlLiteralFormatter
     }
     catch (Exception e)
     {
-      LogMgr.logError("SqlLiteralFormatter.createFormatter()", "Could not create formatter with pattern [" + pattern + "], using default [" + defaultPattern + "]", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not create formatter with pattern [" + pattern + "], using default [" + defaultPattern + "]", e);
       f = new WbDateFormatter(defaultPattern);
     }
     return f;
@@ -369,7 +370,7 @@ public class SqlLiteralFormatter
         }
         catch (Exception e)
         {
-          LogMgr.logError("SqlLiteralFormatter.getDefaultLiteral", "Could not write CLOB file", e);
+          LogMgr.logError(new CallerInfo(){}, "Could not write CLOB file", e);
           return quoteString(type, t);
         }
       }
@@ -462,7 +463,7 @@ public class SqlLiteralFormatter
         }
         catch (Exception e)
         {
-          LogMgr.logError("SqlLiteralFormatter.getDefaultLiteral", "Could not write BLOB file", e);
+          LogMgr.logError(new CallerInfo(){}, "Could not write BLOB file", e);
         }
       }
       else if (blobFormatter != null)
@@ -473,7 +474,7 @@ public class SqlLiteralFormatter
         }
         catch (Exception e)
         {
-          LogMgr.logError("SqlLiteralFormatter.getDefaultLiteral", "Error converting BLOB value", e);
+          LogMgr.logError(new CallerInfo(){}, "Error converting BLOB value", e);
         }
       }
     }
@@ -556,7 +557,7 @@ public class SqlLiteralFormatter
       }
       catch (Exception ex)
       {
-        LogMgr.logWarning("SqlLiteralFormatter.formatDbmsType()", "Could not create formatter for type \"" + dbmsType + "\" using '" + format + "'", ex);
+        LogMgr.logWarning(new CallerInfo(){}, "Could not create formatter for type \"" + dbmsType + "\" using '" + format + "'", ex);
       }
     }
 
@@ -575,12 +576,12 @@ public class SqlLiteralFormatter
       }
       else
       {
-        LogMgr.logWarning("SqlLiteralFormatter.formatDbmsType()", "Value class " + value.getClass().getName() + " cannot be formatted as a date/time value");
+        LogMgr.logWarning(new CallerInfo(){}, "Value class " + value.getClass().getName() + " cannot be formatted as a date/time value");
       }
     }
     catch (Exception ex)
     {
-      LogMgr.logWarning("SqlLiteralFormatter.formatDbmsType()", "Could not format type \"" + dbmsType + "\" using '" + format + "'", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not format type \"" + dbmsType + "\" using '" + format + "'", ex);
     }
     return null;
   }

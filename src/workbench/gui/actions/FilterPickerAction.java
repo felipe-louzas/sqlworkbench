@@ -37,6 +37,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
@@ -103,7 +104,7 @@ public class FilterPickerAction
       }
       catch (Exception ex)
       {
-        LogMgr.logError("FilterPickerAction.actionPerformed()", "Error loading filter", ex);
+        LogMgr.logError(new CallerInfo(){}, "Error loading filter", ex);
         Window w = SwingUtilities.getWindowAncestor(this.client);
         WbSwingUtilities.showErrorMessage(w, "Could not load filter: " + ex.getMessage());
         dropDownButton.setToolTipText(ResourceMgr.getDescription("MnuTxtPickFilter"));

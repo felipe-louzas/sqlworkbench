@@ -1035,7 +1035,7 @@ public class MainWindow
       }
       catch (Exception e)
       {
-        LogMgr.logError("MainWindow.checkMacroMenuForPanel()", "Error during macro update", e);
+        LogMgr.logError(new CallerInfo(){}, "Error during macro update", e);
       }
     });
   }
@@ -1070,7 +1070,7 @@ public class MainWindow
 
       if (startIndex == -1)
       {
-        LogMgr.logWarning("MainWindow.setMacroMenuItemStates()", "Start of macro menu items not found!");
+        LogMgr.logWarning(new CallerInfo(){}, "Start of macro menu items not found!");
         return;
       }
 
@@ -1226,7 +1226,7 @@ public class MainWindow
     }
     catch (Exception e)
     {
-      LogMgr.logDebug("MainWindow.getSqlPanel()", "Invalid index [" + index + "] specified!", e);
+      LogMgr.logDebug(new CallerInfo(){}, "Invalid index [" + index + "] specified!", e);
       return Optional.empty();
     }
   }
@@ -1826,7 +1826,7 @@ public class MainWindow
   {
     if (!ConnectionGuiHelper.doPrompt(this, profile))
     {
-      LogMgr.logWarning("MainWindow.connectTo()", "Can't directly connect to a profile that requires prompting for a password or username");
+      LogMgr.logWarning(new CallerInfo(){}, "Can't directly connect to a profile that requires prompting for a password or username");
       return;
     }
     getSelector().connectTo(profile, showDialog, loadWorkspace);
@@ -3374,7 +3374,7 @@ public class MainWindow
   {
     if (this.currentWorkspace == null) return;
     if (this.currentProfile == null) return;
-    
+
     String filename = FileDialogUtil.removeConfigDir(currentWorkspace.getFilename());
     currentProfile.setWorkspaceFile(filename);
 

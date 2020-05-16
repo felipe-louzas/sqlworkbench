@@ -586,7 +586,7 @@ public class RecordFormPanel
     }
     catch (Exception e)
     {
-      LogMgr.logError("RecordFormPanel.validateInput()", "Error during validate", e);
+      LogMgr.logError(new CallerInfo(){}, "Error during validate", e);
       WbSwingUtilities.showErrorMessage(e.getMessage());
       return false;
     }

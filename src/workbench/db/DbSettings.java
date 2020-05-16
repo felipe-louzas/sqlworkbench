@@ -1293,7 +1293,7 @@ public class DbSettings
     }
     catch (Exception ex)
     {
-      LogMgr.logWarning("DbSettings.getTypeMappingForPreparedStatement()", "Could not retrieve type mapping", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve type mapping", ex);
     }
     return result;
   }
@@ -1988,7 +1988,7 @@ public class DbSettings
     String quote = getProperty("quote.escape", null);
     if (quote != null)
     {
-      LogMgr.logWarning("DbSettings.getIdentifierQuoteString()", "Deprecated property \"" + prefix + ".quote.escape\" used. Renaming to: " + prefix + propName);
+      LogMgr.logWarning(new CallerInfo(){}, "Deprecated property \"" + prefix + ".quote.escape\" used. Renaming to: " + prefix + propName);
       Settings.getInstance().removeProperty(prefix + "quote.escape");
       Settings.getInstance().setProperty(prefix + propName, quote);
     }

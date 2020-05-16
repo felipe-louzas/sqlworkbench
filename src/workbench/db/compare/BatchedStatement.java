@@ -35,6 +35,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
@@ -88,7 +89,7 @@ public class BatchedStatement
     }
     catch (SQLException e)
     {
-      LogMgr.logError("BatchedStatement.<init>", "Error initializing statement", e);
+      LogMgr.logError(new CallerInfo(){}, "Error initializing statement", e);
       this.batchSize = 1;
     }
     this.currentSize = 0;

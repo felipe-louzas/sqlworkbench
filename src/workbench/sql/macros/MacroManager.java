@@ -31,6 +31,7 @@ import java.util.TreeMap;
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.MacroChangeListener;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 import workbench.resource.StoreableKeyStroke;
@@ -65,7 +66,7 @@ public class MacroManager
     MacroStorage storage = new MacroStorage(file);
     long duration = System.currentTimeMillis() - start;
     allMacros.put(file.getFullPath(), storage);
-    LogMgr.logDebug("MacroManager.init<>", "Loading default macros took " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Loading default macros took " + duration + "ms");
     dumpMacroInfo();
   }
 
@@ -151,7 +152,7 @@ public class MacroManager
       storage.loadNewFile(macroFile);
     }
 
-    LogMgr.logDebug("MacroManager.loadMacros()", "Loaded " + storage.getSize() + " macros from file " + macroFile.getFullPath() + " for clientId:  " + clientId);
+    LogMgr.logDebug(new CallerInfo(){}, "Loaded " + storage.getSize() + " macros from file " + macroFile.getFullPath() + " for clientId:  " + clientId);
     allMacros.put(newFilename, storage);
     macroClients.put(clientId, newFilename);
     dumpMacroInfo();
@@ -259,8 +260,8 @@ public class MacroManager
   {
     if (LogMgr.isTraceEnabled())
     {
-      LogMgr.logTrace("MacroManager.dumpMacroInfo()", "Current macro clients: " + macroClients);
-      LogMgr.logTrace("MacroManager.dumpMacroInfo()", "Current storages: " + allMacros);
+      LogMgr.logTrace(new CallerInfo(){}, "Current macro clients: " + macroClients);
+      LogMgr.logTrace(new CallerInfo(){}, "Current storages: " + allMacros);
     }
   }
 }

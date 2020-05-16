@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -105,10 +106,7 @@ public class MonetDbSequenceReader
       SqlUtil.appendExpression(query, "sh.name", StringUtil.trimQuotes(schema), null);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("MonetDbSequenceReader.getRawSequenceDefinition()", "Query to retrieve sequences:\n" + query);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequences", query);
 
     DataStore result = null;
     try
@@ -117,7 +115,7 @@ public class MonetDbSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("MonetDbSequenceReader.getSequenceDefinition()", "Error when retrieving sequence definition", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequences", query);
     }
 
     return result;

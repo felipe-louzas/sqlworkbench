@@ -25,10 +25,14 @@ package workbench.gui.components;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import workbench.interfaces.StatusBar;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+
 import workbench.storage.RowActionMonitor;
+
 import workbench.util.NumberStringCache;
 
 /**
@@ -87,7 +91,7 @@ public class GenericRowMonitor
         this.updateMsg = null;
         break;
       default:
-        LogMgr.logWarning("GenericRowMonitor.setMonitorType()", "Invalid monitor type " + type + " specified!");
+        LogMgr.logWarning(new CallerInfo(){}, "Invalid monitor type " + type + " specified!");
         this.monitorType = RowActionMonitor.MONITOR_PLAIN;
         this.updateMsg = null;
     }

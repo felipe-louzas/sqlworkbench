@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -95,11 +96,6 @@ public class NuoDBDomainReader
     }
     sql.append(" ORDER BY dom.schema, dom.domainname ");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug("NuoDbDomainReader.getSql()", "Query to retrieve domain:\n" + sql);
-    }
-
     return sql.toString();
   }
 
@@ -107,11 +103,14 @@ public class NuoDBDomainReader
   {
     Statement stmt = null;
     ResultSet rs = null;
-    List<DomainIdentifier> result = new ArrayList<DomainIdentifier>();
+    List<DomainIdentifier> result = new ArrayList<>();
+
+    String sql = getSql(connection, schemaPattern, namePattern);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "domains", sql);
+
     try
     {
       stmt = connection.createStatementForQuery();
-      String sql = getSql(connection, schemaPattern, namePattern);
       rs = stmt.executeQuery(sql);
       while (rs.next())
       {
@@ -141,7 +140,7 @@ public class NuoDBDomainReader
     }
     catch (SQLException e)
     {
-      LogMgr.logError("NuoDbDomainReader.getDomainList()", "Could not read domains", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "domains", sql);
     }
     finally
     {

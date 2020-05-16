@@ -32,6 +32,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 import workbench.interfaces.ResultReceiver;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.objectcache.ObjectCacheStorage;
@@ -1479,7 +1480,7 @@ public class GuiSettings
     }
     catch (Throwable th)
     {
-      LogMgr.logError("GuiSettings.getDefaultShowType()", "Invalid type \"" + type + "\" specified!", th);
+      LogMgr.logError(new CallerInfo(){}, "Invalid type \"" + type + "\" specified!", th);
       return ResultReceiver.ShowType.appendText;
     }
   }
@@ -1497,7 +1498,7 @@ public class GuiSettings
     }
     catch (Throwable th)
     {
-      LogMgr.logError("GuiSettings.getDefaultShowType()", "Invalid type \"" + type + "\" specified!", th);
+      LogMgr.logError(new CallerInfo(){}, "Invalid type \"" + type + "\" specified!", th);
       return ResultReceiver.ShowType.appendText;
     }
   }

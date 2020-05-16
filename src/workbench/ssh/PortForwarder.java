@@ -106,10 +106,10 @@ public class PortForwarder
     props.put("StrictHostKeyChecking", "no");
     JSch jsch = new JSch();
 
-    String li = new CallerInfo(){}.toString();
+    final CallerInfo ci = new CallerInfo(){};
 
     long start = System.currentTimeMillis();
-    LogMgr.logDebug(li, "Connecting to SSH host: " + sshHost + ":" + sshPort + " using username: " + sshUser);
+    LogMgr.logDebug(ci, "Connecting to SSH host: " + sshHost + ":" + sshPort + " using username: " + sshUser);
 
     boolean useAgent = tryAgent && tryAgent(jsch);
 
@@ -129,12 +129,12 @@ public class PortForwarder
     session.setConfig(props);
     session.connect();
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logInfo(li, "Connected to SSH host: " + sshHost + ":" + sshPort + " using username: " + sshUser + " (" + duration + "ms)");
+    LogMgr.logInfo(ci, "Connected to SSH host: " + sshHost + ":" + sshPort + " using username: " + sshUser + " (" + duration + "ms)");
 
     if (localPortToUse < 0) localPortToUse = 0;
 
     localPort = session.setPortForwardingL(localPortToUse, remoteDbServer, remoteDbPort);
-    LogMgr.logInfo(li, "Port forwarding established: localhost:"  + localPort + " -> " + remoteDbServer + ":" + remoteDbPort + " through host " + sshHost);
+    LogMgr.logInfo(ci, "Port forwarding established: localhost:"  + localPort + " -> " + remoteDbServer + ":" + remoteDbPort + " through host " + sshHost);
 
     return localPort;
   }
@@ -157,7 +157,7 @@ public class PortForwarder
     }
     catch (Throwable th)
     {
-      LogMgr.logError("PortForwarder.tryAgent()", "Error when accessing agent", th);
+      LogMgr.logError(new CallerInfo(){}, "Error when accessing agent", th);
     }
     return false;
   }

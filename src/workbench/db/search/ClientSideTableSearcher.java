@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 import workbench.interfaces.TableSearchConsumer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -128,7 +129,7 @@ public class ClientSideTableSearcher
     }
     catch (Throwable e)
     {
-      LogMgr.logWarning("TableSearcher.cancelSearc()", "Error when cancelling", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Error when cancelling", e);
     }
   }
 
@@ -214,7 +215,7 @@ public class ClientSideTableSearcher
       String sql = builder.getSelectForTable(table, -1);
       if (StringUtil.isEmptyString(sql))
       {
-        LogMgr.logWarning("CleintSideTableSearcher.searchTable()", "No SELECT generated for " + table.getTableExpression() + ". Most probably the table was not fund");
+        LogMgr.logWarning(new CallerInfo(){}, "No SELECT generated for " + table.getTableExpression() + ". Most probably the table was not fund");
         return;
       }
 
@@ -261,7 +262,7 @@ public class ClientSideTableSearcher
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ClientSideTableSearcher.searchTable", "Error searching table", e);
+      LogMgr.logError(new CallerInfo(){}, "Error searching table", e);
       connection.rollback(sp);
     }
     finally

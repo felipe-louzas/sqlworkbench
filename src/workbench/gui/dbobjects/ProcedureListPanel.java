@@ -50,6 +50,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import workbench.WbManager;
+
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
@@ -68,6 +69,7 @@ import workbench.db.dependency.DependencyReader;
 import workbench.db.dependency.DependencyReaderFactory;
 import workbench.db.objectcache.SourceCache;
 import workbench.db.oracle.OraclePackageParser;
+
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.AlterProcedureAction;
@@ -92,15 +94,20 @@ import workbench.gui.renderer.SqlTypeRenderer;
 import workbench.gui.settings.PlacementChooser;
 import workbench.gui.sql.PanelContentSender;
 import workbench.gui.sql.PasteType;
+
 import workbench.interfaces.PropertyStorage;
 import workbench.interfaces.Reloadable;
 import workbench.interfaces.WbSelectionModel;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
 import workbench.sql.DelimiterDefinition;
+
 import workbench.storage.DataStore;
+
 import workbench.util.FilteredProperties;
 import workbench.util.LowMemoryException;
 import workbench.util.SqlUtil;
@@ -418,7 +425,7 @@ public class ProcedureListPanel
         }
         catch (Exception ex)
         {
-          LogMgr.logError("ProcedureListPanel().actionPerformed()", "Error when accessing editor tab", ex);
+          LogMgr.logError(new CallerInfo(){}, "Error when accessing editor tab", ex);
         }
       }
     });
@@ -585,7 +592,7 @@ public class ProcedureListPanel
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ProcedureListPanel.retrieve() thread", "Could not retrieve procedure list", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve procedure list", e);
     }
     finally
     {
@@ -872,7 +879,7 @@ public class ProcedureListPanel
       }
       catch (Exception ex)
       {
-        LogMgr.logError("ProcedureListPanel.valueChanged() thread", "Could not read procedure definition", ex);
+        LogMgr.logError(new CallerInfo(){}, "Could not read procedure definition", ex);
         procColumns.reset();
       }
 
@@ -906,7 +913,7 @@ public class ProcedureListPanel
       catch (Throwable ex)
       {
         sql = null;
-        LogMgr.logError("ProcedureListPanel.valueChanged() thread", "Could not read procedure source", ex);
+        LogMgr.logError(new CallerInfo(){}, "Could not read procedure source", ex);
         source.setPlainText(ex.getMessage());
       }
     }

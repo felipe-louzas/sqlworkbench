@@ -38,11 +38,14 @@ import workbench.gui.actions.ReplaceAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ReplacePanel;
 import workbench.gui.components.SearchCriteriaPanel;
+
 import workbench.interfaces.Replaceable;
 import workbench.interfaces.Searchable;
 import workbench.interfaces.TextContainer;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 
@@ -299,7 +302,7 @@ public class SearchAndReplace
     }
     catch (Exception e)
     {
-      LogMgr.logError("SearchAndReplace.replaceNext()", "Error replacing value", e);
+      LogMgr.logError(new CallerInfo(){}, "Error replacing value", e);
       WbSwingUtilities.showErrorMessage(e.getMessage());
       return false;
     }
@@ -463,7 +466,7 @@ public class SearchAndReplace
       }
       catch (Exception e)
       {
-        LogMgr.logError("SearchAndReplace.replaceCurrent()", "Error replacing value", e);
+        LogMgr.logError(new CallerInfo(){}, "Error replacing value", e);
         WbSwingUtilities.showErrorMessage(e.getMessage());
         return false;
       }

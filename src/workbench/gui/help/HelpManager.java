@@ -27,6 +27,7 @@ import java.io.File;
 import java.net.URI;
 
 import workbench.WbManager;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -129,7 +130,7 @@ public class HelpManager
     }
     else
     {
-      LogMgr.logWarning("HelpManager.getHtmlManualDir()", "Help directory '" + htmldir.getAbsolutePath() + "' not found!");
+      LogMgr.logWarning(new CallerInfo(){}, "Help directory '" + htmldir.getAbsolutePath() + "' not found!");
     }
 
     return null;
@@ -147,7 +148,7 @@ public class HelpManager
       return;
     }
 
-    LogMgr.logDebug("HelpManager.showPdfHelp()", "Using PDF: " + pdf.getFullPath());
+    LogMgr.logDebug(new CallerInfo(){}, "Using PDF: " + pdf.getFullPath());
 
     if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.OPEN))
     {
@@ -162,7 +163,7 @@ public class HelpManager
           }
           catch (Exception ex)
           {
-            LogMgr.logError("HelpManager.showPdf()", "Error when running PDF Viewer", ex);
+            LogMgr.logError(new CallerInfo(){}, "Error when running PDF Viewer", ex);
             WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(ex));
           }
         }
@@ -171,7 +172,7 @@ public class HelpManager
     }
     else
     {
-      LogMgr.logError("HelpManager.showPdfHelp()", "Desktop not supported!", null);
+      LogMgr.logError(new CallerInfo(){}, "Desktop not supported!", null);
       WbSwingUtilities.showErrorMessage("Desktop not supported by your Java version");
     }
   }
@@ -193,7 +194,7 @@ public class HelpManager
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ShowHelpAction.executeAction", "Error displaying manual", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error displaying manual", ex);
     }
   }
 
@@ -230,7 +231,7 @@ public class HelpManager
 
     if (!manual.exists())
     {
-      LogMgr.logInfo("HelpManager.showHelpFile()", "Help file: '" + manual + "' not found. Showing online help");
+      LogMgr.logInfo(new CallerInfo(){}, "Help file: '" + manual + "' not found. Showing online help");
       showOnlineHelp(basefile, anchor);
       return;
     }
@@ -250,7 +251,7 @@ public class HelpManager
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ShowHelpAction.executeAction", "Error displaying manual", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error displaying manual", ex);
     }
   }
 
@@ -273,7 +274,7 @@ public class HelpManager
     }
     catch (Exception ex)
     {
-      LogMgr.logError("HelpManager.showHelpFile", "Could not open online help", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not open online help", ex);
     }
   }
 

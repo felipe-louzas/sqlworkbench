@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import workbench.interfaces.ProgressReporter;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -246,7 +247,7 @@ public class TableDeleteSync
 
     if (columnMap.isEmpty())
     {
-      LogMgr.logWarning("TableDeleteSync.setTableName()", "No primary key found to delete rows from target table " + tableToDelete.getTableName(), null);
+      LogMgr.logWarning(new CallerInfo(){}, "No primary key found to delete rows from target table " + tableToDelete.getTableName(), null);
       return TableDiffStatus.NoPK;
     }
 
@@ -256,7 +257,7 @@ public class TableDeleteSync
       String deleteSql = "DELETE FROM " + this.tableToDeleteFrom.getTable().getFullyQualifiedName(this.targetConnection) + where;
       PreparedStatement deleteStmt = targetConnection.getSqlConnection().prepareStatement(deleteSql);
       this.deleteStatement = new BatchedStatement(deleteStmt, targetConnection, batchSize);
-      LogMgr.logInfo("TableDeleteSync.setTable()", "Using " + deleteSql + " to delete rows from target database");
+      LogMgr.logInfo(new CallerInfo(){}, "Using " + deleteSql + " to delete rows from target database");
     }
     return TableDiffStatus.OK;
   }
@@ -287,7 +288,7 @@ public class TableDeleteSync
     TableIdentifier deleteTable = this.tableToDeleteFrom.getTable();
     String retrieve = "SELECT " + selectColumns + " FROM " + deleteTable.getFullyQualifiedName(targetConnection);
 
-    LogMgr.logInfo("TableDeleteSync.doSync()", "Using " + retrieve + " to retrieve rows from the reference table" );
+    LogMgr.logInfo(new CallerInfo(){}, "Using " + retrieve + " to retrieve rows from the reference table" );
 
     deletedRows = 0;
     cancelExecution = false;
@@ -420,7 +421,7 @@ public class TableDeleteSync
     }
     catch (SQLException e)
     {
-      LogMgr.logError("TableDeleteSync.checkRows()", "Error when running check SQL " + sql, e);
+      LogMgr.logError(new CallerInfo(){}, "Error when running check SQL " + sql, e);
       throw e;
     }
     finally
@@ -490,7 +491,7 @@ public class TableDeleteSync
       }
       catch (IOException e)
       {
-        LogMgr.logError("TableDeleteSync.deleteRow()", "Error writing DELETE statement", e);
+        LogMgr.logError(new CallerInfo(){}, "Error writing DELETE statement", e);
       }
     }
   }

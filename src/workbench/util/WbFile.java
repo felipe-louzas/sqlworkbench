@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
@@ -109,7 +110,7 @@ public class WbFile
     }
     catch (Exception io)
     {
-      LogMgr.logWarning("WbFile.makeBackup()", "Could not copy " + this.getFullPath() + " to " + newfile.getFullPath());
+      LogMgr.logWarning(new CallerInfo(){}, "Could not copy " + this.getFullPath() + " to " + newfile.getFullPath());
       return null;
     }
     return newfile;

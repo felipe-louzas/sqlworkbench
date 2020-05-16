@@ -25,6 +25,7 @@ package workbench.gui.completion;
 
 import java.util.ArrayList;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.TableIdentifier;
@@ -129,7 +130,7 @@ public class InsertAnalyzer
     }
     catch (Exception e)
     {
-      LogMgr.logError("InsertAnalyzer.checkContext()", "Error parsing insert statement", e);
+      LogMgr.logError(new CallerInfo(){}, "Error parsing insert statement", e);
       this.context = NO_CONTEXT;
     }
 

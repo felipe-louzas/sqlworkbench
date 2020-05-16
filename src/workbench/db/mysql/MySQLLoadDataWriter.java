@@ -26,6 +26,7 @@ package workbench.db.mysql;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.exporter.DataExporter;
@@ -102,7 +103,7 @@ public class MySQLLoadDataWriter
     }
     catch (Exception e)
     {
-      LogMgr.logError("PostgresCopyStatementWriter.writeFormatFile()", "Could not write format file", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not write format file", e);
     }
     finally
     {

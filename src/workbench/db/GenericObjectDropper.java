@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import workbench.interfaces.ObjectDropper;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.sqltemplates.TemplateHandler;
@@ -205,7 +206,7 @@ public class GenericObjectDropper
     {
       ddl = ddl.replace(MetaDataSqlManager.FQ_NAME_PLACEHOLDER, toDrop.getFullyQualifiedName(connection));
     }
-    
+
     ddl = TemplateHandler.replaceTablePlaceholder(ddl, toDrop, connection, true);
 
     sql.append(ddl);
@@ -236,7 +237,7 @@ public class GenericObjectDropper
         DbObject object = objects.get(i);
 
         String sql = SqlUtil.trimSemicolon(getDropStatement(i).toString());
-        LogMgr.logDebug("GenericObjectDropper.execute()", "Dropping object using: " + sql);
+        LogMgr.logDebug(new CallerInfo(){}, "Dropping object using: " + sql);
         if (monitor != null)
         {
           String name = object.getObjectName();

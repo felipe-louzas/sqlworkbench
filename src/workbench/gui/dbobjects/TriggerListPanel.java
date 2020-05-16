@@ -46,6 +46,7 @@ import workbench.WbManager;
 import workbench.interfaces.PropertyStorage;
 import workbench.interfaces.Reloadable;
 import workbench.interfaces.WbSelectionModel;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
@@ -330,7 +331,7 @@ public class TriggerListPanel
     }
     catch (Throwable e)
     {
-      LogMgr.logError("ProcedureListPanel.retrieve() thread", "Could not retrieve trigger list", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve trigger list", e);
     }
     finally
     {
@@ -514,7 +515,7 @@ public class TriggerListPanel
       }
       catch (Throwable ex)
       {
-        LogMgr.logError("TriggerListPanel.retrieveTriggerSource() thread", "Could not read trigger source", ex);
+        LogMgr.logError(new CallerInfo(){}, "Could not read trigger source", ex);
         source.setPlainText(ExceptionUtil.getDisplay(ex));
       }
     }

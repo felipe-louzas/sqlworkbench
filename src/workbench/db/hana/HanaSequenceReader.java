@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -85,7 +86,7 @@ public class HanaSequenceReader
     StringBuilder query = new StringBuilder(baseQuery.length() + 20);
     query.append(baseQuery);
     boolean whereAdded = false;
-
+    final CallerInfo ci = new CallerInfo(){};
     if (StringUtil.isNonBlank(namePattern))
     {
       whereAdded = true;
@@ -108,7 +109,7 @@ public class HanaSequenceReader
 
     if (Settings.getInstance().getDebugMetadataSql())
     {
-      LogMgr.logInfo("HanaSequenceReader.getRawSequenceDefinition()", "Using query=" + query);
+      LogMgr.logInfo(ci, "Using query=" + query);
     }
 
     PreparedStatement stmt = null;
@@ -122,7 +123,7 @@ public class HanaSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("HanaSequenceReader.getSequenceDefinition()", "Error when retrieving sequence definition", e);
+      LogMgr.logError(ci, "Error when retrieving sequence definition", e);
     }
     finally
     {

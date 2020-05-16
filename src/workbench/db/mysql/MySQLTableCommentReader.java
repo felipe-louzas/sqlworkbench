@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -122,15 +123,12 @@ public class MySQLTableCommentReader
       whereAdded = true;
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("MySQLTableCommentReader.updateObjectRemarks()", "Using query=\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "remarks", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
 
-    Map<String, String> remarks = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
+    Map<String, String> remarks = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
     try
     {
         stmt = con.createStatement();
@@ -148,7 +146,7 @@ public class MySQLTableCommentReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("MySQLTableCommentReader.updateObjectRemarks()", "Error retrieving remarks", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "remarks", sql);
     }
     finally
     {

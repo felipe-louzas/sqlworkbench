@@ -219,7 +219,7 @@ public class WbXmlDataFileParser
         if (ignoreMissingColumns || !abortOnError)
         {
           String msg = ResourceMgr.getFormattedString("ErrImportColumnIgnored", c.getColumnName(), getSourceFilename(), this.tableName);
-          LogMgr.logWarning("XmlDataFileParser.checkImportColumns()", "Ignoring table column " + c.getColumnName() + " because it is not present in the input file");
+          LogMgr.logWarning(new CallerInfo(){}, "Ignoring table column " + c.getColumnName() + " because it is not present in the input file");
           this.hasWarnings = true;
           if (!ignoreMissingColumns) this.hasErrors = true;
           this.messages.append(msg);

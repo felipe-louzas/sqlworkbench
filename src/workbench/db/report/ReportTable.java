@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
@@ -207,7 +208,7 @@ public class ReportTable
       }
       catch (SQLException e)
       {
-        LogMgr.logError("ReportTable.<init>", "Could not retrieve table triggers", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not retrieve table triggers", e);
         triggers = null;
       }
     }

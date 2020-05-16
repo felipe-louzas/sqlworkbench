@@ -28,6 +28,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import workbench.interfaces.MainPanel;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 
@@ -65,7 +66,7 @@ public class ClosedTabManager
       ClosedTabInfo info = new ClosedTabInfo(title, entries, index);
       info.setExternalFile(sql.getEditor().getCurrentFile(), sql.getEditor().getCurrentFileEncoding());
       recentTabs.add(info);
-      LogMgr.logDebug("TabHistoryManager.addToTabHistory()", "Recent tab added: " + info.toString());
+      LogMgr.logDebug(new CallerInfo(){}, "Recent tab added: " + info.toString());
     }
   }
 
@@ -115,7 +116,7 @@ public class ClosedTabManager
         }
         else
         {
-          LogMgr.logWarning("ClosedTabManager.actionPerformed()",
+          LogMgr.logWarning(new CallerInfo(){},
             "The tab \"" + tabInfo.getTabName() + "\" referenced the no longer existing file: " + tabInfo.getExternalFile().getAbsolutePath());
         }
       }

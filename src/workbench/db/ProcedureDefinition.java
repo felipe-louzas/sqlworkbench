@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.objectcache.DbObjectCacheFactory;
@@ -257,7 +258,7 @@ public class ProcedureDefinition
         }
         catch (SQLException s)
         {
-          LogMgr.logError("ProcedureDefinition.readParameters()", "Could not read procedure parameters", s);
+          LogMgr.logError(new CallerInfo(){}, "Could not read procedure parameters", s);
         }
       }
     }
@@ -530,7 +531,7 @@ public class ProcedureDefinition
     {
       return this.dbmsProcType;
     }
-    
+
     if (this.isOracleObjectType())
     {
       return "TYPE";
@@ -585,7 +586,7 @@ public class ProcedureDefinition
     }
     catch (Exception ex)
     {
-      LogMgr.logError("ProcedureListPanel.valueChanged() thread", "Could not read procedure definition", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not read procedure definition", ex);
       return null;
     }
 

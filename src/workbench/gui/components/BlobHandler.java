@@ -37,13 +37,18 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.sql.Blob;
 import java.sql.SQLException;
+
 import workbench.WbManager;
+import workbench.log.CallerInfo;
+
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.dialogs.BlobInfoDialog;
 import workbench.gui.dialogs.ImageViewer;
+
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
 import workbench.util.EncodingUtil;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
@@ -122,7 +127,7 @@ public class BlobHandler
       }
       catch (Exception e)
       {
-        LogMgr.logError("BlobHandler.getBlobAsArray()", "Error retrieving blob value", e);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving blob value", e);
         return null;
       }
     }
@@ -142,7 +147,7 @@ public class BlobHandler
       }
       catch (Exception e)
       {
-        LogMgr.logError("BlobHandler.getBlobAsArray()", "Error retrieving blob value", e);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving blob value", e);
         return null;
       }
       finally
@@ -166,7 +171,7 @@ public class BlobHandler
       }
       catch (Exception e)
       {
-        LogMgr.logError("BlobHandler.getBlobSize()", "Could not retrieve blob size",e);
+        LogMgr.logError(new CallerInfo(){}, "Could not retrieve blob size",e);
       }
     }
     else if (value instanceof File)
@@ -192,7 +197,7 @@ public class BlobHandler
     }
     catch (UnsupportedEncodingException e)
     {
-      LogMgr.logError("BlobHandler.convertArray()", "Could not convert binary to string using encoding: " + encoding, e);
+      LogMgr.logError(new CallerInfo(){}, "Could not convert binary to string using encoding: " + encoding, e);
       data = new String(value);
     }
     return data;
@@ -215,7 +220,7 @@ public class BlobHandler
       }
       catch (Exception e)
       {
-        LogMgr.logError("BlobHandler.getBlobAsString()", "Error retrieving blob value", e);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving blob value", e);
         return "";
       }
     }
@@ -235,7 +240,7 @@ public class BlobHandler
       }
       catch (Exception e)
       {
-        LogMgr.logError("BlobHandler.getBlobAsString()", "Error retrieving blob value", e);
+        LogMgr.logError(new CallerInfo(){}, "Error retrieving blob value", e);
         return "";
       }
     }
@@ -273,7 +278,7 @@ public class BlobHandler
 
     if (in == null)
     {
-      LogMgr.logError("WbTable.saveBlobContent", "No valid BLOB data found, got " + data.getClass().getName() + " instead", null);
+      LogMgr.logError(new CallerInfo(){}, "No valid BLOB data found, got " + data.getClass().getName() + " instead", null);
       throw new IOException("No LOB data found");
     }
     return FileUtil.copy(in, out);
@@ -355,7 +360,7 @@ public class BlobHandler
       {
         this.newValue = null;
         result = false;
-        LogMgr.logError("BlobHandler.showBlobAsText", "Error converting text to blob", e);
+        LogMgr.logError(new CallerInfo(){}, "Error converting text to blob", e);
       }
     }
 

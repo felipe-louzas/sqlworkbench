@@ -29,8 +29,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
@@ -68,11 +68,7 @@ public class DerbySynonymReader
       sql += " AND a.alias LIKE ?";
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo(getClass().getName() + ".getSynonymList()", "Retrieving synonym list using:\n" +
-        SqlUtil.replaceParameters(sql, schema, namePattern));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonyms", sql);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -96,6 +92,11 @@ public class DerbySynonymReader
         }
       }
     }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "synonyms", sql);
+      throw ex;
+    }
     finally
     {
       SqlUtil.closeAll(rs, stmt);
@@ -115,11 +116,7 @@ public class DerbySynonymReader
       "where a.alias = ?" +
       "  and s.schemaname = ?";
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo(getClass().getName() + ".getSynonymTable()", "Retrieving synonym table using:\n" +
-        SqlUtil.replaceParameters(sql, synonym, owner));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonym table", sql);
 
     PreparedStatement stmt = con.getSqlConnection().prepareStatement(sql);
     stmt.setString(1, synonym);
@@ -137,6 +134,11 @@ public class DerbySynonymReader
           result = new TableIdentifier(table);
         }
       }
+    }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "synonym table", sql);
+      throw ex;
     }
     finally
     {

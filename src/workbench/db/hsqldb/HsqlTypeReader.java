@@ -30,8 +30,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.BaseObjectType;
 import workbench.db.ColumnIdentifier;
@@ -110,10 +110,7 @@ public class HsqlTypeReader
 
     select.append("\n ORDER BY 2,3 ");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("HsqlTypeReader.extendObjectList()", "Using SQL: " + select);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "object types", select);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -135,7 +132,7 @@ public class HsqlTypeReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("HsqlTypeReader.getTypes()", "Error retrieving object types", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "object types", select);
     }
     finally
     {
@@ -190,7 +187,7 @@ public class HsqlTypeReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("HsqlTypeReader.getObjectDetails()", "Cannot retrieve type columns", e);
+      LogMgr.logError(new CallerInfo(){}, "Cannot retrieve type columns", e);
     }
     return null;
   }
@@ -209,7 +206,7 @@ public class HsqlTypeReader
     }
     catch (Exception e)
     {
-      LogMgr.logError("HsqlTypeReader.getObjectDetails()", "Cannot retrieve type columns", e);
+      LogMgr.logError(new CallerInfo(){}, "Cannot retrieve type columns", e);
     }
     return null;
   }

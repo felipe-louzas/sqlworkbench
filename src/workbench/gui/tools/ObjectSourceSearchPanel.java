@@ -51,6 +51,7 @@ import javax.swing.table.TableModel;
 
 import workbench.WbManager;
 import workbench.interfaces.ToolWindow;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -202,7 +203,7 @@ public class ObjectSourceSearchPanel
         }
         catch (Exception e)
         {
-          LogMgr.logError("ObjectSourceSearchPanel.startSearch()", "Error while searching", e);
+          LogMgr.logError(new CallerInfo(){}, "Error while searching", e);
         }
         finally
         {
@@ -306,7 +307,7 @@ public class ObjectSourceSearchPanel
         }
         else
         {
-          LogMgr.logError("ObjectSourceSearchPanel.selectConnection()", "NULL Profile selected!", null);
+          LogMgr.logError(new CallerInfo(){}, "NULL Profile selected!", null);
         }
       }
       dialog.setVisible(false);
@@ -314,7 +315,7 @@ public class ObjectSourceSearchPanel
     }
     catch (Throwable th)
     {
-      LogMgr.logError("ObjectSourceSearchPanel.selectConnection()", "Error during connect", th);
+      LogMgr.logError(new CallerInfo(){}, "Error during connect", th);
       prof = null;
     }
     if (prof != null)
@@ -343,7 +344,7 @@ public class ObjectSourceSearchPanel
         }
         catch (Exception e)
         {
-          LogMgr.logError("ObjectSourceSearchPanel.connect()", "Error during connect", e);
+          LogMgr.logError(new CallerInfo(){}, "Error during connect", e);
           String msg = ExceptionUtil.getDisplay(e);
           WbSwingUtilities.showFriendlyErrorMessage(ObjectSourceSearchPanel.this, ResourceMgr.getString("ErrConnectFailed"), msg);
           connection = null;

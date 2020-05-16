@@ -28,6 +28,7 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -210,7 +211,7 @@ public class RowDataListSorter
     }
     catch (Exception e)
     {
-      LogMgr.logError("RowDataListSorter.compare()", "Error when comparing rows", e);
+      LogMgr.logError(new CallerInfo(){}, "Error when comparing rows", e);
     }
     return 0;
   }

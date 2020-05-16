@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
@@ -120,10 +121,7 @@ public class HsqlSequenceReader
       SqlUtil.appendExpression(query, "sequence_schema", StringUtil.trimQuotes(schema), null);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo("HsqlSequenceReader.getRawSequenceDefinition()", "Using query=" + query);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", query);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -136,7 +134,7 @@ public class HsqlSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError("HsqlSequenceReader.getSequenceDefinition()", "Error when retrieving sequence definition", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", query);
     }
     finally
     {
@@ -278,7 +276,7 @@ public class HsqlSequenceReader
     catch (SQLException e)
     {
       supportsColumnSequence = false;
-      LogMgr.logError("HsqlSequenceReader.getOwnedByClause()", "Error retrieving sequence column", e);
+      LogMgr.logError(new CallerInfo(){}, "Error retrieving sequence column", e);
     }
     finally
     {

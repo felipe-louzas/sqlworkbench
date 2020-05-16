@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.sqltemplates.ColumnDefinitionTemplate;
@@ -278,14 +279,14 @@ public class TableCreator
 
     try
     {
-      LogMgr.logInfo("TableCreator.createTable()", "Creating table using sql: " + sql);
+      LogMgr.logInfo(new CallerInfo(){}, "Creating table using sql: " + sql);
       stmt.executeUpdate(sql);
       if (addPKNeeded())
       {
         String alterTable = getAddPKSQL();
         if (alterTable != null)
         {
-          LogMgr.logInfo("TableCreator.createTable()", "Adding primary key using: " + alterTable);
+          LogMgr.logInfo(new CallerInfo(){}, "Adding primary key using: " + alterTable);
           stmt.executeUpdate(alterTable);
         }
         if (storeSQL)
@@ -296,7 +297,7 @@ public class TableCreator
 
       if (commitRequired)
       {
-        LogMgr.logDebug("TableCreator.createTable()", "Commiting the CREATE TABLE");
+        LogMgr.logDebug(new CallerInfo(){}, "Commiting the CREATE TABLE");
         this.connection.commit();
       }
     }

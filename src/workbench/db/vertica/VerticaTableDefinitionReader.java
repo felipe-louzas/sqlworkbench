@@ -30,8 +30,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
@@ -98,23 +98,20 @@ public class VerticaTableDefinitionReader
     PreparedStatement stmt = null;
     String sql;
 
+    if (table.getObjectType().equals("SYSTEM TABLE"))
+    {
+      sql = retrieveTableColumns;
+    }
+    else
+    {
+      sql = retrieveViewColumns;
+    }
+    
     try
     {
-      if (table.getObjectType().equals("SYSTEM TABLE"))
-      {
-        sql = retrieveTableColumns;
-      }
-      else
-      {
-        sql = retrieveViewColumns;
-      }
 
       stmt = dbConnection.getSqlConnection().prepareStatement(sql);
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug("VerticaTableDefinitionReader.getInternalTableColumns()",
-          "Using SQL to retrieve columns:\n" + SqlUtil.replaceParameters(sql, tablename, schema));
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "columns", sql, tablename, schema);
 
       stmt.setString(1, tablename);
       stmt.setString(2, schema);
@@ -132,7 +129,7 @@ public class VerticaTableDefinitionReader
     }
     catch (SQLException se)
     {
-      LogMgr.logError("VerticaTableDefinitionReader.getTableColumns()", "Could not retrieve columns for an internal table", se);
+      LogMgr.logMetadataError(new CallerInfo(){}, se, "columns", sql, tablename, schema);
     }
     finally
     {

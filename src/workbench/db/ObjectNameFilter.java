@@ -36,6 +36,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.util.CaseInsensitiveComparator;
@@ -81,7 +82,7 @@ public class ObjectNameFilter
    * Controls if the filter expressions should be treated as SQL LIKE conditions to be used in a JDBC call.
    *
    * Only valid if {@link #isInclusionFilter()} is true.
-   * 
+   *
    * @see #isInclusionFilter()
    */
   public void setIsRetrievalFilter(boolean flag)
@@ -264,7 +265,7 @@ public class ObjectNameFilter
     }
     catch (PatternSyntaxException p)
     {
-      LogMgr.logError("ObjectNameFilter.addExpression()", "Could not compile expression: " + exp , p);
+      LogMgr.logError(new CallerInfo(){}, "Could not compile expression: " + exp , p);
     }
     modified = true;
   }
@@ -277,7 +278,7 @@ public class ObjectNameFilter
     }
     catch (PatternSyntaxException pse)
     {
-      LogMgr.logWarning("ObjectNameFilter.addPattern()", "Could not compile expression: " + expression, pse);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not compile expression: " + expression, pse);
     }
   }
 

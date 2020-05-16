@@ -155,7 +155,7 @@ public class XmlTableDefinitionParser
       }
       catch (Exception e)
       {
-        LogMgr.logError("XmlTableDefinitionParser.endElement", "Incorrec value for " + XmlRowDataConverter.COLUMN_COUNT_TAG + ": " + this.chars, e);
+        LogMgr.logError(new CallerInfo(){}, "Incorrec value for " + XmlRowDataConverter.COLUMN_COUNT_TAG + ": " + this.chars, e);
         throw new SAXException("Invalid column count", e);
       }
     }
@@ -180,7 +180,7 @@ public class XmlTableDefinitionParser
       }
       catch (Exception e)
       {
-        LogMgr.logError("XmlTableDefinitionParser.endElement()", "Could not read columnn type!", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not read columnn type!", e);
         throw new SAXException("Could not read columnn type", e);
       }
     }
@@ -192,7 +192,7 @@ public class XmlTableDefinitionParser
       }
       catch (Exception e)
       {
-        LogMgr.logError("XmlDataFileParser.endElement()", "Could not read dbms columnn type!", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not read dbms columnn type!", e);
         throw new SAXException("Could not read dbms columnn type", e);
       }
     }
@@ -204,7 +204,7 @@ public class XmlTableDefinitionParser
       }
       catch (Exception e)
       {
-        LogMgr.logError("XmlTableDefinitionParser.endElement()", "Could not read columnn class name!", e);
+        LogMgr.logError(new CallerInfo(){}, "Could not read columnn class name!", e);
         throw new SAXException("Could not read columnn name", e);
       }
     }

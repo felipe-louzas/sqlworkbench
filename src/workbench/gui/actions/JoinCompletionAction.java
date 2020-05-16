@@ -32,6 +32,7 @@ import java.util.List;
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.StatusBar;
+import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
@@ -86,7 +87,7 @@ public class JoinCompletionAction
 
     if (sql == null)
     {
-      LogMgr.logWarning("JoinCompletionAction.executeAction()", "No SQL found!");
+      LogMgr.logWarning(new CallerInfo(){}, "No SQL found!");
       return;
     }
 
@@ -144,7 +145,7 @@ public class JoinCompletionAction
     }
     catch (SQLException ex)
     {
-      LogMgr.logWarning("JoinCompletionAction.executeAction()", "Error retrieving condition", ex);
+      LogMgr.logWarning(new CallerInfo(){}, "Error retrieving condition", ex);
       setStatusMessage("", 0);
     }
   }
