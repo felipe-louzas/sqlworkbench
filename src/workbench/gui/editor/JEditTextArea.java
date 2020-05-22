@@ -123,8 +123,8 @@ public class JEditTextArea
   protected boolean rightClickMovesCursor = false;
 
   private Color alternateSelectionColor;
-  private static final Color ERROR_COLOR = Color.RED.brighter();
-  private static final Color TEMP_COLOR = Color.GREEN.brighter();
+  private Color errorColor = Settings.getInstance().getEditorErrorColor();
+  private Color tempColor = Settings.getInstance().getEditorCurrentStmtColor();
   private boolean currentSelectionIsTemporary;
   protected String commentChar;
   private TokenMarker currentTokenMarker;
@@ -276,6 +276,8 @@ public class JEditTextArea
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_MINLEN,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_NO_WHITESPACE,
+      Settings.PROPERTY_EDITOR_CURRENT_STMT_COLOR,
+      Settings.PROPERTY_EDITOR_ERROR_STMT_COLOR,
       GuiSettings.PROP_FONT_ZOOM_WHEEL);
 
     minHighlightLength = Settings.getInstance().getMinLengthForSelectionHighlight();
@@ -306,6 +308,11 @@ public class JEditTextArea
     else if (evt.getPropertyName().startsWith(GuiSettings.PROP_FONT_ZOOM_WHEEL))
     {
       initWheelZoom();
+    }
+    else
+    {
+      this.errorColor = Settings.getInstance().getEditorErrorColor();
+      this.tempColor = Settings.getInstance().getEditorCurrentStmtColor();
     }
   }
 
@@ -1869,12 +1876,12 @@ public class JEditTextArea
 
   public void selectError(int start, int end)
   {
-    this.selectCommand(start, end, ERROR_COLOR);
+    this.selectCommand(start, end, errorColor);
   }
 
   public void selectStatementTemporary(int start, int end)
   {
-    this.selectCommand(start, end, TEMP_COLOR);
+    this.selectCommand(start, end, tempColor);
   }
 
   private void selectCommand(int start, int end, Color alternateColor)

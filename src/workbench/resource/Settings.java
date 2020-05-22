@@ -105,6 +105,7 @@ public class Settings
 {
 	// <editor-fold defaultstate="collapsed" desc="Property Keys">
 	public static final String PROPERTY_ENCRYPT_PWD = "workbench.profiles.encryptpassword";
+	public static final String PROPERTY_MASTER_PWD = "workbench.profiles.masterpassword";
 	public static final String PROPERTY_TRIM_PWD = "workbench.profiles.trimpassword";
 	public static final String PROPERTY_DATE_FORMAT = "workbench.gui.display.dateformat";
 	public static final String PROPERTY_DATETIME_FORMAT = "workbench.gui.display.datetimeformat";
@@ -136,6 +137,8 @@ public class Settings
 	public static final String PROPERTY_EDITOR_TAB_WIDTH = "workbench.editor.tabwidth";
 
 	public static final String PROPERTY_EDITOR_CURRENT_LINE_COLOR = "workbench.editor.currentline.color";
+	public static final String PROPERTY_EDITOR_CURRENT_STMT_COLOR = "workbench.editor.currentstmt.color";
+	public static final String PROPERTY_EDITOR_ERROR_STMT_COLOR = "workbench.editor.color.error";
 	public static final String PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_BASE = "workbench.editor.occurance.highlight";
 	public static final String PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT = PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_BASE + ".enable";
 	public static final String PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_COLOR = PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_BASE + ".color";
@@ -1945,14 +1948,24 @@ public class Settings
 		return getColor(PROPERTY_EDITOR_SELECTION_COLOR, null);
 	}
 
+	public void setEditorCurrentStmtColor(Color c)
+	{
+		setColor(PROPERTY_EDITOR_CURRENT_STMT_COLOR, c);
+	}
+
+	public Color getEditorCurrentStmtColor()
+	{
+		return getColor(PROPERTY_EDITOR_CURRENT_STMT_COLOR, Color.GREEN.brighter());
+	}
+
 	public void setEditorErrorColor(Color c)
 	{
-		setColor("workbench.editor.color.error", c);
+		setColor(PROPERTY_EDITOR_ERROR_STMT_COLOR, c);
 	}
 
 	public Color getEditorErrorColor()
 	{
-		return getColor("workbench.editor.color.error", Color.RED.brighter());
+		return getColor(PROPERTY_EDITOR_ERROR_STMT_COLOR, Color.RED.brighter());
 	}
 
 	public Color getEditorCurrentLineColor()
@@ -3203,6 +3216,21 @@ public class Settings
 	public void setUseEncryption(boolean useEncryption)
 	{
 		this.setProperty(PROPERTY_ENCRYPT_PWD, useEncryption);
+	}
+
+	public void setEncryptedMasterPassword(String pwd)
+	{
+    setProperty(PROPERTY_MASTER_PWD, StringUtil.trimToNull(pwd));
+	}
+
+	public boolean getUseMasterPassword()
+	{
+		return getEncryptedMasterPassword() != null;
+	}
+
+	public String getEncryptedMasterPassword()
+	{
+		return getProperty(PROPERTY_MASTER_PWD, null);
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="Utility">
