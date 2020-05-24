@@ -49,6 +49,7 @@ import workbench.interfaces.Disposable;
 import workbench.interfaces.Restoreable;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -198,6 +199,14 @@ public class GeneralOptionsPanel
     img = new LoadingImage();
     img.setName(iconName);
     cancelIconCombo.setSelectedItem(img);
+    if (Settings.getInstance().getUseMasterPassword())
+    {
+      masterPwdButton.setIcon(IconMgr.getInstance().getLabelIcon("tick"));
+    }
+    else
+    {
+      masterPwdButton.setIcon(null);
+    }
   }
 
   @Override
@@ -491,7 +500,9 @@ public class GeneralOptionsPanel
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(focusToQuickFilter, gridBagConstraints);
 
-    masterPwdButton.setText(ResourceMgr.getString("LblSetMasterPwd")); // NOI18N
+    masterPwdButton.setText(ResourceMgr.getString("LblMasterPwd")); // NOI18N
+    masterPwdButton.setHorizontalTextPosition(SwingConstants.LEADING);
+    masterPwdButton.setIconTextGap(8);
     masterPwdButton.addActionListener(this);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 2;
@@ -883,13 +894,13 @@ public class GeneralOptionsPanel
 
   public void actionPerformed(ActionEvent evt)
   {
-    if (evt.getSource() == showFinishAlert)
-    {
-      GeneralOptionsPanel.this.showFinishAlertActionPerformed(evt);
-    }
-    else if (evt.getSource() == masterPwdButton)
+    if (evt.getSource() == masterPwdButton)
     {
       GeneralOptionsPanel.this.masterPwdButtonActionPerformed(evt);
+    }
+    else if (evt.getSource() == showFinishAlert)
+    {
+      GeneralOptionsPanel.this.showFinishAlertActionPerformed(evt);
     }
   }// </editor-fold>//GEN-END:initComponents
 

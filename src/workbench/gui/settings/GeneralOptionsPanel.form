@@ -223,8 +223,10 @@
         <Component class="javax.swing.JButton" name="masterPwdButton">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="language/wbstrings.properties" key="LblSetMasterPwd" replaceFormat="ResourceMgr.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="language/wbstrings.properties" key="LblMasterPwd" replaceFormat="ResourceMgr.getString(&quot;{key}&quot;)"/>
             </Property>
+            <Property name="horizontalTextPosition" type="int" value="10"/>
+            <Property name="iconTextGap" type="int" value="8"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="masterPwdButtonActionPerformed"/>

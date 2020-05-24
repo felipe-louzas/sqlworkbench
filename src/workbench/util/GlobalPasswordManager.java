@@ -176,7 +176,7 @@ public class GlobalPasswordManager
     this.masterCipher = null;
     MasterPwdInputForm input = new MasterPwdInputForm(this);
 
-    boolean ok = ValidatingDialog.showConfirmDialog(WbManager.getInstance().getCurrentWindow(), input, ResourceMgr.getString("MsgEnterMasterPwd"));
+    boolean ok = ValidatingDialog.showConfirmDialog(WbManager.getInstance().getCurrentWindow(), input, ResourceMgr.getString("LblMasterPassword"));
     return ok;
   }
 

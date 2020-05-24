@@ -28,6 +28,7 @@ import java.util.Arrays;
 import javax.swing.JDialog;
 
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
@@ -43,6 +44,7 @@ public class MasterPasswordDialog
   private boolean cancelled = false;
   private boolean removeMasterPwd = false;
   private EscAction escAction;
+  
   public MasterPasswordDialog(Dialog parent)
   {
     super(parent, ResourceMgr.getString("TxtWindowTitleMasterPwd"), true);
@@ -50,6 +52,10 @@ public class MasterPasswordDialog
 
     setResizable(true);
     initComponents();
+    if (!Settings.getInstance().getUseMasterPassword())
+    {
+      removePwdButton.setVisible(false);
+    }
   }
 
   public boolean doRemoveMasterPassword()
@@ -103,6 +109,7 @@ public class MasterPasswordDialog
     removePwdButton = new javax.swing.JButton();
     okButton = new WbButton();
     cancelButton = new WbButton();
+    jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -145,9 +152,8 @@ public class MasterPasswordDialog
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
     jPanel1.add(removePwdButton, gridBagConstraints);
 
     okButton.setText(ResourceMgr.getString("LblOK")); // NOI18N
@@ -159,7 +165,9 @@ public class MasterPasswordDialog
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
     jPanel1.add(okButton, gridBagConstraints);
 
     cancelButton.setText(ResourceMgr.getString("LblCancel")); // NOI18N
@@ -171,9 +179,18 @@ public class MasterPasswordDialog
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
+    gridBagConstraints.gridx = 3;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
     gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
     jPanel1.add(cancelButton, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    jPanel1.add(jPanel2, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -239,6 +256,7 @@ public class MasterPasswordDialog
   private javax.swing.JButton cancelButton;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JPanel jPanel1;
+  private javax.swing.JPanel jPanel2;
   private javax.swing.JLabel newPwdLabel;
   private javax.swing.JButton okButton;
   private javax.swing.JLabel oldPwdLabel;
