@@ -23,6 +23,7 @@
  */
 package workbench.gui.settings;
 
+import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -53,9 +55,11 @@ import workbench.resource.Settings;
 import workbench.db.KeepAliveDaemon;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.MasterPasswordDialog;
 import workbench.gui.components.WbLabelField;
 import workbench.gui.sql.IconHandler;
 
+import workbench.util.GlobalPasswordManager;
 import workbench.util.MacOSHelper;
 import workbench.util.WbFile;
 import workbench.util.WbLocale;
@@ -68,6 +72,8 @@ public class GeneralOptionsPanel
   extends JPanel
   implements Restoreable, ActionListener, Disposable
 {
+  private boolean removeMasterPassword = false;
+  private String newMasterPassword = null;
 
   public GeneralOptionsPanel()
   {
@@ -82,13 +88,13 @@ public class GeneralOptionsPanel
 
     brushedMetal.setVisible(MacOSHelper.isMacOS());
     brushedMetal.setEnabled(MacOSHelper.isMacOS());
-    if (!brushedMetal.isVisible())
-    {
-      GridBagLayout layout = (GridBagLayout)jPanel2.getLayout();
-      GridBagConstraints constraints = layout.getConstraints(focusToQuickFilter);
-      constraints.weightx = 1.0;
-      layout.setConstraints(focusToQuickFilter, constraints);
-    }
+//    if (!brushedMetal.isVisible())
+//    {
+//      GridBagLayout layout = (GridBagLayout)jPanel2.getLayout();
+//      GridBagConstraints constraints = layout.getConstraints(focusToQuickFilter);
+//      constraints.weightx = 1.0;
+//      layout.setConstraints(focusToQuickFilter, constraints);
+//    }
 
     String[] updTypes = new String[] {
       ResourceMgr.getString("LblUpdCheckNever"),
@@ -210,7 +216,6 @@ public class GeneralOptionsPanel
     GuiSettings.setEnableProfileQuickFilter(enableQuickFilter.isSelected());
     GuiSettings.setFocusToProfileQuickFilter(focusToQuickFilter.isSelected());
     GuiSettings.setShowMenuIcons(showMenuIcons.isSelected());
-    set.setUseEncryption(this.useEncryption.isSelected());
     set.setConsolidateLogMsg(this.consolidateLog.isSelected());
     set.setExitOnFirstConnectCancel(exitOnConnectCancel.isSelected());
     set.setShowConnectDialogOnStartup(autoConnect.isSelected());
@@ -268,6 +273,29 @@ public class GeneralOptionsPanel
 
     LoadingImage cancelImg = (LoadingImage)cancelIconCombo.getSelectedItem();
     set.setProperty(IconHandler.PROP_CANCEL_IMAGE, cancelImg.getName());
+    applyMasterPassword();
+  }
+
+  private void applyMasterPassword()
+  {
+    if (!removeMasterPassword && newMasterPassword == null) return;
+
+    try
+    {
+      WbSwingUtilities.showWaitCursorOnWindow(this);
+      if (removeMasterPassword)
+      {
+        GlobalPasswordManager.getInstance().applyNewPassword(null);
+      }
+      else
+      {
+        GlobalPasswordManager.getInstance().applyNewPassword(newMasterPassword);
+      }
+    }
+    finally
+    {
+      WbSwingUtilities.showDefaultCursorOnWindow(this);
+    }
   }
 
   @Override
@@ -294,7 +322,6 @@ public class GeneralOptionsPanel
     GridBagConstraints gridBagConstraints;
 
     jPanel2 = new JPanel();
-    useEncryption = new JCheckBox();
     consolidateLog = new JCheckBox();
     exitOnConnectCancel = new JCheckBox();
     autoConnect = new JCheckBox();
@@ -304,6 +331,7 @@ public class GeneralOptionsPanel
     enableQuickFilter = new JCheckBox();
     showMenuIcons = new JCheckBox();
     focusToQuickFilter = new JCheckBox();
+    masterPwdButton = new JButton();
     settingsfilename = new WbLabelField();
     jPanel1 = new JPanel();
     showTabIndex = new JCheckBox();
@@ -347,20 +375,6 @@ public class GeneralOptionsPanel
 
     jPanel2.setLayout(new GridBagLayout());
 
-    useEncryption.setSelected(Settings.getInstance().getUseEncryption());
-    useEncryption.setText(ResourceMgr.getString("LblUseEncryption")); // NOI18N
-    useEncryption.setToolTipText(ResourceMgr.getString("d_LblUseEncryption")); // NOI18N
-    useEncryption.setBorder(null);
-    useEncryption.setHorizontalAlignment(SwingConstants.LEFT);
-    useEncryption.setHorizontalTextPosition(SwingConstants.RIGHT);
-    useEncryption.setIconTextGap(5);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(0, 10, 4, 0);
-    jPanel2.add(useEncryption, gridBagConstraints);
-
     consolidateLog.setSelected(Settings.getInstance().getConsolidateLogMsg());
     consolidateLog.setText(ResourceMgr.getString("LblConsolidateLog")); // NOI18N
     consolidateLog.setToolTipText(ResourceMgr.getString("d_LblConsolidateLog")); // NOI18N
@@ -370,7 +384,7 @@ public class GeneralOptionsPanel
     consolidateLog.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(consolidateLog, gridBagConstraints);
@@ -408,7 +422,7 @@ public class GeneralOptionsPanel
     singlePageHelp.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(singlePageHelp, gridBagConstraints);
@@ -418,10 +432,8 @@ public class GeneralOptionsPanel
     brushedMetal.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(brushedMetal, gridBagConstraints);
 
@@ -474,10 +486,22 @@ public class GeneralOptionsPanel
     focusToQuickFilter.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(focusToQuickFilter, gridBagConstraints);
+
+    masterPwdButton.setText(ResourceMgr.getString("LblSetMasterPwd")); // NOI18N
+    masterPwdButton.addActionListener(this);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridheight = 2;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(0, 15, 0, 0);
+    jPanel2.add(masterPwdButton, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -863,6 +887,10 @@ public class GeneralOptionsPanel
     {
       GeneralOptionsPanel.this.showFinishAlertActionPerformed(evt);
     }
+    else if (evt.getSource() == masterPwdButton)
+    {
+      GeneralOptionsPanel.this.masterPwdButtonActionPerformed(evt);
+    }
   }// </editor-fold>//GEN-END:initComponents
 
   private void showFinishAlertActionPerformed(ActionEvent evt)//GEN-FIRST:event_showFinishAlertActionPerformed
@@ -870,6 +898,31 @@ public class GeneralOptionsPanel
     this.alertDuration.setEnabled(showFinishAlert.isSelected());
     this.useSystemTray.setEnabled(SystemTray.isSupported() && showFinishAlert.isSelected());
   }//GEN-LAST:event_showFinishAlertActionPerformed
+
+  private void masterPwdButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_masterPwdButtonActionPerformed
+  {//GEN-HEADEREND:event_masterPwdButtonActionPerformed
+    // If a master password is defined, don't allow changing it without entering the current one
+    if (!GlobalPasswordManager.getInstance().showPasswordPromptIfNeeded())
+    {
+      return;
+    }
+    Dialog parent = (Dialog)WbSwingUtilities.getWindowAncestor(this);
+    MasterPasswordDialog pwdDialog = new MasterPasswordDialog(parent);
+    Settings.getInstance().restoreWindowSize(pwdDialog);
+    WbSwingUtilities.center(pwdDialog, parent);
+    pwdDialog.setVisible(true);
+
+    if (pwdDialog.wasCancelled())  return;
+
+    if (pwdDialog.doRemoveMasterPassword())
+    {
+      this.removeMasterPassword = true;
+      return;
+    }
+
+    this.newMasterPassword = pwdDialog.getMasterPassword();
+    this.removeMasterPassword = false;
+  }//GEN-LAST:event_masterPwdButtonActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JTextField alertDuration;
@@ -908,6 +961,7 @@ public class GeneralOptionsPanel
   private JLabel logLevelLabel;
   private JCheckBox logMetaSQL;
   private JTextField logfileLabel;
+  private JButton masterPwdButton;
   private JCheckBox obfuscateDbInfo;
   private JCheckBox onlyActiveTab;
   private JCheckBox scrollTabs;
@@ -919,7 +973,6 @@ public class GeneralOptionsPanel
   private JCheckBox showTabIndex;
   private JCheckBox singlePageHelp;
   private JCheckBox tabLRUclose;
-  private JCheckBox useEncryption;
   private JCheckBox useSystemTray;
   // End of variables declaration//GEN-END:variables
 

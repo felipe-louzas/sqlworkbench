@@ -22,7 +22,6 @@
 package workbench.db;
 
 import java.awt.Color;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Collections;
@@ -49,6 +48,7 @@ import workbench.sql.DelimiterDefinition;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileDialogUtil;
+import workbench.util.GlobalPasswordManager;
 import workbench.util.StringUtil;
 import workbench.util.WbCipher;
 import workbench.util.WbDesCipher;
@@ -61,10 +61,11 @@ import workbench.util.WbProperties;
  *  @author Thomas Kellerer
  */
 public class ConnectionProfile
-  implements PropertyChangeListener, Serializable
+  implements Serializable
 {
   public static final String PROPERTY_PROFILE_GROUP = "profileGroup";
-  private static final String CRYPT_PREFIX = "@*@";
+  public static final String CRYPT_PREFIX = "@*@";
+  public static final String MASTER_CRYPT_PREFIX = "$@wb@$";
   private String name;
   private String url;
   private String temporaryUrl;
@@ -132,7 +133,6 @@ public class ConnectionProfile
     this.isNew = true;
     this.changed = true;
     this.internalId = nextId++;
-    Settings.getInstance().addPropertyChangeListener(this, Settings.PROPERTY_ENCRYPT_PWD);
   }
 
   public ConnectionProfile(String profileName, String driverClass, String url, String userName, String pwd)
@@ -613,11 +613,6 @@ public class ConnectionProfile
     return this.removeComments;
   }
 
-  /**
-   * @deprecated Replaced by {@link #setUseSeparateConnectionPerTab(boolean)}
-   */
-  public void setUseSeperateConnectionPerTab(boolean aFlag) { this.setUseSeparateConnectionPerTab(aFlag); }
-
   public boolean getRollbackBeforeDisconnect()
   {
     return this.rollbackBeforeDisconnect;
@@ -630,11 +625,14 @@ public class ConnectionProfile
   }
 
   /**
-   *  Sets the current password. If the password
-   *  is not already encrypted, it will be encrypted
+   * Sets the current password in plain text.
+   * <p>
+   * If the password is not already encrypted, it will be encrypted if needed/configured
    *
-   *  @see #getPassword()
-   *  @see workbench.util.WbCipher#encryptString(String)
+   * @see #getPassword()
+   * @see #getDecryptedPassword()
+   * @see workbench.util.WbCipher#encryptString(String)
+   * @see GlobalPasswordManager#encrypt(String)
    */
   public final void setPassword(String pwd)
   {
@@ -658,18 +656,19 @@ public class ConnectionProfile
     {
       pwd = "";
     }
-    // else --> either PasswordTrimType.never or the password was not blank
 
     // check encryption settings when reading the profiles...
-    if (Settings.getInstance().getUseEncryption())
+    if (Settings.getInstance().getUseMasterPassword())
     {
-      if (!this.isEncrypted(pwd))
+      if (!isEncrypted(pwd))
       {
-        pwd = this.encryptPassword(pwd);
+        pwd = MASTER_CRYPT_PREFIX + GlobalPasswordManager.getInstance().encrypt(pwd);
       }
     }
     else
     {
+      // no encryption should be used, but password is encrypted
+      // so, decrypt it now
       if (this.isEncrypted(pwd))
       {
         pwd = this.decryptPassword(pwd);
@@ -683,11 +682,17 @@ public class ConnectionProfile
     }
   }
 
+  public boolean isPasswordEncrypted()
+  {
+    return this.isEncrypted(this.password);
+  }
 
   /**
    *  Returns the encrypted version of the password.
+   *
    *  This getter/setter pair is used when saving the profile
-   *  @see #decryptPassword(String)
+   *
+   *  @see #getDecryptedPassword()
    */
   public String getPassword()
   {
@@ -719,16 +724,28 @@ public class ConnectionProfile
    *  Returns the plain text version of the
    *  current password.
    *
+   *  This method is used to populate the profile editor.
+   *  It's not named get
    *  @see #encryptPassword(String)
    */
-  public String decryptPassword()
+  public String getDecryptedPassword()
   {
     return this.decryptPassword(getPassword());
   }
 
+  public void setEncryptedPassword(String encrypted)
+  {
+    if (this.getStorePassword())
+    {
+      this.changed = !StringUtil.equalString(this.password, encrypted);
+      this.password = encrypted;
+    }
+  }
+
   /**
-   *  Returns the plain text version of the given
-   *  password. This is not put into the getPassword()
+   *  Returns the plain text version of the given password.
+   *
+   *  This is not put into the getPassword()
    *  method because the XMLEncode would write the
    *  password in plain text into the XML file.
    *
@@ -741,20 +758,21 @@ public class ConnectionProfile
   public String decryptPassword(String pwd)
   {
     if (StringUtil.isEmptyString(pwd)) return "";
-    if (!isEncrypted(pwd))
-    {
-      return pwd;
-    }
-    else
+    if (pwd.startsWith(CRYPT_PREFIX))
     {
       WbCipher des = WbDesCipher.getInstance();
       return des.decryptString(pwd.substring(CRYPT_PREFIX.length()));
     }
+    else if (pwd.startsWith(MASTER_CRYPT_PREFIX))
+    {
+      return GlobalPasswordManager.getInstance().decrypt(pwd.substring(MASTER_CRYPT_PREFIX.length()));
+    }
+    return pwd;
   }
 
   private boolean isEncrypted(String aPwd)
   {
-    return aPwd.startsWith(CRYPT_PREFIX);
+    return aPwd.startsWith(CRYPT_PREFIX) || aPwd.startsWith(MASTER_CRYPT_PREFIX);
   }
 
   public void setNew()
@@ -793,16 +811,6 @@ public class ConnectionProfile
     if (this.schemaFilter != null) schemaFilter.resetModified();
     if (this.catalogFilter != null) catalogFilter.resetModified();
     this.lastSettingsKey = getSettingsKey();
-  }
-
-  private String encryptPassword(String aPwd)
-  {
-    if (Settings.getInstance().getUseEncryption() && !this.isEncrypted(aPwd))
-    {
-      WbCipher des = WbDesCipher.getInstance();
-      aPwd = CRYPT_PREFIX + des.encryptString(aPwd);
-    }
-    return aPwd;
   }
 
   public String debugString()
@@ -1247,18 +1255,6 @@ public class ConnectionProfile
   {
     if (flag != this.confirmUpdates) this.changed = true;
     this.confirmUpdates = flag;
-  }
-
-  @Override
-  public void propertyChange(java.beans.PropertyChangeEvent evt)
-  {
-    if (Settings.PROPERTY_ENCRYPT_PWD.equals(evt.getPropertyName()))
-    {
-      String old = this.password;
-      // calling setPassword will encrypt/decrypt the password
-      // according to the current setting
-      this.setPassword(old);
-    }
   }
 
   public int getFetchSize()

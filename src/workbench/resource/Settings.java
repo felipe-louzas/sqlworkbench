@@ -104,7 +104,6 @@ public class Settings
 	implements PropertyStorage
 {
 	// <editor-fold defaultstate="collapsed" desc="Property Keys">
-	public static final String PROPERTY_ENCRYPT_PWD = "workbench.profiles.encryptpassword";
 	public static final String PROPERTY_MASTER_PWD = "workbench.profiles.masterpassword";
 	public static final String PROPERTY_TRIM_PWD = "workbench.profiles.trimpassword";
 	public static final String PROPERTY_DATE_FORMAT = "workbench.gui.display.dateformat";
@@ -3206,16 +3205,6 @@ public class Settings
 	private String getSortCountry()
 	{
 		return getProperty("workbench.sort.country", System.getProperty("user.country"));
-	}
-
-	public boolean getUseEncryption()
-	{
-		return getBoolProperty(PROPERTY_ENCRYPT_PWD, false);
-	}
-
-	public void setUseEncryption(boolean useEncryption)
-	{
-		this.setProperty(PROPERTY_ENCRYPT_PWD, useEncryption);
 	}
 
 	public void setEncryptedMasterPassword(String pwd)

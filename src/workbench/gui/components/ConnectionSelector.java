@@ -44,6 +44,7 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.profiles.ProfileSelectionDialog;
 
 import workbench.util.ExceptionUtil;
+import workbench.util.GlobalPasswordManager;
 import workbench.util.ImageUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
@@ -77,7 +78,6 @@ public class ConnectionSelector
     return this.connectInProgress;
   }
 
-
   public void selectConnection()
   {
     WbSwingUtilities.invoke(this::_selectConnection);
@@ -86,6 +86,7 @@ public class ConnectionSelector
   protected void _selectConnection()
   {
     if (this.isConnectInProgress()) return;
+    if (!GlobalPasswordManager.getInstance().showPasswordPromptIfNeeded()) return;
     ProfileSelectionDialog dialog = null;
     try
     {
