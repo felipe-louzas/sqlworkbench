@@ -53,14 +53,11 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import workbench.interfaces.SimplePropertyEditor;
 import workbench.interfaces.ValidatingComponent;
@@ -88,7 +85,6 @@ import workbench.gui.components.IntegerPropertyEditor;
 import workbench.gui.components.MapEditor;
 import workbench.gui.components.PasswordPropertyEditor;
 import workbench.gui.components.StringPropertyEditor;
-import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbColorPicker;
 import workbench.gui.components.WbFileChooser;
@@ -117,12 +113,13 @@ public class ConnectionEditorPanel
   private boolean init;
   private List<SimplePropertyEditor> editors = new ArrayList<>();
   private Set<String> allTags;
+  private char echoChar;
 
   public ConnectionEditorPanel()
   {
     super();
     this.initComponents();
-
+    echoChar = tfPwd.getEchoChar();
     String text = altDelimLabel.getText();
     altDelimLabel.setText("<html><u>" + text + "</u></html>");
 
@@ -197,6 +194,10 @@ public class ConnectionEditorPanel
     WbSwingUtilities.setMinimumSize(tfFetchSize, 5);
     WbSwingUtilities.setMinimumSize(tfTimeout, 5);
     WbSwingUtilities.setMinimumSize(altDelimiter, 5);
+
+    showPassword.setText(null);
+    showPassword.setIcon(IconMgr.getInstance().getLabelIcon("eye"));
+    showPassword.setMargin(tfPwd.getMargin());
 
     alignHeight(tfPwd, showPassword);
     alignHeight(tfWorkspaceFile, selectWkspButton);
@@ -428,7 +429,7 @@ public class ConnectionEditorPanel
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(2, 4, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(2, 4, 0, 5);
     add(asSysDBA, gridBagConstraints);
 
     lblUsername.setLabelFor(tfUserName);
@@ -479,7 +480,6 @@ public class ConnectionEditorPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 5;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 4, 5);
     add(showPassword, gridBagConstraints);
@@ -1857,19 +1857,16 @@ public class ConnectionEditorPanel
     }
     else if (e.getSource() == this.showPassword)
     {
-      String pwd = this.getProfile().getLoginPassword();
-      String title = ResourceMgr.getString("LblCurrentPassword");
-      title += " " + this.getProfile().getLoginUser();
-      JTextField f = new JTextField();
-      f.setDisabledTextColor(f.getForeground());
-      f.setEditable(false);
-      f.setText(pwd == null ? "" : pwd);
-      Border b = new CompoundBorder(new LineBorder(Color.LIGHT_GRAY), new EmptyBorder(2, 2, 2, 2));
-      f.setBorder(b);
-      TextComponentMouseListener l = new TextComponentMouseListener();
-      f.addMouseListener(l);
-      //WbSwingUtilities.showMessage(this, f);
-      JOptionPane.showMessageDialog(this.getParent(), f, title, JOptionPane.PLAIN_MESSAGE);
+      if (tfPwd.getEchoChar() == (char)0)
+      {
+        tfPwd.setEchoChar(echoChar);
+        tfPwd.putClientProperty("JPasswordField.cutCopyAllowed", false);
+      }
+      else
+      {
+        tfPwd.setEchoChar((char)0);
+        tfPwd.putClientProperty("JPasswordField.cutCopyAllowed", true);
+      }
     }
     else if (e.getSource() == this.infoColor && this.currentProfile != null)
     {

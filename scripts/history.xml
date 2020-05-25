@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2020-05-01">
-    <entry dev-build="9" type="enh">Passwords can now securely be encrypted using a master password.</entry>
+    <entry dev-build="9" type="enh">Passwords can now securely be encrypted using a master password. The old password encryption is no longer supported.</entry>
     <entry dev-build="9" type="enh">The properties base profile storage (wb-profiles.properties) is now the default. The old XML format is still supported.</entry>
     <entry dev-build="9" type="enh">WbVarDef now supports conditional execution.</entry>
     <entry dev-build="8" type="enh">WbCopy now supports views as the source by using -includeViews=true.</entry>

@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 
 import javax.swing.JDialog;
+import javax.swing.JPasswordField;
 
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
@@ -46,6 +47,7 @@ public class MasterPasswordDialog
   private boolean cancelled = false;
   private boolean removeMasterPwd = false;
   private EscAction escAction;
+  private char echoChar;
 
   public MasterPasswordDialog(Dialog parent)
   {
@@ -62,6 +64,13 @@ public class MasterPasswordDialog
     {
       removePwdButton.setVisible(false);
     }
+    echoChar = pwdInput.getEchoChar();
+    showPwd.setIcon(IconMgr.getInstance().getLabelIcon("eye"));
+    showRepeat.setIcon(IconMgr.getInstance().getLabelIcon("eye"));
+    showPwd.setMargin(pwdInput.getMargin());
+    WbSwingUtilities.makeEqualHeight(pwdInput, showPwd);
+    showRepeat.setMargin(pwdInput.getMargin());
+    WbSwingUtilities.makeEqualHeight(repeatPwd, showRepeat);
   }
 
   public boolean doRemoveMasterPassword()
@@ -117,6 +126,8 @@ public class MasterPasswordDialog
     cancelButton = new WbButton();
     jPanel2 = new javax.swing.JPanel();
     warningLabel = new javax.swing.JLabel();
+    showPwd = new FlatButton();
+    showRepeat = new FlatButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -137,14 +148,16 @@ public class MasterPasswordDialog
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(13, 8, 8, 12);
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(13, 8, 8, 0);
     getContentPane().add(pwdInput, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(0, 8, 8, 12);
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 8, 8, 0);
     getContentPane().add(repeatPwd, gridBagConstraints);
 
     jPanel1.setLayout(new java.awt.GridBagLayout());
@@ -201,7 +214,7 @@ public class MasterPasswordDialog
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LAST_LINE_START;
     gridBagConstraints.weightx = 1.0;
@@ -214,12 +227,52 @@ public class MasterPasswordDialog
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
-    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 12);
     getContentPane().add(warningLabel, gridBagConstraints);
+
+    showPwd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/workbench/resource/images/eye16.png"))); // NOI18N
+    showPwd.setIconTextGap(0);
+    showPwd.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    showPwd.setMaximumSize(null);
+    showPwd.setMinimumSize(null);
+    showPwd.setPreferredSize(null);
+    showPwd.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        showPwdActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(13, 0, 0, 13);
+    getContentPane().add(showPwd, gridBagConstraints);
+
+    showRepeat.setIcon(new javax.swing.ImageIcon(getClass().getResource("/workbench/resource/images/eye16.png"))); // NOI18N
+    showRepeat.setIconTextGap(0);
+    showRepeat.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    showRepeat.setMaximumSize(null);
+    showRepeat.setMinimumSize(null);
+    showRepeat.setPreferredSize(null);
+    showRepeat.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        showRepeatActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 13);
+    getContentPane().add(showRepeat, gridBagConstraints);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -254,6 +307,28 @@ public class MasterPasswordDialog
     closeWindow();
   }//GEN-LAST:event_removePwdButtonActionPerformed
 
+  private void showPwdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showPwdActionPerformed
+  {//GEN-HEADEREND:event_showPwdActionPerformed
+    togglePasswordVisible(pwdInput);
+  }//GEN-LAST:event_showPwdActionPerformed
+
+  private void showRepeatActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showRepeatActionPerformed
+  {//GEN-HEADEREND:event_showRepeatActionPerformed
+    togglePasswordVisible(repeatPwd);
+  }//GEN-LAST:event_showRepeatActionPerformed
+
+  private void togglePasswordVisible(JPasswordField field)
+  {
+    if (field.getEchoChar() == (char)0)
+    {
+      field.setEchoChar(echoChar);
+    }
+    else
+    {
+      field.setEchoChar((char)0);
+    }
+  }
+
   private void closeWindow()
   {
     this.dispose();
@@ -269,6 +344,8 @@ public class MasterPasswordDialog
   private javax.swing.JPasswordField pwdInput;
   private javax.swing.JButton removePwdButton;
   private javax.swing.JPasswordField repeatPwd;
+  private javax.swing.JButton showPwd;
+  private javax.swing.JButton showRepeat;
   private javax.swing.JLabel warningLabel;
   // End of variables declaration//GEN-END:variables
 }
