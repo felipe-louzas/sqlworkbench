@@ -43,6 +43,7 @@ import workbench.sql.StatementRunnerResult;
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
 import workbench.util.ExceptionUtil;
+import workbench.util.GlobalPasswordManager;
 import workbench.util.StringUtil;
 
 /**
@@ -145,6 +146,12 @@ public class WbConnect
     if (profile == null)
     {
       result.addMessageByKey("ErrConnNoArgs");
+      return result;
+    }
+
+    if (!GlobalPasswordManager.getInstance().showPasswordPromptIfNeeded())
+    {
+      result.setFailure();
       return result;
     }
 

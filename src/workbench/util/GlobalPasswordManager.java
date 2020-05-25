@@ -22,7 +22,10 @@ package workbench.util;
 
 import java.util.List;
 
+import workbench.RunMode;
 import workbench.WbManager;
+import workbench.console.WbConsole;
+import workbench.console.WbConsoleFactory;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
@@ -174,10 +177,39 @@ public class GlobalPasswordManager
   private boolean promptForPassword()
   {
     this.masterCipher = null;
-    MasterPwdInputForm input = new MasterPwdInputForm(this);
-
-    boolean ok = ValidatingDialog.showConfirmDialog(WbManager.getInstance().getCurrentWindow(), input, ResourceMgr.getString("LblMasterPwd"));
+    boolean ok = false;
+    if (WbManager.getInstance().getRunMode() == RunMode.GUI)
+    {
+      MasterPwdInputForm input = new MasterPwdInputForm(this);
+      ok = ValidatingDialog.showConfirmDialog(WbManager.getInstance().getCurrentWindow(), input, ResourceMgr.getString("LblMasterPwd"));
+    }
+    else
+    {
+      ok = doConsolePrompt();
+    }
     return ok;
+  }
+
+  private boolean doConsolePrompt()
+  {
+    String prompt = ResourceMgr.getString("MsgEnterMasterPwd");
+    WbConsole console = WbConsoleFactory.getConsole();
+    while (true)
+    {
+      String pwd = console.readPassword(prompt + ": ");
+      if (StringUtil.isBlank(pwd))
+      {
+        return false;
+      }
+      if (!validateMasterPassword(pwd))
+      {
+        System.out.println(ResourceMgr.getString("MsgWrongPassword"));
+      }
+      else
+      {
+        return true;
+      }
+    }
   }
 
   public boolean validateMasterPassword(String userInput)
