@@ -152,6 +152,12 @@ public class WbSwingUtilities
     return false;
   }
 
+  public static boolean isNearlyBlack(Color color)
+  {
+    if (color == null) return false;
+    return color.getRed() <= 100 && color.getBlue() <= 100 && color.getGreen() <= 100;
+  }
+
   public static Color getContrastColor(Color color)
   {
     if (color == null) return Color.BLACK;

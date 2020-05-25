@@ -683,7 +683,7 @@ public class Settings
 
   public WbFile getDefaultProfileStorage()
   {
-    List<String> toSearch = CollectionUtil.arrayList(XmlProfileStorage.DEFAULT_FILE_NAME, IniProfileStorage.DEFAULT_FILE_NAME);
+    List<String> toSearch = CollectionUtil.arrayList(IniProfileStorage.DEFAULT_FILE_NAME, XmlProfileStorage.DEFAULT_FILE_NAME);
 
     for (String fname : toSearch)
     {

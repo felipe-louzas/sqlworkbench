@@ -912,8 +912,8 @@ public class GeneralOptionsPanel
 
   private void masterPwdButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_masterPwdButtonActionPerformed
   {//GEN-HEADEREND:event_masterPwdButtonActionPerformed
-    // If a master password is defined, don't allow changing it without entering the current one
-    if (!GlobalPasswordManager.getInstance().showPasswordPromptIfNeeded())
+    // If a master password is defined, don't allow changing it without entering the current one again
+    if (!GlobalPasswordManager.getInstance().showPasswordPrompt(true))
     {
       return;
     }
@@ -923,16 +923,19 @@ public class GeneralOptionsPanel
     WbSwingUtilities.center(pwdDialog, parent);
     pwdDialog.setVisible(true);
 
-    if (pwdDialog.wasCancelled())  return;
+    if (pwdDialog.wasCancelled()) return;
 
     if (pwdDialog.doRemoveMasterPassword())
     {
-      this.removeMasterPassword = true;
+      removeMasterPassword = true;
+      newMasterPassword = null;
+      masterPwdButton.setIcon(null);
       return;
     }
 
-    this.newMasterPassword = pwdDialog.getMasterPassword();
-    this.removeMasterPassword = false;
+    masterPwdButton.setIcon(IconMgr.getInstance().getLabelIcon("tick"));
+    newMasterPassword = pwdDialog.getMasterPassword();
+    removeMasterPassword = false;
   }//GEN-LAST:event_masterPwdButtonActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

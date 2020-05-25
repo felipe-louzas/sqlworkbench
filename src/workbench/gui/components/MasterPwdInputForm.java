@@ -20,10 +20,16 @@
  */
 package workbench.gui.components;
 
+import java.awt.Color;
+
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
 
 import workbench.interfaces.ValidatingComponent;
 import workbench.resource.ResourceMgr;
+
+import workbench.gui.WbSwingUtilities;
 
 import workbench.util.GlobalPasswordManager;
 
@@ -41,6 +47,18 @@ public class MasterPwdInputForm
   {
     this.pwdManager = validator;
     initComponents();
+    Color bg = UIManager.getDefaults().getColor("Label.background");
+    Color c;
+    if (WbSwingUtilities.isNearlyBlack(bg))
+    {
+      c = bg.brighter();
+    }
+    else
+    {
+      c = bg.darker();
+    }
+    LineBorder b = new LineBorder(c, 1);
+    message.setBorder(b);
   }
 
   @Override
@@ -96,7 +114,7 @@ public class MasterPwdInputForm
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(10, 12, 0, 12);
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
     add(pwdInput, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -105,7 +123,7 @@ public class MasterPwdInputForm
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(6, 12, 0, 12);
+    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     add(message, gridBagConstraints);
 
     titleLabel.setText(ResourceMgr.getString("MsgEnterMasterPwd")); // NOI18N
@@ -114,7 +132,6 @@ public class MasterPwdInputForm
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 12);
     add(titleLabel, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 

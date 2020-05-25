@@ -1246,7 +1246,8 @@ public class SqlPanel
 
   /**
    * Saves any change to the current result set to the database.
-   * The saving is done in a background thread by updateDb()
+   *
+   * <p>The saving is done in a background thread by updateDb().</p>
    *
    * @see #updateDb()
    */

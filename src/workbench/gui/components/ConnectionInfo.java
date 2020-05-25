@@ -24,6 +24,7 @@ package workbench.gui.components;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Window;
@@ -233,10 +234,13 @@ public class ConnectionInfo
       if (foreground == null)
       {
         infoText.setForeground(UIManager.getDefaults().getColor("Label.foreground"));
+        Font f = infoText.getFont();
+        infoText.setFont(f.deriveFont(f.getStyle() - Font.BOLD));
       }
       else
       {
         infoText.setForeground(foreground);
+        infoText.setFont(infoText.getFont().deriveFont(Font.BOLD));
       }
     });
   }

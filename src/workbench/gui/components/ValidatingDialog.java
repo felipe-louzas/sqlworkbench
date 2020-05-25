@@ -36,6 +36,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -45,12 +46,12 @@ import javax.swing.border.Border;
 
 import workbench.WbManager;
 import workbench.interfaces.ValidatingComponent;
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
 import workbench.gui.actions.WbAction;
-
 
 /**
  * @author  Thomas Kellerer
@@ -179,27 +180,33 @@ public class ValidatingDialog
 
     JPanel content = new JPanel();
     content.setLayout(new BorderLayout());
-    Border b = BorderFactory.createEmptyBorder(5,5,5,5);
+    int gap = (int)(IconMgr.getInstance().getSizeForLabel() * 0.70);
+    Border b = BorderFactory.createEmptyBorder(gap,gap,gap,gap);
     content.setBorder(b);
     content.add(editor, BorderLayout.CENTER);
     buttonPanel = new JPanel();
-    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
     int length = optionButtons.length + (cancelButton == null ? 0 : 1);
     JComponent[] allButtons = new JComponent[length];
     for (int i=0; i < optionButtons.length; i++)
     {
+      if (i > 0)
+      {
+        buttonPanel.add(Box.createHorizontalStrut(gap));
+      }
       buttonPanel.add(optionButtons[i]);
       allButtons[i] = optionButtons[i];
     }
 
     if (cancelButton != null)
     {
+      buttonPanel.add(Box.createHorizontalStrut(gap));
       buttonPanel.add(cancelButton);
       allButtons[allButtons.length - 1] = cancelButton;
     }
 
-    b = BorderFactory.createEmptyBorder(2, 0, 0, 0);
+    b = BorderFactory.createEmptyBorder(gap, 0, 0, 0);
 
     WbSwingUtilities.makeEqualWidth(allButtons);
     buttonPanel.setBorder(b);

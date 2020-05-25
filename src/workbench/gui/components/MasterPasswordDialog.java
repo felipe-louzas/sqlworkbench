@@ -21,12 +21,14 @@
 package workbench.gui.components;
 
 import java.awt.Dialog;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
 import javax.swing.JDialog;
 
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -44,7 +46,7 @@ public class MasterPasswordDialog
   private boolean cancelled = false;
   private boolean removeMasterPwd = false;
   private EscAction escAction;
-  
+
   public MasterPasswordDialog(Dialog parent)
   {
     super(parent, ResourceMgr.getString("TxtWindowTitleMasterPwd"), true);
@@ -52,6 +54,10 @@ public class MasterPasswordDialog
 
     setResizable(true);
     initComponents();
+    warningLabel.setIconTextGap(IconMgr.getInstance().getSizeForLabel() / 2);
+    warningLabel.setIcon(IconMgr.getInstance().getLabelIcon("alert"));
+    warningLabel.setFont(warningLabel.getFont().deriveFont(Font.BOLD));
+    pack();
     if (!Settings.getInstance().getUseMasterPassword())
     {
       removePwdButton.setVisible(false);
@@ -110,7 +116,7 @@ public class MasterPasswordDialog
     okButton = new WbButton();
     cancelButton = new WbButton();
     jPanel2 = new javax.swing.JPanel();
-    jLabel1 = new javax.swing.JLabel();
+    warningLabel = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -203,7 +209,8 @@ public class MasterPasswordDialog
     gridBagConstraints.insets = new java.awt.Insets(19, 12, 16, 12);
     getContentPane().add(jPanel1, gridBagConstraints);
 
-    jLabel1.setText(ResourceMgr.getString("LblMasterPwdWarn")); // NOI18N
+    warningLabel.setText(ResourceMgr.getString("LblMasterPwdWarn")); // NOI18N
+    warningLabel.setIconTextGap(8);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
@@ -212,7 +219,7 @@ public class MasterPasswordDialog
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 12);
-    getContentPane().add(jLabel1, gridBagConstraints);
+    getContentPane().add(warningLabel, gridBagConstraints);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -254,7 +261,6 @@ public class MasterPasswordDialog
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancelButton;
-  private javax.swing.JLabel jLabel1;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JLabel newPwdLabel;
@@ -263,5 +269,6 @@ public class MasterPasswordDialog
   private javax.swing.JPasswordField pwdInput;
   private javax.swing.JButton removePwdButton;
   private javax.swing.JPasswordField repeatPwd;
+  private javax.swing.JLabel warningLabel;
   // End of variables declaration//GEN-END:variables
 }

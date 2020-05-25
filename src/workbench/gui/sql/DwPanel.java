@@ -427,15 +427,17 @@ public class DwPanel
 
   /**
    * Prepare the DwPanel for saving any changes to the database.
+   * <p>
+   * This will check for the PK columns and if necessary ask the user to specify them.
+   * It will also prompt the user to verify the generated update statements.<br>
+   * If everything is OK, true will be returned.
+   * </p>
    *
-   * This will check for the PK columns and if necessary
-   * ask the user to specify them.
-   * It will also prompt the user to verify the generated
-   * update statements.
-   * If everything is OK, true will be returned
+   * <p>
    * If the user cancels the PK column selection or the
    * statement preview, false will be returned. In that
-   * case saveChanges() should not be called
+   * case saveChanges() must not be called
+   * </p>
    */
   boolean prepareDatabaseUpdate(boolean confirm)
   {
@@ -1647,15 +1649,14 @@ public class DwPanel
   }
 
   /**
-   *  Starts the "edit" mode of the table.
-   *
-   * It will not start the edit mode, if the table is "read only"
-   * meaning if no update table (=database table) is defined.
-   *
+   * Starts the "edit" mode of the table.
+   * <p>
+   * It will not start the edit mode, if the table is "read only", meaning if no update table (=database table) is defined.
+   * </p>
    * The following actions are carried out:
    * <ul>
    *  <li>if the updateable flag is not yet set, try to find out which table to update</li>
-   *  <li>the status column is displayec</li>
+   *  <li>the status column is displayed</li>
    *  <li>the corresponding actions (insert row, delete row) are enabled</li>
    * <li>the startEdit action is turned to "switched on"</li>
    * </ul>
@@ -1664,7 +1665,6 @@ public class DwPanel
   public boolean startEdit(boolean restoreSelection)
   {
     if (this.readOnly) return false;
-
 
     int[] selectedRows = this.dataTable.getSelectedRows();
     int currentRow = this.dataTable.getEditingRow();
