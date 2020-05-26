@@ -153,7 +153,7 @@ public class UpdatingCommand
       {
         appendSuccessMessage(result);
       }
-      else if (Settings.getInstance().showSuccessMessageForVerb(verb))
+      else if (currentConnection.getDbSettings().showSuccessMessageForVerb(verb))
       {
         String msg = ResourceMgr.getFormattedString("MsgDMLSuccess", getMessageVerb(), table);
         result.addMessage(msg);

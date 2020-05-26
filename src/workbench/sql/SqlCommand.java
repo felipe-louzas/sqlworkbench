@@ -71,7 +71,7 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
-/**
+ /**
  * A single SQL command.
  *
  * This class is used if no special class was found for a given SQL verb.
@@ -277,7 +277,8 @@ public class SqlCommand
       verb = getParsingUtil().getSqlVerb(result.getSourceCommand());
     }
 
-    if (!Settings.getInstance().showSuccessMessageForVerb(verb)) return null;
+    DbSettings dbs = currentConnection != null ? currentConnection.getDbSettings() : null;
+    if (dbs != null && !dbs.showSuccessMessageForVerb(verb)) return null;
 
     String msg = result == null ? null : getSuccessMessage(verb, result.getSourceCommand());
     if (msg != null) return msg;

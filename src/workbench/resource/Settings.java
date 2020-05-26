@@ -862,12 +862,6 @@ public class Settings
     return getIntProperty("workbench.gui.data.memcheckinterval", 1000);
   }
 
-	public boolean showSuccessMessageForVerb(String verb)
-	{
-		if (verb == null) return false;
-		return getBoolProperty("workbench.sql." + verb.toLowerCase() + ".show.success", true);
-	}
-
 	public boolean getFixSqlServerTimestampDisplay()
 	{
 		return getBoolProperty("workbench.db.microsoft_sql_server.fix.timestamp", false);
