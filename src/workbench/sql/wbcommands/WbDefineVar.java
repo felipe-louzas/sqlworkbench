@@ -94,6 +94,7 @@ public class WbDefineVar
     this.cmdLine.addArgument(ARG_NULL_HANDLING, NullVarHandling.class);
 
     CommonArgs.addEncodingParameter(cmdLine);
+    ConditionCheck.addParameters(cmdLine);
   }
 
   @Override
