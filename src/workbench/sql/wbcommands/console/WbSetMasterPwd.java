@@ -27,7 +27,6 @@ import java.sql.SQLException;
 
 import javax.swing.JFrame;
 
-import workbench.RunMode;
 import workbench.WbManager;
 import workbench.console.WbConsole;
 import workbench.console.WbConsoleFactory;
@@ -84,7 +83,7 @@ public class WbSetMasterPwd
     }
     else
     {
-      pwd = getPasswordFromConsolee(result);
+      pwd = getPasswordFromConsole(result);
     }
     if (pwd != null && result.isSuccess())
     {
@@ -94,7 +93,7 @@ public class WbSetMasterPwd
     return result;
   }
 
-  private String getPasswordFromConsolee(StatementRunnerResult result)
+  private String getPasswordFromConsole(StatementRunnerResult result)
   {
     String msg = ResourceMgr.getString("LblMasterPwdWarn");
     msg = msg.replace("<br>", "\n");
