@@ -44,7 +44,7 @@ public class MasterPasswordDialog
   extends JDialog
   implements ActionListener
 {
-  private boolean cancelled = false;
+  private boolean cancelled = true;
   private boolean removeMasterPwd = false;
   private EscAction escAction;
   private char echoChar;
