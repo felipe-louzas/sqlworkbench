@@ -55,6 +55,7 @@ public class AnsiSQLTokenMarker
   {
     keywords = new KeywordMap(true, 150);
     addKeywords();
+    addWbCommands();
     addDataTypes();
     addSystemFunctions();
     addOperators();

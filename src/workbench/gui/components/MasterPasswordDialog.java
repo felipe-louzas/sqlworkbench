@@ -22,6 +22,7 @@ package workbench.gui.components;
 
 import java.awt.Dialog;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -36,6 +37,8 @@ import workbench.resource.Settings;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
+
 /**
  *
  * @author Thomas Kellerer
@@ -49,9 +52,19 @@ public class MasterPasswordDialog
   private EscAction escAction;
   private char echoChar;
 
+  public MasterPasswordDialog(Frame parent, boolean allowRemove)
+  {
+    super(parent, ResourceMgr.getString("TxtWindowTitleMasterPwd"), true);
+    init(allowRemove);
+  }
   public MasterPasswordDialog(Dialog parent)
   {
     super(parent, ResourceMgr.getString("TxtWindowTitleMasterPwd"), true);
+    init(false);
+  }
+
+  private void init(boolean allowRemove)
+  {
     escAction = new EscAction(this, this);
 
     setResizable(true);
@@ -60,7 +73,7 @@ public class MasterPasswordDialog
     warningLabel.setIcon(IconMgr.getInstance().getLabelIcon("alert"));
     warningLabel.setFont(warningLabel.getFont().deriveFont(Font.BOLD));
     pack();
-    if (!Settings.getInstance().getUseMasterPassword())
+    if (!allowRemove || !Settings.getInstance().getUseMasterPassword())
     {
       removePwdButton.setVisible(false);
     }
@@ -287,12 +300,12 @@ public class MasterPasswordDialog
     char[] pwd = pwdInput.getPassword();
     if (pwd == null || pwd.length == 0)
     {
-      WbSwingUtilities.showErrorMessage("No password specified!");
+      WbSwingUtilities.showErrorMessageKey(this, "MsgNoPwd");
       return;
     }
     if (!Arrays.equals(pwdInput.getPassword(), repeatPwd.getPassword()))
     {
-      WbSwingUtilities.showErrorMessage("The passwords do not match!");
+      WbSwingUtilities.showErrorMessageKey(this, "MsgPwdNoMatch");
       return;
     }
     this.removeMasterPwd = false;

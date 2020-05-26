@@ -124,8 +124,10 @@ import workbench.sql.wbcommands.console.WbDisplay;
 import workbench.sql.wbcommands.console.WbListDrivers;
 import workbench.sql.wbcommands.console.WbListMacros;
 import workbench.sql.wbcommands.console.WbListProfiles;
+import workbench.sql.wbcommands.console.WbRemoveMasterPwd;
 import workbench.sql.wbcommands.console.WbRun;
 import workbench.sql.wbcommands.console.WbSetDisplaySize;
+import workbench.sql.wbcommands.console.WbSetMasterPwd;
 import workbench.sql.wbcommands.console.WbStoreProfile;
 import workbench.sql.wbcommands.console.WbToggleDisplay;
 
@@ -254,6 +256,9 @@ public class CommandMapper
     addCommand(new SetCommand());
     addCommand(new SelectCommand());
     addCommand(new WbSetSchema());
+
+    addCommand(new WbSetMasterPwd());
+    addCommand(new WbRemoveMasterPwd());
 
     for (DdlCommand cmd : DdlCommand.getDdlCommands())
     {
