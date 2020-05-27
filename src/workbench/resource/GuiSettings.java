@@ -1620,8 +1620,14 @@ public class GuiSettings
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.infocolor.use.contrast", true);
   }
+
   public static int getConstrastColorFormula()
   {
     return Settings.getInstance().getIntProperty("workbench.gui.infocolor.contrast.type", 1);
+  }
+
+  public static boolean useBoldFontForConnectionInfo()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.infocolor.use.bold", false);
   }
 }

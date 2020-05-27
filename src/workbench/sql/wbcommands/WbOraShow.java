@@ -60,11 +60,21 @@ import workbench.util.StringUtil;
  * Currently supported commands:
  * <ul>
  *    <li>parameters</li>
+ *    <li>spparameters</li>
+ *    <li>pdbs</li>
+ *    <li>con_name</li>
+ *    <li>con_id</li>
+ *    <li>logsource</li>
+ *    <li>edition</li>
  *    <li>user</li>
+ *    <li>appinfo</li>
  *    <li>errors</li>
  *    <li>sga</li>
+ *    <li>sgainfo (non-standard)</li>
  *    <li>recyclebin</li>
  *    <li>autocommit</li>
+ *    <li>version</li>
+ *    <li>release</li>
  * </ul>
  *
  * @author Thomas Kellerer
@@ -216,7 +226,18 @@ public class WbOraShow
 
   private StatementRunnerResult showVersion()
   {
-    String query = "select version from product_component_version where upper(product) like 'ORACLE%'";
+    String query;
+
+    if (JdbcUtils.hasMinimumServerVersion(currentConnection, "18.0"))
+    {
+      query = "select version_full from product_component_version where upper(product) like 'ORACLE%'";
+    }
+    else
+    {
+      query = "select version from product_component_version where upper(product) like 'ORACLE%'";
+    }
+
+
     StatementRunnerResult result = new StatementRunnerResult("SHOW release");
     DataStore ds = SqlUtil.getResult(currentConnection, query);
     if (ds.getRowCount() > 0)
@@ -515,7 +536,8 @@ public class WbOraShow
       "sga",
       "sgainfo",
       "spparameters",
-      "user"
+      "user",
+      "release"
     );
   }
 

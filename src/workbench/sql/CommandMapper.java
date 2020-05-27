@@ -126,6 +126,7 @@ import workbench.sql.wbcommands.console.WbListMacros;
 import workbench.sql.wbcommands.console.WbListProfiles;
 import workbench.sql.wbcommands.console.WbRemoveMasterPwd;
 import workbench.sql.wbcommands.console.WbRun;
+import workbench.sql.wbcommands.console.WbSaveProfiles;
 import workbench.sql.wbcommands.console.WbSetDisplaySize;
 import workbench.sql.wbcommands.console.WbSetMasterPwd;
 import workbench.sql.wbcommands.console.WbStoreProfile;
@@ -235,6 +236,7 @@ public class CommandMapper
     addCommand(new WbDeleteMacro());
 
     addCommand(new WbStoreProfile());
+    addCommand(new WbSaveProfiles());
     addCommand(new WbDeleteProfile());
     addCommand(new WbCreateProfile());
     addCommand(new WbDefineDriver());

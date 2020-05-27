@@ -37,7 +37,6 @@ import workbench.resource.Settings;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 
 /**
  *
@@ -60,7 +59,7 @@ public class MasterPasswordDialog
   public MasterPasswordDialog(Dialog parent)
   {
     super(parent, ResourceMgr.getString("TxtWindowTitleMasterPwd"), true);
-    init(false);
+    init(true);
   }
 
   private void init(boolean allowRemove)

@@ -944,7 +944,7 @@ public class ConnectionMgr
    * Save the connection profiles.
    *
    * This will also resetChangedFlags the changed flag for any modified or new
- profiles. The name of the file defaults to <tt>WbProfiles.xml</tt>, but
+   * profiles. The name of the file defaults to <tt>WbProfiles.xml</tt>, but
    * can be defined in the configuration properties.
    *
    * @see ProfileManager#save()

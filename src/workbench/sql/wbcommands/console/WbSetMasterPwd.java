@@ -33,6 +33,8 @@ import workbench.console.WbConsoleFactory;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.ConnectionMgr;
+
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.MasterPasswordDialog;
 
@@ -43,7 +45,7 @@ import workbench.util.GlobalPasswordManager;
 import workbench.util.StringUtil;
 
 /**
- * A SQL command for the SQL console to set the master password to encrypt database passwords.
+ * A SQL command for the console to set the master password to encrypt connection profile passwords.
  *
  * @author  Thomas Kellerer
  */
@@ -85,9 +87,13 @@ public class WbSetMasterPwd
     {
       pwd = getPasswordFromConsole(result);
     }
+
     if (pwd != null && result.isSuccess())
     {
       GlobalPasswordManager.getInstance().applyNewPassword(pwd);
+      Settings.getInstance().saveSettings(false);
+      ConnectionMgr.getInstance().saveProfiles();
+      result.addMessageByKey("MsgMasterPwdSet");
     }
 
     return result;

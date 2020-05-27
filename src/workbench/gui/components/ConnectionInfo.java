@@ -235,12 +235,18 @@ public class ConnectionInfo
       {
         infoText.setForeground(UIManager.getDefaults().getColor("Label.foreground"));
         Font f = infoText.getFont();
-        infoText.setFont(f.deriveFont(f.getStyle() - Font.BOLD));
+        if (GuiSettings.useBoldFontForConnectionInfo())
+        {
+          infoText.setFont(f.deriveFont(f.getStyle() - Font.BOLD));
+        }
       }
       else
       {
         infoText.setForeground(foreground);
-        infoText.setFont(infoText.getFont().deriveFont(Font.BOLD));
+        if (GuiSettings.useBoldFontForConnectionInfo())
+        {
+          infoText.setFont(infoText.getFont().deriveFont(Font.BOLD));
+        }
       }
     });
   }

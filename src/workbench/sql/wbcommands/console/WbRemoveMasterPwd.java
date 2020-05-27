@@ -31,6 +31,8 @@ import workbench.console.WbConsoleFactory;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.ConnectionMgr;
+
 import workbench.gui.WbSwingUtilities;
 
 import workbench.sql.SqlCommand;
@@ -40,7 +42,7 @@ import workbench.util.GlobalPasswordManager;
 import workbench.util.StringUtil;
 
 /**
- * A SQL command for the SQL console to remove the master password used to encrypt database passwords.
+ * A SQL command for the console to remove the master password used to encrypt connection profile passwords.
  *
  * @author  Thomas Kellerer
  */
@@ -64,7 +66,7 @@ public class WbRemoveMasterPwd
       result.addErrorMessageByKey("ErrNoMasterPwdSet");
       return result;
     }
-    
+
     if (!GlobalPasswordManager.getInstance().showPasswordPrompt(true))
     {
       result.setFailure();
@@ -81,15 +83,17 @@ public class WbRemoveMasterPwd
     else
     {
       WbConsole console = WbConsoleFactory.getConsole();
-      String yes = ResourceMgr.getString("MsgConfirmYes");
-      String no = ResourceMgr.getString("MsgConfirmNo");
-      prompt += " (" + yes + "/" + no + ")";
+      String yes = ResourceMgr.getString("MsgConfirmYes").toLowerCase();
+      String no = ResourceMgr.getString("MsgConfirmNo").toLowerCase();
+      prompt += " (" + yes + "/" + no + "): ";
       String choice = console.readLineWithoutHistory(prompt);
       confirm = yes.equalsIgnoreCase(StringUtil.trim(choice));
     }
     if (confirm)
     {
       GlobalPasswordManager.getInstance().applyNewPassword(null);
+      Settings.getInstance().saveSettings(false);
+      ConnectionMgr.getInstance().saveProfiles();
       result.addMessageByKey("MsgMasterPwdRemoved");
     }
     result.setSuccess();
