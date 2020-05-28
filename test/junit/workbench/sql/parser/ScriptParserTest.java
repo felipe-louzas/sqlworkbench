@@ -59,6 +59,32 @@ public class ScriptParserTest
   }
 
 	@Test
+  public void testHiveScript()
+  {
+    String script =
+      "set hivevar:jobid='some string here';\n" +
+      "set hivevar:identity_type='some string here';\n" +
+      "set hivevar:cohort_start_dt='some string here';\n" +
+      "set hivevar:cohort_end_dt='some string here';\n" +
+      "set hivevar:asof_state='some string here';\n";
+
+    ScriptParser p = new ScriptParser(ParserType.Standard);
+    p.setScript(script);
+    assertEquals(5, p.getSize());
+    assertEquals("set hivevar:cohort_start_dt='some string here'", p.getCommand(2));
+
+    script =
+      "set hivevar:jobid='some string here';" +
+      "set hivevar:identity_type='some string here';" +
+      "set hivevar:cohort_start_dt='some string here';" +
+      "set hivevar:cohort_end_dt='some string here';" +
+      "set hivevar:asof_state='some string here';";
+
+    p.setScript(script);
+    assertEquals(5, p.getSize());
+  }
+
+	@Test
 	public void testDelimiterAtTheStart()
 	{
 		String script =
