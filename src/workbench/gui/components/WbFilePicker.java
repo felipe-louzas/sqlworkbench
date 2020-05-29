@@ -32,6 +32,7 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
@@ -50,7 +51,7 @@ import workbench.util.StringUtil;
  * @author  Thomas Kellerer
  */
 public class WbFilePicker
-  extends javax.swing.JPanel
+  extends JPanel
 {
   public static final String PROP_FILENAME = "filename";
   private String lastDir;
@@ -254,6 +255,10 @@ public class WbFilePicker
   {
     if (this.selectedFiles == null)
     {
+      if (StringUtil.isNonBlank(getFilename()))
+      {
+        return new File(getFilename());
+      }
       return null;
     }
     return this.selectedFiles[0];

@@ -332,7 +332,12 @@ public class ExportOptionsPanel
   @Override
   public boolean validateInput()
   {
-    return getSelectedFile() != null;
+    if (getSelectedFile() == null)
+    {
+      WbSwingUtilities.showErrorMessageKey(this, "ErrExportOutputFileRequired");
+      return false;
+    }
+    return true;
   }
 
   @Override

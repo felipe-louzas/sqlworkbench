@@ -828,6 +828,7 @@ public class ConnectionMgr
         else if (result instanceof ArrayList)
         {
           this.drivers = Collections.synchronizedList((List<DbDriver>) result);
+          fixOracleSampleURL();
         }
       }
       catch (FileNotFoundException fne)
@@ -852,6 +853,21 @@ public class ConnectionMgr
     }
   }
 
+  private void fixOracleSampleURL()
+  {
+    if (drivers == null) return;
+    for (DbDriver drv : drivers)
+    {
+      if (drv.getDriverClass().equals("oracle.jdbc.OracleDriver") && drv.getSampleUrl() != null && drv.getSampleUrl().contains("thin://@"))
+      {
+        String oldUrl = drv.getSampleUrl();
+        String fixedUrl = oldUrl.replace("thin://@", "thin:@//");
+        drv.setSampleUrl(fixedUrl);
+        LogMgr.logInfo(new CallerInfo(){}, "Changed invalid sample URL in driver \"" + drv.getName() + "\" from: " + oldUrl + " to: " + fixedUrl);
+      }
+    }
+  }
+  
   private boolean readDriverTemplates()
   {
     return Settings.getInstance().getBoolProperty(Settings.PROP_READ_DRIVER_TEMPLATES, true);

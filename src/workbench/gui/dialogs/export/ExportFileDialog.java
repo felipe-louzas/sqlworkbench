@@ -73,7 +73,6 @@ public class ExportFileDialog
   private boolean selectDirectory = false;
   private boolean includeSqlUpdate = true;
   private boolean includeSqlInsert = true;
-  private boolean includeSqlDeleteInsert = true;
 
   private String lastDirConfigKey = "workbench.export.lastdir";
 	private final static String SIZE_KEY = "workbench.saveas.dialog";
@@ -288,7 +287,6 @@ public class ExportFileDialog
     }
 
     dialog.setDefaultButton(0);
-    dialog.setButtonsEnabled(false);
     WbSwingUtilities.center(dialog, mainWindow);
     this.restoreSettings();
     this.exportOptions.addPropertyChangeListener("exportType", this);
@@ -385,7 +383,6 @@ public class ExportFileDialog
     exportOptions.updateSqlOptions(source);
     includeSqlInsert = (source != null && source.canSaveAsSqlInsert());
     includeSqlUpdate = (source != null && source.hasPkColumns());
-    includeSqlDeleteInsert = (includeSqlInsert && includeSqlUpdate);
   }
 
   protected void _checkSqlOptions()
