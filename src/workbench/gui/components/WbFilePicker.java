@@ -60,10 +60,16 @@ public class WbFilePicker
   private File[] selectedFiles;
   private String lastDirProperty;
   private boolean selectDirectory;
+  private boolean showSaveAsDialog;
 
   public WbFilePicker()
   {
+    this(false);
+  }
+  public WbFilePicker(boolean saveAsDialog)
+  {
     super();
+    this.showSaveAsDialog = saveAsDialog;
     initComponents();
     WbSwingUtilities.adjustButtonWidth(selectFileButton,22,22);
   }
@@ -201,7 +207,17 @@ public class WbFilePicker
         }
       }
 
-      int answer = jf.showOpenDialog(SwingUtilities.getWindowAncestor(this));
+      int answer = JFileChooser.CANCEL_OPTION;
+
+      if (showSaveAsDialog)
+      {
+        answer = jf.showSaveDialog(SwingUtilities.getWindowAncestor(this));
+      }
+      else
+      {
+        answer = jf.showOpenDialog(SwingUtilities.getWindowAncestor(this));
+      }
+      
       if (answer == JFileChooser.APPROVE_OPTION)
       {
         if (this.allowMultiple)

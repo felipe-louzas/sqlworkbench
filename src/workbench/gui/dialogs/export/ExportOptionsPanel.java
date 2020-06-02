@@ -128,8 +128,8 @@ public class ExportOptionsPanel
     poiAvailable = PoiHelper.isPoiAvailable();
     xlsxAvailable = PoiHelper.isXLSXAvailable();
 
-    this.picker = new WbFilePicker();
-    this.picker.addPropertyChangeListener(WbFilePicker.PROP_FILENAME, this);
+    picker = new WbFilePicker(true);
+    picker.addPropertyChangeListener(WbFilePicker.PROP_FILENAME, this);
     typeSelector = new JComboBox();
     typeSelector.addItem("Text");
     typeSelector.addItem("SQL");
