@@ -55,6 +55,70 @@ public class RowDataComparerTest
   }
 
   @Test
+  public void testNullPKValues()
+  {
+    boolean oldDel = Settings.getInstance().getDoFormatDeletes();
+    boolean oldIns = Settings.getInstance().getDoFormatInserts();
+    boolean oldUpd = Settings.getInstance().getDoFormatUpdates();
+    try
+    {
+      Settings.getInstance().setDoFormatDeletes(false);
+      Settings.getInstance().setDoFormatInserts(false);
+      Settings.getInstance().setDoFormatUpdates(false);
+
+      ColumnIdentifier[] cols = new ColumnIdentifier[3];
+      cols[0] = new ColumnIdentifier("ID_1");
+      cols[0].setIsPkColumn(true);
+      cols[0].setIsNullable(true);
+      cols[0].setDataType(Types.INTEGER);
+
+      cols[1] = new ColumnIdentifier("ID_2");
+      cols[1].setIsPkColumn(true);
+      cols[1].setIsNullable(true);
+      cols[1].setDataType(Types.INTEGER);
+
+      cols[2] = new ColumnIdentifier("DATA");
+      cols[2].setIsPkColumn(false);
+      cols[2].setIsNullable(false);
+      cols[2].setDataType(Types.INTEGER);
+
+      ResultInfo info = new ResultInfo(cols);
+      info.setUpdateTable(new TableIdentifier("SOME_TABLE"));
+
+
+      StatementFactory factory = new StatementFactory(info, null);
+      factory.setEmptyStringIsNull(true);
+      factory.setIncludeNullInInsert(true);
+
+      RowData reference = new RowData(info);
+      reference.setValue(0, new Integer(1));
+      reference.setValue(1, null);
+      reference.setValue(2, new Integer(42));
+      reference.resetStatus();
+
+      RowData target = new RowData(info);
+      target.setValue(0, new Integer(1));
+      target.setValue(1, null);
+      target.setValue(2, new Integer(2));
+      target.resetStatus();
+
+      RowDataComparer instance = new RowDataComparer();
+      instance.setTypeSql();
+      instance.setRows(reference, target);
+      instance.setConnection(null);
+      instance.setResultInfo(info);
+      String sql = instance.getMigration(0).trim();
+      assertEquals("UPDATE SOME_TABLE SET DATA = 42 WHERE ID_1 = 1 AND ID_2 IS NULL;", sql);
+    }
+    finally
+    {
+      Settings.getInstance().setDoFormatDeletes(oldDel);
+      Settings.getInstance().setDoFormatInserts(oldIns);
+      Settings.getInstance().setDoFormatUpdates(oldUpd);
+    }
+  }
+
+  @Test
   public void testGetMigrationSql()
   {
     boolean oldDel = Settings.getInstance().getDoFormatDeletes();
@@ -108,13 +172,13 @@ public class RowDataComparerTest
       String sql = instance.getMigration(1);
       String verb = SqlUtil.getSqlVerb(sql);
       assertEquals("UPDATE", verb);
-      assertTrue(sql.indexOf("SET FIRSTNAME = 'Zaphod'") > -1);
+      assertTrue(sql.contains("SET FIRSTNAME = 'Zaphod'"));
 
       instance.setRows(reference, null);
       sql = instance.getMigration(1);
       verb = SqlUtil.getSqlVerb(sql);
       assertEquals("INSERT", verb);
-      assertTrue(sql.indexOf("(42,'Zaphod','Beeblebrox')") > -1);
+      assertTrue(sql.contains("(42,'Zaphod','Beeblebrox')"));
 
       reference = new RowData(info);
       reference.setValue(0, new Integer(42));

@@ -525,11 +525,18 @@ public class TableDeleteSync
       {
         if (c > 0) sql.append(" AND ");
         appendReferenceIdentifier(sql, info.getColumnName(c));
-        sql.append(" = ");
         Object value = rows.get(row).getValue(c);
-        ColumnIdentifier col = info.getColumn(c);
-        ColumnData data = new ColumnData(value,col);
-        sql.append(formatter.getDefaultLiteral(data));
+        if (value == null)
+        {
+          sql.append(" IS NULL");
+        }
+        else
+        {
+          sql.append(" = ");
+          ColumnIdentifier col = info.getColumn(c);
+          ColumnData data = new ColumnData(value, col);
+          sql.append(formatter.getDefaultLiteral(data));
+        }
       }
       sql.append(") ");
     }

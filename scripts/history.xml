@@ -29,6 +29,7 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="9" type="fix">WbDataDiff did not work properly if the key columns contained NULL values.</entry>
     <entry dev-build="9" type="fix">When exporting or saving data, it was not possible to enter the filename manually into the dialog.</entry>
     <entry dev-build="8" type="fix">Month names were case sensitive when using -dateFormat or -timestampFormat with WbImport</entry>
     <entry dev-build="8" type="fix">For Oracle 18c and later, index information wasn't displayed correctly.</entry>

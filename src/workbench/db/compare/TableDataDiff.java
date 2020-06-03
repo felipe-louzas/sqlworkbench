@@ -665,10 +665,17 @@ public class TableDataDiff
           if (pkCount > 0) sql.append(" AND ");
           ColumnIdentifier targetCol = findTargetColumn(column);
           sql.append(targetCol.getColumnName(toSync));
-          sql.append(" = ");
           Object value = rows.get(row).getValue(c);
-          ColumnData data = new ColumnData(value, column);
-          sql.append(formatter.getDefaultLiteral(data));
+          if (value == null)
+          {
+            sql.append(" IS NULL");
+          }
+          else
+          {
+            sql.append(" = ");
+            ColumnData data = new ColumnData(value, column);
+            sql.append(formatter.getDefaultLiteral(data));
+          }
           pkCount++;
         }
       }

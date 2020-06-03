@@ -89,10 +89,26 @@ public class WbDataDiffTest
   }
 
   @Test
+  public void testAlternateKey()
+  {
+    WbDataDiff diff = new WbDataDiff();
+    ArgumentParser cmdline = diff.getArgumentParser();
+    StatementRunnerResult result = new StatementRunnerResult();
+
+    cmdline.parse("-alternateKey='table_one=col_1' -alternateKey='table_two=one_column,other_column'");
+    Map<String, Set<String>> alternateKeys = diff.getAlternateKeys(cmdline, result);
+    assertEquals(2, alternateKeys.size());
+    assertTrue(alternateKeys.get("table_one").contains("col_1"));
+    assertTrue(alternateKeys.get("table_two").contains("one_column"));
+    assertTrue(alternateKeys.get("table_two").contains("other_column"));
+  }
+
+  @Test
   public void testExclude()
     throws Exception
   {
-    String script = "drop all objects;\n" +
+    String script =
+      "drop all objects;\n" +
       "create table some_data (id integer primary key, code varchar(10), firstname varchar(100), lastname varchar(100), foo varchar(20), bar varchar(20));\n" +
       "commit;\n";
 
@@ -490,7 +506,7 @@ public class WbDataDiffTest
       assertTrue(result.hasWarning());
       CharSequence msg = result.getMessages();
       assertNotNull(msg);
-      assertTrue(msg.toString().indexOf("The columns from the table PERSON do not match the columns of the target table PERSON") > -1);
+      assertTrue(msg.toString().contains("The columns from the table PERSON do not match the columns of the target table PERSON"));
 
       util.emptyBaseDirectory();
       sql = "WbDataDiff -referenceProfile=dataDiffTarget -targetProfile=dataDiffSource -file=sync.sql -encoding=UTF8";
@@ -500,7 +516,7 @@ public class WbDataDiffTest
       assertFalse(result.hasWarning());
       msg = result.getMessages();
       assertNotNull(msg);
-      assertTrue(msg.toString().indexOf("The columns from the table PERSON do not match the columns of the target table PERSON") == -1);
+      assertTrue(!msg.toString().contains("The columns from the table PERSON do not match the columns of the target table PERSON"));
 
     }
     finally
@@ -511,7 +527,7 @@ public class WbDataDiffTest
   }
 
   @Test
-  public void testQuoteIdentifier()
+  public void testQuotedIdentifier()
     throws Exception
   {
     setupConnections();
