@@ -4015,4 +4015,14 @@ public class Settings
     return getBoolProperty("workbench.gui.remove.empty.show.warning", true);
   }
 
+  public boolean getProfileDefaultSeparateConnection()
+  {
+    return getBoolProperty("workbench.profile.default.separate.connection", false);
+  }
+
+  public boolean getProfileDefaultStoreExplorerSchema()
+  {
+    return getBoolProperty("workbench.profile.default.store.explorer.schema", false);
+  }
+
 }

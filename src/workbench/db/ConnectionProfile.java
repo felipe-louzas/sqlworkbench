@@ -149,8 +149,8 @@ public class ConnectionProfile
   public static ConnectionProfile createEmptyProfile()
   {
     ConnectionProfile cp = new ConnectionProfile();
-    cp.setUseSeparateConnectionPerTab(true);
-    cp.setStoreExplorerSchema(true);
+    cp.setUseSeparateConnectionPerTab(Settings.getInstance().getProfileDefaultSeparateConnection());
+    cp.setStoreExplorerSchema(Settings.getInstance().getProfileDefaultStoreExplorerSchema());
     cp.setName(ResourceMgr.getString("TxtEmptyProfileName"));
     return cp;
   }

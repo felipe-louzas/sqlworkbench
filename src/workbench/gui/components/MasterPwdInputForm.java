@@ -20,11 +20,7 @@
  */
 package workbench.gui.components;
 
-import java.awt.Color;
-
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
 
 import workbench.interfaces.ValidatingComponent;
 import workbench.resource.ResourceMgr;
@@ -41,37 +37,21 @@ public class MasterPwdInputForm
   extends JPanel
   implements ValidatingComponent
 {
-  private GlobalPasswordManager pwdManager;
+  private final GlobalPasswordManager pwdManager;
 
   public MasterPwdInputForm(GlobalPasswordManager validator)
   {
     this.pwdManager = validator;
     initComponents();
-    Color bg = UIManager.getDefaults().getColor("Label.background");
-    Color c;
-    if (WbSwingUtilities.isNearlyBlack(bg))
-    {
-      c = bg.brighter();
-    }
-    else
-    {
-      c = bg.darker();
-    }
-    LineBorder b = new LineBorder(c, 1);
-    message.setBorder(b);
   }
 
   @Override
   public boolean validateInput()
   {
     boolean valid = pwdManager.validateMasterPassword(getText());
-    if (valid)
+    if (!valid)
     {
-      message.setText("");
-    }
-    else
-    {
-      message.setText(ResourceMgr.getString("MsgWrongPassword"));
+      WbSwingUtilities.showErrorMessageKey(this, "MsgWrongPassword");
     }
     return valid;
   }
@@ -103,7 +83,6 @@ public class MasterPwdInputForm
     java.awt.GridBagConstraints gridBagConstraints;
 
     pwdInput = new javax.swing.JPasswordField();
-    message = new WbStatusLabel();
     titleLabel = new javax.swing.JLabel();
 
     setLayout(new java.awt.GridBagLayout());
@@ -114,17 +93,10 @@ public class MasterPwdInputForm
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
-    add(pwdInput, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-    add(message, gridBagConstraints);
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
+    add(pwdInput, gridBagConstraints);
 
     titleLabel.setText(ResourceMgr.getString("MsgEnterMasterPwd")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -137,7 +109,6 @@ public class MasterPwdInputForm
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel message;
   private javax.swing.JPasswordField pwdInput;
   private javax.swing.JLabel titleLabel;
   // End of variables declaration//GEN-END:variables
