@@ -118,6 +118,11 @@ public class SqlRowDataConverter
     this.literalFormatter.setInfinityLiterals(literals);
   }
 
+  public void setLineEnding(String end)
+  {
+    if (end != null) this.lineTerminator = end;
+  }
+
   public boolean getUseMultiRowInserts()
   {
     return this.useMultiRowInserts;
@@ -314,7 +319,7 @@ public class SqlRowDataConverter
     {
       dml = this.statementFactory.createDeleteStatement(row, true);
       dml.setFormatSql(this.doFormatting);
-      result.append(dml.getExecutableStatement(this.literalFormatter, this.originalConnection));
+      result.append(dml.getExecutableStatement(this.literalFormatter, this.originalConnection, lineTerminator));
       result.append(';');
       result.append(lineTerminator);
     }
@@ -349,7 +354,7 @@ public class SqlRowDataConverter
     {
       dml.setFormatSql(false);
     }
-    CharSequence sql = dml.getExecutableStatement(this.literalFormatter, this.originalConnection);
+    CharSequence sql = dml.getExecutableStatement(this.literalFormatter, this.originalConnection, lineTerminator);
 
     if (isInsertType() && useMultiRowInserts)
     {

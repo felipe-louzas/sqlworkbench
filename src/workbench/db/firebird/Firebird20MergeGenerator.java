@@ -87,6 +87,7 @@ public class Firebird20MergeGenerator
   private String generateUpsert(StatementFactory factory, ResultInfo info, RowData row)
   {
     DmlStatement dml = factory.createInsertStatement(row, true, "\n");
+    dml.setFormatSql(false);
     CharSequence sql =  dml.getExecutableStatement(formatter);
     StringBuilder result = new StringBuilder(sql.length() + 50);
     result.append("UPDATE OR ");

@@ -111,7 +111,7 @@ public class WbSqlFormatter
   private Set<String> createTableTypes = CollectionUtil.caseInsensitiveSet();
   private Set<String> createViewTypes = CollectionUtil.caseInsensitiveSet();
 
-  private static final String NL = "\n";
+  private String lineEnding = "\n";
   private boolean addColumnCommentForInsert;
   private boolean newLineForSubSelects;
   private GeneratedIdentifierCase keywordCase = GeneratedIdentifierCase.upper;
@@ -166,6 +166,11 @@ public class WbSqlFormatter
     this.schemaSeparator = separator;
   }
 
+  public void setLineEnding(String end)
+  {
+    if (end != null) this.lineEnding = end;
+  }
+  
   private WbSqlFormatter(CharSequence aScript, int indentCount, int maxLength, String dbId)
   {
     this.sql = aScript;
@@ -293,7 +298,7 @@ public class WbSqlFormatter
 
   public String getLineEnding()
   {
-    return NL;
+    return lineEnding;
   }
 
   private void setDbId(String id)
@@ -435,7 +440,7 @@ public class WbSqlFormatter
   private void appendNewline()
   {
     if (this.result.length() == 0) return;
-    this.result.append(WbSqlFormatter.NL);
+    this.result.append(lineEnding);
     if (this.indent != null) this.result.append(indent);
   }
 
@@ -945,7 +950,7 @@ public class WbSqlFormatter
         {
           if (onPos > 0)
           {
-            String lb = NL + StringUtil.padRight(" ", indentPos - 3, ' ') + (indent == null ? "" : indent);
+            String lb = lineEnding + StringUtil.padRight(" ", indentPos - 3, ' ') + (indent == null ? "" : indent);
             this.result.insert(onPos, lb);
             realLength += lb.length();
             onPos = -1; // we only need this treatment for the first condition after the ON
@@ -1273,11 +1278,11 @@ public class WbSqlFormatter
     boolean useFormattedQuery = f.getRealLength() > maxSubLength;
     if (!useFormattedQuery)
     {
-      s = s.replaceAll(" *" + WbSqlFormatter.NL + " *", " ").trim();
+      s = s.replaceAll(" *" + lineEnding + " *", " ").trim();
     }
     if (useNewline && useFormattedQuery)
     {
-      this.result.append(WbSqlFormatter.NL);  // do not use appendNewLine() as it will indent the new line
+      this.result.append(lineEnding);  // do not use appendNewLine() as it will indent the new line
       this.appendText(StringUtil.padRight(" ", lastIndent));
     }
     this.appendText(s);
@@ -1737,10 +1742,10 @@ public class WbSqlFormatter
     if (len == 0) return true;
 
     // simulates endsWith() on a StringBuilder
-    int pos = result.lastIndexOf(WbSqlFormatter.NL);
-    if (pos == len - NL.length()) return true;
+    int pos = result.lastIndexOf(lineEnding);
+    if (pos == len - lineEnding.length()) return true;
 
-    String remain = result.substring(pos + NL.length());
+    String remain = result.substring(pos + lineEnding.length());
     return remain.isEmpty() || StringUtil.isWhitespace(remain);
   }
 

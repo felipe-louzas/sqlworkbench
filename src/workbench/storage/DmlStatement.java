@@ -435,10 +435,15 @@ public class DmlStatement
    */
   public CharSequence getExecutableStatement(SqlLiteralFormatter literalFormatter)
   {
-    return getExecutableStatement(literalFormatter, null);
+    return getExecutableStatement(literalFormatter, null, null);
   }
 
   public CharSequence getExecutableStatement(SqlLiteralFormatter literalFormatter, WbConnection con)
+  {
+    return getExecutableStatement(literalFormatter, con, null);
+  }
+
+  public CharSequence getExecutableStatement(SqlLiteralFormatter literalFormatter, WbConnection con, String lineEnding)
   {
     CharSequence toUse = this.sql;
     if (this.values.size() > 0)
@@ -477,6 +482,10 @@ public class DmlStatement
     if ((isInsert && formatInserts) || (isUpdate && formatUpdates) || (isDelete && formatDeletes))
     {
       WbSqlFormatter f = new WbSqlFormatter(toUse, con == null ? null : con.getDbId());
+      if (lineEnding != null)
+      {
+        f.setLineEnding(lineEnding);
+      }
       if (con != null)
       {
         f.setCatalogSeparator(con.getMetadata().getCatalogSeparator());

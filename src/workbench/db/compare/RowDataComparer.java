@@ -252,6 +252,7 @@ public class RowDataComparer
         sqlConverter.setType(ExportType.SQL_UPDATE);
       }
       sqlConverter.setApplySQLFormatting(this.applySQLFormatting);
+      sqlConverter.setLineEnding(StringUtil.LINE_TERMINATOR);
       result = sqlConverter.convertRowData(migrationData, rowNumber);
     }
     if (xmlConverter != null)

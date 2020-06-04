@@ -61,6 +61,7 @@ public class SqlExportWriter
     conv.setConcatString(exporter.getConcatString());
     conv.setConcatFunction(exporter.getConcatFunction());
     conv.setDateLiteralType(exporter.getDateLiteralType());
+    conv.setLineEnding(exporter.getLineEnding());
 
     conv.setBlobMode(exporter.getBlobMode());
 
