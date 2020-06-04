@@ -54,6 +54,8 @@ exp
 extract
 first_value
 floor
+gcd
+gen_random_uuid
 generate_series
 get_bit
 get_byte
@@ -95,6 +97,7 @@ jsonb_populate_record
 jsonb_populate_recordset
 jsonb_pretty
 jsonb_set
+jsonb_set_lax
 jsonb_strip_nulls
 jsonb_to_record
 jsonb_to_recordset
@@ -123,6 +126,7 @@ justify_hours
 justify_interval
 lag
 last_value
+lcm
 lead
 length
 ln
@@ -136,9 +140,11 @@ make_interval
 make_time
 make_timestamp
 make_timestamptz
+min_scale
 md5
 mod
 mode
+normalize
 now
 nth_value
 ntile
@@ -227,6 +233,7 @@ to_timestamp
 transaction_timestamp
 translate
 trim
+trim_scale
 trunc
 unnest
 variance
