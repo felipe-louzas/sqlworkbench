@@ -111,7 +111,7 @@ public class WbSqlFormatter
   private Set<String> createTableTypes = CollectionUtil.caseInsensitiveSet();
   private Set<String> createViewTypes = CollectionUtil.caseInsensitiveSet();
 
-  private static final String NL = StringUtil.LINE_TERMINATOR;
+  private static final String NL = "\n";
   private boolean addColumnCommentForInsert;
   private boolean newLineForSubSelects;
   private GeneratedIdentifierCase keywordCase = GeneratedIdentifierCase.upper;
