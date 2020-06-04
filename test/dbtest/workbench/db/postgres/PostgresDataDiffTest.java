@@ -129,10 +129,9 @@ public class PostgresDataDiffTest
 
     String sql1 =
       "create schema one;\n" +
-      "create table one.person (\n" +
+      "create table one.the_table (\n" +
       "   id integer not null primary key, " +
-      "   firstname varchar(100), " +
-      "   lastname varchar(100) not null\n" +
+      "   data varchar(100)\n " +
       ");\n" +
       "commit;\n";
 
@@ -141,13 +140,11 @@ public class PostgresDataDiffTest
     TestUtil.executeScript(conn, sql2);
 
     String insert1 =
-      "insert into one.person (id, firstname, lastname) \n" +
-      "values\n" +
-      "(1, 'Arthur', 'Dent')," +
-      "(2, 'Ford', 'Prefect²')," +
-      "(3, 'Tricia', 'McMillan''s'),\n" +
-      "(4, 'Zaphod', 'Beeblebrox');\n" +
+      "insert into one.the_table (id, data) values \n" +
+      "(1, 'Something \u00bb else'), (2, 'par d\u00e9faul 50 m\u00b2/room'), (3, 'details \u00bb de l''INSEE (annè)');\n" +
       "commit;";
+//    System.out.println(insert1);
+
     TestUtil.executeScript(conn, insert1);
     String insert2 = insert1.replace("one", "two");
     TestUtil.executeScript(conn, insert2);
@@ -166,13 +163,14 @@ public class PostgresDataDiffTest
     assertTrue(outFile1.exists());
 
     String script1 = FileUtil.readFile(outFile1, "UTF-8");
-//      System.out.println(script1);
-    assertTrue(script1.contains("-- No UPDATEs for person necessary"));
-    assertTrue(script1.contains("-- No INSERTs for person necessary"));
-    assertTrue(script1.contains("-- No DELETEs for person necessary"));
+//    System.out.println(script1);
+    assertTrue(script1.contains("-- No UPDATEs for the_table necessary"));
+    assertTrue(script1.contains("-- No INSERTs for the_table necessary"));
+    assertTrue(script1.contains("-- No DELETEs for the_table necessary"));
 
     TestUtil.executeScript(conn,
-      "update two.person set lastname = '' where id in (2,3);\n" +
+      "update two.the_table set data = '50m\u00b2/room' where id = 2;\n" +
+      "update two.the_table set data = 'Arthur''s House' where id = 3;\n" +
       "commit; ");
 
     WbFile outFile2 = util.getFile("diff2.sql");
@@ -185,9 +183,10 @@ public class PostgresDataDiffTest
     assertTrue(outFile2.exists());
 
     String script2 = FileUtil.readFile(outFile2, "UTF-8");
-//      System.out.println(script2);
-    assertTrue(script2.contains("SET lastname = 'Prefect²'"));
-    assertTrue(script2.contains("SET lastname = 'McMillan''s'"));
+//    System.out.println(script2);
+    assertFalse(script2.contains("WHERE id = 1"));
+    assertTrue(script2.contains("WHERE id = 2"));
+    assertTrue(script2.contains("WHERE id = 3"));
   }
 
 

@@ -58,7 +58,7 @@ import workbench.util.StringUtil;
 import static workbench.db.exporter.ExportType.*;
 
 /**
- * Export data as SQL INSERT statements.
+ * Export data as SQL statements.
  *
  * @author Thomas Kellerer
  */
@@ -313,6 +313,7 @@ public class SqlRowDataConverter
     if (this.sqlTypeToUse == ExportType.SQL_DELETE_INSERT)
     {
       dml = this.statementFactory.createDeleteStatement(row, true);
+      dml.setFormatSql(this.doFormatting);
       result.append(dml.getExecutableStatement(this.literalFormatter, this.originalConnection));
       result.append(';');
       result.append(lineTerminator);
@@ -335,6 +336,7 @@ public class SqlRowDataConverter
 
     if (dml == null) return null;
 
+    dml.setFormatSql(this.doFormatting);
     dml.setChrFunction(this.chrFunction);
     dml.setConcatString(this.concatString);
     dml.setConcatFunction(this.concatFunction);
@@ -479,18 +481,21 @@ public class SqlRowDataConverter
     return createSql;
   }
 
+  public void setApplySQLFormatting(boolean flag)
+  {
+    this.doFormatting = flag;
+  }
+
   public void setCreateInsert()
   {
     this.sqlType = ExportType.SQL_INSERT;
     this.sqlTypeToUse = this.sqlType;
-    this.doFormatting = Settings.getInstance().getBoolProperty("workbench.sql.generate.insert.doformat",true);
   }
 
   public void setCreateInsertIgnore()
   {
     this.sqlType = ExportType.SQL_INSERT_IGNORE;
     this.sqlTypeToUse = this.sqlType;
-    this.doFormatting = Settings.getInstance().getBoolProperty("workbench.sql.generate.insert.doformat",true);
   }
 
   public void setCreateMerge()
@@ -504,21 +509,18 @@ public class SqlRowDataConverter
   {
     this.sqlType = ExportType.SQL_UPDATE;
     this.sqlTypeToUse = this.sqlType;
-    this.doFormatting = Settings.getInstance().getBoolProperty("workbench.sql.generate.update.doformat",true);
   }
 
   public void setCreateInsertDelete()
   {
     this.sqlType = ExportType.SQL_DELETE_INSERT;
     this.sqlTypeToUse = this.sqlType;
-    this.doFormatting = Settings.getInstance().getBoolProperty("workbench.sql.generate.insert.doformat",true);
   }
 
   public void setCreateDelete()
   {
     this.sqlType = ExportType.SQL_DELETE;
     this.sqlTypeToUse = this.sqlType;
-    this.doFormatting = Settings.getInstance().getBoolProperty("workbench.sql.generate.delete.doformat",true);
   }
 
   public void setCommitEvery(int interval)

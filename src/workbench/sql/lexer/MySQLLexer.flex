@@ -206,6 +206,7 @@ keyword=(
 
 (OWNED{wsp}BY)|
 (FETCH{wsp}FIRST)|(FETCH{wsp}NEXT)|
+(NEXT{wsp}VALUE{wsp}FOR)|
 "AFTER"|
 "AGGREGATE"|
 "ALL"|

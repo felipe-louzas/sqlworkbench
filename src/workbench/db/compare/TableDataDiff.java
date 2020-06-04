@@ -35,12 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import workbench.db.ColumnIdentifier;
-import workbench.db.TableDefinition;
-import workbench.db.TableIdentifier;
-import workbench.db.WbConnection;
-import workbench.db.exporter.BlobMode;
-
 import workbench.interfaces.ErrorReporter;
 import workbench.interfaces.ProgressReporter;
 import workbench.log.CallerInfo;
@@ -48,15 +42,20 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.ColumnIdentifier;
 import workbench.db.DbObjectFinder;
+import workbench.db.TableDefinition;
+import workbench.db.TableIdentifier;
+import workbench.db.WbConnection;
+import workbench.db.exporter.BlobMode;
 
 import workbench.storage.ColumnData;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowActionMonitor;
 import workbench.storage.RowData;
+import workbench.storage.SqlLiteralFormatter;
 import workbench.storage.reader.RowDataReader;
 import workbench.storage.reader.RowDataReaderFactory;
-import workbench.storage.SqlLiteralFormatter;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
@@ -137,6 +136,7 @@ public class TableDataDiff
     comparer = new RowDataComparer();
     comparer.setConnection(toSync);
     comparer.setTypeSql();
+    comparer.setApplySQLFormatting(Settings.getInstance().getDoFormatInserts() || Settings.getInstance().getDoFormatUpdates());
   }
 
   public void setTargetSchema(String schema)

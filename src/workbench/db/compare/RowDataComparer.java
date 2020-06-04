@@ -61,12 +61,15 @@ public class RowDataComparer
   private XmlRowDataConverter xmlConverter;
   private String sqlDateLiteral;
   private WbFile baseDir;
+  private boolean applySQLFormatting;
 
-  /**
-   * Compares two database rows.
-   */
   public RowDataComparer()
   {
+  }
+
+  public void setApplySQLFormatting(boolean flag)
+  {
+    this.applySQLFormatting = flag;
   }
 
   public void setBaseDir(WbFile dir)
@@ -248,6 +251,7 @@ public class RowDataComparer
         sqlConverter.setIgnoreColumnStatus(false);
         sqlConverter.setType(ExportType.SQL_UPDATE);
       }
+      sqlConverter.setApplySQLFormatting(this.applySQLFormatting);
       result = sqlConverter.convertRowData(migrationData, rowNumber);
     }
     if (xmlConverter != null)

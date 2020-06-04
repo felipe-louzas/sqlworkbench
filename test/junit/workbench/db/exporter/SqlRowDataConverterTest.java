@@ -42,9 +42,9 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
+import workbench.storage.SqlLiteralFormatter;
 import workbench.storage.reader.RowDataReader;
 import workbench.storage.reader.RowDataReaderFactory;
-import workbench.storage.SqlLiteralFormatter;
 
 import workbench.sql.parser.ScriptParser;
 
@@ -392,11 +392,10 @@ public class SqlRowDataConverterTest
 
     boolean check = Settings.getInstance().getCheckEditableColumns();
     boolean identity = Settings.getInstance().getGenerateInsertIgnoreIdentity();
-    boolean format = Settings.getInstance().getDoFormatInserts();
+
     try
     {
       Settings.getInstance().setCheckEditableColumns(false);
-      Settings.getInstance().setDoFormatInserts(false);
       Settings.getInstance().setGenerateInsertIgnoreIdentity(true);
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("select * from foo order by id");
@@ -408,6 +407,7 @@ public class SqlRowDataConverterTest
 
       SqlRowDataConverter converter = new SqlRowDataConverter(conn);
       converter.setResultInfo(ds.getResultInfo());
+      converter.setApplySQLFormatting(false);
 
       String insert = converter.convertRowData(ds.getRow(0), 0).toString();
       assertEquals("INSERT INTO FOO (C1,C2) VALUES (1,1);", insert.trim());
@@ -419,6 +419,7 @@ public class SqlRowDataConverterTest
       Settings.getInstance().setCheckEditableColumns(true);
 
       converter = new SqlRowDataConverter(conn);
+      converter.setApplySQLFormatting(false);
       converter.setResultInfo(ds.getResultInfo());
 
       insert = converter.convertRowData(ds.getRow(0), 0).toString();
@@ -446,7 +447,6 @@ public class SqlRowDataConverterTest
     {
       Settings.getInstance().setCheckEditableColumns(check);
       Settings.getInstance().setGenerateInsertIgnoreIdentity(identity);
-      Settings.getInstance().setDoFormatInserts(format);
       TestUtil.executeScript(conn, "drop table foo;");
     }
   }

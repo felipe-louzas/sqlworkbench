@@ -111,7 +111,7 @@ public class WbSqlFormatter
   private Set<String> createTableTypes = CollectionUtil.caseInsensitiveSet();
   private Set<String> createViewTypes = CollectionUtil.caseInsensitiveSet();
 
-  private static final String NL = "\n";
+  private static final String NL = StringUtil.LINE_TERMINATOR;
   private boolean addColumnCommentForInsert;
   private boolean newLineForSubSelects;
   private GeneratedIdentifierCase keywordCase = GeneratedIdentifierCase.upper;
@@ -2365,7 +2365,7 @@ public class WbSqlFormatter
       {
         this.appendText(' ');
       }
-      
+
       this.appendTokenText(t);
 
       if (bracketCount == 0)

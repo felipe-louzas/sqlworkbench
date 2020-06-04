@@ -468,6 +468,7 @@ public class ClipBoardCopier
       converter.setIncludeTableOwner(Settings.getInstance().getIncludeOwnerInSqlExport());
       converter.setDateLiteralType(Settings.getInstance().getDefaultCopyDateLiteralType());
       converter.setType(type);
+
       MultiRowInserts multiRowInserts = Settings.getInstance().getUseMultirowInsertForClipboard();
       switch (multiRowInserts)
       {
@@ -482,6 +483,20 @@ public class ClipBoardCopier
       }
       converter.setTransactionControl(false);
       converter.setIgnoreColumnStatus(true);
+
+      switch (type)
+      {
+        case SQL_INSERT:
+        case SQL_DELETE_INSERT:
+        case SQL_INSERT_IGNORE:
+          converter.setApplySQLFormatting(Settings.getInstance().getDoFormatInserts());
+        case SQL_UPDATE:
+          converter.setApplySQLFormatting(Settings.getInstance().getDoFormatUpdates());
+        case SQL_DELETE:
+          converter.setApplySQLFormatting(Settings.getInstance().getDoFormatDeletes());
+        default:
+          converter.setApplySQLFormatting(false);
+      }
 
       if (columnsToInclude != null)
       {

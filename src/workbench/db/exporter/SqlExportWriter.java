@@ -30,7 +30,7 @@ import workbench.resource.Settings;
 import workbench.db.TableIdentifier;
 
 /**
- * Export data as SQL INSERT statements.
+ * Export data as SQL statements.
  *
  * @author  Thomas Kellerer
  */
@@ -38,9 +38,6 @@ public class SqlExportWriter
   extends ExportWriter
 {
 
-  /** Creates a new instance of SqlExportWriter
-   * @param exp The exporter to convert the rows for
-   */
   public SqlExportWriter(DataExporter exp)
   {
     super(exp);
@@ -85,6 +82,20 @@ public class SqlExportWriter
     {
       LogMgr.logError(new CallerInfo(){}, "Illegal SQL type requested. Reverting to INSERT", null);
       conv.setCreateInsert();
+    }
+
+    switch (exporter.getExportType())
+    {
+        case SQL_INSERT:
+        case SQL_DELETE_INSERT:
+        case SQL_INSERT_IGNORE:
+          conv.setApplySQLFormatting(Settings.getInstance().getDoFormatInserts());
+        case SQL_UPDATE:
+          conv.setApplySQLFormatting(Settings.getInstance().getDoFormatUpdates());
+        case SQL_DELETE:
+          conv.setApplySQLFormatting(Settings.getInstance().getDoFormatDeletes());
+        default:
+          conv.setApplySQLFormatting(false);
     }
 
     String table = exporter.getTableName();
