@@ -68,6 +68,12 @@ public class SqlServerTableSourceBuilder
     {
       return pkSource;
     }
+    
+    if (pk.getPkIndexDefinition() == null)
+    {
+      return pkSource;
+    }
+
     String sql = pkSource.toString();
 
     String type = pk.getPkIndexDefinition().getIndexType();
