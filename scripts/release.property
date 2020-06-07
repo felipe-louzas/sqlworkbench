@@ -1,7 +1,7 @@
-#Fri, 01 May 2020 12:13:02 +0200
+#Sun, 07 Jun 2020 11:47:32 +0200
 
 release.build.number=125
 release.build.date=2019-05-08
 
-dev.build.date=2020-05-01
-dev.build.number=125.8
+dev.build.date=2020-06-07
+dev.build.number=125.10
