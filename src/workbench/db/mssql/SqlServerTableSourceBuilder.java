@@ -68,9 +68,10 @@ public class SqlServerTableSourceBuilder
     {
       return pkSource;
     }
-    
+
     if (pk.getPkIndexDefinition() == null)
     {
+      LogMgr.logWarning(new CallerInfo(){}, "Primary key " + pk + " for table + " table + " has not index definition");
       return pkSource;
     }
 
