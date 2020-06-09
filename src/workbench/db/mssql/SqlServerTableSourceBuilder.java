@@ -69,28 +69,28 @@ public class SqlServerTableSourceBuilder
       return pkSource;
     }
 
-    if (pk.getPkIndexDefinition() == null)
-    {
-      LogMgr.logWarning(new CallerInfo(){}, "Primary key " + pk + " for table " + table + " has not index definition");
-      return pkSource;
-    }
-
     String sql = pkSource.toString();
-
-    String type = pk.getPkIndexDefinition().getIndexType();
-    String clustered = "CLUSTERED";
-    if ("NORMAL".equals(type))
+    String indexType = null;
+    if (pk.getPkIndexDefinition() != null)
     {
-      clustered = "NONCLUSTERED";
+      String type = pk.getPkIndexDefinition().getIndexType();
+      if ("NORMAL".equals(type))
+      {
+        indexType = "NONCLUSTERED";
+      }
+      else
+      {
+        indexType = "CLUSTERED";
+      }
     }
 
-    if (StringUtil.isBlank(clustered))
+    if (indexType == null)
     {
       sql = TemplateHandler.removePlaceholder(sql, CLUSTERED_PLACEHOLDER, true);
     }
     else
     {
-      sql = TemplateHandler.replacePlaceholder(sql, CLUSTERED_PLACEHOLDER, clustered, true);
+      sql = TemplateHandler.replacePlaceholder(sql, CLUSTERED_PLACEHOLDER, indexType, true);
     }
     return sql;
   }

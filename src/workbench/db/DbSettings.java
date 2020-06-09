@@ -1407,6 +1407,11 @@ public class DbSettings
     return getBoolProperty("generate.tablesource.include.grants", defaultFlag);
   }
 
+  public boolean needsPKIndexForPKDefinition()
+  {
+    return getBoolProperty("pksource.needs.pkindex", false);
+  }
+  
   public boolean needTableDefinitionForTableSource()
   {
     boolean useCustomQuery = isTableSourceRetrievalCustomized();

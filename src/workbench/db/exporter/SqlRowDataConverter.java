@@ -34,6 +34,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DropType;
+import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.TableSourceBuilderFactory;
@@ -479,11 +480,23 @@ public class SqlRowDataConverter
     }
     boolean includePK = Settings.getInstance().getBoolProperty("workbench.sql.export.createtable.pk", true);
 
-    CharSequence create = builder.getCreateTable(toUse, cols, null, null, DropType.none, false, includePK, useSchema);
+
+    List<IndexDefinition> indexInfo = null;
+    if (includePK && needsPKIndexForPK())
+    {
+      indexInfo = originalConnection.getMetadata().getIndexReader().getTableIndexList(toUse, true);
+    }
+    CharSequence create = builder.getCreateTable(toUse, cols, indexInfo, null, DropType.none, false, includePK, useSchema);
     String source = create.toString();
     StringBuilder createSql = new StringBuilder(source);
     createSql.append(doubleLineTerminator);
     return createSql;
+  }
+
+  private boolean needsPKIndexForPK()
+  {
+    if (originalConnection == null) return false;
+    return originalConnection.getDbSettings().needsPKIndexForPKDefinition();
   }
 
   public void setApplySQLFormatting(boolean flag)
