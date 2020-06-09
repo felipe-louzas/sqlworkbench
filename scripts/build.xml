@@ -250,8 +250,6 @@
       </zipfileset>
       <zipfileset dir="../../launcher" prefix="launcher">
         <include name="**/*.*"/>
-        <exclude name="*.exe"/>
-        <exclude name="*.cmd"/>
       </zipfileset>
     </zip>
   </target>
@@ -337,10 +335,11 @@
         <include name="${jarfile}"/>
         <include name="SQLWorkbench-Manual.pdf"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/autoit">
+      <zipfileset dir="../../launcher/winrun4j">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
-        <include name="SQLWorkbench.cfg.sample"/>
+        <include name="SQLWorkbench.ini.sample"/>
+        <include name="SQLWorkbench64.ini.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}" prefix="ext">
         <include name="README_EXT"/>
@@ -392,10 +391,11 @@
       <zipfileset dir="../libs/lnf" prefix="ext">
         <include name="*.jar"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/autoit">
+      <zipfileset dir="../../launcher/winrun4j">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
-        <include name="SQLWorkbench.cfg.sample"/>
+        <include name="SQLWorkbench.ini.sample"/>
+        <include name="SQLWorkbench64.ini.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
         <include name="log4j-sample.xml"/>
@@ -486,10 +486,8 @@
         <include name="*.*"/>
       </zipfileset>
 
-      <zipfileset dir="../../launcher/autoit" prefix="launcher">
-        <include name="*.au3"/>
-        <include name="*.ico"/>
-        <include name="SQLWorkbench.cfg.sample"/>
+      <zipfileset dir="../../launcher" prefix="launcher">
+        <include name="**/*"/>
       </zipfileset>
     </zip>
   </target>
