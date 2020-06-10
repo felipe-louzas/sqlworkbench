@@ -126,7 +126,7 @@ public class LogMgr
 
 	public static void logMetadataSql(CallerInfo caller, String type, CharSequence sql, Object... parameters)
 	{
-    if (Settings.getInstance().getDebugMetadataSql())
+    if (isDebugEnabled() || Settings.getInstance().getDebugMetadataSql())
     {
       String msg = "Retrieving "  + type + " using:\n" + SqlUtil.replaceParameters(sql, parameters);
       getLogger().logMessage(LogLevel.debug, caller, msg, null);

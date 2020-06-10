@@ -106,13 +106,33 @@ public class WbWorkspace
   {
     close();
 
-    File f = new File(filename);
-    OutputStream out = new BufferedOutputStream(new FileOutputStream(f), 64*1024);
-    zout = new ZipOutputStream(out);
-    zout.setLevel(Settings.getInstance().getIntProperty("workbench.workspace.compression", 9));
-    zout.setComment("SQL Workbench/J Workspace file");
-
-    state = WorkspaceState.writing;
+    OutputStream out = null;
+    try
+    {
+      File f = new File(filename);
+      out = new BufferedOutputStream(new FileOutputStream(f), 64*1024);
+      zout = new ZipOutputStream(out);
+      zout.setLevel(Settings.getInstance().getIntProperty("workbench.workspace.compression", 9));
+      zout.setComment("SQL Workbench/J Workspace file");
+      state = WorkspaceState.writing;
+    }
+    catch (Exception e)
+    {
+      if (zout == null)
+      {
+        FileUtil.closeQuietely(out);
+      }
+      else
+      {
+        FileUtil.closeQuietely(zout);
+      }
+      state = WorkspaceState.closed;
+      if (e instanceof IOException)
+      {
+        throw (IOException)e;
+      }
+      throw new IOException("Could not open ZIP file", e);
+    }
   }
 
   public String getLoadError()
@@ -171,6 +191,7 @@ public class WbWorkspace
     }
     catch (Throwable th)
     {
+      FileUtil.closeQuietely(archive);
       LogMgr.logDebug(new CallerInfo(){}, "Could not open workspace file " + filename, th);
       loadError = th.getMessage();
       state = WorkspaceState.closed;
@@ -304,7 +325,6 @@ public class WbWorkspace
 
   @Override
   public void close()
-    throws IOException
   {
     FileUtil.closeQuietely(zout);
     FileUtil.closeQuietely(archive);

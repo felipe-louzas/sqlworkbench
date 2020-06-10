@@ -22,7 +22,6 @@
 package workbench.db;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -35,21 +34,17 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
-import workbench.db.mssql.SqlServerUtil;
+import workbench.db.mssql.SqlServerClassLoader;
 import workbench.db.postgres.PostgresUtil;
 
 import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
-import workbench.util.FileUtil;
-import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -71,7 +66,7 @@ public class DbDriver
 
   protected String name;
   private String driverClass;
-  private List<String> libraryList;
+  private final List<String> libraryList = new ArrayList<>();
   private boolean isTemporary;
   private String sampleUrl;
 
@@ -152,138 +147,22 @@ public class DbDriver
     return b.toString();
   }
 
-  private boolean doAddLibraryPath()
-  {
-    // The DLL is only needed for integrated security, which only works on Windows anyway
-    if (!PlatformHelper.isWindows()) return false;
-
-    // alway adjust the library path for SQL Server driver to make enabling Windows authentication easier.
-    if (driverClass.equals("com.microsoft.sqlserver.jdbc.SQLServerDriver"))
-    {
-      // if the DLL is already available on the library.path, there is no need to change it
-      return SqlServerUtil.isAuthDLLAvailable() == false;
-    }
-
-    boolean fixDefault = Settings.getInstance().getBoolProperty("workbench.dbdriver.fixlibrarypath", false);
-    return Settings.getInstance().getBoolProperty("workbench." + driverClass + ".fixlibrarypath", fixDefault);
-  }
-
-  private String findAuthDLLDir()
-  {
-    boolean is64Bit = System.getProperty("os.arch").equals("amd64");
-    if (CollectionUtil.isEmpty(libraryList)) return null;
-
-    // the Microsoft Driver is only a single jar file, no need to search more than one entry
-    WbFile f = buildFile(libraryList.get(0));
-    String jarDir = f.getAbsoluteFile().getParent();
-
-    if (SqlServerUtil.authDLLExists(new File(jarDir)))
-    {
-      return jarDir;
-    }
-
-    String archDir = is64Bit ? "x64" : "x86";
-    WbFile authDir = new WbFile(jarDir, "auth\\" + archDir);
-
-    if (!authDir.exists())
-    {
-      // newer builds of the driver put the jar files into a sub-directory
-      authDir = new WbFile(jarDir, "..\\auth\\" + archDir);
-    }
-    if (SqlServerUtil.authDLLExists(authDir))
-    {
-      return authDir.getFullPath();
-    }
-    return null;
-  }
-
-  private void addToLibraryPath()
-  {
-    if (libraryList == null) return;
-
-    final CallerInfo ci = new CallerInfo(){};
-
-    // By putting the directories into a Set, we make sure each directory is only added once
-    final Set<String> paths = new TreeSet<>();
-
-    if (driverClass.equals("com.microsoft.sqlserver.jdbc.SQLServerDriver"))
-    {
-      String authDll = findAuthDLLDir();
-      if (StringUtil.isNonEmpty(authDll))
-      {
-        paths.add(authDll);
-      }
-    }
-
-    for (String file : libraryList)
-    {
-      WbFile f = buildFile(file);
-      File dir = f.getParentFile().getAbsoluteFile();
-
-      // only add the directory if it isn't already on the path
-      if (FileUtil.isDirectoryOnLibraryPath(dir) == false)
-      {
-        paths.add(dir.getAbsolutePath());
-      }
-    }
-
-    String addPath = "";
-    for (String path : paths)
-    {
-      addPath += path + File.pathSeparator;
-    }
-
-    if (StringUtil.isBlank(addPath)) return;
-
-    String current = System.getProperty("java.library.path");
-
-    String newPath = current + File.pathSeparator + addPath;
-
-    LogMgr.logInfo(ci, "Adding " + addPath + " to java.library.path");
-    LogMgr.logDebug(ci, "Setting java.library.path=" + newPath);
-
-    System.setProperty("java.library.path", newPath);
-
-    // the following hack is taken from: https://blog.cedarsoft.com/2010/11/setting-java-library-path-programmatically/
-    // the explanation for this hack is:
-    // The Classloader has a static field (sys_paths) that contains the paths.
-    // If that field is set to null, it is initialized automatically. Therefore forcing that field to null will result
-    // into the reevaluation of the library path as soon as loadLibrary() is called and as we have changed
-    // java.library.path before nulling the field, this will result in an updated java.library.path
-    try
-    {
-      // TODO: this might not work with newer Java versions
-      Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-      fieldSysPath.setAccessible(true);
-      fieldSysPath.set(null, null);
-    }
-    catch (Throwable nf)
-    {
-      LogMgr.logError(ci, "Could not modify system path!", nf);
-    }
-  }
-
   public void setLibraryList(List<String> files)
   {
-    if (CollectionUtil.isEmpty(files))
+    this.libraryList.clear();
+    if (CollectionUtil.isNonEmpty(files))
     {
-      this.libraryList = null;
-    }
-    else
-    {
-      this.libraryList = new ArrayList<>(files);
+      this.libraryList.addAll(files);
     }
   }
 
   public List<String> getRealLibraryList()
   {
-    if (CollectionUtil.isEmpty(this.libraryList)) return Collections.emptyList();
     return Collections.unmodifiableList(libraryList);
   }
 
   public List<String> getLibraryList()
   {
-    if (CollectionUtil.isEmpty(this.libraryList)) return Collections.emptyList();
     List<String> result = new ArrayList<>(this.libraryList.size());
     ClasspathUtil cp = new ClasspathUtil();
     for (String entry : libraryList)
@@ -302,7 +181,7 @@ public class DbDriver
 
   public static List<String> splitLibraryList(String libList)
   {
-    if (libList == null) return null;
+    if (libList == null) return Collections.emptyList();
 
     if (libList.contains(LIB_SEPARATOR))
     {
@@ -312,12 +191,13 @@ public class DbDriver
     {
       return StringUtil.stringToList(libList, StringUtil.getPathSeparator(), true, true, false);
     }
-    return null;
+    return Collections.emptyList();
   }
 
   public final void setLibrary(String libList)
   {
-    this.libraryList = splitLibraryList(libList);
+    this.libraryList.clear();
+    this.libraryList.addAll(splitLibraryList(libList));
     this.driverClassInstance = null;
     this.classLoader = null;
   }
@@ -391,7 +271,6 @@ public class DbDriver
 
   public boolean isExtDriver()
   {
-    if (this.libraryList == null) return false;
     ClasspathUtil cpUtil = new ClasspathUtil();
     for (String fname : libraryList)
     {
@@ -406,6 +285,20 @@ public class DbDriver
     return true;
   }
 
+  private URLClassLoader createClassLoader(URL[] path)
+  {
+    // Use a standard URLClassLoader for everything but SQL Server's driver
+    if (!"com.microsoft.sqlserver.jdbc.SQLServerDriver".equals(this.driverClass))
+    {
+      return new URLClassLoader(path, ClassLoader.getSystemClassLoader());
+    }
+
+    // For SQL Server we create a Classloader that implements findLibrary()
+    // to search for the DLL for integrated security in well known places
+    // This way we can avoid messing around with java.library.path
+    return new SqlServerClassLoader(buildFile(libraryList.get(0)), path, ClassLoader.getSystemClassLoader());
+  }
+
   private synchronized void loadDriverClass()
     throws ClassNotFoundException, Exception, UnsupportedClassVersionError
   {
@@ -414,7 +307,7 @@ public class DbDriver
 
     try
     {
-      if (!isExtDriver() && this.classLoader == null && this.libraryList != null)
+      if (!isExtDriver() && this.classLoader == null && CollectionUtil.isNonEmpty(this.libraryList))
       {
         URL[] url = new URL[libraryList.size()];
         int index = 0;
@@ -425,12 +318,7 @@ public class DbDriver
           LogMgr.logInfo(ci, "Adding ClassLoader URL=" + url[index].toString());
           index ++;
         }
-        classLoader = new URLClassLoader(url, ClassLoader.getSystemClassLoader());
-      }
-
-      if (doAddLibraryPath())
-      {
-        addToLibraryPath();
+        classLoader = createClassLoader(url);
       }
 
       Class drvClass = null;
@@ -496,10 +384,10 @@ public class DbDriver
   {
     DbDriver copy = new DbDriver();
     copy.driverClass = this.driverClass;
-    copy.libraryList = new ArrayList<>(libraryList);
+    copy.libraryList.addAll(this.libraryList);
     copy.sampleUrl = this.sampleUrl;
     copy.name = this.name;
-
+    
     // the internal attribute should not be copied!
 
     return copy;
