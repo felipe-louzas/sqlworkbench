@@ -97,6 +97,7 @@ public final class WbManager
   private final List<ToolWindow> toolWindows = Collections.synchronizedList(new ArrayList<>(5));
 
   private RunMode runMode;
+  private boolean inShutdown = false;
   private boolean writeSettings = true;
   private boolean overWriteGlobalSettingsFile = true;
   private boolean outOfMemoryOcurred;
@@ -373,6 +374,8 @@ public final class WbManager
       return;
     }
 
+    WbSwingUtilities.showWaitCursor(window);
+
     // When disconnecting it can happen that the disconnect itself
     // takes some time. Because of this, a small window is displayed
     // that the disconnect takes place, and the actual disconnect is
@@ -574,7 +577,15 @@ public final class WbManager
     if (this.mainWindows.size() == 1)
     {
       // If only one window is present, shut down the application
-      this.exitWorkbench(win, win.isBusy());
+      if (!this.inShutdown)
+      {
+        this.inShutdown = true;
+        this.exitWorkbench(win, win.isBusy());
+      }
+      else
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Ignoring second attempt to shutdown the application", new Exception("Backtrace"));
+      }
     }
     else if (win != null)
     {

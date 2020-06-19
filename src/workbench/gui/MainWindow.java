@@ -1659,6 +1659,7 @@ public class MainWindow
   @Override
   public void windowClosing(WindowEvent windowEvent)
   {
+    LogMgr.logDebug(new CallerInfo(){}, "Main window closing");
     WbManager.getInstance().closeMainWindow(this);
   }
 
