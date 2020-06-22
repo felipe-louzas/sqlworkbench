@@ -59,7 +59,11 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import workbench.AppArguments;
 import workbench.WbManager;
@@ -109,6 +113,7 @@ import workbench.sql.wbcommands.CommonArgs;
 import workbench.sql.wbcommands.WbCopy;
 import workbench.sql.wbcommands.WbImport;
 
+import workbench.util.DurationFormatter;
 import workbench.util.ExceptionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -123,7 +128,7 @@ import workbench.util.WbThread;
 public class DataPumper
   extends JPanel
   implements ActionListener, WindowListener, PropertyChangeListener,
-             RowActionMonitor, ToolWindow
+             RowActionMonitor, ToolWindow, StatusBar
 {
   private static int instanceCount;
   private int windowId;
@@ -146,6 +151,10 @@ public class DataPumper
   protected boolean copyRunning;
   private EditorPanel sqlEditor;
   private boolean supportsBatch;
+  private Timer executionTimer;
+  private long timerStarted;
+  private final int timerInterval = 1000;
+  private final DurationFormatter durationFormatter = new DurationFormatter();
 
   // used in the Jemmy Unit Test to wait for the connection thread
   boolean isConnecting = false;
@@ -165,6 +174,12 @@ public class DataPumper
 
     initComponents();
     updateImportModes();
+    execTime.setHorizontalAlignment(SwingConstants.RIGHT);
+    WbSwingUtilities.setMinimumSize(execTime, 10);
+    execTime.setText("");
+    Border b = new CompoundBorder(new DividerBorder(DividerBorder.LEFT), new EmptyBorder(0, 3, 0, 0));
+    execTime.setBorder(b);
+    this.executionTimer = new Timer(1000, this);
 
     WbSwingUtilities.makeEqualWidth(cancelButton, closeButton, startButton, showLogButton, showWbCommand, helpButton);
 
@@ -191,7 +206,7 @@ public class DataPumper
     this.useQueryCbx.addActionListener(this);
     this.sqlEditor = EditorPanel.createSqlEditor();
     this.sqlEditor.showFormatSql();
-    this.completionAction = new AutoCompletionAction(this.sqlEditor, (StatusBar)this.statusLabel);
+    this.completionAction = new AutoCompletionAction(this.sqlEditor, this);
     this.wherePanel.add(this.sqlEditor);
     this.showWbCommand.setEnabled(false);
     this.batchSize.setEnabled(false);
@@ -330,6 +345,50 @@ public class DataPumper
     {
       initColumnMapper();
     }
+  }
+
+  public void startTimer()
+  {
+    timerStarted = System.currentTimeMillis();
+    executionTimer.setInitialDelay(timerInterval);
+    executionTimer.setDelay(timerInterval);
+    executionTimer.start();
+    execTime.setText("");
+  }
+
+  public void stopTimer()
+  {
+    executionTimer.stop();
+  }
+
+  @Override
+  public void setStatusMessage(String message)
+  {
+    statusLabel.setText(message);
+  }
+
+  @Override
+  public void setStatusMessage(String message, int duration)
+  {
+    statusLabel.setText(message);
+  }
+
+  @Override
+  public void clearStatusMessage()
+  {
+    statusLabel.setText("");
+  }
+
+  @Override
+  public void doRepaint()
+  {
+    statusLabel.repaint();
+  }
+
+  @Override
+  public String getText()
+  {
+    return statusLabel.getText();
   }
 
   private void updateTargetDisplay()
@@ -629,7 +688,6 @@ public class DataPumper
     jLabel3 = new JLabel();
     preTableStmt = new JTextField();
     postTableStmt = new JTextField();
-    statusLabel = new WbStatusLabel();
     buttonPanel = new JPanel();
     jPanel3 = new JPanel();
     startButton = new WbButton();
@@ -640,6 +698,9 @@ public class DataPumper
     jPanel5 = new JPanel();
     helpButton = new JButton();
     closeButton = new JButton();
+    jPanel7 = new JPanel();
+    statusLabel = new JLabel();
+    execTime = new JLabel();
 
     setLayout(new GridBagLayout());
 
@@ -1052,17 +1113,6 @@ public class DataPumper
     gridBagConstraints.insets = new Insets(8, 2, 0, 2);
     add(jSplitPane1, gridBagConstraints);
 
-    statusLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(0, 2, 0, 0)));
-    statusLabel.setMinimumSize(new Dimension(4, 24));
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.SOUTHEAST;
-    gridBagConstraints.insets = new Insets(0, 2, 0, 2);
-    add(statusLabel, gridBagConstraints);
-
     buttonPanel.setLayout(new GridBagLayout());
 
     jPanel3.setLayout(new GridBagLayout());
@@ -1132,6 +1182,33 @@ public class DataPumper
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(9, 0, 8, 0);
     add(buttonPanel, gridBagConstraints);
+
+    jPanel7.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+    jPanel7.setLayout(new GridBagLayout());
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    jPanel7.add(statusLabel, gridBagConstraints);
+
+    execTime.setText("00:00:00");
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    jPanel7.add(execTime, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(0, 2, 0, 2);
+    add(jPanel7, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void modeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modeComboBoxActionPerformed
@@ -1164,6 +1241,7 @@ public class DataPumper
   protected JCheckBox continueOnErrorCbx;
   protected JCheckBox deleteTargetCbx;
   protected JCheckBox dropTargetCbx;
+  protected JLabel execTime;
   protected JButton helpButton;
   protected JCheckBox ignoreDropError;
   protected JCheckBox ignoreIdentityCbx;
@@ -1176,6 +1254,7 @@ public class DataPumper
   protected JPanel jPanel4;
   protected JPanel jPanel5;
   protected JPanel jPanel6;
+  protected JPanel jPanel7;
   protected JSplitPane jSplitPane1;
   protected JPanel mapperPanel;
   protected JComboBox modeComboBox;
@@ -1425,6 +1504,11 @@ public class DataPumper
     else if (e.getSource() == this.showLogButton)
     {
       this.showLog();
+    }
+    else if (e.getSource() == this.executionTimer)
+    {
+      long time = System.currentTimeMillis() - timerStarted;
+      execTime.setText(durationFormatter.formatDuration(time, Settings.getInstance().getDurationFormat(), false));
     }
   }
 
@@ -2052,6 +2136,7 @@ public class DataPumper
     try
     {
       this.copyRunning = true;
+      startTimer();
       String tableType = (ttable.isNewTable() ? DbSettings.DEFAULT_CREATE_TABLE_TYPE : null);
 
       if (this.fileImporter != null)
@@ -2207,6 +2292,7 @@ public class DataPumper
   @Override
   public void jobFinished()
   {
+    this.stopTimer();
     this.copyRunning = false;
     if (this.copier.isSuccess())
     {
