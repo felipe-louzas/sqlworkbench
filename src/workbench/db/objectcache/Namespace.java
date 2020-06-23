@@ -119,6 +119,18 @@ public class Namespace
     expression = buildExpression();
   }
 
+  public void setNamespace(TableIdentifier tbl)
+  {
+    if (tbl.getSchema() == null)
+    {
+      tbl.setSchema(this.schema);
+    }
+    if (tbl.getCatalog() == null)
+    {
+      tbl.setCatalog(this.catalog);
+    }
+  }
+
   public void removeNamespaceIfEqual(TableIdentifier tbl)
   {
     if (tbl == null) return;

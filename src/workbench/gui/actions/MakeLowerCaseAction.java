@@ -28,7 +28,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import workbench.interfaces.TextSelectionListener;
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
 
@@ -42,7 +41,6 @@ import workbench.gui.sql.EditorPanel;
  */
 public class MakeLowerCaseAction
   extends WbAction
-  implements TextSelectionListener
 {
   private EditorPanel client;
 
@@ -50,10 +48,8 @@ public class MakeLowerCaseAction
   {
     super();
     this.client = aClient;
-    this.client.addSelectionListener(this);
     this.initMenuDefinition("MnuTxtMakeLowerCase", KeyStroke.getKeyStroke(KeyEvent.VK_L, PlatformShortcuts.getDefaultModifier()));
     this.setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
-    this.setEnabled(false);
   }
 
   @Override
@@ -61,11 +57,4 @@ public class MakeLowerCaseAction
   {
     this.client.toLowerCase();
   }
-
-  @Override
-  public void selectionChanged(int newStart, int newEnd)
-  {
-    this.setEnabled(newEnd > newStart);
-  }
-
 }

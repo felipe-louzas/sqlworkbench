@@ -2,6 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2020-06-11">
+    <entry dev-build="12" type="enh">"Make uppercase" and "Make lowercase" now also work if no text is selected. In that case, (only) the character at the cursor is changed</entry>
     <entry dev-build="11" type="enh">Reverted to the old Windows EXE launcher due to problems with some anti-virus programs and the new launcher introduced in 125.8.</entry>
     <entry dev-build="9" type="enh">Passwords can now securely be encrypted using a master password. The old password encryption is no longer supported.</entry>
     <entry dev-build="9" type="enh">The properties base profile storage (wb-profiles.properties) is now the default. The old XML format is still supported.</entry>
@@ -30,6 +31,7 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
+    <entry dev-build="12" type="fix">For WbCopy, when using -createTarget=true together with -targetSchema the new table was created in the wrong schema</entry>
     <entry dev-build="11" type="fix">Fixed an issue when loading the SQL Server JDBC driver with certain versions of OpenJDK</entry>
     <entry dev-build="11" type="fix">For SQL Server, when including the CREATE TABLE statement in the output when exporting data as SQL the export failed</entry>
     <entry dev-build="9" type="fix">WbDataDiff did not work properly if the key columns contained NULL values.</entry>

@@ -76,8 +76,8 @@ public class PostgresDependencyReader
       "       obj_description(cl.oid) as remarks\n" +
       "from information_schema.view_table_usage vtu \n" +
       "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.table_schema)||'.'||quote_ident(vtu.table_name))::regclass \n" +
-      "where (view_schema, view_name) = (?, ?) \n" +
-      "order by view_schema, view_name";
+      "where (vtu.view_schema, vtu.view_name) = (?, ?) \n" +
+      "order by vtu.view_schema, vtu.view_name";
 
   private final String viewsUsingTable =
         "select vtu.view_schema, \n" +
@@ -85,8 +85,8 @@ public class PostgresDependencyReader
         "       obj_description(cl.oid) as remarks\n" +
         "from information_schema.view_table_usage vtu \n" +
         "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.view_schema)||'.'||quote_ident(vtu.view_name))::regclass \n" +
-        "where (table_schema, table_name) = (?, ?) \n" +
-        "order by view_schema, view_name";
+        "where (vtu.table_schema, vtu.table_name) = (?, ?) \n" +
+        "order by vtu.view_schema, vtu.view_name";
 
   private String typesUsedByFunction =
     "select distinct ts.nspname as type_schema, typ.typname as type_name, 'TYPE', obj_description(typ.oid) as remarks \n" +
@@ -109,47 +109,41 @@ public class PostgresDependencyReader
     "  and typ.typname = ? \n";
 
   private final String tablesUsingType =
-    "select distinct n.nspname as table_schema, \n " +
+    "select distinct t.typnamespace::regnamespace::text as table_schema, \n " +
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
     "       obj_description(cl.oid) as remarks  \n" +
     "from pg_catalog.pg_class cl  \n" +
-    "  join pg_catalog.pg_namespace n on n.oid = cl.relnamespace  \n" +
     "  join pg_depend d on d.objid = cl.oid and d.classid = 'pg_class'::regclass  \n" +
     "  join pg_catalog.pg_type t on t.oid = d.refobjid  \n" +
-    "  join pg_catalog.pg_namespace tn on tn.oid = t.typnamespace \n" +
     "where d.deptype in ('a', 'n')" +
     "  and cl.relkind in ('r', 'v', 'f') \n" +
-    "  and tn.nspname = ? \n" +
+    "  and t.typnamespace = to_regnamespace(?) \n" +
     "  and t.typname = ? \n";
 
   private final String typesUsedByTable =
-    "select distinct tn.nspname as type_schema, t.typname as type_name, 'TYPE' as object_type, obj_description(t.oid) as remarks \n" +
+    "select distinct t.typnamespace::regnamespace::text as type_schema, t.typname as type_name, 'TYPE' as object_type, obj_description(t.oid) as remarks \n" +
     "from pg_catalog.pg_class c \n" +
-    "  join pg_catalog.pg_namespace n on n.oid = c.relnamespace \n" +
     "  join pg_depend d on d.objid = c.oid and d.classid = 'pg_class'::regclass \n" +
     "  join pg_catalog.pg_type t on t.oid = d.refobjid \n" +
-    "  join pg_catalog.pg_namespace tn on tn.oid = t.typnamespace\n" +
     "where d.deptype in ('a', 'n') \n" +
-    "  and n.nspname = ? \n"+
+    "  and c.relnamespace = to_regnamespace(?) \n"+
     "  and c.relname = ? ";
 
   private final String sequencesUsedByTable =
-    "select distinct sn.nspname as sequence_schema, s.relname as sequence_name, 'SEQUENCE', obj_description(s.oid) as remarks\n" +
+    "select distinct s.relnamespace::regnamespace::text as sequence_schema, s.relname as sequence_name, 'SEQUENCE', obj_description(s.oid) as remarks\n" +
     "from pg_catalog.pg_class s\n" +
-    "  join pg_catalog.pg_namespace sn on sn.oid = s.relnamespace \n" +
     "  join pg_depend d on d.refobjid = s.oid and d.refclassid='pg_class'::regclass \n" +
     "  join pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
     "  join pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
     "  join pg_catalog.pg_class tbl on tbl.oid = ad.adrelid \n" +
-    "  join pg_catalog.pg_namespace ts on ts.oid = tbl.relnamespace \n" +
     "where s.relkind = 'S' \n" +
     "  and d.deptype in ('a', 'n') \n " +
-    "  and ts.nspname = ? \n" +
+    "  and tbl.relnamespace = to_regnamespace(?) \n" +
     "  and tbl.relname = ?";
 
   private final String tablesUsingSequence =
-    "select distinct n.nspname as table_schema, \n" +
+    "select distinct cl.relnamespace::regnamespace::text as table_schema, \n" +
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
     "       obj_description(cl.oid) as remarks\n" +
@@ -158,30 +152,25 @@ public class PostgresDependencyReader
     "  join pg_catalog.pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
     "  join pg_catalog.pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
     "  join pg_catalog.pg_class cl on cl.oid = ad.adrelid \n" +
-    "  join pg_catalog.pg_namespace n on n.oid = cl.relnamespace\n " +
     "where s.relkind = 'S' \n" +
     "  and d.deptype in ('a', 'n') \n " +
-    "  and n.nspname = ? \n" +
+    "  and cl.relnamespace = to_regnamespace(?) \n" +
     "  and s.relname = ?";
 
   private final String triggerImplementationFunction =
-    "SELECT trgsch.nspname as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, " + proArgs +
+    "SELECT p.pronamespace::regnamespace::text as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, " + proArgs +
     "FROM pg_catalog.pg_trigger trg  \n" +
     "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
     "  JOIN pg_catalog.pg_proc p ON p.oid = trg.tgfoid \n" +
-    "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = p.pronamespace \n" +
-    "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
-    "WHERE tblsch.nspname =  ? \n" +
+    "WHERE tbl.relnamespace = to_regnamespace(?) \n" +
     "  AND trg.tgname = ? ";
 
   private final String triggerTable =
-    "SELECT tblsch.nspname as table_schema, tbl.relname as table_name, 'TABLE', obj_description(tbl.oid) as remarks \n" +
+    "SELECT tbl.relnamespace::regnamespace::text as table_schema, tbl.relname as table_name, 'TABLE', obj_description(tbl.oid) as remarks \n" +
     "FROM pg_catalog.pg_trigger trg  \n" +
     "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
     "  JOIN pg_catalog.pg_proc proc ON proc.oid = trg.tgfoid \n" +
-    "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
-    "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
-    "WHERE tblsch.nspname =  ? \n" +
+    "WHERE tbl.relnamespace = to_regnamespace(?) \n" +
     "  AND trg.tgname = ? ";
 
   private final String triggersUsingFunction =
@@ -301,7 +290,7 @@ public class PostgresDependencyReader
 
     List<DbObject> result = new ArrayList<>();
 
-    LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", base.getSchema(), base.getObjectName(), base.getObjectType());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, base.getSchema(), base.getObjectName(), base.getObjectType());
 
     Savepoint sp = null;
     try
@@ -349,7 +338,7 @@ public class PostgresDependencyReader
     catch (Exception ex)
     {
       connection.rollback(sp);
-      LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", base.getSchema(), base.getObjectName(), base.getObjectType());
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, base.getSchema(), base.getObjectName(), base.getObjectType());
     }
     finally
     {

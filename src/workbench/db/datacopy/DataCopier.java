@@ -924,6 +924,7 @@ public class DataCopier
   private static boolean useSavePointForSourceQuery(WbConnection source)
   {
     if (source == null) return false;
+    if (source.getAutoCommit()) return false;
     return source.getDbSettings().useSavePointForDML() &&
           source.supportsSavepoints() &&
           source.selectStartsTransaction();

@@ -190,17 +190,22 @@ public class QueryCopySource
       {
         this.receiver.importCancelled();
       }
+      sourceConnection.releaseSavepoint(sp);
+    }
+    catch (Exception ex)
+    {
+      sourceConnection.rollback(sp);
+      this.receiver.tableImportError();
+      throw ex;
     }
     finally
     {
       resultBuffer.disableDriverBuffering();
       SqlUtil.closeAll(rs, retrieveStatement);
-      sourceConnection.rollback(sp);
       if (reader != null)
       {
         reader.closeStreams();
       }
-
     }
   }
 

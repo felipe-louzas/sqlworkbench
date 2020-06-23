@@ -28,7 +28,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import workbench.interfaces.TextSelectionListener;
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
 
@@ -42,7 +41,6 @@ import workbench.gui.sql.EditorPanel;
  */
 public class MakeUpperCaseAction
   extends WbAction
-  implements TextSelectionListener
 {
   private EditorPanel client;
 
@@ -50,21 +48,13 @@ public class MakeUpperCaseAction
   {
     super();
     this.client = aClient;
-    this.client.addSelectionListener(this);
     this.initMenuDefinition("MnuTxtMakeUpperCase", KeyStroke.getKeyStroke(KeyEvent.VK_U, PlatformShortcuts.getDefaultModifier()));
     this.setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
-    this.setEnabled(false);
   }
 
   @Override
   public void executeAction(ActionEvent e)
   {
     this.client.toUpperCase();
-  }
-
-  @Override
-  public void selectionChanged(int newStart, int newEnd)
-  {
-    this.setEnabled(newEnd > newStart);
   }
 }

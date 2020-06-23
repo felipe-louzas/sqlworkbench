@@ -39,6 +39,7 @@ import workbench.db.TableIdentifier;
 import workbench.db.TableNotFoundException;
 import workbench.db.WbConnection;
 import workbench.db.datacopy.DataCopier;
+import workbench.db.objectcache.Namespace;
 
 import workbench.storage.RowActionMonitor;
 
@@ -80,6 +81,7 @@ class TableCopy
     String sourcetable = cmdLine.getValue(WbCopy.PARAM_SOURCETABLE);
     String sourcequery = SqlUtil.trimSemicolon(cmdLine.getValue(WbCopy.PARAM_SOURCEQUERY));
     String targettable = cmdLine.getValue(WbCopy.PARAM_TARGETTABLE);
+    String targetSchema = cmdLine.getValue(WbCopy.PARAM_TARGETSCHEMA);
     if (targettable == null)
     {
       targettable = sourcetable;
@@ -104,17 +106,19 @@ class TableCopy
     copier.setRowActionMonitor(monitor);
 
     String createTableType = null;
-    TableIdentifier targetId = null;
+    TableIdentifier targetId = new TableIdentifier(targettable, targetConnection);
+    Namespace ns = Namespace.fromExpression(targetConnection, targetSchema);
+    ns.setNamespace(targetId);
+
     if (createTable)
     {
-      targetId = new TableIdentifier(targettable, targetConnection);
       targetId.setNewTable(true);
       createTableType = cmdLine.getValue(WbCopy.PARAM_TABLE_TYPE, DbSettings.DEFAULT_CREATE_TABLE_TYPE);
     }
     else
     {
       String[] types = targetConnection.getMetadata().getTablesAndViewTypes();
-      targetId = new DbObjectFinder(targetConnection).findTable(new TableIdentifier(targettable, targetConnection), types);
+      targetId = new DbObjectFinder(targetConnection).findTable(targetId, types);
     }
 
     if (targetId == null)

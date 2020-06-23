@@ -729,7 +729,7 @@ public class TreeLoader
         addDependencyNodes(node);
       }
 
-      if (connection.getMetadata().isViewType(typeNode.getName()))
+      if (connection.getMetadata().isViewType(typeNode.getName()) && !tbl.getType().equals(DbMetadata.MVIEW_NAME))
       {
         addViewTriggerNode(node);
         connection.getObjectCache().addTable(new TableDefinition(tbl));

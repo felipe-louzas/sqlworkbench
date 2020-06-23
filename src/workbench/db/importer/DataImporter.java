@@ -1832,9 +1832,10 @@ public class DataImporter
 
     final CallerInfo ci = new CallerInfo(){};
 
+    this.targetTable = table.createCopy();
+    String tname = this.targetTable.getTableExpression(dbConn);
     try
     {
-      this.targetTable = table.createCopy();
       this.targetColumns = new ArrayList<>(columnsToImport);
 
       // Key columns might have been externally defined if
@@ -1849,11 +1850,11 @@ public class DataImporter
       String tableMsg = null;
       if (this.parser != null)
       {
-        tableMsg = ResourceMgr.getFormattedString("MsgImportingFile", this.parser.getSourceFilename(), this.targetTable.getTableName());
+        tableMsg = ResourceMgr.getFormattedString("MsgImportingFile", this.parser.getSourceFilename(), tname);
       }
       else
       {
-        tableMsg = ResourceMgr.getFormattedString("MsgImportingTableData", this.targetTable.getTableName());
+        tableMsg = ResourceMgr.getFormattedString("MsgImportingTableData", tname);
       }
       this.messages.append(tableMsg);
       this.messages.appendNewLine();
@@ -1866,10 +1867,10 @@ public class DataImporter
         }
         catch (SQLException e)
         {
-          String msg = ResourceMgr.getFormattedString("ErrImportTableNotCreated", this.targetTable.getTableExpression(this.dbConn), ExceptionUtil.getDisplay(e));
+          String msg = ResourceMgr.getFormattedString("ErrImportTableNotCreated", tname, ExceptionUtil.getDisplay(e));
           this.messages.append(msg);
           this.messages.appendNewLine();
-          LogMgr.logError(ci, "Could not create target: " + this.targetTable, e);
+          LogMgr.logError(ci, "Could not create target: " + tname, e);
           this.hasErrors = true;
           throw e;
         }
@@ -1883,7 +1884,7 @@ public class DataImporter
         }
         catch (SQLException e)
         {
-          this.messages.append(ResourceMgr.getFormattedString("ErrTargetTableNotFound", targetTable.getTableExpression()));
+          this.messages.append(ResourceMgr.getFormattedString("ErrTargetTableNotFound", tname));
           if (parser != null)
           {
             this.messages.appendNewLine();
@@ -1917,7 +1918,7 @@ public class DataImporter
         {
           this.progressMonitor.saveCurrentType("importDelete");
           this.progressMonitor.setMonitorType(RowActionMonitor.MONITOR_PLAIN);
-          String msg = ResourceMgr.getFormattedString("TxtDeletingTable", targetTable.getObjectName());
+          String msg = ResourceMgr.getFormattedString("TxtDeletingTable", tname);
           this.progressMonitor.setCurrentObject(msg,-1,-1);
         }
 
@@ -1929,12 +1930,12 @@ public class DataImporter
         {
           this.hasErrors = true;
           String msg = ResourceMgr.getString("ErrDeleteTableData");
-          msg = msg.replace("%table%",table.toString());
+          msg = msg.replace("%table%", tname);
           msg = msg.replace("%error%", ExceptionUtil.getDisplay(e));
           this.messages.append(msg);
           this.messages.appendNewLine();
 
-          LogMgr.logError(ci, "Could not delete contents of table " + targetTable, e);
+          LogMgr.logError(ci, "Could not delete contents of table " + tname, e);
           if (!this.continueOnError)
           {
             throw e;
@@ -1947,12 +1948,12 @@ public class DataImporter
       if (this.reportInterval == 0 && this.progressMonitor != null)
       {
         this.progressMonitor.setMonitorType(RowActionMonitor.MONITOR_PLAIN);
-        this.progressMonitor.setCurrentObject(ResourceMgr.getFormattedString("MsgImportingTableData", targetTable + " (" + this.getModeString() + ")"),-1,-1);
+        this.progressMonitor.setCurrentObject(ResourceMgr.getFormattedString("MsgImportingTableData", tname + " (" + this.getModeString() + ")"),-1,-1);
       }
 
       if (LogMgr.isInfoEnabled())
       {
-        LogMgr.logInfo(ci, "Starting import for table " + targetTable.getTableExpression());
+        LogMgr.logInfo(ci, "Starting import for table " + tname);
       }
 
       if (this.badfileName != null)
@@ -1967,7 +1968,6 @@ public class DataImporter
     }
     catch (Exception th)
     {
-      String tname = targetTable == null ? "null" : targetTable.getTableExpression();
       String msg = "Error initializing import for table " + tname;
       if (this.continueOnError)
       {

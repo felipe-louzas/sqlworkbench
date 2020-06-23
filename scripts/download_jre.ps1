@@ -15,7 +15,7 @@ function Get-RedirectedUrl
     }
 }
 
-$url= "https://api.adoptopenjdk.net/v2/binary/releases/openjdk14?openjdk_impl=hotspot&os=windows&arch=x64&release=latest&type=jre"
+$url= "https://api.adoptopenjdk.net/v3/binary/latest/14/ga/windows/x64/jre/hotspot/normal/adoptopenjdk?project=jdk"
 
 $fUrl = Get-RedirectedUrl $url
 $filename = [System.IO.Path]::GetFileName($fUrl); 

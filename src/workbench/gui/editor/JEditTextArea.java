@@ -363,9 +363,14 @@ public class JEditTextArea
   private void changeCase(boolean toLower)
   {
     String sel = this.getSelectedText();
-    if (sel == null || sel.length() == 0) return;
-    int start = this.getSelectionStart();
-    int end = this.getSelectionEnd();
+    boolean singleChar = false;
+    int pos = this.getCaretPosition();
+    if (sel == null || sel.length() == 0)
+    {
+      sel = this.getText(pos, 1);
+      singleChar = true;
+    }
+
     if (toLower)
     {
       sel = sel.toLowerCase();
@@ -374,8 +379,19 @@ public class JEditTextArea
     {
       sel = sel.toUpperCase();
     }
-    this.setSelectedText(sel);
-    this.select(start, end);
+
+    if (singleChar)
+    {
+      this.select(pos, pos + 1);
+      this.setSelectedText(sel);
+    }
+    else
+    {
+      int start = this.getSelectionStart();
+      int end = this.getSelectionEnd();
+      this.setSelectedText(sel);
+      this.select(start, end);
+    }
   }
 
   public String getCommentChar()

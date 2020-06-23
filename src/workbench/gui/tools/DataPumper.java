@@ -100,7 +100,6 @@ import workbench.gui.components.FlatButton;
 import workbench.gui.components.RunningJobIndicator;
 import workbench.gui.components.WbButton;
 import workbench.gui.components.WbSplitPane;
-import workbench.gui.components.WbStatusLabel;
 import workbench.gui.dialogs.dataimport.ImportFileDialog;
 import workbench.gui.help.HelpManager;
 import workbench.gui.profiles.ProfileSelectionDialog;
