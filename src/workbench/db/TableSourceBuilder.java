@@ -221,6 +221,9 @@ public class TableSourceBuilder
 
     boolean inlineFK = getCreateInlineFKConstraints();
 
+    StringUtil.trimTrailingWhitespace(result);
+    result.append(lineEnding);
+
     if (!inlineFK && includeFk && dbConnection.getDbSettings().getGenerateTableFKSource())
     {
       CharSequence fk = getFkSource(table, fkList, false);
@@ -229,6 +232,8 @@ public class TableSourceBuilder
         result.append(lineEnding);
         result.append(fk);
       }
+      StringUtil.trimTrailingWhitespace(result);
+      result.append(lineEnding);
     }
 
     if (dbConnection.getDbSettings().getGenerateTableIndexSource())
@@ -240,6 +245,8 @@ public class TableSourceBuilder
         result.append(lineEnding);
         result.append(indexSource);
       }
+      StringUtil.trimTrailingWhitespace(result);
+      result.append(lineEnding);
     }
 
     appendTableComments(result, table, columns, lineEnding);
@@ -253,6 +260,8 @@ public class TableSourceBuilder
         result.append(lineEnding);
         result.append(grants);
       }
+      StringUtil.trimTrailingWhitespace(result);
+      result.append(lineEnding);
     }
 
     CharSequence extendedSQL = table.getSourceOptions().getAdditionalSql();
@@ -261,6 +270,10 @@ public class TableSourceBuilder
       result.append(lineEnding);
       result.append(extendedSQL);
     }
+
+    StringUtil.trimTrailingWhitespace(result);
+    result.append(lineEnding);
+
     return result.toString();
   }
 

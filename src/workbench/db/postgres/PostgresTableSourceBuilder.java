@@ -62,6 +62,8 @@ public class PostgresTableSourceBuilder
 
   public static final String FORCE_RLS_OPTION = "FORCE_RLS";
   public static final String RLS_ENABLED_OPTION = "RLS_ENABLED";
+  public static final String REPLICA_IDENT_OPTION = "REPLICA_IDENTITY";
+  public static final String REPLICA_INDEX = "REPLICA_INDEX";
 
   public PostgresTableSourceBuilder(WbConnection con)
   {
@@ -145,6 +147,24 @@ public class PostgresTableSourceBuilder
       persistenceCol = "null::char as relpersistence";
     }
 
+    String replicaCol;
+    String replicaIndexCol;
+    if (JdbcUtils.hasMinimumServerVersion(dbConnection, "9.4"))
+    {
+      replicaCol = "ct.relreplident";
+      replicaIndexCol = "" +
+        "case \n" +
+        "          when ct.relreplident = 'i' " +
+        "               then (select ix.indexrelid::regclass::text from pg_index ix where ix.indrelid = ct.oid and ix.indisreplident) \n" +
+        "          else null \n" +
+        "       end as replica_index";
+    }
+    else
+    {
+      replicaCol = "null as relreplident";
+      replicaIndexCol = "null as replica_index";
+    }
+
     String spcnameCol;
     String defaultTsCol;
     String defaultTsQuery;
@@ -195,7 +215,9 @@ public class PostgresTableSourceBuilder
       "       own.rolname as owner, \n" +
       "       " + defaultTsCol + ", \n" +
       "       " + rlsEnableCol + ", \n" +
-      "       " + rlsForceCol + " \n " +
+      "       " + rlsForceCol + ", \n " +
+      "       " + replicaCol + ", \n" +
+      "       " + replicaIndexCol + " \n" +
       "from pg_catalog.pg_class ct \n" +
       "  join pg_catalog.pg_namespace cns on ct.relnamespace = cns.oid \n " +
       "  join pg_catalog.pg_roles own on ct.relowner = own.oid \n " +
@@ -221,6 +243,7 @@ public class PostgresTableSourceBuilder
       if (rs.next())
       {
         String persistence = rs.getString("relpersistence");
+        String replica = rs.getString("relreplident");
         String type = rs.getString("relkind");
         String settings = rs.getString("options");
         String tableSpace = rs.getString("spcname");
@@ -250,6 +273,28 @@ public class PostgresTableSourceBuilder
           }
         }
 
+        if (StringUtil.isNonEmpty(replica))
+        {
+          String tname = tbl.getTableExpression(dbConnection);
+          String alter = "ALTER TABLE " + tname + " REPLICA IDENTITY ";
+          switch (replica.charAt(0))
+          {
+            case 'n':
+              option.appendAdditionalSql(alter + "NOTHING;");
+              option.addConfigSetting(REPLICA_IDENT_OPTION, "nothing");
+              break;
+            case 'f':
+              option.appendAdditionalSql(alter + "FULL;");
+              option.addConfigSetting(REPLICA_IDENT_OPTION, "full");
+              break;
+            case 'i':
+              String index = rs.getString("replica_index");
+              option.appendAdditionalSql(alter + "USING INDEX " + SqlUtil.quoteObjectname(index) + ";");
+              option.addConfigSetting(REPLICA_IDENT_OPTION, "index");
+              option.addConfigSetting(REPLICA_INDEX, index);
+              break;
+          }
+        }
 
         if (forceRls)
         {
@@ -429,7 +474,7 @@ public class PostgresTableSourceBuilder
     {
       dbConnection.rollback(sp);
       sp = null;
-      LogMgr.logMetadataError(ci, ex, "foreitn table options", sql, table.getSchema(), table.getTableName());
+      LogMgr.logMetadataError(ci, ex, "foreign table options", sql, table.getSchema(), table.getTableName());
     }
     finally
     {
@@ -454,8 +499,11 @@ public class PostgresTableSourceBuilder
     {
       String conname = SqlUtil.quoteObjectname(node.getFkName());
       String comment = SqlUtil.escapeQuotes(node.getComment());
-      String ddl = "\nCOMMENT ON CONSTRAINT " + conname + " ON " + tblname + " IS '" + comment + "';";
-      fkSource.append(ddl);
+      if (StringUtil.isNonEmpty(comment))
+      {
+        String ddl = "\nCOMMENT ON CONSTRAINT " + conname + " ON " + tblname + " IS '" + comment + "';";
+        fkSource.append(ddl);
+      }
     }
   }
 
