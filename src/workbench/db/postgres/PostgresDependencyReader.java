@@ -31,6 +31,7 @@ import java.util.Set;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.ProcedureDefinition;
 import workbench.db.SequenceDefinition;
@@ -109,41 +110,47 @@ public class PostgresDependencyReader
     "  and typ.typname = ? \n";
 
   private final String tablesUsingType =
-    "select distinct t.typnamespace::regnamespace::text as table_schema, \n " +
+    "select distinct n.nspname as table_schema, \n " +
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
     "       obj_description(cl.oid) as remarks  \n" +
     "from pg_catalog.pg_class cl  \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = cl.relnamespace  \n" +
     "  join pg_depend d on d.objid = cl.oid and d.classid = 'pg_class'::regclass  \n" +
     "  join pg_catalog.pg_type t on t.oid = d.refobjid  \n" +
+    "  join pg_catalog.pg_namespace tn on tn.oid = t.typnamespace \n" +
     "where d.deptype in ('a', 'n')" +
     "  and cl.relkind in ('r', 'v', 'f') \n" +
-    "  and t.typnamespace = to_regnamespace(?) \n" +
+    "  and tn.nspname = ? \n" +
     "  and t.typname = ? \n";
 
   private final String typesUsedByTable =
-    "select distinct t.typnamespace::regnamespace::text as type_schema, t.typname as type_name, 'TYPE' as object_type, obj_description(t.oid) as remarks \n" +
+    "select distinct tn.nspname as type_schema, t.typname as type_name, 'TYPE' as object_type, obj_description(t.oid) as remarks \n" +
     "from pg_catalog.pg_class c \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = c.relnamespace \n" +
     "  join pg_depend d on d.objid = c.oid and d.classid = 'pg_class'::regclass \n" +
     "  join pg_catalog.pg_type t on t.oid = d.refobjid \n" +
+    "  join pg_catalog.pg_namespace tn on tn.oid = t.typnamespace\n" +
     "where d.deptype in ('a', 'n') \n" +
-    "  and c.relnamespace = to_regnamespace(?) \n"+
+    "  and n.nspname = ? \n"+
     "  and c.relname = ? ";
 
   private final String sequencesUsedByTable =
-    "select distinct s.relnamespace::regnamespace::text as sequence_schema, s.relname as sequence_name, 'SEQUENCE', obj_description(s.oid) as remarks\n" +
+    "select distinct sn.nspname as sequence_schema, s.relname as sequence_name, 'SEQUENCE', obj_description(s.oid) as remarks\n" +
     "from pg_catalog.pg_class s\n" +
+    "  join pg_catalog.pg_namespace sn on sn.oid = s.relnamespace \n" +
     "  join pg_depend d on d.refobjid = s.oid and d.refclassid='pg_class'::regclass \n" +
     "  join pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
     "  join pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
     "  join pg_catalog.pg_class tbl on tbl.oid = ad.adrelid \n" +
+    "  join pg_catalog.pg_namespace ts on ts.oid = tbl.relnamespace \n" +
     "where s.relkind = 'S' \n" +
     "  and d.deptype in ('a', 'n') \n " +
-    "  and tbl.relnamespace = to_regnamespace(?) \n" +
+    "  and ts.nspname = ? \n" +
     "  and tbl.relname = ?";
 
   private final String tablesUsingSequence =
-    "select distinct cl.relnamespace::regnamespace::text as table_schema, \n" +
+    "select distinct n.nspname as table_schema, \n" +
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
     "       obj_description(cl.oid) as remarks\n" +
@@ -152,25 +159,30 @@ public class PostgresDependencyReader
     "  join pg_catalog.pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
     "  join pg_catalog.pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
     "  join pg_catalog.pg_class cl on cl.oid = ad.adrelid \n" +
+    "  join pg_catalog.pg_namespace n on n.oid = cl.relnamespace\n " +
     "where s.relkind = 'S' \n" +
     "  and d.deptype in ('a', 'n') \n " +
-    "  and cl.relnamespace = to_regnamespace(?) \n" +
+    "  and n.nspname = ? \n" +
     "  and s.relname = ?";
 
   private final String triggerImplementationFunction =
-    "SELECT p.pronamespace::regnamespace::text as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, " + proArgs +
+    "SELECT trgsch.nspname as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, " + proArgs +
     "FROM pg_catalog.pg_trigger trg  \n" +
     "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
     "  JOIN pg_catalog.pg_proc p ON p.oid = trg.tgfoid \n" +
-    "WHERE tbl.relnamespace = to_regnamespace(?) \n" +
+    "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = p.pronamespace \n" +
+    "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
+    "WHERE tblsch.nspname =  ? \n" +
     "  AND trg.tgname = ? ";
 
   private final String triggerTable =
-    "SELECT tbl.relnamespace::regnamespace::text as table_schema, tbl.relname as table_name, 'TABLE', obj_description(tbl.oid) as remarks \n" +
+    "SELECT tblsch.nspname as table_schema, tbl.relname as table_name, 'TABLE', obj_description(tbl.oid) as remarks \n" +
     "FROM pg_catalog.pg_trigger trg  \n" +
     "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
     "  JOIN pg_catalog.pg_proc proc ON proc.oid = trg.tgfoid \n" +
-    "WHERE tbl.relnamespace = to_regnamespace(?) \n" +
+    "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
+    "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
+    "WHERE tblsch.nspname =  ? \n" +
     "  AND trg.tgname = ? ";
 
   private final String triggersUsingFunction =
@@ -212,7 +224,7 @@ public class PostgresDependencyReader
     List<DbObject> sequences = retrieveObjects(connection, base, sequencesUsedByTable);
     objects.addAll(sequences);
 
-    if (objectType.equals("table") ||objectType.equals("view") || objectType.equals("materialized view"))
+    if (objectType.equals("table") ||objectType.equals("view") || objectType.equalsIgnoreCase(DbMetadata.MVIEW_NAME))
     {
       List<DbObject> types = retrieveObjects(connection, base, typesUsedByTable);
       objects.addAll(types);
