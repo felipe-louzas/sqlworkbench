@@ -27,12 +27,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import workbench.interfaces.Restoreable;
 import workbench.resource.GuiSettings;
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -62,6 +65,9 @@ public class FontOptionsPanel
       scaleFonts.setVisible(false);
       scaleFonts.setEnabled(false);
     }
+    String[] sizeValues = new String[]{ResourceMgr.getString("LblDefaultIndicator"), "16px", "24px", "32px"};
+    DefaultComboBoxModel model = new DefaultComboBoxModel(sizeValues);
+    iconSize.setModel(model);
   }
 
   @Override
@@ -72,9 +78,30 @@ public class FontOptionsPanel
     msgLogFont.setSelectedFont(Settings.getInstance().getMsgLogFont());
     standardFont.setSelectedFont(Settings.getInstance().getStandardFont());
     wheelZoom.setSelected(GuiSettings.getZoomFontWithMouseWheel());
+
     if (scaleFonts.isVisible())
     {
       scaleFonts.setSelected(Settings.getInstance().getScaleFonts());
+    }
+    if (Settings.getInstance().getScaleMenuIcons())
+    {
+      iconSize.setSelectedIndex(0);
+    }
+    else
+    {
+      int size = Settings.getInstance().getToolbarIconSize();
+      switch (size)
+      {
+        case IconMgr.SMALL_ICON:
+          iconSize.setSelectedIndex(1);
+          break;
+        case IconMgr.MEDIUM_ICON:
+          iconSize.setSelectedIndex(2);
+          break;
+        case IconMgr.LARGE_ICON:
+          iconSize.setSelectedIndex(3);
+          break;
+      }
     }
   }
 
@@ -90,6 +117,25 @@ public class FontOptionsPanel
       Settings.getInstance().setScaleFonts(scaleFonts.isSelected());
     }
     GuiSettings.setZoomFontWithMouseWheel(wheelZoom.isSelected());
+    int selected = iconSize.getSelectedIndex();
+    switch (selected)
+    {
+      case 0:
+        Settings.getInstance().setScaleMenuIcons(true);
+        break;
+      case 1:
+        Settings.getInstance().setScaleMenuIcons(false);
+        Settings.getInstance().setToolbarIconSize(IconMgr.SMALL_ICON);
+        break;
+      case 2:
+        Settings.getInstance().setScaleMenuIcons(false);
+        Settings.getInstance().setToolbarIconSize(IconMgr.MEDIUM_ICON);
+        break;
+      case 3:
+        Settings.getInstance().setScaleMenuIcons(false);
+        Settings.getInstance().setToolbarIconSize(IconMgr.LARGE_ICON);
+        break;
+    }
   }
 
   /** This method is called from within the constructor to  initialize the form.
@@ -111,8 +157,10 @@ public class FontOptionsPanel
     editorFont = new WbFontPicker();
     editorFontLabel = new JLabel();
     scaleFonts = new JCheckBox();
-    jPanel1 = new JPanel();
     wheelZoom = new JCheckBox();
+    iconSizePanel = new JPanel();
+    jLabel1 = new JLabel();
+    iconSize = new JComboBox<>();
 
     setLayout(new GridBagLayout());
 
@@ -194,33 +242,55 @@ public class FontOptionsPanel
     scaleFonts.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(7, 1, 5, 0);
     add(scaleFonts, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 8;
-    gridBagConstraints.weighty = 1.0;
-    add(jPanel1, gridBagConstraints);
 
     wheelZoom.setText(ResourceMgr.getString("LblEnableWheelZoom")); // NOI18N
     wheelZoom.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(7, 1, 5, 0);
     add(wheelZoom, gridBagConstraints);
+
+    iconSizePanel.setLayout(new GridBagLayout());
+
+    jLabel1.setText(ResourceMgr.getString("LblIconSize")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 0, 0, 11);
+    iconSizePanel.add(jLabel1, gridBagConstraints);
+
+    iconSize.setModel(new DefaultComboBoxModel<>(new String[] { "16 px", "24 px", "32 px", " " }));
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    iconSizePanel.add(iconSize, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(4, 0, 0, 0);
+    add(iconSizePanel, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private WbFontPicker dataFont;
   private JLabel dataFontLabel;
   private WbFontPicker editorFont;
   private JLabel editorFontLabel;
-  private JPanel jPanel1;
+  private JComboBox<String> iconSize;
+  private JPanel iconSizePanel;
+  private JLabel jLabel1;
   private JLabel msgFontLabel;
   private WbFontPicker msgLogFont;
   private JCheckBox scaleFonts;

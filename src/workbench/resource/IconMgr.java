@@ -46,11 +46,11 @@ public class IconMgr
 {
 	public static final String IMG_SAVE = "save";
 
-	private static final int SMALL_ICON = 16;
-	private static final int MEDIUM_ICON = 24;
-	private static final int LARGE_ICON = 32;
+	public static final int SMALL_ICON = 16;
+	public static final int MEDIUM_ICON = 24;
+	public static final int LARGE_ICON = 32;
 
-	private final RenderingHints scaleHints;
+  private final RenderingHints scaleHints;
 
 	private final Map<String, ImageIcon> iconCache = new HashMap<>();
 	private final String filepath;

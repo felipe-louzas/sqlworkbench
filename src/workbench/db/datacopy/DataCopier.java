@@ -272,8 +272,8 @@ public class DataCopier
     DbObjectFinder finder = new DbObjectFinder(sourceConnection);
     if (!finder.objectExists(sourceTbl, this.sourceConnection.getMetadata().getSelectableTypes()))
     {
-      this.addError(ResourceMgr.getFormattedString("ErrCopySourceTableNotFound", sourceTbl.getQualifiedName()));
-      throw new SQLException("Table " + sourceTbl.getTableName() + " not found in source connection");
+      this.addError(ResourceMgr.getFormattedString("ErrCopySourceTableNotFound", sourceTbl.getFullyQualifiedName(sourceConnection)));
+      throw new SQLException("Table " + sourceTbl.getTableExpression() + " not found in source connection");
     }
 
     this.initColumnMapping(columnMapping, createTableType != null, skipTargetCheck);
@@ -333,11 +333,11 @@ public class DataCopier
           dropper.setCascade(dropIfExists == DropType.cascaded);
           dropper.setConnection(targetConnection);
           dropper.dropObjects();
-          this.addMessage(ResourceMgr.getFormattedString("MsgCopyTableDropped", toDrop.getQualifiedName()));
+          this.addMessage(ResourceMgr.getFormattedString("MsgCopyTableDropped", toDrop.getFullyQualifiedName(targetConnection)));
         }
         catch (SQLException e)
         {
-          String msg = ResourceMgr.getFormattedString("MsgCopyErrorDropTable",toDrop.getTableExpression(this.targetConnection),ExceptionUtil.getDisplay(e));
+          String msg = ResourceMgr.getFormattedString("MsgCopyErrorDropTable", toDrop.getFullyQualifiedName(this.targetConnection), ExceptionUtil.getDisplay(e));
           if (ignoreError)
           {
             this.addMessage(msg);
@@ -409,12 +409,12 @@ public class DataCopier
       // no need to delete rows from a newly created table
       this.setDeleteTarget(DeleteType.none);
 
-      this.addMessage(ResourceMgr.getFormattedString("MsgCopyTableCreated", this.targetTable.getTableExpression(this.targetConnection)) + "\n");
+      this.addMessage(ResourceMgr.getFormattedString("MsgCopyTableCreated", this.targetTable.getFullyQualifiedName(this.targetConnection)) + "\n");
     }
     catch (SQLException e)
     {
-      //LogMgr.logError("DataCopier.copyFromTable()", "Error when creating target table", e);
-      this.addError(ResourceMgr.getFormattedString("MsgCopyErrorCreatTable",targetTable.getTableExpression(this.targetConnection),ExceptionUtil.getDisplay(e)));
+      LogMgr.logError(new CallerInfo(){}, "Error when creating target table", e);
+      this.addError(ResourceMgr.getFormattedString("MsgCopyErrorCreatTable", targetTable.getFullyQualifiedName(this.targetConnection), ExceptionUtil.getDisplay(e)));
       throw e;
     }
   }
