@@ -1233,6 +1233,7 @@ public class WbExport
     }
     finally
     {
+      toConsume.setConsumed(true);
       toConsume.clearResultData();
       exporter.finished();
       // Tell the statement runner we're done

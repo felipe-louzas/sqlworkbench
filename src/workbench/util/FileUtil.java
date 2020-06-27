@@ -792,7 +792,7 @@ public class FileUtil
 
     int maxVersions = getInstance().getMaxBackupFiles();
     String dir = getInstance().getBackupDir();
-    String sep = getInstance().getFileVersionDelimiter();
+    char sep = getInstance().getFileVersionDelimiter();
     FileVersioner version = new FileVersioner(maxVersions, dir, sep);
     try
     {

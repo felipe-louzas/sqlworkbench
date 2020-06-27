@@ -1,6 +1,4 @@
 /*
- * StatementRunnerResult.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -62,6 +60,7 @@ public class StatementRunnerResult
   private boolean stopScriptExecution;
   private boolean showRowCount = true;
   private boolean ignoreUpdateCount;
+  private boolean wasConsumed = false;
 
   private long executionTime = -1;
   private static final DurationFormatter TIMING_FORMATTER = new DurationFormatter();
@@ -174,6 +173,16 @@ public class StatementRunnerResult
   public void setShowRowCount(boolean flag)
   {
     showRowCount = flag;
+  }
+
+  public void setConsumed(boolean flag)
+  {
+    this.wasConsumed = flag;
+  }
+
+  public boolean wasConsumed()
+  {
+    return wasConsumed;
   }
 
   public boolean getShowRowCount()

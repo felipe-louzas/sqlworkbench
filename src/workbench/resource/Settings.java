@@ -2328,9 +2328,11 @@ public class Settings
 		return ExternalFileHandling.getValue(v);
 	}
 
-	public String getFileVersionDelimiter()
+	public char getFileVersionDelimiter()
 	{
-		return getProperty("workbench.file.version.delimiter", ".");
+		String delim = getProperty("workbench.file.version.delimiter", ".");
+    if (StringUtil.isBlank(delim)) return '.';
+    return delim.charAt(0);
 	}
 	// </editor-fold>
 

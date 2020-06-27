@@ -1,6 +1,4 @@
 /*
- * SqlCommand.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -71,7 +69,7 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
- /**
+/**
  * A single SQL command.
  *
  * This class is used if no special class was found for a given SQL verb.
@@ -370,6 +368,8 @@ public class SqlCommand
 
   protected void appendSuccessMessage(StatementRunnerResult result)
   {
+    if (result.wasConsumed()) return;
+
     String msg = getDefaultSuccessMessage(result);
     if (msg != null)
     {

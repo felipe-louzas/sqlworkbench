@@ -1,6 +1,4 @@
 /*
- * MacroStorage.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -160,7 +158,7 @@ public class MacroStorage
     {
       int maxVersions = Settings.getInstance().getMaxBackupFiles();
       String dir = Settings.getInstance().getBackupDir();
-      String sep = Settings.getInstance().getFileVersionDelimiter();
+      char sep = Settings.getInstance().getFileVersionDelimiter();
       FileVersioner version = new FileVersioner(maxVersions, dir, sep);
       try
       {

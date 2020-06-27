@@ -1,6 +1,4 @@
 /*
- * FileVersionerTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -45,7 +43,7 @@ public class FileVersionerTest
   {
     TestUtil util = new TestUtil("FileVersioner");
     File bckDir = new File(util.getBaseDir(), "backup");
-    FileVersioner v = new FileVersioner(3, bckDir.getAbsolutePath(), ";");
+    FileVersioner v = new FileVersioner(3, bckDir.getAbsolutePath(), ';');
     util.emptyBaseDirectory();
     File main = new File(util.getBaseDir(), "mystuff.conf");
     TestUtil.writeFile(main, "this is a test\n");

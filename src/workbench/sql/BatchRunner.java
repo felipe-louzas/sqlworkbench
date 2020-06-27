@@ -1,6 +1,4 @@
 /*
- * BatchRunner.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -854,7 +852,6 @@ public class BatchRunner
     lastError = null;
     errorStatementIndex = -1;
     boolean ignoreAllErrors = false;
-    boolean logAllStatements = Settings.getInstance().getLogAllStatements();
     int commandIndex = 0;
     int numStatements = parser.getStatementCount();
 
@@ -1143,6 +1140,11 @@ public class BatchRunner
   public void setShowStatementTiming(boolean flag)
   {
     this.showStatementTiming = flag;
+  }
+
+  public boolean getAbortOnError()
+  {
+    return abortOnError;
   }
 
   public void setAbortOnError(boolean aFlag)

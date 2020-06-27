@@ -3481,7 +3481,7 @@ public class MainWindow
     {
       int maxVersions = Settings.getInstance().getMaxBackupFiles();
       String dir = Settings.getInstance().getBackupDir();
-      String sep = Settings.getInstance().getFileVersionDelimiter();
+      char sep = Settings.getInstance().getFileVersionDelimiter();
       FileVersioner version = new FileVersioner(maxVersions, dir, sep);
       try
       {

@@ -1,6 +1,4 @@
 /*
- * FileVersioner.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -25,6 +23,10 @@ package workbench.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Iterator;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -37,7 +39,7 @@ import workbench.resource.Settings;
  */
 public class FileVersioner
 {
-  private String versionSeparator = "."; // should be compatible with all file systems
+  private char versionSeparator = '.'; // should be compatible with all file systems
   private final int maxVersions;
   private File backupDir;
 
@@ -49,7 +51,7 @@ public class FileVersioner
    */
   public FileVersioner(int maxCount)
   {
-    this(maxCount, null, ".");
+    this(maxCount, null, '.');
   }
 
   /**
@@ -63,7 +65,7 @@ public class FileVersioner
    * @param separator the character to put before the version number. Only the first character is used
    * @see Settings#getConfigDir()
    */
-  public FileVersioner(int maxCount, String dirName, String separator)
+  public FileVersioner(int maxCount, String dirName, char separator)
   {
     this.maxVersions = (maxCount > 0 ? maxCount : 5);
     if (StringUtil.isNonBlank(dirName))
@@ -74,7 +76,7 @@ public class FileVersioner
         backupDir = new File(Settings.getInstance().getConfigDir(), dirName);
       }
     }
-    if (StringUtil.isNonBlank(separator))
+    if (separator != 0)
     {
       versionSeparator = separator;
     }
@@ -84,8 +86,7 @@ public class FileVersioner
    * Create a versioned backup of the specified file.
    * <br/>
    * If the max. number of versions has not yet been reached for the given
-   * file, this method will simply create a new version (highest number is
-   * the newest version).
+   * file, this method will simply create a new version (highest number is the newest version).
    * <br/>
    * File versions will be appended to the input filename (myfile.txt -> myfile.txt.1).
    * <br/>
@@ -93,9 +94,9 @@ public class FileVersioner
    * be deleted, and the other versions will be renamed (2 -> 1, 3 -> 2, and so on).
    * <br/>
    * Then the new version will be created.
+   * <br>
    * The backup file will be stored in the directory specified in the constructor,
-   * or the directory of the file that is backed up (if no backup directory was
-   * specified)
+   * or the directory of the file that is backed up (if no backup directory was specified)
    *
    * @param toBackup the file to backup
    * @return the complete filename of the backup
@@ -139,24 +140,48 @@ public class FileVersioner
 
   private int findNextIndex(File target)
   {
-    File dir = getTargetDir(target);
-    String name = target.getName();
     if (!target.exists())	return 1;
 
-    for (int index = 1; index <= maxVersions; index++)
+    Path dir = getTargetDir(target).toPath();
+    if (!dir.toFile().exists()) return 1;
+
+    String name = target.getName() + versionSeparator + "*";
+    int maxVersion = 0;
+
+    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir, name))
     {
-      File bck = new File(dir, name + versionSeparator + index);
-      if (!bck.exists())
+      Iterator<Path> itr = dirStream.iterator();
+      while (itr.hasNext())
       {
-        return index;
+        Path p = itr.next();
+        String fname = p.getFileName().toString();
+        int pos = fname.lastIndexOf(versionSeparator);
+        if (pos < 0) continue;
+
+        int version = StringUtil.getIntValue(fname.substring(pos + 1), -1);
+        if (version > maxVersion)
+        {
+          maxVersion = version;
+        }
       }
     }
+    catch (IOException io)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not determine highest version", io);
+    }
+
+    if (maxVersion < maxVersions)
+    {
+      return maxVersion + 1;
+    }
+
     slideVersions(target);
     return maxVersions;
   }
 
   private void slideVersions(File target)
   {
+    long start = System.currentTimeMillis();
     File dir = getTargetDir(target);
     String name = target.getName();
 
@@ -172,5 +197,7 @@ public class FileVersioner
         old.renameTo(newIndex);
       }
     }
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Adjusting backup versions for \"" + target + "\" took " + duration + "ms");
   }
 }

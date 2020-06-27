@@ -126,6 +126,7 @@ import workbench.sql.wbcommands.console.WbListMacros;
 import workbench.sql.wbcommands.console.WbListProfiles;
 import workbench.sql.wbcommands.console.WbRemoveMasterPwd;
 import workbench.sql.wbcommands.console.WbRun;
+import workbench.sql.wbcommands.WbRunResult;
 import workbench.sql.wbcommands.console.WbSaveProfiles;
 import workbench.sql.wbcommands.console.WbSetDisplaySize;
 import workbench.sql.wbcommands.console.WbSetMasterPwd;
@@ -219,6 +220,7 @@ public class CommandMapper
     addCommand(new WbGenerateFKScript());
     addCommand(new WbGenDelete());
     addCommand(new WbGenInsert());
+    addCommand(new WbRunResult());
     addCommand(new WbGenImpTable());
     addCommand(new WbObjectGrants());
     addCommand(new WbEcho());
