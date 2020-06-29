@@ -335,9 +335,11 @@
         <include name="${jarfile}"/>
         <include name="SQLWorkbench-Manual.pdf"/>
       </zipfileset>
+      <zipfileset dir="../../launcher/wblauncher/bin">
+        <include name="SQLWorkbench.exe"/>
+        <include name="SQLWorkbench64.exe"/>
+      </zipfileset>
       <zipfileset dir="../../launcher/wblauncher">
-        <include name="bin/SQLWorkbench.exe"/>
-        <include name="bin/SQLWorkbench64.exe"/>
         <include name="SQLWorkbench.cfg.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}" prefix="ext">
@@ -390,10 +392,12 @@
       <zipfileset dir="../libs/lnf" prefix="ext">
         <include name="*.jar"/>
       </zipfileset>
+      <zipfileset dir="../../launcher/wblauncher/bin">
+        <include name="SQLWorkbench.exe"/>
+        <include name="SQLWorkbench64.exe"/>
+      </zipfileset>
       <zipfileset dir="../../launcher/wblauncher">
-        <include name="bin/SQLWorkbench.exe"/>
-        <include name="bin/SQLWorkbench64.exe"/>
-        <include name="SQLWorkbench.cfg"/>
+        <include name="SQLWorkbench.cfg.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
         <include name="log4j-sample.xml"/>
@@ -484,7 +488,7 @@
         <include name="*.*"/>
       </zipfileset>
 
-      <zipfileset dir="../../launcher" prefix="launcher">
+      <zipfileset dir="../../launcher/wblauncher" prefix="launcher">
         <include name="**/*"/>
       </zipfileset>
     </zip>
