@@ -641,7 +641,7 @@ public class SqlPanel
     List<WbAction> result = new ArrayList<>(actions.size());
     for (Object obj : actions)
     {
-      if (obj instanceof WbAction )
+      if (obj instanceof WbAction)
       {
         result.add((WbAction)obj);
       }

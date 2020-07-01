@@ -103,56 +103,57 @@ public class InputHandler
    */
   public static final String SMART_HOME_END_PROPERTY = "InputHandler.homeEnd";
 
-  private ActionListener BACKSPACE = new backspace();
-  private ActionListener OVERWRITE = new overwrite();
+  private final ActionListener backspaceAction = new Backspace();
+  private final ActionListener overWriteAction = new Overwrite();
 
-  private final EditorAction DELETE = new DeleteChar();
+  private final EditorAction delete = new DeleteChar();
 
-  private final EditorAction DELETE_WORD = new DeleteWord();
-  private final EditorAction DEL_PREV_WORD = new DelPrevWord();
+  private final EditorAction deleteWord = new DeleteWord();
+  private final EditorAction delPrevWord = new DelPrevWord();
 
-  private final EditorAction DOCUMENT_END = new DocumentEnd();
-  private final EditorAction SELECT_DOC_END = new SelectDocumentEnd();
+  private final EditorAction documentEnd = new DocumentEnd();
+  private final EditorAction selectDocEnd = new SelectDocumentEnd();
 
-  private final EditorAction LINE_END = new LineEnd();
-  private final EditorAction SELECT_LINE_END = new SelectLineEnd();
+  private final EditorAction lineEnd = new LineEnd();
+  private final EditorAction selectLineEnd = new SelectLineEnd();
 
-  private final EditorAction LINE_START = new LineStart();
-  private final EditorAction SELECT_LINE_START = new SelectLineStart();
+  private final EditorAction lineStart = new LineStart();
+  private final EditorAction selectLineStart = new SelectLineStart();
 
-  private final EditorAction DOCUMENT_HOME = new DocumentHome();
-  private final EditorAction SELECT_DOC_HOME = new SelectDocumentHome();
+  private final EditorAction documentHome = new DocumentHome();
+  private final EditorAction selectDocHome = new SelectDocumentHome();
 
-  private final ActionListener INSERT_BREAK = new insert_break();
-  private final ActionListener INSERT_TAB = new insert_tab();
-  private final ActionListener SHIFT_TAB = new shift_tab();
+  private final ActionListener insertBreak = new InsertBreak();
+  private final ActionListener insertTab = new InsertTab();
+  private final ActionListener shiftTab = new ShiftTab();
 
-  private final EditorAction PREV_WORD = new PrevWord();
-  private final EditorAction SELECT_PREV_WORD = new SelectPrevWord();
-  private final EditorAction NEXT_WORD = new NextWord();
-  private final EditorAction SELECT_NEXT_WORD = new SelectNextWord();
+  private final EditorAction prevWord = new PrevWord();
+  private final EditorAction selectPrevWord = new SelectPrevWord();
+  private final EditorAction nextWord = new NextWord();
+  private final EditorAction selectNextWord = new SelectNextWord();
 
-  private final EditorAction NEXT_CHAR = new NextChar();
-  private final EditorAction SELECT_NEXT_CHAR = new SelectNextChar();
-  private final EditorAction PREV_CHAR = new PreviousChar();
-  private final EditorAction SELECT_PREV_CHAR = new SelectPreviousChar();
+  private final EditorAction nextChar = new NextChar();
+  private final EditorAction selectNextChar = new SelectNextChar();
+  private final EditorAction prevChar = new PreviousChar();
+  private final EditorAction selectPrevChar = new SelectPreviousChar();
 
-  private final EditorAction NEXT_PAGE = new NextPage();
-  private final EditorAction PREV_PAGE = new PreviousPage();
-  private final EditorAction SELECT_PREV_PAGE = new SelectPreviousPage();
-  private final EditorAction SELECT_NEXT_PAGE = new SelectNextPage();
+  private final EditorAction nextPage = new NextPage();
+  private final EditorAction prevPage = new PreviousPage();
+  private final EditorAction selectPrevPage = new SelectPreviousPage();
+  private final EditorAction selectNextPage = new SelectNextPage();
 
-  private final EditorAction NEXT_LINE = new NextLine();
-  private final EditorAction SELECT_NEXT_LINE = new SelectNextLine();
-  private final EditorAction SELECT_PREV_LINE = new SelectPreviousLine();
-  private final EditorAction PREV_LINE = new PreviousLine();
+  private final EditorAction nextLine = new NextLine();
+  private final EditorAction selectNextLine = new SelectNextLine();
+  private final EditorAction selectPrevLine = new SelectPreviousLine();
+  private final EditorAction prevLine = new PreviousLine();
 
-  private final WbAction INCREASE_FONT = new IncreaseFontSize();
-  private final WbAction DECREASE_FONT = new DecreaseFontSize();
-  private final WbAction RESET_FONT = new ResetFontSize();
+  private final WbAction increaseFont = new IncreaseFontSize();
+  private final WbAction decreaseFont = new DecreaseFontSize();
+  private final WbAction resetFont = new ResetFontSize();
+  private final WbAction dupeLine = new DuplicateCurrentLine();
 
   // Default action
-  private final ActionListener INSERT_CHAR = new insert_char();
+  private final ActionListener INSERT_CHAR = new InsertChar();
 
   private Map<KeyStroke, ActionListener> bindings;
 
@@ -174,63 +175,63 @@ public class InputHandler
   public final void initKeyBindings()
   {
     bindings = new HashMap<>();
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), BACKSPACE);
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), backspaceAction);
 
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE);
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), delete);
 
-    addKeyBinding(DEL_PREV_WORD);
-    addKeyBinding(DELETE_WORD);
+    addKeyBinding(delPrevWord);
+    addKeyBinding(deleteWord);
 
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), INSERT_BREAK);
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), INSERT_TAB);
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK), SHIFT_TAB);
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), insertBreak);
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), insertTab);
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK), shiftTab);
 
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), OVERWRITE);
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), overWriteAction);
 
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), new cancel_rectangle_select());
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), new CancelRectangleSelect());
 
-    addKeyBinding(LINE_START);
-    addKeyBinding(SELECT_LINE_START);
+    addKeyBinding(lineStart);
+    addKeyBinding(selectLineStart);
 
-    addKeyBinding(LINE_END);
-    addKeyBinding(SELECT_LINE_END);
+    addKeyBinding(lineEnd);
+    addKeyBinding(selectLineEnd);
 
-    addKeyBinding(DOCUMENT_HOME);
-    addKeyBinding(SELECT_DOC_HOME);
+    addKeyBinding(documentHome);
+    addKeyBinding(selectDocHome);
 
-    addKeyBinding(DOCUMENT_END);
-    addKeyBinding(SELECT_DOC_END);
+    addKeyBinding(documentEnd);
+    addKeyBinding(selectDocEnd);
 
 
-    addKeyBinding(PREV_PAGE);
-    addKeyBinding(SELECT_PREV_PAGE);
+    addKeyBinding(prevPage);
+    addKeyBinding(selectPrevPage);
 
-    addKeyBinding(NEXT_PAGE);
-    addKeyBinding(SELECT_NEXT_PAGE);
+    addKeyBinding(nextPage);
+    addKeyBinding(selectNextPage);
 
-    addKeyBinding(PREV_CHAR);
-    addKeyBinding(SELECT_PREV_CHAR);
+    addKeyBinding(prevChar);
+    addKeyBinding(selectPrevChar);
 
-    addKeyBinding(PREV_WORD);
-    addKeyBinding(SELECT_PREV_WORD);
+    addKeyBinding(prevWord);
+    addKeyBinding(selectPrevWord);
 
-    addKeyBinding(NEXT_CHAR);
-    addKeyBinding(SELECT_NEXT_CHAR);
+    addKeyBinding(nextChar);
+    addKeyBinding(selectNextChar);
 
-    addKeyBinding(NEXT_WORD);
-    addKeyBinding(SELECT_NEXT_WORD);
+    addKeyBinding(nextWord);
+    addKeyBinding(selectNextWord);
 
-    addKeyBinding(PREV_LINE);
-    addKeyBinding(SELECT_PREV_LINE);
+    addKeyBinding(prevLine);
+    addKeyBinding(selectPrevLine);
 
-    addKeyBinding(NEXT_LINE);
-    addKeyBinding(SELECT_NEXT_LINE);
+    addKeyBinding(nextLine);
+    addKeyBinding(selectNextLine);
 
-    addKeyBinding(INCREASE_FONT);
-    addKeyBinding(DECREASE_FONT);
-    addKeyBinding(RESET_FONT);
+    addKeyBinding(increaseFont);
+    addKeyBinding(decreaseFont);
+    addKeyBinding(resetFont);
     addKeyBinding(new DeleteCurrentLine());
-    addKeyBinding(new DuplicateCurrentLine());
+    addKeyBinding(dupeLine);
     expandKey = GuiSettings.getExpansionKey();
   }
 
@@ -353,7 +354,7 @@ public class InputHandler
     // workaround to enable Shift-Backspace to behave like Backspace
     if (l == null && keyCode == KeyEvent.VK_BACK_SPACE && evt.isShiftDown())
     {
-      l = BACKSPACE;
+      l = backspaceAction;
     }
 
     if (l != null)
@@ -548,7 +549,7 @@ public class InputHandler
     return null;
   }
 
-  public static class backspace implements ActionListener
+  public static class Backspace implements ActionListener
   {
     @Override
     public void actionPerformed(ActionEvent evt)
@@ -592,7 +593,7 @@ public class InputHandler
     }
   }
 
-  public static class insert_break implements ActionListener
+  public static class InsertBreak implements ActionListener
   {
     @Override
     public void actionPerformed(ActionEvent evt)
@@ -609,7 +610,7 @@ public class InputHandler
     }
   }
 
-  public static class shift_tab implements ActionListener
+  public static class ShiftTab implements ActionListener
   {
     @Override
     public void actionPerformed(ActionEvent evt)
@@ -632,7 +633,7 @@ public class InputHandler
     }
   }
 
-  public static class insert_tab implements ActionListener
+  public static class InsertTab implements ActionListener
   {
     @Override
     public void actionPerformed(ActionEvent evt)
@@ -677,7 +678,7 @@ public class InputHandler
     }
   }
 
-  public static class overwrite implements ActionListener
+  public static class Overwrite implements ActionListener
   {
     @Override
     public void actionPerformed(ActionEvent evt)
@@ -687,7 +688,7 @@ public class InputHandler
     }
   }
 
-  public static class cancel_rectangle_select
+  public static class CancelRectangleSelect
     implements ActionListener
   {
     @Override
@@ -702,7 +703,7 @@ public class InputHandler
     }
   }
 
-  public static class insert_char
+  public static class InsertChar
     implements ActionListener
   {
     @Override

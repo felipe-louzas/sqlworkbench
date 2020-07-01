@@ -99,7 +99,7 @@ public class EditorPanelTest
       p.setAutoIndent(false);
       p.appendLine("Line1");
 
-      ActionListener insert = new InputHandler.insert_break();
+      ActionListener insert = new InputHandler.InsertBreak();
       insert.actionPerformed(evt);
       p.appendLine("Line2");
       insert.actionPerformed(evt);
