@@ -620,6 +620,21 @@ public class Settings
 		return new WbFile(getConfigDir(), "WbColumnOrder.xml");
 	}
 
+  public final File getWorkspaceDir()
+  {
+    String dir = getProperty("workbench.workspacedir", null);
+    if (dir == null)
+    {
+      return getConfigDir();
+    }
+    File fdir = new File(dir);
+    if (!fdir.exists())
+    {
+      return getConfigDir();
+    }
+    return fdir;
+  }
+
 	public final File getConfigDir()
 	{
 		return this.configfile.getParentFile();

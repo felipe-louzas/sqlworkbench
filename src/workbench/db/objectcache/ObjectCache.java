@@ -62,7 +62,6 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -88,7 +87,6 @@ class ObjectCache
   private boolean supportsSchemas;
   private boolean supportsCatalogs;
   private boolean databasesCached;
-  private char catalogSeparator;
   private final List<String> availableDatabases = new ArrayList<>();
   private final DbObjectFinder finder;
   private final TableIdentifier dummyTable = new TableIdentifier("-$WB DUMMY$-", "-$WB DUMMY$-");
@@ -100,7 +98,6 @@ class ObjectCache
     catalogFilter = conn.getProfile().getCatalogFilter();
     supportsSchemas = conn.getDbSettings().supportsSchemas();
     supportsCatalogs = conn.getDbSettings().supportsCatalogs();
-    catalogSeparator = SqlUtil.getCatalogSeparator(conn);
     finder = new DbObjectFinder(conn);
   }
 
@@ -108,17 +105,10 @@ class ObjectCache
   {
     String dbId = conn.getDbId();
     Set<String> types = CollectionUtil.caseInsensitiveSet();
-    types.addAll(Settings.getInstance().getListProperty("workbench.db." + dbId + ".completion.types", true, null));
 
-    if (CollectionUtil.isEmpty(types))
-    {
-      types.addAll(conn.getMetadata().getTableTypes());
-      types.addAll(conn.getDbSettings().getViewTypes());
-      if (conn.getMetadata().supportsMaterializedViews())
-      {
-        types.add(conn.getMetadata().getMViewTypeName());
-      }
-    }
+    types.addAll(CollectionUtil.caseInsensitiveSet(conn.getMetadata().getSelectableTypes()));
+    types.addAll(Settings.getInstance().getListProperty("workbench.db." + dbId + ".completion.types.additional", true, null));
+
     List<String> excludeTypes = Settings.getInstance().getListProperty("workbench.db." + dbId + ".completion.types.exclude", true, null);
     types.removeAll(excludeTypes);
 

@@ -1990,12 +1990,12 @@ public class MainWindow
   private String getRealWorkspaceFilename(String filename)
   {
     if (filename == null) return filename;
-    filename = FileDialogUtil.replaceConfigDir(filename);
+    filename = FileDialogUtil.makeWorkspacePath(filename);
 
     WbFile wfile = new WbFile(filename);
     if (!wfile.isAbsolute())
     {
-      wfile = new WbFile(Settings.getInstance().getConfigDir(), filename);
+      wfile = new WbFile(Settings.getInstance().getWorkspaceDir(), filename);
       filename = wfile.getFullPath();
     }
     return filename;

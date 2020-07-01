@@ -58,6 +58,7 @@ public class FileDialogUtil
 
   private int lastFileType = FILE_TYPE_UNKNOWN;
   public static final String CONFIG_DIR_KEY = "%ConfigDir%";
+  public static final String WKSP_DIR_KEY = "%WorkspaceDir%";
   public static final String PROGRAM_DIR_KEY = "%ProgramDir%";
   private String encoding = null;
 
@@ -296,9 +297,21 @@ public class FileDialogUtil
     return StringUtil.replace(aPathname, CONFIG_DIR_KEY, dir.getFullPath());
   }
 
+  public static String makeWorkspacePath(String aPathname)
+  {
+    if (aPathname == null) return null;
+    WbFile dir = new WbFile(Settings.getInstance().getWorkspaceDir());
+
+    String fullPath = replaceConfigDir(aPathname);
+    fullPath = StringUtil.replace(fullPath, WKSP_DIR_KEY, dir.getFullPath());
+    fullPath = replaceProgramDir(fullPath);
+    return fullPath;
+  }
+
   public static String replaceProgramDir(String aPathname)
   {
     if (aPathname == null) return null;
+    if (!aPathname.contains(PROGRAM_DIR_KEY)) return aPathname;
     ClasspathUtil cp = new ClasspathUtil();
     WbFile dir = new WbFile(cp.getJarPath());
     return StringUtil.replace(aPathname, PROGRAM_DIR_KEY, dir.getFullPath());
