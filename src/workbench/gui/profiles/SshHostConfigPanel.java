@@ -20,7 +20,6 @@
  */
 package workbench.gui.profiles;
 
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -80,19 +79,26 @@ public class SshHostConfigPanel
       public void run()
       {
         canUseAgent = SshManager.canUseAgent();
-        if (!canUseAgent)
-        {
-          WbSwingUtilities.invoke(SshHostConfigPanel.this::disableAgentCheckBox);
-        }
+        WbSwingUtilities.invoke(SshHostConfigPanel.this::setTryAgentState);
       }
     };
     th.start();
   }
 
-  private void disableAgentCheckBox()
+  private void setTryAgentState()
   {
-    useAgent.setEnabled(false);
-    useAgent.setToolTipText(ResourceMgr.getString("d_LblSshAgentNotAvailable"));
+    if (this.isEnabled())
+    {
+      useAgent.setEnabled(canUseAgent);
+      if (canUseAgent)
+      {
+        useAgent.setToolTipText(null);
+      }
+      else
+      {
+        useAgent.setToolTipText(ResourceMgr.getString("d_LblSshAgentNotAvailable"));
+      }
+    }
   }
 
   public void setConfig(SshHostConfig config)
@@ -106,10 +112,7 @@ public class SshHostConfigPanel
       username.setText(StringUtil.coalesce(config.getUsername(), ""));
       password.setText(StringUtil.coalesce(config.getPassword(), ""));
       keyPassFile.setFilename(config.getPrivateKeyFile());
-      if (useAgent.isEnabled())
-      {
-        useAgent.setSelected(config.getTryAgent());
-      }
+      useAgent.setSelected(config.getTryAgent());
 
       int port = config.getSshPort();
       if (port > 0 && port != PortForwarder.DEFAULT_SSH_PORT)
@@ -167,7 +170,10 @@ public class SshHostConfigPanel
     if (currentConfig != null)
     {
       syncConfig(currentConfig);
-      currentConfig.setConfigName(configName.getText());
+      if (configName.isVisible())
+      {
+        currentConfig.setConfigName(configName.getText());
+      }
       return currentConfig;
     }
 

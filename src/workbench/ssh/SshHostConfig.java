@@ -32,8 +32,6 @@ import workbench.util.StringUtil;
 public class SshHostConfig
   implements Serializable
 {
-  private boolean changed;
-
   private String sshHost;
   private String password;
   private String username;
@@ -67,7 +65,6 @@ public class SshHostConfig
   {
     if (port > 0 && port != sshPort)
     {
-      changed = true;
       sshPort = port;
     }
   }
@@ -79,7 +76,6 @@ public class SshHostConfig
 
   public void setTryAgent(boolean flag)
   {
-    changed = tryAgent != flag;
     tryAgent = flag;
   }
 
@@ -105,7 +101,6 @@ public class SshHostConfig
 
   public void setHostname(String sshHost)
   {
-    changed = !StringUtil.equalStringIgnoreCase(this.sshHost, sshHost);
     this.sshHost = sshHost;
   }
 
@@ -117,7 +112,6 @@ public class SshHostConfig
 
   public void setPassword(String password)
   {
-    changed = !StringUtil.equalStringIgnoreCase(this.password, password);
     this.password = password;
   }
 
@@ -128,7 +122,6 @@ public class SshHostConfig
 
   public void setUsername(String username)
   {
-    changed = !StringUtil.equalStringIgnoreCase(this.username, username);
     this.username = username;
   }
 
@@ -139,7 +132,6 @@ public class SshHostConfig
 
   public void setPrivateKeyFile(String privateKeyFile)
   {
-    changed = !StringUtil.equalStringIgnoreCase(this.privateKeyFile, privateKeyFile);
     this.privateKeyFile = privateKeyFile;
   }
 
@@ -157,13 +149,6 @@ public class SshHostConfig
   {
     return this.sshHost != null && this.username != null;
   }
-  
-  public SshHostConfig createStatefulCopy()
-  {
-    SshHostConfig copy = createCopy();
-    copy.changed = this.changed;
-    return copy;
-  }
 
   public SshHostConfig createCopy()
   {
@@ -175,7 +160,6 @@ public class SshHostConfig
     copy.sshPort = this.sshPort;
     copy.tryAgent = this.tryAgent;
     copy.username = this.username;
-    copy.changed = false;
     copy.configName = this.configName;
     return copy;
   }
@@ -187,7 +171,9 @@ public class SshHostConfig
     hash = 37 * hash + Objects.hashCode(this.sshHost);
     hash = 37 * hash + Objects.hashCode(this.username);
     hash = 37 * hash + Objects.hashCode(this.privateKeyFile);
+    hash = 37 * hash + Objects.hashCode(this.configName);
     hash = 37 * hash + this.sshPort;
+    hash = 37 * hash + Boolean.hashCode(tryAgent);
     return hash;
   }
 
@@ -198,10 +184,14 @@ public class SshHostConfig
     if (obj == null) return false;
     if (getClass() != obj.getClass()) return false;
     final SshHostConfig other = (SshHostConfig)obj;
+
     if (this.sshPort != other.sshPort) return false;
+    if (this.tryAgent != other.tryAgent) return false;
     if (!Objects.equals(this.sshHost, other.sshHost)) return false;
     if (!Objects.equals(this.username, other.username)) return false;
     if (!Objects.equals(this.privateKeyFile, other.privateKeyFile)) return false;
+    if (!Objects.equals(this.configName, other.configName)) return false;
+
     return true;
   }
 

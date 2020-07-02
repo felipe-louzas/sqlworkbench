@@ -40,7 +40,6 @@ public class SshConfig
   private int localPort;
   private int dbPort;
   private String dbHostname;
-  private String privateKeyFile;
   private String sshHostConfigName;
 
   public SshConfig()
@@ -155,14 +154,8 @@ public class SshConfig
   public void copyFrom(SshConfig config)
   {
     if (config == this) return;
-    if (config.getSshHostConfigName() != null)
-    {
-      setSshHostConfigName(config.getSshHostConfigName());
-    }
-    else
-    {
-      setHostConfig(config.getSshHostConfig().createStatefulCopy());
-    }
+
+    setHostConfig(config.getHostConfig());
     setLocalPort(config.getLocalPort());
     setDbHostname(config.getDbHostname());
     setDbPort(config.getDbPort());
@@ -172,7 +165,6 @@ public class SshConfig
   {
     SshConfig copy = new SshConfig();
     copy.localPort = this.localPort;
-    copy.privateKeyFile = this.privateKeyFile;
     copy.changed = this.changed;
     copy.dbPort = this.dbPort;
     copy.dbHostname = this.dbHostname;
