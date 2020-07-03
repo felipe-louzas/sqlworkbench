@@ -132,7 +132,7 @@ public abstract class BaseAnalyzer
   protected List elements;
   protected String title;
   private boolean overwriteCurrentWord;
-  private boolean appendDot;
+  protected boolean appendDot;
   private String columnPrefix;
   protected BaseAnalyzer parentAnalyzer;
   protected char catalogSeparator;
@@ -255,11 +255,6 @@ public abstract class BaseAnalyzer
   protected void setOverwriteCurrentWord(boolean flag)
   {
     this.overwriteCurrentWord = flag;
-  }
-
-  protected void setAppendDot(boolean flag)
-  {
-    this.appendDot = flag;
   }
 
   public boolean appendDotToSelection()

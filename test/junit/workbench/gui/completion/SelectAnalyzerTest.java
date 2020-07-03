@@ -345,6 +345,24 @@ public class SelectAnalyzerTest
   }
 
   @Test
+  public void testJoinTableList()
+  {
+    String sql =
+      "SELECT * \n" +
+      "FROM person p \n" +
+      " JOIN address a ON ";
+
+    int pos = sql.indexOf("ON ") + 3;
+    SelectAnalyzer analyzer = new SelectAnalyzer(null, sql, pos);
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_TABLE_LIST, analyzer.context);
+    List tables = analyzer.getData();
+//    analyzer.buildResult();
+    assertNotNull(tables);
+  }
+
+
+  @Test
   public void testNonStandardNames()
   {
     String select = "select  from #some_table";

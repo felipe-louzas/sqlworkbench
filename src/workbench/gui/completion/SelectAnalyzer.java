@@ -74,7 +74,7 @@ public class SelectAnalyzer
 
     String currentWord = getCurrentWord();
 
-    setAppendDot(false);
+    this.appendDot = false;
     setColumnPrefix(null);
 
     SqlParsingUtil util = SqlParsingUtil.getInstance(dbConnection);
@@ -143,16 +143,24 @@ public class SelectAnalyzer
       if (inWhere || afterGroup || afterOrder) inTableList = false;
     }
 
+    int joinState = NO_JOIN_ON;
     if (joinPos > 0 && inTableList)
     {
-      int joinState = inJoinONPart(tables);
+      joinState = inJoinONPart(tables);
       if (joinState == JOIN_ON_COLUMN_LIST)
       {
         inTableList = false;
       }
     }
 
-    if (inTableList)
+    if (inTableList && joinState == JOIN_ON_TABLE_LIST)
+    {
+      context = CONTEXT_TABLE_LIST;
+      this.appendDot = true;
+      this.elements = getTables();
+      return;
+    }
+    else if (inTableList)
     {
       String q = getQualifierLeftOfCursor();
       if (q != null)
@@ -294,7 +302,7 @@ public class SelectAnalyzer
         {
           TableAlias tbl = new TableAlias(entry.getObjectName(), entry.getAlias(), catalogSeparator, schemaSeparator);
           this.elements.add(tbl);
-          setAppendDot(true);
+          this.appendDot = true;
         }
       }
       else if (currentAlias != null)
@@ -356,7 +364,24 @@ public class SelectAnalyzer
 
         if (afterFrom)
         {
-          if ("ON".equals(t) || "USING".equals(t))
+          if ("ON".equals(t))
+          {
+            if (cursorPos >= token.getCharEnd())
+            {
+              String word = getQualifierLeftOfCursor();
+              if (word == null)
+              {
+                // right after the ON
+                result = JOIN_ON_TABLE_LIST;
+              }
+              else
+              {
+                // if there is a qualifier, we assume it's a table name or table alias
+                result = JOIN_ON_COLUMN_LIST;
+              }
+            }
+          }
+          else if ("USING".equals(t))
           {
             if (cursorPos >= token.getCharEnd()) result = JOIN_ON_COLUMN_LIST;
           }
@@ -522,7 +547,7 @@ public class SelectAnalyzer
   }
 
   /**
-   * This will only return any tables in the FROM clause to
+   * This will only return tables in the FROM clause to
    * support correlated sub-queries
    */
   @Override
