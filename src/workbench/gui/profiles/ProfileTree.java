@@ -136,7 +136,6 @@ public class ProfileTree
 
       @Override
       public void newItem(boolean copyCurrent)
-        throws Exception
       {
       }
     });

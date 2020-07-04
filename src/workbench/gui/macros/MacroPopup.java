@@ -160,7 +160,6 @@ public class MacroPopup
 
       @Override
       public void newItem(boolean copyCurrent)
-        throws Exception
       {
       }
     };

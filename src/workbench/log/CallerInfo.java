@@ -35,6 +35,11 @@ public abstract class CallerInfo
   {
   }
 
+  public CallerInfo(String info)
+  {
+    this.info = info;
+  }
+  
   @Override
   public String toString()
   {

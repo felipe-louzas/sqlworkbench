@@ -31,5 +31,5 @@ public interface FileActions
 {
   void saveItem() throws Exception;
   void deleteItem() throws Exception;
-  void newItem(boolean copyCurrent) throws Exception;
+  void newItem(boolean copyCurrent);
 }

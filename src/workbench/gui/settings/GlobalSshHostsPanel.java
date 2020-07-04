@@ -35,6 +35,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -45,6 +47,9 @@ import workbench.gui.components.WbToolbar;
 
 import workbench.interfaces.FileActions;
 import workbench.interfaces.Restoreable;
+import workbench.interfaces.Validator;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.ssh.SshConfigMgr;
 import workbench.ssh.SshHostConfig;
 
@@ -61,12 +66,13 @@ import workbench.util.StringUtil;
 public class GlobalSshHostsPanel
   extends JPanel
   implements Restoreable, ListSelectionListener, FileActions,
-             PropertyChangeListener
+             PropertyChangeListener, ChangeListener, Validator
 {
   private JList hostList;
   private SshHostConfigPanel hostConfig;
   private WbToolbar toolbar;
   private DefaultListModel<SshHostConfig> configs;
+  private boolean ignoreValueChanged = false;
 
   public GlobalSshHostsPanel()
   {
@@ -90,10 +96,55 @@ public class GlobalSshHostsPanel
     toolbar.setBorder(DividerBorder.BOTTOM_DIVIDER);
 
     hostConfig = new SshHostConfigPanel(true);
+    hostConfig.setAgentCheckBoxEnabled(true);
+    hostConfig.setEnabled(false);
+    hostConfig.addNameChangeListener(this);
+    hostConfig.setValidator(this);
 
     add(toolbar, BorderLayout.NORTH);
     add(scroll, BorderLayout.WEST);
     add(hostConfig, BorderLayout.CENTER);
+  }
+
+
+  @Override
+  public boolean isValid(String name)
+  {
+    if (name == null) return false;
+
+    name = name.trim();
+    int selected = hostList.getSelectedIndex();
+    return validateName(name, selected);
+  }
+
+  public boolean validateName(String name, int ignoreIndex)
+  {
+    if (name == null) return false;
+    name = name.trim();
+    int count = configs.getSize();
+
+    for (int index = 0; index < count; index ++)
+    {
+      if (ignoreIndex == -1 || index != ignoreIndex)
+      {
+        if (name.equalsIgnoreCase(configs.get(index).getConfigName()))
+        {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  @Override
+  public void stateChanged(ChangeEvent e)
+  {
+    SshHostConfig config = (SshHostConfig)hostList.getSelectedValue();
+    if (config != null)
+    {
+      config.setConfigName(hostConfig.getConfigName());
+      hostList.repaint();
+    }
   }
 
   @Override
@@ -139,7 +190,7 @@ public class GlobalSshHostsPanel
       SshHostConfig cfg = configs.get(i);
       if (StringUtil.equalStringIgnoreCase(cfg.getConfigName(), config.getConfigName()))
       {
-        configs.setElementAt(cfg, i);
+        configs.setElementAt(config, i);
       }
     }
   }
@@ -147,9 +198,24 @@ public class GlobalSshHostsPanel
   @Override
   public void valueChanged(ListSelectionEvent evt)
   {
+    if (ignoreValueChanged) return;
+    if (evt.getValueIsAdjusting()) return;
+
     applyConfig();
-    SshHostConfig config = configs.getElementAt(evt.getFirstIndex());
-    this.hostConfig.setConfig(config);
+    int index = hostList.getSelectedIndex();
+
+    if (index > -1 & index < configs.size())
+    {
+      SshHostConfig config = configs.getElementAt(index);
+      if (config != null)
+      {
+        this.hostConfig.setConfig(config);
+      }
+    }
+    else
+    {
+      this.hostConfig.setConfig(null);
+    }
   }
 
   @Override
@@ -165,25 +231,42 @@ public class GlobalSshHostsPanel
     {
       configs.remove(index);
     }
+
     if (hostList.getModel().getSize() == 0)
     {
       hostConfig.setConfig(null);
+      hostConfig.setEnabled(false);
     }
     hostList.repaint();
   }
 
   @Override
-  public void newItem(boolean copyCurrent) throws Exception
+  public void newItem(boolean copyCurrent)
   {
     try
     {
-      SshHostConfig config = new SshHostConfig("SSH Host");
-      configs.addElement(config);
-      hostList.setSelectedIndex(configs.size()-1);
+      applyConfig();
+      String name = "SSH Host";
+      int i = 2;
+      while (!validateName(name, -1))
+      {
+        name = name + " " + i;
+        i++;
+      }
+      SshHostConfig newConfig = new SshHostConfig(name);
+
+      ignoreValueChanged = true;
+      configs.addElement(newConfig);
+      hostList.setSelectedIndex(configs.size() - 1);
+      this.hostConfig.setConfig(newConfig);
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LogMgr.logError(new CallerInfo(){}, "Could not create new SSH configuration", e);
+    }
+    finally
+    {
+      ignoreValueChanged = false;
     }
   }
 

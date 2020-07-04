@@ -164,7 +164,6 @@ public class MapEditor
 
   @Override
   public void newItem(boolean copyCurrent)
-    throws Exception
   {
     this.propTable.addRow();
     this.propTable.getSelectionModel().clearSelection();

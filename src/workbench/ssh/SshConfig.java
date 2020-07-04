@@ -155,7 +155,14 @@ public class SshConfig
   {
     if (config == this) return;
 
-    setHostConfig(config.getHostConfig());
+    if (config.getSshHostConfigName() != null)
+    {
+      setSshHostConfigName(config.getSshHostConfigName());
+    }
+    else
+    {
+      setHostConfig(config.getHostConfig());
+    }
     setLocalPort(config.getLocalPort());
     setDbHostname(config.getDbHostname());
     setDbPort(config.getDbPort());

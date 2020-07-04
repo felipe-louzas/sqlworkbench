@@ -587,6 +587,7 @@ public class IniProfileStorage
     }
     return config;
   }
+  
   private SshConfig readSshConfig(PropertyStorage props, String prefix, String key)
   {
     String dbHost = props.getProperty(prefix + key + PROP_SSH_DB_HOST, null);

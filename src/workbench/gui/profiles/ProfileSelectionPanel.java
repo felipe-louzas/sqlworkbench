@@ -560,7 +560,6 @@ public class ProfileSelectionPanel
    */
   @Override
   public void newItem(boolean createCopy)
-    throws Exception
   {
     ConnectionProfile cp = null;
 

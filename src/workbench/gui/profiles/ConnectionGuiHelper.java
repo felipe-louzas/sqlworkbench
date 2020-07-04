@@ -98,7 +98,7 @@ public class ConnectionGuiHelper
 
     String pwd = WbSwingUtilities.getUserInputHidden(parent, ResourceMgr.getFormattedString("MsgInputPwdWindowTitle", profile.getName()), "");
     if (StringUtil.isEmptyString(pwd)) return false;
-    
+
     profile.setPassword(pwd);
     return true;
   }
@@ -109,18 +109,19 @@ public class ConnectionGuiHelper
     SshHostConfig config = profile.getSshHostConfig();
     if (config == null) return true;
 
-    String key;
+    String msg;
 
     if (config.getPrivateKeyFile() == null)
     {
-      key = "MsgInputSshPwd";
+      String dest = config.getUsername() + "@" + config.getHostname() + ":" + config.getSshPort();
+      msg = ResourceMgr.getFormattedString("MsgInputSshPwd", dest);
     }
     else
     {
-      key = "MsgInputSshPassPhrase";
+      msg = ResourceMgr.getString("MsgInputSshPassPhrase");
     }
 
-    String pwd = WbSwingUtilities.getUserInputHidden(parent, ResourceMgr.getString(key), "");
+    String pwd = WbSwingUtilities.getUserInputHidden(parent, msg, "");
     if (StringUtil.isEmptyString(pwd)) return false;
     config.setTemporaryPassword(pwd);
     return true;

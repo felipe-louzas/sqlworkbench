@@ -30,6 +30,8 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.ssh.SshConfigMgr;
+import workbench.ssh.SshHostConfig;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
@@ -44,7 +46,6 @@ import workbench.gui.components.ValidatingDialog;
 public class GlobalPasswordManager
 {
   private WbAESCipher masterCipher;
-  private String masterPassword;
 
   private static class InstanceHolder
   {
@@ -122,6 +123,13 @@ public class GlobalPasswordManager
         {
           profile.setEncryptedPassword(pwd);
         }
+        adjustSshPassword(profile.getSshHostConfig(), newCipher);
+      }
+
+      List<SshHostConfig> configs = SshConfigMgr.getDefaultInstance().getGlobalConfigs();
+      for (SshHostConfig config : configs)
+      {
+        adjustSshPassword(config, newCipher);
       }
     }
     this.masterCipher = newCipher;
@@ -135,6 +143,21 @@ public class GlobalPasswordManager
     }
   }
 
+
+  private void adjustSshPassword(SshHostConfig config, WbAESCipher newCipher)
+  {
+    if (config == null) return;
+    String pwd = config.getDecryptedPassword();
+    if (newCipher != null && StringUtil.isNonEmpty(pwd))
+    {
+      String encrypted = newCipher.encryptString(pwd);
+      config.setPassword(ConnectionProfile.MASTER_CRYPT_PREFIX + encrypted);
+    }
+    else
+    {
+      config.setPassword(pwd);
+    }
+  }
 
   private String decryptProfilePassword(ConnectionProfile profile)
   {
@@ -225,12 +248,10 @@ public class GlobalPasswordManager
     boolean result = encrypted.equals(inputEncrypted);
     if (result)
     {
-      this.masterPassword = userInput;
       this.masterCipher = cipher;
     }
     else
     {
-      this.masterPassword = null;
       this.masterCipher = null;
     }
     return result;

@@ -146,6 +146,9 @@ public class SshConfigPanel
 
   private SshHostConfig getSelectedGlobalConfig()
   {
+    // The first index is always the "empty" config indicating that no global config should be used.
+    int index = globalConfigDD.getSelectedIndex();
+    if (index <= 0) return null;
     return (SshHostConfig)globalConfigDD.getSelectedItem();
   }
 
@@ -165,13 +168,29 @@ public class SshConfigPanel
 
   public SshConfig getConfig()
   {
-    SshHostConfig hostConfig = hostConfigPanel.getConfig();
-    if (hostConfig == null || !hostConfig.isValid()) return null;
+    boolean globalConfig = false;
+    SshHostConfig hostConfig = getSelectedGlobalConfig();
+    if (hostConfig == null)
+    {
+      hostConfig = hostConfigPanel.getConfig();
+      if (hostConfig == null || !hostConfig.isValid()) return null;
+    }
+    else
+    {
+      globalConfig = true;
+    }
 
     String localPortNr = StringUtil.trimToNull(localPort.getText());
 
     SshConfig config = new SshConfig();
-    config.setHostConfig(hostConfig);
+    if (globalConfig)
+    {
+      config.setSshHostConfigName(hostConfig.getConfigName());
+    }
+    else
+    {
+      config.setHostConfig(hostConfig);
+    }
     config.setLocalPort(StringUtil.getIntValue(localPortNr, 0));
     config.setDbHostname(StringUtil.trimToNull(dbHostname.getText()));
     config.setDbPort(StringUtil.getIntValue(dbPort.getText(), 0));

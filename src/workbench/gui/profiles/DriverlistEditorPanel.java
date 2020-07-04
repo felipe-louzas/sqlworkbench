@@ -111,6 +111,8 @@ public class DriverlistEditorPanel
   @Override
   public void valueChanged(ListSelectionEvent evt)
   {
+    if (evt.getValueIsAdjusting()) return;
+
     if (evt.getSource() == this.driverList)
     {
       if (lastIndex > -1)
@@ -186,7 +188,7 @@ public class DriverlistEditorPanel
    *  created in the ListModel.
    */
   @Override
-  public void newItem(boolean copyCurrent) throws Exception
+  public void newItem(boolean copyCurrent)
   {
     DbDriver drv;
     if (copyCurrent)

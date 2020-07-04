@@ -23,7 +23,12 @@ package workbench.ssh;
 import java.io.Serializable;
 import java.util.Objects;
 
+import workbench.resource.Settings;
+
+import workbench.util.GlobalPasswordManager;
 import workbench.util.StringUtil;
+
+import static workbench.db.ConnectionProfile.*;
 
 /**
  *
@@ -104,15 +109,57 @@ public class SshHostConfig
     this.sshHost = sshHost;
   }
 
-  public String getPassword()
+  public void setEncryptedPassword(String pwd)
+  {
+    this.password = pwd;
+  }
+
+  public String getDecryptedPassword()
   {
     if (temporaryPassword != null) return temporaryPassword;
+    return decryptPassword(password);
+  }
+
+  private String decryptPassword(String pwd)
+  {
+    if (pwd == null) return null;
+
+    if (pwd.startsWith(MASTER_CRYPT_PREFIX))
+    {
+      return GlobalPasswordManager.getInstance().decrypt(pwd.substring(MASTER_CRYPT_PREFIX.length()));
+    }
+    return pwd;
+  }
+
+  public String getPassword()
+  {
     return password;
   }
 
-  public void setPassword(String password)
+  public void setPassword(String pwd)
   {
-    this.password = password;
+    // check encryption settings when reading the profiles...
+    if (Settings.getInstance().getUseMasterPassword())
+    {
+      if (!isEncrypted(pwd))
+      {
+        pwd = MASTER_CRYPT_PREFIX + GlobalPasswordManager.getInstance().encrypt(pwd);
+      }
+    }
+    else
+    {
+      // no encryption should be used, but password is encrypted, decrypt it now.
+      if (this.isEncrypted(pwd))
+      {
+        pwd = decryptPassword(pwd);
+      }
+    }
+    this.password = pwd;
+  }
+
+  private boolean isEncrypted(String aPwd)
+  {
+    return aPwd.startsWith(MASTER_CRYPT_PREFIX);
   }
 
   public String getUsername()

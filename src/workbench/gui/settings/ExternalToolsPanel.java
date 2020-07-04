@@ -137,14 +137,13 @@ public class ExternalToolsPanel
   }
 
   @Override
-  public void newItem(boolean copyCurrent) throws Exception
+  public void newItem(boolean copyCurrent)
   {
     try
     {
       ToolDefinition tool = new ToolDefinition("path_to_program", "commandline parameters", "New Tool");
       tools.addElement(tool);
       toolList.setSelectedIndex(tools.size()-1);
-
     }
     catch (Exception e)
     {

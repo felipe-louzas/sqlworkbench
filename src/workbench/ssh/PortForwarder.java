@@ -26,12 +26,16 @@ import java.util.Vector;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
+
+import workbench.gui.WbSwingUtilities;
 
 import com.jcraft.jsch.Identity;
 import com.jcraft.jsch.IdentityRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UserInfo;
 import com.jcraft.jsch.agentproxy.Connector;
 import com.jcraft.jsch.agentproxy.ConnectorFactory;
 import com.jcraft.jsch.agentproxy.RemoteIdentityRepository;
@@ -41,12 +45,14 @@ import com.jcraft.jsch.agentproxy.RemoteIdentityRepository;
  * @author Thomas Kellerer
  */
 public class PortForwarder
+  implements UserInfo
 {
   public static final int DEFAULT_SSH_PORT = 22;
 
   private String sshHost;
   private String sshUser;
   private String password;
+  private String passphrase;
   private String privateKeyFile;
 
   private Session session;
@@ -58,7 +64,7 @@ public class PortForwarder
   {
     this.sshHost = config.getHostname();
     this.sshUser = config.getUsername();
-    this.password = config.getPassword();
+    this.password = config.getDecryptedPassword();
     this.tryAgent = config.getTryAgent();
     setPrivateKeyFile(config.getPrivateKeyFile());
   }
@@ -119,6 +125,7 @@ public class PortForwarder
     }
 
     session = jsch.getSession(sshUser, sshHost, sshPort);
+    session.setUserInfo(this);
 
     if (!useAgent && privateKeyFile == null)
     {
@@ -188,4 +195,55 @@ public class PortForwarder
     session = null;
     localPort = -1;
   }
+
+  @Override
+  public String getPassphrase()
+  {
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.getPassphrase() called.");
+    return this.passphrase;
+  }
+
+  @Override
+  public String getPassword()
+  {
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.getPassword() called.");
+    return password;
+  }
+
+  @Override
+  public boolean promptPassword(String message)
+  {
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassword() called with message: " + message);
+    String dest = message.replace("Password for ", "");
+    String msg = ResourceMgr.getFormattedString("MsgInputSshPwd", dest);
+    String pwd = WbSwingUtilities.getUserInputHidden(WbSwingUtilities.getMainWindow(null), msg, "");
+    if (pwd == null) return false;
+    this.password = pwd;
+    return true;
+  }
+
+  @Override
+  public boolean promptPassphrase(String message)
+  {
+    String msg = ResourceMgr.getString("MsgInputSshPassPhrase");
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassphrase() called with message: " + message);
+    String pwd = WbSwingUtilities.getUserInputHidden(WbSwingUtilities.getMainWindow(null), msg, "");
+    if (pwd == null) return false;
+    this.passphrase = pwd;
+    return true;
+  }
+
+  @Override
+  public boolean promptYesNo(String message)
+  {
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptYesNo() called with message: " + message);
+    return true;
+  }
+
+  @Override
+  public void showMessage(String message)
+  {
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.showMessage() called with message: " + message);
+  }
+
 }

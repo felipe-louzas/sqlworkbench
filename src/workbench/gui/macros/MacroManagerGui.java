@@ -166,7 +166,7 @@ public class MacroManagerGui
   }
 
   @Override
-  public void newItem(boolean copyCurrent) throws Exception
+  public void newItem(boolean copyCurrent)
   {
     boolean ok = macroTree.addMacro(copyCurrent);
     if (ok)

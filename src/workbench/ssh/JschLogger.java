@@ -51,9 +51,19 @@ public class JschLogger
   @Override
   public void log(int level, String message)
   {
-    StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-    StackTraceElement e = stack[2];
-    final CallerInfo ci = new CallerInfo(){};
+    CallerInfo ci;
+
+    if (LogMgr.isDebugEnabled())
+    {
+      StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+      StackTraceElement e = stack[2];
+      String info = "JSch" + getSimpleClassName(e) + "." + e.getMethodName() + "()";
+      ci = new CallerInfo(info){};
+    }
+    else
+    {
+      ci = new CallerInfo(){};
+    }
 
     switch (level)
     {
@@ -71,4 +81,13 @@ public class JschLogger
         LogMgr.logError(ci, message, null);
     }
   }
+
+  private String getSimpleClassName(StackTraceElement e)
+  {
+    if (e == null) return "";
+    String cls = e.getClassName();
+    int pos = cls.lastIndexOf('.');
+    return cls.substring(pos);
+  }
+
 }

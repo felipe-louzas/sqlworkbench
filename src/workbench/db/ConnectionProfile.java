@@ -667,8 +667,7 @@ public class ConnectionProfile
     }
     else
     {
-      // no encryption should be used, but password is encrypted
-      // so, decrypt it now
+      // no encryption should be used, but password is encrypted, decrypt it now.
       if (this.isEncrypted(pwd))
       {
         pwd = this.decryptPassword(pwd);
@@ -725,7 +724,7 @@ public class ConnectionProfile
    *  current password.
    *
    *  This method is used to populate the profile editor.
-   *  It's not named get
+   *
    *  @see #encryptPassword(String)
    */
   public String getDecryptedPassword()

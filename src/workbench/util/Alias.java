@@ -36,6 +36,8 @@ public class Alias
   private String alias;
   private String display;
   private String asKeyword;
+  private int startPosInQuery = -1;
+  private int endPosInQuery = -1;
 
   public Alias()
   {
@@ -45,6 +47,26 @@ public class Alias
   {
     this.objectName = name;
     this.alias = alias;
+  }
+
+  public void setStartPositionInQuery(int pos)
+  {
+    this.startPosInQuery = pos;
+  }
+
+  public int getStartPositionInQuery()
+  {
+    return startPosInQuery;
+  }
+
+  public void setEndPositionInQuery(int pos)
+  {
+    this.endPosInQuery = pos;
+  }
+
+  public int getEndPositionInQuery()
+  {
+    return endPosInQuery;
   }
 
   /**
@@ -177,6 +199,11 @@ public class Alias
     return display;
   }
 
+  public String debugString()
+  {
+    return "Name: " + this.objectName + ", alias: " + StringUtil.coalesce(alias, "") + ", start: " + startPosInQuery + ", end: " + endPosInQuery;
+  }
+  
   @Override
   public int hashCode()
   {

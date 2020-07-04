@@ -90,7 +90,7 @@ public class SshManager
         // so the user is not asked multiple times for the same keystore.
         if (hostConfig.getPrivateKeyFile() != null && hostConfig.hasTemporaryPassword())
         {
-          passphrases.put(hostConfig.getPrivateKeyFile(), hostConfig.getPassword());
+          passphrases.put(hostConfig.getPrivateKeyFile(), hostConfig.getDecryptedPassword());
         }
       }
       else
