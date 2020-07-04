@@ -27,10 +27,13 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.sql.formatter.WbSqlFormatter;
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
 import workbench.sql.lexer.SQLToken;
 import workbench.sql.parser.ParserType;
+
+import static workbench.util.SqlParsingUtil.*;
 
 
 /**
@@ -63,13 +66,18 @@ public class TableListParser
   {
     SQLLexer lexer = SQLLexerFactory.createLexer(parserType, "");
 
-    String fromPart = SqlParsingUtil.getFromPart(sql, lexer);
-    if (StringUtil.isBlank(fromPart)) return Collections.emptyList();
+    sql = SqlUtil.trimSemicolon(sql);
+
+    int fromPos = getKeywordPosition(Collections.singleton("FROM"), sql, 0, lexer);
+    if (fromPos < 0) return Collections.emptyList();
+    //String fromPart = SqlParsingUtil.getFromPart(sql, lexer);
+
+    //if (StringUtil.isBlank(fromPart)) return Collections.emptyList();
     List<Alias> result = new ArrayList<>();
 
     try
     {
-      lexer.setInput(fromPart);
+      //lexer.setInput(fromPart);
       boolean lastTokenWasAlias = false;
       SQLToken t = lexer.getNextToken(false, false);
 
@@ -81,6 +89,7 @@ public class TableListParser
       while (t != null)
       {
         String s = t.getContents();
+        if (WbSqlFormatter.FROM_TERMINAL.contains(s) && bracketCount == 0) break;
 
         if (s.equals("SELECT") && bracketCount > 0)
         {
@@ -142,6 +151,7 @@ public class TableListParser
             collectTable = false;
             lastTokenWasAlias = true;
             Alias table = new Alias();
+            table.setStartPositionInQuery(t.getCharBegin());
 
             if (!t.getContents().equals("AS"))
             {
@@ -159,15 +169,21 @@ public class TableListParser
               // the next item must be the alias
               t = lexer.getNextToken(false, false);
               table.setAlias(t != null ? t.getText() : null);
+              if (t != null)
+              {
+                table.setEndPositionInQuery(t.getCharEnd());
+              }
               result.add(table);
             }
             else if (t != null && t.isIdentifier())
             {
               table.setAlias(t.getText());
+              table.setEndPositionInQuery(t.getCharEnd());
               result.add(table);
             }
             else
             {
+              if (t != null) table.setEndPositionInQuery(t.getCharEnd());
               result.add(table);
               continue;
             }
@@ -222,6 +238,7 @@ public class TableListParser
         break;
       }
       table.appendObjectName(token.getText());
+      table.setEndPositionInQuery(token.getCharEnd());
       token = lexer.getNextToken(false, true);
     }
     return token;

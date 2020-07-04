@@ -508,7 +508,7 @@ public abstract class BaseAnalyzer
     {
       this.title = SqlParsingUtil.getInstance(dbConnection).getSqlVerb(sql);
     }
-    else
+    else if (elements == null)
     {
       // no proper sql found
       this.elements = Collections.emptyList();

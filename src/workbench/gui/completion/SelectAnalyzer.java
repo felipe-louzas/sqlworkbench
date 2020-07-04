@@ -58,8 +58,15 @@ public class SelectAnalyzer
   extends BaseAnalyzer
 {
   private final int NO_JOIN_ON = 0;
+
+  /** Display tables from the database for the JOIN keyword */
   private final int JOIN_ON_TABLE_LIST = 1;
-  private final int JOIN_ON_COLUMN_LIST = 2;
+
+  /** The cursor position is such that the completion should display the tables in the from clause */
+  private final int JOIN_FROM_TABLE_LIST = 2;
+
+  /** display columns for a join condition. */
+  private final int JOIN_ON_COLUMN_LIST = 3;
 
   public SelectAnalyzer(WbConnection conn, String statement, int cursorPos)
   {
@@ -153,11 +160,22 @@ public class SelectAnalyzer
       }
     }
 
-    if (inTableList && joinState == JOIN_ON_TABLE_LIST)
+    if (inTableList && joinState == JOIN_FROM_TABLE_LIST)
     {
-      context = CONTEXT_TABLE_LIST;
+      this.context = CONTEXT_FROM_LIST;
       this.appendDot = true;
-      this.elements = getTables();
+
+      this.elements = new ArrayList<>();
+      // As we are in the middle of a JOIN ON condition
+      // we should only display tables that have already been mentioned 
+      for (Alias a : tables)
+      {
+        if (a.getStartPositionInQuery() < 0 || a.getStartPositionInQuery() <= cursorPos)
+        {
+          elements.add(TableAlias.createFrom(a));
+        }
+      }
+
       return;
     }
     else if (inTableList)
@@ -372,7 +390,7 @@ public class SelectAnalyzer
               if (word == null)
               {
                 // right after the ON
-                result = JOIN_ON_TABLE_LIST;
+                result = JOIN_FROM_TABLE_LIST;
               }
               else
               {
@@ -408,9 +426,16 @@ public class SelectAnalyzer
           }
           else if (joinKeywords.contains(t))
           {
-            if (lastToken != null && cursorPos > lastToken.getCharEnd() && cursorPos <= token.getCharBegin() &&
-              SqlUtil.getJoinKeyWords().contains(lastToken.getContents()))
+            if (lastToken != null && cursorPos > lastToken.getCharEnd() && cursorPos <= token.getCharBegin() && lastToken.getContents().equals("ON"))
             {
+              // we are between an ON keyword and the next JOIN keyword
+              // --> show all tables that have been listed so far
+              return JOIN_FROM_TABLE_LIST;
+            }
+            else if (lastToken != null && cursorPos > lastToken.getCharEnd() && cursorPos <= token.getCharBegin()
+                       && SqlUtil.getJoinKeyWords().contains(lastToken.getContents())  )
+            {
+              // we are between two JOIN statements without anything else
               result = JOIN_ON_TABLE_LIST;
             }
             else if (cursorPos > token.getCharEnd())
@@ -557,8 +582,7 @@ public class SelectAnalyzer
     List<TableAlias> result = new ArrayList<>(tables.size());
     for (Alias s : tables)
     {
-      TableAlias tbl = new TableAlias(s.getObjectName());
-      tbl.setAlias(s.getAlias());
+      TableAlias tbl = TableAlias.createFrom(s);
       result.add(tbl);
     }
     return result;

@@ -24,6 +24,9 @@ import java.util.List;
 
 import workbench.db.TableIdentifier;
 
+import workbench.gui.completion.BaseAnalyzer;
+import workbench.gui.completion.SelectAnalyzer;
+
 import workbench.sql.parser.ParserType;
 
 import org.junit.Test;
@@ -39,6 +42,15 @@ public class TableListParserTest
 
   public TableListParserTest()
   {
+  }
+
+  @Test
+  public void testNonStandardNames()
+  {
+    TableListParser parser = new TableListParser( '.', '.', ParserType.SqlServer);
+    List<Alias> tables = parser.getTables("select  from #some_table", false);
+    assertEquals(tables.size(), 1);
+    assertEquals("#some_table", tables.get(0).getObjectName());
   }
 
   @Test

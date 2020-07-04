@@ -355,9 +355,25 @@ public class SelectAnalyzerTest
     int pos = sql.indexOf("ON ") + 3;
     SelectAnalyzer analyzer = new SelectAnalyzer(null, sql, pos);
     analyzer.checkContext();
-    assertEquals(BaseAnalyzer.CONTEXT_TABLE_LIST, analyzer.context);
+    assertEquals(BaseAnalyzer.CONTEXT_FROM_LIST, analyzer.context);
     List tables = analyzer.getData();
-//    analyzer.buildResult();
+    assertNotNull(tables);
+  }
+
+  @Test
+  public void testJoinTableList2()
+  {
+    String sql =
+      "SELECT * \n" +
+      "FROM person p \n" +
+      " JOIN address a ON \n" +
+      " join country c on ";
+
+    int pos = sql.indexOf("a ON ") + 5;
+    SelectAnalyzer analyzer = new SelectAnalyzer(null, sql, pos);
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_FROM_LIST, analyzer.context);
+    List tables = analyzer.getData();
     assertNotNull(tables);
   }
 

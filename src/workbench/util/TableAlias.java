@@ -78,4 +78,13 @@ public class TableAlias
     TableIdentifier tbl = new TableIdentifier(name, catalogSeparator, schemaSeparator);
     return (table.getTableName().equalsIgnoreCase(tbl.getTableName()) || name.equalsIgnoreCase(getAlias()));
   }
+
+  public static TableAlias createFrom(Alias a)
+  {
+    TableAlias tbl = new TableAlias(a.getObjectName());
+    tbl.setAlias(a.getAlias());
+    tbl.setStartPositionInQuery(a.getStartPositionInQuery());
+    tbl.setEndPositionInQuery(a.getEndPositionInQuery());
+    return tbl;
+  }
 }
