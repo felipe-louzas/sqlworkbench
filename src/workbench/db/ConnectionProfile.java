@@ -927,6 +927,15 @@ public class ConnectionProfile
     }
   }
 
+  public String getUrlInfo()
+  {
+    if (StringUtil.isBlank(this.username))
+    {
+      return this.url;
+    }
+    return this.username + "@" + url.replace("jdbc:", "");
+  }
+
   public String getUsername()
   {
     if (temporaryUsername != null) return temporaryUsername;
@@ -992,13 +1001,13 @@ public class ConnectionProfile
     if (config == null) return false;
 
     if (config.getTryAgent() == true) return false;
-    SshManager sshManager = ConnectionMgr.getInstance().getSshManager();
-
-    // Assume that non-encrypted key files don't need a passphrase
-    if (!sshManager.needsPassphrase(config)) return false;
 
     if (config.getPrivateKeyFile() != null)
     {
+      // Assume that non-encrypted key files don't need a passphrase
+      SshManager sshManager = ConnectionMgr.getInstance().getSshManager();
+      if (!sshManager.needsPassphrase(config)) return false;
+
       // Check for cached passphrases for this config
       String passphrase = sshManager.getPassphrase(config);
       if (passphrase != null)

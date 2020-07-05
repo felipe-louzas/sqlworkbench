@@ -129,7 +129,7 @@ public class StatementRunnerTest
         }
 
         @Override
-        public String getPassword(String prompt)
+        public String getPassword(String title, String prompt)
         {
           return null;
         }
