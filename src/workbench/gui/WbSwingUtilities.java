@@ -89,7 +89,6 @@ import workbench.interfaces.SimplePropertyEditor;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
-import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -1051,7 +1050,7 @@ public class WbSwingUtilities
   public static String passwordPrompt(Component caller, String title, String message)
   {
     final JTextField input = new JPasswordField();
-    JPanel p = new JPanel(new BorderLayout(0, 8));
+    JPanel p = new JPanel(new BorderLayout(0, 5));
     p.setBorder(new EmptyBorder(8, 0, 16, 0));
     p.add(new JLabel(message), BorderLayout.PAGE_START);
     p.add(input, BorderLayout.CENTER);

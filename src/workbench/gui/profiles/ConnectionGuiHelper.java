@@ -122,7 +122,7 @@ public class ConnectionGuiHelper
     {
       title = ResourceMgr.getString("MsgInputSshPassPhrase");
       WbFile f = new WbFile(config.getPrivateKeyFile());
-      msg = ResourceMgr.getFormattedString("MsgInputPwd", f.getFileName());
+      msg = f.getFileName();
     }
 
     String pwd = WbSwingUtilities.passwordPrompt(parent, title, msg);

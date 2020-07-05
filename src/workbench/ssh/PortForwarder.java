@@ -217,7 +217,7 @@ public class PortForwarder
   @Override
   public boolean promptPassword(String message)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "JSch.UserInfo.promptPassword() called with message: " + message);
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassword() called with message: " + message);
 
     String title = ResourceMgr.getString("MsgInputSshPwd");
     String dest = message.replace("Password for ", "");
@@ -231,7 +231,7 @@ public class PortForwarder
   @Override
   public boolean promptPassphrase(String message)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "JSch.UserInfo.promptPassphrase() called with message: " + message);
+    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassphrase() called with message: " + message);
 
     String title = ResourceMgr.getString("MsgInputSshPassPhrase");
     WbFile f = new WbFile(this.privateKeyFile);
