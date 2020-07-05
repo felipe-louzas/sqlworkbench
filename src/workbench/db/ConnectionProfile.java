@@ -927,6 +927,15 @@ public class ConnectionProfile
     }
   }
 
+  public String getUrlInfo()
+  {
+    if (StringUtil.isBlank(this.username))
+    {
+      return this.url;
+    }
+    return this.username + "@" + url.replace("jdbc:", "");
+  }
+
   public String getUsername()
   {
     if (temporaryUsername != null) return temporaryUsername;

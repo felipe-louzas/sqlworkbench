@@ -431,7 +431,7 @@ public class BatchRunner
         LogMgr.logError(new CallerInfo(){}, "A passwort prompt is needed but no ExecutionController was provided.", null);
         return;
       }
-      String pwd = controller.getPassword(ResourceMgr.getString("MsgInputPwd"));
+      String pwd = controller.getPassword(ResourceMgr.getFormattedString("MsgInputPwd", profile.getUrlInfo()));
       profile.setInputPassword(pwd);
     }
 

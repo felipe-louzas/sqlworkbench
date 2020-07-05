@@ -40,6 +40,7 @@ import workbench.gui.components.ValidatingDialog;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
+import workbench.util.WbFile;
 import workbench.util.WbThread;
 
 /**
@@ -96,7 +97,7 @@ public class ConnectionGuiHelper
   {
     if (profile == null) return false;
 
-    String pwd = WbSwingUtilities.getUserInputHidden(parent, ResourceMgr.getFormattedString("MsgInputPwdWindowTitle", profile.getName()), "");
+    String pwd = WbSwingUtilities.passwordPrompt(parent, ResourceMgr.getFormattedString("MsgInputPwd"), profile.getUrlInfo());
     if (StringUtil.isEmptyString(pwd)) return false;
 
     profile.setPassword(pwd);
@@ -109,19 +110,22 @@ public class ConnectionGuiHelper
     SshHostConfig config = profile.getSshHostConfig();
     if (config == null) return true;
 
+    String title;
     String msg;
 
     if (config.getPrivateKeyFile() == null)
     {
-      String dest = config.getUsername() + "@" + config.getHostname() + ":" + config.getSshPort();
-      msg = ResourceMgr.getFormattedString("MsgInputSshPwd", dest);
+      msg = config.getUsername() + "@" + config.getHostname() + ":" + config.getSshPort();
+      title = ResourceMgr.getFormattedString("MsgInputSshPwd");
     }
     else
     {
-      msg = ResourceMgr.getString("MsgInputSshPassPhrase");
+      title = ResourceMgr.getString("MsgInputSshPassPhrase");
+      WbFile f = new WbFile(config.getPrivateKeyFile());
+      msg = f.getFileName();
     }
 
-    String pwd = WbSwingUtilities.getUserInputHidden(parent, msg, "");
+    String pwd = WbSwingUtilities.passwordPrompt(parent, title, msg);
     if (StringUtil.isEmptyString(pwd)) return false;
     config.setTemporaryPassword(pwd);
     return true;

@@ -23,6 +23,8 @@
  */
 package workbench.interfaces;
 
+import workbench.resource.ResourceMgr;
+
 /**
  *
  * @author  Thomas Kellerer
@@ -48,6 +50,12 @@ public interface ExecutionController
    */
   boolean confirmExecution(String prompt, String yesText, String noText);
 
-  String getPassword(String prompt);
+  String getPassword(String title, String prompt);
+
+  default String getPassword(String prompt)
+  {
+    return getPassword(ResourceMgr.TXT_PRODUCT_NAME, prompt);
+  }
+
   String getInput(String prompt);
 }

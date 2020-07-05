@@ -21,6 +21,7 @@
  */
 package workbench.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -1044,6 +1045,26 @@ public class WbSwingUtilities
     TEXT,
     NUMBER,
     HIDDEN
+  }
+
+  public static String passwordPrompt(Component caller, String title, String message)
+  {
+    final JTextField input = new JPasswordField();
+    JPanel p = new JPanel(new BorderLayout(5,5));
+    p.setBorder(new EmptyBorder(0, 0, 5, 0));
+    p.add(new JLabel(message), BorderLayout.PAGE_START);
+    p.add(input, BorderLayout.CENTER);
+    WbThread getFocus = new WbThread("GetFocus")
+    {
+      @Override
+      public void run()
+      {
+        input.requestFocusInWindow();
+      }
+    };
+    boolean ok = getOKCancel(title, caller == null ? WbManager.getInstance().getCurrentWindow() : caller, p, getFocus);
+    if (!ok) return null;
+    return input.getText();
   }
 
   public static String getUserInput(Component caller, String title, String initialValue)

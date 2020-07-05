@@ -113,7 +113,7 @@ public class ConsolePrompter
   }
 
   @Override
-  public String getPassword(String prompt)
+  public String getPassword(String title, String prompt)
   {
     return WbConsoleFactory.getConsole().readPassword(prompt + " ");
   }
@@ -177,4 +177,5 @@ public class ConsolePrompter
     }
     return true;
   }
+
 }

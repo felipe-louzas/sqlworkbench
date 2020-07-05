@@ -24,11 +24,14 @@ import java.io.File;
 import java.util.Properties;
 import java.util.Vector;
 
+import workbench.WbManager;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.WbSwingUtilities;
+
+import workbench.util.WbFile;
 
 import com.jcraft.jsch.Identity;
 import com.jcraft.jsch.IdentityRepository;
@@ -214,9 +217,11 @@ public class PortForwarder
   public boolean promptPassword(String message)
   {
     LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassword() called with message: " + message);
+
+    String title = ResourceMgr.getString("MsgInputSshPwd");
     String dest = message.replace("Password for ", "");
-    String msg = ResourceMgr.getFormattedString("MsgInputSshPwd", dest);
-    String pwd = WbSwingUtilities.getUserInputHidden(WbSwingUtilities.getMainWindow(null), msg, "");
+    String msg = ResourceMgr.getFormattedString("MsgInputPwd", dest);
+    String pwd = WbSwingUtilities.passwordPrompt(WbManager.getInstance().getCurrentWindow(), title, msg);
     if (pwd == null) return false;
     this.password = pwd;
     return true;
@@ -225,9 +230,12 @@ public class PortForwarder
   @Override
   public boolean promptPassphrase(String message)
   {
-    String msg = ResourceMgr.getString("MsgInputSshPassPhrase");
     LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassphrase() called with message: " + message);
-    String pwd = WbSwingUtilities.getUserInputHidden(WbSwingUtilities.getMainWindow(null), msg, "");
+
+    String title = ResourceMgr.getString("MsgInputSshPassPhrase");
+    WbFile f = new WbFile(this.privateKeyFile);
+    String msg = ResourceMgr.getFormattedString("MsgInputPwd", f.getFileName());
+    String pwd = WbSwingUtilities.passwordPrompt(WbManager.getInstance().getCurrentWindow(), title, msg);
     if (pwd == null) return false;
     this.passphrase = pwd;
     return true;

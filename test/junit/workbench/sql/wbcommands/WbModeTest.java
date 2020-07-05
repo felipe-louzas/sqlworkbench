@@ -159,7 +159,7 @@ public class WbModeTest
     }
 
     @Override
-    public String getPassword(String prompt)
+    public String getPassword(String title, String prompt)
     {
       return "";
     }
