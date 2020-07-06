@@ -1106,6 +1106,15 @@ public class JEditTextArea
       // For some unknown reason painter.getGraphics() sometimes returns null
       gfx = (Graphics2D)getGraphics();
     }
+
+    if (gfx == null)
+    {
+      // this is complete nonsense, but it's better than a NPE in this method
+      // which is called thousands of times per second.
+      // If there is no graphics object, the display will be wrecked anyway.
+      return 0;
+    }
+    
     return offsetToX(gfx, line, offset);
   }
 
@@ -1210,7 +1219,6 @@ public class JEditTextArea
       Token tokens = tokenMarker.markTokens(lineSegment, line);
       int offset = 0;
 
-//      System.out.println("line: " + line + ", x: " + x + ", offset: " + offset);
       while (tokens != null)
       {
         FontMetrics styledMetrics = painter.getStyleFontMetrics(tokens.id);
@@ -1230,7 +1238,6 @@ public class JEditTextArea
           {
             charWidth = styledMetrics.getStringBounds(segmentArray, charIndex, charIndex + 1, gfx).getBounds2D().getWidth();
           }
-//          System.out.println("  current char: " + c + ", index: " + charIndex + ", currentWidth: " + width + ", charWidth: " + charWidth);
 
           if (width + charWidth/2 > x) return offset + i;
 
@@ -1289,7 +1296,7 @@ public class JEditTextArea
     document = newDocument;
     document.tokenizeLines();
 
-    select(0,0,null);
+    setCaretPosition(0);
 
     if (this.document != null)
     {
@@ -1527,7 +1534,7 @@ public class JEditTextArea
   {
     try
     {
-      select(0,0,null);
+      setCaretPosition(0);
       document.beginCompoundEdit();
 
       if (document.getLength() > 0)

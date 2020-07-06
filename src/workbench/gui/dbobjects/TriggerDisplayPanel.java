@@ -111,7 +111,7 @@ public class TriggerDisplayPanel
   public void reset()
   {
     this.triggers.reset();
-    this.source.setText("");
+    this.source.reset();
     this.triggerSchema = null;
     this.triggerCatalog = null;
   }
