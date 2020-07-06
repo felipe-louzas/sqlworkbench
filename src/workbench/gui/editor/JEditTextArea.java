@@ -139,7 +139,7 @@ public class JEditTextArea
 
   protected Timer caretTimer;
 
-  protected TextAreaPainter painter;
+  protected final TextAreaPainter painter;
 
   protected TextPopup popup;
 
@@ -1100,7 +1100,13 @@ public class JEditTextArea
    */
   public final int offsetToX(int line, int offset)
   {
-    return offsetToX((Graphics2D)painter.getGraphics(), line, offset);
+    Graphics2D gfx = (Graphics2D)painter.getGraphics();
+    if (gfx == null)
+    {
+      // For some unknown reason painter.getGraphics() sometimes returns null
+      gfx = (Graphics2D)getGraphics();
+    }
+    return offsetToX(gfx, line, offset);
   }
 
   public final int offsetToX(Graphics2D gfx, int line, int offset)

@@ -63,12 +63,16 @@ public class GlobalPasswordManager
 
   public String encrypt(String plaintext)
   {
+    if (StringUtil.isEmptyString(plaintext)) return plaintext;
     if (masterCipher == null) return plaintext;
+
     return masterCipher.encryptString(plaintext);
   }
 
   public String decrypt(String toDecrypt)
   {
+    if (StringUtil.isEmptyString(toDecrypt)) return toDecrypt;
+
     if (Settings.getInstance().getUseMasterPassword())
     {
       initCipher();

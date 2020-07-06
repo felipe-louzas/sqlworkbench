@@ -25,6 +25,8 @@ import java.util.Objects;
 
 import workbench.resource.Settings;
 
+import workbench.db.PasswordTrimType;
+
 import workbench.util.GlobalPasswordManager;
 import workbench.util.StringUtil;
 
@@ -138,20 +140,37 @@ public class SshHostConfig
 
   public void setPassword(String pwd)
   {
-    // check encryption settings when reading the profiles...
-    if (Settings.getInstance().getUseMasterPassword())
+    if (pwd != null)
     {
-      if (!isEncrypted(pwd))
+      PasswordTrimType trimType = Settings.getInstance().getPassworTrimType();
+
+      if (trimType == PasswordTrimType.always)
       {
-        pwd = MASTER_CRYPT_PREFIX + GlobalPasswordManager.getInstance().encrypt(pwd);
+        pwd = pwd.trim();
+      }
+      else if (trimType == PasswordTrimType.blankOnly && StringUtil.isBlank(pwd))
+      {
+        pwd = "";
       }
     }
-    else
+
+    if (StringUtil.isNonEmpty(pwd))
     {
-      // no encryption should be used, but password is encrypted, decrypt it now.
-      if (this.isEncrypted(pwd))
+      // check encryption settings when reading the profiles...
+      if (Settings.getInstance().getUseMasterPassword())
       {
-        pwd = decryptPassword(pwd);
+        if (!isEncrypted(pwd))
+        {
+          pwd = MASTER_CRYPT_PREFIX + GlobalPasswordManager.getInstance().encrypt(pwd);
+        }
+      }
+      else
+      {
+        // no encryption should be used, but password is encrypted, decrypt it now.
+        if (this.isEncrypted(pwd))
+        {
+          pwd = decryptPassword(pwd);
+        }
       }
     }
     this.password = pwd;
@@ -159,6 +178,7 @@ public class SshHostConfig
 
   private boolean isEncrypted(String aPwd)
   {
+    if (aPwd == null) return false;
     return aPwd.startsWith(MASTER_CRYPT_PREFIX);
   }
 
