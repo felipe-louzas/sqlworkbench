@@ -31,9 +31,9 @@
     <entry dev-build="1" type="enh">Added new command WbSetSchema to change the current schema using the driver's JDBC API</entry>
     <entry dev-build="1" type="enh">For PostgreSQL 12, the new computed columns are now shown in the generated DDL</entry>
     <entry dev-build="1" type="enh">The tooltip of a column header now always includes the table name if available</entry>
-    <entry dev-build="12" type="fix">When invoking code-completion in the ON part of a JOIN, not tables where shown.</entry>
-    <entry dev-build="12" type="fix">When selecting a global SSH configuration for a connection profile, it was no longer possible to revert to a "non-global" configuration</entry>
-    <entry dev-build="12" type="fix">When specifying a SSH Tunnel without a password and no keyfile, SQL Workbench did not prompt for the password</entry>
+    <entry dev-build="13" type="fix">When invoking code-completion in the ON part of a JOIN, not tables where shown.</entry>
+    <entry dev-build="13" type="fix">When selecting a global SSH configuration for a connection profile, it was no longer possible to revert to a "non-global" configuration</entry>
+    <entry dev-build="13" type="fix">When specifying a SSH Tunnel without a password and no keyfile, SQL Workbench did not prompt for the password</entry>
     <entry dev-build="12" type="fix">For WbCopy, when using -createTarget=true together with -targetSchema the new table was created in the wrong schema</entry>
     <entry dev-build="11" type="fix">Fixed an issue when loading the SQL Server JDBC driver with certain versions of OpenJDK</entry>
     <entry dev-build="11" type="fix">For SQL Server, when including the CREATE TABLE statement in the output when exporting data as SQL the export failed</entry>
