@@ -21,12 +21,11 @@
 
 package workbench.sql.macros;
 
-import java.awt.Window;
+import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import workbench.WbManager;
 import workbench.resource.ResourceMgr;
@@ -62,31 +61,29 @@ public class MacroFileSelector
     return true;
   }
 
-  public WbFile selectMacroFile()
+  public WbFile selectMacroFile(Component parent)
   {
-    return selectStorageFile(false, null);
+    return selectStorageFile(parent, false, null);
   }
 
-  public WbFile selectStorageForLoad(int clientId)
+  public WbFile selectStorageForLoad(Component parent, int clientId)
   {
     if (!canLoadMacros(clientId)) return null;
-    return selectStorageFile(false, null);
+    return selectStorageFile(parent, false, null);
   }
 
-  public WbFile selectStorageForSave(int clientId)
+  public WbFile selectStorageForSave(Component parent, int clientId)
   {
-    return selectStorageFile(true, MacroManager.getInstance().getMacros(clientId).getCurrentFile());
+    return selectStorageFile(parent, true, MacroManager.getInstance().getMacros(clientId).getCurrentFile());
   }
 
-  private WbFile selectStorageFile(boolean forSave, File currentFile)
+  private WbFile selectStorageFile(Component parent, boolean forSave, File currentFile)
   {
     String lastDir = Settings.getInstance().getProperty(LAST_DIR_PROPERTY, Settings.getInstance().getConfigDir().getAbsolutePath());
 
     JFileChooser fc = new WbFileChooser(lastDir);
     fc.addChoosableFileFilter(ExtensionFileFilter.getXmlFileFilter());
     fc.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
-
-    Window parent = SwingUtilities.getWindowAncestor(WbManager.getInstance().getCurrentWindow());
 
     int answer = JFileChooser.CANCEL_OPTION;
 
@@ -128,6 +125,5 @@ public class MacroFileSelector
     }
     return new WbFile(selectedFile);
   }
-
 
 }

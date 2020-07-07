@@ -20,15 +20,19 @@
  */
 package workbench.gui.actions;
 
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 
-import workbench.gui.menu.RecentFileManager;
 import workbench.interfaces.MacroChangeListener;
 import workbench.resource.ResourceMgr;
+
+import workbench.gui.menu.RecentFileManager;
+
 import workbench.sql.macros.MacroFileSelector;
 import workbench.sql.macros.MacroManager;
 import workbench.sql.macros.MacroStorage;
+
 import workbench.util.WbFile;
 
 /**
@@ -40,11 +44,13 @@ public class SaveMacrosAction
   implements MacroChangeListener
 {
   private final int macroClientId;
+  private Component parent;
 
-  public SaveMacrosAction(int clientId)
+  public SaveMacrosAction(Component c, int clientId)
   {
     super();
     this.macroClientId = clientId;
+    this.parent = c;
     this.initMenuDefinition("MnuTxtSaveMacros");
     this.setMenuItemName(ResourceMgr.MNU_TXT_MACRO);
     this.setIcon(null);
@@ -61,7 +67,7 @@ public class SaveMacrosAction
   public void executeAction(ActionEvent e)
   {
     MacroFileSelector selector = new MacroFileSelector();
-    WbFile f = selector.selectStorageForSave(macroClientId);
+    WbFile f = selector.selectStorageForSave(parent, macroClientId);
     if (f == null) return;
     MacroManager.getInstance().saveAs(macroClientId, f);
     RecentFileManager.getInstance().macrosLoaded(f);

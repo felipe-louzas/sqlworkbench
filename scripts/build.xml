@@ -525,7 +525,8 @@
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>PostgresLexer</replacevalue>
       </replacefilter>
-      <replacefilter token="XXXX_DBMS_XXXX|" value='"LIMIT|OFFSET|CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|'/>
+      <replacefilter token="XXXX_DBMS_XXXX|"
+                     value='"LIMIT|OFFSET|CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|(DEFAULT{wsp}PRIVILEGES)|'/>
       <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|"/>
       <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
       <replacefilter token="(PACKAGE{wsp}BODY)|"/>
@@ -687,36 +688,42 @@
     <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
+      <arg value="-nobak"/>
       <arg value="../src/workbench/sql/lexer/StandardLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
+      <arg value="-nobak"/>
       <arg value="../src/workbench/sql/lexer/PostgresLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
+      <arg value="-nobak"/>
       <arg value="../src/workbench/sql/lexer/NonStandardLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
+      <arg value="-nobak"/>
       <arg value="../src/workbench/sql/lexer/MySQLLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
+      <arg value="-nobak"/>
       <arg value="../src/workbench/sql/lexer/SqlServerLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
+      <arg value="-nobak"/>
       <arg value="../src/workbench/sql/lexer/PgEscapingLexer.flex"/>
     </java>
 

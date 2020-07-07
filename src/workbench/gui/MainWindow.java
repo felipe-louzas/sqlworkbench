@@ -633,8 +633,8 @@ public class MainWindow
 
     this.createMacro = new AddMacroAction(getMacroClientId());
     this.manageMacros = new ManageMacroAction(this);
-    this.loadMacros = new LoadMacrosAction(getMacroClientId());
-    this.saveMacros = new SaveMacrosAction(getMacroClientId());
+    this.loadMacros = new LoadMacrosAction(this, getMacroClientId());
+    this.saveMacros = new SaveMacrosAction(this, getMacroClientId());
     showMacroPopup = new ShowMacroPopupAction(this);
 
     this.dbExplorerAction = new ShowDbExplorerAction(this);

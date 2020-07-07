@@ -106,7 +106,7 @@ public class SqlUtil
       "FLASHBACK ARCHIVE", "TYPE BODY", "CAST", "FOREIGN DATA WRAPPER", "OPERATOR", "SCHEMA", "EXTENSION",
       "DATABASE", "DATABASE LINK", "PFILE", "SPFILE", "SYSTEM", "RULE", "POLICY", "SERVER", "EVENT TRIGGER",
       "STATISTICS", "PUBLICATION", "SUBSCRIPTION", "TABLESPACE", "FOREIGN TABLE", "COLLATION", "FOREIGN DATA WRAPPER",
-      "PARTITION FUNCTION", "PARTITION SCHEME"));
+      "PARTITION FUNCTION", "PARTITION SCHEME", "DEFAULT PRIVILEGES"));
   }
 
   private static final Set<String> CHAR_TYPES_WITHOUT_LENGTH = CollectionUtil.caseInsensitiveSet("text", "tinytext", "mediumtext", "longtext");
@@ -124,7 +124,7 @@ public class SqlUtil
   private static class TypesWithoutNamesHolder
   {
     private final static Set<String> TYPES =
-      Collections.unmodifiableSet(CollectionUtil.treeSet("MATERIALIZED VIEW LOG", "SNAPSHOT LOG", "PFILE", "SPFILE", "SYSTEM"));
+      Collections.unmodifiableSet(CollectionUtil.treeSet("MATERIALIZED VIEW LOG", "SNAPSHOT LOG", "PFILE", "SPFILE", "SYSTEM", "DEFAULT PRIVILEGES"));
   }
 
   public static Set<String> getTypesWithoutNames()

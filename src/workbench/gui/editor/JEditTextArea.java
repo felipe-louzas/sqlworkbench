@@ -1031,6 +1031,7 @@ public class JEditTextArea
   public boolean scrollTo(final int line, final int offset)
   {
     if (visibleLines == 0) return false;
+    if (painter == null) return false;
 
     int newFirstLine = firstLine;
     int newHorizontalOffset = horizontalOffset;
@@ -1114,7 +1115,7 @@ public class JEditTextArea
       // If there is no graphics object, the display will be wrecked anyway.
       return 0;
     }
-    
+
     return offsetToX(gfx, line, offset);
   }
 
@@ -1980,7 +1981,7 @@ public class JEditTextArea
 
     if (newStart < 0 || newEnd > getDocumentLength())
     {
-      throw new IllegalArgumentException("Bounds out of"+ " range: " + newStart + "," + newEnd);
+      throw new IllegalArgumentException("Bounds out of range: " + newStart + "," + newEnd);
     }
 
     if (newStart != selectionStart || newEnd != selectionEnd || newBias != biasLeft)

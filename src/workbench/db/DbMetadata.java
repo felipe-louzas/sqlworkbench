@@ -83,6 +83,7 @@ import workbench.db.postgres.PostgresEventTriggerReader;
 import workbench.db.postgres.PostgresExtensionReader;
 import workbench.db.postgres.PostgresForeignServerReader;
 import workbench.db.postgres.PostgresObjectListCleaner;
+import workbench.db.postgres.PostgresPublicationReader;
 import workbench.db.postgres.PostgresRangeTypeReader;
 import workbench.db.postgres.PostgresRuleReader;
 import workbench.db.postgres.PostgresTypeReader;
@@ -329,6 +330,10 @@ public class DbMetadata
         extenders.add(new PostgresExtensionReader());
         extenders.add(new PostgresEventTriggerReader());
         extenders.add(new PostgresCollationReader());
+      }
+      if (JdbcUtils.hasMinimumServerVersion(dbConnection, "10"))
+      {
+        extenders.add(new PostgresPublicationReader());
       }
       extenders.add(new PostgresRuleReader());
       PostgresTypeReader typeReader = new PostgresTypeReader();

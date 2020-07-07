@@ -1439,7 +1439,7 @@ public class ConnectionEditorPanel
   public void selectMacroFile()
   {
     MacroFileSelector selector = new MacroFileSelector();
-    WbFile file = selector.selectMacroFile();
+    WbFile file = selector.selectMacroFile(this);
     if (file != null)
     {
       String path = FileDialogUtil.getPathWithPlaceholder(file);

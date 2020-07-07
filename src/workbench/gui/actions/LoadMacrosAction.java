@@ -20,6 +20,7 @@
  */
 package workbench.gui.actions;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import workbench.resource.ResourceMgr;
@@ -39,11 +40,13 @@ public class LoadMacrosAction
   extends WbAction
 {
   private final int macroClientId;
+  private Component parent;
 
-  public LoadMacrosAction(int clientId)
+  public LoadMacrosAction(Component parent, int clientId)
   {
     super();
     this.macroClientId = clientId;
+    this.parent = parent;
     this.initMenuDefinition("MnuTxtLoadMacros");
     this.setMenuItemName(ResourceMgr.MNU_TXT_MACRO);
     this.setIcon(null);
@@ -53,7 +56,7 @@ public class LoadMacrosAction
   public void executeAction(ActionEvent e)
   {
     MacroFileSelector selector = new MacroFileSelector();
-    WbFile f = selector.selectStorageForLoad(macroClientId);
+    WbFile f = selector.selectStorageForLoad(parent, macroClientId);
     if (f == null) return;
     RecentFileManager.getInstance().macrosLoaded(f);
     MacroManager.getInstance().loadMacros(macroClientId, f);
