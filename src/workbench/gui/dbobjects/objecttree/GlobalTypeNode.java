@@ -48,7 +48,7 @@ public class GlobalTypeNode
   }
 
   @Override
-  public boolean loadChildren(WbConnection connection)
+  public boolean loadChildren(WbConnection connection, TreeLoader loader)
   {
     if (connection == null) return false;
     DbSettings dbs = connection.getDbSettings();
@@ -65,6 +65,7 @@ public class GlobalTypeNode
         if (dbo != null)
         {
           ObjectTreeNode node = new ObjectTreeNode(dbo);
+          loader.addDependencyNodes(node);
           add(node);
         }
       }

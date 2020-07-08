@@ -51,7 +51,7 @@ public class BuddyListNode
   }
 
   @Override
-  public boolean loadChildren(WbConnection connection)
+  public boolean loadChildren(WbConnection connection, TreeLoader loader)
   {
     ProjectionNode projection = getProjection();
     if (projection != null)

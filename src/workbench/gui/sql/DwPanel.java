@@ -921,7 +921,7 @@ public class DwPanel
           success = true;
           showData(result);
         }
-        else
+        else if (result.hasMessages())
         {
           String err = result.getMessages().toString();
           showError(err);

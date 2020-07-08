@@ -20,7 +20,6 @@
  */
 package workbench.db.postgres;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
@@ -104,7 +103,6 @@ public class PostgresPublicationReader
     }
     StringBuilder sql = new StringBuilder(
       "select pubname, \n" +
-      "       pubowner::regrole as owner, \n" +
       "       puballtables, \n" +
       "       pubinsert, \n" +
       "       pubupdate, \n" +
@@ -131,9 +129,8 @@ public class PostgresPublicationReader
       while (rs.next())
       {
         String name = rs.getString("pubname");
-        String owner = rs.getString("owner");
         String remarks = rs.getString("remarks");
-        PgPublication pub = new PgPublication(name, owner);
+        PgPublication pub = new PgPublication(name);
         pub.setReplicatesDeletes(rs.getBoolean("pubdelete"));
         pub.setReplicatesInserts(rs.getBoolean("pubinsert"));
         pub.setReplicatesUpdates(rs.getBoolean("pubupdate"));
@@ -158,13 +155,15 @@ public class PostgresPublicationReader
   @Override
   public DataStore getObjectDetails(WbConnection con, DbObject object)
   {
+    PgPublication pub = getObjectDefinition(con, object);
+    if (pub == null) return null;
     return null;
   }
 
   @Override
-  public PgPublication getObjectDefinition(WbConnection con, DbObject name)
+  public PgPublication getObjectDefinition(WbConnection con, DbObject object)
   {
-    List<PgPublication> publications = getPublications(con, name.getObjectName());
+    List<PgPublication> publications = getPublications(con, object.getObjectName());
     if (publications == null || publications.isEmpty()) return null;
     return publications.get(0);
   }
@@ -174,21 +173,15 @@ public class PostgresPublicationReader
   {
     PgPublication pub = getObjectDefinition(con, object);
     if (pub == null) return null;
-
     try
     {
-      if (!pub.getTablesInitialized())
-      {
-        List<TableIdentifier> tables = getTables(con, pub);
-        pub.setTables(tables);
-      }
       return pub.getSource(con).toString();
     }
-    catch (SQLException ex)
+    catch (Exception ex)
     {
       LogMgr.logError(new CallerInfo(){}, "Could not retrieve publication source", ex);
+      return null;
     }
-    return null;
   }
 
   @Override
@@ -222,53 +215,9 @@ public class PostgresPublicationReader
     return publications.size() > 0;
   }
 
-  public List<TableIdentifier> getTables(WbConnection connection, PgPublication publication)
+  public List<TableIdentifier> getTables(WbConnection con, DbObject dbo)
   {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    Savepoint sp = null;
-    List<TableIdentifier> result = new ArrayList<>();
-
-    String sql =
-      "select t.relnamespace::regclass as schema_name, \n" +
-      "       t.relname as table_name, \n" +
-      "       pg_catalog.obj_description(t.oid) as remarks \n" +
-      "from pg_class t" +
-      "where t.oid in (select rel.prrelid \n" +
-      "                from pg_publication_rel rel " +
-      "                  join pg_publication pub on pub.oid = rel.prpubid \n" +
-      "                where pub.pubname = ?)";
-
-    LogMgr.logMetadataSql(new CallerInfo(){}, "publication tables", sql);
-
-    try
-    {
-      sp = connection.setSavepoint();
-      stmt = connection.getSqlConnection().prepareStatement(sql);
-      stmt.setString(1, publication.getObjectName());
-      rs = stmt.executeQuery();
-      while (rs.next())
-      {
-        String schema = rs.getString("schema_name");
-        String table = rs.getString("table_name");
-        String remarks = rs.getString("remarks");
-        TableIdentifier tbl = new TableIdentifier(schema, table);
-        tbl.setComment(remarks);
-        tbl.setNeverAdjustCase(true);
-        result.add(tbl);
-      }
-      connection.releaseSavepoint(sp);
-    }
-    catch (SQLException e)
-    {
-      connection.rollback(sp);
-      LogMgr.logMetadataError(new CallerInfo(){}, e, "publication tables", sql);
-    }
-    finally
-    {
-      SqlUtil.closeAll(rs, stmt);
-    }
-    return result;
-
+    PgPublication pub = getObjectDefinition(con, dbo);
+    return pub.retrieveTables(con);
   }
 }

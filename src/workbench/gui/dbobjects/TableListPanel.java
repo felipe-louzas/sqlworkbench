@@ -740,12 +740,9 @@ public class TableListPanel
    *
    * @param includeDataPanel if true, the Data panel will also be displayed
    */
-  private void showObjectDefinitionPanels(final boolean includeDataPanel)
+  private void showObjectDefinitionPanels(boolean includeDataPanel)
   {
     int count = displayTab.getTabCount();
-
-    if (includeDataPanel && count == 3) return; // nothing to do
-    if (!includeDataPanel && count == 2) return; // nothing to do
 
     WbSwingUtilities.invoke(() ->
     {
@@ -797,7 +794,8 @@ public class TableListPanel
   {
     if (dbConnection == null) return;
     DependencyReader reader = DependencyReaderFactory.getReader(dbConnection);
-    if (reader != null)
+    TableIdentifier tbl = getObjectTable();
+    if (reader != null && (reader.supportsIsUsingDependency(tbl.getType()) || reader.supportsUsedByDependency(tbl.getObjectType())) )
     {
       displayTab.add(ResourceMgr.getString("TxtDeps"), dependencyPanel);
     }
@@ -807,7 +805,7 @@ public class TableListPanel
   {
     if (dbConnection == null) return;
     PartitionLister lister = PartitionLister.Factory.createReader(dbConnection);
-    if (lister != null)
+    if (lister != null && isTable())
     {
       TablePartitionsPanel panel = getPartitionsPanel();
       panel.reset();

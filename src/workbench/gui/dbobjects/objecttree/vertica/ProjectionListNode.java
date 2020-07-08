@@ -48,7 +48,7 @@ public class ProjectionListNode
   }
 
   @Override
-  public boolean loadChildren(WbConnection connection)
+  public boolean loadChildren(WbConnection connection, TreeLoader loader)
   {
     if (getParent() == null) return false;
     DbObject dbo = getParent().getDbObject();

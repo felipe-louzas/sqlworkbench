@@ -124,7 +124,7 @@ public class ShowObjectInfoAction
           if (hasMessages)
           {
             display.appendToLog("\n");
-            display.appendToLog(result.getMessages().toString());
+            display.appendToLog(result.getMessages());
           }
 
           if (result.hasDataStores())

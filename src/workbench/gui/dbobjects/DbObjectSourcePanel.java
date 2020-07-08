@@ -544,27 +544,31 @@ public class DbObjectSourcePanel
   }
 
   @Override
-  public void appendToLog(final String msg)
+  public void appendToLog(CharSequence msg)
   {
+    if (msg == null) return;
+
     if (errorLog != null)
     {
       if (StringUtil.isBlank(errorLog.getText()) && StringUtil.isBlank(msg)) return;
 
       WbSwingUtilities.invoke(() ->
       {
-        errorLog.append(msg);
+        errorLog.append(msg.toString());
       });
     }
   }
 
   @Override
-  public void showLogMessage(String msg)
+  public void showLogMessage(CharSequence msg)
   {
+    if (msg == null) return;
+
     if (errorLog != null)
     {
       WbSwingUtilities.invoke(() ->
       {
-        errorLog.setText(msg);
+        errorLog.setText(msg.toString());
       });
     }
   }

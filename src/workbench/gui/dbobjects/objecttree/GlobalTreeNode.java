@@ -56,7 +56,7 @@ public class GlobalTreeNode
   }
 
   @Override
-  public boolean loadChildren(WbConnection connection)
+  public boolean loadChildren(WbConnection connection, TreeLoader loader)
   {
     if (connection == null) return false;
     DbSettings dbs = connection.getDbSettings();

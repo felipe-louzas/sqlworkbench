@@ -37,6 +37,8 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.ProcedureDefinition;
 import workbench.db.SynonymReader;
+import workbench.db.postgres.PgPublication;
+import workbench.db.postgres.PgSubscription;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
@@ -85,6 +87,8 @@ public class DbObjectNodeRenderer
     iconMap.put("type", "type");
     iconMap.put("foreign server", "server");
     iconMap.put(TreeLoader.TYPE_PACKAGE_NODE, "package");
+    iconMap.put(PgSubscription.TYPE_NAME, "subscription");
+    iconMap.put(PgPublication.TYPE_NAME, "publication");
 
     iconMapOpen.put(TreeLoader.TYPE_SCHEMA, "folder-open");
     iconMapOpen.put(TreeLoader.TYPE_CATALOG, "folder-open-db");

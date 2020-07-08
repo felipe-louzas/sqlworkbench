@@ -29,8 +29,8 @@ package workbench.interfaces;
 public interface ResultLogger
 {
   void clearLog();
-  void appendToLog(String msg);
-  void showLogMessage(String msg);
+  void appendToLog(CharSequence msg);
+  void showLogMessage(CharSequence msg);
 
   public static final ResultLogger DEV_NULL_LOGGER = new ResultLogger()
   {
@@ -40,12 +40,12 @@ public interface ResultLogger
     }
 
     @Override
-    public void appendToLog(String msg)
+    public void appendToLog(CharSequence msg)
     {
     }
 
     @Override
-    public void showLogMessage(String msg)
+    public void showLogMessage(CharSequence msg)
     {
     }
   };

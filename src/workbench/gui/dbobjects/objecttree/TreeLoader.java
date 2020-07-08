@@ -337,7 +337,7 @@ public class TreeLoader
           Set<String> globalTypes = connection.getDbSettings().getGlobalObjectTypes();
           globalNode = new GlobalTreeNode(globalTypes);
         }
-        globalNode.loadChildren(connection);
+        globalNode.loadChildren(connection, this);
         root.add(globalNode);
       }
 
@@ -491,7 +491,7 @@ public class TreeLoader
           {
             CatalogObjectTypesNode catalogObjectTypes = new CatalogObjectTypesNode(types);
             catalogNode.add(catalogObjectTypes);
-            catalogObjectTypes.loadChildren(connection);
+            catalogObjectTypes.loadChildren(connection, this);
           }
         }
         if (!connection.getDbSettings().supportsSchemas())
@@ -1211,7 +1211,7 @@ public class TreeLoader
       levelChanger.changeIsolationLevel(connection);
       this.connection.setBusy(true);
 
-      if (node.loadChildren(connection))
+      if (node.loadChildren(connection, this))
       {
         model.nodeStructureChanged(node);
         connection.releaseSavepoint(sp);

@@ -22,8 +22,6 @@ package workbench.gui.dbobjects.objecttree;
 
 import java.util.Set;
 
-import workbench.log.CallerInfo;
-import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.DbMetadata;
@@ -32,7 +30,6 @@ import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-
 
 /**
  *
@@ -57,7 +54,7 @@ public class CatalogObjectTypesNode
   }
 
   @Override
-  public boolean loadChildren(WbConnection connection)
+  public boolean loadChildren(WbConnection connection, TreeLoader loader)
   {
     if (connection == null) return false;
     DbSettings dbs = connection.getDbSettings();

@@ -21,10 +21,16 @@
 package workbench.db.postgres;
 
 import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.DbObject;
 import workbench.db.TableIdentifier;
@@ -42,7 +48,6 @@ public class PgPublication
 {
   public static final String TYPE_NAME = "PUBLICATION";
   private String name;
-  private String owner;
   private String comment;
   private boolean replicatesInserts;
   private boolean replicatesUpdates;
@@ -52,10 +57,9 @@ public class PgPublication
   private boolean tablesInitialized;
   private List<TableIdentifier> tables = new ArrayList<>();
 
-  public PgPublication(String name, String owner)
+  public PgPublication(String name)
   {
     this.name = name;
-    this.owner = owner;
   }
 
   @Override
@@ -105,39 +109,19 @@ public class PgPublication
     }
     else
     {
+      if (!tablesInitialized)
+      {
+        setTables(retrieveTables(con));
+      }
       String options = tables.stream().map(t -> t.getTableExpression(con)).collect(Collectors.joining(", "));
       source += "\n  FOR TABLE " + options;
     }
-
-    if (!replicatesDeletes || !replicatesInserts || !replicatesTruncate || !replicatesUpdates)
+    String publish = getPublishOptions();
+    if (publish != null)
     {
-      source += "\n WITH (publish = '";
-      int option = 0;
-      if (replicatesInserts)
-      {
-        source += "insert";
-        option ++;
-      }
-      if (replicatesUpdates)
-      {
-        if (option > 0) source += ", ";
-        source += "update";
-        option ++;
-      }
-      if (replicatesDeletes)
-      {
-        if (option > 0) source += ", ";
-        source += "delete";
-        option ++;
-      }
-      if (replicatesTruncate)
-      {
-        if (option > 0) source += ", ";
-        source += "truncate";
-        option ++;
-      }
-      source += "')";
+      source += "\n WITH (publish = '" + publish + "')";
     }
+    source += ";";
     return source;
   }
 
@@ -162,7 +146,7 @@ public class PgPublication
   @Override
   public String getDropStatement(WbConnection con, boolean cascade)
   {
-    return "DROP PUBLICATION " + SqlUtil.quoteObjectname(name);
+    return "DROP PUBLICATION IF EXISTS " + SqlUtil.quoteObjectname(name);
   }
 
   @Override
@@ -181,11 +165,6 @@ public class PgPublication
   public void setName(String name)
   {
     this.name = name;
-  }
-
-  public void setOwner(String owner)
-  {
-    this.owner = owner;
   }
 
   public void setReplicatesInserts(boolean replicatesInserts)
@@ -213,17 +192,95 @@ public class PgPublication
     this.includeAllTables = includeAllTables;
   }
 
-  public boolean getTablesInitialized()
+  private String getPublishOptions()
   {
-    return tablesInitialized;
+    if (replicatesDeletes && replicatesInserts && replicatesTruncate && replicatesUpdates)
+    {
+      return null;
+    }
+    String setting = "";
+    int num = 0;
+    if (replicatesInserts)
+    {
+      setting += "insert";
+      num ++;
+    }
+    if (replicatesUpdates)
+    {
+      if (num > 0) setting += ", ";
+      setting += "update";
+      num ++;
+    }
+    if (replicatesDeletes)
+    {
+      if (num > 0) setting += ", ";
+      setting += "delete";
+      num ++;
+    }
+    if (replicatesTruncate)
+    {
+      if (num > 0) setting += ", ";
+      setting += "truncate";
+      num ++;
+    }
+    return setting;
   }
-  
+
   public void setTables(List<TableIdentifier> pubTables)
   {
-    if (CollectionUtil.isEmpty(pubTables)) return;
     this.tables.clear();
+    if (CollectionUtil.isEmpty(pubTables)) return;
     this.tables.addAll(pubTables);
     this.tablesInitialized = true;
+  }
+
+  public List<TableIdentifier> retrieveTables(WbConnection connection)
+  {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Savepoint sp = null;
+    List<TableIdentifier> result = new ArrayList<>();
+
+    String sql =
+      "select t.relnamespace::regnamespace::text as schema_name, \n" +
+      "       t.relname as table_name, \n" +
+      "       pg_catalog.obj_description(t.oid) as remarks \n" +
+      "from pg_class t \n" +
+      "where t.oid in (select rel.prrelid \n" +
+      "                from pg_publication_rel rel " +
+      "                  join pg_publication pub on pub.oid = rel.prpubid \n" +
+      "                where pub.pubname = ?)";
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "publication tables", sql);
+
+    try
+    {
+      sp = connection.setSavepoint();
+      stmt = connection.getSqlConnection().prepareStatement(sql);
+      stmt.setString(1, name);
+      rs = stmt.executeQuery();
+      while (rs.next())
+      {
+        String schema = rs.getString("schema_name");
+        String table = rs.getString("table_name");
+        String remarks = rs.getString("remarks");
+        TableIdentifier tbl = new TableIdentifier(schema, table);
+        tbl.setComment(remarks);
+        tbl.setNeverAdjustCase(true);
+        result.add(tbl);
+      }
+      connection.releaseSavepoint(sp);
+    }
+    catch (SQLException e)
+    {
+      connection.rollback(sp);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "publication tables", sql);
+    }
+    finally
+    {
+      SqlUtil.closeAll(rs, stmt);
+    }
+    return result;
   }
 
 }

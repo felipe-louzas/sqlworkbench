@@ -209,6 +209,16 @@ public class PostgresDependencyReader
 
     String objectType = base.getObjectType().toLowerCase();
 
+    if (objectType.equals("subscription"))
+    {
+      return retrieveSubscriptionTables(connection, base);
+    }
+
+    if (objectType.equals("publication"))
+    {
+      return retrievePublicationTables(connection, base);
+    }
+
     if (objectType.equals("function"))
     {
       return retrieveObjects(connection, base, typesUsedByFunction);
@@ -290,6 +300,20 @@ public class PostgresDependencyReader
     return objects;
   }
 
+  private List<DbObject> retrieveSubscriptionTables(WbConnection conn, DbObject sub)
+  {
+    PostgresSubscriptionReader reader = new PostgresSubscriptionReader();
+    List<TableIdentifier> tables = reader.getTables(conn, sub);
+    return new ArrayList<>(tables);
+  }
+
+  private List<DbObject> retrievePublicationTables(WbConnection conn, DbObject sub)
+  {
+    PostgresPublicationReader reader = new PostgresPublicationReader();
+    List<TableIdentifier> tables = reader.getTables(conn, sub);
+    return new ArrayList<>(tables);
+  }
+
   private List<DbObject> getTriggerFunction(WbConnection connection, DbObject base)
   {
     return retrieveObjects(connection, base, triggerImplementationFunction);
@@ -369,6 +393,8 @@ public class PostgresDependencyReader
   public boolean supportsIsUsingDependency(String objectType)
   {
     if ("sequence".equalsIgnoreCase(objectType)) return false;
+    if (PgSubscription.TYPE_NAME.equalsIgnoreCase(objectType)) return true;
+    if (PgPublication.TYPE_NAME.equalsIgnoreCase(objectType)) return true;
     return supportedTypes.contains(objectType);
   }
 }

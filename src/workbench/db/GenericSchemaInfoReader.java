@@ -48,6 +48,7 @@ public class GenericSchemaInfoReader
   private String schemaQuery;
   private final boolean useSavepoint;
   private boolean reuseStmt;
+  private boolean isCacheable;
 
   private PreparedStatement query;
   private String cachedSchema;
@@ -63,6 +64,7 @@ public class GenericSchemaInfoReader
     useSavepoint = settings.getBoolProperty("currentschema.query.usesavepoint", false);
     schemaQuery = settings.getProperty(queryProp, null);
     reuseStmt = settings.getBoolProperty(reuseProp, false);
+    isCacheable = settings.getBoolProperty(cacheProp, false);
     connection.addChangeListener(this);
     logSettings();
   }
@@ -75,12 +77,7 @@ public class GenericSchemaInfoReader
 
   private void logSettings()
   {
-    LogMgr.logDebug(new CallerInfo(){}, connection.getId() + ": Re-Use statement: " + reuseStmt + ", cache current schema: "+ isCacheable() + ", SQL: " + schemaQuery);
-  }
-
-  private boolean isCacheable()
-  {
-    return Settings.getInstance().getBoolProperty(cacheProp, false);
+    LogMgr.logDebug(new CallerInfo(){}, connection.getId() + ": Re-Use statement: " + reuseStmt + ", cache current schema: "+ isCacheable + ", SQL: " + schemaQuery);
   }
 
   @Override
@@ -129,10 +126,8 @@ public class GenericSchemaInfoReader
     if (this.connection == null) return null;
     if (StringUtil.isEmptyString(this.schemaQuery)) return null;
 
-    boolean isCacheable = isCacheable();
     if (isCacheable && cachedSchema != null)
     {
-//      LogMgr.logTrace("GenericSchemaInfoReader.getCurrenSchema()", "Using cached schema: " + cachedSchema);
       return cachedSchema;
     }
 
@@ -187,6 +182,11 @@ public class GenericSchemaInfoReader
     if (isCacheable)
     {
       cachedSchema = currentSchema;
+      LogMgr.logDebug(ci, "Caching current schema: " + cachedSchema);
+    }
+    else
+    {
+      cachedSchema = null;
     }
     return currentSchema;
   }

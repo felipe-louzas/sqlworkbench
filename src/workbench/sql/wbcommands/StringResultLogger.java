@@ -40,16 +40,16 @@ public class StringResultLogger
   }
 
   @Override
-  public void appendToLog(String msg)
+  public void appendToLog(CharSequence msg)
   {
-    messages.append(msg);
+    if (msg != null) messages.append(msg);
   }
 
   @Override
-  public void showLogMessage(String msg)
+  public void showLogMessage(CharSequence msg)
   {
     messages.clear();
-    messages.append(msg);
+    if (msg != null) messages.append(msg);
   }
 
   public MessageBuffer getMessages()

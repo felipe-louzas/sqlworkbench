@@ -114,15 +114,22 @@ public class LogArea
   }
 
   @Override
-  public void appendToLog(String msg)
+  public void appendToLog(CharSequence msg)
   {
-    append(msg);
+    if (msg != null) append(msg.toString());
   }
 
   @Override
-  public void showLogMessage(String msg)
+  public void showLogMessage(CharSequence msg)
   {
-    setText(msg);
+    if (msg == null)
+    {
+      setText("");
+    }
+    else
+    {
+      setText(msg.toString());
+    }
   }
 
   @Override

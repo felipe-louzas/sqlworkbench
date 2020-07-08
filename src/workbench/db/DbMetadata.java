@@ -86,6 +86,7 @@ import workbench.db.postgres.PostgresObjectListCleaner;
 import workbench.db.postgres.PostgresPublicationReader;
 import workbench.db.postgres.PostgresRangeTypeReader;
 import workbench.db.postgres.PostgresRuleReader;
+import workbench.db.postgres.PostgresSubscriptionReader;
 import workbench.db.postgres.PostgresTypeReader;
 import workbench.db.postgres.PostgresUtil;
 import workbench.db.progress.OpenEdgeObjectListEnhancer;
@@ -334,6 +335,7 @@ public class DbMetadata
       if (JdbcUtils.hasMinimumServerVersion(dbConnection, "10"))
       {
         extenders.add(new PostgresPublicationReader());
+        extenders.add(new PostgresSubscriptionReader());
       }
       extenders.add(new PostgresRuleReader());
       PostgresTypeReader typeReader = new PostgresTypeReader();

@@ -968,7 +968,7 @@ public class WbSwingUtilities
         @Override
         public void windowOpened(WindowEvent evt)
         {
-          EventQueue.invokeLater(doLater);
+          WbSwingUtilities.invoke(doLater);
         }
       };
       dialog.addWindowListener(w);
@@ -1051,7 +1051,7 @@ public class WbSwingUtilities
   {
     final JTextField input = new JPasswordField();
     JPanel p = new JPanel(new BorderLayout(0, 5));
-    p.setBorder(new EmptyBorder(8, 0, 16, 0));
+    p.setBorder(new EmptyBorder(0, 0, 16, 0));
     p.add(new JLabel(message), BorderLayout.PAGE_START);
     p.add(input, BorderLayout.CENTER);
     WbThread getFocus = new WbThread("GetFocus")
@@ -1059,7 +1059,7 @@ public class WbSwingUtilities
       @Override
       public void run()
       {
-        input.requestFocusInWindow();
+        input.requestFocus();
       }
     };
     boolean ok = getOKCancel(title, caller == null ? WbManager.getInstance().getCurrentWindow() : caller, p, getFocus);

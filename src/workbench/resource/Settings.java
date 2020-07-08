@@ -2961,7 +2961,6 @@ public class Settings
 		return getProperty(PROPERTY_DECIMAL_FORMAT, null);
 	}
 
-
 	public void setIntegerFormatString(String format)
 	{
 		this.props.setProperty(PROPERTY_INTEGER_FORMAT, format);
@@ -2973,7 +2972,6 @@ public class Settings
 	}
 
 	// </editor-fold>
-
 
 	public int getMaxErrorStatementLength()
 	{

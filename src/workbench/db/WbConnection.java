@@ -610,9 +610,9 @@ public class WbConnection
             {
               messages.append(error.getErrorMessage());
             }
-            else
+            else if (result.hasMessages())
             {
-              messages.append(result.getMessages().toString());
+              messages.append(result.getMessages());
             }
           }
           messages.append("\n");

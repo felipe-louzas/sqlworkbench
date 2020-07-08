@@ -1016,7 +1016,7 @@ public class DbExplorerPanel
   }
 
   @Override
-  public void showLogMessage(String aMsg)
+  public void showLogMessage(CharSequence aMsg)
   {
   }
 
@@ -1026,7 +1026,7 @@ public class DbExplorerPanel
   }
 
   @Override
-  public void appendToLog(String msg)
+  public void appendToLog(CharSequence msg)
   {
   }
 

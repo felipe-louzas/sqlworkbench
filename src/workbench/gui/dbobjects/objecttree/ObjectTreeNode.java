@@ -567,7 +567,7 @@ public class ObjectTreeNode
     return (TreeLoader.TYPE_FK_DEF.equals(type) || TreeLoader.TYPE_FK_LIST.equals(type) || TreeLoader.TYPE_REF_LIST.equals(type));
   }
 
-  public boolean loadChildren(WbConnection connection)
+  public boolean loadChildren(WbConnection connection, TreeLoader loader)
   {
     return false;
   }

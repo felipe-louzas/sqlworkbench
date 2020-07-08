@@ -913,7 +913,7 @@ public class BatchRunner
           // and a subsequent call to hasMessages() will return false;
           boolean hasMessage = result.hasMessages();
           MessagePriority msgPrio = result.getMessagePriority();
-          String feedback = result.getMessages().toString();
+          String feedback = hasMessage ? result.getMessages().toString() : "";
 
           if (status == ExecutionStatus.Error)
           {

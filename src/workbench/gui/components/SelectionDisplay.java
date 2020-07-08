@@ -55,14 +55,12 @@ public class SelectionDisplay
   private Border activeBorder = new CompoundBorder(new DividerBorder(DividerBorder.LEFT), new EmptyBorder(0, 3, 0, 3));
   private ListSelectionListener rowListener;
   private ListSelectionListener columnListener;
-  private WbNumberFormatter formatter;
 
   public SelectionDisplay()
   {
     rowListener = this::rowSelectionChanged;
     columnListener = this::columnSelectionChanged;
     setBorder(WbSwingUtilities.EMPTY_BORDER);
-    formatter = Settings.getInstance().createDefaultDecimalFormatter(2);
   }
 
   public void removeClient(JTable client)
@@ -169,6 +167,9 @@ public class SelectionDisplay
 
     int cols[] = table.getSelectedColumns();
     double sum = 0;
+    double min = Double.MAX_VALUE;
+    double max = Double.MIN_VALUE;
+    double avg = 0;
     boolean numbers = false;
 
     boolean showSum = cols != null && cols.length > 0 && table.getColumnSelectionAllowed();
@@ -179,7 +180,7 @@ public class SelectionDisplay
 
     if (showSum)
     {
-      int rows[] = table.getSelectedRows();
+      int[] rows = table.getSelectedRows();
       for (int i=0; i < rows.length; i++)
       {
         for (int c=0; c < cols.length; c++)
@@ -187,18 +188,27 @@ public class SelectionDisplay
           Object o = table.getValueAt(rows[i], cols[c]);
           if (o instanceof Number)
           {
-            sum += ((Number)o).doubleValue();
+            double value = ((Number)o).doubleValue();
+            sum += value;
+            if (value > max) max = value;
+            if (value < min) min = value;
             numbers = true;
           }
         }
       }
+      avg = sum / rows.length;
     }
 
     String display = null;
 
     if (numbers)
     {
-      display = ResourceMgr.getFormattedString("MsgSelectSum", formatter.format(sum));
+      WbNumberFormatter dFormat = Settings.getInstance().createDefaultDecimalFormatter();
+      WbNumberFormatter iFormat = Settings.getInstance().createDefaultIntegerFormatter();
+
+      display = ResourceMgr.getFormattedString("MsgSelectStats",
+        format(sum, dFormat, iFormat), format(avg, dFormat, iFormat),
+        format(min, dFormat, iFormat), format(max, dFormat, iFormat));
     }
     else
     {
@@ -217,5 +227,14 @@ public class SelectionDisplay
     {
       setText(display);
     }
+  }
+
+  private String format(double value, WbNumberFormatter decimalFormatter, WbNumberFormatter intFormater)
+  {
+    if (value == Math.rint(value))
+    {
+      return intFormater.format(value);
+    }
+    return decimalFormatter.format(value);
   }
 }

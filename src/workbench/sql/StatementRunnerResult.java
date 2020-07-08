@@ -407,13 +407,13 @@ public class StatementRunnerResult
 
   public void addMessage(CharSequence msgBuffer)
   {
+    if (msgBuffer == null) return;
     if (messageLogger != null)
     {
       messageLogger.appendToLog(msgBuffer.toString());
       messageLogger.appendToLog("\n");
       return;
     }
-    if (msgBuffer == null) return;
     if (messages == null) return;
     if (messages.getLength() > 0) messages.appendNewLine();
     messages.append(msgBuffer);

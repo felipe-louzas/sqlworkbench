@@ -97,7 +97,9 @@ public class ConnectionGuiHelper
   {
     if (profile == null) return false;
 
-    String pwd = WbSwingUtilities.passwordPrompt(parent, ResourceMgr.getFormattedString("MsgInputPwd"), profile.getUrlInfo());
+    String title = profile.getName();
+    String msg =  ResourceMgr.getFormattedString("MsgInputPwd", profile.getUsername());
+    String pwd = WbSwingUtilities.passwordPrompt(parent, title, msg);
     if (StringUtil.isEmptyString(pwd)) return false;
 
     profile.setPassword(pwd);

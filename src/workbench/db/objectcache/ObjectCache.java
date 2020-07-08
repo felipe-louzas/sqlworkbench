@@ -559,7 +559,7 @@ class ObjectCache
    */
   public synchronized List<ColumnIdentifier> getColumns(WbConnection dbConnection, TableIdentifier tbl)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "Checking columns for: " + tbl.getTableExpression(dbConnection));
+    long start = System.currentTimeMillis();
 
     TableIdentifier toSearch = findEntry(dbConnection, tbl);
 
@@ -616,8 +616,11 @@ class ObjectCache
         LogMgr.logDebug(new CallerInfo(){}, "Adding columns for " + toSearch.getTableExpression() + " to cache");
         this.objects.put(toSearch, cols);
       }
-
     }
+
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Checking columns for: " + tbl.getTableExpression(dbConnection) + " took " + duration + "ms");
+
     return Collections.unmodifiableList(cols);
   }
 
@@ -736,27 +739,27 @@ class ObjectCache
     if (toSearch == null) return null;
 
     String schemaCat = supportsSchemas ? toSearch.getSchema() : toSearch.getCatalog();
+
     if (schemaCat == null)
     {
       TableIdentifier key = toSearch.createCopy();
       key.adjustCase(con);
 
-      List<Namespace> schemas = getSearchPath(con, new Namespace(con.getCurrentSchema()));
+      String schema = con.getCurrentSchema();
+      List<Namespace> schemas = getSearchPath(con, new Namespace(schema, null));
+
       for (Namespace nsp : schemas)
       {
-        TableIdentifier copy = key.createCopy();
-        copy.setCatalog(nsp.getCatalog());
-        copy.setSchema(nsp.getSchema());
-        TableIdentifier tbl = findInCache(copy);
-        if (tbl != null) return tbl;
+        key.setCatalog(nsp.getCatalog());
+        key.setSchema(nsp.getSchema());
+        TableIdentifier tbl = findInCache(key);
+        if (tbl != null)
+        {
+          return tbl;
+        }
       }
     }
-    else
-    {
-      return findInCache(toSearch);
-    }
-
-    return null;
+    return findInCache(toSearch);
   }
 
   PkDefinition getPrimaryKey(WbConnection con, TableIdentifier table)

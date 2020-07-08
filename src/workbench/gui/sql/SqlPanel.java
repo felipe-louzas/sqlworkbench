@@ -1337,10 +1337,13 @@ public class SqlPanel
    *  the display to the log panel (away from the result panel)
    */
   @Override
-  public void showLogMessage(String aMsg)
+  public void showLogMessage(CharSequence aMsg)
   {
     this.showLogPanel();
-    setLogText(aMsg);
+    if (aMsg != null)
+    {
+      setLogText(aMsg.toString());
+    }
   }
 
   /**
@@ -2664,10 +2667,10 @@ public class SqlPanel
   }
 
   @Override
-  public void appendToLog(final String logMessage)
+  public void appendToLog(CharSequence logMessage)
   {
     if (logMessage == null) return;
-    appendMessage(logMessage);
+    appendMessage(logMessage.toString());
   }
 
   private void appendMessage(final String logMessage, final String ... moreMessages)
@@ -3583,7 +3586,7 @@ public class SqlPanel
 
           // error messages should always be shown in the log panel, even if compressLog is enabled
           // if it is not enabled the messages have been appended to the log already
-          if (logWasCompressed)
+          if (logWasCompressed && statementResult.hasMessages())
           {
             printMessage(statementResult.getMessages().toString());
           }
@@ -3726,9 +3729,9 @@ public class SqlPanel
         WbManager.getInstance().showOutOfMemoryError();
       }
       LogMgr.logError(ci, "Error executing statement", e);
-      if (statementResult != null)
+      if (statementResult != null && statementResult.hasMessages())
       {
-        showLogMessage(statementResult.getMessages().toString());
+        showLogMessage(statementResult.getMessages());
         statementResult.clear();
       }
       else

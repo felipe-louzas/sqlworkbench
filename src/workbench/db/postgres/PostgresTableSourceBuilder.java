@@ -441,7 +441,7 @@ public class PostgresTableSourceBuilder
       stmt.setString(1, table.getRawTableName());
       stmt.setString(2, table.getRawSchema());
 
-      LogMgr.logMetadataSql(ci, "foreign table options", sql, table.getSchema(), table.getTableName());
+      LogMgr.logMetadataSql(ci, "foreign table options", sql, table.getTableName(), table.getSchema());
 
       rs = stmt.executeQuery();
       if (rs.next())
@@ -474,7 +474,7 @@ public class PostgresTableSourceBuilder
     {
       dbConnection.rollback(sp);
       sp = null;
-      LogMgr.logMetadataError(ci, ex, "foreign table options", sql, table.getSchema(), table.getTableName());
+      LogMgr.logMetadataError(ci, ex, "foreign table options", table.getTableName(), table.getSchema());
     }
     finally
     {
