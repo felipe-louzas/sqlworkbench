@@ -202,7 +202,7 @@ public class WbIncludeTest
       StatementRunnerResult result = runner.runStatement("WbInclude -file=/this/will/not/be/there/i_hope.sql");
       assertFalse("Runner was successful", result.isSuccess());
       String msg = result.getMessages().toString();
-      assertTrue("Wrong error", msg.indexOf("not found") > -1);
+      assertTrue("Wrong error", msg.contains("not found"));
     }
     finally
     {

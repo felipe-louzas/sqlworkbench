@@ -508,7 +508,7 @@ public class XlsRowDataConverter
       int count = workbook.getNumberOfSheets();
       workbook.setSheetOrder(info.getSheetName(), count - 1);
     }
-    
+
     if (info instanceof SXSSFSheet)
     {
       ((SXSSFSheet)info).trackAllColumnsForAutoSizing();
@@ -516,8 +516,14 @@ public class XlsRowDataConverter
 
     int rowNum = info.getLastRowNum() + 1;
 
-    Row infoRow = info.createRow(rowNum);
+    String sql = generatingSql.trim();
+    int numLines = sql.split(StringUtil.REGEX_CRLF).length;
 
+    Row infoRow = info.createRow(rowNum);
+    // I can't get automatic row height to work
+    // this assumes a default font size of 12pt
+    // It's probably not perfect, but better than having a single row
+    infoRow.setHeightInPoints(numLines * 12);
     Cell name = infoRow.createCell(0);
     CellStyle nameStyle = workbook.createCellStyle();
     nameStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -531,11 +537,12 @@ public class XlsRowDataConverter
     CellStyle sqlStyle = workbook.createCellStyle();
     sqlStyle.setAlignment(HorizontalAlignment.LEFT);
     sqlStyle.setVerticalAlignment(VerticalAlignment.TOP);
-    sqlStyle.setWrapText(false);
+    sqlStyle.setWrapText(true);
 
-    RichTextString s = workbook.getCreationHelper().createRichTextString(generatingSql);
+    RichTextString s = workbook.getCreationHelper().createRichTextString(sql);
     sqlCell.setCellValue(s);
     sqlCell.setCellStyle(sqlStyle);
+    info.autoSizeColumn(1);
   }
 
   @Override

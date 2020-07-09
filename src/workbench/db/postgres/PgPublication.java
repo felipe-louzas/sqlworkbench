@@ -113,8 +113,13 @@ public class PgPublication
       {
         setTables(retrieveTables(con));
       }
-      String options = tables.stream().map(t -> t.getTableExpression(con)).collect(Collectors.joining(", "));
-      source += "\n  FOR TABLE " + options;
+      String indent = " ";
+      if (tables.size() > 5)
+      {
+        indent = "\n    ";
+      }
+      String options = tables.stream().map(t -> t.getTableExpression(con)).collect(Collectors.joining("," + indent));
+      source += "\n  FOR TABLE" + indent + options;
     }
     String publish = getPublishOptions();
     if (publish != null)
