@@ -205,6 +205,10 @@ public class SelectionDisplay
     {
       WbNumberFormatter dFormat = Settings.getInstance().createDefaultDecimalFormatter();
       WbNumberFormatter iFormat = Settings.getInstance().createDefaultIntegerFormatter();
+      if (iFormat == null)
+      {
+        iFormat = dFormat;
+      }
 
       display = ResourceMgr.getFormattedString("MsgSelectStats",
         format(sum, dFormat, iFormat), format(avg, dFormat, iFormat),
