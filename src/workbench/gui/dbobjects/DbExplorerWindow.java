@@ -1,6 +1,4 @@
 /*
- * DbExplorerWindow.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -73,7 +71,6 @@ public class DbExplorerWindow
     this.getContentPane().add(this.panel);
     ResourceMgr.setWindowIcons(this, "database");
 
-    this.setProfile(profile);
     this.restorePosition();
     this.jobIndicator = new RunningJobIndicator(this);
     this.panel.setDbExecutionListener(this);
@@ -98,11 +95,11 @@ public class DbExplorerWindow
     return "database";
   }
 
-  public final void setProfile(ConnectionProfile profile)
+  public void updateTitle(WbConnection conn)
   {
     WindowTitleBuilder builder = new WindowTitleBuilder();
     builder.setShowWorkspace(false);
-    String windowTitle = builder.getWindowTitle(profile, null, null, ResourceMgr.getString("TxtDbExplorerTitel"));
+    String windowTitle = builder.getWindowTitle(conn, null, null, ResourceMgr.getString("TxtDbExplorerTitel"));
     setTitle(windowTitle);
   }
 
@@ -259,7 +256,7 @@ public class DbExplorerWindow
   @Override
   public void connectFailed(String error)
   {
-    this.setProfile(null);
+    updateTitle(null);
     this.panel.setConnection(null);
     WbSwingUtilities.showFriendlyErrorMessage(this, ResourceMgr.getString("ErrConnectFailed"), error.trim());
   }
@@ -267,7 +264,7 @@ public class DbExplorerWindow
   @Override
   public void connected(WbConnection conn)
   {
-    this.setProfile(conn.getProfile());
+    updateTitle(conn);
     this.panel.setConnection(conn);
   }
 

@@ -1,6 +1,4 @@
 /*
- * GuiSettings.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -72,6 +70,8 @@ public class GuiSettings
 	public static final String PROP_TITLE_SHOW_WKSP = "workbench.gui.display.showpworkspace";
 	public static final String PROP_TITLE_SHOW_URL = "workbench.gui.display.showurl";
 	public static final String PROP_TITLE_SHOW_URL_USER = "workbench.gui.display.showurl.includeuser";
+	public static final String PROP_TITLE_SHOW_URL_CLEANUP = "workbench.gui.display.showurl.cleanup";
+	public static final String PROP_TITLE_REMOVE_URL_PRODUCT = "workbench.gui.display.showurl.removeproduct";
 	public static final String PROP_TITLE_SHOW_PROF_GROUP = "workbench.gui.display.showprofilegroup";
 	public static final String PROP_TITLE_APP_AT_END = "workbench.gui.display.name_at_end";
 	public static final String PROP_TITLE_SHOW_EDITOR_FILE = "workbench.gui.display.showfilename";
@@ -846,6 +846,26 @@ public class GuiSettings
 	{
 		Settings.getInstance().setProperty(PROP_TITLE_SHOW_WKSP, flag);
 	}
+
+  public static boolean getCleanupURLParametersInWindowTitle()
+  {
+    return Settings.getInstance().getBoolProperty(PROP_TITLE_SHOW_URL_CLEANUP, true);
+  }
+
+  public static void setCleanupURLParametersInWindowTitle(boolean flag)
+  {
+    Settings.getInstance().setProperty(PROP_TITLE_SHOW_URL_CLEANUP, flag);
+  }
+
+  public static boolean getRemoveJDBCProductInWindowTitle()
+  {
+    return Settings.getInstance().getBoolProperty(PROP_TITLE_REMOVE_URL_PRODUCT, true);
+  }
+
+  public static void setRemoveJDBCProductInWindowTitle(boolean flag)
+  {
+    Settings.getInstance().setProperty(PROP_TITLE_REMOVE_URL_PRODUCT, flag);
+  }
 
 	public static boolean getShowWorkspaceInWindowTitle()
 	{

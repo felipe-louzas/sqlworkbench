@@ -1,6 +1,4 @@
 /*
- * XlsRowDataConverter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -516,14 +514,8 @@ public class XlsRowDataConverter
 
     int rowNum = info.getLastRowNum() + 1;
 
-    String sql = generatingSql.trim();
-    int numLines = sql.split(StringUtil.REGEX_CRLF).length;
-
     Row infoRow = info.createRow(rowNum);
-    // I can't get automatic row height to work
-    // this assumes a default font size of 12pt
-    // It's probably not perfect, but better than having a single row
-    infoRow.setHeightInPoints(numLines * 12);
+    infoRow.setHeight((short)-1);
     Cell name = infoRow.createCell(0);
     CellStyle nameStyle = workbook.createCellStyle();
     nameStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -539,7 +531,7 @@ public class XlsRowDataConverter
     sqlStyle.setVerticalAlignment(VerticalAlignment.TOP);
     sqlStyle.setWrapText(true);
 
-    RichTextString s = workbook.getCreationHelper().createRichTextString(sql);
+    RichTextString s = workbook.getCreationHelper().createRichTextString(generatingSql.trim());
     sqlCell.setCellValue(s);
     sqlCell.setCellStyle(sqlStyle);
     info.autoSizeColumn(1);

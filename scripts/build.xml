@@ -527,17 +527,17 @@
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|"
                      value='"LIMIT|OFFSET|CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|(DEFAULT{wsp}PRIVILEGES)|'/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|"/>
+      <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|" value="(USER{wsp}MAPPING)"/>
       <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
-      <replacefilter token="(PACKAGE{wsp}BODY)|"/>
+      <replacefilter token="(PACKAGE{wsp}BODY)|" value="(OPERATOR{wsp}CLASS)|(OPERATOR{wsp}FAMILY)|(ACCESS{wsp}METHOD)|"/>
       <replacefilter token="(TYPE{wsp}BODY)|(FOREIGN{wsp}TABLE)"/>
-      <replacefilter token="(SNAPSHOT{wsp}LOG)|(ACCESS{wsp}METHOD)"/>
-      <replacefilter token="(CONNECT{wsp}BY)|"/>
-      <replacefilter token='"VARCHAR2"|"STATISTICS"'/>
+      <replacefilter token="(SNAPSHOT{wsp}LOG)|" value="(ACCESS{wsp}METHOD)|"/>
+      <replacefilter token="(CONNECT{wsp}BY)|" value='"TRANSFORM"|'/>
+      <replacefilter token='"VARCHAR2"|' value='"STATISTICS"'/>
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
       <replacefilter token="(DATABASE{wsp}LINK)|"/>
       <replacefilter token='"SYSDATE"|'/>
-      <replacefilter token='"SYSTIMESTAMP"|'/>
+      <replacefilter token='"SYSTIMESTAMP"|' value='"LOCALTIMESTAMP"|'/>
       <replacefilter token='"SESSION_USER"|'/>
       <replacefilter>
         <replacetoken><![CDATA[operator=([\+\-\*\/\<\>\=\~\!\%\^\&\?]|"||"|"!="|"<>"|"<="|">="|"=>"|"(+)")]]></replacetoken>

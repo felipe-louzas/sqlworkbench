@@ -1,6 +1,4 @@
 /*
- * SelectionDisplay.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -205,10 +203,6 @@ public class SelectionDisplay
     {
       WbNumberFormatter dFormat = Settings.getInstance().createDefaultDecimalFormatter();
       WbNumberFormatter iFormat = Settings.getInstance().createDefaultIntegerFormatter();
-      if (iFormat == null)
-      {
-        iFormat = dFormat;
-      }
 
       display = ResourceMgr.getFormattedString("MsgSelectStats",
         format(sum, dFormat, iFormat), format(avg, dFormat, iFormat),
@@ -233,11 +227,11 @@ public class SelectionDisplay
     }
   }
 
-  private String format(double value, WbNumberFormatter decimalFormatter, WbNumberFormatter intFormater)
+  private String format(double value, WbNumberFormatter decimalFormatter, WbNumberFormatter intFormatter)
   {
-    if (value == Math.rint(value))
+    if (intFormatter != null && value == Math.rint(value))
     {
-      return intFormater.format(value);
+      return intFormatter.format(value);
     }
     return decimalFormatter.format(value);
   }

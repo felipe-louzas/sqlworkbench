@@ -1,6 +1,4 @@
 /*
- * DbExplorerPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -691,7 +689,7 @@ public class DbExplorerPanel
 
       if (this.window != null)
       {
-        this.window.setProfile(aConnection.getProfile());
+        this.window.updateTitle(aConnection);
       }
 
       this.connectionInfo.setConnection(aConnection);

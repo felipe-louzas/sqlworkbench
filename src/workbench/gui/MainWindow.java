@@ -2574,7 +2574,7 @@ public class MainWindow
     EventQueue.invokeLater(() ->
     {
       WindowTitleBuilder titleBuilder = new WindowTitleBuilder();
-      String title1 = titleBuilder.getWindowTitle(currentProfile, getCurrentWorkspaceFile(), getCurrentEditorFile());
+      String title1 = titleBuilder.getWindowTitle(getCurrentConnection(), getCurrentWorkspaceFile(), getCurrentEditorFile());
       setTitle(title1);
       getJobIndicator().baseTitleChanged();
     });

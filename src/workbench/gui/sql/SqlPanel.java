@@ -2714,7 +2714,7 @@ public class SqlPanel
     if (dbConnection != null)
     {
       WindowTitleBuilder builder = new WindowTitleBuilder();
-      title = builder.getWindowTitle(dbConnection.getProfile(), null, null, null) + " - ";
+      title = builder.getWindowTitle(dbConnection, null, null, null) + " - ";
     }
     title += getRealTabTitle();
 

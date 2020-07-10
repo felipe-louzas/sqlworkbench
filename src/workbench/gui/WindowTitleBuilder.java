@@ -1,6 +1,4 @@
 /*
- * WindowTitleBuilder.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -29,6 +27,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ConnectionProfile;
+import workbench.db.WbConnection;
 
 import workbench.util.StringUtil;
 
@@ -90,22 +89,22 @@ public class WindowTitleBuilder
     this.showNotConnected = flag;
   }
 
-  public String getWindowTitle(ConnectionProfile profile)
+  public String getWindowTitle(WbConnection connection)
   {
-    return getWindowTitle(profile, null, null);
+    return getWindowTitle(connection, null, null);
   }
 
-  public String getWindowTitle(ConnectionProfile profile, String workspaceFile, String editorFile)
+  public String getWindowTitle(WbConnection connection, String workspaceFile, String editorFile)
   {
-    return getWindowTitle(profile, workspaceFile, editorFile, ResourceMgr.TXT_PRODUCT_NAME);
+    return getWindowTitle(connection, workspaceFile, editorFile, ResourceMgr.TXT_PRODUCT_NAME);
   }
 
-  public String getWindowTitle(ConnectionProfile profile, String workspaceFile, String editorFile, String appName)
+  public String getWindowTitle(WbConnection connection, String workspaceFile, String editorFile, String appName)
   {
-    final StringBuilder title = new StringBuilder(50);
+    StringBuilder title = new StringBuilder(50);
 
-    String enclose = GuiSettings.getTitleGroupBracket();
-    String sep = GuiSettings.getTitleGroupSeparator();
+    ConnectionProfile profile = connection != null ? connection.getProfile() : null;
+    String user = connection != null ? connection.getDisplayUser() : null;
 
     if (appName != null && productNamePosition == NAME_AT_START)
     {
@@ -119,10 +118,14 @@ public class WindowTitleBuilder
 
       if (showURL)
       {
-        String url = makeCleanUrl(profile.getActiveUrl());
-        if (showUser)
+        if (showProfileGroup)
         {
-          title.append(profile.getLoginUser());
+          appendProfileName(title, profile);
+        }
+        String url = makeCleanUrl(profile.getActiveUrl());
+        if (showUser && user != null)
+        {
+          title.append(user);
           if (url.charAt(0) != '@')
           {
             title.append('@');
@@ -135,24 +138,12 @@ public class WindowTitleBuilder
         if (profile.getPromptForUsername())
         {
           // always display the username if prompted
-          title.append(profile.getLoginUser());
-          title.append("- ");
+          title.append(user);
+          title.append(" - ");
         }
         if (showProfileGroup)
         {
-          char open = getOpeningBracket(enclose);
-          char close = getClosingBracket(enclose);
-
-          if (open != 0 && close != 0)
-          {
-            title.append(open);
-          }
-          title.append(profile.getGroup());
-          if (open != 0 && close != 0)
-          {
-            title.append(close);
-          }
-          if (sep != null) title.append(sep);
+          appendProfileName(title, profile);
         }
         title.append(profile.getName());
       }
@@ -163,7 +154,7 @@ public class WindowTitleBuilder
       title.append(ResourceMgr.getString("TxtNotConnected"));
     }
 
-    if (workspaceFile != null && showWorkspace)
+    if (StringUtil.isNonBlank(workspaceFile) && showWorkspace)
     {
       File f = new File(workspaceFile);
       String baseName = f.getName();
@@ -173,7 +164,7 @@ public class WindowTitleBuilder
     }
 
     int showFilename = GuiSettings.getShowFilenameInWindowTitle();
-    if (editorFile != null && showFilename != GuiSettings.SHOW_NO_FILENAME)
+    if (StringUtil.isNonBlank(editorFile) && showFilename != GuiSettings.SHOW_NO_FILENAME)
     {
       title.append(" - ");
       if (showFilename == GuiSettings.SHOW_FULL_PATH)
@@ -187,13 +178,33 @@ public class WindowTitleBuilder
       }
     }
 
-    if (appName != null && productNamePosition == NAME_AT_END)
+    if (StringUtil.isNonBlank(appName) && productNamePosition == NAME_AT_END)
     {
       if (title.length() > 0) title.append(" - ");
       title.append(appName);
     }
 
     return title.toString();
+  }
+
+  private void appendProfileName(StringBuilder title, ConnectionProfile profile)
+  {
+    String enclose = GuiSettings.getTitleGroupBracket();
+    String sep = GuiSettings.getTitleGroupSeparator();
+
+    char open = getOpeningBracket(enclose);
+    char close = getClosingBracket(enclose);
+
+    if (open != 0 && close != 0)
+    {
+      title.append(open);
+    }
+    title.append(profile.getGroup());
+    if (open != 0 && close != 0)
+    {
+      title.append(close);
+    }
+    if (sep != null) title.append(sep);
   }
 
   private char getOpeningBracket(String settingsValue)
@@ -216,16 +227,49 @@ public class WindowTitleBuilder
   public String makeCleanUrl(String url)
   {
     if (StringUtil.isEmptyString(url)) return url;
+    // remove the jdbc: prefix as it's not useful
+    url = url.replace("jdbc:", "");
 
-    int numColon = 2;
-    if (url.startsWith("jdbc:oracle:") || url.startsWith("jdbc:jtds:"))
+    // remove URL parameters
+    if (GuiSettings.getCleanupURLParametersInWindowTitle())
     {
-      numColon = 3;
+      int pos = url.indexOf('&');
+      if (pos < 0)
+      {
+        pos = url.indexOf(';');
+      }
+      if (pos > 0)
+      {
+        url = url.substring(0, pos);
+      }
     }
-    int pos = StringUtil.findOccurance(url, ':', numColon);
-    if (pos > 0)
+    else
     {
-      return url.substring(pos + 1);
+      // in any case remove the parameter for integratedSecurity as
+      // that will be reflected in the username
+      url = url.replaceFirst("(?i)(integratedSecurity=true);*", "");
+    }
+
+    if (GuiSettings.getRemoveJDBCProductInWindowTitle())
+    {
+      if (url.contains("oracle:"))
+      {
+        // special handling for Oracle
+        url = url.replace("oracle:thin:", "");
+        url = url.replace("oracle:oci:", "");
+      }
+      else if (url.contains("jtds:sqlserver:"))
+      {
+        url = url.replace("jtds:sqlserver:", "");
+      }
+      else
+      {
+        int pos = url.indexOf(':');
+        if (pos > 0)
+        {
+          url = url.substring(pos + 1);
+        }
+      }
     }
     return url;
   }

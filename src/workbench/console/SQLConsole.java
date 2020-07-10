@@ -1,6 +1,4 @@
 /*
- * SQLConsole.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -622,13 +620,8 @@ public class SQLConsole
   private void setTerminalTitle(WbConnection conn, boolean isRunning)
   {
     if (!changeTerminalTitle) return;
-    ConnectionProfile profile = null;
-    if (conn != null)
-    {
-      profile = conn.getProfile();
-    }
     String indicator = isRunning ? "> " : "";
-    String toPrint = titlePrefix + indicator + titleBuilder.getWindowTitle(profile) + titleSuffix;
+    String toPrint = titlePrefix + indicator + titleBuilder.getWindowTitle(conn) + titleSuffix;
     System.out.println(toPrint);
   }
 
