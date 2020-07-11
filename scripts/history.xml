@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2020-06-29">
+  <release build="-1" date="2020-07-11">
     <entry dev-build="13" type="enh">For PostgreSQL, subscriptions and publications for logical replication are now shown in the DbTree and DbExplorer.</entry>
     <entry dev-build="12" type="enh">For PostgreSQL, the attribute of IDENTITY REPLICA is now shown in the generated DDL.</entry>
     <entry dev-build="12" type="enh">"Make uppercase" and "Make lowercase" now also work if no text is selected. In that case, (only) the character at the cursor is changed</entry>
