@@ -387,7 +387,7 @@ public class DbDriver
     copy.libraryList.addAll(this.libraryList);
     copy.sampleUrl = this.sampleUrl;
     copy.name = this.name;
-    
+
     // the internal attribute should not be copied!
 
     return copy;
@@ -498,6 +498,7 @@ public class DbDriver
     catch (Throwable th)
     {
       LogMgr.logError(ci, "Error connecting to the database using URL=" + loggingUrl + ", username=" + loggingUser, th);
+      if (th instanceof SQLException) throw (SQLException)th;
       throw new SQLException(th.getMessage(), th);
     }
 

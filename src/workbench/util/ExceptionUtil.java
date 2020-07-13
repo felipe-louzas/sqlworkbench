@@ -25,6 +25,7 @@ package workbench.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 
 import workbench.log.CallerInfo;
@@ -140,6 +141,11 @@ public class ExceptionUtil
         result.append(th.getMessage().trim());
       }
 
+      if (th.getCause() instanceof UnknownHostException)
+      {
+        result.append(" (UnknownHost)");
+      }
+
       if (th instanceof SQLException)
       {
         SQLException se = (SQLException)th;
@@ -157,7 +163,7 @@ public class ExceptionUtil
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         th.printStackTrace(pw);
-        result.append("\r\n");
+        result.append("\n");
         result.append(sw.getBuffer());
       }
     }

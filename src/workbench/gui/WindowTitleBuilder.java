@@ -234,10 +234,16 @@ public class WindowTitleBuilder
     if (GuiSettings.getCleanupURLParametersInWindowTitle())
     {
       int pos = url.indexOf('&');
-      if (pos < 0)
+      if (pos > 0)
       {
-        pos = url.indexOf(';');
+        url = url.substring(0, pos);
       }
+      pos = url.indexOf(';');
+      if (pos > 0)
+      {
+        url = url.substring(0, pos);
+      }
+      pos = url.indexOf('?');
       if (pos > 0)
       {
         url = url.substring(0, pos);

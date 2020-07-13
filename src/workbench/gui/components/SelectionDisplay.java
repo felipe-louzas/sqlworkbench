@@ -170,13 +170,14 @@ public class SelectionDisplay
     double avg = 0;
     boolean numbers = false;
 
-    boolean showSum = cols != null && cols.length > 0 && table.getColumnSelectionAllowed();
+    boolean showStats = cols != null && cols.length > 0 && table.getColumnSelectionAllowed();
     if (table.getSelectedRowCount() == 1 && cols.length == 1)
     {
-      showSum = false;
+      showStats = false;
     }
 
-    if (showSum)
+    int numRows = table.getSelectedRowCount();
+    if (showStats)
     {
       int[] rows = table.getSelectedRows();
       for (int i=0; i < rows.length; i++)
@@ -206,14 +207,14 @@ public class SelectionDisplay
 
       display = ResourceMgr.getFormattedString("MsgSelectStats",
         format(sum, dFormat, iFormat), format(avg, dFormat, iFormat),
-        format(min, dFormat, iFormat), format(max, dFormat, iFormat));
+        format(min, dFormat, iFormat), format(max, dFormat, iFormat),
+        format(numRows, dFormat, iFormat));
     }
     else
     {
-      int rows = table.getSelectedRowCount();
-      if (rows > 0)
+      if (numRows > 0)
       {
-        display = ResourceMgr.getFormattedString("MsgRowsSelected", rows);
+        display = ResourceMgr.getFormattedString("MsgRowsSelected", numRows);
       }
     }
 

@@ -157,7 +157,7 @@ public class ConnectionGuiHelper
         }
         catch (Exception ex)
         {
-          String error = ExceptionUtil.getDisplay(ex);
+          String error = ExceptionUtil.getDisplay(ex, false);
           connectingInfo.setVisible(false);
           WbSwingUtilities.showFriendlyErrorMessage(window, ResourceMgr.getString("ErrConnectFailed"), error);
         }
