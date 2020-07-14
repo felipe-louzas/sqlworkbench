@@ -133,6 +133,7 @@ ln
 localtime
 localtimestamp
 log
+lower
 lpad
 ltrim
 make_date
