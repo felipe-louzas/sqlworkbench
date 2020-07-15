@@ -177,6 +177,7 @@ public class SelectionDisplay
     }
 
     int numRows = table.getSelectedRowCount();
+    int rowCount = 0;
     if (showStats)
     {
       int[] rows = table.getSelectedRows();
@@ -192,10 +193,11 @@ public class SelectionDisplay
             if (value > max) max = value;
             if (value < min) min = value;
             numbers = true;
+            rowCount ++;
           }
         }
       }
-      avg = sum / rows.length;
+      avg = sum / rowCount;
     }
 
     String display = null;
@@ -208,7 +210,9 @@ public class SelectionDisplay
       display = ResourceMgr.getFormattedString("MsgSelectStats",
         format(sum, dFormat, iFormat), format(avg, dFormat, iFormat),
         format(min, dFormat, iFormat), format(max, dFormat, iFormat),
-        format(numRows, dFormat, iFormat));
+        format(rowCount, dFormat, iFormat),
+        format(numRows, dFormat, iFormat)
+        );
     }
     else
     {
