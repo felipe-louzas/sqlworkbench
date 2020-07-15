@@ -752,6 +752,11 @@ public class DataExporter
     this.continueOnError = aFlag;
   }
 
+  public boolean getContinueOnError()
+  {
+    return this.continueOnError;
+  }
+
   /**
    * Do not write any COMMITs to generated SQL scripts
    */

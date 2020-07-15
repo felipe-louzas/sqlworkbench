@@ -1506,6 +1506,11 @@ public class Settings
 		setProperty("workbench.export.sql.default.dateliterals", type);
 	}
 
+  public boolean getAbortExportWithMissingQuoteChar()
+  {
+    return getBoolProperty("workbench.export.text.abort.missing.quotechar", false);
+  }
+
 	public String getDefaultExportDateLiteralType()
 	{
 		return getProperty("workbench.export.sql.default.dateliterals", "dbms");

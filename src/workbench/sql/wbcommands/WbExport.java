@@ -930,6 +930,9 @@ public class WbExport
     }
 
     this.exporter.prepareExport();
+    this.exporter.setContinueOnError(this.continueOnError);
+    this.exporter.setRowMonitor(this);
+    this.exporter.setReportInterval(this.progressInterval);
 
     if (consumeQuery)
     {
@@ -969,9 +972,6 @@ public class WbExport
       String where = cmdLine.getValue(ARG_TABLEWHERE);
       try
       {
-        exporter.setRowMonitor(this);
-        exporter.setReportInterval(this.progressInterval);
-        exporter.setContinueOnError(this.continueOnError);
         if (tablesToExport.size() > 1 || outputdir != null)
         {
           exportTableList(tablesToExport, result, outputdir, outputFile, cmdLine.getValue(ARG_TABLE_PREFIX), where, ignoreOwner, containerFileSupported, useColumnList, lowerCase);

@@ -26,11 +26,12 @@ package workbench.db.exporter;
 import java.io.File;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
-
-import workbench.log.LogMgr;
 
 import workbench.storage.DataConverter;
 import workbench.storage.RowData;
@@ -68,6 +69,7 @@ public class TextRowDataConverter
   private String lineEnding = StringUtil.LINE_TERMINATOR;
   private boolean writeBlobFiles = true;
   private boolean writeClobFiles;
+  private boolean quoteWarningAdded;
   private QuoteEscapeType quoteEscape = QuoteEscapeType.none;
   private String rowIndexColumnName;
   private DataConverter converter;
@@ -244,6 +246,7 @@ public class TextRowDataConverter
             value = StringUtil.escapeText(value, this.escapeRange, this.delimiterAndQuote, getEscapeType());
           }
         }
+
         if (this.quoteEscape != QuoteEscapeType.none && hasQuoteChar && value.contains(this.quoteCharacter))
         {
           switch (quoteEscape)
@@ -258,9 +261,23 @@ public class TextRowDataConverter
         }
       }
 
-      if (addQuote) result.append(this.quoteCharacter);
+      if (addQuote && !hasQuoteChar && !quoteWarningAdded)
+      {
+        String msg = ResourceMgr.getString("ErrExportNoQuoteChar");
+        if (exporter.getContinueOnError() || !Settings.getInstance().getAbortExportWithMissingQuoteChar())
+        {
+          quoteWarningAdded = true;
+          exporter.addWarning(msg);
+        }
+        else if (Settings.getInstance().getAbortExportWithMissingQuoteChar())
+        {
+          throw new IllegalStateException(msg);
+        }
+      }
+
+      if (addQuote && hasQuoteChar) result.append(this.quoteCharacter);
       result.append(value);
-      if (addQuote) result.append(this.quoteCharacter);
+      if (addQuote && hasQuoteChar) result.append(this.quoteCharacter);
 
       currentColIndex ++;
     }
@@ -286,7 +303,6 @@ public class TextRowDataConverter
   {
     if (quoteAlways) return true;
     if (value == null) return false;
-    if (quoteCharacter == null) return false;
 
     boolean containsDelimiter = value.contains(this.delimiter);
     boolean containsLineFeed = lineEnding != null && value.contains(this.lineEnding);
