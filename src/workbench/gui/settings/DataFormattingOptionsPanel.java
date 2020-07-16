@@ -1,6 +1,4 @@
 /*
- * DataFormattingOptionsPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -27,14 +25,17 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
-import workbench.gui.WbSwingUtilities;
-import workbench.gui.components.NumberField;
-import workbench.gui.help.HelpManager;
 import workbench.interfaces.Restoreable;
 import workbench.interfaces.ValidatingComponent;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
+import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.NumberField;
+import workbench.gui.help.HelpManager;
+
 import workbench.util.StringUtil;
+import workbench.util.WbNumberFormatter;
 
 /**
  *
@@ -88,6 +89,19 @@ public class DataFormattingOptionsPanel
     Settings.getInstance().setFixOracleDateType(oraDateFix.isSelected());
   }
 
+  private char getDecimalSeparator()
+  {
+    String sep = StringUtil.trimToNull(decimalField.getText());
+    if (sep == null) return '.';
+    return sep.charAt(0);
+  }
+
+  private char getGroupSymbol()
+  {
+    String sep = StringUtil.trimToNull(groupSeparator.getText());
+    if (sep == null) return ',';
+    return sep.charAt(0);
+  }
 
   @Override
   public boolean validateInput()
@@ -124,6 +138,36 @@ public class DataFormattingOptionsPanel
       if (err != null)
       {
         String msg = ResourceMgr.getFormattedString("ErrInvalidInput", timeFormatLabel.getText(), err);
+        WbSwingUtilities.showErrorMessage(this, ResourceMgr.getString("TxtError"), msg);
+        return false;
+      }
+    }
+
+    format = decimalFormat.getText();
+    if (StringUtil.isNonBlank(format))
+    {
+      try
+      {
+        new WbNumberFormatter(format, getDecimalSeparator(), getGroupSymbol());
+      }
+      catch (Throwable th)
+      {
+        String msg = ResourceMgr.getFormattedString("ErrInvalidInput", decimalFormatLabel.getText(), th.getMessage());
+        WbSwingUtilities.showErrorMessage(this, ResourceMgr.getString("TxtError"), msg);
+        return false;
+      }
+    }
+
+    format = intFormat.getText();
+    if (StringUtil.isNonBlank(format))
+    {
+      try
+      {
+        new WbNumberFormatter(format, getDecimalSeparator(), getGroupSymbol());
+      }
+      catch (Throwable th)
+      {
+        String msg = ResourceMgr.getFormattedString("ErrInvalidInput", intFormatLabel.getText(), th.getMessage());
         WbSwingUtilities.showErrorMessage(this, ResourceMgr.getString("TxtError"), msg);
         return false;
       }

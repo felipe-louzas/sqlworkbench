@@ -2919,10 +2919,17 @@ public class Settings
 
     if (StringUtil.isNonBlank(format))
     {
-      return new WbNumberFormatter(format, sep, groupSymbol);
+      try
+      {
+        return new WbNumberFormatter(format, sep, groupSymbol);
+      }
+      catch (Throwable th)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Could not create number formatter using \"" + format + "\"", th);
+      }
     }
-		int maxDigits = this.getMaxFractionDigits();
 
+		int maxDigits = this.getMaxFractionDigits();
 		return new WbNumberFormatter(maxDigits, sep);
 	}
 
