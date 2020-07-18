@@ -23,11 +23,18 @@
  */
 package workbench.gui.editor;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.Segment;
+
 import workbench.WbTestCase;
+
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 /**
@@ -39,6 +46,32 @@ public class SQLTokenMarkerTest
   public SQLTokenMarkerTest()
   {
     super("SQLTokenMarkerTest");
+  }
+
+  @Test
+  public void testPgOperators()
+    throws Exception
+  {
+    SyntaxDocument doc = new SyntaxDocument();
+
+    AnsiSQLTokenMarker marker = new AnsiSQLTokenMarker();
+    doc.setTokenMarker(marker);
+    marker.addOperator("@>");
+    String sql = "@> '{\"key\": 42}'";
+    doc.insertString(0, sql, null);
+    Segment lineContent = new Segment();
+    getLineText(doc, 0, lineContent);
+    Token token = marker.markTokens(lineContent, 0);
+    List<Token> tokens = new ArrayList<>();
+    while (token != null)
+    {
+      tokens.add(token);
+      token = token.next;
+    }
+    assertEquals(3, tokens.size());
+    assertEquals(Token.OPERATOR, tokens.get(0).id);
+    assertEquals(Token.NULL, tokens.get(1).id);
+    assertEquals(Token.LITERAL1, tokens.get(2).id);
   }
 
   @Test
@@ -82,7 +115,7 @@ public class SQLTokenMarkerTest
       {Token.KEYWORD1, Token.NULL, Token.KEYWORD1, Token.NULL }
     };
 
-    for (int lineIndex = 0; lineIndex < lineCount; lineIndex ++)
+    for (int lineIndex = 0; lineIndex < lineCount; lineIndex++)
     {
       getLineText(doc, lineIndex, lineContent);
       Token token = marker.markTokens(lineContent, lineIndex);

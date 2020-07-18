@@ -16,6 +16,8 @@ import java.util.Collection;
 import workbench.sql.syntax.SqlKeywordHelper;
 import workbench.sql.wbcommands.CommandTester;
 
+import workbench.util.CollectionUtil;
+
 /**
  * @author Thomas Kellerer
  */
@@ -61,6 +63,11 @@ public class AnsiSQLTokenMarker
     addOperators();
   }
 
+  public void addOperator(String operator)
+  {
+    this.keywords.add(operator, Token.OPERATOR);
+  }
+
   public void initKeywordMap(Collection<String> keyWords, Collection<String> dataTypes, Collection<String> operators, Collection<String> functions)
   {
     keywords = new KeywordMap(true, 150);
@@ -76,7 +83,10 @@ public class AnsiSQLTokenMarker
     CommandTester tester = new CommandTester();
     for (String verb : tester.getCommands())
     {
-      keywords.add(verb, Token.KEYWORD2);
+      if (!"@".equals(verb))
+      {
+        keywords.add(verb, Token.KEYWORD2);
+      }
     }
   }
 

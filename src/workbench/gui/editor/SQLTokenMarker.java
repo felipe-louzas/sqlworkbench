@@ -136,22 +136,6 @@ public class SQLTokenMarker
             lastOffset = i + 1;
           }
           break;
-        case '+':
-        case '%':
-        case '&':
-        case '|':
-        case '^':
-        case '~':
-        case '<':
-        case '>':
-        case '=':
-          if (token == Token.NULL)
-          {
-            searchBack(lineIndex, line, i, true);
-            addToken(lineIndex, 1, Token.OPERATOR);
-            lastOffset = i + 1;
-          }
-          break;
         case ' ':
         case '\t':
         case ';':
