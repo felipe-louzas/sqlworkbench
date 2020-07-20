@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Start SQL Workbench/J in GUI mode
 
-SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
-
+SCRIPT_PATH=$(dirname -- "$(readlink -e "${BASH_SOURCE[0]}")")
 JAVACMD="java"
 
 if [ -x "$SCRIPT_PATH/jre/bin/java" ]
@@ -23,8 +22,8 @@ then
   JAVACMD="$JAVA_HOME/bin/java"
 fi
 
-cp=$SCRIPT_PATH/sqlworkbench.jar
-cp=$cp:$SCRIPT_PATH/ext/*
+cp="$SCRIPT_PATH/sqlworkbench.jar"
+cp="$cp:$SCRIPT_PATH/ext/*"
 
 # When running in batch mode on a system with no X11 installed, the option
 #   -Djava.awt.headless=true
@@ -36,7 +35,7 @@ cp=$cp:$SCRIPT_PATH/ext/*
 
 # For Java 9 and above the following options might be needed:
 # --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED
-# --add-opens java.base/java.lang=ALL-UNNAMED 
+# --add-opens java.base/java.lang=ALL-UNNAMED
 
 exec "$JAVACMD" -Dawt.useSystemAAFontSettings=on \
                 -Dvisualvm.display.name=SQLWorkbenchJ -cp "$cp" workbench.WbStarter "$@"
