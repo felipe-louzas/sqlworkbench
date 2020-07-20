@@ -200,8 +200,7 @@ public class PostgresPublicationReader
   public boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded(PgPublication.TYPE_NAME, requestedTypes)) return false;
-    List<PgPublication> publications = getPublications(con, null);
-
+    List<PgPublication> publications = getPublications(con, objects);
     for (PgPublication pub : publications)
     {
       int row = result.addRow();

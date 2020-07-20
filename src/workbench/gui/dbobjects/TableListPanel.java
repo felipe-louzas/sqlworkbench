@@ -1,6 +1,4 @@
 /*
- * TableListPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -710,7 +708,6 @@ public class TableListPanel
       try
       {
         ignoreStateChanged = true;
-        int index = displayTab.getSelectedIndex();
         displayTab.removeAll();
         addSourcePanel();
         displayTab.setSelectedIndex(0);
@@ -724,7 +721,9 @@ public class TableListPanel
 
   private void restoreIndex(int index)
   {
-    if (index > 0 && index < displayTab.getTabCount())
+    if (displayTab.getTabCount() == 0) return;
+
+    if (index >= 0 && index < displayTab.getTabCount())
     {
       displayTab.setSelectedIndex(index);
     }
@@ -795,6 +794,7 @@ public class TableListPanel
     if (dbConnection == null) return;
     DependencyReader reader = DependencyReaderFactory.getReader(dbConnection);
     TableIdentifier tbl = getObjectTable();
+    if (tbl == null) return;
     if (reader != null && (reader.supportsIsUsingDependency(tbl.getType()) || reader.supportsUsedByDependency(tbl.getObjectType())) )
     {
       displayTab.add(ResourceMgr.getString("TxtDeps"), dependencyPanel);
@@ -872,7 +872,12 @@ public class TableListPanel
 
   protected void addBaseObjectPanels()
   {
-    displayTab.add(ResourceMgr.getString("TxtDbExplorerTableDefinition"), tableDefinition);
+    TableIdentifier tbl = getObjectTable();
+    if (tbl == null) return;
+    if (tbl != null && dbConnection.getMetadata().hasColumns(tbl))
+    {
+      displayTab.add(ResourceMgr.getString("TxtDbExplorerTableDefinition"), tableDefinition);
+    }
     addSourcePanel();
   }
 

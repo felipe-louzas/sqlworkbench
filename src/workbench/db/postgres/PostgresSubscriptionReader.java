@@ -175,7 +175,7 @@ public class PostgresSubscriptionReader
   public boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded(PgSubscription.TYPE_NAME, requestedTypes)) return false;
-    List<PgSubscription> subs = getSubscriptions(con, null);
+    List<PgSubscription> subs = getSubscriptions(con, objects);
     for (PgSubscription sub : subs)
     {
       int row = result.addRow();
