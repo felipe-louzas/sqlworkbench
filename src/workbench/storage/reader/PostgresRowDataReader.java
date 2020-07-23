@@ -20,7 +20,9 @@
  */
 package workbench.storage.reader;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -30,7 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
-import java.util.Calendar;
+import java.util.TimeZone;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -38,6 +40,8 @@ import workbench.log.LogMgr;
 import workbench.db.WbConnection;
 
 import workbench.storage.ResultInfo;
+
+import workbench.util.SqlUtil;
 
 import static java.time.temporal.ChronoField.*;
 
@@ -66,12 +70,14 @@ class PostgresRowDataReader
       .appendOffset("+HHmm", "Z")
       .toFormatter();
 
-  private long tzOffset = Calendar.getInstance().getTimeZone().getRawOffset();
+  private long tzOffset;
+  private ZoneId sessionTimeZone;
+  private WbConnection dbConnection;
 
   PostgresRowDataReader(ResultInfo info, WbConnection conn)
   {
     super(info, conn);
-
+    dbConnection = conn;
     timeTzStrategy = getTimeTZStrategy(conn);
     if (timeTzStrategy != NO_ADJUST)
     {
@@ -131,6 +137,7 @@ class PostgresRowDataReader
     {
       try
       {
+        initTimeZone();
         return time.toLocalTime().plus(tzOffset, ChronoUnit.MILLIS);
       }
       catch (Throwable th)
@@ -148,14 +155,16 @@ class PostgresRowDataReader
   {
     if (useJava8Time)
     {
-      return readTimeZoneInfo(rs, column);
+      return readZonedDateTime(rs, column);
     }
     return super.readTimestampTZValue(rs, column);
   }
 
-  private ZonedDateTime readTimeZoneInfo(ResultHolder rs, int column)
+  private ZonedDateTime readZonedDateTime(ResultHolder rs, int column)
     throws SQLException
   {
+    initTimeZone();
+
     OffsetDateTime odt = rs.getObject(column, OffsetDateTime.class);
     if (odt == null) return null;
     // This is how the JDBC returns Infinity values
@@ -164,7 +173,57 @@ class PostgresRowDataReader
       //TODO: is returning ZondedDateTime better,  or simply returning the OffsetDateTime directly?
       return odt.atZoneSimilarLocal(ZoneId.of("+0"));
     }
-    return odt.atZoneSameInstant(ZoneId.systemDefault());
+    return odt.atZoneSameInstant(sessionTimeZone);
+  }
+
+  private void initTimeZone()
+  {
+    if (sessionTimeZone != null) return;
+    sessionTimeZone = getSessionTimezone(dbConnection);
+    TimeZone tz = TimeZone.getTimeZone(sessionTimeZone);
+    tzOffset = tz.getRawOffset();
+  }
+
+  private ZoneId getSessionTimezone(WbConnection con)
+  {
+    if (con == null) return ZoneId.systemDefault();
+
+    // TODO: can we cache this in the connection instance?
+    // this would require the SET command to trap changing the time zone.
+    Statement stmt = null;
+    ResultSet rs = null;
+    try
+    {
+      stmt = con.createStatement();
+      rs = stmt.executeQuery("show time zone");
+      if (rs.next())
+      {
+        String zone = rs.getString(1);
+        // apparently Postgres and Java disagree on what - and + means in the TimeZone offset
+        // at least this hack gives me the same output values as psql (which should be reference)
+        if (zone.contains("-"))
+        {
+          zone = zone.replace('-', '+');
+        }
+        else if (zone.contains("+"))
+        {
+          zone = zone.replace('+', '-');
+        }
+
+        ZoneId tzid = ZoneId.of(zone);
+        LogMgr.logDebug(new CallerInfo(){}, "Using session time zone: " + tzid);
+        return tzid;
+      }
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve session time zone, using system default", th);
+    }
+    finally
+    {
+      SqlUtil.close(rs, stmt);
+    }
+    return ZoneId.systemDefault();
   }
 
 }

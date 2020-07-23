@@ -530,7 +530,7 @@
       <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|" value="(USER{wsp}MAPPING)"/>
       <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
       <replacefilter token="(PACKAGE{wsp}BODY)|" value="(OPERATOR{wsp}CLASS)|(OPERATOR{wsp}FAMILY)|(ACCESS{wsp}METHOD)|"/>
-      <replacefilter token="(TYPE{wsp}BODY)|(FOREIGN{wsp}TABLE)"/>
+      <replacefilter token="(TYPE{wsp}BODY)|" value="(FOREIGN{wsp}TABLE)|(TIME{wsp}ZONE)|"/>
       <replacefilter token="(SNAPSHOT{wsp}LOG)|" value="(ACCESS{wsp}METHOD)|"/>
       <replacefilter token="(CONNECT{wsp}BY)|" value='"TRANSFORM"|'/>
       <replacefilter token='"VARCHAR2"|' value='"STATISTICS"'/>

@@ -162,7 +162,7 @@ keyword=(
 (GROUP{wsp}BY)|
 (ORDER{wsp}BY)|
 (OPERATOR{wsp}CLASS)|(OPERATOR{wsp}FAMILY)|(ACCESS{wsp}METHOD)|
-(TYPE{wsp}BODY)|
+(FOREIGN{wsp}TABLE)|(TIME{wsp}ZONE)|
 (CREATE{wsp}OR{wsp}REPLACE)|
 
 (IS{wsp}NOT{wsp}NULL)|
