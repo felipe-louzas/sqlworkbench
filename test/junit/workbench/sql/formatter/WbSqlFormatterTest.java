@@ -93,7 +93,7 @@ public class WbSqlFormatterTest
  //   System.out.println("***** formatted ***** \n" + formatted + "\n----------- expected --------- \n" + expected + "\n*****************");
     assertEquals(expected, formatted);
   }
-  
+
   @Test
   public void testNVarchar()
   {
@@ -1071,25 +1071,39 @@ public class WbSqlFormatterTest
   }
 
   @Test
-  public void testMySQLWhiteSpaceBug()
+  public void testStupidMySQLWhiteSpaceBug()
     throws Exception
   {
     String sql = "INSERT INTO test (id, wert) VALUES ( uuid(), 1)";
     String expected = "INSERT INTO test\n  (id, wert)\nVALUES\n  (uuid(), 1)";
 
-    WbSqlFormatter f = new WbSqlFormatter(sql, 100);
-    int cols = Settings.getInstance().getFormatterMaxColumnsInInsert();
-    try
-    {
-      Settings.getInstance().setFormatterMaxColumnsInInsert(10);
-      String formatted = f.getFormattedSql();
-//      System.out.println("**************\n" + formatted + "\n----------------------\n" + expected + "\n************************");
-      assertEquals("SELECT in VALUES not formatted", expected, formatted);
-    }
-    finally
-    {
-      Settings.getInstance().setFormatterMaxColumnsInInsert(cols);
-    }
+    WbSqlFormatter f = new WbSqlFormatter(sql, "mysql");
+    f.setFunctionCase(GeneratedIdentifierCase.lower);
+    f.setKeywordCase(GeneratedIdentifierCase.upper);
+    f.setColumnsPerInsert(10);
+    String formatted = f.getFormattedSql();
+//    System.out.println("**************\n" + formatted + "\n----------------------\n" + expected + "\n************************");
+    assertEquals(expected, formatted);
+  }
+
+  @Test
+  public void testStupidMySQLWhiteSpaceBug2()
+    throws Exception
+  {
+    String sql = "select substring_index(group_concat(task.name ORDER BY job_task.fdate ASC separator ', '),', ',3) tasks from bla";
+    WbSqlFormatter f = new WbSqlFormatter(sql, "mariadb");
+    f.setFunctionCase(GeneratedIdentifierCase.lower);
+    String formatted = f.getFormattedSql();
+    String expected =
+      "SELECT substring_index(group_concat(task.name ORDER BY job_task.fdate ASC SEPARATOR ', '),', ',3) tasks\n" +
+      "FROM bla";
+//    System.out.println(formatted);
+    assertEquals(expected, formatted);
+
+    WbSqlFormatter f2 = new WbSqlFormatter(sql, "mysql");
+    f2.setFunctionCase(GeneratedIdentifierCase.lower);
+    formatted = f2.getFormattedSql();
+    assertEquals(expected, formatted);
   }
 
   @Test
@@ -1929,7 +1943,7 @@ public class WbSqlFormatterTest
       ")\n" +
       "SELECT *\n" +
       "FROM dates";
-//    System.out.println("**************\n" + formatted + "\n------------------\n" + expected + "\n*************");
+//    System.out.println("************** formatted\n" + formatted + "\n------------------ expected\n" + expected + "\n*************");
     assertEquals(expected, formatted);
   }
 

@@ -66,7 +66,7 @@ import workbench.util.StringUtil;
 public class SqlKeywordHelper
 {
   private String dbId;
-
+  private String aliasId;
   private static class LazyHolder
   {
     private static Set<String> keywords = new SqlKeywordHelper().getReservedWords();
@@ -94,6 +94,10 @@ public class SqlKeywordHelper
   public SqlKeywordHelper(String id)
   {
     this.dbId = id;
+    if (dbId != null)
+    {
+      this.aliasId = Settings.getInstance().getProperty("workbench.db." + dbId + ".aliasid", null);
+    }
   }
 
   public Set<String> getReservedWords()
@@ -166,6 +170,14 @@ public class SqlKeywordHelper
       if (dbms != null)
       {
         result.addAll(dbms);
+      }
+      if (aliasId != null)
+      {
+        Set<String> alias = readFile(this.aliasId + "." + filename);
+        if (alias != null)
+        {
+          result.addAll(alias);
+        }
       }
     }
     removeItems(result);
