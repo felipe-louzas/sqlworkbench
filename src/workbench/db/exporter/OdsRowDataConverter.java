@@ -97,10 +97,13 @@ public class OdsRowDataConverter
       out.write(" <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"content.xml\"/>\n");
       out.write(" <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"meta.xml\"/>\n");
       out.write(" <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"settings.xml\"/>\n");
+      out.write(" <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"styles.xml\"/>\n");
       out.write("</manifest:manifest>\n");
       out.close();
 
       writeMeta();
+      writeStyles();
+
       if (getEnableFixedHeader() && (writeHeader || includeColumnComments))
       {
         writeSettings();
@@ -205,6 +208,32 @@ public class OdsRowDataConverter
     }
   }
 
+  private void writeStyles()
+  {
+    // this writes a dummy styles.xml file that is not needed by ODF, but apparently Microsoft didn't get the memo
+    // and Excel chokes on loading such an ODF document (even if the ODF validator confirms that it's valid)
+    String styles =
+       "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+        "<office:document-styles xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" \n" +
+        "                        xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" \n" +
+        "                        office:version=\"1.2\">\n" +
+        "  <office:master-styles>\n" +
+        "    <style:master-page style:name=\"Default\" style:page-layout-name=\"Mpm1\">\n" +
+        "      <style:header/>\n" +
+        "      <style:footer/>\n" +
+        "    </style:master-page>\n" +
+        "  </office:master-styles>\n" +
+        "</office:document-styles>";
+
+    try (Writer out = factory.createWriter("styles.xml", "UTF-8");)
+    {
+      out.write(styles);
+    }
+    catch (Exception e)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Error writing styles", e);
+    }
+  }
   /**
    * Write a settings.xml that will create a vertical split that makes the table header fixed
    */
@@ -318,9 +347,11 @@ public class OdsRowDataConverter
     String dateStyleDef = dateIncluded() ? buildDateStyle(new OdsDateStyleBuilder(this.defaultDateFormatter.toPattern()), dateStyle, "N60") : "";
     String timeStyleDef = timeIncluded() ? buildDateStyle(new OdsDateStyleBuilder(this.defaultTimeFormatter.toPattern()), dateStyle, "N80") : "";
 
+    // The style:row-height=\"5.00mm\" is for Excel which otherwise wouldn't display the header properly
+    // LibreOffice and OpenOffice have no problem without it (and also not problem with it)
     String styles =
       "  <style:style style:name=\"ro1\" style:family=\"table-row\"> \n" +
-      "    <style:table-row-properties fo:break-before=\"auto\" style:use-optimal-row-height=\"true\"/> \n" +
+      "    <style:table-row-properties fo:break-before=\"auto\" style:row-height=\"5.00mm\" style:use-optimal-row-height=\"true\"/> \n" +
       "  </style:style> \n" +
       "  <style:style style:name=\"ta1\" style:family=\"table\" style:master-page-name=\"Default\"> \n" +
       "    <style:table-properties table:display=\"true\" style:writing-mode=\"lr-tb\"/> \n" +
