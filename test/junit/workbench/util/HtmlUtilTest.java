@@ -72,6 +72,10 @@ public class HtmlUtilTest
     escaped = HtmlUtil.escapeXML(input);
     assertEquals("a &amp;lt; b", escaped);
 
+    input = "Hello, \n xml";
+    escaped = HtmlUtil.escapeXML(input);
+    assertEquals("Hello, &#10; xml", escaped);
+
     input = "a > b";
     escaped = HtmlUtil.escapeXML(input);
     assertEquals("a &gt; b", escaped);

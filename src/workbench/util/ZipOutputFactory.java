@@ -27,7 +27,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -77,6 +79,31 @@ public class ZipOutputFactory
     ZipEntry currentEntry = new ZipEntry(filename);
     this.zout.putNextEntry(currentEntry);
     return new ZipEntryOutputStream(zout);
+  }
+
+  @Override
+  public void writeUncompressedString(String name, String content)
+    throws IOException
+  {
+    if (this.zout == null) initArchive();
+    
+    try
+    {
+      ZipEntry mime = new ZipEntry(name);
+      mime.setMethod(ZipEntry.STORED);
+      byte[] bytes = content.getBytes("UTF-8");
+      mime.setSize(bytes.length);
+      mime.setCompressedSize(bytes.length);
+      CRC32 crc = new CRC32();
+      crc.update(bytes);
+      mime.setCrc(crc.getValue());
+      zout.putNextEntry(mime);
+      zout.write(bytes);
+    }
+    catch (UnsupportedEncodingException ue)
+    {
+      // cannot happen
+    }
   }
 
   @Override

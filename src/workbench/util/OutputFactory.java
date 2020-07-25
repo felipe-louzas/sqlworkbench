@@ -43,6 +43,9 @@ public interface OutputFactory
   Writer createWriter(String filename, String encoding)
     throws IOException;
 
+  void writeUncompressedString(String name, String content)
+    throws IOException;
+
   void done() throws IOException;
   boolean isArchive();
 }

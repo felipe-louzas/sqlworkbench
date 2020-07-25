@@ -26,11 +26,6 @@ package workbench.db.exporter;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.Types;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 
 import workbench.log.CallerInfo;
@@ -41,6 +36,7 @@ import workbench.db.report.TagWriter;
 import workbench.storage.RowData;
 
 import workbench.util.FileUtil;
+import workbench.util.HtmlUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbDateFormatter;
@@ -57,9 +53,9 @@ public class OdsRowDataConverter
   private Writer content;
 
   // The formatters used for the interal date/time formats in the cell values
-  private SimpleDateFormat tFormat = new SimpleDateFormat("HH:mm:ss");
-  private SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd");
-  private SimpleDateFormat tsFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+  private WbDateFormatter tFormat = new WbDateFormatter("HH:mm:ss");
+  private WbDateFormatter dtFormat = new WbDateFormatter("yyyy-MM-dd");
+  private WbDateFormatter tsFormat = new WbDateFormatter("yyyy-MM-dd'T'HH:mm:ss");
 
   private final String dateStyle = "ce2";
   private final String tsStyle = "ce3";
@@ -76,11 +72,20 @@ public class OdsRowDataConverter
         this.factory.done();
       }
       this.factory = new ZipOutputFactory(getOutputFile());
+      boolean template = isTemplate();
+      if (template)
+      {
+        factory.writeUncompressedString("mimetype", "application/vnd.oasis.opendocument.spreadsheet-template");
+      }
+      else
+      {
+        factory.writeUncompressedString("mimetype", "application/vnd.oasis.opendocument.spreadsheet");
+      }
+
       out = factory.createWriter("META-INF/manifest.xml", "UTF-8");
 
-      boolean template = isTemplate();
       out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-      out.write("<manifest:manifest xmlns:manifest=\"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0\">\n");
+      out.write("<manifest:manifest xmlns:manifest=\"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0\" manifest:version=\"1.2\">\n");
       if (template)
       {
         out.write(" <manifest:file-entry manifest:media-type=\"application/vnd.oasis.opendocument.spreadsheet-template\" manifest:full-path=\"/\"/>\n");
@@ -91,6 +96,7 @@ public class OdsRowDataConverter
       }
       out.write(" <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"content.xml\"/>\n");
       out.write(" <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"meta.xml\"/>\n");
+      out.write(" <manifest:file-entry manifest:media-type=\"text/xml\" manifest:full-path=\"settings.xml\"/>\n");
       out.write("</manifest:manifest>\n");
       out.close();
 
@@ -100,20 +106,10 @@ public class OdsRowDataConverter
         writeSettings();
       }
 
-      out = factory.createWriter("mimetype", "UTF-8");
-      if (template)
-      {
-        out.write("application/vnd.oasis.opendocument.spreadsheet-template");
-      }
-      else
-      {
-        out.write("application/vnd.oasis.opendocument.spreadsheet");
-      }
-      out.close();
       this.content = factory.createWriter("content.xml", "UTF-8");
 
       content.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n");
-      content.write("<office:document-content xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" xmlns:text=\"urn:oasis:names:tc:opendocument:xmlns:text:1.0\" xmlns:table=\"urn:oasis:names:tc:opendocument:xmlns:table:1.0\" xmlns:draw=\"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0\" xmlns:fo=\"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0\" xmlns:xlink=\"https://www.w3.org/1999/xlink\" xmlns:dc=\"https://purl.org/dc/elements/1.1/\" xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\" xmlns:number=\"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0\" xmlns:presentation=\"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" xmlns:chart=\"urn:oasis:names:tc:opendocument:xmlns:chart:1.0\" xmlns:dr3d=\"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0\" xmlns:math=\"https://www.w3.org/1998/Math/MathML\" xmlns:form=\"urn:oasis:names:tc:opendocument:xmlns:form:1.0\" xmlns:script=\"urn:oasis:names:tc:opendocument:xmlns:script:1.0\" xmlns:ooo=\"https://openoffice.org/2004/office\" xmlns:ooow=\"https://openoffice.org/2004/writer\" xmlns:oooc=\"https://openoffice.org/2004/calc\" xmlns:dom=\"https://www.w3.org/2001/xml-events\" xmlns:xforms=\"https://www.w3.org/2002/xforms\" xmlns:xsd=\"https://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"https://www.w3.org/2001/XMLSchema-instance\" office:version=\"1.0\"> \n");
+      content.write("<office:document-content xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" xmlns:text=\"urn:oasis:names:tc:opendocument:xmlns:text:1.0\" xmlns:table=\"urn:oasis:names:tc:opendocument:xmlns:table:1.0\" xmlns:draw=\"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0\" xmlns:fo=\"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0\" xmlns:xlink=\"https://www.w3.org/1999/xlink\" xmlns:dc=\"https://purl.org/dc/elements/1.1/\" xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\" xmlns:number=\"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0\" xmlns:presentation=\"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" xmlns:chart=\"urn:oasis:names:tc:opendocument:xmlns:chart:1.0\" xmlns:dr3d=\"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0\" xmlns:math=\"https://www.w3.org/1998/Math/MathML\" xmlns:form=\"urn:oasis:names:tc:opendocument:xmlns:form:1.0\" xmlns:script=\"urn:oasis:names:tc:opendocument:xmlns:script:1.0\" xmlns:ooo=\"https://openoffice.org/2004/office\" xmlns:ooow=\"https://openoffice.org/2004/writer\" xmlns:oooc=\"https://openoffice.org/2004/calc\" xmlns:dom=\"https://www.w3.org/2001/xml-events\" xmlns:xforms=\"https://www.w3.org/2002/xforms\" xmlns:xsd=\"https://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"https://www.w3.org/2001/XMLSchema-instance\" office:version=\"1.2\"> \n");
 
       writeInlineStyles();
 
@@ -157,9 +153,7 @@ public class OdsRowDataConverter
 
           content.write("  <table:table-cell table:style-name=\"ce1\" office:value-type=\"string\">\n");
           content.write("    <text:p>");
-          content.write(TagWriter.CDATA_START);
-          content.write(comment);
-          content.write(TagWriter.CDATA_END);
+          appendValue(content, comment);
           content.write("</text:p>\n");
           content.write("  </table:table-cell>\n");
         }
@@ -180,9 +174,7 @@ public class OdsRowDataConverter
 
           content.write("  <table:table-cell table:style-name=\"ce1\" office:value-type=\"string\">\n");
           content.write("    <text:p>");
-          content.write(TagWriter.CDATA_START);
-          content.write(colname);
-          content.write(TagWriter.CDATA_END);
+          appendValue(content, colname);
           content.write("</text:p>\n");
           content.write("  </table:table-cell>\n");
         }
@@ -196,6 +188,21 @@ public class OdsRowDataConverter
     }
 
     return null;
+  }
+
+  private void appendValue(Writer target, String value)
+    throws IOException
+  {
+    boolean needscData = TagWriter.needsCData(value);
+    if (needscData)
+    {
+      target.write(TagWriter.CDATA_START);
+    }
+    target.write(value);
+    if (needscData)
+    {
+      target.write(TagWriter.CDATA_END);
+    }
   }
 
   /**
@@ -251,7 +258,14 @@ public class OdsRowDataConverter
     {
       out = factory.createWriter("meta.xml", "UTF-8");
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-      out.write("<office:document-meta xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" xmlns:xlink=\"https://www.w3.org/1999/xlink\" xmlns:dc=\"https://purl.org/dc/elements/1.1/\" xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\" xmlns:ooo=\"https://openoffice.org/2004/office\" office:version=\"1.0\">\n");
+      out.write(
+        "<office:document-meta \n" +
+        "     office:version=\"1.2\" \n" +
+        "     xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" \n" +
+        "     xmlns:xlink=\"https://www.w3.org/1999/xlink\" \n" +
+        "     xmlns:dc=\"http://purl.org/dc/elements/1.1/\" \n" +
+        "     xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\" \n" +
+        "     xmlns:ooo=\"https://openoffice.org/2004/office\">\n");
       out.write("<office:meta>\n");
       out.write("<meta:generator>SQL Workbench/J</meta:generator>\n");
       out.write("<dc:title>SQL Workbench/J Export</dc:title>\n");
@@ -272,7 +286,7 @@ public class OdsRowDataConverter
       out.write("</dc:description>");
       out.write("<meta:initial-creator>SQL Workbench/J</meta:initial-creator>\n");
       out.write("<meta:creation-date>");
-      out.write(tsFormat.format(new java.util.Date()));
+      out.write(tsFormat.formatUtilDate(new java.util.Date()));
       out.write("</meta:creation-date>\n");
       out.write("</office:meta>\n");
       out.write("</office:document-meta>\n");
@@ -373,7 +387,7 @@ public class OdsRowDataConverter
         for (String line : lines)
         {
           buff.append("<text:p>");
-          writeEscapedXML(buff, line, true);
+          writeEscapedXML(buff, line);
           buff.append("</text:p>\n");
         }
         content.append(buff.toString());
@@ -385,7 +399,7 @@ public class OdsRowDataConverter
       if (getEnableAutoFilter() && writeHeader)
       {
         String colName = columnToName(getRealColumnCount());
-        String title = "&apos;" + escapeXML(getPageTitle("Export"), false) + "&apos;";
+        String title = "&apos;" + HtmlUtil.escapeXML(getPageTitle("Export"), false) + "&apos;";
         String start = "A1";
         if (includeColumnComments)
         {
@@ -455,7 +469,7 @@ public class OdsRowDataConverter
         for (String line : lines)
         {
           xml.append("<text:p>");
-          writeEscapedXML(xml, line, true);
+          writeEscapedXML(xml, line);
           xml.append("</text:p>\n");
         }
       }
@@ -494,47 +508,19 @@ public class OdsRowDataConverter
     else if (type == Types.DATE)
     {
       attr.append("\"date\" table:style-name=\"" + dateStyle + "\" office:date-value=\"");
-      if (data instanceof java.util.Date)
-      {
-        java.util.Date d = (java.util.Date)data;
-        attr.append(dtFormat.format(d));
-      }
+      attr.append(dtFormat.formatDateTimeValue(data));
       attr.append("\"");
     }
     else if (type == Types.TIMESTAMP)
     {
       attr.append("\"date\" table:style-name=\"" + tsStyle + "\" office:date-value=\"");
-      if (data instanceof java.util.Date)
-      {
-        java.util.Date d = (java.util.Date)data;
-        attr.append(tsFormat.format(d));
-      }
-      else if (data instanceof ZonedDateTime)
-      {
-        ZonedDateTime d = (ZonedDateTime)data;
-        attr.append(tsFormat.format(java.util.Date.from(d.toInstant())));
-      }
-      else if (data instanceof OffsetDateTime)
-      {
-        OffsetDateTime d = (OffsetDateTime)data;
-        attr.append(tsFormat.format(d));
-      }
-      else if (data instanceof LocalDateTime)
-      {
-        LocalDateTime d = (LocalDateTime)data;
-        ZoneOffset offset = WbDateFormatter.getSystemDefaultOffset();
-        attr.append(tsFormat.format(java.util.Date.from(d.toInstant(offset))));
-      }
+      attr.append(tsFormat.formatDateTimeValue(data));
       attr.append("\"");
     }
     else if (type == Types.TIME)
     {
       attr.append("\"date\" office:time-value=\"");
-      if (data instanceof java.util.Date)
-      {
-        java.util.Date d = (java.util.Date)data;
-        attr.append(tFormat.format(d));
-      }
+      attr.append(tFormat.formatDateTimeValue(data));
       attr.append("\"");
     }
     else

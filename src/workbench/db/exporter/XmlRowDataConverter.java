@@ -353,7 +353,7 @@ public class XmlRowDataConverter
         }
         else
         {
-          writeEscapedXML(xml, this.getValueAsFormattedString(row, c), true);
+          writeEscapedXML(xml, this.getValueAsFormattedString(row, c));
         }
       }
       if (writeCloseTag) xml.append(closeColTag);

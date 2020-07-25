@@ -47,31 +47,40 @@ public class HtmlUtil
     for (int i = 0; i < n; i++)
     {
       char c = s.charAt(i);
-      switch (c)
+      if (c < 32)
       {
-        case '<':
-          sb.append("&lt;");
-          break;
-        case '>':
-          sb.append("&gt;");
-          break;
-        case '&':
-          sb.append("&amp;");
-          break;
-        case '"':
-          sb.append("&quot;");
-          break;
-        case '\'':
-          if (replaceSingleQuotes)
-          {
-            sb.append("&apos;");
+        sb.append("&#");
+        sb.append(NumberStringCache.getNumberString(c));
+        sb.append(';');
+      }
+      else
+      {
+        switch (c)
+        {
+          case '<':
+            sb.append("&lt;");
             break;
-          }
-          // single quotes should not be replaced
-          // in that case the fall through to the default is intended
-        default:
-          sb.append(c);
-          break;
+          case '>':
+            sb.append("&gt;");
+            break;
+          case '&':
+            sb.append("&amp;");
+            break;
+          case '"':
+            sb.append("&quot;");
+            break;
+          case '\'':
+            if (replaceSingleQuotes)
+            {
+              sb.append("&apos;");
+              break;
+            }
+            // single quotes should not be replaced
+            // in that case the fall through to the default is intended
+          default:
+            sb.append(c);
+            break;
+        }
       }
     }
     return sb.toString();

@@ -958,7 +958,7 @@ public abstract class RowDataConverter
     return defaultNumberFormatter;
   }
 
-  protected void writeEscapedXML(StringBuilder out, String s, boolean keepCR)
+  protected void writeEscapedXML(StringBuilder out, String s)
   {
     if (s == null) return;
 
@@ -990,14 +990,6 @@ public abstract class RowDataConverter
         }
       }
     }
-  }
-
-  protected CharSequence escapeXML(String s, boolean keepCR)
-  {
-    if (s == null) return "";
-    StringBuilder out = new StringBuilder(s.length() + 5);
-    writeEscapedXML(out, s, keepCR);
-    return out;
   }
 
   protected boolean hasOutputFileExtension(String ext)

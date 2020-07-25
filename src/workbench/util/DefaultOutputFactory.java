@@ -70,4 +70,15 @@ public class DefaultOutputFactory
     throws IOException
   {
   }
+
+  @Override
+  public void writeUncompressedString(String name, String content)
+    throws IOException
+  {
+    try (Writer w = createWriter(name, "UTF-8"))
+    {
+      w.write(content);
+    }
+  }
+
 }

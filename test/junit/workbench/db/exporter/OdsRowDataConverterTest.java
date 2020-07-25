@@ -117,18 +117,19 @@ public class OdsRowDataConverterTest
 
     assertTrue(output.exists());
 
-    ZipFile archive = new ZipFile(output);
-    ZipEntry entry = archive.getEntry("content.xml");
-    InputStream in = archive.getInputStream(entry);
-    InputStreamReader reader = new InputStreamReader(in, "UTF-8");
-    String content = FileUtil.readCharacters(reader);
-
-    entry = archive.getEntry("meta.xml");
-    in = archive.getInputStream(entry);
-    reader = new InputStreamReader(in, "UTF-8");
-    String meta = FileUtil.readCharacters(reader);
-
-    archive.close();
+    String content = null;
+    String meta = null;
+    try (ZipFile archive = new ZipFile(output))
+    {
+      ZipEntry entry = archive.getEntry("content.xml");
+      InputStream in = archive.getInputStream(entry);
+      InputStreamReader reader = new InputStreamReader(in, "UTF-8");
+      content = FileUtil.readCharacters(reader);
+      entry = archive.getEntry("meta.xml");
+      in = archive.getInputStream(entry);
+      reader = new InputStreamReader(in, "UTF-8");
+      meta = FileUtil.readCharacters(reader);
+    }
 
     Map<String, String> contentNamespaces = TestUtil.getNameSpaces(content, "office:document-content");
     Map<String, String> metaNamespaces = TestUtil.getNameSpaces(meta, "office:document-meta");

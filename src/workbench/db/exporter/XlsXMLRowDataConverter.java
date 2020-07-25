@@ -31,6 +31,7 @@ import workbench.db.report.TagWriter;
 import workbench.storage.RowData;
 
 import workbench.util.EncodingUtil;
+import workbench.util.HtmlUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -70,7 +71,7 @@ public class XlsXMLRowDataConverter
 
     int colCount = metaData.getColumnCount();
 
-    out.append("<Worksheet ss:Name=\"" + escapeXML(getPageTitle("Export"), false) + "\">\n");
+    out.append("<Worksheet ss:Name=\"" + HtmlUtil.escapeXML(getPageTitle("Export"), false) + "\">\n");
     out.append("<Table ss:ExpandedColumnCount=\"" + getRealColumnCount() + "\" x:FullColumns=\"1\" x:FullRows=\"1\">\n");
 
     for (int i = 0; i < colCount; i++)
@@ -192,7 +193,7 @@ public class XlsXMLRowDataConverter
       xml.append(getDataType(row.getValue(i)));
       xml.append("\">");
 
-      writeEscapedXML(xml, value, false);
+      writeEscapedXML(xml, value);
 
       xml.append("</Data></Cell>\n");
     }
