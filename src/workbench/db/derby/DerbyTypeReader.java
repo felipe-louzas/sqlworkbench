@@ -1,6 +1,4 @@
 /*
- * DerbyTypeReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -30,18 +28,17 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 /**
  *
@@ -95,7 +92,7 @@ public class DerbyTypeReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return true;
   }
@@ -170,7 +167,7 @@ public class DerbyTypeReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

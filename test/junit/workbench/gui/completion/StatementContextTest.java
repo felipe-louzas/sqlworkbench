@@ -1,6 +1,4 @@
 /*
- * StatementContextTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,11 +30,11 @@ import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 import org.junit.After;
 import org.junit.Before;
@@ -381,7 +379,7 @@ public class StatementContextTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 }

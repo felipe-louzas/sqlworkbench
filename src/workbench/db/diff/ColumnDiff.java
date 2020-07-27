@@ -1,6 +1,4 @@
 /*
- * ColumnDiff.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -227,7 +225,7 @@ public class ColumnDiff
         {
           writer.appendTag(result, attIndent, ReportColumn.TAG_COLUMN_JAVA_TYPE_NAME, sId.getColumnTypeName());
         }
-        
+
         if (this.compareJdbcTypes) {
         	writer.appendTag(result, attIndent, ReportColumn.TAG_COLUMN_JAVA_TYPE, sId.getDataType());
         }

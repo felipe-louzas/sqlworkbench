@@ -1,6 +1,4 @@
 /*
- * WbImportTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -48,6 +46,7 @@ import workbench.WbTestCase;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 import workbench.db.exporter.RowDataConverter;
 import workbench.db.importer.TableDependencySorterTest;
@@ -57,7 +56,6 @@ import workbench.sql.StatementRunnerResult;
 import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
 import workbench.util.FileUtil;
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.ZipOutputFactory;
@@ -563,7 +561,7 @@ public class WbImportTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -638,7 +636,7 @@ public class WbImportTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -740,7 +738,7 @@ public class WbImportTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
   }
@@ -806,7 +804,7 @@ public class WbImportTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -935,7 +933,7 @@ public class WbImportTest
     {
       fail("Nothing imported!");
     }
-    SqlUtil.closeAll(rs, stmt);
+    JdbcUtils.closeAll(rs, stmt);
 
     if (!importFile.delete())
     {
@@ -1071,7 +1069,7 @@ public class WbImportTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -1322,7 +1320,7 @@ public class WbImportTest
       rows = 0;
       if (rs.next()) rows = rs.getInt(1);
       assertEquals("Wrong number of rows imported", 4, rows);
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
 
       if (!xmlFile.delete())
       {
@@ -1622,7 +1620,7 @@ public class WbImportTest
       {
         fail("Not enough values imported");
       }
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       if (!importFile.delete())
       {
         fail("Could not delete input file: " + importFile.getCanonicalPath());
@@ -2048,7 +2046,7 @@ public class WbImportTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -2428,7 +2426,7 @@ public class WbImportTest
       {
         fail("No rows imported!");
       }
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (!importFile.delete())
@@ -4381,7 +4379,7 @@ public class WbImportTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

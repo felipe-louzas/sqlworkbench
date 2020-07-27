@@ -33,7 +33,7 @@ import workbench.TestUtil;
 import workbench.storage.ColumnData;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 
 /**
@@ -199,7 +199,7 @@ public class ReferenceTableNavigationTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }
@@ -382,7 +382,7 @@ public class ReferenceTableNavigationTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }

@@ -1,6 +1,4 @@
 /*
- * JdbcTableDefinitionReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -255,7 +253,7 @@ public class JdbcTableDefinitionReader
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
 
     // Some JDBC drivers (e.g. Ingres) do not return the columns in the correct order, so we need to make sure they are sorted correctly

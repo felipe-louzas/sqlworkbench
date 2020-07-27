@@ -1,6 +1,4 @@
 /*
- * WbConnection.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -355,7 +353,19 @@ public class WbConnection
       // so we have to end any pending transaction
       rollbackSilently();
 
-      sqlConnection.setReadOnly(isSessionReadOnly());
+      // It seems e.g. Postgres can only turn on READ ONLY for the session using a SQL statement
+      // Using Connection.setReadOnly() seems to only work if auto commit is turned off
+      String sql = getDbSettings().getSetReadOnlySQL();
+      boolean isSet = false;
+      if (StringUtil.isNonBlank(sql))
+      {
+        LogMgr.logInfo(new CallerInfo(){}, "Setting connection to read only using: " + sql);
+        isSet = JdbcUtils.runStatement(this, sql);
+      }
+      if (!isSet)
+      {
+        sqlConnection.setReadOnly(isSessionReadOnly());
+      }
     }
     catch (Throwable th)
     {

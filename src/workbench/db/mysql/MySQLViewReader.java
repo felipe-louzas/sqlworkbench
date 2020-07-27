@@ -33,7 +33,7 @@ import workbench.db.NoConfigException;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -76,7 +76,7 @@ public class MySQLViewReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return source;
   }

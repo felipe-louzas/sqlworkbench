@@ -38,7 +38,7 @@ import workbench.db.UniqueConstraintReader;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -98,7 +98,7 @@ public class HsqlUniqueConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
   }
 

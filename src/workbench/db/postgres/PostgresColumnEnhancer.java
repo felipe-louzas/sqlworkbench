@@ -33,10 +33,11 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
-import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -292,7 +293,7 @@ public class PostgresColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (identityColumns.size() > 0)
@@ -390,7 +391,7 @@ public class PostgresColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
   }
 

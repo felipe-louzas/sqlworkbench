@@ -38,6 +38,8 @@ import workbench.db.postgres.PostgresObjectListCleaner;
 
 import workbench.storage.DataStore;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -139,7 +141,7 @@ public class GreenplumObjectListCleaner
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     long duration = System.currentTimeMillis() - start;

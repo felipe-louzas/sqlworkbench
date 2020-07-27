@@ -38,7 +38,7 @@ import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
 import workbench.sql.wbcommands.WbImport;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -211,7 +211,7 @@ public class WbImportPostgresTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
   }

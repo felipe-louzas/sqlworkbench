@@ -36,7 +36,7 @@ import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -128,7 +128,7 @@ public class OracleSynonymReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return result;

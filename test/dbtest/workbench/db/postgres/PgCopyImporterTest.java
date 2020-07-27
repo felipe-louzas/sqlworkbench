@@ -47,7 +47,7 @@ import workbench.sql.parser.ScriptParser;
 import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
 import workbench.util.QuoteEscapeType;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import org.junit.Test;
 
@@ -111,7 +111,7 @@ public class PgCopyImporterTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       PostgresTestUtil.cleanUpTestCase();
     }
   }

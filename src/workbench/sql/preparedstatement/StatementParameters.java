@@ -35,7 +35,7 @@ import workbench.db.WbConnection;
 import workbench.log.LogMgr;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A class to store the parameters for a PreparedStatement
@@ -74,7 +74,7 @@ public class StatementParameters
     }
     finally
     {
-      SqlUtil.closeStatement(pstmt);
+      JdbcUtils.closeStatement(pstmt);
     }
   }
 

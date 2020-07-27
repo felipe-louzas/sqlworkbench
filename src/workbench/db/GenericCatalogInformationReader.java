@@ -29,7 +29,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -121,7 +121,7 @@ public class GenericCatalogInformationReader
       }
       finally
       {
-        SqlUtil.closeAll(rs, stmt);
+        JdbcUtils.closeAll(rs, stmt);
       }
     }
 

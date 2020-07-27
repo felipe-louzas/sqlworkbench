@@ -36,7 +36,7 @@ import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A class to retrieve synonym definitions from an Informix database.
@@ -112,7 +112,7 @@ public class InformixSynonymReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return result;

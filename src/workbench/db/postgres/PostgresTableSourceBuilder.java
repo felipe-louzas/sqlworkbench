@@ -41,13 +41,15 @@ import workbench.db.DomainIdentifier;
 import workbench.db.DropType;
 import workbench.db.EnumIdentifier;
 import workbench.db.IndexDefinition;
-import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -351,7 +353,7 @@ public class PostgresTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     option.setTableOption(tableSql.toString());
 
@@ -479,7 +481,7 @@ public class PostgresTableSourceBuilder
     finally
     {
       dbConnection.releaseSavepoint(sp);
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -647,7 +649,7 @@ public class PostgresTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     if (b.length() == 0) return null;
     return b;
@@ -841,7 +843,7 @@ public class PostgresTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     return result;

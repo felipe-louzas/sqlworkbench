@@ -38,6 +38,8 @@ import workbench.db.JdbcTableDefinitionReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -73,7 +75,7 @@ public class HanaTableDefinitionReader
     }
     finally
     {
-      SqlUtil.closeStatement(columnsStatement);
+      JdbcUtils.closeStatement(columnsStatement);
       columnsStatement = null;
     }
   }

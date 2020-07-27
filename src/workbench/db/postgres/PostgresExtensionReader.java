@@ -40,6 +40,9 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -111,7 +114,7 @@ public class PostgresExtensionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

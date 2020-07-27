@@ -39,7 +39,6 @@ import workbench.db.DomainIdentifier;
 import workbench.db.DropType;
 import workbench.db.EnumIdentifier;
 import workbench.db.IndexDefinition;
-import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableGrantReader;
 import workbench.db.TableIdentifier;
@@ -57,6 +56,9 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -344,7 +346,7 @@ public class RedshiftTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     TableGrantReader grantReader = TableGrantReader.createReader(dbConnection);
@@ -535,7 +537,7 @@ public class RedshiftTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     option.setTableOption(tableSql.toString());
 
@@ -675,7 +677,7 @@ public class RedshiftTableSourceBuilder
     finally
     {
       dbConnection.releaseSavepoint(sp);
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -781,7 +783,7 @@ public class RedshiftTableSourceBuilder
     if (!JdbcUtils.hasMinimumServerVersion(this.dbConnection, "8.4")) return null;
     if (table == null) return null;
     if (CollectionUtil.isEmpty(columns)) return null;
-    
+
     String tblname = table.getTableExpression(dbConnection);
     ResultSet rs = null;
     Statement stmt = null;
@@ -824,7 +826,7 @@ public class RedshiftTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     if (b.length() == 0)
       return null;

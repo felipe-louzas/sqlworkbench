@@ -33,6 +33,8 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -137,7 +139,7 @@ public class PostgresFKHandler
     }
     finally
     {
-      SqlUtil.close(pstmt, rs);
+      JdbcUtils.close(pstmt, rs);
     }
   }
 

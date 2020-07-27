@@ -37,7 +37,7 @@ import workbench.db.sqltemplates.ColumnDefinitionTemplate;
 import workbench.sql.formatter.FormatterUtil;
 import workbench.sql.syntax.SqlKeywordHelper;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A class to create a table in the database based on column definitions.
@@ -303,7 +303,7 @@ public class TableCreator
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 

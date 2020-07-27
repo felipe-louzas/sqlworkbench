@@ -33,7 +33,7 @@ import workbench.log.LogMgr;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import static java.sql.DatabaseMetaData.*;
 
@@ -221,7 +221,7 @@ public class DefaultFKHandler
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     return ds;
   }

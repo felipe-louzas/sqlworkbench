@@ -1755,7 +1755,7 @@ public class DbMetadata
     }
     finally
     {
-      SqlUtil.closeResult(tableRs);
+      JdbcUtils.closeResult(tableRs);
     }
 
 
@@ -2535,7 +2535,7 @@ public class DbMetadata
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
 
     if (filter != null)
@@ -2675,7 +2675,7 @@ public class DbMetadata
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     return count;
   }
@@ -2741,7 +2741,7 @@ public class DbMetadata
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
 
     if (!ignoredTypes.isEmpty())

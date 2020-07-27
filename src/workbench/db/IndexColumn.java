@@ -1,6 +1,4 @@
 /*
- * IndexColumn.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -27,8 +25,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 import workbench.db.objectcache.DbObjectCacheFactory;
-import workbench.util.SqlUtil;
 
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**

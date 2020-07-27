@@ -39,7 +39,7 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CaseInsensitiveComparator;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -160,7 +160,7 @@ public class SqlServerObjectListEnhancer
             remarks.put(schema + "." + objectname.trim(), remark);
           }
         }
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
       }
     }
     catch (Exception e)
@@ -169,7 +169,7 @@ public class SqlServerObjectListEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return remarks;
   }

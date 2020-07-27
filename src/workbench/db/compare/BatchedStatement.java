@@ -1,6 +1,4 @@
 /*
- * BatchedStatement.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -38,10 +36,10 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.util.FileUtil;
-import workbench.util.SqlUtil;
 
 /**
  * A wrapper to treat batched statements just like a "normal" statement.
@@ -369,7 +367,7 @@ public class BatchedStatement
   public void close()
   {
     try { statement.clearBatch(); } catch (Throwable th) {}
-    SqlUtil.closeStatement(this.statement);
+    JdbcUtils.closeStatement(this.statement);
     closeStreams();
   }
 

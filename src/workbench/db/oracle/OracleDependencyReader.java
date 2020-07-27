@@ -45,7 +45,7 @@ import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 import workbench.log.LogMgr;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -208,7 +208,7 @@ public class OracleDependencyReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return removeBodies(result);
   }

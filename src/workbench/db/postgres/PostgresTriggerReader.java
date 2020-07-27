@@ -31,7 +31,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DefaultTriggerReader;
-import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
@@ -42,6 +41,8 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 import workbench.storage.SortDefinition;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -134,7 +135,7 @@ public class PostgresTriggerReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (triggerCount > 0)
@@ -241,7 +242,7 @@ public class PostgresTriggerReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result.toString();
   }
@@ -294,7 +295,7 @@ public class PostgresTriggerReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (funcName != null && funcSchema != null)

@@ -1,6 +1,4 @@
 /*
- * Db2ProcedureReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -36,12 +34,13 @@ import workbench.log.LogMgr;
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.JdbcProcedureReader;
-import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -101,7 +100,7 @@ public class Db2ProcedureReader
     finally
     {
       // The resultSet is already closed by fillProcedureListDataStore
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 
@@ -271,7 +270,7 @@ public class Db2ProcedureReader
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
 
     return ds;

@@ -38,7 +38,6 @@ import workbench.resource.Settings;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcProcedureReader;
-import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
@@ -48,6 +47,8 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.sql.DelimiterDefinition;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -119,7 +120,7 @@ public class OracleProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return count > 0;
   }
@@ -227,7 +228,7 @@ public class OracleProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -315,7 +316,7 @@ public class OracleProcedureReader
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
 
     // Remove the implicit parameter for Object type functions that passes
@@ -521,7 +522,7 @@ public class OracleProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving procedures took: " + duration + "ms");

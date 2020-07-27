@@ -1,6 +1,4 @@
 /*
- * PostgresSearchPathTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,6 +30,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.objectcache.Namespace;
@@ -42,7 +41,6 @@ import workbench.sql.StatementRunnerResult;
 import workbench.sql.wbcommands.ObjectInfo;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -106,7 +104,7 @@ public class PostgresSearchPathTest
       String sql = "select * from t1";
       rs = stmt.executeQuery(sql);
       DataStore ds1 = new DataStore(rs, con);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       ds1.setGeneratingSql(sql);
       ds1.checkUpdateTable(con);
@@ -117,7 +115,7 @@ public class PostgresSearchPathTest
       sql = "select * from t2";
       rs = stmt.executeQuery(sql);
       DataStore ds2 = new DataStore(rs, con);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       ds2.setGeneratingSql(sql);
       ds2.checkUpdateTable(con);
@@ -127,7 +125,7 @@ public class PostgresSearchPathTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 
@@ -148,7 +146,7 @@ public class PostgresSearchPathTest
       String sql = "select * from t2";
       rs = stmt.executeQuery(sql);
       DataStore ds1 = new DataStore(rs, con);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       ds1.setGeneratingSql(sql);
       ds1.checkUpdateTable(con);
@@ -162,7 +160,7 @@ public class PostgresSearchPathTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 

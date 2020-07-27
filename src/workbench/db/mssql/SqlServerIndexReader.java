@@ -38,7 +38,7 @@ import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
 import workbench.db.TableIdentifier;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -134,7 +134,7 @@ public class SqlServerIndexReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     StringBuilder options = new StringBuilder(cols.size() * 20);

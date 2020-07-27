@@ -1,6 +1,4 @@
 /*
- * WbDefineVar.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -48,6 +46,9 @@ import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -443,7 +444,7 @@ public class WbDefineVar
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
 
     return result;

@@ -40,7 +40,7 @@ import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 
 import workbench.util.ExceptionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -359,7 +359,7 @@ public class OracleMViewReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

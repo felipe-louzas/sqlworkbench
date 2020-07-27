@@ -32,7 +32,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
-import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.TableIdentifier;
@@ -40,6 +39,8 @@ import workbench.db.WbConnection;
 
 import workbench.storage.ColumnRemover;
 import workbench.storage.DataStore;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -141,7 +142,7 @@ public class OracleSequenceReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (!hasIdentitySeqName)

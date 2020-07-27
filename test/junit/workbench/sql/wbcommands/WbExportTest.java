@@ -1,6 +1,4 @@
 /*
- * WbExportTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -49,6 +47,9 @@ import workbench.util.EncodingUtil;
 import workbench.util.FileUtil;
 import workbench.util.LobFileParameter;
 import workbench.util.LobFileStatement;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -302,7 +303,7 @@ public class WbExportTest
     stmt.executeUpdate("DELETE FROM JUNIT_TEST");
     stmt.executeUpdate("DELETE FROM PERSON");
     connection.commit();
-    SqlUtil.closeStatement(stmt);
+    JdbcUtils.closeStatement(stmt);
 
     WbFile exportFile = new WbFile(util.getBaseDir(), "create_tbl.sql");
     StatementRunnerResult result = exportCmd.execute("wbexport -createTable=true -file='" + exportFile.getFullPath() + "' -type=sqlinsert -useSchema=false -sourceTable=junit_test");
@@ -392,7 +393,7 @@ public class WbExportTest
     exportDir.delete();
     StatementRunnerResult result = exportCmd.execute("wbexport -outputDir='" + exportDir.getAbsolutePath() + "' -type=text -sourceTable=*");
     String msg = result.getMessages().toString();
-    assertTrue(msg.indexOf("not found!") > -1);
+    assertTrue(msg.contains("not found!"));
     assertFalse("Export did not fail", result.isSuccess());
     assertFalse("Export directory created", exportDir.exists());
 
@@ -542,8 +543,8 @@ public class WbExportTest
     String sql = p.getCommand(0);
     String verb = SqlUtil.getSqlVerb(sql);
     assertEquals("Not an insert statement", "INSERT", verb);
-    assertEquals("JDBC Date literal not found", true, sql.indexOf("{d '2006-01-01'}") > -1);
-    assertEquals("JDBC Timestamp literal not found", true, sql.indexOf("{ts '2007-02-02 14:15:16") > -1);
+    assertTrue("JDBC Date literal not found", sql.contains("{d '2006-01-01'}"));
+    assertTrue("JDBC Timestamp literal not found", sql.contains("{ts '2007-02-02 14:15:16"));
 
     // Test ANSI literals
     exportFile.delete();
@@ -557,8 +558,8 @@ public class WbExportTest
     sql = p.getCommand(0);
     verb = SqlUtil.getSqlVerb(script);
     assertEquals("Not an insert statement", "INSERT", verb);
-    assertEquals("ANSI Date literal not found", true, sql.indexOf("DATE '2006-01-01'") > -1);
-    assertEquals("ANSI Timestamp literal not found", true, sql.indexOf("TIMESTAMP '2007-02-02 14:15:16") > -1);
+    assertTrue("ANSI Date literal not found", sql.contains("DATE '2006-01-01'"));
+    assertTrue("ANSI Timestamp literal not found", sql.contains("TIMESTAMP '2007-02-02 14:15:16"));
 
     // Test Standard literals
     exportFile.delete();
@@ -572,8 +573,8 @@ public class WbExportTest
     sql = p.getCommand(0);
     verb = SqlUtil.getSqlVerb(script);
     assertEquals("Not an insert statement", "INSERT", verb);
-    assertEquals("STANDARD Date literal not found", true, sql.indexOf("'2006-01-01'") > -1);
-    assertEquals("STANDARD Timestamp literal not found", true, sql.indexOf("'2007-02-02 14:15:16") > -1);
+    assertTrue("STANDARD Date literal not found", sql.contains("'2006-01-01'"));
+    assertTrue("STANDARD Timestamp literal not found", sql.contains("'2007-02-02 14:15:16"));
 
     // Test Oracle literals
     exportFile.delete();
@@ -588,8 +589,8 @@ public class WbExportTest
     verb = SqlUtil.getSqlVerb(script);
 //      System.out.println("Statement=" + sql);
     assertEquals("Not an insert statement", "INSERT", verb);
-    assertEquals("Oracle Date literal not found", true, sql.indexOf("to_date('2006-01-01'") > -1);
-    assertEquals("Oracle Timestamp literal not found", true, sql.indexOf("to_timestamp('2007-02-02 14:15:16.000") > -1);
+    assertTrue("Oracle Date literal not found", sql.contains("to_date('2006-01-01'"));
+    assertTrue("Oracle Timestamp literal not found", sql.contains("to_timestamp('2007-02-02 14:15:16.000"));
   }
 
   @Test
@@ -702,7 +703,7 @@ public class WbExportTest
     File exportFile = new File(this.basedir, "blob_ext.txt");
 
     StatementRunner runner = util.createConnectedStatementRunner(connection);
-    StatementRunnerResult result = runner.runStatement("wbexport -filenameColumn=fname -file='" + exportFile.getAbsolutePath() + "' -type=text -header=true;");
+    runner.runStatement("wbexport -filenameColumn=fname -file='" + exportFile.getAbsolutePath() + "' -type=text -header=true;");
 //    System.out.println("**************\n" + result.getMessages().toString() + "\n**************");
     runner.runStatement("select  \n" +
            "   case \n" +
@@ -884,18 +885,18 @@ public class WbExportTest
     List<String> lines = TestUtil.readLines(ctl);
 //      System.out.println("first line: " + lines.get(0));
     assertTrue(lines.get(0).startsWith("--"));
-    assertTrue(lines.get(1).indexOf("skip=1") > -1);
+    assertTrue(lines.get(1).contains("skip=1"));
 
     File bcp = new File(this.basedir, "export.fmt");
     assertEquals("BCP format file not created", true, bcp.exists());
     lines = TestUtil.readLines(bcp);
     assertEquals("7.0", lines.get(0));
     assertEquals("3", lines.get(1));
-    assertTrue(lines.get(2).indexOf(" NR") > -1);
-    assertTrue(lines.get(2).indexOf(" \"\\t\"") > -1);
-    assertTrue(lines.get(3).indexOf(" FIRSTNAME") > -1);
-    assertTrue(lines.get(4).indexOf(" LASTNAME") > -1);
-    assertTrue(lines.get(4).indexOf(" \"\\n\"") > -1);
+    assertTrue(lines.get(2).contains(" NR"));
+    assertTrue(lines.get(2).contains(" \"\\t\""));
+    assertTrue(lines.get(3).contains(" FIRSTNAME"));
+    assertTrue(lines.get(4).contains(" LASTNAME"));
+    assertTrue(lines.get(4).contains(" \"\\n\""));
 
   }
 

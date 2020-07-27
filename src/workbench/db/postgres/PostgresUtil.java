@@ -31,10 +31,11 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
-import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -96,7 +97,7 @@ public class PostgresUtil
       }
       finally
       {
-        SqlUtil.closeStatement(stmt);
+        JdbcUtils.closeStatement(stmt);
       }
     }
   }
@@ -168,7 +169,7 @@ public class PostgresUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (result.isEmpty())
@@ -323,7 +324,7 @@ public class PostgresUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return false;
   }
@@ -360,7 +361,7 @@ public class PostgresUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return false;
   }

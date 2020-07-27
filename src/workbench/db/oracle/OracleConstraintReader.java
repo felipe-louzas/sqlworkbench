@@ -42,6 +42,9 @@ import workbench.sql.lexer.SQLToken;
 import workbench.sql.parser.ParserType;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -151,7 +154,7 @@ public class OracleConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

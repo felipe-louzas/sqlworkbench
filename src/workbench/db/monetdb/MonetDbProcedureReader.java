@@ -1,6 +1,4 @@
 /*
- * MonetDbProcedureReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer.
@@ -30,7 +28,6 @@ import java.sql.Types;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.JdbcProcedureReader;
 import workbench.db.NoConfigException;
@@ -40,6 +37,9 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.ExceptionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -108,7 +108,7 @@ public class MonetDbProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -198,7 +198,7 @@ public class MonetDbProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return ds;
   }
@@ -280,7 +280,7 @@ public class MonetDbProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return source;
   }

@@ -26,11 +26,10 @@ import java.sql.Statement;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.util.SqlUtil;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -99,7 +98,7 @@ public class OracleArrayConverterTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -124,7 +123,7 @@ public class OracleArrayConverterTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
   }

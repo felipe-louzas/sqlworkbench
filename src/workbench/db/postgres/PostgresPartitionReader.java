@@ -36,7 +36,7 @@ import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -237,7 +237,7 @@ public class PostgresPartitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
   }
 
@@ -318,7 +318,7 @@ public class PostgresPartitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
   }
 
@@ -394,7 +394,7 @@ public class PostgresPartitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return result;
   }

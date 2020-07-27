@@ -35,12 +35,14 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
-import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CharacterRange;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbStringTokenizer;
@@ -127,7 +129,7 @@ public class GreenplumExternalTableReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -297,7 +299,7 @@ public class GreenplumExternalTableReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     tblOptions.appendTableOptionSQL(source);
   }

@@ -36,7 +36,6 @@ import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.JdbcProcedureReader;
-import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
@@ -46,6 +45,8 @@ import workbench.db.oracle.OraclePackageParser;
 import workbench.storage.DataStore;
 
 import workbench.sql.DelimiterDefinition;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -302,7 +303,7 @@ public class FirebirdProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -447,7 +448,7 @@ public class FirebirdProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     return result;

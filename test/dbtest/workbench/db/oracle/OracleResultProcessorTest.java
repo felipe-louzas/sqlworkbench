@@ -35,8 +35,6 @@ import workbench.sql.DelimiterDefinition;
 import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
 
-import workbench.util.SqlUtil;
-
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -113,7 +111,7 @@ public class OracleResultProcessorTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -172,7 +170,7 @@ public class OracleResultProcessorTest
     finally
     {
       TestUtil.executeScript(con, "drop function get_numbers");
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

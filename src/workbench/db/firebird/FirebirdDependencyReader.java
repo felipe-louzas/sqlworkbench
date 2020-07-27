@@ -40,6 +40,9 @@ import workbench.db.dependency.DependencyReader;
 import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -146,7 +149,7 @@ public class FirebirdDependencyReader
     finally
     {
       connection.rollback(sp);
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     DbObjectSorter.sort(result, true, true);

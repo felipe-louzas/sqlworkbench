@@ -38,7 +38,7 @@ import workbench.db.WbConnection;
 import workbench.storage.RowActionMonitor;
 
 import workbench.util.MessageBuffer;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * @author Thomas Kellerer
@@ -162,7 +162,7 @@ class ImportTableDeleter
     finally
     {
       this.dbConn.setBusy(false);
-      SqlUtil.closeStatement(statement);
+      JdbcUtils.closeStatement(statement);
       if (this.rowMonitor != null)
       {
         this.rowMonitor.jobFinished();

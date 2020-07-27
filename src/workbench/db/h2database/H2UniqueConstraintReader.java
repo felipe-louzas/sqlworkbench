@@ -1,6 +1,4 @@
 /*
- * PostgresUniqueConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -23,8 +21,6 @@
  */
 package workbench.db.h2database;
 
-
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,12 +31,12 @@ import workbench.log.LogMgr;
 
 import workbench.db.ConstraintDefinition;
 import workbench.db.IndexDefinition;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.UniqueConstraintReader;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 /**
  *
@@ -92,7 +88,7 @@ public class H2UniqueConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
   }
 

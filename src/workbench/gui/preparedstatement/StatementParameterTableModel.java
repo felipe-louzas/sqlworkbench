@@ -1,6 +1,4 @@
 /*
- * StatementParameterTableModel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -24,8 +22,11 @@
 package workbench.gui.preparedstatement;
 
 import javax.swing.table.TableModel;
+
 import workbench.resource.ResourceMgr;
+
 import workbench.sql.preparedstatement.StatementParameters;
+
 import workbench.util.SqlUtil;
 
 /**

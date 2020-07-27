@@ -29,10 +29,10 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 import workbench.util.ValueConverter;
 
 import org.junit.Test;
@@ -113,7 +113,7 @@ public class ConstantColumnValuesTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       try { con.disconnect(); } catch (Throwable th) {}
     }
   }

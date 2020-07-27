@@ -38,10 +38,10 @@ import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
 
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 /**
  *
@@ -156,7 +156,7 @@ public class HanaDependencyReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     return result;

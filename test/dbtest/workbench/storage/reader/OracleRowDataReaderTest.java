@@ -1,6 +1,4 @@
 /*
- * OracleRowDataReaderTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2013, Thomas Kellerer
@@ -30,10 +28,9 @@ import java.time.OffsetDateTime;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 import workbench.db.oracle.OracleTestUtil;
-
-import workbench.util.SqlUtil;
 
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -101,7 +98,7 @@ public class OracleRowDataReaderTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

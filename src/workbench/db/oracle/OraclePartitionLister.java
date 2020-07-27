@@ -35,6 +35,8 @@ import workbench.db.TableIdentifier;
 import workbench.db.TablePartition;
 import workbench.db.WbConnection;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -148,7 +150,7 @@ public class OraclePartitionLister
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving sub partitions " + baseTable.getObjectName() + " took: " + duration + "ms");

@@ -28,7 +28,6 @@ import java.util.TreeMap;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.ObjectListEnhancer;
@@ -37,6 +36,9 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CaseInsensitiveComparator;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -143,7 +145,7 @@ public class Db2iObjectListEnhancer
             remarks.put(schema + "." + objectname.trim(), remark);
           }
         }
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
       }
     }
     catch (Exception e)
@@ -152,7 +154,7 @@ public class Db2iObjectListEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return remarks;
   }

@@ -47,7 +47,7 @@ import workbench.sql.lexer.SQLToken;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -217,7 +217,7 @@ public class WbSelectBlob
     }
     finally
     {
-      SqlUtil.closeAll(rs, currentStatement);
+      JdbcUtils.closeAll(rs, currentStatement);
     }
 
     return result;

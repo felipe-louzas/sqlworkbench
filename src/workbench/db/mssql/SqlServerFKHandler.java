@@ -41,7 +41,7 @@ import workbench.log.LogMgr;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -115,7 +115,7 @@ public class SqlServerFKHandler
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

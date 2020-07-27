@@ -32,7 +32,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.JdbcUtils;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -85,7 +85,7 @@ public class DbmsOutput
     }
     finally
     {
-      SqlUtil.closeStatement(enableStatement);
+      JdbcUtils.closeStatement(enableStatement);
     }
   }
 
@@ -105,7 +105,7 @@ public class DbmsOutput
     }
     finally
     {
-      SqlUtil.closeStatement(disableStatement);
+      JdbcUtils.closeStatement(disableStatement);
     }
   }
 
@@ -189,7 +189,7 @@ public class DbmsOutput
       {
         // ignore
       }
-      SqlUtil.closeStatement(cstmt);
+      JdbcUtils.closeStatement(cstmt);
     }
     return result.toString();
   }
@@ -221,7 +221,7 @@ public class DbmsOutput
     }
     finally
     {
-      SqlUtil.closeStatement(cstmt);
+      JdbcUtils.closeStatement(cstmt);
     }
     return result.toString();
   }

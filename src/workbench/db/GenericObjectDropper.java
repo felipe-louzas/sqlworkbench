@@ -1,6 +1,4 @@
 /*
- * GenericObjectDropper.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -265,7 +263,7 @@ public class GenericObjectDropper
     }
     finally
     {
-      SqlUtil.closeStatement(currentStatement);
+      JdbcUtils.closeStatement(currentStatement);
       currentStatement = null;
     }
   }

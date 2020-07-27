@@ -46,7 +46,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -222,7 +222,7 @@ public class OracleTableDefinitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     if (columns.size() > 0 && table.getType() == null)
     {
@@ -304,7 +304,7 @@ public class OracleTableDefinitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     long duration = System.currentTimeMillis() - start;
@@ -505,7 +505,7 @@ public class OracleTableDefinitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return linkOwner;

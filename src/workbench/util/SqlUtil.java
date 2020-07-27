@@ -51,6 +51,7 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DbSettings;
 import workbench.db.DropType;
+import workbench.db.JdbcUtils;
 import workbench.db.QuoteHandler;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -793,7 +794,7 @@ public class SqlUtil
         catch (Exception e)
         {
           LogMgr.logError(new CallerInfo(){}, "Could not obtain result info from prepared statement for:\n" + sql, e);
-          closeStatement(pstmt);
+          JdbcUtils.closeStatement(pstmt);
           pstmt = null;
           meta = null;
         }
@@ -824,8 +825,8 @@ public class SqlUtil
     }
     finally
     {
-      closeStatement(pstmt);
-      closeAll(rs, stmt);
+      JdbcUtils.closeStatement(pstmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -1474,57 +1475,6 @@ public class SqlUtil
   }
 
   /**
-   *	Convenience method to close a ResultSet without a possible
-   *  SQLException
-   */
-  public static void closeResult(ResultSet rs)
-  {
-    if (rs == null) return;
-    clearWarnings(rs);
-    try { rs.close(); } catch (Throwable th) {}
-  }
-
-  /**
-   *	Convenience method to close a Statement without a possible
-   *  SQLException
-   */
-  public static void closeStatement(Statement stmt)
-  {
-    if (stmt == null) return;
-    try { stmt.close(); } catch (Throwable th) {}
-  }
-
-  /**
-   *	Convenience method to close a ResultSet and a Statement without
-   *  a possible SQLException
-   */
-  public static void closeAll(ResultSet rs, Statement stmt)
-  {
-    closeResult(rs);
-    closeStatement(stmt);
-  }
-
-  public static void close(AutoCloseable... toClose)
-  {
-    if (toClose == null) return;
-    for (AutoCloseable cl : toClose)
-    {
-      close(cl);
-    }
-  }
-
-  public static void close(AutoCloseable toClose)
-  {
-    if (toClose == null) return;
-    if (toClose instanceof ResultSet)
-    {
-      clearWarnings((ResultSet)toClose);
-    }
-    try { toClose.close(); } catch (Throwable th) {}
-  }
-
-
-  /**
    * Returns the name of the java.sql.Types constant for the given type value.
    *
    * @param sqlType  the data type corresponding to the java.sql.Types constants
@@ -1723,7 +1673,7 @@ public class SqlUtil
       }
 
       // make sure the warnings are cleared from both objects!
-      clearWarnings(con, stmt);
+      JdbcUtils.clearWarnings(con, stmt);
       StringUtil.trimTrailingWhitespace(msg);
       return msg;
     }
@@ -1731,45 +1681,6 @@ public class SqlUtil
     {
       LogMgr.logWarning(new CallerInfo(){}, "Error retrieving warnings", e);
       return null;
-    }
-  }
-
-  public static void clearWarnings(ResultSet rs)
-  {
-    try
-    {
-      if (rs != null) rs.clearWarnings();
-    }
-    catch (Throwable th)
-    {
-    }
-  }
-
-  public static void clearWarnings(WbConnection con, Statement stmt)
-  {
-    clearWarnings(con);
-    clearWarnings(stmt);
-  }
-
-  public static void clearWarnings(WbConnection con)
-  {
-    try
-    {
-      if (con != null) con.clearWarnings();
-    }
-    catch (Throwable th)
-    {
-    }
-  }
-
-  public static void clearWarnings(Statement stmt)
-  {
-    try
-    {
-      if (stmt != null) stmt.clearWarnings();
-    }
-    catch (Throwable th)
-    {
     }
   }
 
@@ -2316,7 +2227,7 @@ public class SqlUtil
     }
     finally
     {
-      closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return ds;
   }

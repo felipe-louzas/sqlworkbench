@@ -36,7 +36,7 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
- * Convert row data to Microsoft's XLSX Spreadsheet format.
+ * Convert row data to Microsoft's SpreadsheetML (XML) format.
  *
  * @author  Thomas Kellerer
  */

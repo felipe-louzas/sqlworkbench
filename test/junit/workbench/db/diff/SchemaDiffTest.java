@@ -1,6 +1,4 @@
 /*
- * SchemaDiffTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -29,9 +27,8 @@ import java.sql.Statement;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
-
-import workbench.util.SqlUtil;
 
 import org.junit.After;
 import org.junit.Test;
@@ -306,7 +303,7 @@ public class SchemaDiffTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 
@@ -342,7 +339,7 @@ public class SchemaDiffTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 

@@ -41,7 +41,7 @@ import workbench.db.WbConnection;
 
 import workbench.storage.ResultInfo;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import static java.time.temporal.ChronoField.*;
 
@@ -221,7 +221,7 @@ class PostgresRowDataReader
     }
     finally
     {
-      SqlUtil.close(rs, stmt);
+      JdbcUtils.close(rs, stmt);
     }
     return ZoneId.systemDefault();
   }

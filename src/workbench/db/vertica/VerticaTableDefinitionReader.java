@@ -39,7 +39,7 @@ import workbench.db.JdbcTableDefinitionReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -133,7 +133,7 @@ public class VerticaTableDefinitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return columns;
   }

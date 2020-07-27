@@ -37,7 +37,7 @@ import workbench.resource.Settings;
 import workbench.db.DbSearchPath;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -90,7 +90,7 @@ public class Db2SearchPath
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     List<String> searchPath = parseResult(result);

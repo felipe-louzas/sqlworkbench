@@ -1,6 +1,4 @@
 /*
- * ScriptParserTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -23,7 +21,6 @@
  */
 package workbench.sql.parser;
 
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -43,7 +40,6 @@ import workbench.util.StringUtil;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
 
 /**
  *

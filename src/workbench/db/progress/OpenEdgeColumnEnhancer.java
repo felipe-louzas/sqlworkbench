@@ -1,6 +1,4 @@
 /*
- * SqlServerColumnEnhancer.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -39,6 +37,9 @@ import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
 import workbench.util.CaseInsensitiveComparator;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -101,7 +102,7 @@ public class OpenEdgeColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     for (ColumnIdentifier col : table.getColumns())

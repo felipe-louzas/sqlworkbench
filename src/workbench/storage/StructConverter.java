@@ -1,6 +1,4 @@
 /*
- * StructConverter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -36,6 +34,8 @@ import java.util.Date;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+
+import workbench.storage.reader.RowDataReader;
 
 import workbench.util.SqlUtil;
 

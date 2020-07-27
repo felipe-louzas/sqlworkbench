@@ -30,11 +30,11 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceAdjuster;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
 
 /**
  * A class to sync the sequences related to the columns of a table with the current values.
@@ -85,7 +85,7 @@ public class FirebirdSequenceAdjuster
       if (rs.next())
       {
         maxValue = rs.getLong(1) + 1;
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
       }
 
       if (maxValue > 0)
@@ -102,7 +102,7 @@ public class FirebirdSequenceAdjuster
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

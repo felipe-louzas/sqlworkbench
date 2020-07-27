@@ -32,7 +32,7 @@ import workbench.log.LogMgr;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -109,7 +109,7 @@ public class OracleExternalTableReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return options;
   }

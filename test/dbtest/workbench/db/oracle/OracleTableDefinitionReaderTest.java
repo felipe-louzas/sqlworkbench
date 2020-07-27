@@ -44,7 +44,7 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -186,7 +186,7 @@ public class OracleTableDefinitionReaderTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 

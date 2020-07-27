@@ -1,6 +1,4 @@
 /*
- * SpHelpTextRunner.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -31,7 +29,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -100,7 +98,7 @@ public class SpHelpTextRunner
       {
         SqlServerUtil.changeDatabase(connection, currentDb);
       }
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return sql;
   }

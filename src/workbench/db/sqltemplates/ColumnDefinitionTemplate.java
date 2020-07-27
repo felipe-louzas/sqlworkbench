@@ -1,6 +1,4 @@
 /*
- * ColumnDefinitionTemplate.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -288,7 +286,7 @@ public class ColumnDefinitionTemplate
 
     final String defaultTemplate = ColumnChanger.PARAM_DATATYPE + " " + ColumnChanger.PARAM_DEFAULT_VALUE + " " + PARAM_NOT_NULL + " " + PARAM_COL_CONSTRAINTS;
     String sql;
-    
+
     if (isAutoincrement)
     {
       sql = getProperty("coldef.autoinc", null);

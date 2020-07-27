@@ -1,6 +1,4 @@
 /*
- * TableSourceBuilder.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -801,7 +799,7 @@ public class TableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     StringUtil.trimTrailingWhitespace(result);
     if (result.charAt(result.length() -1 ) != ';')

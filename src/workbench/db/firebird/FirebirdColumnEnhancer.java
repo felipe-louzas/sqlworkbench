@@ -37,7 +37,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -121,7 +121,7 @@ public class FirebirdColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     for (ColumnIdentifier col : table.getColumns())

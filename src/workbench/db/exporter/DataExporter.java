@@ -78,6 +78,9 @@ import workbench.util.EncodingUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.MessageBuffer;
 import workbench.util.QuoteEscapeType;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbDateFormatter;
@@ -1316,7 +1319,7 @@ public class DataExporter
   {
     if (currentStatement != null)
     {
-      SqlUtil.closeStatement(currentStatement);
+      JdbcUtils.closeStatement(currentStatement);
     }
     currentStatement = this.dbConn.createStatementForQuery();
     ResultSet rs = null;
@@ -1352,7 +1355,7 @@ public class DataExporter
     }
     finally
     {
-      SqlUtil.closeAll(rs, currentStatement);
+      JdbcUtils.closeAll(rs, currentStatement);
       if (busyControl)
       {
         this.dbConn.setBusy(false);
@@ -1434,7 +1437,7 @@ public class DataExporter
     finally
     {
       exportFinished();
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     long numRows = this.exportWriter.getNumberOfRecords();
     String msg = "Exported " + numRows + " rows to " + this.outputfile;

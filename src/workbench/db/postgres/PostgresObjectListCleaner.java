@@ -32,7 +32,6 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
-import workbench.db.JdbcUtils;
 import workbench.db.ObjectListCleaner;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -40,6 +39,9 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -145,7 +147,7 @@ public class PostgresObjectListCleaner
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     long duration = System.currentTimeMillis() - start;
@@ -211,7 +213,7 @@ public class PostgresObjectListCleaner
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     int rowCount = result.getRowCount();

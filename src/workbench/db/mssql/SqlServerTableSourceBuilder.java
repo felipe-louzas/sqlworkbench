@@ -41,7 +41,7 @@ import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 import workbench.db.sqltemplates.TemplateHandler;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -291,7 +291,7 @@ public class SqlServerTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     if (result.length() > 0)
     {

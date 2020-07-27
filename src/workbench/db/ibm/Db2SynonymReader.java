@@ -1,6 +1,4 @@
 /*
- * Db2SynonymReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -37,6 +35,8 @@ import workbench.db.DBID;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 
@@ -131,7 +131,7 @@ public class Db2SynonymReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return result;

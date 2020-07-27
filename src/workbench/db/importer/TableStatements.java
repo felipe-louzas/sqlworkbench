@@ -37,7 +37,7 @@ import workbench.db.WbConnection;
 import workbench.sql.wbcommands.CommonArgs;
 
 import workbench.util.ArgumentParser;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -177,7 +177,7 @@ public class TableStatements
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 

@@ -30,12 +30,13 @@ import java.sql.Statement;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -106,7 +107,7 @@ public class MySQLDataStoreTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 }

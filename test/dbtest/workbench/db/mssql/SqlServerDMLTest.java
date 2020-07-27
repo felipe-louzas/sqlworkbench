@@ -28,11 +28,10 @@ import java.sql.Statement;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.util.SqlUtil;
 
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -91,7 +90,7 @@ public class SqlServerDMLTest
     ResultSet rs = stmt.executeQuery(sql);
     DataStore ds = new DataStore(rs, con);
 
-    SqlUtil.closeAll(rs, stmt);
+    JdbcUtils.closeAll(rs, stmt);
 
     ds.setGeneratingSql(sql);
     ds.checkUpdateTable(con);

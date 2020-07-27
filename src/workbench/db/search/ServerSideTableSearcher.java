@@ -49,7 +49,7 @@ import workbench.storage.filter.ColumnExpression;
 import workbench.storage.filter.ContainsComparator;
 
 import workbench.util.ExceptionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
@@ -223,7 +223,7 @@ public class ServerSideTableSearcher
     }
     finally
     {
-      SqlUtil.closeAll(rs, query);
+      JdbcUtils.closeAll(rs, query);
       this.query = null;
       if (sp != null)
       {

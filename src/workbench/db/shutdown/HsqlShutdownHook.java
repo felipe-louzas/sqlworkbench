@@ -33,7 +33,7 @@ import workbench.db.WbConnection;
 
 import workbench.log.LogMgr;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A Shutdown hook for H2 Database.
@@ -75,7 +75,7 @@ public class HsqlShutdownHook
       }
       finally
       {
-        SqlUtil.closeStatement(stmt);
+        JdbcUtils.closeStatement(stmt);
       }
     }
     con.shutdown();

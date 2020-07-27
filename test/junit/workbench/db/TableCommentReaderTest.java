@@ -30,7 +30,7 @@ import workbench.TestUtil;
 
 import workbench.sql.parser.ScriptParser;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import static org.junit.Assert.*;
 
@@ -72,7 +72,7 @@ public class TableCommentReaderTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 

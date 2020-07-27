@@ -34,7 +34,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
-import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSelectBuilder;
 import workbench.db.WbConnection;
@@ -44,7 +43,9 @@ import workbench.gui.actions.WbAction;
 import workbench.gui.dbobjects.DbObjectList;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.WbThread;
 
 /**
@@ -145,7 +146,7 @@ public class ShowRowCountAction
         String sql = builder.getSelectForCount(table);
         LogMgr.logDebug(ci, "Retrieving rowcount using:\n" + sql);
 
-        rs = JdbcUtils.runStatement(conn, currentStatement, sql, useSavepoint);
+        rs = JdbcUtils.runQuery(conn, currentStatement, sql, useSavepoint);
 
         if (rs != null && rs.next())
         {
@@ -153,7 +154,7 @@ public class ShowRowCountAction
           display.showRowCount(table, rowCount);
         }
 
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
         if (cancelCount) break;
       }
     }
@@ -163,7 +164,7 @@ public class ShowRowCountAction
     }
     finally
     {
-      SqlUtil.closeAll(rs, currentStatement);
+      JdbcUtils.closeAll(rs, currentStatement);
       if (conn.selectStartsTransaction())
       {
         conn.endReadOnlyTransaction(new CallerInfo(){});

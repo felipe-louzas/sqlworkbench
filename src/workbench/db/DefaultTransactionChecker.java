@@ -31,7 +31,7 @@ import java.sql.Statement;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -90,7 +90,7 @@ public class DefaultTransactionChecker
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return count > 0;
   }

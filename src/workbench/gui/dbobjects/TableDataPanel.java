@@ -101,7 +101,7 @@ import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.FilteredProperties;
 import workbench.util.LowMemoryException;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.WbThread;
 import workbench.util.WbWorkspace;
 
@@ -592,7 +592,7 @@ public class TableDataPanel
     }
     finally
     {
-      SqlUtil.closeAll(rs, rowCountRetrieveStmt);
+      JdbcUtils.closeAll(rs, rowCountRetrieveStmt);
       this.rowCountCancel = false;
 
       WbSwingUtilities.invoke(() ->

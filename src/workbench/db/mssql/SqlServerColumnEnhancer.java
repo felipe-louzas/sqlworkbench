@@ -1,6 +1,4 @@
 /*
- * SqlServerColumnEnhancer.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -42,6 +40,9 @@ import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -190,7 +191,7 @@ public class SqlServerColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -224,7 +225,7 @@ public class SqlServerColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, info);
+      JdbcUtils.closeAll(rs, info);
     }
     defaultCollations.put(database, collation);
     return collation;
@@ -286,7 +287,7 @@ public class SqlServerColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

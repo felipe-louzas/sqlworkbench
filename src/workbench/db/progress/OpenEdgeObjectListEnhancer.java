@@ -40,7 +40,7 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CaseInsensitiveComparator;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -140,7 +140,7 @@ public class OpenEdgeObjectListEnhancer
           remarks.put(objectSchema + "." + objectName.trim(), remark);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     catch (Exception e)
     {
@@ -148,7 +148,7 @@ public class OpenEdgeObjectListEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     long duration = System.currentTimeMillis() - start;
 		LogMgr.logDebug(new CallerInfo(){}, "Retrieving table remarks took: " + duration + "ms");

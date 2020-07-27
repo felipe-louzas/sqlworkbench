@@ -1,6 +1,4 @@
 /*
- * SourceTableArgumentTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -26,15 +24,22 @@ package workbench.sql.wbcommands;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Set;
+
 import workbench.TestUtil;
+
 import workbench.db.ConnectionMgr;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-import workbench.util.SqlUtil;
+
 import static org.junit.Assert.*;
+
 import org.junit.Test;
+
 import workbench.WbTestCase;
 import workbench.resource.Settings;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.CollectionUtil;
 
 /**
@@ -93,7 +98,7 @@ public class SourceTableArgumentTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }
@@ -128,7 +133,7 @@ public class SourceTableArgumentTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }
@@ -178,7 +183,7 @@ public class SourceTableArgumentTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       ConnectionMgr.getInstance().disconnectAll();
       Settings.getInstance().setProperty("workbench.sql.ignorecatalog.h2", oldCatIgnore);
     }
@@ -249,7 +254,7 @@ public class SourceTableArgumentTest
     {
       Settings.getInstance().setProperty("workbench.sql.ignorecatalog.h2", oldCatIgnore);
       Settings.getInstance().setProperty("workbench.sql.ignoreschema.h2", schemaIgnore);
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }

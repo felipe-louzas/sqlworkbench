@@ -1,6 +1,4 @@
 /*
- * WbModeTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,11 +30,10 @@ import workbench.WbTestCase;
 import workbench.interfaces.ExecutionController;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.sql.BatchRunner;
-
-import workbench.util.SqlUtil;
 
 import org.junit.Test;
 
@@ -85,7 +82,7 @@ public class WbModeTest
       assertTrue(rs.next());
       int count = rs.getInt(1);
       assertEquals(count, 2);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       Controller controll = new Controller();
       runner.setExecutionController(controll);
@@ -102,8 +99,8 @@ public class WbModeTest
       assertTrue(rs.next());
       count = rs.getInt(1);
       assertEquals(count, 0);
-      SqlUtil.closeResult(rs);
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeResult(rs);
+      JdbcUtils.closeStatement(stmt);
 
       con.getProfile().setReadOnly(true);
       con.getProfile().setConfirmUpdates(false);

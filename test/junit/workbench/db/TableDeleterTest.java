@@ -36,7 +36,7 @@ import workbench.interfaces.JobErrorHandler;
 
 import workbench.sql.parser.ScriptParser;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 import org.junit.Test;
 
@@ -87,13 +87,13 @@ public class TableDeleterTest
         {
           count = rs.getInt(1);
         }
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
         assertEquals(0, count);
       }
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }
@@ -158,7 +158,7 @@ public class TableDeleterTest
         {
           count = rs.getInt(1);
         }
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
         assertTrue(count > 0);
       }
 
@@ -191,7 +191,7 @@ public class TableDeleterTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }

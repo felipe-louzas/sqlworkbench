@@ -39,7 +39,7 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CaseInsensitiveComparator;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -150,7 +150,7 @@ public class MySQLTableCommentReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return remarks;
   }

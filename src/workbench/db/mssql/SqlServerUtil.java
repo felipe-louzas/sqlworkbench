@@ -35,7 +35,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -167,7 +167,7 @@ public class SqlServerUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     conn.setSessionProperty(IS_ENTERPRISE_PROP, Boolean.toString(isEnterprise));
     return isEnterprise;
@@ -197,7 +197,7 @@ public class SqlServerUtil
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 
@@ -249,7 +249,7 @@ public class SqlServerUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return version;

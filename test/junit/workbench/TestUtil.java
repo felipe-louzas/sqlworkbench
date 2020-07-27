@@ -76,6 +76,9 @@ import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
 import workbench.util.EncodingUtil;
 import workbench.util.FileUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -294,7 +297,7 @@ public class TestUtil
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 
@@ -552,7 +555,7 @@ public class TestUtil
       }
       finally
       {
-        SqlUtil.closeStatement(stmt);
+        JdbcUtils.closeStatement(stmt);
       }
     }
   }
@@ -581,7 +584,7 @@ public class TestUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -606,7 +609,7 @@ public class TestUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

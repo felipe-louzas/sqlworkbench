@@ -1,6 +1,4 @@
 /*
- * PostgresSequenceReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -36,6 +34,8 @@ import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -133,7 +133,7 @@ public class OpenEdgeSequenceReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -183,7 +183,7 @@ public class OpenEdgeSequenceReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return result;

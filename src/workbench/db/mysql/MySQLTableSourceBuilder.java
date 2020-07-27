@@ -35,7 +35,7 @@ import workbench.resource.Settings;
 
 import workbench.db.*;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -106,7 +106,7 @@ public class MySQLTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     if (result != null)
     {
@@ -147,7 +147,7 @@ public class MySQLTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return defaultCollation;
   }

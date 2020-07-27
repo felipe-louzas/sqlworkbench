@@ -1,6 +1,4 @@
 /*
- * DataStore.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -68,6 +66,9 @@ import workbench.util.ConverterException;
 import workbench.util.ExceptionUtil;
 import workbench.util.LowMemoryException;
 import workbench.util.MemoryWatcher;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.ValueConverter;
@@ -1828,7 +1829,7 @@ public class DataStore
         }
         finally
         {
-          SqlUtil.closeStatement(currentDelete);
+          JdbcUtils.closeStatement(currentDelete);
           currentDelete = null;
         }
       }

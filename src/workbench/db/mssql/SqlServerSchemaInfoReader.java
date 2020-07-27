@@ -33,7 +33,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.SchemaInformationReader;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -105,7 +105,7 @@ public class SqlServerSchemaInfoReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return schema;
   }

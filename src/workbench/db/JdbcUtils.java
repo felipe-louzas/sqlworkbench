@@ -42,6 +42,7 @@ import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.VersionNumber;
 
+
 /**
  *
  * @author Thomas Kellerer
@@ -274,7 +275,7 @@ public class JdbcUtils
     }
   }
 
-  public static ResultSet runStatement(WbConnection dbConnection, Statement statement, String sql, boolean useSavepoint)
+  public static ResultSet runQuery(WbConnection dbConnection, Statement statement, String sql, boolean useSavepoint)
   {
     ResultSet rs = null;
     Savepoint sp = null;
@@ -290,9 +291,29 @@ public class JdbcUtils
     catch (Throwable ex)
     {
       dbConnection.rollback(sp);
-      LogMgr.logError(new CallerInfo(){}, "Error running statement", ex);
+      LogMgr.logError(new CallerInfo(){}, "Error running query", ex);
     }
     return rs;
+  }
+
+  public static boolean runStatement(WbConnection dbConnection, String sql)
+  {
+    Statement stmt = null;
+    try
+    {
+      stmt = dbConnection.getSqlConnection().createStatement();
+      stmt.execute(sql);
+      return true;
+    }
+    catch (Throwable ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Error running statement", ex);
+    }
+    finally
+    {
+      close(stmt);
+    }
+    return false;
   }
 
   public static String getDbIdFromUrl(String url)
@@ -338,4 +359,96 @@ public class JdbcUtils
     if (pos < 0) return jdbcUrl;
     return jdbcUrl.substring(0, pos + 1);
   }
+
+  /**
+   *	Convenience method to close a ResultSet without a possible
+   *  SQLException
+   */
+  public static void closeResult(ResultSet rs)
+  {
+    if (rs == null) return;
+    clearWarnings(rs);
+    try { rs.close(); } catch (Throwable th) {}
+  }
+
+  /**
+   *	Convenience method to close a Statement without a possible
+   *  SQLException
+   */
+  public static void closeStatement(Statement stmt)
+  {
+    if (stmt == null) return;
+    try { stmt.close(); } catch (Throwable th) {}
+  }
+
+  /**
+   *	Convenience method to close a ResultSet and a Statement without
+   *  a possible SQLException
+   */
+  public static void closeAll(ResultSet rs, Statement stmt)
+  {
+    closeResult(rs);
+    closeStatement(stmt);
+  }
+
+  public static void close(AutoCloseable... toClose)
+  {
+    if (toClose == null) return;
+    for (AutoCloseable cl : toClose)
+    {
+      close(cl);
+    }
+  }
+
+  public static void close(AutoCloseable toClose)
+  {
+    if (toClose == null) return;
+    if (toClose instanceof ResultSet)
+    {
+      clearWarnings((ResultSet)toClose);
+    }
+    try { toClose.close(); } catch (Throwable th) {}
+  }
+
+  public static void clearWarnings(ResultSet rs)
+  {
+    try
+    {
+      if (rs != null) rs.clearWarnings();
+    }
+    catch (Throwable th)
+    {
+    }
+  }
+
+  public static void clearWarnings(WbConnection con, Statement stmt)
+  {
+    clearWarnings(con);
+    clearWarnings(stmt);
+  }
+
+  public static void clearWarnings(WbConnection con)
+  {
+    try
+    {
+      if (con != null) con.clearWarnings();
+    }
+    catch (Throwable th)
+    {
+    }
+  }
+
+  public static void clearWarnings(Statement stmt)
+  {
+    try
+    {
+      if (stmt != null) stmt.clearWarnings();
+    }
+    catch (Throwable th)
+    {
+    }
+  }
+
+
+
 }

@@ -1,6 +1,4 @@
 /*
- * ColumnDropper.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -36,7 +34,6 @@ import workbench.db.sqltemplates.TemplateHandler;
 
 import workbench.storage.RowActionMonitor;
 
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -212,7 +209,7 @@ public class ColumnDropper
     }
     finally
     {
-      SqlUtil.closeStatement(currentStatement);
+      JdbcUtils.closeStatement(currentStatement);
       currentStatement = null;
     }
   }

@@ -35,8 +35,9 @@ import workbench.db.DbMetadata;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
-import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -113,7 +114,7 @@ public class Db2IndexReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -228,7 +229,7 @@ public class Db2IndexReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

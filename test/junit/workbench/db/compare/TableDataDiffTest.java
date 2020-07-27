@@ -1,6 +1,4 @@
 /*
- * TableDataDiffTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -38,17 +36,18 @@ import workbench.WbTestCase;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
-
 import static org.junit.Assert.*;
 
 import workbench.db.ConnectionMgr;
 
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
+
 import workbench.sql.parser.ScriptParser;
 
 import workbench.util.CollectionUtil;
+import workbench.util.SqlUtil;
 
 /**
  *
@@ -124,8 +123,8 @@ public class TableDataDiffTest
     }
     finally
     {
-      SqlUtil.closeStatement(sourceStmt);
-      SqlUtil.closeStatement(targetStmt);
+      JdbcUtils.closeStatement(sourceStmt);
+      JdbcUtils.closeStatement(targetStmt);
     }
   }
 
@@ -213,8 +212,8 @@ public class TableDataDiffTest
     }
     finally
     {
-      SqlUtil.closeStatement(sourceStmt);
-      SqlUtil.closeStatement(targetStmt);
+      JdbcUtils.closeStatement(sourceStmt);
+      JdbcUtils.closeStatement(targetStmt);
     }
   }
 
@@ -286,7 +285,7 @@ public class TableDataDiffTest
       StringWriter updates = new StringWriter(2500);
       StringWriter inserts = new StringWriter(2500);
       diff.setOutputWriters(updates, inserts, "\n", "UTF-8");
-      Map<String, Set<String>> alternatePk = new HashMap<String, Set<String>>();
+      Map<String, Set<String>> alternatePk = new HashMap<>();
       alternatePk.put("person", CollectionUtil.caseInsensitiveSet("firstname", "lastname"));
       diff.setAlternateKeys(alternatePk);
 
@@ -298,8 +297,8 @@ public class TableDataDiffTest
       ScriptParser p = new ScriptParser(updates.toString());
       assertEquals(1, p.getSize());
       String sync = p.getCommand(0);
-      assertTrue(sync.indexOf("SET SOME_DATA = 'nothing'") > -1);
-      assertTrue(sync.indexOf("WHERE FIRSTNAME = 'Tricia' AND LASTNAME = 'McMillian'") > -1);
+      assertTrue(sync.contains("SET SOME_DATA = 'nothing'"));
+      assertTrue(sync.contains("WHERE FIRSTNAME = 'Tricia' AND LASTNAME = 'McMillian'"));
 
       p = new ScriptParser(inserts.toString());
       assertEquals(1, p.getSize());

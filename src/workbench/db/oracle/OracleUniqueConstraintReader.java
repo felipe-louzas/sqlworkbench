@@ -45,6 +45,9 @@ import workbench.storage.DataStore;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -163,7 +166,7 @@ public class OracleUniqueConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(ci, "Retrieving unique constraints took: " + duration + "ms");
@@ -225,7 +228,7 @@ public class OracleUniqueConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return null;
   }

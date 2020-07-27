@@ -44,6 +44,8 @@ import workbench.resource.Settings;
 import workbench.db.DependencyNode;
 import workbench.db.DropType;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -172,7 +174,7 @@ public class GreenplumTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     option.appendTableOptionSQL(tableSql.toString());
 
@@ -234,7 +236,7 @@ public class GreenplumTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     ObjectSourceOptions option = table.getSourceOptions();
     String sql = option.getTableOption();

@@ -39,7 +39,7 @@ import workbench.storage.DataStore;
 
 import workbench.sql.DelimiterDefinition;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -135,7 +135,7 @@ public class MySqlProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return source;
   }

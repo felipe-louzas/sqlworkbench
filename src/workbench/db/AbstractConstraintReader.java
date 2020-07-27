@@ -38,7 +38,7 @@ import workbench.db.sqltemplates.ColumnDefinitionTemplate;
 import workbench.db.sqltemplates.ConstraintNameTester;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -141,7 +141,7 @@ public abstract class AbstractConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -253,7 +253,7 @@ public abstract class AbstractConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

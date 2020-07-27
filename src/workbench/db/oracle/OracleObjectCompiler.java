@@ -37,7 +37,7 @@ import workbench.db.WbConnection;
 import workbench.sql.ErrorDescriptor;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A class to re-compile Oracle objects like stored procedures, packages.
@@ -108,7 +108,7 @@ public class OracleObjectCompiler
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       this.dbConnection.setBusy(false);
     }
   }

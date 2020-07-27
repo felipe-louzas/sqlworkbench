@@ -36,7 +36,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -78,7 +78,7 @@ public class MySQLColumnCollationReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, info);
+      JdbcUtils.closeAll(rs, info);
     }
 
     // In MySQL 5.7 show variables is no longer available to regular users
@@ -140,7 +140,7 @@ public class MySQLColumnCollationReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     for (ColumnIdentifier col : table.getColumns())
     {

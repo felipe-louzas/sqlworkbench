@@ -53,6 +53,9 @@ import workbench.sql.parser.ParserType;
 import workbench.sql.wbcommands.CommandTester;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -366,7 +369,7 @@ public class OracleStatementHook
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
   }
 
@@ -470,7 +473,7 @@ public class OracleStatementHook
           planStatement.setString(1, sqlid);
           planStatement.setInt(2, childNumber);
           planStatement.setString(3, options);
-          SqlUtil.closeResult(rs);
+          JdbcUtils.closeResult(rs);
           LogMgr.logDebug(ci, "Getting plan for sqlid=" + sqlid + ", child=" + childNumber + " using:\n" +
             SqlUtil.replaceParameters(retrievePlan, sqlid, childNumber, options));
         }
@@ -493,8 +496,8 @@ public class OracleStatementHook
     }
     finally
     {
-      SqlUtil.closeStatement(planStatement);
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeStatement(planStatement);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -520,7 +523,7 @@ public class OracleStatementHook
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 
@@ -558,7 +561,7 @@ public class OracleStatementHook
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -630,7 +633,7 @@ public class OracleStatementHook
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     return statValues;
   }
@@ -753,7 +756,7 @@ public class OracleStatementHook
   @Override
   public void close(WbConnection conn)
   {
-    SqlUtil.closeStatement(statisticsStmt);
+    JdbcUtils.closeStatement(statisticsStmt);
     statisticsStmt = null;
     lastExplainID = null;
     if (lastStatisticsLevel != null && conn != null)

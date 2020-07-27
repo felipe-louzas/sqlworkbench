@@ -33,7 +33,7 @@ import workbench.log.LogMgr;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -135,7 +135,7 @@ public class SqlServerPartitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return result;
   }
@@ -176,7 +176,7 @@ public class SqlServerPartitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return result;
   }
@@ -243,7 +243,7 @@ public class SqlServerPartitionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return func;
   }

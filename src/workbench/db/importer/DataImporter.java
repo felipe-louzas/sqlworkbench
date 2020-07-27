@@ -1,6 +1,4 @@
 /*
- * DataImporter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -84,6 +82,9 @@ import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
 import workbench.util.MemoryWatcher;
 import workbench.util.MessageBuffer;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -872,7 +873,7 @@ public class DataImporter
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 

@@ -72,7 +72,6 @@ import workbench.sql.wbcommands.WbRowCount;
 
 import workbench.util.CollectionUtil;
 import workbench.util.NumberStringCache;
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
@@ -263,14 +262,14 @@ public class TableRowCountPanel
         showTable(table, tableNum+1, tblCount);
         String sql = builder.getSelectForCount(table);
 
-        rs = JdbcUtils.runStatement(dbConnection, currentStatement, sql, useSavepoint);
+        rs = JdbcUtils.runQuery(dbConnection, currentStatement, sql, useSavepoint);
 
         if (rs != null && rs.next())
         {
           long rowCount = rs.getLong(1);
           addRowCount(table, rowCount);
         }
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
         if (cancel) break;
       }
     }
@@ -280,7 +279,7 @@ public class TableRowCountPanel
     }
     finally
     {
-      SqlUtil.closeAll(rs, currentStatement);
+      JdbcUtils.closeAll(rs, currentStatement);
       currentStatement = null;
       dbConnection.setBusy(false);
       if (useSeparateConnection)

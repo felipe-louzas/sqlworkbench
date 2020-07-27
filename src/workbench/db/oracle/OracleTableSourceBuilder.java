@@ -36,7 +36,6 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DependencyNode;
 import workbench.db.DropType;
 import workbench.db.IndexDefinition;
-import workbench.db.JdbcUtils;
 import workbench.db.PkDefinition;
 import workbench.db.TableGrantReader;
 import workbench.db.TableIdentifier;
@@ -45,6 +44,9 @@ import workbench.db.WbConnection;
 import workbench.db.sqltemplates.TemplateHandler;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -358,7 +360,7 @@ public class OracleTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     long duration = System.currentTimeMillis() - start;
@@ -585,7 +587,7 @@ public class OracleTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     long duration = System.currentTimeMillis() - start;
@@ -668,7 +670,7 @@ public class OracleTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
   }
 
@@ -753,7 +755,7 @@ public class OracleTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return options;
   }
@@ -969,7 +971,7 @@ public class OracleTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     String tableOptions = tbl.getSourceOptions().getTableOption();
     String newOptions = tableOptions.replace(IOT_OPTIONS, options.toString());
@@ -1021,7 +1023,7 @@ public class OracleTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(ci, "Retrieving included columns for IOT " + owner + "." + tableName + " took " + duration + "ms");
@@ -1263,7 +1265,7 @@ public class OracleTableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return result.toString();
   }

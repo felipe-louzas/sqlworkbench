@@ -1,6 +1,4 @@
 /*
- * StatementRunnerTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,6 +30,7 @@ import workbench.interfaces.ExecutionController;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.DbObjectFinder;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -43,8 +42,6 @@ import workbench.sql.wbcommands.WbCopy;
 import workbench.sql.wbcommands.WbDefineVar;
 import workbench.sql.wbcommands.WbFeedback;
 import workbench.sql.wbcommands.WbInclude;
-
-import workbench.util.SqlUtil;
 
 import org.junit.Test;
 
@@ -109,7 +106,7 @@ public class StatementRunnerTest
       {
         count = rs.getInt(1);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(1, count);
 
       ExecutionController controller = new ExecutionController()
@@ -171,10 +168,10 @@ public class StatementRunnerTest
       {
         count = rs.getInt(1);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(2, count);
 
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
     finally
     {

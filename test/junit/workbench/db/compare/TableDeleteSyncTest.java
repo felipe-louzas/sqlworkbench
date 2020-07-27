@@ -1,6 +1,4 @@
 /*
- * TableDeleteSyncTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -30,13 +28,13 @@ import java.util.Set;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.sql.parser.ScriptParser;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 import org.junit.Test;
 
@@ -108,8 +106,8 @@ public class TableDeleteSyncTest
     }
     finally
     {
-      SqlUtil.closeStatement(sourceStmt);
-      SqlUtil.closeStatement(targetStmt);
+      JdbcUtils.closeStatement(sourceStmt);
+      JdbcUtils.closeStatement(targetStmt);
     }
   }
 

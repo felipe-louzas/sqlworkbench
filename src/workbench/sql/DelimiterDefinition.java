@@ -71,15 +71,6 @@ public class DelimiterDefinition
     this.slePattern = null;
   }
 
-  private DelimiterDefinition(boolean immutable)
-  {
-    this.delimiter = "";
-    this.changed = false;
-    this.slePattern = null;
-    this.isImmutable = immutable;
-    this.isStandard = false;
-  }
-
   private DelimiterDefinition(String delim, boolean immutable)
   {
     setDelimiter(delim);

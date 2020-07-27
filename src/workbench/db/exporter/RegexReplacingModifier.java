@@ -1,6 +1,4 @@
 /*
- * RegexReplacingModifier.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -24,8 +22,11 @@
 package workbench.db.exporter;
 
 import java.util.regex.Pattern;
+
 import workbench.db.ColumnIdentifier;
+
 import workbench.storage.RowData;
+
 import workbench.util.SqlUtil;
 
 /**

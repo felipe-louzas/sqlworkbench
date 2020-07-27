@@ -48,7 +48,7 @@ import workbench.storage.filter.ColumnExpression;
 
 import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
@@ -267,7 +267,7 @@ public class ClientSideTableSearcher
     }
     finally
     {
-      SqlUtil.closeAll(rs, this.searchQuery);
+      JdbcUtils.closeAll(rs, this.searchQuery);
     }
   }
 

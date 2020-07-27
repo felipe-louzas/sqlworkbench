@@ -36,7 +36,6 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
-import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -44,6 +43,9 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -141,7 +143,7 @@ public class PostgresSubscriptionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -251,7 +253,7 @@ public class PostgresSubscriptionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

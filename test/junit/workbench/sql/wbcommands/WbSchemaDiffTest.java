@@ -1,6 +1,4 @@
 /*
- * WbSchemaDiffTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -31,6 +29,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.gui.profiles.ProfileKey;
@@ -38,7 +37,6 @@ import workbench.gui.profiles.ProfileKey;
 import workbench.sql.StatementRunnerResult;
 
 import workbench.util.FileUtil;
-import workbench.util.SqlUtil;
 
 import org.junit.Test;
 
@@ -75,7 +73,7 @@ public class WbSchemaDiffTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       // Close the connection in order to be able to check if WbSchemaReport
       // frees them correctly when they are opened during the compare
       target.disconnect();
@@ -193,7 +191,7 @@ public class WbSchemaDiffTest
       stmt.executeUpdate("CREATE sequence seq_one");
       stmt.executeUpdate("CREATE sequence seq_two  increment by 5");
       stmt.executeUpdate("CREATE sequence seq_three");
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
 
       stmt = target.createStatement();
       stmt.executeUpdate("create table person (person_id integer primary key, firstname varchar(50), lastname varchar(100))");
@@ -212,7 +210,7 @@ public class WbSchemaDiffTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
       source.disconnect();
       target.disconnect();
     }

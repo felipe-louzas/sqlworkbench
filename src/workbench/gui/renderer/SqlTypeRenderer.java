@@ -1,6 +1,4 @@
 /*
- * SqlTypeRenderer.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -23,9 +21,8 @@
  */
 package workbench.gui.renderer;
 
-
-
 import javax.swing.JLabel;
+
 import workbench.util.NumberStringCache;
 import workbench.util.SqlUtil;
 

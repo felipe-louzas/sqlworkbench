@@ -27,9 +27,9 @@ import java.sql.Statement;
 
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 import org.junit.AfterClass;
@@ -91,7 +91,7 @@ public class DbmsOutputTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
   }
 }

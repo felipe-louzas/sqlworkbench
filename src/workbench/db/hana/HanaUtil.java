@@ -31,7 +31,7 @@ import workbench.db.WbConnection;
 
 import workbench.log.LogMgr;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -70,7 +70,7 @@ public class HanaUtil
     }
     finally
     {
-      SqlUtil.closeAll(rs, cstmt);
+      JdbcUtils.closeAll(rs, cstmt);
     }
     return source;
   }

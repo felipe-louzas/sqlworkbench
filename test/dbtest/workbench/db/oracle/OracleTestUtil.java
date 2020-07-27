@@ -1,6 +1,4 @@
 /*
- * OracleTestUtil.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,13 +30,13 @@ import workbench.TestUtil;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.sql.BatchRunner;
 import workbench.sql.DelimiterDefinition;
 
 import workbench.util.ArgumentParser;
-import workbench.util.SqlUtil;
 
 /**
  *
@@ -170,9 +168,9 @@ public class OracleTestUtil
     }
     finally
     {
-      SqlUtil.closeResult(rs);
-      SqlUtil.closeStatement(stmt);
-      SqlUtil.closeStatement(drop);
+      JdbcUtils.closeResult(rs);
+      JdbcUtils.closeStatement(stmt);
+      JdbcUtils.closeStatement(drop);
     }
   }
 

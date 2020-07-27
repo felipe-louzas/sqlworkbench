@@ -30,7 +30,7 @@ import workbench.log.LogMgr;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *

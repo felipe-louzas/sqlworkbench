@@ -41,7 +41,7 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A TableSourceBuilder for Vertica.
@@ -95,7 +95,7 @@ public class VerticaTableReader
     }
     finally
     {
-      SqlUtil.closeAll(tableRs, stmt);
+      JdbcUtils.closeAll(tableRs, stmt);
     }
     return false;
   }

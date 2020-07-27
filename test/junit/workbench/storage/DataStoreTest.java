@@ -1,6 +1,4 @@
 /*
- * DataStoreTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -49,6 +47,9 @@ import workbench.storage.filter.StartsWithComparator;
 import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.util.Alias;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 import org.junit.Test;
@@ -153,7 +154,7 @@ public class DataStoreTest
 
     ResultSet rs = stmt.executeQuery(sql);
     DataStore ds = new DataStore(rs, con);
-    SqlUtil.closeAll(rs, stmt);
+    JdbcUtils.closeAll(rs, stmt);
 
     ds.setGeneratingSql(sql);
 
@@ -173,7 +174,7 @@ public class DataStoreTest
     {
       fail("No rows selected");
     }
-    SqlUtil.closeAll(rs, stmt);
+    JdbcUtils.closeAll(rs, stmt);
   }
 
   @Test
@@ -352,7 +353,7 @@ public class DataStoreTest
       String sql = "select key, lastname, firstname from junit_test";
       ResultSet rs = stmt.executeQuery(sql);
       DataStore ds = new DataStore(rs, con);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       List<Alias> tbl = SqlUtil.getTables(sql, true, null);
       assertEquals("Wrong number of tables retrieved from SQL", 1, tbl.size());
@@ -375,7 +376,7 @@ public class DataStoreTest
       String firstname = rs.getString(2);
       assertEquals("Firstname not updated", "Arthur", firstname);
       assertEquals("Lastname not updated", "Dent", lastname);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       rs = stmt.executeQuery("select lastname, firstname from junit_test where key = 1");
       hasNext = rs.next();
@@ -384,7 +385,7 @@ public class DataStoreTest
       firstname = rs.getString(2);
       assertEquals("Firstname updated", "FirstName1", firstname);
       assertEquals("Lastname updated", "LastName1", lastname);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       int row = ds.addRow();
       ds.setValue(row, 0, new Integer(42));
@@ -400,13 +401,13 @@ public class DataStoreTest
       firstname = rs.getString(2);
       assertEquals("Firstname not updated", "Zaphod", firstname);
       assertEquals("Lastname not updated", "Beeblebrox", lastname);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       stmt.executeUpdate("update junit_test set firstname = null where key = 42");
       con.commit();
       rs = stmt.executeQuery("select key, lastname, firstname from junit_test where key = 42");
       ds = new DataStore(rs, con);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       ds.setUpdateTable(id);
       ds.setValue(0, 2, "Arthur");
       ds.updateDb(con, null);
@@ -418,7 +419,7 @@ public class DataStoreTest
 
       rs = stmt.executeQuery("select key, lastname, firstname from junit_test where key = 42");
       ds = new DataStore(rs, con);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       ds.setUpdateTable(id);
       ds.deleteRow(0);
 
@@ -432,7 +433,7 @@ public class DataStoreTest
       int count = rs.getInt(1);
       assertEquals(0, count);
 
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     finally
     {

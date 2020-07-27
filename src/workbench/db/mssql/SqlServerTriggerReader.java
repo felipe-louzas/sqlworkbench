@@ -35,7 +35,7 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 import workbench.storage.SortDefinition;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -134,7 +134,7 @@ public class SqlServerTriggerReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (triggerCount > 0)

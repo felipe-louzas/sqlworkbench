@@ -35,7 +35,7 @@ import workbench.log.LogMgr;
 import workbench.db.DbSearchPath;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -97,7 +97,7 @@ public class RedshiftSearchPathHandler
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (result.isEmpty())

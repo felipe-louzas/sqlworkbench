@@ -1,6 +1,4 @@
 /*
- * WbSqlFormatter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -170,7 +168,7 @@ public class WbSqlFormatter
   {
     if (end != null) this.lineEnding = end;
   }
-  
+
   private WbSqlFormatter(CharSequence aScript, int indentCount, int maxLength, String dbId)
   {
     this.sql = aScript;

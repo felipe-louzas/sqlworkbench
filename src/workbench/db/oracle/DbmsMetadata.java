@@ -30,6 +30,8 @@ import workbench.log.LogMgr;
 
 import workbench.db.WbConnection;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -151,7 +153,7 @@ public class DbmsMetadata
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       resetSessionTransforms(conn);
     }
 
@@ -183,7 +185,7 @@ public class DbmsMetadata
     }
     catch (Throwable th)
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
 			LogMgr.logDebug(new CallerInfo(){}, "Could not set transform parameter", th);
     }
   }
@@ -207,7 +209,7 @@ public class DbmsMetadata
     }
     catch (Throwable th)
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
 			LogMgr.logDebug(new CallerInfo(){}, "Could not reset transform parameters", th);
     }
   }
@@ -223,7 +225,7 @@ public class DbmsMetadata
     }
     catch (Throwable th)
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
 			LogMgr.logDebug(new CallerInfo(){}, "Could not disable transform parameter: " + transform, th);
     }
   }

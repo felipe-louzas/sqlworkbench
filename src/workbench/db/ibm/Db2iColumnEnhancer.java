@@ -32,6 +32,8 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -108,7 +110,7 @@ public class Db2iColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

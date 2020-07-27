@@ -1,6 +1,4 @@
 /*
- * DefaultTriggerReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -239,7 +237,7 @@ public class DefaultTriggerReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -415,12 +413,12 @@ public class DefaultTriggerReader
       LogMgr.logMetadataError(new CallerInfo(){}, e, "trigger source", query);
       if (this.dbMeta.isPostgres()) try { this.dbConnection.rollback(); } catch (Throwable th) {}
       result.append(ExceptionUtil.getDisplay(e));
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       return result.toString();
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return result.toString();

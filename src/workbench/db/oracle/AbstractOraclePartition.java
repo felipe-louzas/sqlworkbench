@@ -32,9 +32,10 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbObject;
-import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -299,7 +300,7 @@ public abstract class AbstractOraclePartition
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     if (isRefPartition() && dbObject instanceof TableIdentifier)
@@ -345,7 +346,7 @@ public abstract class AbstractOraclePartition
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving partition columns for " + table.getObjectName() + " took: " + duration + "ms");
@@ -380,7 +381,7 @@ public abstract class AbstractOraclePartition
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving sub partition columns for " + dbObject.getObjectName() + " took: " + duration + "ms");
@@ -446,7 +447,7 @@ public abstract class AbstractOraclePartition
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving sub partitions " + object.getObjectName() + " took: " + duration + "ms");
@@ -500,7 +501,7 @@ public abstract class AbstractOraclePartition
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
 
     long duration = System.currentTimeMillis() - start;

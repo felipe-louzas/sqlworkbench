@@ -1,6 +1,4 @@
 /*
- * H2IndexReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -34,9 +32,9 @@ import workbench.resource.Settings;
 import workbench.db.DbMetadata;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 
@@ -108,7 +106,7 @@ public class H2IndexReader
   @Override
   protected void primaryKeysResultDone()
   {
-    SqlUtil.closeStatement(primaryKeysStatement);
+    JdbcUtils.closeStatement(primaryKeysStatement);
     primaryKeysStatement = null;
   }
 

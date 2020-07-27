@@ -39,7 +39,6 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.JdbcProcedureReader;
-import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
@@ -48,6 +47,9 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.ExceptionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -189,7 +191,7 @@ public class PostgresProcedureReader
       }
       finally
       {
-        SqlUtil.closeAll(rs, stmt);
+        JdbcUtils.closeAll(rs, stmt);
       }
       pgTypes = new PGTypeLookup(typeMap);
     }
@@ -353,7 +355,7 @@ public class PostgresProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -671,7 +673,7 @@ public class PostgresProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (isAggregate)
@@ -791,7 +793,7 @@ public class PostgresProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     def.setSource(source);
   }
@@ -889,7 +891,7 @@ public class PostgresProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return source;
 
@@ -1024,7 +1026,7 @@ public class PostgresProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

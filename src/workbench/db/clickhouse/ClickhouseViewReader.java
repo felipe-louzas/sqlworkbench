@@ -31,6 +31,7 @@ import workbench.resource.Settings;
 
 import workbench.db.DefaultViewReader;
 import workbench.db.DropType;
+import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
@@ -38,7 +39,6 @@ import workbench.db.WbConnection;
 import workbench.sql.formatter.SqlFormatter;
 import workbench.sql.formatter.SqlFormatterFactory;
 
-import workbench.util.SqlUtil;
 
 /**
  *
@@ -92,7 +92,7 @@ public class ClickhouseViewReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return source;

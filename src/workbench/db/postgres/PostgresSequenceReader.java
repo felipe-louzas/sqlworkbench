@@ -40,7 +40,7 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -218,7 +218,7 @@ public class PostgresSequenceReader
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     return result;
   }
@@ -306,7 +306,7 @@ public class PostgresSequenceReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (result.getRowCount() > 1)

@@ -53,7 +53,6 @@ import workbench.sql.StatementRunnerResult;
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -176,7 +175,7 @@ public class WbRowCount
     {
       include = cmdLine.getNonArguments();
     }
-    
+
     if (StringUtil.isEmptyString(include))
     {
       include = "%";
@@ -269,7 +268,7 @@ public class WbRowCount
           LogMgr.logDebug(ci, "Retrieving rowcount using:\n" + countQuery);
         }
 
-        rs = JdbcUtils.runStatement(currentConnection, currentStatement, countQuery, useSavepoint);
+        rs = JdbcUtils.runQuery(currentConnection, currentStatement, countQuery, useSavepoint);
 
         if (isCancelled) break;
 
@@ -291,7 +290,7 @@ public class WbRowCount
       }
       finally
       {
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
         processed.add(table);
       }
     }

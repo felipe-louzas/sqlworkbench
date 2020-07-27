@@ -47,7 +47,7 @@ import workbench.db.ibm.Db2ViewGrantReader;
 import workbench.db.oracle.OracleViewGrantReader;
 import workbench.db.postgres.PostgresViewGrantReader;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -156,7 +156,7 @@ public abstract class ViewGrantReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
 

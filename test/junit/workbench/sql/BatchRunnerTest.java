@@ -1,6 +1,4 @@
 /*
- * BatchRunnerTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -40,11 +38,11 @@ import workbench.ssh.SshHostConfig;
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbDriver;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.util.ArgumentParser;
 import workbench.util.FileUtil;
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -125,7 +123,7 @@ public class BatchRunnerTest
       count = rs.getInt(1);
       assertEquals(0, count);
 
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     finally
     {
@@ -194,7 +192,7 @@ public class BatchRunnerTest
       {
         fail("No data");
       }
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     finally
     {
@@ -265,7 +263,7 @@ public class BatchRunnerTest
       {
         fail("No data");
       }
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     finally
     {
@@ -431,7 +429,7 @@ public class BatchRunnerTest
         int count = rs.getInt(1);
         assertEquals("Not enough records inserted", 3, count);
       }
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     finally
     {
@@ -567,7 +565,7 @@ public class BatchRunnerTest
         int count = rs.getInt(1);
         assertEquals("Not enough records inserted", 4, count);
       }
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     catch (Exception e)
     {
@@ -633,7 +631,7 @@ public class BatchRunnerTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       ConnectionMgr.getInstance().disconnectAll();
     }
   }

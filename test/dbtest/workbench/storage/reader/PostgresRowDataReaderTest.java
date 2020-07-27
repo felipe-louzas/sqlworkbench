@@ -29,13 +29,13 @@ import java.time.ZonedDateTime;
 
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 import workbench.db.postgres.PostgresTestUtil;
 
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 
-import workbench.util.SqlUtil;
 import workbench.util.WbDateFormatter;
 
 import org.junit.Assume;
@@ -123,7 +123,7 @@ public class PostgresRowDataReaderTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       con.shutdown();
     }
   }

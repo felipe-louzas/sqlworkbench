@@ -38,13 +38,15 @@ import workbench.db.DbSettings;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
-import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.PkDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -95,7 +97,7 @@ public class OracleIndexReader
   @Override
   public void indexInfoProcessed()
   {
-    SqlUtil.closeStatement(this.indexStatement);
+    JdbcUtils.closeStatement(this.indexStatement);
     this.indexStatement = null;
   }
 
@@ -294,7 +296,7 @@ public class OracleIndexReader
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       indexInfoProcessed(); // close the statement
     }
     return index;
@@ -484,7 +486,7 @@ public class OracleIndexReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -592,7 +594,7 @@ public class OracleIndexReader
   @Override
   protected void primaryKeysResultDone()
   {
-    SqlUtil.closeStatement(pkStament);
+    JdbcUtils.closeStatement(pkStament);
     pkStament = null;
   }
 

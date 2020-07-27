@@ -42,7 +42,7 @@ import workbench.db.dependency.DependencyReader;
 import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -378,7 +378,7 @@ public class PostgresDependencyReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return result;
   }

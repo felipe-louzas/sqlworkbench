@@ -35,7 +35,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A class to retrieve enum definitions from a MySQL database.
@@ -105,7 +105,7 @@ public class MySQLEnumReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

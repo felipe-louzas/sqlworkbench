@@ -33,6 +33,9 @@ import workbench.db.WbConnection;
 import workbench.sql.ErrorDescriptor;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -142,7 +145,7 @@ public class OracleErrorPositionReader
     }
     finally
     {
-      SqlUtil.closeStatement(cstmt);
+      JdbcUtils.closeStatement(cstmt);
     }
 
     if (errorPos > -1)

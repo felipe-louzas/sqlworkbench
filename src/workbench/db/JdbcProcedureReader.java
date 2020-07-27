@@ -1,6 +1,4 @@
 /*
- * JdbcProcedureReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -224,7 +222,7 @@ public class JdbcProcedureReader
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
   }
 
@@ -400,7 +398,7 @@ public class JdbcProcedureReader
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
 
     return ds;
@@ -649,7 +647,7 @@ public class JdbcProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return source;
   }

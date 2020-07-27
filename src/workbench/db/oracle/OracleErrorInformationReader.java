@@ -38,7 +38,7 @@ import workbench.sql.ErrorDescriptor;
 
 import workbench.util.CollectionUtil;
 import workbench.util.SqlParsingUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -202,7 +202,7 @@ public class OracleErrorInformationReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (result != null)

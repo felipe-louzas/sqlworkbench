@@ -29,11 +29,12 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
+
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
 
 import workbench.util.LowMemoryException;
-import workbench.util.SqlUtil;
 
 /**
  * Implementation of the SELECT statement.
@@ -177,7 +178,7 @@ public class SelectCommand
       }
       else
       {
-        SqlUtil.clearWarnings(currentConnection, currentStatement);
+        JdbcUtils.clearWarnings(currentConnection, currentStatement);
       }
       LogMgr.logUserSqlError(ci, sql, e);
       this.runner.rollbackSavepoint();

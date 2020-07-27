@@ -65,6 +65,9 @@ import workbench.util.DdlObjectInfo;
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
 import workbench.util.SqlParsingUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -814,7 +817,7 @@ public class SqlCommand
           }
           finally
           {
-            SqlUtil.closeResult(rs);
+            JdbcUtils.closeResult(rs);
           }
 
           result.addRowsProcessed(currentRetrievalData.getRowCount());

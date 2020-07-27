@@ -1,6 +1,4 @@
 /*
- * WbCopyTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,14 +30,13 @@ import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.MetaDataSqlManager;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
-
-import workbench.util.SqlUtil;
 
 import org.junit.After;
 import org.junit.Test;
@@ -279,14 +276,14 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(4, count);
       rs = ttstmt.executeQuery("select count(*) from scott.person");
       if (rs.next())
       {
         count = rs.getInt(1);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(2, count);
     }
     finally
@@ -365,7 +362,7 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(4, count);
     }
     finally
@@ -417,7 +414,7 @@ public class WbCopyTest
     {
       count = rs.getInt(1);
     }
-    SqlUtil.closeResult(rs);
+    JdbcUtils.closeResult(rs);
     assertEquals("Wrong rowcount", 50, count);
 
     rs = stmt.executeQuery("select count(*) from target_data where nr >= 1000");
@@ -426,7 +423,7 @@ public class WbCopyTest
     {
       count = rs.getInt(1);
     }
-    SqlUtil.closeResult(rs);
+    JdbcUtils.closeResult(rs);
     assertEquals("Rows not deleted", 0, count);
     ConnectionMgr.getInstance().removeProfile(con.getProfile());
   }
@@ -475,7 +472,7 @@ public class WbCopyTest
     {
       count = rs.getInt(1);
     }
-    SqlUtil.closeResult(rs);
+    JdbcUtils.closeResult(rs);
     assertEquals("Wrong rowcount", 50, count);
 
     rs = stmt.executeQuery("select count(*) from target_data where nr >= 1000");
@@ -484,7 +481,7 @@ public class WbCopyTest
     {
       count = rs.getInt(1);
     }
-    SqlUtil.closeResult(rs);
+    JdbcUtils.closeResult(rs);
     assertEquals("Rows not deleted", 0, count);
     ConnectionMgr.getInstance().removeProfile(con.getProfile());
   }
@@ -718,7 +715,7 @@ public class WbCopyTest
         int count = rs.getInt(1);
         assertEquals("Incorrect number of rows copied", 4, count);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       rs = stmt.executeQuery("select tfirstname, tlastname from target_data where tnr = 3");
       if (rs.next())
@@ -732,7 +729,7 @@ public class WbCopyTest
       {
         fail("Nothing copied");
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -778,7 +775,7 @@ public class WbCopyTest
         int count = rs.getInt(1);
         assertEquals("Incorrect number of rows copied", 2, count);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       rs = stmt.executeQuery("select nr, firstname, lastname from target_data");
       while (rs.next())
@@ -801,7 +798,7 @@ public class WbCopyTest
           fail("Wrong ID " + id + " copied");
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -847,7 +844,7 @@ public class WbCopyTest
         int count = rs.getInt(1);
         assertEquals("Incorrect number of rows copied", 2, count);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       rs = stmt.executeQuery("select tnr, tfirstname, tlastname from target_data");
       while (rs.next())
@@ -870,7 +867,7 @@ public class WbCopyTest
           fail("Wrong ID " + id + " copied");
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -918,7 +915,7 @@ public class WbCopyTest
         int count = rs.getInt(1);
         assertEquals("Incorrect number of rows copied", 2, count);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       rs = stmt.executeQuery("select tfirstname, tlastname from target_data where tnr = 1");
       if (rs.next())
@@ -932,7 +929,7 @@ public class WbCopyTest
       {
         fail("Nothing copied");
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -1021,7 +1018,7 @@ public class WbCopyTest
         int count = rs.getInt(1);
         assertEquals("Incorrect number of rows copied", 4, count);
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       rs = stmt.executeQuery("select tfirstname, tlastname from target_data where tnr = 1");
       if (rs.next())
@@ -1035,7 +1032,7 @@ public class WbCopyTest
       {
         fail("Nothing copied");
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -1120,7 +1117,7 @@ public class WbCopyTest
         }
       }
       assertEquals(4, count);
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -1208,12 +1205,12 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(4, personCount);
 
       Number addressCount = (Number)TestUtil.getSingleQueryValue(target, "select count(*) from address");
       assertEquals("Wrong number of rows copied to address table", 4, addressCount.intValue());
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
 
       // Now test deleting the target first
@@ -1246,7 +1243,7 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -1305,7 +1302,7 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
 
       target.commit();
 
@@ -1338,7 +1335,7 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -1404,7 +1401,7 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
     finally
     {
@@ -1479,7 +1476,7 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(4, participants);
       target.commit();
 
@@ -1587,7 +1584,7 @@ public class WbCopyTest
           assertEquals("Incorrect data copied", "Zaphod", fn);
         }
       }
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       assertEquals(4, count);
     }
     finally

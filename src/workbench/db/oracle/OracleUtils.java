@@ -33,12 +33,14 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionProfile;
-import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -213,7 +215,7 @@ public class OracleUtils
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return cdbCount > 0;
   }
@@ -272,7 +274,7 @@ public class OracleUtils
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return result;

@@ -1,6 +1,4 @@
 /*
- * SelectionFilter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -24,6 +22,7 @@
 package workbench.gui.filter;
 
 import workbench.gui.components.WbTable;
+
 import workbench.storage.filter.AndExpression;
 import workbench.storage.filter.ColumnComparator;
 import workbench.storage.filter.ComparatorFactory;
@@ -33,6 +32,7 @@ import workbench.storage.filter.IsNullComparator;
 import workbench.storage.filter.NumberEqualsComparator;
 import workbench.storage.filter.OrExpression;
 import workbench.storage.filter.StringEqualsComparator;
+
 import workbench.util.SqlUtil;
 
 /**

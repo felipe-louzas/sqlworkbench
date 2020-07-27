@@ -40,7 +40,7 @@ import workbench.db.WbConnection;
 import workbench.storage.reader.ResultHolder;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -106,7 +106,7 @@ public class DefaultRefCursorConsumer
     }
     finally
     {
-      SqlUtil.close(refCursor);
+      JdbcUtils.close(refCursor);
     }
     return name;
   }

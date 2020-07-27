@@ -1,6 +1,4 @@
 /*
- * WbCall.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -70,6 +68,9 @@ import workbench.storage.reader.RowDataReaderFactory;
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.SqlParsingUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -177,7 +178,7 @@ public class WbCall
           // Some drivers do not work properly if this happens, so
           // we have to close and re-open the statement
           LogMgr.logWarning(ci, "Could not get parameters from statement!", e);
-          SqlUtil.closeStatement(cstmt);
+          JdbcUtils.closeStatement(cstmt);
           currentConnection.rollback(sp);
         }
         finally
@@ -599,7 +600,7 @@ public class WbCall
 
     if (currentStatement != null)
     {
-      SqlUtil.closeStatement(currentStatement);
+      JdbcUtils.closeStatement(currentStatement);
     }
 
     CallableStatement cstmt = currentConnection.getSqlConnection().prepareCall(sqlUsed);

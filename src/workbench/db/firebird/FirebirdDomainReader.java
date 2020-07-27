@@ -1,6 +1,4 @@
 /*
- * FirebirdDomainReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -39,13 +37,13 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -160,7 +158,7 @@ public class FirebirdDomainReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

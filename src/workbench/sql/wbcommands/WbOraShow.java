@@ -35,7 +35,6 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
-import workbench.db.JdbcUtils;
 import workbench.db.oracle.OracleErrorInformationReader;
 import workbench.db.oracle.OracleUtils;
 
@@ -51,6 +50,9 @@ import workbench.sql.lexer.SQLToken;
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -321,7 +323,7 @@ public class WbOraShow
     }
     finally
     {
-      SqlUtil.closeAll(rs, currentStatement);
+      JdbcUtils.closeAll(rs, currentStatement);
     }
     return result;
   }
@@ -417,7 +419,7 @@ public class WbOraShow
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -515,7 +517,7 @@ public class WbOraShow
     }
     finally
     {
-      SqlUtil.closeAll(rs, currentStatement);
+      JdbcUtils.closeAll(rs, currentStatement);
     }
     return result;
   }
@@ -617,7 +619,7 @@ public class WbOraShow
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

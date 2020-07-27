@@ -39,6 +39,9 @@ import workbench.db.WbConnection;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -183,7 +186,7 @@ public class InformixColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

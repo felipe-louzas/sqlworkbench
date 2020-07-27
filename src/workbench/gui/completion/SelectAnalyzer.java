@@ -1,6 +1,4 @@
 /*
- * SelectAnalyzer.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -167,7 +165,7 @@ public class SelectAnalyzer
 
       this.elements = new ArrayList<>();
       // As we are in the middle of a JOIN ON condition
-      // we should only display tables that have already been mentioned 
+      // we should only display tables that have already been mentioned
       for (Alias a : tables)
       {
         if (a.getStartPositionInQuery() < 0 || a.getStartPositionInQuery() <= cursorPos)

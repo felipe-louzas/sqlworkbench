@@ -31,6 +31,8 @@ import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.WbConnection;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -75,7 +77,7 @@ public class TeradataProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return source;
   }

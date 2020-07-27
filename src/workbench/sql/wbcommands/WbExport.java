@@ -726,6 +726,14 @@ public class WbExport
         this.exporter.setEncoding("UTF-8");
       }
     }
+    else if ("xlsm".equals(type))
+    {
+      this.defaultExtension = ".xml";
+      if (encoding == null)
+      {
+        this.exporter.setEncoding("UTF-8");
+      }
+    }
     else if ("html".equals(type))
     {
       String value = cmdLine.getValue(ARG_ESCAPE_HTML);

@@ -1,6 +1,4 @@
 /*
- * WbSelectBlobTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -28,13 +26,18 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
+
 import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
-import workbench.util.SqlUtil;
+
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 /**
@@ -113,7 +116,7 @@ public class WbSelectBlobTest
       assertEquals("Blob row not found", true, rs.next());
       int size = rs.getInt(1);
       assertEquals("Wrong size", 100, size);
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     finally
     {

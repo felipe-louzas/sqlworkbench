@@ -33,12 +33,11 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbObjectFinder;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.sqltemplates.ColumnChanger;
-
-import workbench.util.SqlUtil;
 
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -150,7 +149,7 @@ public class SqlServerColumnEnhancerTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
 
     // Now check if the column remark was defined correctly

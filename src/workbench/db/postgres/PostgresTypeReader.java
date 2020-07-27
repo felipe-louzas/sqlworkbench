@@ -37,7 +37,6 @@ import workbench.db.CommentSqlManager;
 import workbench.db.DataTypeResolver;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
-import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableColumnsDatastore;
@@ -49,6 +48,9 @@ import workbench.db.sqltemplates.ColumnChanger;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -200,7 +202,7 @@ public class PostgresTypeReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }
@@ -359,7 +361,7 @@ public class PostgresTypeReader
     finally
     {
       con.releaseSavepoint(sp);
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

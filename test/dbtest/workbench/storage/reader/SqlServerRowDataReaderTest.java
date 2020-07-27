@@ -29,13 +29,12 @@ import java.time.ZoneOffset;
 
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 import workbench.db.mssql.SQLServerTestUtil;
 
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
-
-import workbench.util.SqlUtil;
 
 import org.junit.Assume;
 import org.junit.Test;
@@ -90,7 +89,7 @@ public class SqlServerRowDataReaderTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       con.shutdown();
     }
 

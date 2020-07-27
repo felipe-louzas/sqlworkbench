@@ -1,6 +1,4 @@
 /*
- * FirstSqlConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,13 +30,13 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.AbstractConstraintReader;
+import workbench.db.JdbcUtils;
 import workbench.db.TableConstraint;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 /**
  * Constraint reader for <a href="https://www.firstsql.com/">FirstSQL</a>
@@ -91,7 +89,7 @@ public class FirstSqlConstraintReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return result;
   }

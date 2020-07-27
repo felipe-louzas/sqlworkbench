@@ -1,6 +1,4 @@
 /*
- * FirebirdIndexReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -32,17 +30,16 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
+import workbench.db.JdbcUtils;
 import workbench.db.ReaderFactory;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
 
 /**
  * A class to retrieve the index information for Firebird 2.5.
@@ -168,7 +165,7 @@ public class FirebirdIndexReader
   @Override
   public void indexInfoProcessed()
   {
-    SqlUtil.closeStatement(indexStatement);
+    JdbcUtils.closeStatement(indexStatement);
     indexStatement = null;
   }
 

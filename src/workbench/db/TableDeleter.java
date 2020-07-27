@@ -42,7 +42,7 @@ import workbench.db.sqltemplates.TemplateHandler;
 import workbench.sql.formatter.FormatterUtil;
 
 import workbench.util.ExceptionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -282,7 +282,7 @@ public class TableDeleter
     }
     finally
     {
-      SqlUtil.closeStatement(currentStatement);
+      JdbcUtils.closeStatement(currentStatement);
       connection.setBusy(false);
       if (autoCommitChanged)
       {

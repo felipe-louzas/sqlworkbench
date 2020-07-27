@@ -1,6 +1,4 @@
 /*
- * TableDeleteSync.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -43,6 +41,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbObjectFinder;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -57,7 +56,6 @@ import workbench.storage.reader.RowDataReaderFactory;
 import workbench.storage.SqlLiteralFormatter;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -381,9 +379,9 @@ public class TableDeleteSync
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
       if (deleteStatement != null) this.deleteStatement.close();
-      SqlUtil.closeStatement(this.checkStatement);
+      JdbcUtils.closeStatement(this.checkStatement);
     }
   }
 
@@ -426,7 +424,7 @@ public class TableDeleteSync
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
   }
 

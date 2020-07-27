@@ -1,6 +1,4 @@
 /*
- * WbCopyPostgresTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -30,12 +28,11 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.sql.StatementRunnerResult;
 import workbench.sql.wbcommands.WbCopy;
-
-import workbench.util.SqlUtil;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -129,7 +126,7 @@ public class WbCopyPostgresTest
     finally
     {
       if (con != null) con.getMetadata().resetSchemasToIgnores();
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -219,7 +216,7 @@ public class WbCopyPostgresTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -294,7 +291,7 @@ public class WbCopyPostgresTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
   }

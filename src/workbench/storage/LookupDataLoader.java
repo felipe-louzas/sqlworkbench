@@ -45,7 +45,7 @@ import workbench.db.WbConnection;
 import workbench.db.search.ServerSideTableSearcher;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A class to retrieve the data from the table that is referenced through a FK constraint from another table.
@@ -127,7 +127,7 @@ public class LookupDataLoader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

@@ -1,6 +1,4 @@
 /*
- * HanaProcedureReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2013, Thomas Kellerer
@@ -36,7 +34,7 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -95,7 +93,7 @@ public class HanaProcedureReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

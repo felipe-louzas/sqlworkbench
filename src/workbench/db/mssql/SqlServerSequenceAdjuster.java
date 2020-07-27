@@ -33,7 +33,7 @@ import workbench.db.SequenceAdjuster;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -72,7 +72,7 @@ public class SqlServerSequenceAdjuster
     }
     finally
     {
-      SqlUtil.close(stmt);
+      JdbcUtils.close(stmt);
     }
     return 1;
   }
@@ -111,7 +111,7 @@ public class SqlServerSequenceAdjuster
     }
     finally
     {
-      SqlUtil.close(rs, pstmt);
+      JdbcUtils.close(rs, pstmt);
     }
     return result;
   }
@@ -146,7 +146,7 @@ public class SqlServerSequenceAdjuster
     }
     finally
     {
-      SqlUtil.close(rs, pstmt);
+      JdbcUtils.close(rs, pstmt);
     }
     return column;
   }

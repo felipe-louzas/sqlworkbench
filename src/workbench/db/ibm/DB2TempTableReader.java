@@ -33,7 +33,7 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * An ObjectListAppender for DB2/LUW to read temporary tables.
@@ -136,7 +136,7 @@ public class DB2TempTableReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return count > 0;

@@ -33,6 +33,8 @@ import workbench.db.WbConnection;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 /**
@@ -105,7 +107,7 @@ public class OracleDataTypeResolver
       }
       finally
       {
-        SqlUtil.closeAll(rs, stmt);
+        JdbcUtils.closeAll(rs, stmt);
       }
     }
   }

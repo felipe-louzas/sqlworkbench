@@ -1,6 +1,4 @@
 /*
- * SqlRowDataConverterTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -50,6 +48,9 @@ import workbench.sql.parser.ScriptParser;
 
 import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 
 import org.junit.Test;
@@ -122,7 +123,7 @@ public class SqlRowDataConverterTest
     finally
     {
       con.disconnect();
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -162,7 +163,7 @@ public class SqlRowDataConverterTest
     finally
     {
       con.disconnect();
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -214,7 +215,7 @@ public class SqlRowDataConverterTest
     finally
     {
       con.disconnect();
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
@@ -279,7 +280,7 @@ public class SqlRowDataConverterTest
     finally
     {
       con.disconnect();
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

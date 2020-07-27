@@ -37,7 +37,7 @@ import workbench.sql.formatter.WbSqlFormatter;
 
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 
@@ -359,7 +359,7 @@ public class DefaultViewReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return source;

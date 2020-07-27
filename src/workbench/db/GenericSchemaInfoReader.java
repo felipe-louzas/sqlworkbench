@@ -34,7 +34,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -176,7 +176,7 @@ public class GenericSchemaInfoReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     if (isCacheable)
@@ -216,7 +216,7 @@ public class GenericSchemaInfoReader
   @Override
   public void dispose()
   {
-    SqlUtil.closeStatement(query);
+    JdbcUtils.closeStatement(query);
     cachedSchema = null;
     connection = null;
     Settings.getInstance().removePropertyChangeListener(this);

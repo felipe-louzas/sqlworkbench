@@ -1,6 +1,4 @@
 /*
- * DerbySynonymReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -35,6 +33,8 @@ import workbench.log.LogMgr;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
+import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -124,7 +124,7 @@ public class OpenEdgeSynonymReader
 		}
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     return result;
@@ -173,7 +173,7 @@ public class OpenEdgeSynonymReader
 		}
     finally
     {
-      SqlUtil.closeAll(rs,stmt);
+      JdbcUtils.closeAll(rs,stmt);
     }
 
     return result;

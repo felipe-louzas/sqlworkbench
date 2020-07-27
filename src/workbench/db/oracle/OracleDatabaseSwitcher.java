@@ -37,7 +37,7 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  *
@@ -88,7 +88,7 @@ public class OracleDatabaseSwitcher
     }
     finally
     {
-      SqlUtil.close(stmt);
+      JdbcUtils.close(stmt);
     }
     return true;
   }

@@ -33,7 +33,7 @@ import workbench.db.WbConnection;
 
 import workbench.log.LogMgr;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 
 /*
@@ -236,7 +236,7 @@ public class RedshiftTableGrantReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return result;
   }

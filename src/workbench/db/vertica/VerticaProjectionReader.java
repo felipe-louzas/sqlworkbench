@@ -35,7 +35,7 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 
 /**
@@ -97,7 +97,7 @@ public class VerticaProjectionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, projectionStatement);
+      JdbcUtils.closeAll(rs, projectionStatement);
     }
 
     return null;
@@ -142,7 +142,7 @@ public class VerticaProjectionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return null;
   }
@@ -193,7 +193,7 @@ public class VerticaProjectionReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     return null;
   }

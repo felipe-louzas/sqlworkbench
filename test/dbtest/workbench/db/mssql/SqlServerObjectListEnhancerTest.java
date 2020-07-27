@@ -32,11 +32,10 @@ import workbench.WbTestCase;
 import workbench.resource.Settings;
 
 import workbench.db.DbObjectFinder;
+import workbench.db.JdbcUtils;
 import workbench.db.TableCommentReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.util.SqlUtil;
 
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -111,7 +110,7 @@ public class SqlServerObjectListEnhancerTest
     }
     finally
     {
-      SqlUtil.closeStatement(stmt);
+      JdbcUtils.closeStatement(stmt);
     }
     List<TableIdentifier> tables = conn.getMetadata().getTableList("person", "dbo");
     assertEquals(1, tables.size());

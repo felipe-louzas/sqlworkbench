@@ -1,6 +1,4 @@
 /*
- * JdbcIndexReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -246,7 +244,7 @@ public class JdbcIndexReader
       finally
       {
         metaData.getWbConnection().releaseSavepoint(sp);
-        SqlUtil.closeResult(keysRs);
+        JdbcUtils.closeResult(keysRs);
         primaryKeysResultDone();
       }
 
@@ -473,7 +471,7 @@ public class JdbcIndexReader
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     StringUtil.trimTrailingWhitespace(result);
     if (result.charAt(result.length() -1 ) != ';')
@@ -865,7 +863,7 @@ public class JdbcIndexReader
     finally
     {
       conn.releaseSavepoint(sp);
-      SqlUtil.closeResult(idxRs);
+      JdbcUtils.closeResult(idxRs);
       indexInfoProcessed();
     }
 
@@ -1233,7 +1231,7 @@ public class JdbcIndexReader
     finally
     {
       metaData.getWbConnection().releaseSavepoint(sp);
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     processIndexList(result);
     result.sort(IndexDefinition.getNameSorter());

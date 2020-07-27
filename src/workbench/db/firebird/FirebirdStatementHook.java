@@ -29,6 +29,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.sql.StatementHook;
@@ -36,7 +37,6 @@ import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
 
 import workbench.util.CollectionUtil;
-import workbench.util.SqlUtil;
 
 /**
  *
@@ -122,7 +122,7 @@ public class FirebirdStatementHook
     }
     finally
     {
-      SqlUtil.closeStatement(pstmt);
+      JdbcUtils.closeStatement(pstmt);
     }
     return executionPlan;
   }

@@ -34,7 +34,7 @@ import workbench.db.SequenceAdjuster;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 
 /**
  * A class to sync the sequences related to the columns of a table with the current values.
@@ -85,7 +85,7 @@ public class Db2SequenceAdjuster
       if (rs.next())
       {
         maxValue = rs.getLong(1) + 1;
-        SqlUtil.closeResult(rs);
+        JdbcUtils.closeResult(rs);
       }
 
       if (maxValue > 0)
@@ -102,7 +102,7 @@ public class Db2SequenceAdjuster
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

@@ -1,6 +1,4 @@
 /*
- * QueryCopySource.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -47,6 +45,9 @@ import workbench.storage.reader.RowDataReader;
 import workbench.storage.reader.RowDataReaderFactory;
 
 import workbench.util.MessageBuffer;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.ValueConverter;
 
@@ -201,7 +202,7 @@ public class QueryCopySource
     finally
     {
       resultBuffer.disableDriverBuffering();
-      SqlUtil.closeAll(rs, retrieveStatement);
+      JdbcUtils.closeAll(rs, retrieveStatement);
       if (reader != null)
       {
         reader.closeStreams();

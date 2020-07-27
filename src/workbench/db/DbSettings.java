@@ -1411,7 +1411,7 @@ public class DbSettings
   {
     return getBoolProperty("pksource.needs.pkindex", false);
   }
-  
+
   public boolean needTableDefinitionForTableSource()
   {
     boolean useCustomQuery = isTableSourceRetrievalCustomized();
@@ -2483,6 +2483,16 @@ public class DbSettings
   public boolean syncConnectionReadOnlyState()
   {
     return getBoolProperty("change.connection.readonly.state", true);
+  }
+
+  public String getSetReadOnlySQL()
+  {
+    return getProperty("change.connection.readonly.sql", null);
+  }
+
+  public String getSetReadWriteSQL()
+  {
+    return getProperty("change.connection.readwrite.sql", null);
   }
 
   public Set<String> getTypesRequiringAlternateDelimiter()

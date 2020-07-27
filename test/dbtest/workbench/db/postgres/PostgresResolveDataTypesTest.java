@@ -1,6 +1,4 @@
 /*
- * PostgresResolveDataTypesTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -27,18 +25,23 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
-import workbench.util.SqlUtil;
+
 import static org.junit.Assert.*;
 
 /**
@@ -134,7 +137,7 @@ public class PostgresResolveDataTypesTest
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 }

@@ -1,6 +1,4 @@
 /*
- * TableDataDiff.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -60,6 +58,9 @@ import workbench.storage.reader.RowDataReaderFactory;
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 import workbench.util.MessageBuffer;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -464,9 +465,9 @@ public class TableDataDiff
     }
     finally
     {
-      SqlUtil.closeResult(rs);
-      SqlUtil.closeStatement(stmt);
-      SqlUtil.closeStatement(this.checkStatement);
+      JdbcUtils.closeResult(rs);
+      JdbcUtils.closeStatement(stmt);
+      JdbcUtils.closeStatement(this.checkStatement);
       if (reader != null)
       {
         reader.closeStreams();
@@ -596,7 +597,7 @@ public class TableDataDiff
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
       if (reader != null)
       {
         reader.closeStreams();

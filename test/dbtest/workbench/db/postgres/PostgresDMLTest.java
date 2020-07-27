@@ -28,6 +28,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -36,8 +37,6 @@ import workbench.storage.DmlStatement;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.StatementFactory;
-
-import workbench.util.SqlUtil;
 
 import org.junit.After;
 import org.junit.Test;
@@ -82,7 +81,7 @@ public class PostgresDMLTest
 
     ResultSet rs = stmt.executeQuery(sql);
     DataStore ds = new DataStore(rs, con);
-    SqlUtil.closeAll(rs, stmt);
+    JdbcUtils.closeAll(rs, stmt);
     ds.setGeneratingSql(sql);
     ds.checkUpdateTable(con);
 

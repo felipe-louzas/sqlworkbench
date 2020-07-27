@@ -1,6 +1,4 @@
 /*
- * H2TableSourceBuilder.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -34,11 +32,11 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DropType;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -111,7 +109,7 @@ public class H2TableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
     return createSql.toString();
   }
@@ -164,7 +162,7 @@ public class H2TableSourceBuilder
     }
     finally
     {
-      SqlUtil.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, pstmt);
     }
     tbl.getSourceOptions().setInitialized();
   }

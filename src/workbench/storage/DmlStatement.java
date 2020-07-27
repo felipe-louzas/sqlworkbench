@@ -1,6 +1,4 @@
 /*
- * DmlStatement.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -50,7 +48,6 @@ import workbench.log.CallerInfo;
 import workbench.db.DbSettings;
 import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
-import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 import workbench.db.ArrayValueHandler;
 
@@ -62,6 +59,9 @@ import workbench.sql.formatter.WbSqlFormatter;
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.NumberStringCache;
+
+import workbench.db.JdbcUtils;
+
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -275,7 +275,7 @@ public class DmlStatement
     finally
     {
       FileUtil.closeStreams(streamsToClose);
-      SqlUtil.closeStatement(currentStatement);
+      JdbcUtils.closeStatement(currentStatement);
       currentStatement = null;
     }
 
@@ -332,7 +332,7 @@ public class DmlStatement
     }
     finally
     {
-      SqlUtil.closeResult(rs);
+      JdbcUtils.closeResult(rs);
     }
   }
 

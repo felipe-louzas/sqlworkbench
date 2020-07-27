@@ -27,7 +27,6 @@ import java.sql.Statement;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -118,7 +117,7 @@ public class CatalogChanger
         stmt.execute(sql);
         if (clearWarnings)
         {
-          SqlUtil.clearWarnings(stmt);
+          JdbcUtils.clearWarnings(stmt);
         }
       }
       catch (Exception ex)
@@ -128,7 +127,7 @@ public class CatalogChanger
       }
       finally
       {
-        SqlUtil.closeStatement(stmt);
+        JdbcUtils.closeStatement(stmt);
       }
     }
 
@@ -137,7 +136,7 @@ public class CatalogChanger
       // Some JDBC drivers report the success of changing the catalog through a warning
       // as we are displaying our own message anyway in the USE command, there is no need
       // to display the warning as well.
-      SqlUtil.clearWarnings(conn);
+      JdbcUtils.clearWarnings(conn);
     }
 
     String newCat = meta.getCurrentCatalog();

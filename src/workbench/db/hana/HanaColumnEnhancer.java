@@ -23,7 +23,6 @@
  */
 package workbench.db.hana;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
@@ -34,10 +33,10 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -100,7 +99,7 @@ public class HanaColumnEnhancer
     }
     finally
     {
-      SqlUtil.closeAll(rs, stmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
 
     for (ColumnIdentifier col : table.getColumns())

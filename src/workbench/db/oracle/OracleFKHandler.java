@@ -43,7 +43,7 @@ import workbench.storage.filter.AndExpression;
 import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.util.CaseInsensitiveComparator;
-import workbench.util.SqlUtil;
+import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -197,7 +197,7 @@ public class OracleFKHandler
     finally
     {
       // the result set is closed by processResult
-      SqlUtil.closeStatement(retrievalStatement);
+      JdbcUtils.closeStatement(retrievalStatement);
       retrievalStatement = null;
     }
     sortResult(result);
@@ -280,7 +280,7 @@ public class OracleFKHandler
     finally
     {
       // the result set is closed by processResult
-      SqlUtil.closeStatement(retrievalStatement);
+      JdbcUtils.closeStatement(retrievalStatement);
       retrievalStatement = null;
     }
     sortResult(result);
@@ -375,7 +375,7 @@ public class OracleFKHandler
     finally
     {
       // the result set is closed by processResult
-      SqlUtil.closeStatement(retrievalStatement);
+      JdbcUtils.closeStatement(retrievalStatement);
       retrievalStatement = null;
     }
     sortResult(result);
