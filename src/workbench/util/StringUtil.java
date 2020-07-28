@@ -1997,6 +1997,16 @@ public class StringUtil
     return null;
   }
 
+  public static String firstNonBlank(String ... args)
+  {
+    if (args == null) return null;
+    for (String s : args)
+    {
+      if (isNonBlank(s)) return s;
+    }
+    return null;
+  }
+
   public static String unescape(String value)
   {
     if (StringUtil.isBlank(value))

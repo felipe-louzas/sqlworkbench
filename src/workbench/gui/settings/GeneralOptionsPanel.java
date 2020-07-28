@@ -89,13 +89,6 @@ public class GeneralOptionsPanel
 
     brushedMetal.setVisible(MacOSHelper.isMacOS());
     brushedMetal.setEnabled(MacOSHelper.isMacOS());
-//    if (!brushedMetal.isVisible())
-//    {
-//      GridBagLayout layout = (GridBagLayout)jPanel2.getLayout();
-//      GridBagConstraints constraints = layout.getConstraints(focusToQuickFilter);
-//      constraints.weightx = 1.0;
-//      layout.setConstraints(focusToQuickFilter, constraints);
-//    }
 
     String[] updTypes = new String[] {
       ResourceMgr.getString("LblUpdCheckNever"),

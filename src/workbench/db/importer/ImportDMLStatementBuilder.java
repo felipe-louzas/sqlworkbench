@@ -35,6 +35,7 @@ import workbench.db.DbMetadata;
 import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
 import workbench.db.JdbcUtils;
+import workbench.db.QuoteHandler;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.mssql.SqlServerUtil;
@@ -189,7 +190,7 @@ public class ImportDMLStatementBuilder
       }
       return hasPK;
     }
-    return CollectionUtil.isNonEmpty(keyColumns) && supportsUpsert(this.dbConn);
+    return CollectionUtil.isNonEmpty(getKeyColumns()) && supportsUpsert(this.dbConn);
   }
 
 
@@ -248,14 +249,25 @@ public class ImportDMLStatementBuilder
     }
   }
 
+  private QuoteHandler getQuoteHandler()
+  {
+    return dbConn == null ? QuoteHandler.STANDARD_HANDLER : dbConn.getMetadata();
+  }
+
+  private String getInsertString()
+  {
+    if (dbConn == null) return null;
+    return dbConn.getDbSettings().getInsertForImport();
+  }
+
   /**
    * Creates a plain INSERT statement.
    *
    * The alternate insert statement can be used to enable special DBMS features.
    * e.g. enabling direct path inserts for Oracle using: <tt>INSERT /&#42;+ append &#42;/ INTO</tt>
    *
-   * @param columnConstants  constant value definitions for some columns
-   * @param insertSqlStart   an alternate insert statement.
+   * @param columnConstants  constant value definitions for some columns, may be null
+   * @param insertSqlStart   an alternate insert statement, may be null.
    * @return a SQL statement suitable used for a PreparedStatement
    */
   String createInsertStatement(ConstantColumnValues columnConstants, String insertSqlStart)
@@ -264,20 +276,13 @@ public class ImportDMLStatementBuilder
     StringBuilder text = new StringBuilder(targetColumns.size() * 50);
     StringBuilder parms = new StringBuilder(targetColumns.size() * 20);
 
-    String sql = (insertSqlStart != null ? insertSqlStart : dbConn.getDbSettings().getInsertForImport());
-    if (StringUtil.isNonBlank(sql))
-    {
-      text.append(sql);
-      text.append(' ');
-    }
-    else
-    {
-      text.append("INSERT INTO ");
-    }
+    String sql = StringUtil.firstNonBlank(insertSqlStart, getInsertString(), "INSERT INTO");
+    text.append(sql);
+    text.append(' ');
     text.append(targetTable.getFullyQualifiedName(dbConn));
     text.append(" (");
 
-    DbMetadata meta = dbConn.getMetadata();
+    QuoteHandler quoter = getQuoteHandler();
 
     int colIndex = 0;
     for (int i=0; i < getColCount(); i++)
@@ -291,7 +296,7 @@ public class ImportDMLStatementBuilder
       }
 
       String colname = col.getDisplayName();
-      colname = meta.quoteObjectname(colname);
+      colname = quoter.quoteObjectname(colname);
       text.append(colname);
 
       String expr = columnExpressions.get(colname);
@@ -463,14 +468,15 @@ public class ImportDMLStatementBuilder
     return insert;
   }
 
-  private String createOracleInsertIgnore(ConstantColumnValues columnConstants)
+  protected String createOracleInsertIgnore(ConstantColumnValues columnConstants)
   {
     String start = "INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX (";
     start += targetTable.getRawTableName() + " (";
-    for (int i=0; i < keyColumns.size(); i++)
+    List<ColumnIdentifier> keyCols = getKeyColumns();
+    for (int i=0; i < keyCols.size(); i++)
     {
       if (i > 0) start += ",";
-      String colname = keyColumns.get(i).getDisplayName();
+      String colname = keyCols.get(i).getDisplayName();
       start += colname;
     }
     start += ")) */ INTO ";
@@ -479,16 +485,16 @@ public class ImportDMLStatementBuilder
 
   private String createHanaUpsert(ConstantColumnValues columnConstants)
   {
-    if (CollectionUtil.isEmpty(keyColumns)) return null;
+    if (CollectionUtil.isEmpty(getKeyColumns())) return null;
 
     String insert = createInsertStatement(columnConstants, "UPSERT ");
     insert += " WITH PRIMARY KEY";
     return insert;
   }
 
-  private String createPostgresUpsert(ConstantColumnValues columnConstants, String insertSqlStart, boolean useIgnore)
+  protected String createPostgresUpsert(ConstantColumnValues columnConstants, String insertSqlStart, boolean useIgnore)
   {
-    if (CollectionUtil.isEmpty(keyColumns)) return null;
+    if (CollectionUtil.isEmpty(getKeyColumns())) return null;
 
     String insert = createInsertStatement(columnConstants, insertSqlStart);
 
@@ -500,14 +506,15 @@ public class ImportDMLStatementBuilder
       return insert;
     }
 
-    DbMetadata meta = dbConn.getMetadata();
+    QuoteHandler quoter = getQuoteHandler();
+    List<ColumnIdentifier> keyCols = getKeyColumns();
 
     insert += " (";
-    for (int i=0; i < keyColumns.size(); i++)
+    for (int i=0; i < keyCols.size(); i++)
     {
       if (i > 0) insert += ",";
-      String colname = keyColumns.get(i).getDisplayName();
-      colname = meta.quoteObjectname(colname);
+      String colname = keyCols.get(i).getDisplayName();
+      colname = quoter.quoteObjectname(colname);
       insert += colname;
     }
 
@@ -520,7 +527,7 @@ public class ImportDMLStatementBuilder
       ColumnIdentifier col = targetColumns.get(i);
       if (keys.contains(col) ) continue;
       if (colCount > 0) insert += ",\n      ";
-      String colname = meta.quoteObjectname(col.getDisplayName());
+      String colname = quoter.quoteObjectname(col.getDisplayName());
       insert += colname + " = EXCLUDED." + colname;
       colCount ++;
     }
@@ -528,27 +535,28 @@ public class ImportDMLStatementBuilder
     return insert;
   }
 
-  private String createH2Upsert(ConstantColumnValues columnConstants)
+  protected String createH2Upsert(ConstantColumnValues columnConstants)
   {
     String insert = createInsertStatement(columnConstants, null);
     insert = insert.replace("INSERT INTO", "MERGE INTO");
     return insert;
   }
 
-  private String createFirebirdUpsert(ConstantColumnValues columnConstants)
+  protected String createFirebirdUpsert(ConstantColumnValues columnConstants)
   {
     String insert = createInsertStatement(columnConstants, null);
     insert = insert.replace("INSERT INTO", "UPDATE OR INSERT INTO");
 
-    DbMetadata meta = dbConn.getMetadata();
-    if (CollectionUtil.isNonEmpty(keyColumns))
+    QuoteHandler quoter = getQuoteHandler();
+    List<ColumnIdentifier> keyCols = getKeyColumns();
+    if (CollectionUtil.isNonEmpty(keyCols))
     {
       insert += "\nMATCHING (";
-      for (int i = 0; i < keyColumns.size(); i++)
+      for (int i = 0; i < keyCols.size(); i++)
       {
         if (i > 0) insert += ",";
-        String colname = keyColumns.get(i).getDisplayName();
-        colname = meta.quoteObjectname(colname);
+        String colname = keyCols.get(i).getDisplayName();
+        colname = quoter.quoteObjectname(colname);
         insert += colname;
       }
       insert += ")";
@@ -556,27 +564,27 @@ public class ImportDMLStatementBuilder
     return insert;
   }
 
-  private String createHSQLUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
+  protected String createHSQLUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
   {
     return createStandardMerge(columnConstants, insertOnly, "USING ");
   }
 
-  private String createDB2LuWUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
+  protected String createDB2LuWUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
   {
     return createStandardMerge(columnConstants, insertOnly, "USING TABLE");
   }
 
-  private String createDB2zOSUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
+  protected String createDB2zOSUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
   {
     return createStandardMerge(columnConstants, insertOnly, "USING ");
   }
 
-  private String createSqlServerUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
+  protected String createSqlServerUpsert(ConstantColumnValues columnConstants, boolean insertOnly)
   {
     return createStandardMerge(columnConstants, insertOnly, "USING ") + ";";
   }
 
-  private String createStandardMerge(ConstantColumnValues columnConstants, boolean insertOnly, String usingKeyword)
+  protected String createStandardMerge(ConstantColumnValues columnConstants, boolean insertOnly, String usingKeyword)
   {
     StringBuilder text = new StringBuilder(targetColumns.size() * 50);
 
@@ -584,7 +592,7 @@ public class ImportDMLStatementBuilder
     text.append(targetTable.getFullyQualifiedName(dbConn));
     text.append(" AS tg\n" + usingKeyword + "(\n  VALUES (");
 
-    DbMetadata meta = dbConn.getMetadata();
+    QuoteHandler quoter = getQuoteHandler();
 
     int colIndex = 0;
     for (int i=0; i < getColCount(); i++)
@@ -607,22 +615,24 @@ public class ImportDMLStatementBuilder
     {
       if (colIndex > 0) text.append(',');
       String colname = targetColumns.get(i).getDisplayName();
-      colname = meta.quoteObjectname(colname);
+      colname = quoter.quoteObjectname(colname);
       text.append(colname);
       colIndex ++;
     }
     text.append(")\n  ON ");
     colIndex = 0;
 
-    for (int i=0; i < keyColumns.size(); i++)
+    List<ColumnIdentifier> keyCols = getKeyColumns();
+    for (int i=0; i < keyCols.size(); i++)
     {
       if (colIndex > 0) text.append(" AND ");
-      String colname = keyColumns.get(i).getDisplayName();
-      colname = meta.quoteObjectname(colname);
+      String colname = keyCols.get(i).getDisplayName();
+      colname = quoter.quoteObjectname(colname);
       text.append("tg.");
       text.append(colname);
       text.append(" = vals.");
       text.append(colname);
+      colIndex ++;
     }
     appendMergeMatchSection(text, insertOnly);
     return text.toString();
@@ -630,7 +640,7 @@ public class ImportDMLStatementBuilder
 
   private void appendMergeMatchSection(StringBuilder text, boolean insertOnly)
   {
-    DbMetadata meta = dbConn.getMetadata();
+    QuoteHandler quoter = getQuoteHandler();
     int colIndex = 0;
 
     if (!insertOnly)
@@ -642,7 +652,7 @@ public class ImportDMLStatementBuilder
         if (isKeyColumn(col)) continue;
 
         String colname = targetColumns.get(i).getDisplayName();
-        colname = meta.quoteObjectname(colname);
+        colname = quoter.quoteObjectname(colname);
 
         if (colIndex > 0) text.append(",\n      ");
         text.append("tg.");
@@ -660,7 +670,7 @@ public class ImportDMLStatementBuilder
     for (int i=0; i < getColCount(); i++)
     {
       String colname = targetColumns.get(i).getDisplayName();
-      colname = meta.quoteObjectname(colname);
+      colname = quoter.quoteObjectname(colname);
 
       if (colIndex > 0)
       {
@@ -679,7 +689,7 @@ public class ImportDMLStatementBuilder
     text.append(")");
   }
 
-  private String createOracleMerge(ConstantColumnValues columnConstants)
+  protected String createOracleMerge(ConstantColumnValues columnConstants)
   {
     StringBuilder text = new StringBuilder(targetColumns.size() * 50);
 
@@ -687,7 +697,7 @@ public class ImportDMLStatementBuilder
     text.append(targetTable.getFullyQualifiedName(dbConn));
     text.append(" tg\n USING (\n  SELECT ");
 
-    DbMetadata meta = dbConn.getMetadata();
+    QuoteHandler quoter = getQuoteHandler();
 
     int colIndex = 0;
     for (int i=0; i < getColCount(); i++)
@@ -704,21 +714,23 @@ public class ImportDMLStatementBuilder
       }
       String colname = targetColumns.get(i).getDisplayName();
       text.append(" AS ");
-      text.append(meta.quoteObjectname(colname));
+      text.append(quoter.quoteObjectname(colname));
       colIndex ++;
     }
     text.append(" FROM DUAL\n) vals ON (");
 
     colIndex = 0;
-    for (int i=0; i < keyColumns.size(); i++)
+    List<ColumnIdentifier> keyCols = getKeyColumns();
+    for (int i=0; i < keyCols.size(); i++)
     {
       if (colIndex > 0) text.append(" AND ");
-      String colname = keyColumns.get(i).getDisplayName();
-      colname = meta.quoteObjectname(colname);
+      String colname = keyCols.get(i).getDisplayName();
+      colname = quoter.quoteObjectname(colname);
       text.append("tg.");
       text.append(colname);
       text.append(" = vals.");
       text.append(colname);
+      colIndex ++;
     }
     text.append(')');
     appendMergeMatchSection(text, false);
@@ -728,9 +740,11 @@ public class ImportDMLStatementBuilder
   private boolean isKeyColumn(ColumnIdentifier col)
   {
     if (col.isPkColumn()) return true;
-    if (this.keyColumns != null)
+    List<ColumnIdentifier> keyCols = getKeyColumns();
+
+    if (keyCols != null)
     {
-      return keyColumns.contains(col);
+      return keyCols.contains(col);
     }
     return false;
   }
@@ -738,7 +752,7 @@ public class ImportDMLStatementBuilder
   private String createMySQLUpsert(ConstantColumnValues columnConstants, String insertSqlStart, boolean useIgnore)
   {
     String insert = createInsertStatement(columnConstants, insertSqlStart);
-    DbMetadata meta = dbConn.getMetadata();
+    QuoteHandler quoter = getQuoteHandler();
 
     insert += "\nON DUPLICATE KEY UPDATE \n  ";
     if (useIgnore)
@@ -746,7 +760,7 @@ public class ImportDMLStatementBuilder
       // Just add a dummy update for one column
       // Apparently this is more efficient and stable than using insert ... ignore
       String colname = targetColumns.get(0).getDisplayName();
-      colname = meta.quoteObjectname(colname);
+      colname = quoter.quoteObjectname(colname);
       insert += " " + colname + " = " + colname;
     }
     else
@@ -755,7 +769,7 @@ public class ImportDMLStatementBuilder
       {
         if (i > 0) insert += ",\n  ";
         String colname = targetColumns.get(i).getDisplayName();
-        colname = meta.quoteObjectname(colname);
+        colname = quoter.quoteObjectname(colname);
         insert += colname + " = VALUES(" + colname + ")";
       }
     }
@@ -770,7 +784,7 @@ public class ImportDMLStatementBuilder
 
   private List<ColumnIdentifier> getPKColumns()
   {
-    List<ColumnIdentifier> keys = new ArrayList<>(2);
+    List<ColumnIdentifier> keys = new ArrayList<>(5);
     for (ColumnIdentifier col : targetColumns)
     {
       if (col.isPkColumn())
@@ -783,8 +797,9 @@ public class ImportDMLStatementBuilder
 
   private boolean hasRealPK()
   {
-    if (CollectionUtil.isEmpty(keyColumns)) return false;
-    for (ColumnIdentifier col : keyColumns)
+    List<ColumnIdentifier> keyCols = getKeyColumns();
+    if (CollectionUtil.isEmpty(keyCols)) return false;
+    for (ColumnIdentifier col : keyCols)
     {
       if (!col.isPkColumn()) return false;
     }
@@ -799,16 +814,21 @@ public class ImportDMLStatementBuilder
 
   private List<ColumnIdentifier> createColumnList(List<ColumnIdentifier> columns, ColumnFilter filter, boolean adjustCase)
   {
-    DbMetadata meta = dbConn.getMetadata();
+    DbMetadata meta = dbConn != null ? dbConn.getMetadata() : null;
+    QuoteHandler quoter = getQuoteHandler();
 
     List<ColumnIdentifier> newCols = new ArrayList<>(columns.size());
     for (ColumnIdentifier col : columns)
     {
-      if (filter.ignoreColumn(col)) continue;
+      if (filter != null && filter.ignoreColumn(col)) continue;
       ColumnIdentifier copy = col.createCopy();
       if (adjustCase)
       {
-        String colname = meta.adjustObjectnameCase(meta.removeQuotes(copy.getColumnName()));
+        String colname = quoter.removeQuotes(copy.getColumnName());
+        if (meta != null)
+        {
+          colname = meta.adjustObjectnameCase(colname);
+        }
         copy.setColumnName(colname);
       }
       newCols.add(copy);
