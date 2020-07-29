@@ -26,7 +26,6 @@ import java.util.Collection;
 import workbench.sql.syntax.SqlKeywordHelper;
 import workbench.sql.wbcommands.CommandTester;
 
-import workbench.util.CollectionUtil;
 
 /**
  * @author Thomas Kellerer

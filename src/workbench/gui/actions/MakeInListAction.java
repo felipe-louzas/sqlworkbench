@@ -1,6 +1,4 @@
 /*
- * MakeInListAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -36,7 +34,7 @@ import workbench.gui.sql.EditorPanel;
  *
  * @see workbench.gui.editor.CodeTools#makeInListForChar()
  * @see MakeNonCharInListAction
- * 
+ *
  * @author Thomas Kellerer
  */
 public class MakeInListAction

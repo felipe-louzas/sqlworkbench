@@ -25,30 +25,32 @@ import java.awt.event.ActionEvent;
 
 import workbench.interfaces.TextSelectionListener;
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
-import workbench.gui.editor.CodeTools;
+import workbench.gui.editor.ValuesListCreator;
 import workbench.gui.sql.EditorPanel;
 
+import workbench.util.StringUtil;
+
 /**
- * Make an "IN" list with elements that don't need single quotes.
+ * Convert the current selection to a format approriate for a VALUES list.
  *
- * @see workbench.gui.editor.CodeTools#makeInListForNonChar()
- * @see MakeInListAction
+ * @see workbench.gui.editor.ValuesListCreator
  *
  * @author Thomas Kellerer
  */
-public class MakeNonCharInListAction
+public class MakeValuesListAction
   extends WbAction
   implements TextSelectionListener
 {
   private EditorPanel client;
 
-  public MakeNonCharInListAction(EditorPanel aClient)
+  public MakeValuesListAction(EditorPanel aClient)
   {
     super();
     this.client = aClient;
     this.client.addSelectionListener(this);
-    this.initMenuDefinition("MnuTxtMakeNonCharInList");
+    this.initMenuDefinition("MnuTxtMakeValuesList");
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
     this.setEnabled(false);
   }
@@ -56,8 +58,16 @@ public class MakeNonCharInListAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    CodeTools tools = new CodeTools(client);
-    tools.makeInListForNonChar();
+    String input = client.getSelectedText();
+    ValuesListCreator creator = new ValuesListCreator(input);
+    String end = Settings.getInstance().getInternalEditorLineEnding();
+    creator.setLineEnding(end);
+    String list = creator.createValuesList();
+    list += end;
+    if (StringUtil.isNonBlank(list))
+    {
+      client.setSelectedText(list);
+    }
   }
 
   @Override
