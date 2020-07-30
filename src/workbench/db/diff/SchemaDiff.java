@@ -1423,7 +1423,7 @@ public class SchemaDiff
     String[] pattr = new String[] { "referenceProcedure", "compareTo" };
     String[] pkgattr = new String[] { "referencePackage", "compareTo" };
     String[] sattr = new String[] { "referenceSequence", "compareTo" };
-    String[] tbls = new String[3];
+    String[] tbls;
     DbSettings dbs = this.referenceDb.getMetadata().getDbSettings();
     for (int i=0; i < count; i++)
     {
@@ -1433,6 +1433,7 @@ public class SchemaDiff
       if (o instanceof DiffEntry)
       {
         DiffEntry de = (DiffEntry)o;
+        tbls = new String[3];
         tbls[0] = de.reference.getType();
         tbls[1] = (de.target == null ? "" : de.target.getFullyQualifiedName(targetDb));
         tbls[2] = de.reference.getFullyQualifiedName(referenceDb);
@@ -1454,6 +1455,7 @@ public class SchemaDiff
       else if (o instanceof PackageDiffEntry)
       {
         PackageDiffEntry pe = (PackageDiffEntry)o;
+        tbls = new String[2];
         tbls[0] = pe.reference.getPackageName();
         tbls[1] = (pe.target == null ? "" : pe.target.getPackageName());
 
@@ -1462,12 +1464,12 @@ public class SchemaDiff
       else if (o instanceof SequenceDiffEntry)
       {
         SequenceDiffEntry pe = (SequenceDiffEntry)o;
+        tbls = new String[2];
         tbls[0] = pe.reference.getFullyQualifiedName(referenceDb);
         tbls[1] = (pe.target == null ? "" : pe.target.getFullyQualifiedName(targetDb));
         tw.appendOpenTag(info, indent2, TAG_SEQ_PAIR, sattr, tbls, false);
       }
       info.append("/>\n");
-
     }
     tw.appendCloseTag(info, indent, TAG_COMPARE_INFO);
 
