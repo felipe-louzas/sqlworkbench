@@ -36,6 +36,7 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -43,9 +44,6 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -56,6 +54,8 @@ import workbench.util.StringUtil;
 public class PostgresSubscriptionReader
   implements ObjectListExtender
 {
+  private Boolean hasPrivileges;
+
   @Override
   public List<String> supportedTypes()
   {
@@ -87,10 +87,14 @@ public class PostgresSubscriptionReader
 
   private List<PgSubscription> getSubscriptions(WbConnection connection, String namePattern)
   {
+    List<PgSubscription> result = new ArrayList<>();
+
+    checkPrivileges(connection);
+    if (!hasPrivileges) return result;
+
     Statement stmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
-    List<PgSubscription> result = new ArrayList<>();
 
     StringBuilder sql = new StringBuilder(
       "select s.subname, \n" +
@@ -194,7 +198,6 @@ public class PostgresSubscriptionReader
   @Override
   public DataStore getObjectDetails(WbConnection con, DbObject object)
   {
-    PgSubscription sub = getObjectDefinition(con, object);
     return null;
   }
 
@@ -212,10 +215,14 @@ public class PostgresSubscriptionReader
 
   public List<TableIdentifier> getTables(WbConnection connection, DbObject publication)
   {
+    List<TableIdentifier> result = new ArrayList<>();
+
+    checkPrivileges(connection);
+    if (!hasPrivileges) return result;
+
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
-    List<TableIdentifier> result = new ArrayList<>();
 
     String sql =
       "SELECT c.relnamespace::regnamespace::text as table_schema, \n" +
@@ -256,6 +263,25 @@ public class PostgresSubscriptionReader
       JdbcUtils.closeAll(rs, stmt);
     }
     return result;
+  }
+
+  private synchronized void checkPrivileges(WbConnection conn)
+  {
+    if (hasPrivileges != null) return;
+
+    final String sql = "select has_table_privilege('pg_catalog.pg_subscription', 'select')";
+
+    try
+    {
+      this.hasPrivileges = false;
+      LogMgr.logDebug(new CallerInfo(){}, "Checking privileges for pg_catalog.pg_subscription");
+      JdbcUtils.runQuery(conn, sql, false, (rs -> {if (rs.next()) this.hasPrivileges = rs.getBoolean(1);}));
+    }
+    catch (SQLException e)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not check privileges for pg_catalog.pg_subscription", e);
+      this.hasPrivileges = false;
+    }
   }
 
 }

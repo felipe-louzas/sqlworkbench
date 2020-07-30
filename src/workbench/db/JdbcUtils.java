@@ -296,6 +296,29 @@ public class JdbcUtils
     return rs;
   }
 
+  public static void runQuery(WbConnection dbConnection, String sql, boolean useSavepoint, ResultSetProcessor processor)
+    throws SQLException
+  {
+    ResultSet rs = null;
+    Savepoint sp = null;
+    Statement stmt = null;
+    try
+    {
+      stmt = dbConnection.createStatementForQuery();
+      if (useSavepoint && !dbConnection.getAutoCommit())
+      {
+        sp = dbConnection.setSavepoint();
+      }
+      rs = stmt.executeQuery(sql);
+      processor.process(rs);
+      dbConnection.releaseSavepoint(sp);
+    }
+    finally
+    {
+      closeAll(rs, stmt);
+    }
+  }
+
   public static boolean runStatement(WbConnection dbConnection, String sql)
   {
     Statement stmt = null;
