@@ -27,6 +27,7 @@
 
   <xsl:template match="/">
     <xsl:message>Use JDBC types: "<xsl:value-of select="//compare-settings/use-jdbc-types" />"</xsl:message>
+
     <xsl:apply-templates select="/schema-diff/add-table"/>
 
     <xsl:for-each select="/schema-diff/modify-table">
@@ -119,6 +120,17 @@
       </xsl:for-each>
 
     </xsl:for-each>
+
+    <xsl:value-of select="$newline"/>
+    
+    <xsl:for-each select="/schema-diff/drop-table">
+      <xsl:text>DROP TABLE </xsl:text>
+      <xsl:value-of select="table-name"/>
+      <xsl:text> CASCADE CONSTRAINTS PURGE;</xsl:text>
+      <xsl:value-of select="$newline"/>
+    </xsl:for-each>
+    <xsl:value-of select="$newline"/>
+
 
     <xsl:for-each select="/schema-diff/drop-view">
       <xsl:text>DROP VIEW </xsl:text>
