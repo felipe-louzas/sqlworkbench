@@ -39,6 +39,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.JdbcProcedureReader;
+import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
@@ -47,9 +48,6 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.ExceptionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -419,9 +417,11 @@ public class PostgresProcedureReader
 
     boolean is96 = JdbcUtils.hasMinimumServerVersion(connection, "9.6");
     boolean is92 = JdbcUtils.hasMinimumServerVersion(connection, "9.2");
+    boolean is84 = JdbcUtils.hasMinimumServerVersion(connection, "8.4");
     boolean showExtension = is92;
 
     PGProcName name = new PGProcName(def, getTypeLookup());
+
 
     String sql =
       "SELECT p.prosrc, \n" +
@@ -458,6 +458,7 @@ public class PostgresProcedureReader
             "       p.proisstrict, \n" +
             "       " + (is92 ? "p.proleakproof" : "false as proleakproof") + ", \n" +
             "       " + (is96 ? "p.proparallel" : "null as proparallel") + ", \n" +
+            "       " + (is84 ? "array_to_string(p.proconfig, ',') as proconfig" : "null::text as proconfig") + ", \n" +
             getProctypeColumnExpression() +
             "       obj_description(p.oid, 'pg_proc') as remarks ";
 
@@ -548,6 +549,7 @@ public class PostgresProcedureReader
         String types = rs.getString("argtypes");
         String names = rs.getString("argnames");
         String modes = rs.getString("argmodes");
+        String config = rs.getString("proconfig");
         String parallel = rs.getString("proparallel");
         boolean returnSet = rs.getBoolean("proretset");
         boolean leakproof = rs.getBoolean("proleakproof");
@@ -596,6 +598,13 @@ public class PostgresProcedureReader
         source.append(StringUtil.makePlainLinefeed(src));
         if (!src.endsWith(";")) source.append(';');
         source.append("\n$body$\n");
+
+        if (StringUtil.isNonBlank(config))
+        {
+          source.append("  SET ");
+          source.append(config);
+          source.append('\n');
+        }
 
         if (isFunction)
         {
