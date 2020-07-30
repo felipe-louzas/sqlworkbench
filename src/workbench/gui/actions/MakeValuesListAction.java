@@ -21,12 +21,14 @@
  */
 package workbench.gui.actions;
 
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import workbench.interfaces.TextSelectionListener;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.editor.ValuesListCreator;
 import workbench.gui.sql.EditorPanel;
 
@@ -58,8 +60,17 @@ public class MakeValuesListAction
   @Override
   public void executeAction(ActionEvent e)
   {
+    ValuesCreatorParameter parmInput = new ValuesCreatorParameter();
+    Window window = WbSwingUtilities.getWindowAncestor(client);
+    boolean ok = WbSwingUtilities.getOKCancel(ResourceMgr.getString("MnuTxtMakeValuesList"),
+                                              window, parmInput, () -> {parmInput.setFocusToInput();});
+
+    if (!ok) return;
+
     String input = client.getSelectedText();
-    ValuesListCreator creator = new ValuesListCreator(input);
+    ValuesListCreator creator = new ValuesListCreator(input, parmInput.getDelimiter());
+    creator.setDelimiterIsRegex(parmInput.isRegex());
+
     String end = Settings.getInstance().getInternalEditorLineEnding();
     creator.setLineEnding(end);
     String list = creator.createValuesList();

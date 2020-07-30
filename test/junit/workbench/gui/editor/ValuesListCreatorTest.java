@@ -31,6 +31,21 @@ public class ValuesListCreatorTest
 {
 
   @Test
+  public void testRegex()
+  {
+    String input =
+      "1     2       3.14       10.20.30\n" +
+      "4     5     6.28      20.30.40";
+    ValuesListCreator creator = new ValuesListCreator(input, "\\s+");
+    creator.setDelimiterIsRegex(true);
+    String result = creator.createValuesList();
+    String expected =
+       "(1, 2, 3.14, '10.20.30'),\n" +
+       "(4, 5, 6.28, '20.30.40')";
+    assertEquals(expected, result.trim());
+  }
+
+  @Test
   public void testCreateSimpleList()
   {
     String input = "1,2,3.14,10.20.30\n4,5,6.28,20.30.40";

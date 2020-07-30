@@ -21,7 +21,9 @@
 package workbench.gui.editor;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import workbench.util.StringUtil;
 import workbench.util.WbStringTokenizer;
@@ -61,6 +63,9 @@ public class ValuesListCreator
   private final String delimiter;
   private boolean trimItems = true;
   private String lineEnding = "\n";
+  private boolean useRegex;
+  private WbStringTokenizer tokenizer;
+  private Pattern splitPattern;
 
   public ValuesListCreator(String input)
   {
@@ -71,6 +76,13 @@ public class ValuesListCreator
   {
     this.input = StringUtil.trim(input);
     this.delimiter = delimiter;
+    initTokenizer();
+  }
+
+  public void setDelimiterIsRegex(boolean flag)
+  {
+    this.useRegex = flag;
+    initTokenizer();
   }
 
   public void setLineEnding(String ending)
@@ -88,26 +100,31 @@ public class ValuesListCreator
     if (StringUtil.isBlank(input)) return "";
     List<String> lines = StringUtil.getLines(input);
     StringBuilder result = new StringBuilder(input.length() + 50);
-    WbStringTokenizer tokenizer = new WbStringTokenizer(delimiter, "\"'", true);
+
     int nr = 0;
     for (String line : lines)
     {
       line = line.trim();
-      if (line.startsWith(delimiter))
+      if (!useRegex)
       {
-        line = line.substring(1);
+        if (line.startsWith(delimiter))
+        {
+          line = line.substring(1);
+        }
+        if (line.endsWith(delimiter))
+        {
+          line = line.substring(0, line.length() - 1);
+        }
       }
-      if (line.endsWith(delimiter))
-      {
-        line = line.substring(0, line.length() - 1);
-      }
-      tokenizer.setSourceString(line);
-      List<String> items = tokenizer.getAllTokens();
+
+      List<String> items = splitLine(line);
+
       if (nr > 0)
       {
         result.append(',');
         result.append(lineEnding);
       }
+
       StringBuilder entry = convertToEntry(items);
       if (entry.length() > 0)
       {
@@ -115,7 +132,36 @@ public class ValuesListCreator
         nr ++;
       }
     }
+
     return result.toString();
+  }
+
+  private void initTokenizer()
+  {
+    if (this.useRegex)
+    {
+      splitPattern = Pattern.compile(delimiter);
+      tokenizer = null;
+    }
+    else
+    {
+      tokenizer = new WbStringTokenizer(delimiter, "\"'", true);
+      splitPattern = null;
+    }
+  }
+
+  private List<String> splitLine(String line)
+  {
+    if (tokenizer != null)
+    {
+      tokenizer.setSourceString(line);
+      return tokenizer.getAllTokens();
+    }
+    else
+    {
+      String[] items = splitPattern.split(line);
+      return Arrays.asList(items);
+    }
   }
 
   private StringBuilder convertToEntry(List<String> items)
