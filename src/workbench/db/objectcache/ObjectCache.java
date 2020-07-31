@@ -830,6 +830,15 @@ class ObjectCache
     }
   }
 
+  void flushCachedDatabase()
+  {
+    synchronized (this)
+    {
+      databasesCached = false;
+      availableDatabases.clear();
+    }
+  }
+
   List<String> getAvailableDatabases(WbConnection conn)
   {
     synchronized (this)

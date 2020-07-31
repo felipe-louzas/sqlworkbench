@@ -24,6 +24,8 @@ package workbench.gui.components;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +46,7 @@ import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 
 import workbench.util.CollectionUtil;
+import workbench.util.WbThread;
 
 /**
  *
@@ -51,7 +54,7 @@ import workbench.util.CollectionUtil;
  */
 public class SwitchDbComboBox
   extends JComboBox<String>
-  implements ItemListener
+  implements ItemListener, PropertyChangeListener
 {
   private boolean switchAll = false;
   private boolean ignoreItemChange = false;
@@ -71,6 +74,10 @@ public class SwitchDbComboBox
 
   public void setConnection(WbConnection conn)
   {
+    if (this.connection != null)
+    {
+      this.connection.removeChangeListener(this);
+    }
     this.connection = conn;
     this.switcher = DbSwitcher.Factory.createDatabaseSwitcher(conn);
     if (conn == null)
@@ -79,7 +86,8 @@ public class SwitchDbComboBox
     }
     else
     {
-      this.retrieve(conn);
+      this.connection.addChangeListener(this);
+      this.retrieve();
       if (conn.isShared())
       {
         setSwitchWindow(true);
@@ -87,15 +95,32 @@ public class SwitchDbComboBox
     }
   }
 
-  public void retrieve(WbConnection conn)
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
   {
-    if (switcher == null)
+    if (evt.getSource() == this.connection && WbConnection.PROP_CATALOG_LIST.equals(evt.getPropertyName()))
     {
-      switcher = DbSwitcher.Factory.createDatabaseSwitcher(conn);
+      WbSwingUtilities.invokeLater(this::startRetrieve);
     }
+  }
 
+  private void startRetrieve()
+  {
+    WbThread th = new WbThread("Retrieve catalogs")
+    {
+      @Override
+      public void run()
+      {
+        retrieve();
+      }
+    };
+    th.start();
+  }
+
+  public void retrieve()
+  {
     if (switcher == null) return;
-    if (conn == null) return;
+    if (connection == null) return;
 
     clear();
 
@@ -104,11 +129,13 @@ public class SwitchDbComboBox
     d.setSize(width, d.height);
     this.setMaximumSize(d);
 
-    List<String> dbs = conn.getObjectCache().getAvailableDatabases();
+    List<String> dbs = connection.getObjectCache().getAvailableDatabases();
     if (dbs != null)
     {
-      this.setModel(new DefaultComboBoxModel<>(dbs.toArray(new String[0])));
-      selectCurrentDatabase(conn);
+      WbSwingUtilities.invokeLater(() -> {
+        setModel(new DefaultComboBoxModel<>(dbs.toArray(new String[0])));
+        selectCurrentDatabase(connection);
+      });
     }
   }
 
@@ -151,13 +178,20 @@ public class SwitchDbComboBox
   public void itemStateChanged(ItemEvent e)
   {
     if (ignoreItemChange) return;
-    if (isConnectInProgress()) return;
 
     if (e == null) return;
 
     if (e.getSource() == this && e.getStateChange() == ItemEvent.SELECTED)
     {
-      changeDatabase();
+      if (isConnectInProgress())
+      {
+        // try later when the connect is finished
+        WbSwingUtilities.invokeLater(this::changeDatabase);
+      }
+      else
+      {
+        changeDatabase();
+      }
     }
   }
 
@@ -231,7 +265,7 @@ public class SwitchDbComboBox
       MainPanel p = panel.get();
       WbConnection conn = p.getConnection();
       if (conn == null) continue;
-      
+
       if (conn.isBusy())
       {
         LogMgr.logDebug(ci, "Skipping database switch for panel " + p.getTabTitle() + " (" + p.getId() + ") because the connection is busy");

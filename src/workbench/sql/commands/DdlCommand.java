@@ -175,7 +175,12 @@ public class DdlCommand
 
       this.currentConnection.releaseSavepoint(ddlSavepoint, ci);
 
-      if (isDrop && result.isSuccess())
+      if (result.isSuccess() && "database".equalsIgnoreCase(info.getObjectType()))
+      {
+        currentConnection.getObjectCache().flushCachedDatabases();
+        currentConnection.catalogListChanged();
+      }
+      else if (isDrop && result.isSuccess())
       {
         removeFromCache(info);
       }

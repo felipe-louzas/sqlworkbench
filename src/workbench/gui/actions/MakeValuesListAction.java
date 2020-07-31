@@ -60,6 +60,10 @@ public class MakeValuesListAction
   @Override
   public void executeAction(ActionEvent e)
   {
+    String input = client.getSelectedText();
+    // shouldn't happen
+    if (StringUtil.isBlank(input)) return;
+
     ValuesCreatorParameter parmInput = new ValuesCreatorParameter();
     Window window = WbSwingUtilities.getWindowAncestor(client);
     boolean ok = WbSwingUtilities.getOKCancel(ResourceMgr.getString("MnuTxtMakeValuesList"),
@@ -67,7 +71,7 @@ public class MakeValuesListAction
 
     if (!ok) return;
 
-    String input = client.getSelectedText();
+    parmInput.saveSettings();
     ValuesListCreator creator = new ValuesListCreator(input, parmInput.getDelimiter());
     creator.setDelimiterIsRegex(parmInput.isRegex());
 
@@ -88,7 +92,7 @@ public class MakeValuesListAction
     {
       int startLine = this.client.getSelectionStartLine();
       int endLine = this.client.getSelectionEndLine();
-      this.setEnabled(startLine < endLine);
+      this.setEnabled(startLine <= endLine);
     }
     else
     {

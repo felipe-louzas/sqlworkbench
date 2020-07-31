@@ -35,8 +35,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +68,6 @@ import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
-import workbench.db.DbSettings;
-import workbench.db.DbSwitcher;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -84,7 +80,6 @@ import workbench.gui.actions.WbAction;
 import workbench.gui.components.CloseIcon;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.MultiSelectComboBox;
-import workbench.gui.components.SwitchDbComboBox;
 import workbench.gui.components.WbLabelField;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbStatusLabel;
@@ -100,7 +95,6 @@ import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
 
-import static workbench.db.WbConnection.*;
 
 /**
  *
@@ -110,7 +104,7 @@ public class DbTreePanel
   extends JPanel
   implements Reloadable, ActionListener, MouseListener, DbObjectList,
              ObjectDropListener, KeyListener, QuickFilter, RowCountDisplay,
-             ObjectFinder, TreeSelectionListener, PropertyChangeListener
+             ObjectFinder, TreeSelectionListener
 {
   public static final String PROP_DIVIDER = "divider.location";
   public static final String PROP_VISIBLE = "tree.visible";
@@ -118,7 +112,6 @@ public class DbTreePanel
 
   private static int instanceCount = 0;
   private DbObjectsTree tree;
-  private SwitchDbComboBox dbSwitcherCbx;
   private int id;
   private WbConnection connection;
   private WbStatusLabel statusBar;
@@ -258,50 +251,17 @@ public class DbTreePanel
     return schemaPanel;
   }
 
-  private void removeDbSwitcher()
-  {
-    if (dbSwitcherCbx != null)
-    {
-      schemaPanel.remove(dbSwitcherCbx);
-      dbSwitcherCbx.clear();
-      dbSwitcherCbx = null;
-    }
-  }
-
-  private void addDbSwitcher()
-  {
-    GridBagConstraints gc = new GridBagConstraints();
-    gc.gridx = 1;
-    gc.gridy = 0;
-    gc.weightx = 0.0;
-    gc.fill = GridBagConstraints.NONE;
-    gc.anchor = GridBagConstraints.LINE_END;
-    gc.insets = new Insets(0,0,0,0);
-
-    dbSwitcherCbx = new SwitchDbComboBox();
-    schemaPanel.add(dbSwitcherCbx, gc);
-  }
-
   @Override
   public void reload()
   {
     if (!WbSwingUtilities.isConnectionIdle(this, connection)) return;
 
-    reload(true);
-  }
-
-  private void reload(final boolean reloadDbList)
-  {
     resetExpanded();
     WbThread th = new WbThread("DbTree Load Thread")
     {
       @Override
       public void run()
       {
-        if (reloadDbList && dbSwitcherCbx != null)
-        {
-          dbSwitcherCbx.retrieve(connection);
-        }
         tree.reload();
       }
     };
@@ -340,7 +300,6 @@ public class DbTreePanel
       boolean doLoadTypes = this.connection == null;
       this.connection = toUse;
       this.connection.setShared(true);
-      this.connection.addChangeListener(this);
       TreePath selection = tree.getSelectionPath();
       this.tree.setConnection(this.connection);
       this.isPrivateConnection = false;
@@ -401,20 +360,6 @@ public class DbTreePanel
     th.start();
   }
 
-  private boolean shouldShowDbSwitcher()
-  {
-    if (connection == null) return false;
-    if (DbTreeSettings.useTabConnection()) return false;
-
-    DbSettings dbs = connection.getDbSettings();
-    if (dbs == null) return false;
-    if (dbs.supportsCatalogs() && dbs.supportsSchemas()) return false;
-    if (!dbs.enableDatabaseSwitcher()) return false;
-
-    DbSwitcher switcher = DbSwitcher.Factory.createDatabaseSwitcher(connection);
-    return switcher != null && switcher.supportsSwitching(connection);
-  }
-
   private void doConnect(ConnectionProfile profile)
   {
     String cid = "DbTree-" + Integer.toString(id);
@@ -442,13 +387,6 @@ public class DbTreePanel
 
       ExplorerUtils.initDbExplorerConnection(connection);
       tree.setConnection(connection);
-      if (shouldShowDbSwitcher())
-      {
-        addDbSwitcher();
-        dbSwitcherCbx.setConnection(connection);
-        this.connection.addChangeListener(this);
-      }
-
       statusBar.setStatusMessage(ResourceMgr.getString("MsgRetrieving"));
 
       loadTypes();
@@ -461,15 +399,6 @@ public class DbTreePanel
     finally
     {
       statusBar.clearStatusMessage();
-    }
-  }
-
-  @Override
-  public void propertyChange(PropertyChangeEvent evt)
-  {
-    if (evt.getSource() == this.connection && PROP_CATALOG.equals(evt.getPropertyName()))
-    {
-      this.reload(false);
     }
   }
 
@@ -616,10 +545,6 @@ public class DbTreePanel
     {
       disconnect(false);
     }
-    else if (this.connection != null)
-    {
-      this.connection.removeChangeListener(this);
-    }
   }
 
   /**
@@ -633,10 +558,6 @@ public class DbTreePanel
     {
       disconnect(true);
     }
-    else if (this.connection != null)
-    {
-      this.connection.removeChangeListener(this);
-    }
   }
 
   private void disconnect(boolean wait)
@@ -649,11 +570,6 @@ public class DbTreePanel
 
     Runnable runner = () ->
     {
-      removeDbSwitcher();
-      if (connection != null)
-      {
-        connection.removeChangeListener(this);
-      }
       WbConnection old = connection;
       connection = null;
       ConnectionMgr.getInstance().disconnect(old);

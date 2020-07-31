@@ -81,6 +81,7 @@ public class WbConnection
   implements DbExecutionListener
 {
   public static final String PROP_CATALOG = "catalog";
+  public static final String PROP_CATALOG_LIST = "catalog-list";
   public static final String PROP_SCHEMA = "schema";
   public static final String PROP_AUTOCOMMIT = "autocommit";
   public static final String PROP_CONNECTION_STATE = "state";
@@ -131,6 +132,7 @@ public class WbConnection
 
   private boolean logSavepoints;
   private final Set<Integer> usedSavepoints = new HashSet<>(2);
+  private final List<PropertyChangeEvent> pendingEvents = new ArrayList<>();
 
   /**
    * Create a new wrapper connection around the original SQL connection.
@@ -1057,6 +1059,7 @@ public class WbConnection
     sessionProps.clear();
     ConnectionMgr.getInstance().disconnect(this);
     fireConnectionStateChanged(PROP_CONNECTION_STATE, CONNECTION_OPEN, CONNECTION_CLOSED);
+    pendingEvents.clear();
   }
 
   /**
@@ -1147,6 +1150,7 @@ public class WbConnection
       this.sqlConnection = null;
       this.metaData = null;
     }
+    pendingEvents.clear();
 
     LogMgr.logDebug(ci, "Connection " + this.getId() + " closed.");
   }
@@ -1708,14 +1712,39 @@ public class WbConnection
     this.listeners.remove(l);
   }
 
+  private void firePendingEvents()
+  {
+    if (pendingEvents.isEmpty()) return;
+    List<PropertyChangeListener> list = new ArrayList<>(listeners);
+
+    for (PropertyChangeEvent event : pendingEvents)
+    {
+      fireEvent(list, event);
+    }
+    pendingEvents.clear();
+  }
+
   private void fireConnectionStateChanged(String property, String oldValue, String newValue)
   {
-    int count = this.listeners.size();
-    if (count == 0) return;
+    if (listeners.isEmpty()) return;
 
-    List<PropertyChangeListener> listCopy = new ArrayList<>(listeners);
+    List<PropertyChangeListener> list = new ArrayList<>(listeners);
     PropertyChangeEvent evt = new PropertyChangeEvent(this, property, oldValue, newValue);
-    for (PropertyChangeListener l : listCopy)
+    if (this.busy && !property.equals(PROP_BUSY))
+    {
+      // Any event that should have been fired while the connection is busy
+      // should be dispatched after the connection is no longer busy
+      this.pendingEvents.add(evt);
+    }
+    else
+    {
+      fireEvent(list, evt);
+    }
+  }
+
+  private void fireEvent(List<PropertyChangeListener> changeListeners, PropertyChangeEvent evt)
+  {
+    for (PropertyChangeListener l : changeListeners)
     {
       if (l != null)
       {
@@ -1735,6 +1764,11 @@ public class WbConnection
   public String getDisplayCatalog()
   {
     return currentCatalog;
+  }
+
+  public void catalogListChanged()
+  {
+    this.fireConnectionStateChanged(PROP_CATALOG_LIST, null, null);
   }
 
   /**
@@ -1806,6 +1840,8 @@ public class WbConnection
    */
   public boolean setBusy(boolean flag)
   {
+    if (flag == this.busy) return this.busy;
+
     boolean wasBusy = this.busy;
     String oldValue = Boolean.toString(wasBusy);
     this.busy = flag;
@@ -1814,6 +1850,10 @@ public class WbConnection
       this.keepAlive.setLastDbAction(System.currentTimeMillis());
     }
     fireConnectionStateChanged(PROP_BUSY, oldValue, Boolean.toString(this.busy));
+    if (!busy)
+    {
+      firePendingEvents();
+    }
     return wasBusy;
   }
 

@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -115,6 +114,12 @@ public class DdlObjectInfoTest
     assertTrue(info.isValid());
     assertEquals("INDEX", info.getObjectType());
     assertEquals("FOO.BAR_IDX", info.getObjectName());
+
+    sql = "create pluggable database test_db;";
+    info = new DdlObjectInfo(sql, ParserType.Oracle);
+    assertTrue(info.isValid());
+    assertEquals("DATABASE", info.getObjectType());
+    assertEquals("test_db", info.getObjectName());
   }
 
   @Test

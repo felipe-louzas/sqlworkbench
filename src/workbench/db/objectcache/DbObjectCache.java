@@ -214,6 +214,11 @@ public class DbObjectCache
     return realTable;
   }
 
+  public void flushCachedDatabases()
+  {
+    objectCache.flushCachedDatabase();
+  }
+
   public List<String> getAvailableDatabases()
   {
     return objectCache.getAvailableDatabases(dbConnection);
