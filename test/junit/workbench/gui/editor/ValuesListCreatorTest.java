@@ -21,6 +21,7 @@
 package workbench.gui.editor;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -36,8 +37,7 @@ public class ValuesListCreatorTest
     String input =
       "1     2       3.14       10.20.30\n" +
       "4     5     6.28      20.30.40";
-    ValuesListCreator creator = new ValuesListCreator(input, "\\s+");
-    creator.setDelimiterIsRegex(true);
+    ValuesListCreator creator = new ValuesListCreator(input, "\\s+", true);
     String result = creator.createValuesList();
     String expected =
        "(1, 2, 3.14, '10.20.30'),\n" +
@@ -112,7 +112,7 @@ public class ValuesListCreatorTest
     String input =
       "|1  | 2020-07-22 18:19:20 | 3.14  | Arthur | Dent |\n" +
       "| 3 | 2020-06-22 14:12:25 | 6.42  | Tricia | McMillan | \n";
-    ValuesListCreator creator = new ValuesListCreator(input, "|");
+    ValuesListCreator creator = new ValuesListCreator(input, "|", false);
     String result = creator.createValuesList();
     String expected =
        "(1, '2020-07-22 18:19:20', 3.14, 'Arthur', 'Dent'),\n" +
@@ -126,7 +126,7 @@ public class ValuesListCreatorTest
     String input =
       "|1|Arthur|Dent|\n" +
       "|3|Marvin|  |\n";
-    ValuesListCreator creator = new ValuesListCreator(input, "|");
+    ValuesListCreator creator = new ValuesListCreator(input, "|", false);
     creator.setTrimItems(false);
     String result = creator.createValuesList();
     String expected =

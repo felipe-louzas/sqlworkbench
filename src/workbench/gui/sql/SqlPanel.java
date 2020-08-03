@@ -1052,7 +1052,6 @@ public class SqlPanel
     new CleanJavaCodeAction(this.editor).addToMenu(codeTools);
     codeTools.addSeparator();
     new MakeInListAction(this.editor).addToMenu(codeTools);
-    new MakeNonCharInListAction(this.editor).addToMenu(codeTools);
     new MakeValuesListAction(this.editor).addToMenu(codeTools);
     codeTools.addSeparator();
     copyStatementAction = new CopyCurrentStatementAction(this.editor);

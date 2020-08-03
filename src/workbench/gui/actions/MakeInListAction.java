@@ -26,14 +26,15 @@ import java.awt.event.ActionEvent;
 import workbench.interfaces.TextSelectionListener;
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.editor.CodeTools;
+import workbench.gui.editor.InListCreator;
 import workbench.gui.sql.EditorPanel;
 
+import workbench.util.StringUtil;
+
 /**
- * Make an "IN" List for elements that need single quotes.
+ * Make an "IN" List for elements that might or might not need single quotes.
  *
- * @see workbench.gui.editor.CodeTools#makeInListForChar()
- * @see MakeNonCharInListAction
+ * @see workbench.gui.editor.InListCreator#makeInList()
  *
  * @author Thomas Kellerer
  */
@@ -56,8 +57,22 @@ public class MakeInListAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    CodeTools tools = new CodeTools(client);
-    tools.makeInListForChar();
+    String text = client.getSelectedText();
+
+    InListCreator creator = new InListCreator(text);
+    String list;
+    if (invokedByMouse(e) && isCtrlPressed(e))
+    {
+      list = creator.makeQuotedInList();
+    }
+    else
+    {
+      list = creator.makeInList();
+    }
+    if (StringUtil.isNonEmpty(list))
+    {
+      client.setSelectedText(list);
+    }
   }
 
   @Override

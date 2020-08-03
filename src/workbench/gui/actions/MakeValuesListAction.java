@@ -72,8 +72,7 @@ public class MakeValuesListAction
     if (!ok) return;
 
     parmInput.saveSettings();
-    ValuesListCreator creator = new ValuesListCreator(input, parmInput.getDelimiter());
-    creator.setDelimiterIsRegex(parmInput.isRegex());
+    ValuesListCreator creator = new ValuesListCreator(input, parmInput.getDelimiter(), parmInput.isRegex());
 
     String end = Settings.getInstance().getInternalEditorLineEnding();
     creator.setLineEnding(end);

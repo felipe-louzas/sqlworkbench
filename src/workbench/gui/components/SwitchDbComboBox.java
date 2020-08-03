@@ -132,10 +132,10 @@ public class SwitchDbComboBox
     List<String> dbs = connection.getObjectCache().getAvailableDatabases();
     if (dbs != null)
     {
-      WbSwingUtilities.invokeLater(() -> {
+      WbSwingUtilities.invoke(() -> {
         setModel(new DefaultComboBoxModel<>(dbs.toArray(new String[0])));
-        selectCurrentDatabase(connection);
       });
+      selectCurrentDatabase(connection);
     }
   }
 

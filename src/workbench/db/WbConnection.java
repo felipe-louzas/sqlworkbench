@@ -800,7 +800,7 @@ public class WbConnection
     return setSavepoint(null);
   }
 
-  public Savepoint setSavepoint(CallerInfo context)
+  public synchronized Savepoint setSavepoint(CallerInfo context)
     throws SQLException
   {
     if (this.getAutoCommit()) return null;

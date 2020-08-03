@@ -20,7 +20,6 @@
  */
 package workbench.gui.editor;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -61,27 +60,29 @@ public class ValuesListCreator
 {
   private final String input;
   private final String delimiter;
+  private final boolean useRegex;
   private boolean trimItems = true;
   private String lineEnding = "\n";
-  private boolean useRegex;
   private WbStringTokenizer tokenizer;
   private Pattern splitPattern;
 
   public ValuesListCreator(String input)
   {
-    this(input, ",");
+    this(input, ",", false);
   }
 
-  public ValuesListCreator(String input, String delimiter)
+  public ValuesListCreator(String input, String delimiter, boolean isRegex)
   {
     this.input = StringUtil.trim(input);
-    this.delimiter = delimiter;
-    initTokenizer();
-  }
-
-  public void setDelimiterIsRegex(boolean flag)
-  {
-    this.useRegex = flag;
+    this.useRegex = isRegex;
+    if (isRegex)
+    {
+      this.delimiter = delimiter;
+    }
+    else
+    {
+      this.delimiter = StringUtil.unescape(delimiter);
+    }
     initTokenizer();
   }
 
@@ -173,7 +174,7 @@ public class ValuesListCreator
     {
       if (trimItems) item = item.trim();
       if (nr > 0) result.append(", ");
-      if (item.startsWith("'") || item.startsWith("\"") || isNumber(item))
+      if (item.startsWith("'") || item.startsWith("\"") || StringUtil.isNumber(item))
       {
         result.append(item);
       }
@@ -187,19 +188,5 @@ public class ValuesListCreator
     }
     result.append(')');
     return result;
-  }
-
-  private boolean isNumber(String value)
-  {
-    if (StringUtil.isBlank(value)) return false;
-    try
-    {
-      new BigDecimal(value);
-      return true;
-    }
-    catch (Throwable th)
-    {
-      return false;
-    }
   }
 }

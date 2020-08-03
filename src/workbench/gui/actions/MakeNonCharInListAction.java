@@ -26,13 +26,15 @@ import java.awt.event.ActionEvent;
 import workbench.interfaces.TextSelectionListener;
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.editor.CodeTools;
+import workbench.gui.editor.InListCreator;
 import workbench.gui.sql.EditorPanel;
 
+import workbench.util.StringUtil;
+
 /**
- * Make an "IN" list with elements that don't need single quotes.
+ * Make an "IN" list with elements that never need single quotes.
  *
- * @see workbench.gui.editor.CodeTools#makeInListForNonChar()
+ * @see workbench.gui.editor.InListCreator#makeInListForNonChar()
  * @see MakeInListAction
  *
  * @author Thomas Kellerer
@@ -56,8 +58,13 @@ public class MakeNonCharInListAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    CodeTools tools = new CodeTools(client);
-    tools.makeInListForNonChar();
+    String text = client.getSelectedText();
+    InListCreator tools = new InListCreator(text);
+    String list = tools.makeInListForNonChar();
+    if (StringUtil.isNonEmpty(list))
+    {
+      client.setSelectedText(list);
+    }
   }
 
   @Override

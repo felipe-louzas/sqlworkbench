@@ -23,6 +23,7 @@ package workbench.util;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
@@ -653,6 +654,7 @@ public class StringUtil
    */
   public static boolean isNumber(String value)
   {
+    if (value == null) return false;
     try
     {
        Double.parseDouble(value);

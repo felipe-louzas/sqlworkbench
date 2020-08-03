@@ -848,7 +848,10 @@ class ObjectCache
         return new ArrayList<>(this.availableDatabases);
       }
 
-      if (conn.isBusy()) return null;
+      if (conn.isBusy())
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Connection is marked as busy!", new Exception("Backtrace"));
+      }
 
       DbSwitcher switcher = DbSwitcher.Factory.createDatabaseSwitcher(conn);
       if (switcher == null) return null;
@@ -866,6 +869,7 @@ class ObjectCache
       }
       catch (Exception e)
       {
+        LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve available databases", e);
         this.databasesCached = false;
       }
       return new ArrayList<>(this.availableDatabases);

@@ -41,6 +41,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
@@ -114,40 +116,43 @@ public class ConnectionInfo
     }
   }
 
-  private void addDbSwitcher()
+  private void addDbSwitcher(WbConnection conn)
   {
-    if (this.sourceConnection == null) return;
+    if (conn == null) return;
 
     if (dbSwitcher == null)
     {
-      dbSwitcher = new SwitchDbComboBox(sourceConnection);
+      LogMgr.logTrace(new CallerInfo(){}, "Adding DB switcher in thread: " + Thread.currentThread() + " for: " + conn);
+      dbSwitcher = new SwitchDbComboBox(conn);
       add(dbSwitcher, BorderLayout.LINE_START);
     }
     else
     {
-      dbSwitcher.selectCurrentDatabase(sourceConnection);
+      LogMgr.logTrace(new CallerInfo(){}, "Updating DB switcher in thread: " + Thread.currentThread() + " for: " + conn);
+      dbSwitcher.setConnection(conn);
     }
-    dbSwitcher.setEnabled(!sourceConnection.isBusy());
+    dbSwitcher.setEnabled(!conn.isBusy());
   }
 
-  private boolean useDbSwitcher()
+  private boolean useDbSwitcher(WbConnection conn)
   {
-    if (sourceConnection == null) return false;
-    if (sourceConnection.isClosed()) return false;
-    if (!sourceConnection.getDbSettings().enableDatabaseSwitcher()) return false;
+    if (conn == null) return false;
+    if (conn.isClosed()) return false;
+    if (!conn.getDbSettings().enableDatabaseSwitcher()) return false;
 
-    DbSwitcher switcher = DbSwitcher.Factory.createDatabaseSwitcher(sourceConnection);
-    return switcher != null && switcher.supportsSwitching(sourceConnection);
+    DbSwitcher switcher = DbSwitcher.Factory.createDatabaseSwitcher(conn);
+    return switcher != null && switcher.supportsSwitching(conn);
   }
 
-  private void updateDBSwitcher()
+  private void updateDBSwitcher(WbConnection conn)
   {
-    if (useDbSwitcher())
+    if (useDbSwitcher(conn))
     {
-      addDbSwitcher();
+      addDbSwitcher(conn);
     }
     else
     {
+      LogMgr.logDebug(new CallerInfo(){}, "Removing DB switcher for: " + conn);
       removeDbSwitcher();
     }
   }
@@ -200,8 +205,9 @@ public class ConnectionInfo
       }
     }
 
-    useCachedSchema = true;
+    updateDBSwitcher(sourceConnection);
 
+    useCachedSchema = true;
     try
     {
       updateDisplay();
@@ -217,10 +223,6 @@ public class ConnectionInfo
     EventQueue.invokeLater(() ->
     {
       showInfoAction.setEnabled(sourceConnection != null);
-      if (dbSwitcher != null)
-      {
-        dbSwitcher.setConnection(sourceConnection);
-      }
 
       if (background == null)
       {
@@ -286,7 +288,6 @@ public class ConnectionInfo
       infoText.setText(ResourceMgr.getString("TxtNotConnected"));
       infoText.setToolTipText(null);
     }
-    updateDBSwitcher();
 
     infoText.setBackground(this.getBackground());
     infoText.setCaretPosition(0);
