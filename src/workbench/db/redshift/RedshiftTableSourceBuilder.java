@@ -351,7 +351,7 @@ public class RedshiftTableSourceBuilder
 
     TableGrantReader grantReader = TableGrantReader.createReader(dbConnection);
     StringBuilder grants = grantReader.getTableGrantSource(this.dbConnection, table);
-    if (grants.length() > 0)
+    if (StringUtil.isNonBlank(grants))
     {
       createSql.append("\n");
       createSql.append(grants);

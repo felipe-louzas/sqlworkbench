@@ -253,7 +253,7 @@ public class TableSourceBuilder
     {
       TableGrantReader grantReader = TableGrantReader.createReader(dbConnection);
       StringBuilder grants = grantReader.getTableGrantSource(this.dbConnection, table);
-      if (grants.length() > 0)
+      if (StringUtil.isNonBlank(grants))
       {
         result.append(lineEnding);
         result.append(grants);
