@@ -2094,7 +2094,7 @@ public class JEditTextArea
    */
   public int getSelectionLength()
   {
-    return selectionStart - selectionEnd;
+    return selectionEnd - selectionStart;
   }
 
   /**
@@ -2141,7 +2141,7 @@ public class JEditTextArea
     }
     else
     {
-      return getText(selectionStart,selectionEnd - selectionStart);
+      return getText(selectionStart, selectionEnd - selectionStart);
     }
 
   }

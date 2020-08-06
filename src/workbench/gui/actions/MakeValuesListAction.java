@@ -88,16 +88,7 @@ public class MakeValuesListAction
   @Override
   public void selectionChanged(int newStart, int newEnd)
   {
-    if (newEnd > newStart)
-    {
-      int startLine = this.client.getSelectionStartLine();
-      int endLine = this.client.getSelectionEndLine();
-      this.setEnabled(startLine <= endLine);
-    }
-    else
-    {
-      this.setEnabled(false);
-    }
+    this.setEnabled(this.client.getSelectionLength() > 0);
   }
 
 }
