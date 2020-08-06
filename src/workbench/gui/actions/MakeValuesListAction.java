@@ -64,7 +64,7 @@ public class MakeValuesListAction
     // shouldn't happen
     if (StringUtil.isBlank(input)) return;
 
-    ValuesCreatorParameter parmInput = new ValuesCreatorParameter();
+    ValuesCreatorParameter parmInput = new ValuesCreatorParameter(input);
     Window window = WbSwingUtilities.getWindowAncestor(client);
     boolean ok = WbSwingUtilities.getOKCancel(ResourceMgr.getString("MnuTxtMakeValuesList"),
                                               window, parmInput, () -> {parmInput.setFocusToInput();});
@@ -73,7 +73,8 @@ public class MakeValuesListAction
 
     parmInput.saveSettings();
     ValuesListCreator creator = new ValuesListCreator(input, parmInput.getDelimiter(), parmInput.isRegex());
-
+    creator.setEmptyStringIsNull(parmInput.getEmptyStringIsNull());
+    creator.setTrimDelimiter(parmInput.getTrimDelimiter());
     String end = Settings.getInstance().getInternalEditorLineEnding();
     creator.setLineEnding(end);
     String list = creator.createValuesList();

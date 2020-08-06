@@ -58,6 +58,21 @@ public class ValuesListCreatorTest
   }
 
   @Test
+  public void testEmptyString()
+  {
+    String input = "Arthur,Dent\nMarvin, ";
+    ValuesListCreator creator = new ValuesListCreator(input);
+    creator.setEmptyStringIsNull(true);
+    creator.setTrimDelimiter(false);
+    String result = creator.createValuesList();
+    System.out.println(result);
+    String expected =
+       "('Arthur', 'Dent'),\n" +
+       "('Marvin', NULL)";
+    assertEquals(expected, result.trim());
+  }
+
+  @Test
   public void testStrings()
   {
     String input = "1,Arthur,Dent\n2,Tricia,McMillan";
@@ -113,6 +128,7 @@ public class ValuesListCreatorTest
       "|1  | 2020-07-22 18:19:20 | 3.14  | Arthur | Dent |\n" +
       "| 3 | 2020-06-22 14:12:25 | 6.42  | Tricia | McMillan | \n";
     ValuesListCreator creator = new ValuesListCreator(input, "|", false);
+    creator.setTrimDelimiter(true);
     String result = creator.createValuesList();
     String expected =
        "(1, '2020-07-22 18:19:20', 3.14, 'Arthur', 'Dent'),\n" +
@@ -128,6 +144,7 @@ public class ValuesListCreatorTest
       "|3|Marvin|  |\n";
     ValuesListCreator creator = new ValuesListCreator(input, "|", false);
     creator.setTrimItems(false);
+    creator.setTrimDelimiter(true);
     String result = creator.createValuesList();
     String expected =
        "(1, 'Arthur', 'Dent'),\n" +

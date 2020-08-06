@@ -61,6 +61,8 @@ public class ValuesListCreator
   private final String input;
   private final String delimiter;
   private final boolean useRegex;
+  private boolean emptyStringIsNull = true;
+  private boolean trimDelimiter = false;
   private boolean trimItems = true;
   private String lineEnding = "\n";
   private WbStringTokenizer tokenizer;
@@ -91,6 +93,16 @@ public class ValuesListCreator
     this.lineEnding = ending;
   }
 
+  public void setEmptyStringIsNull(boolean flag)
+  {
+    this.emptyStringIsNull = flag;
+  }
+
+  public void setTrimDelimiter(boolean flag)
+  {
+    this.trimDelimiter = flag;
+  }
+
   public void setTrimItems(boolean flag)
   {
     this.trimItems = flag;
@@ -106,7 +118,7 @@ public class ValuesListCreator
     for (String line : lines)
     {
       line = line.trim();
-      if (!useRegex)
+      if (!useRegex && trimDelimiter)
       {
         if (line.startsWith(delimiter))
         {
@@ -172,17 +184,24 @@ public class ValuesListCreator
     int nr = 0;
     for (String item : items)
     {
-      if (trimItems) item = item.trim();
+      if (trimItems && item != null) item = item.trim();
       if (nr > 0) result.append(", ");
-      if (item.startsWith("'") || item.startsWith("\"") || StringUtil.isNumber(item))
+      if (item != null && (item.startsWith("'") || item.startsWith("\"") || StringUtil.isNumber(item)))
       {
         result.append(item);
       }
       else
       {
-        result.append('\'');
-        result.append(item);
-        result.append('\'');
+        if ((emptyStringIsNull && StringUtil.isEmptyString(item)) || item == null)
+        {
+          result.append("NULL");
+        }
+        else
+        {
+          result.append('\'');
+          result.append(item);
+          result.append('\'');
+        }
       }
       nr ++;
     }

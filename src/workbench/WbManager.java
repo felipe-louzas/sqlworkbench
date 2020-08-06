@@ -381,7 +381,7 @@ public final class WbManager
     // that the disconnect takes place, and the actual disconnect is
     // carried out in a different thread to not block the AWT thread.
     // If it takes too long the user can still abort the JVM ...
-    WbSwingUtilities.invokeLater(() ->
+    WbSwingUtilities.invoke(() ->
     {
       createCloseMessageWindow(window);
       if (closeMessage != null) closeMessage.setVisible(true);
