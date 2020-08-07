@@ -20,6 +20,8 @@
  */
 package workbench.gui.actions;
 
+import java.awt.Color;
+
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -52,7 +54,15 @@ public class ValuesCreatorParameter
     this.input = text;
     this.previewArea.setFont(Settings.getInstance().getEditorFont());
     this.previewArea.setText(input);
-    this.previewArea.setBackground(Settings.getInstance().getEditorBackgroundColor());
+    Color bg = Settings.getInstance().getEditorBackgroundColor();
+    if (bg == null)
+    {
+      bg = this.previewArea.getBackground();
+    }
+    this.previewArea.setEditable(false);
+    // Setting the background must be done after turning off the editable flag,
+    // otherwise the edit area will be shown "disabled" with a gray background
+    this.previewArea.setBackground(bg);
     this.previewArea.setForeground(Settings.getInstance().getEditorTextColor());
     this.previewArea.setTabSize(Settings.getInstance().getEditorTabWidth());
     this.delimiter.getDocument().addDocumentListener(this);
@@ -211,7 +221,6 @@ public class ValuesCreatorParameter
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     add(trimDelimiter, gridBagConstraints);
 
-    previewArea.setEditable(false);
     previewArea.setColumns(60);
     previewArea.setRows(10);
     jScrollPane1.setViewportView(previewArea);
