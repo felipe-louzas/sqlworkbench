@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2020-07-11">
+  <release build="126" date="2020-08-09">
     <entry dev-build="14" type="enh">WbExport will now abort if a text export is started without a quote character but a quote character would be needed.</entry>
     <entry dev-build="13" type="enh">For PostgreSQL, subscriptions and publications for logical replication are now shown in the DbTree and DbExplorer.</entry>
     <entry dev-build="12" type="enh">For PostgreSQL, the attribute of IDENTITY REPLICA is now shown in the generated DDL.</entry>
