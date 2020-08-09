@@ -23,12 +23,17 @@
  */
 package workbench.gui.sql;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
@@ -57,6 +62,7 @@ import workbench.util.MessageBuffer;
  */
 public class DwUpdatePreview
 {
+
   public boolean confirmUpdate(Component caller, DataStore ds, WbConnection dbConn)
   {
     boolean doSave = true;
@@ -76,6 +82,7 @@ public class DwUpdatePreview
       preview.setBorder(WbSwingUtilities.EMPTY_BORDER);
       preview.setPreferredSize(pref);
       preview.setMaximumSize(max);
+      JPanel display = new JPanel(new BorderLayout(0, 8));
       JScrollPane scroll = new JScrollPane(preview);
       scroll.setMaximumSize(max);
       int maxStatements = Settings.getInstance().getIntProperty("workbench.db.previewsql.maxstatements", 5000);
@@ -110,8 +117,14 @@ public class DwUpdatePreview
       preview.setText(buffer.getBuffer().toString());
       preview.setCaretPosition(0);
       preview.repaint();
+      display.add(scroll, BorderLayout.CENTER);
 
-      ValidatingDialog dialog = ValidatingDialog.createDialog(win, scroll, ResourceMgr.getString("MsgConfirmUpdates"), null, 0, false);
+      JCheckBox copyCbx = new JCheckBox(ResourceMgr.getString("LblCopyToClp"));
+      boolean doCopy = Settings.getInstance().getBoolProperty("workbench.db.previewsql.copyclipboard", false);
+      copyCbx.setSelected(doCopy);
+      display.add(copyCbx, BorderLayout.PAGE_END);
+
+      ValidatingDialog dialog = ValidatingDialog.createDialog(win, display, ResourceMgr.getString("MsgConfirmUpdates"), null, 0, false);
       if (Settings.getInstance().restoreWindowSize(dialog, "workbench.gui.confirmupdate.dialog"))
       {
         WbSwingUtilities.center(dialog, win);
@@ -119,6 +132,13 @@ public class DwUpdatePreview
       dialog.setVisible(true);
       Settings.getInstance().storeWindowSize(dialog, "workbench.gui.confirmupdate.dialog");
       doSave = !dialog.isCancelled();
+      doCopy = copyCbx.isSelected();
+      Settings.getInstance().setProperty("workbench.db.previewsql.copyclipboard", doCopy);
+
+      if (doSave && doCopy)
+      {
+        copyToClipboard(preview);
+      }
     }
     catch (SQLException e)
     {
@@ -144,6 +164,19 @@ public class DwUpdatePreview
       return false;
     }
     return doSave;
+  }
 
+  private void copyToClipboard(EditorPanel panel)
+  {
+    try
+    {
+      Clipboard clipboard = panel.getToolkit().getSystemClipboard();
+      String selection = panel.getText();
+      clipboard.setContents(new StringSelection(selection), null);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not copy text to clipboard", th);
+    }
   }
 }

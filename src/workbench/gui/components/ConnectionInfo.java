@@ -152,7 +152,7 @@ public class ConnectionInfo
     }
     else
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Removing DB switcher for: " + conn);
+      if (conn != null) LogMgr.logDebug(new CallerInfo(){}, "Removing DB switcher for: " + conn);
       removeDbSwitcher();
     }
   }
