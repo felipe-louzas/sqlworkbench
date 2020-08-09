@@ -1,5 +1,6 @@
 /build/
 /dist/
+/release/
 /website/*.html
 /website/history_rss.txt
 *.java~
