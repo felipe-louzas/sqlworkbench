@@ -400,10 +400,14 @@ WHERE id=42;</p>
         <subtitle>Available Downloads</subtitle>
         <content>
         <not-mysql/>
-          <p style="margin-top:15px;text-align:center;font-weight:bold;margin-bottom:0px">
-              SQL Workbench/J requires <b>Java 8</b> or later
-          </p>
-        <h3 style="margin-top:25px">Stable release</h3>
+        <p style="margin-top:15px;font-weight:bold;margin-bottom:0px">
+            SQL Workbench/J requires <b>Java 8</b> or later
+        </p>
+        <p>
+            Using Java 11 or later is highly recommended, especially with High-DPI screens.<br/>
+            Build 126 is the last build to support Java 8. Starting with the next build, Java 11 will be required.
+        </p>
+        <h3 style="margin-top:20px">Stable release</h3>
         <p>
           Current stable release: Build <build-number/>, <build-date/> (<a href="history.html">Release History</a>)
         </p>
@@ -526,6 +530,12 @@ WHERE id=42;</p>
     <content>
       <p>Download archive for SQL Workbench/J</p>
       <ul class="archive-list">
+        <li>Build 125 (requires Java 8)<br/>
+          <ul>
+            <li><a href="archive/Workbench-Build125.zip">All Platforms</a></li>
+            <li><a href="archive/WorkbenchSrc-Build125.zip">Source Code</a></li>
+          </ul>
+        </li>
         <li>Build 124 (requires Java 8)<br/>
           <ul>
             <li><a href="archive/Workbench-Build124.zip">All Platforms</a></li>
