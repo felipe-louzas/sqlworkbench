@@ -301,7 +301,7 @@ public class ValueConverterTest
     String value = "Mo., 12.06.17";
     ValueConverter converter = new ValueConverter();
     converter.setLocale(Locale.GERMANY);
-    converter.setDefaultDateFormat("EE'.', dd.MM.yy");
+    converter.setDefaultDateFormat("EE, dd.MM.yy");
     Object date = converter.convertValue(value, Types.DATE);
     assertNotNull(date);
   }

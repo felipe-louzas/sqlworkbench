@@ -190,17 +190,13 @@ public class WbDateFormatter
       builder = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern);
     }
 
-    DateTimeFormatter dtf = null;
-    if (localeToUse != null)
+    Locale l = localeToUse;
+    if (l == null)
     {
-      dtf = builder.toFormatter(localeToUse);
+      l = Locale.getDefault(Locale.Category.FORMAT);
     }
-    else
-    {
-      dtf = builder.toFormatter();
-    }
-    DateTimeFormatter format = dtf.withResolverStyle(ResolverStyle.SMART);
-    return format;
+    DateTimeFormatter dtf = builder.toFormatter(l).withResolverStyle(ResolverStyle.SMART);
+    return dtf;
   }
 
   private boolean containsTimezonePattern(String toCheck)

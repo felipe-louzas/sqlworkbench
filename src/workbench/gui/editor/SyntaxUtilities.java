@@ -11,7 +11,6 @@ package workbench.gui.editor;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.text.Segment;
@@ -168,7 +167,7 @@ public class SyntaxUtilities
    *
    * @return The x co-ordinate, plus the width of the painted string
    */
-  public static int paintSyntaxLine(Segment line, Token tokens, SyntaxStyle[] styles, TabExpander expander, Graphics gfx, int x, int y, int addwidth)
+  public static float paintSyntaxLine(Segment line, Token tokens, SyntaxStyle[] styles, TabExpander expander, Graphics2D gfx, float x, float y, int addwidth)
   {
     if (tokens == null) return x;
 

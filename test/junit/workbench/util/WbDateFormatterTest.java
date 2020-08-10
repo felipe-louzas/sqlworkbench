@@ -73,7 +73,7 @@ public class WbDateFormatterTest
   {
     WbDateFormatter formatter = new WbDateFormatter();
     formatter.setLocale(Locale.GERMAN);
-    formatter.applyPattern("EE'.', dd.MM.yy");
+    formatter.applyPattern("EE, dd.MM.yy");
     LocalDate dt = formatter.parseDate("Mo., 12.06.17").toLocalDate();
     assertNotNull(dt);
     assertEquals(2017, dt.getYear());

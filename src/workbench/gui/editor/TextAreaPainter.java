@@ -519,7 +519,7 @@ public class TextAreaPainter
 
     try
     {
-      final int x = textArea.getHorizontalOffset();
+      final float x = (float)textArea.getHorizontalOffset();
 
       int endLine = firstVisible + visibleCount + 1;
       if (endLine > lastLine) endLine = lastLine;
@@ -653,7 +653,7 @@ public class TextAreaPainter
     return (ntabs + 1) * tabSize + offset;
   }
 
-  protected void paintPlainLine(Graphics2D gfx, Segment lineSegment, int line, Font defaultFont, Color defaultColor, int x, int y)
+  protected void paintPlainLine(Graphics2D gfx, Segment lineSegment, int line, Font defaultFont, Color defaultColor, float x, float y)
   {
     final FontMetrics fm = getFontMetrics(defaultFont);
 
@@ -666,7 +666,7 @@ public class TextAreaPainter
     Utilities.drawTabbedText(lineSegment, x, y, gfx, this, 0);
   }
 
-  protected void paintSyntaxLine(Graphics2D gfx, Segment lineSegment, Token tokens, int line, Font defaultFont, Color defaultColor, int x, int y)
+  protected void paintSyntaxLine(Graphics2D gfx, Segment lineSegment, Token tokens, int line, Font defaultFont, Color defaultColor, float x, float y)
   {
     final FontMetrics fm = getFontMetrics(defaultFont);
 
@@ -678,7 +678,7 @@ public class TextAreaPainter
     SyntaxUtilities.paintSyntaxLine(lineSegment, tokens, styles, this, gfx, x, y, 0);
   }
 
-  protected void paintHighlight(Graphics2D gfx, Segment lineSegment, int line, int y, Token token)
+  protected void paintHighlight(Graphics2D gfx, Segment lineSegment, int line, float y, Token token)
   {
     final FontMetrics fm = getFontMetrics(gfx.getFont());
     int height = fm.getHeight();
@@ -702,10 +702,10 @@ public class TextAreaPainter
       {
         if (pos + lineStart != textArea.getSelectionStart())
         {
-          int x = textArea.offsetToX(gfx, line, pos);
-          int width = textArea.offsetToX(gfx, line, pos + highlighText.length()) - x;
+          float x = textArea.offsetToX(gfx, line, pos);
+          int width = Math.round(textArea.offsetToX(gfx, line, pos + highlighText.length()) - x);
           gfx.setColor(occuranceHighlightColor);
-          gfx.fillRect(x, y, width, height);
+          gfx.fillRect(Math.round(x), Math.round(y), width, height);
           gfx.setColor(getBackground());
         }
         pos = SyntaxUtilities.findMatch(lineSegment, highlighText, pos + 1, selectionHighlightIgnoreCase);
@@ -713,7 +713,7 @@ public class TextAreaPainter
     }
   }
 
-  protected void paintLineHighlight(Graphics2D gfx, Segment lineSegment, int line, int y, int height, Token token)
+  protected void paintLineHighlight(Graphics2D gfx, Segment lineSegment, int line, float y, int height, Token token)
   {
     int selectionStart = textArea.getSelectionStart();
     int selectionEnd = textArea.getSelectionEnd();
@@ -734,7 +734,7 @@ public class TextAreaPainter
     int selectionEndLine = textArea.getSelectionEndLine();
     int lineStart = textArea.getLineStartOffset(line);
 
-    int x1, x2;
+    float x1, x2;
     if (textArea.isSelectionRectangular())
     {
       int lineLen = textArea.getLineLength(line);
@@ -764,14 +764,14 @@ public class TextAreaPainter
     }
 
     // "inlined" min/max()
-    gfx.fillRect(x1 > x2 ? x2 : x1,y,x1 > x2 ? (x1 - x2) : (x2 - x1),height);
+    gfx.fillRect(Math.round(x1 > x2 ? x2 : x1), Math.round(y), Math.round(x1 > x2 ? (x1 - x2) : (x2 - x1)),height);
   }
 
-  protected void paintBracketHighlight(Graphics2D gfx, Segment lineSegment, int line, int y, int height, int position, Token token)
+  protected void paintBracketHighlight(Graphics2D gfx, Segment lineSegment, int line, float y, int height, int position, Token token)
   {
     if (position == -1) return;
 
-    int x = textArea.offsetToX(gfx, line, position, token);
+    float x = textArea.offsetToX(gfx, line, position, token);
     if (x > 1)
     {
       x--;
@@ -783,17 +783,17 @@ public class TextAreaPainter
     if (bracketHighlightColor != null)
     {
       gfx.setColor(bracketHighlightColor);
-      gfx.fillRect(x, y, width, height - 1);
+      gfx.fillRect(Math.round(x), Math.round(y), width, height - 1);
     }
 
     if (bracketHighlightRec)
     {
       gfx.setColor(getForeground());
-      gfx.drawRect(x, y, width, height - 1);
+      gfx.drawRect(Math.round(x), Math.round(y), width, height - 1);
     }
   }
 
-  protected void paintCaret(Graphics2D gfx, Segment lineSegment, int line, int y, int height, Token token)
+  protected void paintCaret(Graphics2D gfx, Segment lineSegment, int line, float y, int height, Token token)
   {
     int offset = textArea.getCaretPosition() - textArea.getLineStartOffset(line);
 
@@ -804,7 +804,7 @@ public class TextAreaPainter
       paintBracketHighlight(gfx, lineSegment, line, y, height, offset + charOffset, token);
     }
 
-    int caretX = textArea.offsetToX(gfx, line, offset, token);
+    int caretX = Math.round(textArea.offsetToX(gfx, line, offset, token));
     if (textArea.isCaretVisible())
     {
       gfx.setColor(caretColor);
@@ -812,11 +812,11 @@ public class TextAreaPainter
       if (textArea.isOverwriteEnabled())
       {
         final FontMetrics fm = gfx.getFontMetrics();
-        gfx.fillRect(caretX, y + height - 2,  fm.getMaxAdvance(), 2);
+        gfx.fillRect(caretX, Math.round(y + height - 2),  fm.getMaxAdvance(), 2);
       }
       else
       {
-        gfx.fillRect(caretX, y, cursorWidth, height - 1);
+        gfx.fillRect(caretX, Math.round(y), cursorWidth, height - 1);
       }
     }
   }

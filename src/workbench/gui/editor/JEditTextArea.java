@@ -1055,7 +1055,7 @@ public class JEditTextArea
       }
     }
 
-    int x = offsetToX(line, offset);
+    int  x = Math.round(offsetToX(line, offset));
     int width = painter.getFontMetrics().charWidth('w');
     int pwidth = painter.getWidth();
 
@@ -1099,7 +1099,7 @@ public class JEditTextArea
    * @param line The line
    * @param offset The offset, from the start of the line
    */
-  public final int offsetToX(int line, int offset)
+  public final float offsetToX(int line, int offset)
   {
     Graphics2D gfx = (Graphics2D)painter.getGraphics();
     if (gfx == null)
@@ -1119,7 +1119,7 @@ public class JEditTextArea
     return offsetToX(gfx, line, offset);
   }
 
-  public final int offsetToX(Graphics2D gfx, int line, int offset)
+  public final float offsetToX(Graphics2D gfx, int line, int offset)
   {
     TokenMarker tokenMarker = getTokenMarker();
     Token token = null;
@@ -1132,7 +1132,7 @@ public class JEditTextArea
     return offsetToX(gfx, line, offset, token);
   }
 
-  public final int offsetToX(Graphics2D gfx, int line, int offset, Token token)
+  public final float offsetToX(Graphics2D gfx, int line, int offset, Token token)
   {
     getLineText(line, lineSegment);
 
@@ -1143,7 +1143,7 @@ public class JEditTextArea
     {
       lineSegment.count = offset;
       FontMetrics fm = gfx.getFontMetrics();
-      return Math.round(x + SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, fm, x, painter, 0));
+      return x + SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, fm, x, painter, 0);
     }
     else
     {
@@ -1169,7 +1169,7 @@ public class JEditTextArea
         token = token.next;
       }
     }
-    return Math.round(x);
+    return x;
   }
 
   /**

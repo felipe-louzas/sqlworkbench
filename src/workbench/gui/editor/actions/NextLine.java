@@ -68,7 +68,7 @@ public class NextLine
     int magic = textArea.getMagicCaretPosition();
     if (magic == -1)
     {
-      magic = textArea.offsetToX(line, caret - textArea.getLineStartOffset(line));
+      magic = Math.round(textArea.offsetToX(line, caret - textArea.getLineStartOffset(line)));
     }
 
     caret = textArea.getLineStartOffset(line + 1) + textArea.xToOffset(line + 1, magic);
