@@ -17,7 +17,7 @@
   <property name="javadocdir" value="../javadoc"/>
   <property name="srczipname" value="WorkbenchSrc.zip"/>
   <property name="srczip" value="${root}/../${srczipname}"/>
-  <property name="target.version" value="1.8"/>
+  <property name="target.version" value="11"/>
 
   <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="../../manual/libs/xmltask-v1.16.jar"/>
 
@@ -28,6 +28,7 @@
     <tstamp>
       <format pattern="yyyy-MM-dd HH:mm" property="build_timestamp"/>
     </tstamp>
+    <echo>Java/JVM version: ${java.version}</echo>     
   </target>
 
   <target name="set-build-number" depends="prepare">
@@ -143,11 +144,9 @@
            debuglevel="source,lines"
            destdir="${build}"
            srcdir="${src}"
-           target="${target.version}"
-           source="${target.version}"
            includeantruntime="false"
            encoding="ISO-8859-1">
-      <compilerarg value="-Xlint:none"/>
+      <compilerarg line="-Xlint:none --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
       <exclude name="workbench/WbStarter.java"/>
       <classpath>
           <fileset dir="../libs/odf" includes="*.jar"/>
