@@ -155,7 +155,6 @@ import workbench.gui.actions.JumpToPrevStatement;
 import workbench.gui.actions.JumpToStatement;
 import workbench.gui.actions.MakeInListAction;
 import workbench.gui.actions.MakeLowerCaseAction;
-import workbench.gui.actions.MakeNonCharInListAction;
 import workbench.gui.actions.MakeUpperCaseAction;
 import workbench.gui.actions.MakeValuesListAction;
 import workbench.gui.actions.NextResultAction;
@@ -4209,7 +4208,8 @@ public class SqlPanel
             {
               localAnnotations = sourceAnnotations;
             }
-            boolean showAsText = displayAsText || evaluateResultMode(sourceAnnotations);
+            boolean showAsText = displayAsText || evaluateResultMode(localAnnotations);
+            boolean showContLines = ResultAsTextAnnotation.doShowContinuationLines(localAnnotations);
             String tabName1 = localAnnotations.contains(useTab) ? useTab.getResultName(sql) : null;
             DwPanel p = null;
             if (StringUtil.isNonEmpty(tabName1))
@@ -4229,7 +4229,7 @@ public class SqlPanel
             {
               if (showAsText)
               {
-                showDataStoreAsText(ds, genSql);
+                showDataStoreAsText(ds, genSql, showContLines);
               }
               else
               {
@@ -4302,7 +4302,7 @@ public class SqlPanel
     return count;
   }
 
-  private void showDataStoreAsText(DataStore ds, String sql)
+  private void showDataStoreAsText(DataStore ds, String sql, boolean showContLines)
   {
     if (GuiSettings.includeQueryWithResultAsText())
     {
@@ -4310,6 +4310,7 @@ public class SqlPanel
       log.addLine("\n");
     }
     DataStorePrinter printer = new DataStorePrinter(ds);
+    printer.setPrintContinuationIndicator(showContLines);
     printer.setPrintRowCount(true);
     printer.printTo(log);
     log.addLine("");

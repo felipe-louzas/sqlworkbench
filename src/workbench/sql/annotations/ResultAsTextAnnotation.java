@@ -21,9 +21,10 @@
  */
 package workbench.sql.annotations;
 
-
 import java.util.List;
 
+import workbench.util.ArgumentParser;
+import workbench.util.StringUtil;
 
 /**
  * A class to mark the next result to be shown as "text", rather than a tab in the GUI.
@@ -34,6 +35,9 @@ public class ResultAsTextAnnotation
   extends WbAnnotation
 {
   public static final String ANNOTATION = "WbResultAsText";
+
+  private boolean applyFormat = true;
+  private String mode = null;
 
   public ResultAsTextAnnotation()
   {
@@ -46,22 +50,73 @@ public class ResultAsTextAnnotation
     return false;
   }
 
+  public String getMode()
+  {
+    return mode;
+  }
+
+  public boolean applyConsoleFormat()
+  {
+    return applyFormat;
+  }
+
+  @Override
+  public void setValue(String annotationValue)
+  {
+    if (StringUtil.isNonBlank(annotationValue))
+    {
+      parseValue(annotationValue);
+    }
+  }
+
+  private void parseValue(String value)
+  {
+    ArgumentParser parser = new ArgumentParser(false);
+    parser.addArgument("format");
+    parser.addArgument("mode");
+    parser.parse(value);
+    if (parser.isArgPresent("format"))
+    {
+      applyFormat = parser.getBoolean("format");
+    }
+    if (parser.isArgPresent("mode"))
+    {
+      mode = parser.getValue("mode");
+    }
+    else
+    {
+      mode = StringUtil.trimToNull(parser.getNonArguments());
+    }
+  }
+
+  public static boolean doShowContinuationLines(List<WbAnnotation> annotations)
+  {
+    for (WbAnnotation toCheck : annotations)
+    {
+      if (toCheck instanceof ResultAsTextAnnotation)
+      {
+        return ((ResultAsTextAnnotation)toCheck).applyConsoleFormat();
+      }
+    }
+    return false;
+  }
+
   public static ResultAsTextMode getMode(List<WbAnnotation> annotations)
   {
     for (WbAnnotation toCheck : annotations)
     {
       if (toCheck instanceof ResultAsTextAnnotation)
       {
-        String value = toCheck.getValue();
-        if (value == null)
+        String mode = ((ResultAsTextAnnotation)toCheck).getMode();
+        if (mode == null)
         {
           return ResultAsTextMode.onceOnly;
         }
-        if ("on".equalsIgnoreCase(value))
+        if ("on".equalsIgnoreCase(mode))
         {
           return ResultAsTextMode.turnOn;
         }
-        if ("off".equalsIgnoreCase(value))
+        if ("off".equalsIgnoreCase(mode))
         {
           return ResultAsTextMode.turnOff;
         }

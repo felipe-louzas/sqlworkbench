@@ -21,7 +21,6 @@
  */
 package workbench.console;
 
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +56,7 @@ public abstract class ConsolePrinter
   protected boolean doFormat = true;
   protected boolean showRowCount = true;
   protected boolean printRowAsLine = true;
+  protected boolean printContinuationIndicator = true;
   protected Set<String> includedColumns;
 
   protected abstract String getResultName();
@@ -83,6 +83,11 @@ public abstract class ConsolePrinter
   public void setNullString(String displayValue)
   {
     nullString = displayValue;
+  }
+
+  public void setPrintContinuationIndicator(boolean flag)
+  {
+    this.printContinuationIndicator = flag;
   }
 
   /**
@@ -381,7 +386,7 @@ public abstract class ConsolePrinter
 
         int colstart = getColStartColumn(col) - currentpos;
         writePadded(pw, "", colstart, false);
-        if (printedColNr > 1)
+        if (printContinuationIndicator && printedColNr > 1)
         {
           pw.print(" : ");
         }
