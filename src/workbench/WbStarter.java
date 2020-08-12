@@ -39,7 +39,7 @@ import javax.swing.WindowConstants;
 /**
  * This is a wrapper to kick-off the actual WbManager class.
  *
- * It should run with any JDK >= 1.3 as it does not reference any other classes.
+ * It should run with any JDK >= 1.5 as it does not reference any other classes.
  * <br/>
  * This class is compiled separately in build.xml to allow for a different
  * class file version between this class and the rest of the application.
@@ -99,11 +99,11 @@ public class WbStarter
       versionNr = -1;
     }
 
-    if (versionNr < 8)
+    if (versionNr < 11)
     {
       String error =
-        "SQL Workbench/J requires Java 8, but only " + version + " was found\n\n" +
-        "If you do have Java 8 installed, please point JAVA_HOME to the location of your Java 8 installation.\n" +
+        "SQL Workbench/J requires Java 11, but only " + version + " was found\n\n" +
+        "If you do have Java 11 installed, please point JAVA_HOME to the location of your Java 8 installation, \n" +
         "or refer to the manual for details on how to specify the Java runtime to be used.";
 
       System.err.println("*** Cannot run this application ***");
@@ -112,23 +112,25 @@ public class WbStarter
       {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-        // The dummy Frame is needed for pre Java 5 because otherwise
-        // the dialog will not appear in the Windows task bar
+        // The dummy Frame is needed because otherwise the dialog will not appear in the Windows task bar
         Frame dummy = new Frame("SQL Workbench/J - Wrong Java version");
-        dummy.setBounds(-2000, -2000, 0, 0);
+        dummy.setBounds(-10000, -10000, 0, 0);
         dummy.setVisible(true);
 
+        ImageIcon icon = null;
         try
         {
           URL iconUrl = WbStarter.class.getClassLoader().getResource("workbench/resource/images/workbench16.png");
-          ImageIcon icon = new ImageIcon(iconUrl);
+          icon = new ImageIcon(iconUrl);
           dummy.setIconImage(icon.getImage());
         }
         catch (Exception e)
         {
           e.printStackTrace();
         }
+
         final JDialog d = new JDialog(dummy, "SQL Workbench/J - Wrong Java version", true);
+
         d.getContentPane().setLayout(new BorderLayout(5, 5));
         JButton b = new JButton("Close");
         b.addActionListener(new ActionListener()
