@@ -78,6 +78,7 @@ public class SwitchDbComboBox
     {
       this.connection.removeChangeListener(this);
     }
+
     this.connection = conn;
     this.switcher = DbSwitcher.Factory.createDatabaseSwitcher(conn);
     if (conn == null)
@@ -86,21 +87,27 @@ public class SwitchDbComboBox
     }
     else
     {
-      this.connection.addChangeListener(this);
       this.retrieve();
       if (conn.isShared())
       {
         setSwitchWindow(true);
       }
+      this.connection.addChangeListener(this);
     }
   }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt)
   {
-    if (evt.getSource() == this.connection && WbConnection.PROP_CATALOG_LIST.equals(evt.getPropertyName()))
+    if (evt.getSource() != this.connection) return;
+
+    if (WbConnection.PROP_CATALOG_LIST.equals(evt.getPropertyName()))
     {
       WbSwingUtilities.invokeLater(this::startRetrieve);
+    }
+    else if (WbConnection.PROP_CATALOG.equals(evt.getPropertyName()) && !ignoreItemChange)
+    {
+      selectCurrentDatabase(connection);
     }
   }
 

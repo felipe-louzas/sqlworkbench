@@ -35,6 +35,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +106,7 @@ public class DbTreePanel
   extends JPanel
   implements Reloadable, ActionListener, MouseListener, DbObjectList,
              ObjectDropListener, KeyListener, QuickFilter, RowCountDisplay,
-             ObjectFinder, TreeSelectionListener
+             ObjectFinder, TreeSelectionListener, PropertyChangeListener
 {
   public static final String PROP_DIVIDER = "divider.location";
   public static final String PROP_VISIBLE = "tree.visible";
@@ -284,6 +286,16 @@ public class DbTreePanel
     return tree.getLoader();
   }
 
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    if (evt.getSource() != this.connection) return;
+    if (evt.getPropertyName().equals(WbConnection.PROP_CATALOG) && !this.connection.isBusy())
+    {
+      reload();
+    }
+  }
+
   public void setConnectionToUse(WbConnection toUse)
   {
     if (toUse == null) return;
@@ -303,6 +315,7 @@ public class DbTreePanel
       TreePath selection = tree.getSelectionPath();
       this.tree.setConnection(this.connection);
       this.isPrivateConnection = false;
+      this.connection.addChangeListener(this);
 
       if (connection.isBusy())
       {
@@ -391,6 +404,7 @@ public class DbTreePanel
 
       loadTypes();
       tree.load(true);
+      connection.addChangeListener(this);
     }
     catch (Throwable th)
     {
@@ -566,6 +580,11 @@ public class DbTreePanel
     {
       tree.clear();
       tree.setConnection(null);
+    }
+
+    if (this.connection != null)
+    {
+      this.connection.removeChangeListener(this);
     }
 
     Runnable runner = () ->
