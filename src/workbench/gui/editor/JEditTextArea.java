@@ -2654,7 +2654,7 @@ public class JEditTextArea
         if (data != null)
         {
           String text = data.toString();
-          if (GuiSettings.cleanupClipboardContent())
+          if (text.length() > 1 && GuiSettings.cleanupClipboardContent())
           {
             ClipboardCleaner cleaner = new ClipboardCleaner();
             text = cleaner.cleanupText(text);
