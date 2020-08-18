@@ -234,7 +234,7 @@ public class ColumnWidthOptimizer
     int iconWidth = 0;
     if (table.isViewColumnSorted(col))
     {
-      iconWidth = (int)(SortHeaderRenderer.getArrowSize(fm, table.isPrimarySortColumn(col)) * 1.15);
+      iconWidth = (int)(SortHeaderRenderer.getArrowSize(fm, table.isPrimarySortColumn(col)) * 1.05);
     }
 
     boolean dataTypeVisible = false;
@@ -268,12 +268,7 @@ public class ColumnWidthOptimizer
     }
     Insets ins = c.getInsets();
 
-    if (!remarksVisible)
-    {
-      return c.getPreferredSize().width + iconWidth;
-    }
-
-    int addHeaderSpace = getAdditionalHeaderSpace() + ins.left + ins.right;
+    int addHeaderSpace = getAdditionalColumnSpace() + ins.left + ins.right;
     int headerWidth = hfm.stringWidth(colName) + addHeaderSpace;
 
     if (renderer == null || model == null) return headerWidth + iconWidth;
@@ -321,24 +316,6 @@ public class ColumnWidthOptimizer
     return headerWidth + iconWidth;
   }
 
-  private int getAdditionalHeaderSpace()
-  {
-    int addWidth = table.getIntercellSpacing().width;
-    if (table.getShowVerticalLines())
-    {
-      addWidth += 4;
-    }
-
-    JTableHeader header = table.getTableHeader();
-    TableColumnModel headerCols = header.getColumnModel();
-
-    int headerMargin = headerCols.getColumnMargin();
-
-    addWidth += headerMargin;
-
-    return addWidth;
-  }
-
   private int getAdditionalColumnSpace()
   {
     int addWidth = table.getIntercellSpacing().width;
@@ -347,6 +324,11 @@ public class ColumnWidthOptimizer
       addWidth += 4;
     }
     addWidth += table.getColumnModel().getColumnMargin();
+
+    if (addWidth == 0)
+    {
+      addWidth = 4;
+    }
     return addWidth;
   }
 

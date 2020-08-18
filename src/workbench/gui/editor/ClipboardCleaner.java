@@ -20,6 +20,8 @@
  */
 package workbench.gui.editor;
 
+import workbench.resource.GuiSettings;
+
 import workbench.util.StringUtil;
 
 /**
@@ -28,25 +30,38 @@ import workbench.util.StringUtil;
  */
 public class ClipboardCleaner
 {
-  private final String toReplace;
+  private String toReplace;
   private final String replacements;
 
-  public ClipboardCleaner()
+  public ClipboardCleaner(boolean includeExtendedQuotes)
   {
     String dashes = "\u2012\u2013\u2014\u2015";
     String singleQuotes = "\u2018\u2019\u201b\u2032\u2035";
-    String doubleQuotes = "\u201c\u201d\u201f\u2033\u2036\u00ab\u00bb";
+    String doubleQuotes = "\u201c\u201d\u201f\u2033\u2036";
+    String extendedQuotes = "\u00ab\u00bb"; // « and »
 
     toReplace =  dashes + singleQuotes + doubleQuotes;
+
     String chars = "";
-    for (int i=0; i < dashes.length(); i++) {
+    for (int i = 0; i < dashes.length(); i++)
+    {
       chars += '-';
     }
-    for (int i=0; i < singleQuotes.length(); i++) {
+    for (int i = 0; i < singleQuotes.length(); i++)
+    {
       chars += '\'';
     }
-    for (int i=0; i < doubleQuotes.length(); i++) {
+    for (int i = 0; i < doubleQuotes.length(); i++)
+    {
       chars += '"';
+    }
+    if (includeExtendedQuotes)
+    {
+      toReplace += extendedQuotes;
+      for (int i = 0; i < extendedQuotes.length(); i++)
+      {
+        chars += '"';
+      }
     }
     replacements = chars;
   }

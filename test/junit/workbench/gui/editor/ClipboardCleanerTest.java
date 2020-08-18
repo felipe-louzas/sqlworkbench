@@ -38,8 +38,12 @@ public class ClipboardCleanerTest
   public void testCleanupText()
   {
     String input = "VALUES (\u2019foobar\u2018, 'some \u201ctext\u201d')";
-    ClipboardCleaner cleaner = new ClipboardCleaner();
+    ClipboardCleaner cleaner = new ClipboardCleaner(false);
     assertEquals("VALUES ('foobar', 'some \u201ctext\u201d')", cleaner.cleanupText(input));
+
+    input = "from \u00abfoobar\u00ab";
+    cleaner = new ClipboardCleaner(true);
+    assertEquals("from \"foobar\"", cleaner.cleanupText(input));
   }
 
 }

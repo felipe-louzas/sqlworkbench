@@ -1548,6 +1548,11 @@ public class GuiSettings
     return Settings.getInstance().getBoolProperty("workbench.gui.editor.cleanup.clipboard", true);
   }
 
+  public static boolean cleanupExtendedQuotes()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.editor.cleanup.clipboard.extendedquotes", false);
+  }
+
   public static boolean autoDetectFileEncoding()
   {
     return Settings.getInstance().getBoolProperty("workbench.editor.file.open.detect.encoding", false);

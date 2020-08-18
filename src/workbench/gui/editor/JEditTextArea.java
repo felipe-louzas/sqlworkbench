@@ -2656,7 +2656,7 @@ public class JEditTextArea
           String text = data.toString();
           if (text.length() > 1 && GuiSettings.cleanupClipboardContent())
           {
-            ClipboardCleaner cleaner = new ClipboardCleaner();
+            ClipboardCleaner cleaner = new ClipboardCleaner(GuiSettings.cleanupExtendedQuotes());
             text = cleaner.cleanupText(text);
           }
           setSelectedText(text);
