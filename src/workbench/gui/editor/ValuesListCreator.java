@@ -131,6 +131,7 @@ public class ValuesListCreator
       }
 
       List<String> items = splitLine(line);
+      if (items == null) continue;
 
       if (nr > 0)
       {
@@ -167,11 +168,13 @@ public class ValuesListCreator
   {
     if (tokenizer != null)
     {
+      if (!line.contains(delimiter)) return null;
       tokenizer.setSourceString(line);
       return tokenizer.getAllTokens();
     }
     else
     {
+      if (!splitPattern.matcher(line).find()) return null;
       String[] items = splitPattern.split(line);
       return Arrays.asList(items);
     }

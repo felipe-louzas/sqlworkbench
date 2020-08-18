@@ -104,8 +104,7 @@ public class ValuesListCreatorTest
     String result = creator.createValuesList();
     String expected =
       "(1, 'Arthur', 'Dent', 42),\n" +
-      "(2, 'Tricia', 'McMillan'),\n" +
-      "('foo')";
+      "(2, 'Tricia', 'McMillan')";
     assertEquals(expected, result.trim());
   }
 
