@@ -37,6 +37,24 @@ public class CsvLineParserTest
 {
 
   @Test
+  public void testLeadingDelimiter()
+  {
+    String input = "\t\tval2\tval3\n";
+
+    CsvLineParser parser = new CsvLineParser("\t",'"');
+    parser.setReturnEmptyStrings(true);
+    parser.setTrimValues(true);
+    parser.setUnquotedEmptyStringIsNull(false);
+    parser.setLine(input);
+    List<String> elements = parser.getAllElements();
+    assertEquals(4, elements.size());
+    assertEquals("", elements.get(0));
+    assertEquals("", elements.get(1));
+    assertEquals("val2", elements.get(2));
+    assertEquals("val3", elements.get(3));
+  }
+
+  @Test
   public void testMultiCharDelimiter()
     throws Exception
   {
