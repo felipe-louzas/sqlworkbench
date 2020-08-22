@@ -25,9 +25,14 @@ package workbench.sql.commands;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
+import workbench.db.WbConnection;
+
 import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
+
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 /**
@@ -58,6 +63,26 @@ public class DdlCommandTest
     runner.setUseSavepoint(true);
     result = runner.runStatement(sql);
     assertFalse(result.isSuccess());
+  }
+
+  @Test
+  public void testGrants()
+    throws Exception
+  {
+    TestUtil util = getTestUtil();
+    StatementRunner runner = util.createConnectedStatementRunner();
+    String sql = "create table foo (id integer);";
+    StatementRunnerResult result = runner.runStatement(sql);
+    assertTrue(result.isSuccess());
+
+    result = runner.runStatement("grant select on foo to public;");
+    assertTrue(result.isSuccess());
+
+    result = runner.runStatement("revoke select on foo from public;");
+    assertTrue(result.isSuccess());
+
+    result = runner.runStatement("drop table foo;");
+    assertTrue(result.isSuccess());
   }
 
 
