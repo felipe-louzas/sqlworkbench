@@ -43,6 +43,7 @@ import workbench.console.ConsolePrompter;
 import workbench.console.ConsoleSettings;
 import workbench.console.ConsoleStatusBar;
 import workbench.console.DataStorePrinter;
+import workbench.console.ExternalPager;
 import workbench.console.RowDisplay;
 import workbench.interfaces.ExecutionController;
 import workbench.interfaces.ParameterPrompter;
@@ -139,6 +140,7 @@ public class BatchRunner
   private int errorStatementIndex;
   private ScriptErrorHandler retryHandler;
   private int maxDisplaySize = Integer.MAX_VALUE;
+  private WbFile pagerToUse;
 
   public BatchRunner()
   {
@@ -288,9 +290,14 @@ public class BatchRunner
     this.stmtRunner.setParameterPrompter(p);
   }
 
+  public void setExternalPager(WbFile pager)
+  {
+    this.pagerToUse = pager;
+  }
+
   public void setConsole(PrintStream output)
   {
-    this.console = output;
+    this.console = output == null ? System.out : output;
   }
 
   public void setShowDataLoading(boolean flag)
@@ -899,7 +906,6 @@ public class BatchRunner
         long verbstart = System.currentTimeMillis();
         StatementRunnerResult result = this.stmtRunner.runStatement(sql);
         long verbend = System.currentTimeMillis();
-        this.stmtRunner.statementDone();
 
         status = ExecutionStatus.Success;
 
@@ -968,7 +974,6 @@ public class BatchRunner
             {
               ignoreThisError = true;
             }
-
           }
           else
           {
@@ -1024,6 +1029,10 @@ public class BatchRunner
         printMessage(ExceptionUtil.getDisplay(e));
         status = ExecutionStatus.Error;
         break;
+      }
+      finally
+      {
+        stmtRunner.statementDone();
       }
 
       if (status == ExecutionStatus.Error && abortOnError && !ignoreThisError) break;
@@ -1099,21 +1108,43 @@ public class BatchRunner
 
     boolean showRowCount = result.getShowRowCount() && showRowCounts;
 
-    for (int i=0; i < data.size(); i++)
+    PrintStream output = this.console;
+    ExternalPager pager = null;
+    if (pagerToUse != null && pagerToUse.exists())
     {
-      DataStore ds = data.get(i);
-      if (ds != null)
+      pager = new ExternalPager(this.pagerToUse);
+      if (pager.isValid())
       {
-        DataStorePrinter printer = new DataStorePrinter(ds);
-        printer.setMaxDisplaySize(maxDisplaySize);
-        printer.setFormatColumns(optimizeCols);
-        printer.setPrintRowCount(showRowCount);
-        printer.setPrintRowsAsLine(rowsAsLine);
-        printer.printTo(console);
-        if (i < data.size() -1) console.println();
+        pager.initialize();
+        output = pager.getOutput();
       }
     }
 
+    try
+    {
+      for (int i=0; i < data.size(); i++)
+      {
+        DataStore ds = data.get(i);
+        if (ds != null)
+        {
+          DataStorePrinter printer = new DataStorePrinter(ds);
+          printer.setMaxDisplaySize(maxDisplaySize);
+          printer.setFormatColumns(optimizeCols);
+          printer.setPrintRowCount(showRowCount);
+          printer.setPrintRowsAsLine(rowsAsLine);
+          printer.printTo(output);
+          if (i < data.size() -1) output.println();
+        }
+      }
+    }
+    finally
+    {
+      if (pager != null)
+      {
+        pager.waitFor();
+        pager.done();
+      }
+    }
   }
 
   public void setEncoding(String enc)

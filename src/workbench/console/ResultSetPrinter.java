@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import workbench.interfaces.ResultSetConsumer;
@@ -46,6 +47,9 @@ import workbench.storage.reader.RowDataReader;
 import workbench.storage.reader.RowDataReaderFactory;
 
 import workbench.sql.StatementRunnerResult;
+
+import workbench.util.CollectionUtil;
+import workbench.util.WbFile;
 
 /**
  * A class to print the contents of a ResultSet to a PrintStream.
@@ -63,6 +67,7 @@ public class ResultSetPrinter
   private static final int MAX_WIDTH = 80;
   private TextPrinter pw;
   private ResultInfo info;
+  private WbFile pagerToUse;
 
   public ResultSetPrinter(TextPrinter printer)
   {
@@ -74,7 +79,17 @@ public class ResultSetPrinter
     throws SQLException
   {
     super();
-    pw = TextPrinter.createPrinter(new PrintWriter(out));
+    setOutput(out);
+  }
+
+  public void setExternalPager(WbFile pager)
+  {
+    this.pagerToUse = pager;
+  }
+
+  public void setOutput(PrintStream out)
+  {
+    this.pw = TextPrinter.createPrinter(new PrintWriter(out));
   }
 
   @Override
@@ -87,7 +102,6 @@ public class ResultSetPrinter
   public void cancel()
     throws SQLException
   {
-
   }
 
   @Override
@@ -128,6 +142,8 @@ public class ResultSetPrinter
   protected Map<Integer, Integer> getColumnSizes()
   {
     Map<Integer, Integer> widths = new HashMap<>();
+    if (info == null) return widths;
+
     for (int i=0; i < info.getColumnCount(); i++)
     {
       int nameWidth = getColumnName(i).length();
@@ -143,6 +159,10 @@ public class ResultSetPrinter
   @Override
   public void consumeResult(StatementRunnerResult toConsume)
   {
+    if (toConsume == null) return;
+    List<ResultSet> results = toConsume.getResultSets();
+    if (CollectionUtil.isEmpty(results)) return;
+
     for (ResultSet rs : toConsume.getResultSets())
     {
       printResultSet(rs, toConsume.getShowRowCount());
@@ -156,33 +176,54 @@ public class ResultSetPrinter
 
   public void printResultSet(ResultSet data, boolean showRowCount)
   {
+    TextPrinter output = pw;
+    ExternalPager pager = null;
+    if (pagerToUse != null && pagerToUse.exists())
+    {
+      pager = new ExternalPager(this.pagerToUse);
+      if (pager.isValid())
+      {
+        pager.initialize();
+        output = TextPrinter.createPrinter(new PrintWriter(pager.getOutput()));
+      }
+    }
+
     try
     {
       info = new ResultInfo(data.getMetaData(), null);
+      columnWidths = getColumnSizes();
       printHeader(pw);
 
-      //RowData row = new RowData(info);
       RowDataReader reader = RowDataReaderFactory.createReader(info, null);
       int count = 0;
       ResultHolder rh = new ResultSetHolder(data);
       while (data.next())
       {
         RowData row = reader.read(rh, false);
-        printRow(pw, row, count);
+        printRow(output, row, count);
         reader.closeStreams();
         count ++;
       }
 
       if (showRowCount)
       {
-        pw.println();
-        pw.println(ResourceMgr.getFormattedString("MsgRows", count));
+        output.println();
+        output.println(ResourceMgr.getFormattedString("MsgRows", count));
       }
-      pw.flush();
+      output.flush();
     }
     catch (Exception e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error when printing ResultSet", e);
+    }
+    finally
+    {
+      if (pager != null)
+      {
+        pager.waitFor();
+        pager.done();
+      }
+
     }
   }
 

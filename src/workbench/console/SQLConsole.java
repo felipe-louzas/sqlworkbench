@@ -130,6 +130,7 @@ public class SQLConsole
       WbManager.getInstance().doShutdown(0);
     }
 
+    boolean bufferResults = cmdLine.getBoolean(AppArguments.ARG_CONSOLE_BUFFER_RESULTS, true);
     boolean optimizeColWidths = cmdLine.getBoolean(AppArguments.ARG_CONSOLE_OPT_COLS, true);
 
     runner = initBatchRunner(cmdLine, optimizeColWidths);
@@ -141,7 +142,7 @@ public class SQLConsole
 
       currentPrompt = connectRunner(runner, currentPrompt);
 
-      ResultSetPrinter printer = createPrinter(cmdLine, optimizeColWidths);
+      ResultSetPrinter printer = bufferResults ? null : createPrinter(optimizeColWidths);
       runner.setResultSetConsumer(printer);
 
       loadHistory();
@@ -197,6 +198,7 @@ public class SQLConsole
           try
           {
             runner.setMaxColumnDisplayLength(ConsoleSettings.getMaxColumnDataWidth());
+            runner.setExternalPager(ConsoleSettings.getExternalPager());
             prompter.resetExecuteAll();
 
             if (verb.equalsIgnoreCase(WbHistory.VERB))
@@ -219,7 +221,6 @@ public class SQLConsole
               {
                 saveHistory();
               }
-
               setTerminalTitle(runner.getConnection(), true);
 
               HandlerState state = refreshHandler.handleRefresh(runner, stmt, history);
@@ -253,12 +254,6 @@ public class SQLConsole
           if (changeHistory && !lastHistory.equals(getHistoryFile()))
           {
             loadHistory();
-          }
-
-          // Restore the printing consumer in case a WbExport changed it
-          if (printer != null && runner.getResultSetConsumer() == null)
-          {
-            runner.setResultSetConsumer(printer);
           }
         }
         else
@@ -317,18 +312,14 @@ public class SQLConsole
     return sql;
   }
 
-  private ResultSetPrinter createPrinter(AppArguments cmdLine, boolean optimizeColWidths)
+  private ResultSetPrinter createPrinter(boolean optimizeColWidths)
     throws SQLException
   {
-    boolean bufferResults = cmdLine.getBoolean(AppArguments.ARG_CONSOLE_BUFFER_RESULTS, true);
-    ResultSetPrinter printer = null;
-    if (!bufferResults)
-    {
-      printer = new ResultSetPrinter(System.out);
-      printer.setFormatColumns(optimizeColWidths);
-      printer.setPrintRowCount(true);
-      ConsoleSettings.getInstance().addChangeListener(printer);
-    }
+    ResultSetPrinter printer = new ResultSetPrinter(System.out);
+    printer.setExternalPager(ConsoleSettings.getExternalPager());
+    printer.setFormatColumns(optimizeColWidths);
+    printer.setPrintRowCount(true);
+    ConsoleSettings.getInstance().addChangeListener(printer);
     return printer;
   }
 

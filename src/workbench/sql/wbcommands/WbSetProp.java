@@ -59,7 +59,7 @@ public class WbSetProp
   public static final String ARG_TYPE = "type";
   public static final String ARG_PROP = "property";
   public static final String ARG_VALUE = "value";
-  private final Map<String, String> configMap = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
+  private final Map<String, String> configMap = getAbbreviations();
 
   public WbSetProp()
   {
@@ -68,23 +68,30 @@ public class WbSetProp
     cmdLine.addArgument(ARG_TYPE, CollectionUtil.arrayList("temp","default"));
     cmdLine.addArgument(ARG_PROP);
     cmdLine.addArgument(ARG_VALUE);
-    configMap.put("nulldisplay", ConsoleSettings.PROP_NULL_STRING);
-    configMap.put("nullstring", ConsoleSettings.PROP_NULL_STRING);
-    configMap.put("varsuffix", Settings.PROPERTY_VAR_SUFFIX);
-    configMap.put("varprefix", Settings.PROPERTY_VAR_PREFIX);
-    configMap.put("debugmeta", "workbench.dbmetadata.debugmetasql");
-    configMap.put("date_format", Settings.PROPERTY_DATE_FORMAT);
-    configMap.put("ts_format", Settings.PROPERTY_DATETIME_FORMAT);
-    configMap.put("time_format", Settings.PROPERTY_TIME_FORMAT);
-    configMap.put("digits", Settings.PROPERTY_DECIMAL_DIGITS);
-    configMap.put("dec_separator", Settings.PROPERTY_DECIMAL_SEP);
-    configMap.put("dec_sep", Settings.PROPERTY_DECIMAL_SEP);
-    configMap.put("showscriptfinish", "workbench.gui.sql.script.showtime");
-    configMap.put("showendtime", "workbench.gui.sql.script.showtime");
-    configMap.put("showfinishtime", "workbench.gui.sql.script.showtime");
-    configMap.put("clearonrefresh", ConsoleSettings.PROP_CLEAR_SCREEN);
-    configMap.put("logfileviewer", Settings.PROP_LOGFILE_VIEWER);
-    configMap.put("displaysize", ConsoleSettings.PROP_MAX_DISPLAY_SIZE);
+  }
+
+  public static Map<String, String> getAbbreviations()
+  {
+    Map<String, String> map = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
+    map.put("pager", ConsoleSettings.PROP_PAGER);
+    map.put("nulldisplay", ConsoleSettings.PROP_NULL_STRING);
+    map.put("nullstring", ConsoleSettings.PROP_NULL_STRING);
+    map.put("varsuffix", Settings.PROPERTY_VAR_SUFFIX);
+    map.put("varprefix", Settings.PROPERTY_VAR_PREFIX);
+    map.put("debugmeta", "workbench.dbmetadata.debugmetasql");
+    map.put("date_format", Settings.PROPERTY_DATE_FORMAT);
+    map.put("ts_format", Settings.PROPERTY_DATETIME_FORMAT);
+    map.put("time_format", Settings.PROPERTY_TIME_FORMAT);
+    map.put("digits", Settings.PROPERTY_DECIMAL_DIGITS);
+    map.put("dec_separator", Settings.PROPERTY_DECIMAL_SEP);
+    map.put("dec_sep", Settings.PROPERTY_DECIMAL_SEP);
+    map.put("showscriptfinish", "workbench.gui.sql.script.showtime");
+    map.put("showendtime", "workbench.gui.sql.script.showtime");
+    map.put("showfinishtime", "workbench.gui.sql.script.showtime");
+    map.put("clearonrefresh", ConsoleSettings.PROP_CLEAR_SCREEN);
+    map.put("logfileviewer", Settings.PROP_LOGFILE_VIEWER);
+    map.put("displaysize", ConsoleSettings.PROP_MAX_DISPLAY_SIZE);
+    return map;
   }
 
   @Override

@@ -32,6 +32,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.util.StringUtil;
+import workbench.util.WbFile;
 
 /**
  * A singleton to control and manage the current display style in the console.
@@ -49,6 +50,7 @@ public class ConsoleSettings
   public static final String PROP_MAX_DISPLAY_SIZE = "workbench.console.dataprinter.max.colwidth";
   public static final String PROP_CLEAR_SCREEN = "workbench.console.refresh.clear.screen";
   public static final String PROP_NULL_STRING = "workbench.console.nullstring";
+  public static final String PROP_PAGER = "workbench.console.pager";
   public static final String EVT_PROPERTY_ROW_DISPLAY = "display";
   private RowDisplay rowDisplay = RowDisplay.SingleLine;
   private RowDisplay nextRowDisplay;
@@ -196,4 +198,12 @@ public class ConsoleSettings
   {
     return Settings.getInstance().getBoolProperty("workbench.console.data.print.column.display.name", true);
   }
+
+  public static WbFile getExternalPager()
+  {
+    String pager = Settings.getInstance().getProperty(PROP_PAGER, null);
+    if (StringUtil.isBlank(pager)) return null;
+    return new WbFile(pager);
+  }
+  
 }

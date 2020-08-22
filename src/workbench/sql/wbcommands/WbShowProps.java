@@ -112,6 +112,9 @@ public class WbShowProps
     DataStore data = new PropertyDataStore(true);
     Set<String> keys = Settings.getInstance().getKeys();
 
+    Map<String, String> shortNames = WbSetProp.getAbbreviations();
+    prefix = shortNames.getOrDefault(prefix, prefix);
+
     for (String key : keys)
     {
       if (isWorkbenchProperty(key) && (prefix == null || key.startsWith(prefix)))
@@ -130,7 +133,8 @@ public class WbShowProps
   private static boolean isWorkbenchProperty(String key)
   {
     return key.startsWith("workbench.db")
-          || key.startsWith("workbench.settings.")
+          || key.startsWith("workbench.console")
+          || key.startsWith("workbench.settings")
           || (key.startsWith("workbench.sql") && !key.startsWith("workbench.sql.replace.")
                                               && !key.startsWith("workbench.sql.formatter.")
                                               && !key.startsWith("workbench.sql.search."));
