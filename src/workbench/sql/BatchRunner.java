@@ -297,7 +297,7 @@ public class BatchRunner
 
   public void setConsole(PrintStream output)
   {
-    this.console = output == null ? System.out : output;
+    this.console = output;
   }
 
   public void setShowDataLoading(boolean flag)

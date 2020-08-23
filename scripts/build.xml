@@ -337,7 +337,7 @@
         <include name="${jarfile}"/>
         <include name="SQLWorkbench-Manual.pdf"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/wblauncher/bin">
+      <zipfileset dir="../../launcher/wblauncher/release">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
       </zipfileset>

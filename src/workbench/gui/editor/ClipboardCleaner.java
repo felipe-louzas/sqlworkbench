@@ -20,8 +20,6 @@
  */
 package workbench.gui.editor;
 
-import workbench.resource.GuiSettings;
-
 import workbench.util.StringUtil;
 
 /**

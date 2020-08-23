@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2020-08-09">
+  <release build="-1" date="2020-08-22">
     <entry dev-build="1" type="enh">It's now possible to use an external pager when running in console mode</entry>
-    <entry dev-build="1" type="fix">Running GRANT or REVOKE statements resulted in an error.</entry>
+  </release>
+  <release build="127" date="2020-08-22">
+    <entry dev-build="1" type="fix">It was no longer possible to run GRANT or REVOKE statements.</entry>
   </release>
   <release build="126" date="2020-08-09">
     <entry dev-build="14" type="enh">WbExport will now abort if a text export is started without a quote character but a quote character would be needed.</entry>
