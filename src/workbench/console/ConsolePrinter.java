@@ -66,6 +66,7 @@ public abstract class ConsolePrinter
   protected abstract int getColumnType(int col);
   protected String nullString;
   protected boolean showResultName = true;
+  protected boolean printHeader = true;
 
   public ConsolePrinter()
   {
@@ -122,6 +123,11 @@ public abstract class ConsolePrinter
   public void setPrintRowCount(boolean flag)
   {
     this.showRowCount = flag;
+  }
+
+  public void setPrintHeader(boolean flag)
+  {
+    this.printHeader = flag;
   }
 
   protected void printHeader(TextPrinter pw)

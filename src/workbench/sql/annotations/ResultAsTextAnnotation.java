@@ -37,6 +37,7 @@ public class ResultAsTextAnnotation
   public static final String ANNOTATION = "WbResultAsText";
 
   private boolean applyFormat = true;
+  private boolean showHeader = true;
   private String mode = null;
 
   public ResultAsTextAnnotation()
@@ -53,6 +54,11 @@ public class ResultAsTextAnnotation
   public String getMode()
   {
     return mode;
+  }
+
+  public boolean showResultHeader()
+  {
+    return showHeader;
   }
 
   public boolean applyConsoleFormat()
@@ -74,11 +80,12 @@ public class ResultAsTextAnnotation
     ArgumentParser parser = new ArgumentParser(false);
     parser.addArgument("format");
     parser.addArgument("mode");
+    parser.addArgument("header");
     parser.parse(value);
-    if (parser.isArgPresent("format"))
-    {
-      applyFormat = parser.getBoolean("format");
-    }
+
+    applyFormat = parser.getBoolean("format", applyFormat);
+    showHeader = parser.getBoolean("header", showHeader);
+
     if (parser.isArgPresent("mode"))
     {
       mode = parser.getValue("mode");
@@ -96,6 +103,18 @@ public class ResultAsTextAnnotation
       if (toCheck instanceof ResultAsTextAnnotation)
       {
         return ((ResultAsTextAnnotation)toCheck).applyConsoleFormat();
+      }
+    }
+    return false;
+  }
+
+    public static boolean showResultHeader(List<WbAnnotation> annotations)
+  {
+    for (WbAnnotation toCheck : annotations)
+    {
+      if (toCheck instanceof ResultAsTextAnnotation)
+      {
+        return ((ResultAsTextAnnotation)toCheck).showResultHeader();
       }
     }
     return false;

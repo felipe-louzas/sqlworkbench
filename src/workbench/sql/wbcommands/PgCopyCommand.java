@@ -108,7 +108,7 @@ public class PgCopyCommand
     {
       runner.setSavepoint();
       PgCopyManager pgCopy = new PgCopyManager(currentConnection);
-      if (currentConnection.getDbSettings().getBoolProperty("copy.stdout.text", true))
+      if (currentConnection.getDbSettings().getBoolProperty("copy.stdout.text", false))
       {
         String out = pgCopy.copyStdOutToString(sql);
         if (out != null)

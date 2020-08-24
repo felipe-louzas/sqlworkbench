@@ -4210,6 +4210,7 @@ public class SqlPanel
             }
             boolean showAsText = displayAsText || evaluateResultMode(localAnnotations);
             boolean showContLines = ResultAsTextAnnotation.doShowContinuationLines(localAnnotations);
+            boolean showResultHeader = ResultAsTextAnnotation.showResultHeader(localAnnotations);
             String tabName1 = localAnnotations.contains(useTab) ? useTab.getResultName(sql) : null;
             DwPanel p = null;
             if (StringUtil.isNonEmpty(tabName1))
@@ -4229,7 +4230,7 @@ public class SqlPanel
             {
               if (showAsText)
               {
-                showDataStoreAsText(ds, genSql, showContLines);
+                showDataStoreAsText(ds, genSql, showContLines, showResultHeader);
               }
               else
               {
@@ -4263,6 +4264,7 @@ public class SqlPanel
 
     if (result.hasResultSets())
     {
+      boolean showResultHeader = ResultAsTextAnnotation.showResultHeader(sourceAnnotations);
       final List<ResultSet> results = result.getResultSets();
       count += results.size();
       WbSwingUtilities.invoke(() ->
@@ -4274,7 +4276,7 @@ public class SqlPanel
           {
             if (displayAsText)
             {
-              showResultAsText(rs, sql);
+              showResultAsText(rs, sql, showResultHeader);
             }
             else
             {
@@ -4302,7 +4304,7 @@ public class SqlPanel
     return count;
   }
 
-  private void showDataStoreAsText(DataStore ds, String sql, boolean showContLines)
+  private void showDataStoreAsText(DataStore ds, String sql, boolean showContLines, boolean showHeader)
   {
     if (GuiSettings.includeQueryWithResultAsText())
     {
@@ -4312,11 +4314,12 @@ public class SqlPanel
     DataStorePrinter printer = new DataStorePrinter(ds);
     printer.setPrintContinuationIndicator(showContLines);
     printer.setPrintRowCount(true);
+    printer.setPrintHeader(showHeader && ds.getPrintHeader());
     printer.printTo(log);
     log.addLine("");
   }
 
-  private void showResultAsText(ResultSet rs, String sql)
+  private void showResultAsText(ResultSet rs, String sql, boolean showHeader)
   {
     if (GuiSettings.includeQueryWithResultAsText())
     {
@@ -4324,6 +4327,7 @@ public class SqlPanel
       log.addLine("\n");
     }
     ResultSetPrinter printer = new ResultSetPrinter(log);
+    printer.setPrintHeader(showHeader);
     printer.setPrintRowCount(true);
     printer.printResultSet(rs);
     log.addLine("");

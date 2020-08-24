@@ -1,6 +1,4 @@
 /*
- * ResultSetPrinter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -192,7 +190,7 @@ public class ResultSetPrinter
     {
       info = new ResultInfo(data.getMetaData(), null);
       columnWidths = getColumnSizes();
-      printHeader(pw);
+      if (printHeader) printHeader(pw);
 
       RowDataReader reader = RowDataReaderFactory.createReader(info, null);
       int count = 0;
@@ -223,7 +221,6 @@ public class ResultSetPrinter
         pager.waitFor();
         pager.done();
       }
-
     }
   }
 

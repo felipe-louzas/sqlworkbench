@@ -152,7 +152,7 @@ public class PgCopyManager
   @Override
   public void setup(TableIdentifier table, List<ColumnIdentifier> columns, Reader in, TextImportOptions options, String encoding)
   {
-    sql = createCopyStatement(table, columns, options, encoding);
+    sql = createCopyStatement(table, columns, options);
     if (options.getContainsHeader() && sql.contains("format text"))
     {
       skipOneLine(in);
@@ -219,16 +219,17 @@ public class PgCopyManager
     }
   }
 
-  public final String createCopyStatement(TableIdentifier table, List<ColumnIdentifier> columns, TextImportOptions options, String encoding)
+  public final String createCopyStatement(TableIdentifier table, List<ColumnIdentifier> columns, TextImportOptions options)
   {
     if (!is90)
     {
-      return createCopyStatement84(table, columns, options, encoding);
+      return createCopyStatement84(table, columns, options);
     }
-    return createCopyStatement90(table, columns, options, encoding);
+    // The encoding is not needed in the generated SQL, as this is handle by the Reader we are using
+    return createCopyStatement90(table, columns, options);
   }
 
-  private String createCopyStatement84(TableIdentifier table, List<ColumnIdentifier> columns, TextImportOptions options, String encoding)
+  private String createCopyStatement84(TableIdentifier table, List<ColumnIdentifier> columns, TextImportOptions options)
   {
     StringBuilder copySql = new StringBuilder(100);
     copySql.append("COPY ");
@@ -282,7 +283,7 @@ public class PgCopyManager
     return copySql.toString();
   }
 
-  private String createCopyStatement90(TableIdentifier table, List<ColumnIdentifier> columns, TextImportOptions options, String encoding)
+  private String createCopyStatement90(TableIdentifier table, List<ColumnIdentifier> columns, TextImportOptions options)
   {
     StringBuilder copySql = new StringBuilder(100);
     copySql.append("COPY ");
@@ -344,7 +345,10 @@ public class PgCopyManager
   {
     DataStoreWriter writer = new DataStoreWriter("output");
     runCopyToStdOut(sql, writer);
-    return writer.getResult();
+    DataStore ds = writer.getResult();
+    ds.setPrintHeader(false);
+    ds.setResultName(null);
+    return ds;
   }
 
   public String copyStdOutToString(String sql)

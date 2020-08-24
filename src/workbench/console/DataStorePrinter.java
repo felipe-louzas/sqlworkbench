@@ -1,6 +1,4 @@
 /*
- * DataStorePrinter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -56,6 +54,8 @@ public class DataStorePrinter
   {
     super();
     this.data = source;
+    columnWidths = getColumnSizes();
+    printHeader = source.getPrintHeader();
   }
 
   public void setMaxDisplaySize(int maxLength)
@@ -95,7 +95,6 @@ public class DataStorePrinter
   @Override
   protected Map<Integer, Integer> getColumnSizes()
   {
-    if (!doFormat) return null;
     Map<Integer, Integer> widths = new HashMap<>();
     for (int i=0; i < data.getColumnCount(); i++)
     {
@@ -177,7 +176,7 @@ public class DataStorePrinter
     int count = rows == null ? data.getRowCount() : rows.length;
     try
     {
-      printHeader(pw);
+      if (printHeader) printHeader(pw);
       for (int i=0; i < count; i++)
       {
         int row = rows == null ? i : rows[i];

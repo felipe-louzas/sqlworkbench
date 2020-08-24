@@ -1,6 +1,4 @@
 /*
- * PgCopyImporterTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -23,7 +21,6 @@
  */
 package workbench.db.postgres;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.sql.ResultSet;
@@ -34,7 +31,6 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
-import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -47,6 +43,7 @@ import workbench.sql.parser.ScriptParser;
 import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
 import workbench.util.QuoteEscapeType;
+
 import workbench.db.JdbcUtils;
 
 import org.junit.Test;
@@ -162,12 +159,13 @@ public class PgCopyImporterTest
     List<ColumnIdentifier> cols = CollectionUtil.arrayList(id, name);
     TextImportOptions options = createOptions();
 
-    String sql = copy.createCopyStatement(tbl, cols, options, "UTF-8");
+    String sql = copy.createCopyStatement(tbl, cols, options);
+    System.out.println(sql);
     assertEquals("COPY foo (id,name) FROM stdin WITH (format csv, header true, quote '\"', delimiter '|', NULL '')", sql);
     options.setContainsHeader(false);
     options.setTextDelimiter("\t");
     cols = CollectionUtil.arrayList(name, id);
-    sql = copy.createCopyStatement(tbl, cols, options, "ISO-8859-1");
+    sql = copy.createCopyStatement(tbl, cols, options);
     assertEquals("COPY foo (name,id) FROM stdin WITH (format csv, header false, quote '\"', delimiter E'\\t', NULL '')", sql);
   }
 

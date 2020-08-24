@@ -43,6 +43,7 @@ import workbench.resource.Settings;
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionProfile;
 import workbench.db.DeleteScriptGenerator;
+import workbench.db.JdbcUtils;
 import workbench.db.QuoteHandler;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -66,9 +67,6 @@ import workbench.util.ConverterException;
 import workbench.util.ExceptionUtil;
 import workbench.util.LowMemoryException;
 import workbench.util.MemoryWatcher;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.ValueConverter;
@@ -129,6 +127,7 @@ public class DataStore
 
   protected boolean useNaturalSort;
   private SortDefinition lastSort;
+  private boolean printHeader = true;
 
   /**
    *	Create a DataStore which is not based on a result set
@@ -330,6 +329,22 @@ public class DataStore
         rd.addColumn(index);
       }
     }
+  }
+
+  /**
+   * Return true if the header of this DataStore should be printed to the console.
+   */
+  public boolean getPrintHeader()
+  {
+    return printHeader;
+  }
+
+  /**
+   * Control if the header of thie DataStore should be printed to the console.
+   */
+  public void setPrintHeader(boolean flag)
+  {
+    this.printHeader = flag;
   }
 
   public void setTrimCharData(boolean flag)
