@@ -60,6 +60,7 @@ public class ValuesListCreator
 {
   private final String input;
   private final String delimiter;
+  private String nullString;
   private final boolean useRegex;
   private boolean emptyStringIsNull = true;
   private boolean trimDelimiter = false;
@@ -86,6 +87,14 @@ public class ValuesListCreator
       this.delimiter = StringUtil.unescape(delimiter);
     }
     initTokenizer();
+  }
+
+  /**
+   * Define the string that is treated as a NULL value and will never be quoted.
+   */
+  public void setNullString(String string)
+  {
+    this.nullString = string;
   }
 
   public void setLineEnding(String ending)
@@ -195,7 +204,7 @@ public class ValuesListCreator
       }
       else
       {
-        if ((emptyStringIsNull && StringUtil.isEmptyString(item)) || item == null)
+        if (isNull(item))
         {
           result.append("NULL");
         }
@@ -210,5 +219,13 @@ public class ValuesListCreator
     }
     result.append(')');
     return result;
+  }
+
+  private boolean isNull(String item)
+  {
+    if (item == null) return true;
+    if (emptyStringIsNull && StringUtil.isEmptyString(item)) return true;
+    if (nullString != null && nullString.equals(item)) return true;
+    return false;
   }
 }

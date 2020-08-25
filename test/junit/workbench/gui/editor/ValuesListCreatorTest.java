@@ -85,6 +85,22 @@ public class ValuesListCreatorTest
   }
 
   @Test
+  public void testNullValues()
+  {
+    String input = "1,Arthur,Dent\n2,Tricia,   \n3,Marvin,NULL";
+    ValuesListCreator creator = new ValuesListCreator(input);
+    creator.setEmptyStringIsNull(true);
+    creator.setTrimItems(true);
+    creator.setNullString("NULL");
+    String result = creator.createValuesList();
+    String expected =
+       "(1, 'Arthur', 'Dent'),\n" +
+       "(2, 'Tricia', NULL),\n" +
+       "(3, 'Marvin', NULL)";
+    assertEquals(expected, result.trim());
+  }
+
+  @Test
   public void testQuotedItems()
   {
     String input = "1,'Arthur','Dent'\n2,Tricia,McMillan";

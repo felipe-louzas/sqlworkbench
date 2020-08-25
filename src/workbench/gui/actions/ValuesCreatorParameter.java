@@ -32,6 +32,8 @@ import workbench.resource.Settings;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.editor.ValuesListCreator;
 
+import workbench.util.StringUtil;
+
 /**
  *
  * @author Thomas Kellerer
@@ -44,6 +46,7 @@ public class ValuesCreatorParameter
   private final String regexProp = "workbench.gui.values.creator.regex";
   private final String emptyStringProp = "workbench.gui.values.creator.emptystring.null";
   private final String trimSepProp = "workbench.gui.values.creator.trim.delimiter";
+  private final String nullStringProp = "workbench.gui.values.creator.nullstring";
 
   private String input;
 
@@ -66,7 +69,13 @@ public class ValuesCreatorParameter
     this.previewArea.setForeground(Settings.getInstance().getEditorTextColor());
     this.previewArea.setTabSize(Settings.getInstance().getEditorTabWidth());
     this.delimiter.getDocument().addDocumentListener(this);
+    this.nullString.getDocument().addDocumentListener(this);
     WbSwingUtilities.invokeLater(this::preview);
+  }
+
+  public String getNullString()
+  {
+    return StringUtil.trimToNull(nullString.getText());
   }
 
   public String getDelimiter()
@@ -102,6 +111,7 @@ public class ValuesCreatorParameter
     isRegex.setSelected(Settings.getInstance().getBoolProperty(regexProp, false));
     emptyString.setSelected(Settings.getInstance().getBoolProperty(emptyStringProp, false));
     trimDelimiter.setSelected(Settings.getInstance().getBoolProperty(trimSepProp, true));
+    nullString.setText(Settings.getInstance().getProperty(nullStringProp, null));
   }
 
   public void saveSettings()
@@ -110,6 +120,7 @@ public class ValuesCreatorParameter
     Settings.getInstance().setProperty(regexProp, isRegex());
     Settings.getInstance().setProperty(emptyStringProp, getEmptyStringIsNull());
     Settings.getInstance().setProperty(trimSepProp, getTrimDelimiter());
+    Settings.getInstance().setProperty(nullStringProp, getNullString());
   }
 
   public void preview()
@@ -118,6 +129,7 @@ public class ValuesCreatorParameter
     creator.setEmptyStringIsNull(getEmptyStringIsNull());
     creator.setTrimDelimiter(getTrimDelimiter());
     creator.setLineEnding("\n");
+    creator.setNullString(getNullString());
     previewArea.setText(creator.createValuesList());
   }
 
@@ -155,6 +167,8 @@ public class ValuesCreatorParameter
     previewArea = new javax.swing.JTextArea();
     jSeparator1 = new javax.swing.JSeparator();
     previewButton = new javax.swing.JButton();
+    jLabel2 = new javax.swing.JLabel();
+    nullString = new javax.swing.JTextField();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -180,7 +194,7 @@ public class ValuesCreatorParameter
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
@@ -198,7 +212,7 @@ public class ValuesCreatorParameter
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
@@ -215,7 +229,7 @@ public class ValuesCreatorParameter
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
@@ -227,7 +241,7 @@ public class ValuesCreatorParameter
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1.0;
@@ -236,7 +250,7 @@ public class ValuesCreatorParameter
     add(jScrollPane1, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.weightx = 1.0;
@@ -253,11 +267,26 @@ public class ValuesCreatorParameter
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
     add(previewButton, gridBagConstraints);
+
+    jLabel2.setText(ResourceMgr.getString("LblNullString")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
+    add(jLabel2, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
+    add(nullString, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void previewButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_previewButtonActionPerformed
@@ -285,8 +314,10 @@ public class ValuesCreatorParameter
   private javax.swing.JCheckBox emptyString;
   private javax.swing.JCheckBox isRegex;
   private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JSeparator jSeparator1;
+  private javax.swing.JTextField nullString;
   private javax.swing.JTextArea previewArea;
   private javax.swing.JButton previewButton;
   private javax.swing.JCheckBox trimDelimiter;
