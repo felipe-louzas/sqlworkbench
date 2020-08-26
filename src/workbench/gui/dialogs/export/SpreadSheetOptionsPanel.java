@@ -162,6 +162,7 @@ public class SpreadSheetOptionsPanel
   private void checkHeaderSettings()
   {
     freezeHeaders.setEnabled(exportHeaders.isSelected());
+    includeComments.setEnabled(exportHeaders.isSelected());
   }
   /** This method is called from within the constructor to
    * initialize the form.
@@ -227,7 +228,7 @@ public class SpreadSheetOptionsPanel
     freezeHeaders.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(6, 6, 0, 0);
     add(freezeHeaders, gridBagConstraints);
@@ -246,7 +247,7 @@ public class SpreadSheetOptionsPanel
     cbxOptimizeCols.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(6, 6, 0, 0);
     add(cbxOptimizeCols, gridBagConstraints);
