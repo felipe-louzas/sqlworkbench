@@ -1,6 +1,4 @@
 /*
- * SpreadSheetOptions.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -41,4 +39,5 @@ public interface SpreadSheetOptions
   void setCreateAutoFilter(boolean flag);
   boolean getOptimizeColumns();
   void setOptimizeColumns(boolean flag);
+  boolean getIncludeComments();
 }

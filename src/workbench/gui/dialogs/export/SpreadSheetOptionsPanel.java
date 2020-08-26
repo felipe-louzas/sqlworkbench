@@ -1,6 +1,4 @@
 /*
- * SpreadSheetOptionsPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -81,6 +79,12 @@ public class SpreadSheetOptionsPanel
     setCreateFixedHeaders(s.getBoolProperty("workbench.export." + exportType + ".fixedheader", true));
     setOptimizeColumns(s.getBoolProperty("workbench.export." + exportType + ".optimizecols", true));
     checkHeaderSettings();
+  }
+
+  @Override
+  public boolean getIncludeComments()
+  {
+    return includeComments.isSelected();
   }
 
   @Override
@@ -176,6 +180,7 @@ public class SpreadSheetOptionsPanel
     freezeHeaders = new JCheckBox();
     createAutoFilter = new JCheckBox();
     cbxOptimizeCols = new JCheckBox();
+    includeComments = new JCheckBox();
 
     FormListener formListener = new FormListener();
 
@@ -185,13 +190,13 @@ public class SpreadSheetOptionsPanel
     pageTitleLabel.setHorizontalTextPosition(SwingConstants.LEADING);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(10, 6, 3, 6);
     add(pageTitleLabel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 8;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
@@ -212,7 +217,7 @@ public class SpreadSheetOptionsPanel
     createInfosheet.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(6, 6, 0, 0);
     add(createInfosheet, gridBagConstraints);
@@ -222,7 +227,7 @@ public class SpreadSheetOptionsPanel
     freezeHeaders.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(6, 6, 0, 0);
     add(freezeHeaders, gridBagConstraints);
@@ -232,7 +237,7 @@ public class SpreadSheetOptionsPanel
     createAutoFilter.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(6, 6, 0, 0);
     add(createAutoFilter, gridBagConstraints);
@@ -241,10 +246,19 @@ public class SpreadSheetOptionsPanel
     cbxOptimizeCols.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(6, 6, 0, 0);
     add(cbxOptimizeCols, gridBagConstraints);
+
+    includeComments.setText(ResourceMgr.getString("LblExportIncludeComments")); // NOI18N
+    includeComments.setBorder(null);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(6, 6, 0, 0);
+    add(includeComments, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -273,6 +287,7 @@ public class SpreadSheetOptionsPanel
   private JCheckBox createInfosheet;
   private JCheckBox exportHeaders;
   private JCheckBox freezeHeaders;
+  private JCheckBox includeComments;
   private JTextField pageTitle;
   private JLabel pageTitleLabel;
   // End of variables declaration//GEN-END:variables

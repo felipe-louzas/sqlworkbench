@@ -1,6 +1,4 @@
 /*
- * EncodingPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -38,10 +36,6 @@ import workbench.resource.Settings;
 
 import workbench.util.EncodingUtil;
 
-/**
- *
- * @author Thomas Kellerer
- */
 public class EncodingDropDown
     extends JPanel
     implements EncodingSelector

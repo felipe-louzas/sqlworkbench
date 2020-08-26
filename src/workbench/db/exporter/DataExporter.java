@@ -1679,6 +1679,7 @@ public class DataExporter
     setEnableFixedHeader(options.getCreateFixedHeaders());
     setAppendInfoSheet(options.getCreateInfoSheet());
     setOptimizeSpreadsheetColumns(options.getOptimizeColumns());
+    setIncludeColumnComments(options.getIncludeComments());
     exportWriter.configureConverter();
   }
 
