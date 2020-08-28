@@ -1473,6 +1473,7 @@ public class MainWindow
 
     WbSwingUtilities.invoke(() ->
     {
+      updateWindowTitle();
       updateGuiForTab(anIndex);
     });
   }
