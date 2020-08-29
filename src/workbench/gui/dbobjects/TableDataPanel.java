@@ -807,7 +807,7 @@ public class TableDataPanel
 
     if (ExplorerUtils.isOwnTransaction(dbConnection))
     {
-      this.dbConnection.rollbackSilently();
+      this.dbConnection.rollbackSilently(new CallerInfo(){});
     }
     else if (this.currentSavepoint != null)
     {

@@ -1559,7 +1559,7 @@ public class MainWindow
     checkConnectionForPanel(current);
     updateAddMacroAction();
     updateGuiForTab(index);
-    updateWindowTitle();
+    if (getCurrentConnection() != null) updateWindowTitle();
     updateRecentFiles();
   }
 

@@ -389,7 +389,7 @@ public class TreeLoader
       else
       {
         LogMgr.logDebug(new CallerInfo(){}, "Ending DbTree transaction using rollback on connection: " + connection.getId());
-        connection.rollbackSilently();
+        connection.rollbackSilently(new CallerInfo(){});
       }
     }
   }

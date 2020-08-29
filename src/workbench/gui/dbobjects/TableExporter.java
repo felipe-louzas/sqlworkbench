@@ -1,6 +1,4 @@
 /*
- * TableExporter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -90,34 +88,33 @@ public class TableExporter
     boolean singleTableExport = tables.size() == 1;
 
     ExportFileDialog dialog;
-
-    if (singleTableExport && tables.get(0) instanceof TableIdentifier)
+    if (singleTableExport)
     {
       ResultInfo info = null;
-      try
+      if (tables.get(0) instanceof TableIdentifier)
       {
-        info = new ResultInfo((TableIdentifier)tables.get(0), exporter.getConnection());
-      }
-      catch (Exception ex)
-      {
-        LogMgr.logError(new CallerInfo(){}, "Could not retrieve table columns", ex);
+        try
+        {
+          info = new ResultInfo((TableIdentifier)tables.get(0), exporter.getConnection());
+        }
+        catch (Exception ex)
+        {
+          LogMgr.logError(new CallerInfo(){}, "Could not retrieve table columns", ex);
+        }
       }
       dialog = new ExportFileDialog(caller, info);
-      dialog.setIncludeSqlUpdate(true);
       dialog.setSelectDirectoryOnly(false);
     }
     else
     {
       dialog = new ExportFileDialog(caller);
-      dialog.setIncludeSqlUpdate(false);
       dialog.setSelectDirectoryOnly(true);
     }
     dialog.restoreSettings();
     dialog.setAllowOpenFile(singleTableExport);
-
     String names = tables.stream().map(t -> t.getObjectName()).collect(Collectors.joining(", "));
 
-    String title = ResourceMgr.getString("LblSelectDirTitle");
+    String title = ResourceMgr.getString("MnuTxtSpoolData").replace("&", "");
     WbConnection dbConnection = exporter.getConnection();
     DbMetadata meta = dbConnection.getMetadata();
     dialog.setExportInfo(names);

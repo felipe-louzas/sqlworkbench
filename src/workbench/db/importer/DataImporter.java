@@ -2485,7 +2485,7 @@ public class DataImporter
     {
       if (commitNeeded)
       {
-        this.dbConn.rollbackSilently();
+        this.dbConn.rollbackSilently(ci);
       }
       LogMgr.logError(ci, "Error commiting changes", e);
       this.hasErrors = true;

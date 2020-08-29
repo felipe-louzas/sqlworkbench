@@ -125,7 +125,7 @@ class ImportTableDeleter
         {
           if (needsCommit)
           {
-            dbConn.rollbackSilently();
+            dbConn.rollbackSilently(new CallerInfo(){});
           }
           break;
         }
@@ -155,7 +155,7 @@ class ImportTableDeleter
     {
       if (needsCommit)
       {
-        dbConn.rollbackSilently();
+        dbConn.rollbackSilently(new CallerInfo(){});
       }
       throw e;
     }

@@ -284,7 +284,7 @@ public class TableRowCountPanel
       dbConnection.setBusy(false);
       if (useSeparateConnection)
       {
-        dbConnection.rollbackSilently();
+        dbConnection.rollbackSilently(new CallerInfo(){});
       }
       showStatusMessage("");
       WbSwingUtilities.showDefaultCursor(scrollPane);

@@ -20,6 +20,8 @@
  */
 package workbench.gui.dbobjects;
 
+import workbench.log.CallerInfo;
+
 import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
@@ -38,7 +40,7 @@ public class ExplorerUtils
 
     if (dbConnection.isShared() == false && dbConnection.selectStartsTransaction())
     {
-      dbConnection.rollbackSilently();
+      dbConnection.rollbackSilently(new CallerInfo(){});
     }
   }
 

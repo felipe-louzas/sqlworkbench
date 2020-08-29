@@ -257,7 +257,7 @@ public class GenericObjectDropper
     {
       if (connection.shouldCommitDDL())
       {
-        this.connection.rollbackSilently();
+        this.connection.rollbackSilently(new CallerInfo(){});
       }
       throw e;
     }
@@ -282,7 +282,7 @@ public class GenericObjectDropper
     {
       if (this.connection.shouldCommitDDL())
       {
-        this.connection.rollbackSilently();
+        this.connection.rollbackSilently(new CallerInfo(){});
       }
     }
   }

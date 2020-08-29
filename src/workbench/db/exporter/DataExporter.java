@@ -1350,7 +1350,7 @@ public class DataExporter
 
       if (!this.dbConn.getAutoCommit() && dbConn.selectStartsTransaction())
       {
-        dbConn.rollbackSilently();
+        dbConn.rollbackSilently(new CallerInfo(){});
       }
     }
     finally

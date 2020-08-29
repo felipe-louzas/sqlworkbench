@@ -2390,7 +2390,6 @@ public class SqlPanel
 
     ExportFileDialog dialog = new ExportFileDialog(SwingUtilities.getWindowAncestor(this));
     dialog.setQuerySql(sql, this.getConnection());
-    dialog.setIncludeSqlInsert(true);
 
     boolean result = dialog.selectOutput();
     if (!result) return;

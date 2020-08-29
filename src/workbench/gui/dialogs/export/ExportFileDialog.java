@@ -1,6 +1,4 @@
 /*
- * ExportFileDialog.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -71,8 +69,6 @@ public class ExportFileDialog
   private boolean isCancelled = false;
   private ExportOptionsPanel exportOptions;
   private boolean selectDirectory = false;
-  private boolean includeSqlUpdate = true;
-  private boolean includeSqlInsert = true;
 
   private String lastDirConfigKey = "workbench.export.lastdir";
 	private final static String SIZE_KEY = "workbench.saveas.dialog";
@@ -183,16 +179,6 @@ public class ExportFileDialog
     return this.isCancelled;
   }
 
-  public void setIncludeSqlUpdate(boolean flag)
-  {
-    this.includeSqlUpdate = flag;
-  }
-
-  public void setIncludeSqlInsert(boolean flag)
-  {
-    this.includeSqlInsert = flag;
-  }
-
   /**
    *  Set the config key for the Settings object
    *  where the selected directory should be stored
@@ -277,6 +263,7 @@ public class ExportFileDialog
 
     exportOptions.setBorder(new EmptyBorder(gap, gap, gap, gap));
     ValidatingDialog dialog = new ValidatingDialog(mainWindow, title, exportOptions);
+    ResourceMgr.setWindowIcons(dialog, "workbench");
     if (!Settings.getInstance().restoreWindowSize(dialog, SIZE_KEY))
     {
       // to properly calculate the needed size, we have to activate
@@ -378,13 +365,6 @@ public class ExportFileDialog
     checkWindow.showAndStart(this::_checkSqlOptions);
   }
 
-  private void updateSqlFlags()
-  {
-    exportOptions.updateSqlOptions(source);
-    includeSqlInsert = (source != null && source.canSaveAsSqlInsert());
-    includeSqlUpdate = (source != null && source.hasPkColumns());
-  }
-
   protected void _checkSqlOptions()
   {
     if (source == null) return;
@@ -393,7 +373,7 @@ public class ExportFileDialog
     {
       sqlChecked = true;
       source.updatePkInformation();
-      updateSqlFlags();
+      exportOptions.updateSqlOptions(source);
     }
     catch (Exception sql)
     {

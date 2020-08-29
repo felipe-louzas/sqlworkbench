@@ -917,11 +917,12 @@ public class WbConnection
     {
       String ctx = context == null ? "" : ", context: " + context;
       LogMgr.logDebug(new CallerInfo(){}, "Rollback all savepoints for connection: " + id + ctx);
-      if (!usedSavepoints.isEmpty())
-      {
-        LogMgr.logWarning(new CallerInfo(){}, "Rollback called with pending savepoints: " + usedSavepoints);
-        usedSavepoints.clear();
-      }
+    }
+
+    if (!usedSavepoints.isEmpty())
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Rollback called with pending savepoints: " + usedSavepoints);
+      usedSavepoints.clear();
     }
     this.sqlConnection.rollback();
   }

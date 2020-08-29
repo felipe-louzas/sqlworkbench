@@ -76,7 +76,6 @@ import static workbench.db.exporter.ExportType.*;
 /**
  *
  * @author  Thomas Kellerer
- *
  */
 public class ExportOptionsPanel
   extends JPanel
@@ -158,7 +157,6 @@ public class ExportOptionsPanel
       this.columnSelectEventSource = generalOptions.addColumnSelectListener(this);
     }
 
-		int gap = IconMgr.getInstance().getSizeForLabel() / 2;
     JPanel baseOptionsPanel = new JPanel(new BorderLayout(0, 0));
 
     baseOptionsPanel.add(pickerPanel, BorderLayout.PAGE_START);
