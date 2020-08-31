@@ -28,7 +28,7 @@
     <tstamp>
       <format pattern="yyyy-MM-dd HH:mm" property="build_timestamp"/>
     </tstamp>
-    <echo>Java/JVM version: ${java.version}</echo>     
+    <echo>Java/JVM version: ${java.version}</echo>
   </target>
 
   <target name="set-build-number" depends="prepare">
@@ -274,7 +274,7 @@
       <entry key="release.build.date" value="${today}"/>
     </propertyfile>
   </target>
-  
+
   <!-- build a full release -->
   <target name="release" depends="clean, compile, set-build-number, set-release-info, set-history-release-number, set-history-build-date, make-release-manual, -make-jar, release-src-zip, release-package, -make-sha1">
 
@@ -337,11 +337,11 @@
         <include name="${jarfile}"/>
         <include name="SQLWorkbench-Manual.pdf"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/wblauncher/release">
+      <zipfileset dir="../../launcher/release">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/wblauncher">
+      <zipfileset dir="../../launcher">
         <include name="SQLWorkbench.cfg.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}" prefix="ext">
@@ -394,11 +394,11 @@
       <zipfileset dir="../libs/lnf" prefix="ext">
         <include name="*.jar"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/wblauncher/bin">
+      <zipfileset dir="../../launcher/bin">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/wblauncher">
+      <zipfileset dir="../../launcher">
         <include name="SQLWorkbench.cfg.sample"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
@@ -490,7 +490,7 @@
         <include name="*.*"/>
       </zipfileset>
 
-      <zipfileset dir="../../launcher/wblauncher" prefix="launcher">
+      <zipfileset dir="../../launcher" prefix="launcher">
         <include name="**/*"/>
       </zipfileset>
     </zip>

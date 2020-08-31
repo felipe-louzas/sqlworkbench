@@ -91,19 +91,18 @@ public class WbStarter
       {
         versionNr = part1;
       }
-
-//      System.out.println("version: " + version + ", versionNr: " + versionNr + ", part1: " + part1 + ", part2: "+ part2);
     }
     catch (Exception e)
     {
       versionNr = -1;
     }
 
-    if (versionNr < 11)
+    final int minVersion = 11;
+    if (versionNr < minVersion)
     {
       String error =
-        "SQL Workbench/J requires Java 11, but only " + version + " was found\n\n" +
-        "If you do have Java 11 installed, please point JAVA_HOME to the location of your Java 8 installation, \n" +
+        "SQL Workbench/J requires Java " + minVersion + ", but was started using " + version + "\n\n" +
+        "If you do have Java 11 installed, please point JAVA_HOME to the location of your Java " + minVersion + " installation, \n" +
         "or refer to the manual for details on how to specify the Java runtime to be used.";
 
       System.err.println("*** Cannot run this application ***");
