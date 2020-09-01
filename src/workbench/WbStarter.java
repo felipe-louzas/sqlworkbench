@@ -50,9 +50,6 @@ import javax.swing.WindowConstants;
 public class WbStarter
 {
 
-  /**
-   * @param args the command line arguments
-   */
   public static void main(String[] args)
   {
     final String version = System.getProperty("java.version", System.getProperty("java.runtime.version"));
@@ -100,9 +97,10 @@ public class WbStarter
     final int minVersion = 11;
     if (versionNr < minVersion)
     {
+      final String javaHome = System.getProperty("java.home");
       String error =
-        "SQL Workbench/J requires Java " + minVersion + ", but was started using " + version + "\n\n" +
-        "If you do have Java 11 installed, please point JAVA_HOME to the location of your Java " + minVersion + " installation, \n" +
+        "SQL Workbench/J requires Java " + minVersion + ", but the Java version used (" + javaHome + ") is " + version + "\n\n" +
+        "If you do have Java "+ minVersion + " installed, please point JAVA_HOME to the location of your Java " + minVersion + " installation, \n" +
         "or refer to the manual for details on how to specify the Java runtime to be used.";
 
       System.err.println("*** Cannot run this application ***");
