@@ -76,6 +76,7 @@ public class MakeValuesListAction
     creator.setEmptyStringIsNull(parmInput.getEmptyStringIsNull());
     creator.setTrimDelimiter(parmInput.getTrimDelimiter());
     creator.setNullString(parmInput.getNullString());
+    creator.setReplaceDoubleQuotes(parmInput.getReplaceDoubleQuotes());
     String end = Settings.getInstance().getInternalEditorLineEnding();
     creator.setLineEnding(end);
     String list = creator.createValuesList();

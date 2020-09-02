@@ -47,6 +47,7 @@ public class ValuesCreatorParameter
   private final String emptyStringProp = "workbench.gui.values.creator.emptystring.null";
   private final String trimSepProp = "workbench.gui.values.creator.trim.delimiter";
   private final String nullStringProp = "workbench.gui.values.creator.nullstring";
+  private final String replaceQuotesProp = "workbench.gui.values.creator.replacequotes";
 
   private String input;
 
@@ -83,6 +84,11 @@ public class ValuesCreatorParameter
     return delimiter.getText();
   }
 
+  public boolean getReplaceDoubleQuotes()
+  {
+    return replaceQuotes.isSelected();
+  }
+
   public boolean isRegex()
   {
     return isRegex.isSelected();
@@ -111,6 +117,7 @@ public class ValuesCreatorParameter
     isRegex.setSelected(Settings.getInstance().getBoolProperty(regexProp, false));
     emptyString.setSelected(Settings.getInstance().getBoolProperty(emptyStringProp, false));
     trimDelimiter.setSelected(Settings.getInstance().getBoolProperty(trimSepProp, true));
+    replaceQuotes.setSelected(Settings.getInstance().getBoolProperty(replaceQuotesProp, true));
     nullString.setText(Settings.getInstance().getProperty(nullStringProp, null));
   }
 
@@ -121,6 +128,7 @@ public class ValuesCreatorParameter
     Settings.getInstance().setProperty(emptyStringProp, getEmptyStringIsNull());
     Settings.getInstance().setProperty(trimSepProp, getTrimDelimiter());
     Settings.getInstance().setProperty(nullStringProp, getNullString());
+    Settings.getInstance().setProperty(replaceQuotesProp, getReplaceDoubleQuotes());
   }
 
   public void preview()
@@ -130,6 +138,7 @@ public class ValuesCreatorParameter
     creator.setTrimDelimiter(getTrimDelimiter());
     creator.setLineEnding("\n");
     creator.setNullString(getNullString());
+    creator.setReplaceDoubleQuotes(getReplaceDoubleQuotes());
     previewArea.setText(creator.createValuesList());
   }
 
@@ -160,15 +169,17 @@ public class ValuesCreatorParameter
 
     jLabel1 = new javax.swing.JLabel();
     delimiter = new javax.swing.JTextField();
-    isRegex = new javax.swing.JCheckBox();
-    emptyString = new javax.swing.JCheckBox();
-    trimDelimiter = new javax.swing.JCheckBox();
     jScrollPane1 = new javax.swing.JScrollPane();
     previewArea = new javax.swing.JTextArea();
     jSeparator1 = new javax.swing.JSeparator();
     previewButton = new javax.swing.JButton();
     jLabel2 = new javax.swing.JLabel();
     nullString = new javax.swing.JTextField();
+    jPanel1 = new javax.swing.JPanel();
+    trimDelimiter = new javax.swing.JCheckBox();
+    isRegex = new javax.swing.JCheckBox();
+    emptyString = new javax.swing.JCheckBox();
+    replaceQuotes = new javax.swing.JCheckBox();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -182,58 +193,6 @@ public class ValuesCreatorParameter
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(0, 12, 0, 0);
     add(delimiter, gridBagConstraints);
-
-    isRegex.setText(ResourceMgr.getString("LblDelimIsRegex")); // NOI18N
-    isRegex.setBorder(null);
-    isRegex.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        isRegexActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-    add(isRegex, gridBagConstraints);
-
-    emptyString.setText(ResourceMgr.getString("LblEmptyStringIsNull")); // NOI18N
-    emptyString.setBorder(null);
-    emptyString.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        emptyStringActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-    add(emptyString, gridBagConstraints);
-
-    trimDelimiter.setText(ResourceMgr.getString("LblTrimSeparator")); // NOI18N
-    trimDelimiter.setBorder(null);
-    trimDelimiter.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        trimDelimiterActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-    add(trimDelimiter, gridBagConstraints);
 
     previewArea.setColumns(60);
     previewArea.setRows(10);
@@ -287,6 +246,83 @@ public class ValuesCreatorParameter
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
     add(nullString, gridBagConstraints);
+
+    jPanel1.setLayout(new java.awt.GridBagLayout());
+
+    trimDelimiter.setText(ResourceMgr.getString("LblTrimSeparator")); // NOI18N
+    trimDelimiter.setBorder(null);
+    trimDelimiter.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        trimDelimiterActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(6, 14, 0, 0);
+    jPanel1.add(trimDelimiter, gridBagConstraints);
+
+    isRegex.setText(ResourceMgr.getString("LblDelimIsRegex")); // NOI18N
+    isRegex.setBorder(null);
+    isRegex.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        isRegexActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
+    jPanel1.add(isRegex, gridBagConstraints);
+
+    emptyString.setText(ResourceMgr.getString("LblEmptyStringIsNull")); // NOI18N
+    emptyString.setBorder(null);
+    emptyString.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        emptyStringActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
+    jPanel1.add(emptyString, gridBagConstraints);
+
+    replaceQuotes.setText(ResourceMgr.getString("LblReplaceDQuotes")); // NOI18N
+    replaceQuotes.setBorder(null);
+    replaceQuotes.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        replaceQuotesActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(6, 14, 0, 0);
+    jPanel1.add(replaceQuotes, gridBagConstraints);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.gridheight = 3;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    add(jPanel1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void previewButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_previewButtonActionPerformed
@@ -309,17 +345,24 @@ public class ValuesCreatorParameter
     preview();
   }//GEN-LAST:event_trimDelimiterActionPerformed
 
+  private void replaceQuotesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_replaceQuotesActionPerformed
+  {//GEN-HEADEREND:event_replaceQuotesActionPerformed
+    preview();
+  }//GEN-LAST:event_replaceQuotesActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField delimiter;
   private javax.swing.JCheckBox emptyString;
   private javax.swing.JCheckBox isRegex;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JPanel jPanel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JSeparator jSeparator1;
   private javax.swing.JTextField nullString;
   private javax.swing.JTextArea previewArea;
   private javax.swing.JButton previewButton;
+  private javax.swing.JCheckBox replaceQuotes;
   private javax.swing.JCheckBox trimDelimiter;
   // End of variables declaration//GEN-END:variables
 }

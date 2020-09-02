@@ -32,6 +32,27 @@ public class ValuesListCreatorTest
 {
 
   @Test
+  public void testDoubleQuotes()
+  {
+    String input =
+      "1, \"foo\", 42\n" +
+      "2, \"bar\", 43";
+    ValuesListCreator creator = new ValuesListCreator(input, ",", true);
+    String result = creator.createValuesList();
+    String expected =
+       "(1, '\"foo\"', 42),\n" +
+       "(2, '\"bar\"', 43)";
+    assertEquals(expected, result.trim());
+
+    creator.setReplaceDoubleQuotes(true);
+    result = creator.createValuesList();
+    expected =
+       "(1, 'foo', 42),\n" +
+       "(2, 'bar', 43)";
+    assertEquals(expected, result.trim());
+  }
+
+  @Test
   public void testRegex()
   {
     String input =

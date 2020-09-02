@@ -68,6 +68,7 @@ public class ValuesListCreator
   private String lineEnding = "\n";
   private WbStringTokenizer tokenizer;
   private Pattern splitPattern;
+  private boolean replaceDoubleQuotes = false;
 
   public ValuesListCreator(String input)
   {
@@ -87,6 +88,14 @@ public class ValuesListCreator
       this.delimiter = StringUtil.unescape(delimiter);
     }
     initTokenizer();
+  }
+
+  /**
+   * If set to true, strings enclosed with double quotes will be replace with single quotes.
+   */
+  public void setReplaceDoubleQuotes(boolean replaceDoubleQuotes)
+  {
+    this.replaceDoubleQuotes = replaceDoubleQuotes;
   }
 
   /**
@@ -198,7 +207,13 @@ public class ValuesListCreator
     {
       if (trimItems && item != null) item = item.trim();
       if (nr > 0) result.append(", ");
-      if (item != null && (item.startsWith("'") || item.startsWith("\"") || StringUtil.isNumber(item)))
+
+      if (replaceDoubleQuotes)
+      {
+        item = replaceQuotes(item);
+      }
+
+      if (item != null && (item.startsWith("'") || StringUtil.isNumber(item)))
       {
         result.append(item);
       }
@@ -219,6 +234,16 @@ public class ValuesListCreator
     }
     result.append(')');
     return result;
+  }
+
+  private String replaceQuotes(String item)
+  {
+    if (item == null) return item;
+    if (item.startsWith("\"") && item.endsWith("\""))
+    {
+      return "'" + StringUtil.trimQuotes(item, '"') + "'";
+    }
+    return item;
   }
 
   private boolean isNull(String item)
