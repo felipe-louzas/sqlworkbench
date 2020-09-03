@@ -23,35 +23,34 @@
  */
 package workbench.util;
 
-import java.awt.EventQueue;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.awt.Desktop;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
+import java.awt.desktop.PreferencesEvent;
+import java.awt.desktop.PreferencesHandler;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
 
 import workbench.WbManager;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.gui.actions.OptionsDialogAction;
 import workbench.gui.dialogs.WbAboutDialog;
 
 /**
- * This class - if running on Mac OS - will install an ApplicationListener
- * that responds to the Apple-Q keystroke (handleQuit).
+ * This class - if running on Mac OS - will install the needed application handlers.
  *
- * Information taken from
- *
- * https://developer.apple.com/documentation/Java/Reference/1.4.2/appledoc/api/com/apple/eawt/Application.html
- * https://developer.apple.com/samplecode/OSXAdapter/index.html
+ * @see Desktop#setAboutHandler(java.awt.desktop.AboutHandler)
+ * @see Desktop#setPreferencesHandler(java.awt.desktop.PreferencesHandler)
+ * @see Desktop#setQuitHandler(java.awt.desktop.QuitHandler)
  *
  * @author Thomas Kellerer
  */
 public class MacOSHelper
-  implements InvocationHandler
+  implements AboutHandler, PreferencesHandler, QuitHandler
 {
-  private Object proxy;
-
   private static boolean isMacOS = System.getProperty("os.name").startsWith("Mac OS");
 
   public static boolean isMacOS()
@@ -62,161 +61,48 @@ public class MacOSHelper
   public void installApplicationHandler()
   {
     if (!isMacOS()) return;
+
     final CallerInfo ci = new CallerInfo(){};
     try
     {
-      LogMgr.logDebug(ci, "Trying to install Mac OS ApplicationListener");
-      Class appClass = Class.forName("com.apple.eawt.Application");
-      Object application = appClass.newInstance();
-      if (application != null)
-      {
-        LogMgr.logDebug(ci, "Obtained Application object");
-
-        // Create a dynamic Proxy that can be registered as the ApplicationListener
-        Class listener = Class.forName("com.apple.eawt.ApplicationListener");
-        this.proxy = Proxy.newProxyInstance(listener.getClassLoader(), new Class[] { listener },this);
-        Method add = appClass.getMethod("addApplicationListener", new Class[] { listener });
-        if (add != null)
-        {
-          // Register the proxy as the ApplicationListener. Calling events on the Listener
-          // will result in calling the invoke method from this class.
-          add.invoke(application, this.proxy);
-          LogMgr.logInfo(ci, "Mac OS ApplicationListener installed");
-        }
-
-        // Now register for the Preferences... menu
-        Method enablePrefs = appClass.getMethod("setEnabledPreferencesMenu", boolean.class);
-        enablePrefs.invoke(application, Boolean.TRUE);
-        LogMgr.logDebug(ci, "Registered for Preferences event");
-      }
-      else
-      {
-        LogMgr.logError(ci, "Could not create com.apple.eawt.Application",null);
-      }
-    }
-    catch (Exception e)
-    {
-      LogMgr.logError(ci, "Could not install ApplicationListener", e);
-    }
-
-  }
-
-  @Override
-  public Object invoke(Object prx, Method method, Object[] args)
-    throws Throwable
-  {
-    final CallerInfo ci = new CallerInfo(){};
-    if (prx != proxy)
-    {
-      LogMgr.logWarning(ci, "Different Proxy object passed to invoke!");
-    }
-
-    try
-    {
-      String methodName = method.getName();
-      LogMgr.logDebug(ci, "ApplicationEvent [" + methodName + "] received. Arguments: " + getArguments(args));
-      if ("handleQuit".equals(methodName))
-      {
-        // Apparently MacOS sometimes terminates the application before
-        // WbManager could cleanly shutdown the application. In order to make sure
-        // the settings are properly saved, this is done here "just in case".
-        WbManager.getInstance().saveConfigSettings();
-
-        WbManager.getInstance().removeShutdownHook();
-
-        boolean handled = Settings.getInstance().getBoolProperty("workbench.osx.quit.sethandled", true);
-        if (handled)
-        {
-          // Apparently MacOS will call System.exit() once this event is triggered (and the "handled" flag was set to true)
-          // The following line will prevent WbManager from calling system.exit() again
-          System.setProperty("workbench.system.doexit", "false");
-        }
-
-        setHandled(args[0], handled);
-
-        // This is a hack to somehow cleanly shutdown the application
-        boolean immediate = Settings.getInstance().getBoolProperty("workbench.osx.quit.immediate", true);
-        if (immediate)
-        {
-          LogMgr.logDebug(ci, "Calling exitWorkbench()");
-          WbManager.getInstance().exitWorkbench(false);
-        }
-        else
-        {
-          EventQueue.invokeLater(() ->
-          {
-            LogMgr.logDebug(ci, "Calling exitWorkbench()");
-            WbManager.getInstance().exitWorkbench(false);
-          });
-        }
-      }
-      else if ("handleAbout".equals(methodName))
-      {
-        WbAboutDialog.showDialog(null);
-      }
-      else if ("handlePreferences".equals(methodName))
-      {
-        OptionsDialogAction.showOptionsDialog();
-        setHandled(args[0], true);
-      }
-      else
-      {
-        LogMgr.logInfo(ci, "Ignoring unknown event: " + method.getName());
-      }
+      LogMgr.logInfo(ci, "Installing application handlers");
+      Desktop desktop = Desktop.getDesktop();
+      desktop.setAboutHandler(this);
+      desktop.setPreferencesHandler(this);
+      desktop.setQuitHandler(this);
     }
     catch (Throwable e)
     {
-      LogMgr.logError(ci, "Error during callback", e);
-      LogMgr.logDebug(ci, "Arguments: " + getArguments(args));
+      LogMgr.logError(ci, "Could not install application handlers", e);
     }
-    return null;
   }
 
-  private String getArguments(Object[] args)
+  @Override
+  public void handleAbout(AboutEvent e)
   {
-    if (args == null) return "<null>";
-
-    StringBuilder arguments = new StringBuilder();
-
-    for (int i=0; i < args.length; i++)
-    {
-      if (i > 0) arguments.append(", ");
-      arguments.append("args[");
-      arguments.append(Integer.toString(i));
-      arguments.append("]=");
-      if (args[i] == null)
-      {
-        arguments.append("null");
-      }
-      else
-      {
-        arguments.append(args[i].getClass().getName());
-        arguments.append(" [");
-        arguments.append(args[i].toString());
-        arguments.append("]");
-      }
-    }
-    return arguments.toString();
+    LogMgr.logDebug(new CallerInfo(){}, "handlAbout() called()");
+    WbAboutDialog.showDialog(null);
   }
 
-  private void setHandled(Object event, boolean flag)
+  @Override
+  public void handlePreferences(PreferencesEvent e)
+  {
+    LogMgr.logDebug(new CallerInfo(){}, "handlePreferences() called()");
+    OptionsDialogAction.showOptionsDialog();
+  }
+
+  @Override
+  public void handleQuitRequestWith(QuitEvent e, QuitResponse response)
   {
     final CallerInfo ci = new CallerInfo(){};
-    if (event == null)
+    LogMgr.logDebug(ci, "handleQuitRequestWith() called");
+
+    if (!WbManager.getInstance().canExit())
     {
-      LogMgr.logError(ci, "No event object passed!", null);
+      LogMgr.logDebug(ci, "Canelling quit request");
+      response.cancelQuit();
       return;
     }
-    try
-    {
-      Method setHandled = event.getClass().getMethod("setHandled", boolean.class);
-      LogMgr.logDebug(ci, "Setting handled=" + flag + " for event: " + event.toString());
-      setHandled.invoke(event, Boolean.valueOf(flag));
-    }
-    catch (Exception e)
-    {
-      LogMgr.logWarning(ci, "Could not call setHandled() on class " + event.getClass().getName(), e);
-    }
+    WbManager.getInstance().doShutdown(0);
   }
-
 }
