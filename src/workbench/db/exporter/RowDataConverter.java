@@ -71,7 +71,6 @@ import workbench.util.WbFile;
 import workbench.util.WbNumberFormatter;
 import workbench.util.ZipOutputFactory;
 
-
 /**
  * Abstract class for converting data into various output formats.
  *
@@ -938,6 +937,10 @@ public abstract class RowDataConverter
           LogMgr.logError(new CallerInfo(){}, msg, e);
           throw new RuntimeException(msg, e);
         }
+      }
+      else if (value instanceof Boolean && exporter != null && exporter.getTrueLiteral() != null && exporter.getFalseLiteral() != null)
+      {
+        return (Boolean)value ? exporter.getTrueLiteral() : exporter.getFalseLiteral();
       }
       else
       {

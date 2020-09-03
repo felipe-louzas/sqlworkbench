@@ -187,6 +187,8 @@ public class DataExporter
   private ExportDataModifier modifier;
   private boolean includeColumnComments;
   private String nullString;
+  private String literalFalse;
+  private String literalTrue;
 
   private int maxBlobFilesPerDir = -1;
   private boolean trimCharData;
@@ -356,6 +358,28 @@ public class DataExporter
   public void setSpreadSheetOffset(Point location)
   {
     dataOffset = location;
+  }
+
+  /**
+   * Define the literals to be used for (real) boolean true/false values.
+   *
+   * @param trueLiteral    the literal to be written for the value "true"
+   * @param falseLiteral   the literal to be written for the value "false"
+   */
+  public void setBooleanLiterals(String trueLiteral, String falseLiteral)
+  {
+    literalTrue = StringUtil.trimToNull(trueLiteral);
+    literalFalse = StringUtil.trimToNull(falseLiteral);
+  }
+
+  public String getTrueLiteral()
+  {
+    return literalTrue;
+  }
+
+  public String getFalseLiteral()
+  {
+    return literalFalse;
   }
 
   @Override

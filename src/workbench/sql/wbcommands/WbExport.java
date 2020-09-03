@@ -1,6 +1,4 @@
 /*
- * WbExport.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2020, Thomas Kellerer
@@ -152,6 +150,10 @@ public class WbExport
   public static final String ARG_INCLUDE_IDENTITY = "includeAutoIncColumns";
   public static final String ARG_INCLUDE_READONLY = "includeReadOnlyColumns";
 
+  public static final String ARG_FALSE_LITERAL = "literalFalse";
+  public static final String ARG_TRUE_LITERAL = "literalTrue";
+
+
   // </editor-fold>
 
   private DataExporter exporter;
@@ -253,6 +255,8 @@ public class WbExport
     cmdLine.addArgument(ARG_DATA_OFFSET);
     cmdLine.addArgument(ARG_INCLUDE_IDENTITY, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_INCLUDE_READONLY, ArgumentType.BoolArgument);
+    cmdLine.addArgument(ARG_FALSE_LITERAL);
+    cmdLine.addArgument(ARG_TRUE_LITERAL);
     RegexModifierParameter.addArguments(cmdLine);
     ConditionCheck.addParameters(cmdLine);
   }
@@ -481,6 +485,12 @@ public class WbExport
       exporter.setEncoding(encoding);
     }
 
+    String falseLiteral = cmdLine.getValue(ARG_FALSE_LITERAL);
+    String trueLiteral = cmdLine.getValue(ARG_TRUE_LITERAL);
+    if (StringUtil.isNonBlank(falseLiteral) && StringUtil.isNonBlank(trueLiteral))
+    {
+      exporter.setBooleanLiterals(trueLiteral, falseLiteral);
+    }
     exporter.setWriteEmptyResults(cmdLine.getBoolean(ARG_EMPTY_RESULTS, true));
     int threshold = cmdLine.getIntValue(ARG_CLOB_THRESHOLD, -1);
     exporter.setWriteClobAsFile(cmdLine.getBoolean(ARG_CLOB_AS_FILE, false), threshold);

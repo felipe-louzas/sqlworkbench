@@ -68,6 +68,10 @@ public class HelpManager
     ClasspathUtil cpu = new ClasspathUtil();
     String jarDir = cpu.getJarPath();
     WbFile pdf = new WbFile(jarDir, pdfManual);
+    if (pdf.exists()) return pdf;
+
+    WbFile manDir = new WbFile(jarDir, "manual");
+    pdf = new WbFile(manDir, pdfManual);
 
     return pdf;
   }
