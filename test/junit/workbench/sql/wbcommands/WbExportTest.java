@@ -119,6 +119,37 @@ public class WbExportTest
   }
 
   @Test
+  public void testBooleanLiterals()
+    throws Exception
+  {
+    String sql = "select true as c1, false as c1";
+    WbConnection con = util.getHSQLConnection("boolean");
+    try
+    {
+      TestUtil.executeScript(con,
+        "create table test (c1 boolean, c2 boolean); \n" +
+        "insert into test values (true, false); \n" +
+        "commit;");
+      WbFile out = util.getFile("boolean.txt");
+
+      exportCmd.setConnection(con);
+      StatementRunnerResult result = exportCmd.execute(
+        "wbexport -sourceTable=test -delimiter=',' -header=false -literalFalse='Nein' -literalTrue='Ja' -type=text -file='" + out.getFullPath() + "'");
+      String msg = result.getMessages().toString();
+      assertTrue(msg, result.isSuccess());
+      assertTrue(out.exists());
+      List<String> lines = TestUtil.readLines(out);
+      assertNotNull(lines);
+      assertEquals(1, lines.size());
+      assertEquals("Ja,Nein", lines.get(0));
+    }
+    finally
+    {
+      ConnectionMgr.getInstance().disconnectAll();
+    }
+  }
+
+  @Test
   public void testQuoteHeader()
     throws Exception
   {
