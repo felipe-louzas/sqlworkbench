@@ -122,7 +122,6 @@ public class WbExportTest
   public void testBooleanLiterals()
     throws Exception
   {
-    String sql = "select true as c1, false as c1";
     WbConnection con = util.getHSQLConnection("boolean");
     try
     {
