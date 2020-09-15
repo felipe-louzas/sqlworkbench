@@ -51,6 +51,7 @@ public enum ParserType
     if (DBID.Postgres.isDB(dbid)) return Postgres;
     if (DBID.Vertica.isDB(dbid)) return Postgres;
     if (DBID.Greenplum.isDB(dbid)) return Postgres;
+    if (DBID.Redshift.isDB(dbid)) return Postgres;
 
     // This will allow mixing the standard delimiter with the alternate delimiter
     if (DBID.Oracle.isDB(dbid)) return Oracle;
