@@ -649,7 +649,7 @@ public class Settings
 
 	public WbFile getLibDir()
 	{
-		String dir = getProperty(PROP_LIBDIR, null);
+    String dir = StringUtil.replaceProperties(getProperty(PROP_LIBDIR, null));
 		dir = FileDialogUtil.replaceConfigDir(dir);
     dir = FileDialogUtil.replaceProgramDir(dir);
 		if (dir == null) return new WbFile(getConfigDir());

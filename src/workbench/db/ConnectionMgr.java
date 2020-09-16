@@ -815,6 +815,7 @@ public class ConnectionMgr
   @SuppressWarnings("unchecked")
   private void readDrivers()
   {
+    LogMgr.logInfo(new CallerInfo(){}, "Using libdir: " + Settings.getInstance().getLibDir());
     synchronized (driverLock)
     {
       try
@@ -867,7 +868,7 @@ public class ConnectionMgr
       }
     }
   }
-  
+
   private boolean readDriverTemplates()
   {
     return Settings.getInstance().getBoolProperty(Settings.PROP_READ_DRIVER_TEMPLATES, true);
