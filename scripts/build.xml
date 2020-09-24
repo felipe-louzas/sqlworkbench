@@ -170,6 +170,7 @@
         <attribute name="Implementation-URL" value="http://www.sql-workbench.eu"/>
         <attribute name="WbBuild-Number" value="${build.number}"/>
         <attribute name="WbBuild-Date" value="${build_timestamp}"/>
+        <attribute name="Add-Opens" value="java.desktop/com.sun.java.swing.plaf.windows java.desktop/com.apple.laf java.base/java.lang java.desktop/com.sun.java.swing.plaf.motif"/>
       </manifest>
       <fileset dir="${build}">
         <exclude name="**/package.html"/>
