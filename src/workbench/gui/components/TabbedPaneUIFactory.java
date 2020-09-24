@@ -80,10 +80,6 @@ public class TabbedPaneUIFactory
     {
       return "workbench.gui.components.BorderLessWindowsTabbedPaneUI";
     }
-    else if (lnfClass.equals("com.sun.java.swing.plaf.motif.MotifLookAndFeel"))
-    {
-      return "workbench.gui.components.BorderLessMotifTabbedPaneUI";
-    }
     else if (lnfClass.contains("WebLookAndFeel"))
     {
       return "com.alee.laf.tabbedpane.WebTabbedPaneUI";
