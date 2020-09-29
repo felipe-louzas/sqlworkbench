@@ -33,9 +33,7 @@ cp="$cp:$SCRIPT_PATH/ext/*"
 # -Dsun.java2d.uiScale=125%
 # -Dsun.java2d.uiScale.enabled=false
 
-# For Java 9 and above the following options might be needed:
-# --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED
-# --add-opens java.base/java.lang=ALL-UNNAMED
-
-exec "$JAVACMD" -Dawt.useSystemAAFontSettings=on \
+exec "$JAVACMD" --add-opens java.desktop/com.apple.laf=ALL-UNNAMED \
+                --add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED \
+                -Dawt.useSystemAAFontSettings=on \
                 -Dvisualvm.display.name=SQLWorkbenchJ -cp "$cp" workbench.WbStarter "$@"

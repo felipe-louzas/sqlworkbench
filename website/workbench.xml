@@ -340,7 +340,6 @@ WHERE id=42;</p>
     </content>
   </page>
 
-
   <!-- ======================== XSLT Files ========================== -->
   <page name="xslt" title="XSLT" toc="main">
     <title>Sample XSL transformations</title>
@@ -424,6 +423,10 @@ WHERE id=42;</p>
           If you want to import or export Microsoft Excel files (XLS, XLSX) or import OpenOffice Calc documents, download the "Generic package
           including all optional libraries" (approx. 30MB). If you are in doubt which one to use, download that.
         </p>
+        <p>
+          Please see <a href="macos-binary.html">Creating a macOS executable</a> for a short description on how to build a macOS executable
+          using "Automator".
+        </p>
 
         <div style="padding-left:1.5em;padding-right:1.5em;border-style:solid;border-width:2px;border-color:gray;margin-bottom:2em;margin-top:2em">
           <p style="font-size:125%;font-weight:bold;margin-top:1em;">Change in the directory layout!</p>
@@ -480,27 +483,6 @@ WHERE id=42;</p>
         Bugfixes will show up in these builds first.
         <br/>
       </p>
-      
-      <!--
-      <div style="padding-left:1.5em;padding-right:1.5em;border-style:solid;border-width:2px;border-color:gray;margin-bottom:2em;margin-top:2em">
-        <div style="margin:10px;display:flex;flex-direction:row;justify-content:space-around;">
-          <div style="display:flex;flex-direction:column;margin-right:0.5em;padding-top:4px">
-            <img style="vertical-align:middle;" src="images/warning.png"/>
-          </div>
-          <div style="display:flex;flex-direction:column;">
-            <p>
-              Due to problems with some anti-virus programs, the new launcher introduced in build 125.8 has been removed 
-              and the old launcher (still used in the current stable build) has been included again in this dev build.
-            </p>
-            <p>
-              If the new launcher converted your existing INI file to <tt>SQLWorkbench.cfg</tt> you should restore the 
-              backup file <tt>SQLWorkbench64.ini_obsolete</tt> to <tt>SQLWorkbench64.ini</tt>.
-            </p>
-          </div>
-        </div>
-      </div>
-      -->
-      
       <dev-build/>
     </content>
   </page>
@@ -752,6 +734,50 @@ WHERE id=42;</p>
           <li>Windows&reg;&nbsp;XP built-in ZIP support</li>
           </ul>
         </content>
+  </page>
+
+  <!-- ======================== macos ========================== -->
+  <page name="macos-binary" title="macOS executable" toc="main">
+    <title>SQL Workbench/J</title>
+    <subtitle>Creating a macOS executable</subtitle>
+    <content>
+    <h3>Creating a macOS executable</h3>
+    <p>
+      The generic download does not contain a native executable for macOS. Using "Automator", you can create your own executable by 
+      following these steps:
+    </p>
+    <ol>
+      <li>Open Automator (in the Applications folder) and select File/New from the menu.</li>
+      <li>Select 'Application' as the type of document and click on 'Choose'.</li>
+      <li>Under "Library" on the left, select "Utilities".</li>
+      <li>Look for the "Run Shell Script" task and drag it into the open area on the right.</li>
+      <li>At the bottom of the task select "Options" the check "Ignore this action's input"</li>
+      <li>Cut and paste the following into text area:
+        <p class="programlisting" style="line-height:1.2em"><![CDATA[cd "/Applications/SQL Workbench"
+r=$(java \
+	--add-opens java.desktop/com.apple.laf=ALL-UNNAMED \
+	-cp sqlworkbench.jar:ext/* \
+	-Dawt.useSystemAAFontSettings=on \
+	-Dapple.awt.showGrowBoxtrue=true \
+	-Dapple.laf.useScreenMenuBar=true \
+	-Xmx4096m \
+	-Xdock:name=SQLWorkbench/J \
+	workbench.WbStarter 2>&1)]]></p>
+      </li>
+      
+      <li>You have to adjust the installation path on the first line of the script to match your installation location.</li>
+      <li>Press Cmd-S (or select File/Save from the menu) and save the app in the Applications folder.</li>
+      <li>Close Automator</li>
+      <li>By default, Automator saves every app with its own icon. If you want to set an Icon to more easily identify the app then</li>
+        <ol>
+          <li>Right click on the app and select 'Get Info'</li>
+          <li>Drag and drop <a href="Workbench.icns">Workbench.icns</a> (or your own icon) over the icon at the top left corner of the info screen.</li>
+          <li>Close the info screen.</li>
+          <li>You will have to repeat this if you save the app with Automator again.</li>
+          <li>You can drag the newly created app to the Dock for easy access.</li>
+        </ol>
+    </ol>
+    </content>
   </page>
 
   <page name="build-from-source" title="Building from Source" toc="main">

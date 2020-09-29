@@ -27,12 +27,10 @@ set /a max_mem=%free_memory% / 2
 
 if "%1"=="console" goto console_mode
 
-rem for Java 9 or later add the options:
-rem --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED
-rem --add-opens java.base/java.lang=ALL-UNNAMED
-
 :gui
 start "SQL Workbench/J" "%JAVA_BINPATH%javaw.exe"^
+      --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
+      --add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
       -Xmx%max_mem%m ^
       -Dvisualvm.display.name=SQLWorkbench/J ^
       -Dsun.awt.keepWorkingSetOnMinimize=true ^

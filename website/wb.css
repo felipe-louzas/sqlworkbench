@@ -262,6 +262,23 @@ li.toclist#current
   margin-bottom:20px;
 }
 
+ol
+{
+  list-style: decimal;
+  margin-bottom: 4px;
+  padding-bottom:6px;
+}
+
+ol > li 
+{
+  list-style: inherit;
+  margin-bottom: 1px;
+  padding-bottom:1px;
+  font-size: 95%;
+  font-weight: normal;
+}
+
+
 li
 {
   list-style: square;
@@ -318,7 +335,6 @@ h3.note_h
   background: #F0F0F0;
   border: 1px solid gray;
   padding: 2px;
-  font-size: 10pt;
   white-space: pre;
 }
 
