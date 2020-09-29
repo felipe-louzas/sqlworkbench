@@ -185,6 +185,8 @@ public class ClipBoardCopier
         String name = Settings.getInstance().getProperty("workbench.copy.text.escaperange", CharacterRange.RANGE_NONE.getName());
         CharacterRange range = CharacterRange.getRangeByName(name);
         printer.setEscapeRange(range);
+        printer.setAbortOnMissingQuoteChar(false);
+        printer.setQuoteChar(Settings.getInstance().getProperty("workbench.copy.text.quotechar", "\""));
 
         printer.setNullString(GuiSettings.getDisplayNullString());
         printer.setColumnMapping(getColumnOrder());

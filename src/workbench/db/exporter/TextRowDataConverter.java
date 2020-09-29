@@ -68,10 +68,21 @@ public class TextRowDataConverter
   private boolean writeBlobFiles = true;
   private boolean writeClobFiles;
   private boolean quoteWarningAdded;
+  private boolean abortOnMissingQuoteChar;
   private QuoteEscapeType quoteEscape = QuoteEscapeType.none;
   private String rowIndexColumnName;
   private DataConverter converter;
   private CharacterEscapeType escapeType;
+
+  public TextRowDataConverter()
+  {
+    this.abortOnMissingQuoteChar = Settings.getInstance().getAbortExportWithMissingQuoteChar();
+  }
+
+  public void setAbortOnMissingQuoteChar(boolean flag)
+  {
+    this.abortOnMissingQuoteChar = flag;
+  }
 
   public void setWriteClobToFile(boolean flag)
   {
@@ -262,12 +273,12 @@ public class TextRowDataConverter
       if (addQuote && !hasQuoteChar && !quoteWarningAdded)
       {
         String msg = ResourceMgr.getString("ErrExportNoQuoteChar");
-        if (exporter.getContinueOnError() || !Settings.getInstance().getAbortExportWithMissingQuoteChar())
+        if ((exporter != null && exporter.getContinueOnError()) || !abortOnMissingQuoteChar)
         {
           quoteWarningAdded = true;
           exporter.addWarning(msg);
         }
-        else if (Settings.getInstance().getAbortExportWithMissingQuoteChar())
+        else if (abortOnMissingQuoteChar)
         {
           throw new IllegalStateException(msg);
         }

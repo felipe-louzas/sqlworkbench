@@ -34,7 +34,6 @@ import workbench.db.exporter.TextRowDataConverter;
 
 import workbench.util.CharacterRange;
 import workbench.util.StringUtil;
-import workbench.util.WbNumberFormatter;
 
 /**
  * A class to print the contents of a {@link DataStore} to a PrintStream
@@ -67,10 +66,17 @@ public class DataPrinter
 
   public void setEscapeRange(CharacterRange range)
   {
-    if (this.converter != null)
-    {
-      converter.setEscapeRange(range);
-    }
+    converter.setEscapeRange(range);
+  }
+
+  public void setQuoteChar(String quote)
+  {
+    converter.setQuoteCharacter(quote);
+  }
+
+  public void setAbortOnMissingQuoteChar(boolean flag)
+  {
+    converter.setAbortOnMissingQuoteChar(flag);
   }
 
   private void initConverter(String delimiter, String lineEnd, List<ColumnIdentifier> columns, boolean includeHeader)
@@ -85,6 +91,7 @@ public class DataPrinter
     converter.setEscapeRange(CharacterRange.RANGE_NONE);
     converter.setDefaultNumberFormatter(Settings.getInstance().createDefaultDecimalFormatter());
     converter.setDefaultIntegerFormatter(Settings.getInstance().createDefaultIntegerFormatter());
+    converter.setQuoteCharacter(Settings.getInstance().getQuoteChar());
   }
 
   public void setNullString(String value)

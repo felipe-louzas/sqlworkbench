@@ -84,12 +84,12 @@ public class ClipBoardCopierTest
     info.setUpdateTable(tbl);
     DataStore ds = new DataStore(info);
     int row = ds.addRow();
-    ds.setValue(row, 0, new Integer(1));
+    ds.setValue(row, 0, Integer.valueOf(1));
     ds.setValue(row, 1, "Arthur");
     ds.setValue(row, 2, "Dent");
 
     row = ds.addRow();
-    ds.setValue(row, 0, new Integer(2));
+    ds.setValue(row, 0, Integer.valueOf(2));
     ds.setValue(row, 1, "Ford");
     ds.setValue(row, 2, "Prefect");
 
@@ -103,14 +103,15 @@ public class ClipBoardCopierTest
   {
     final Clipboard testClip = new TestClipboard("testCopyDataToClipboard");
 
-    ClipBoardCopier copier = new ClipBoardCopier(createDataStore())
+    DataStore ds = createDataStore();
+    ds.setValue(0, 1, "Arthur\t");
+    ClipBoardCopier copier = new ClipBoardCopier(ds)
     {
       @Override
       protected Clipboard getClipboard()
       {
         return testClip;
       }
-
     };
     copier.copyDataToClipboard(true, false, false);
     Transferable contents = testClip.getContents(copier);
@@ -120,7 +121,7 @@ public class ClipBoardCopierTest
     List<String> lines = StringUtil.getLines((String)data);
     assertEquals(3, lines.size());
     assertEquals("id\tfirstname\tlastname", lines.get(0));
-    assertEquals("1\tArthur\tDent", lines.get(1));
+    assertEquals("1\t\"Arthur\t\"\tDent", lines.get(1));
     assertEquals("2\tFord\tPrefect", lines.get(2));
   }
 
