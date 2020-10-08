@@ -154,6 +154,8 @@ public class Settings
 	public static final String PROPERTY_EDITOR_BG_COLOR = "workbench.editor.color.background";
 	public static final String PROPERTY_EDITOR_FG_COLOR = "workbench.editor.color.foreground";
 	public static final String PROPERTY_EDITOR_CURSOR_COLOR = "workbench.editor.color.cursor";
+	public static final String PROPERTY_EDITOR_GUTTER_COLOR = "workbench.editor.color.gutter";
+	public static final String PROPERTY_EDITOR_LINENUMBER_COLOR = "workbench.editor.color.linenumber";
 	public static final String PROPERTY_EDITOR_SELECTION_COLOR = "workbench.editor.color.selection";
 
 	public static final String PROPERTY_CONSOLIDATE_LOG_MESSAGES = "workbench.gui.log.consolidate";

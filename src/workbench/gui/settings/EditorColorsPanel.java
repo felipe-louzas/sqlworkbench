@@ -40,6 +40,7 @@ import workbench.gui.components.WbColorPicker;
 import workbench.gui.components.WbFontStylePicker;
 import workbench.gui.editor.SyntaxStyle;
 import workbench.gui.editor.SyntaxUtilities;
+import workbench.gui.editor.TextAreaPainter;
 import workbench.gui.editor.Token;
 
 import static workbench.gui.editor.SyntaxStyle.*;
@@ -85,6 +86,9 @@ public class EditorColorsPanel
     operators.setStyle(defaultStyles[Token.OPERATOR]);
     datatypes.setStyle(defaultStyles[Token.DATATYPE]);
 
+    LineNumberBgColor.setSelectedColor(Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, TextAreaPainter.DEFAULT_GUTTER_BG));
+    LineNumberColor.setSelectedColor(Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, TextAreaPainter.DEFAULT_GUTTER_TEXT_COLOR));
+
     errorColor.setSelectedColor(Settings.getInstance().getEditorErrorColor());
     currentStmtColor.setSelectedColor(Settings.getInstance().getEditorCurrentStmtColor());
     selectionColor.setSelectedColor(Settings.getInstance().getEditorSelectionColor());
@@ -113,6 +117,8 @@ public class EditorColorsPanel
     sett.setEditorTextColor(textColor.getSelectedColor());
     sett.setEditorCursorColor(cursorColor.getSelectedColor());
     sett.setEditorCurrentStmtColor(currentStmtColor.getSelectedColor());
+    sett.setColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, LineNumberBgColor.getSelectedColor());
+    sett.setColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, LineNumberColor.getSelectedColor());
   }
 
   private void saveStyle(WbFontStylePicker picker, String type)
@@ -167,6 +173,10 @@ public class EditorColorsPanel
     cursorColor = new WbColorPicker();
     currentStmtColor = new WbColorPicker();
     currentStmtLabel = new JLabel();
+    lineNumberBgLabel = new JLabel();
+    LineNumberBgColor = new WbColorPicker();
+    lineNumberLabel = new JLabel();
+    LineNumberColor = new WbColorPicker();
 
     setLayout(new GridBagLayout());
 
@@ -334,7 +344,7 @@ public class EditorColorsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 3;
     gridBagConstraints.gridy = 1;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(9, 0, 0, 0);
     editorColors.add(currLineColor, gridBagConstraints);
 
@@ -350,7 +360,7 @@ public class EditorColorsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(9, 3, 0, 0);
     editorColors.add(selectionColor, gridBagConstraints);
 
@@ -399,7 +409,7 @@ public class EditorColorsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 2;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(9, 3, 0, 0);
     editorColors.add(bgColor, gridBagConstraints);
 
@@ -415,7 +425,7 @@ public class EditorColorsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 3;
     gridBagConstraints.gridy = 2;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(9, 0, 0, 0);
     editorColors.add(cursorColor, gridBagConstraints);
@@ -437,6 +447,40 @@ public class EditorColorsPanel
     gridBagConstraints.insets = new Insets(5, 27, 0, 0);
     editorColors.add(currentStmtLabel, gridBagConstraints);
 
+    lineNumberBgLabel.setText(ResourceMgr.getString("LblLineNrBg")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 4;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(9, 27, 0, 0);
+    editorColors.add(lineNumberBgLabel, gridBagConstraints);
+
+    LineNumberBgColor.setToolTipText(ResourceMgr.getString("d_LblCurrentStmtColor")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 5;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(9, 0, 0, 0);
+    editorColors.add(LineNumberBgColor, gridBagConstraints);
+
+    lineNumberLabel.setText(ResourceMgr.getString("LblLineNrText")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 4;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(9, 27, 0, 0);
+    editorColors.add(lineNumberLabel, gridBagConstraints);
+
+    LineNumberColor.setToolTipText(ResourceMgr.getString("d_LblCurrentStmtColor")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 5;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(9, 0, 0, 0);
+    editorColors.add(LineNumberColor, gridBagConstraints);
+
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
@@ -445,6 +489,8 @@ public class EditorColorsPanel
     add(editorColors, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private WbColorPicker LineNumberBgColor;
+  private WbColorPicker LineNumberColor;
   private WbColorPicker bgColor;
   private JLabel bgColorLabel;
   private WbFontStylePicker blockComments;
@@ -466,6 +512,8 @@ public class EditorColorsPanel
   private JLabel keywordsLabel;
   private WbFontStylePicker lineComments;
   private JLabel lineCommentsLabel;
+  private JLabel lineNumberBgLabel;
+  private JLabel lineNumberLabel;
   private WbFontStylePicker literals;
   private JLabel literalsLabel;
   private WbFontStylePicker operators;

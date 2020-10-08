@@ -48,6 +48,9 @@ public class TextAreaPainter
   extends JComponent
   implements TabExpander, PropertyChangeListener
 {
+  public static final Color DEFAULT_GUTTER_TEXT_COLOR = Color.DARK_GRAY;
+  public static final Color DEFAULT_GUTTER_BG  = new Color(238,240,238);
+  public static final Color DEFAULT_SELECTION_COLOR = new Color(204,204,255);
   private final Segment currentLine;
 
   protected JEditTextArea textArea;
@@ -69,10 +72,9 @@ public class TextAreaPainter
   protected boolean showLineNumbers;
   protected int gutterWidth = 0;
 
-  protected static final int GUTTER_MARGIN = 2;
-  private Color gutterBackground = new Color(238,240,238);
-  public static final Color DEFAULT_SELECTION_COLOR = new Color(204,204,255);
-  private Color gutterTextColor = Color.DARK_GRAY;
+  protected int gutterMargin = 8;
+  private Color gutterBackground = DEFAULT_GUTTER_BG;
+  private Color gutterTextColor = DEFAULT_GUTTER_TEXT_COLOR;
 
   private final Object stylesLockMonitor = new Object();
   private String highlighText;
@@ -105,6 +107,8 @@ public class TextAreaPainter
       Settings.PROPERTY_EDITOR_FG_COLOR,
       Settings.PROPERTY_EDITOR_BG_COLOR,
       Settings.PROPERTY_EDITOR_CURSOR_COLOR,
+      Settings.PROPERTY_EDITOR_GUTTER_COLOR,
+      Settings.PROPERTY_EDITOR_LINENUMBER_COLOR,
       Settings.PROPERTY_EDITOR_CURRENT_LINE_COLOR,
       Settings.PROPERTY_EDITOR_SELECTION_COLOR,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_COLOR,
@@ -235,12 +239,8 @@ public class TextAreaPainter
     if (bg == null) bg = getDefaultColor("TextArea.background", Color.WHITE);
     setBackground(bg);
 
-    // this is to support dark themes like Darcula better
-    if (!textColor.equals(Color.BLACK) && !bg.equals(Color.WHITE))
-    {
-      this.gutterBackground = bg.darker();
-      this.gutterTextColor = textColor.brighter();
-    }
+    gutterBackground = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, DEFAULT_GUTTER_BG);
+    gutterTextColor = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, DEFAULT_GUTTER_TEXT_COLOR);
 
     setStyles(SyntaxUtilities.getDefaultSyntaxStyles());
     caretColor = Settings.getInstance().getEditorCursorColor();
@@ -440,9 +440,10 @@ public class TextAreaPainter
   {
     if (this.showLineNumbers)
     {
+      gutterMargin = (int)(fm.stringWidth("9") * 0.8);
       int lastLine = textArea.getLineCount();
       String lineStr = NumberStringCache.getNumberString(lastLine);
-      this.gutterWidth = fm.stringWidth(lineStr) + (GUTTER_MARGIN * 2);
+      this.gutterWidth = fm.stringWidth(lineStr) + (int)(gutterMargin * 2.5);
     }
     else
     {
@@ -524,7 +525,7 @@ public class TextAreaPainter
       int endLine = firstVisible + visibleCount + 1;
       if (endLine > lastLine) endLine = lastLine;
 
-      final int gutterX = this.gutterWidth - GUTTER_MARGIN;
+      final int gutterX = this.gutterWidth - gutterMargin;
       final int caretLine = textArea.getCaretLine();
       TokenMarker tokenMarker = textArea.getDocument().getTokenMarker();
 
@@ -554,7 +555,7 @@ public class TextAreaPainter
           if (this.showLineNumbers)
           {
             gfx.setClip(this.gutterWidth, 0, editorWidth, editorHeight);
-            gfx.translate(this.gutterWidth,0);
+            gfx.translate(this.gutterWidth, 0);
           }
 
           textArea.getLineText(line, currentLine);
