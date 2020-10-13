@@ -238,18 +238,18 @@ public class RedshiftUDFReader
 
     for (int i = 0; i < fullDs.getRowCount(); i++)
     {
-      String specname = (String)fullDs.getRow(i).getValue(ProcedureReader.COLUMN_IDX_PROC_LIST_SPECIFIC_NAME);
-      String cat = (String)fullDs.getRow(i).getValue(ProcedureReader.COLUMN_IDX_PROC_LIST_CATALOG);
-      String schema = (String)fullDs.getRow(i).getValue(ProcedureReader.COLUMN_IDX_PROC_LIST_SCHEMA);
-      String displayName = (String)fullDs.getRow(i).getValue(ProcedureReader.COLUMN_IDX_PROC_LIST_NAME);
-      String bfDisplayName = i > 0 ? (String)fullDs.getRow(i - 1).getValue(ProcedureReader.COLUMN_IDX_PROC_LIST_NAME) : "";
-      Integer procType = (Integer)fullDs.getRow(i).getValue(ProcedureReader.COLUMN_IDX_PROC_LIST_TYPE);
-      String remark = (String)fullDs.getRow(i).getValue(ProcedureReader.COLUMN_IDX_PROC_LIST_REMARKS);
+      String specname = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_SPECIFIC_NAME);
+      String cat = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_CATALOG);
+      String schema = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_SCHEMA);
+      String displayName = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME);
+      String bfDisplayName = i > 0 ? fullDs.getValueAsString(i - 1, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME) : "";
+      Object procType = fullDs.getValue(i, ProcedureReader.COLUMN_IDX_PROC_LIST_TYPE);
+      String remark = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_REMARKS);
       ProcedureDefinition def = (ProcedureDefinition)fullDs.getRow(i).getUserObject();
 
       if ((namePattern == null || specname.contains(namePattern)) &&
-        (schemaPattern == null || schema.equalsIgnoreCase(schemaPattern)) &&
-        catalog.equals(cat) && !bfDisplayName.equals(displayName))
+          (schemaPattern == null || StringUtil.equalStringIgnoreCase(schema, schemaPattern)) &&
+          (catalog == null || StringUtil.equalStringIgnoreCase(catalog, cat)) && !bfDisplayName.equals(displayName))
       {
         int row = ds.addRow();
 
