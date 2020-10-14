@@ -2595,4 +2595,15 @@ public class DbSettings
 		return getBoolProperty(key, global);
 	}
 
+  public Collection<String> getTypesNeedingQuotes()
+  {
+    // built in types
+    List<String> types = getListProperty("literals.quoted.types.default");
+
+    // User provided types
+    types.addAll(getListProperty("literals.quoted.types"));
+
+    return types;
+  }
+
 }

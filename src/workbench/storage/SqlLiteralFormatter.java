@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import workbench.interfaces.DataFileWriter;
@@ -45,6 +46,7 @@ import workbench.db.exporter.InfinityLiterals;
 import workbench.db.postgres.HstoreSupport;
 
 import workbench.util.CaseInsensitiveComparator;
+import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbDateFormatter;
@@ -89,6 +91,7 @@ public class SqlLiteralFormatter
   private boolean isOracle;
   private DbSettings dbSettings;
   private boolean checkDBMSTypes;
+  private final Set<String> quotedTypes = CollectionUtil.caseInsensitiveSet();
 
   private final Map<String, WbDateFormatter> dbmsFormatters = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
 
@@ -121,6 +124,7 @@ public class SqlLiteralFormatter
       isDbId = true;
       dbSettings = con.getDbSettings();
       isOracle = con.getMetadata().isOracle();
+      quotedTypes.addAll(dbSettings.getTypesNeedingQuotes());
     }
     setDateLiteralType(dbid);
     checkDBMSTypes = true;
@@ -487,9 +491,8 @@ public class SqlLiteralFormatter
       // asume the value can be used inside a string literal
       return "'" + value.toString() + "'";
     }
-    else if (type == Types.OTHER && ("uuid".equalsIgnoreCase(dbmsType) || "json".equalsIgnoreCase(dbmsType) || "jsonb".equalsIgnoreCase(dbmsType)))
+    else if (type == Types.OTHER && quotedTypes.contains(dbmsType))
     {
-      // this is for Postgres
       return quoteString(type, value.toString());
     }
 
