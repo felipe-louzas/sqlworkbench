@@ -134,6 +134,11 @@ public class PostgresDataTypeResolver
     {
       return "java.time.ZonedDateTime";
     }
+
+    if ("citext".equals(dbmsType))
+    {
+      return String.class.getName();
+    }
     return null;
   }
 
@@ -148,6 +153,10 @@ public class PostgresDataTypeResolver
     if (type == Types.TIME && ("timetz".equals(dbmsType) || "time with time zone".equals(dbmsType)))
     {
       return Types.TIME_WITH_TIMEZONE;
+    }
+    if (type == Types.OTHER && "citext".equals(dbmsType))
+    {
+      return Types.VARCHAR;
     }
     return type;
   }
