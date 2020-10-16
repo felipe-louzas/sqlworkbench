@@ -6,6 +6,7 @@
     <entry dev-build="1" type="enh">For WbExport, it's now possible to specify the literals to be used for boolean values</entry>
     <entry dev-build="1" type="enh">When using "Save data as..." it's now possible to include column comments the way -enableComments is working for WbExport</entry>
     <entry dev-build="1" type="enh">It's now possible to use an external pager when running in console mode</entry>
+    <entry dev-build="1" type="fix">For PostgreSQL, WbDataDiff did not work if the primary key contained citext columns</entry>
     <entry dev-build="1" type="fix">"Copy to clipboard" failed if any value contained a tab character.</entry>
     <entry dev-build="1" type="fix">When using "Show PDF Manual" the manual was expected in the wrong location.</entry>
     <entry dev-build="1" type="fix">When using "Separate connection per tab", the window title wasn't updated correctly when switching tabs</entry>
