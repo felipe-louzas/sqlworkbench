@@ -477,6 +477,9 @@ WHERE id=42;</p>
     <content>
       <not-mysql/>
       <h3 id="dev_build" style="margin-top:20px">Development build</h3>
+      <p style="margin-top:1em;font-weight:bold;margin-bottom:1em;font-size:110%">
+          The development build requires <b>Java 11</b> or later!
+      </p>
       <p>
         A development build is generated while testing and implementing new features for the next stable build.
         <br/>

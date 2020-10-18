@@ -1,4 +1,7 @@
-#Sun, 09 Aug 2020 20:44:25 +0200
+#Sun, 18 Oct 2020 11:28:39 +0200
 
 release.build.number=127
 release.build.date=2020-08-22
+
+dev.build.date=2020-10-18
+dev.build.number=127.1
