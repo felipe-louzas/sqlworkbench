@@ -156,6 +156,13 @@ public class DataExporter
 
   private WbNumberFormatter numberFormatter;
   private WbNumberFormatter integerFormatter;
+
+  private boolean decimalFormatWasSet = false;
+  private boolean dateFormatWasSet = false;
+  private boolean dateTimeFormatWasSet = false;
+  private boolean timeFormatWasSet = false;
+  private boolean integerFormatWasSet = false;
+
   private boolean append;
   private int targetSheetIndex; // for XLS and XLSX only
   private String targetSheetName; // for XLS and XLSX only
@@ -968,6 +975,7 @@ public class DataExporter
     {
       Locale l = localeToUse == null ? Locale.getDefault(Locale.Category.FORMAT) : localeToUse;
       timeFormatter = new SimpleDateFormat(timeFormat == null ? Settings.getInstance().getDefaultTimeFormat() : timeFormat, l);
+      timeFormatWasSet = true;
     }
     catch (IllegalArgumentException i)
     {
@@ -988,6 +996,7 @@ public class DataExporter
     try
     {
       dateFormatter = new WbDateFormatter(this.dateFormat == null ? Settings.getInstance().getDefaultDateFormat() : dateFormat, localeToUse);
+      dateFormatWasSet = true;
     }
     catch (IllegalArgumentException i)
     {
@@ -1014,6 +1023,7 @@ public class DataExporter
     try
     {
       dateTimeFormatter = new WbDateFormatter(dateTimeFormat == null ? Settings.getInstance().getDefaultTimestampFormat() : dateTimeFormat, localeToUse);
+      dateTimeFormatWasSet = true;
     }
     catch (Exception e)
     {
@@ -1137,6 +1147,7 @@ public class DataExporter
     if (StringUtil.isNonBlank(symbol))
     {
       numberFormatter = new WbNumberFormatter(symbol.charAt(0));
+      decimalFormatWasSet = true;
     }
   }
 
@@ -1145,6 +1156,7 @@ public class DataExporter
     if (StringUtil.isNonBlank(format))
     {
       integerFormatter = createFormatter(format, decimalSymbol, decimalGroup);
+      integerFormatWasSet = true;
     }
   }
 
@@ -1153,6 +1165,7 @@ public class DataExporter
     if (StringUtil.isNonBlank(format))
     {
       numberFormatter = createFormatter(format, decimalSymbol, decimalGroup);
+      decimalFormatWasSet = true;
     }
   }
 
@@ -1169,7 +1182,33 @@ public class DataExporter
     if (StringUtil.isNonBlank(symbol))
     {
       this.numberFormatter = new WbNumberFormatter(digits, symbol.charAt(0), fixedLength);
+      decimalFormatWasSet = true;
     }
+  }
+
+  public boolean decimalFormatWasSet()
+  {
+    return decimalFormatWasSet;
+  }
+
+  public boolean dateFormatWasSet()
+  {
+    return dateFormatWasSet;
+  }
+
+  public boolean timestampFormatWasSet()
+  {
+    return dateTimeFormatWasSet;
+  }
+
+  public boolean timeFormatWasSet()
+  {
+    return timeFormatWasSet;
+  }
+
+  public boolean integerFormatWasSet()
+  {
+    return integerFormatWasSet;
   }
 
   public WbNumberFormatter getIntegerFormatter()
