@@ -133,13 +133,21 @@ public class ValuesCreatorParameter
 
   public void preview()
   {
-    ValuesListCreator creator = new ValuesListCreator(input, getDelimiter(), isRegex());
-    creator.setEmptyStringIsNull(getEmptyStringIsNull());
-    creator.setTrimDelimiter(getTrimDelimiter());
-    creator.setLineEnding("\n");
-    creator.setNullString(getNullString());
-    creator.setReplaceDoubleQuotes(getReplaceDoubleQuotes());
-    previewArea.setText(creator.createValuesList());
+    try
+    {
+      ValuesListCreator creator = new ValuesListCreator(input, getDelimiter(), isRegex());
+      creator.setEmptyStringIsNull(getEmptyStringIsNull());
+      creator.setTrimDelimiter(getTrimDelimiter());
+      creator.setLineEnding("\n");
+      creator.setNullString(getNullString());
+      creator.setReplaceDoubleQuotes(getReplaceDoubleQuotes());
+      previewArea.setText(creator.createValuesList());
+    }
+    catch (Throwable th)
+    {
+      // This can happen if the current delimiter isn't a valid regex
+      previewArea.setText(input);
+    }
   }
 
   @Override
