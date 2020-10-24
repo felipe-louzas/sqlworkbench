@@ -25,6 +25,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import workbench.interfaces.TextSelectionListener;
+import workbench.resource.GeneratedIdentifierCase;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -80,6 +81,16 @@ public class MakeValuesListAction
     String end = Settings.getInstance().getInternalEditorLineEnding();
     creator.setLineEnding(end);
     String list = creator.createValuesList();
+
+
+    if (parmInput.getAddValuesClause())
+    {
+      String valuesClause = getValuesClause();
+      // indent the generated list by two spaces
+      list = list.replaceAll(StringUtil.REGEX_CRLF, end + "  ");
+      list = valuesClause + end + "  " + list;
+    }
+
     list += end;
     if (StringUtil.isNonBlank(list))
     {
@@ -87,6 +98,16 @@ public class MakeValuesListAction
     }
   }
 
+  private String getValuesClause()
+  {
+    GeneratedIdentifierCase kwCase = Settings.getInstance().getFormatterKeywordsCase();
+    if (kwCase != GeneratedIdentifierCase.lower)
+    {
+      return "values";
+    }
+    return "VALUES";
+  }
+  
   @Override
   public void selectionChanged(int newStart, int newEnd)
   {

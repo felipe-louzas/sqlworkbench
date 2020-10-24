@@ -33,6 +33,7 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.editor.ValuesListCreator;
 
 import workbench.util.StringUtil;
+import workbench.util.WbThread;
 
 /**
  *
@@ -48,8 +49,10 @@ public class ValuesCreatorParameter
   private final String trimSepProp = "workbench.gui.values.creator.trim.delimiter";
   private final String nullStringProp = "workbench.gui.values.creator.nullstring";
   private final String replaceQuotesProp = "workbench.gui.values.creator.replacequotes";
+  private final String addValuesKwProp = "workbench.gui.values.creator.addvalueskw";
 
   private String input;
+  private Thread previewThread;
 
   public ValuesCreatorParameter(String text)
   {
@@ -71,9 +74,14 @@ public class ValuesCreatorParameter
     this.previewArea.setTabSize(Settings.getInstance().getEditorTabWidth());
     this.delimiter.getDocument().addDocumentListener(this);
     this.nullString.getDocument().addDocumentListener(this);
-    WbSwingUtilities.invokeLater(this::preview);
+    startPreview();
   }
 
+  public boolean getAddValuesClause()
+  {
+    return addValuesKw.isSelected();
+  }
+  
   public String getNullString()
   {
     return StringUtil.trimToNull(nullString.getText());
@@ -119,6 +127,8 @@ public class ValuesCreatorParameter
     trimDelimiter.setSelected(Settings.getInstance().getBoolProperty(trimSepProp, true));
     replaceQuotes.setSelected(Settings.getInstance().getBoolProperty(replaceQuotesProp, true));
     nullString.setText(Settings.getInstance().getProperty(nullStringProp, null));
+    addValuesKw.setSelected(Settings.getInstance().getBoolProperty(addValuesKwProp, false));
+
   }
 
   public void saveSettings()
@@ -129,9 +139,30 @@ public class ValuesCreatorParameter
     Settings.getInstance().setProperty(trimSepProp, getTrimDelimiter());
     Settings.getInstance().setProperty(nullStringProp, getNullString());
     Settings.getInstance().setProperty(replaceQuotesProp, getReplaceDoubleQuotes());
+    Settings.getInstance().setProperty(addValuesKwProp, getAddValuesClause());
   }
 
-  public void preview()
+  public void startPreview()
+  {
+    if (previewThread != null)
+    {
+      // schedule for later
+      WbSwingUtilities.invokeLater(this::startPreview);
+      return;
+    }
+
+    previewThread = new WbThread("ValuesCreator Preview")
+    {
+      @Override
+      public void run()
+      {
+        doPreview();
+      }
+    };
+    previewThread.start();
+  }
+
+  private synchronized void doPreview()
   {
     try
     {
@@ -141,31 +172,41 @@ public class ValuesCreatorParameter
       creator.setLineEnding("\n");
       creator.setNullString(getNullString());
       creator.setReplaceDoubleQuotes(getReplaceDoubleQuotes());
-      previewArea.setText(creator.createValuesList());
+      String result = creator.createValuesList();
+      WbSwingUtilities.invokeLater(() -> previewArea.setText(result));
     }
     catch (Throwable th)
     {
       // This can happen if the current delimiter isn't a valid regex
       previewArea.setText(input);
     }
+    finally
+    {
+      previewThread = null;
+    }
+  }
+
+  private void textChanged()
+  {
+    startPreview();
   }
 
   @Override
   public void insertUpdate(DocumentEvent e)
   {
-    preview();
+    textChanged();
   }
 
   @Override
   public void removeUpdate(DocumentEvent e)
   {
-    preview();
+    textChanged();
   }
 
   @Override
   public void changedUpdate(DocumentEvent e)
   {
-    preview();
+    textChanged();
   }
 
 
@@ -188,6 +229,7 @@ public class ValuesCreatorParameter
     isRegex = new javax.swing.JCheckBox();
     emptyString = new javax.swing.JCheckBox();
     replaceQuotes = new javax.swing.JCheckBox();
+    addValuesKw = new javax.swing.JCheckBox();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -208,7 +250,7 @@ public class ValuesCreatorParameter
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 8;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1.0;
@@ -217,7 +259,7 @@ public class ValuesCreatorParameter
     add(jScrollPane1, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.weightx = 1.0;
@@ -234,7 +276,7 @@ public class ValuesCreatorParameter
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
@@ -324,6 +366,16 @@ public class ValuesCreatorParameter
     gridBagConstraints.insets = new java.awt.Insets(6, 14, 0, 0);
     jPanel1.add(replaceQuotes, gridBagConstraints);
 
+    addValuesKw.setText(ResourceMgr.getString("LblAddValuesKw")); // NOI18N
+    addValuesKw.setBorder(null);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
+    jPanel1.add(addValuesKw, gridBagConstraints);
+
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
@@ -335,30 +387,31 @@ public class ValuesCreatorParameter
 
   private void previewButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_previewButtonActionPerformed
   {//GEN-HEADEREND:event_previewButtonActionPerformed
-    preview();
+    doPreview();
   }//GEN-LAST:event_previewButtonActionPerformed
 
   private void isRegexActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_isRegexActionPerformed
   {//GEN-HEADEREND:event_isRegexActionPerformed
-    preview();
+    doPreview();
   }//GEN-LAST:event_isRegexActionPerformed
 
   private void emptyStringActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_emptyStringActionPerformed
   {//GEN-HEADEREND:event_emptyStringActionPerformed
-    preview();
+    doPreview();
   }//GEN-LAST:event_emptyStringActionPerformed
 
   private void trimDelimiterActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_trimDelimiterActionPerformed
   {//GEN-HEADEREND:event_trimDelimiterActionPerformed
-    preview();
+    doPreview();
   }//GEN-LAST:event_trimDelimiterActionPerformed
 
   private void replaceQuotesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_replaceQuotesActionPerformed
   {//GEN-HEADEREND:event_replaceQuotesActionPerformed
-    preview();
+    doPreview();
   }//GEN-LAST:event_replaceQuotesActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JCheckBox addValuesKw;
   private javax.swing.JTextField delimiter;
   private javax.swing.JCheckBox emptyString;
   private javax.swing.JCheckBox isRegex;
