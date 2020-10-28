@@ -37,6 +37,24 @@ public class CsvLineParserTest
 {
 
   @Test
+  public void testEscapedBackslash()
+  {
+    String input = "\"1\";\"foo \\\"bar\\\\\";\"2\"";
+    CsvLineParser parser = new CsvLineParser(";",'"');
+    parser.setReturnEmptyStrings(true);
+    parser.setTrimValues(true);
+    parser.setUnquotedEmptyStringIsNull(false);
+    parser.setQuoteEscaping(QuoteEscapeType.escape);
+    parser.setLine(input);
+    List<String> items = parser.getAllElements();
+    String expected = "foo \"bar\\";
+//    System.out.println(expected);
+//    System.out.println("items: " + items);
+    assertEquals(3, items.size());
+    assertEquals(expected, items.get(1));
+  }
+
+  @Test
   public void testLeadingDelimiter()
   {
     String input = "\t\tval2\tval3\n";
@@ -90,14 +108,17 @@ public class CsvLineParserTest
     CsvLineParser parser = new CsvLineParser(';','\'');
     parser.setQuoteEscaping(QuoteEscapeType.escape);
     parser.setReturnEmptyStrings(true);
-    parser.setLine("'\\\\\\'ku\"la'");
+    String line = "'\\\\\\'ku\"la'";
+//    System.out.println(line);
+    parser.setLine(line);
 
     String result = null;
     if (parser.hasNext())
     {
       result = parser.getNext();
     }
-    String ex = "\\\\'ku\"la";
+    String ex = "\\'ku\"la";
+//    System.out.println("expected: " + ex + "  result: " + result);
     assertEquals(ex, result);
 
     parser.setLine("'\\\\ku\"la'");
@@ -106,7 +127,8 @@ public class CsvLineParserTest
     {
       result = parser.getNext();
     }
-    ex = "\\\\ku\"la";
+    ex = "\\ku\"la";
+//    System.out.println("expected: " + ex + "  result: " + result);
     assertEquals(ex, result);
 
     parser.setLine("'\\'ku\"la'");
@@ -117,7 +139,6 @@ public class CsvLineParserTest
     }
     ex = "'ku\"la";
     assertEquals(ex, result);
-
   }
 
   @Test

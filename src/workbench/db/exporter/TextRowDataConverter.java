@@ -264,6 +264,7 @@ public class TextRowDataConverter
               value = StringUtil.replace(value, this.quoteCharacter, this.quoteCharacter + this.quoteCharacter);
               break;
             case escape:
+              value = StringUtil.replace(value, "\\", "\\\\");
               value = StringUtil.replace(value, this.quoteCharacter, "\\" + this.quoteCharacter);
               break;
           }

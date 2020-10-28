@@ -31,9 +31,6 @@ import workbench.db.importer.TextFileParser;
 /**
  * A class to efficiently parse a delimited line of data.
  *
- * A quoted delimiter is recognized, line data spanning multiple lines (i.e.
- * data with embedded \n) is not recognized.
- *
  * @author  Thomas Kellerer
  */
 public class CsvLineParser
@@ -166,21 +163,18 @@ public class CsvLineParser
   @Override
   public String getNext()
   {
-    // The line ends with the delimiter
-    // so we have to return an empty string
+    boolean inQuotes = false;
+    boolean hadQuotes = false;
+
+    // Handle the case where the last character is the delimiter
     if (oneMore)
     {
       oneMore = false;
-      if (returnEmptyStrings) return "";
-      else return null;
+      if (returnEmptyStrings) return StringUtil.EMPTY_STRING;
+      return null;
     }
 
-    int beginField = current;
-    boolean inQuotes = false;
-    int endOffset = 0;
-
-    boolean hadQuotes = false;
-
+    StringBuilder element = new StringBuilder(40);
     while (current < len)
     {
       char c = this.lineData.charAt(current);
@@ -189,84 +183,67 @@ public class CsvLineParser
         break;
       }
 
+      if (this.escapeType == QuoteEscapeType.escape && c == '\\')
+      {
+        c = getNextChar(current);
+        if (c != 0)
+        {
+          element.append(c);
+          current += 2;
+          continue;
+        }
+      }
+      else if (this.escapeType == QuoteEscapeType.duplicate && c == this.quoteChar)
+      {
+        char next = getNextChar(current);
+        if (next == quoteChar)
+        {
+          if (!isDelimiter(getCharAt(current - 1), current - 1) && !isDelimiter(getNextChar(current + 2), current + 2))
+          {
+            element.append(quoteChar);
+            current += 2;
+            continue;
+          }
+        }
+      }
+
       if (c == this.quoteChar)
       {
         hadQuotes = true;
-
-        if (this.escapeType == QuoteEscapeType.escape)
-        {
-          char last = 0;
-          if (current > 1) last = this.lineData.charAt(current - 1);
-          if (last != '\\')
-          {
-            inQuotes = !inQuotes;
-          }
-        }
-        // Only check for duplicated quotes if they are inside a quoted field content
-        // this prevents empty strings e.g. "" to be interpreted as a single quote
-        // but preserves a single escaped quoted inside quotes, e.g.: """"
-        else if (this.escapeType == QuoteEscapeType.duplicate && (endOffset == 1))
-        {
-          char next = 0;
-          if (current < lineData.length() - 1) next = this.lineData.charAt(current + 1);
-          if (next == quoteChar)
-          {
-            current ++;
-          }
-          else
-          {
-            inQuotes = !inQuotes;
-          }
-        }
-        else
-        {
-          inQuotes = !inQuotes;
-        }
-
-        // don't return the quote at the beginning or the end of the field
-        // this expects that the quotes are closed properly
-        if (current == beginField)
-        {
-          beginField++;
-          endOffset = 1;
-        }
+        inQuotes = !inQuotes;
+        current ++;
+        // don't append the quote to the result
+        continue;
       }
+
+      element.append(c);
       current ++;
     }
 
-    String next = null;
-    if (current - endOffset > beginField)
-    {
-      next = this.lineData.substring(beginField, current - endOffset);
-    }
-
-    this.current += delimiterLength; // skip the delimiter
+    current += this.delimiterLength;
     if (current == len && isDelimiter(lineData.charAt(current-delimiterLength), current - delimiterLength))
     {
-      // if the line ends with the delimiter, we have one more
-      // (empty) element
+      // if the line ends with the delimiter, we have one more (empty) element
       oneMore = true;
     }
+    String next = element.toString();
+    if (hadQuotes && unquotedEmptyIsNull && next.length() == 0) return StringUtil.EMPTY_STRING;
+    if (!returnEmptyStrings && next.length() == 0) return null;
 
-    if (hadQuotes && next != null)
-    {
-      if (this.escapeType == QuoteEscapeType.escape)
-      {
-        String quoteString = new String(new char[] { quoteChar } );
-        next = StringUtil.replace(next, "\\" + quoteChar, quoteString);
-      }
-      else if (this.escapeType == QuoteEscapeType.duplicate)
-      {
-        String two = new String(new char[] { quoteChar, quoteChar} );
-        String one = new String(new char[] { quoteChar} );
-        next = StringUtil.replace(next, two, one);
-      }
-    }
+    if (trimValues) next = next.trim();
+    return next;
+  }
 
-    if (hadQuotes && unquotedEmptyIsNull && next == null) return StringUtil.EMPTY_STRING;
-    if (this.returnEmptyStrings && next == null) next = StringUtil.EMPTY_STRING;
-    if (trimValues && next != null) return next.trim();
-    else return next;
+  private char getCharAt(int pos)
+  {
+    if (pos >= len) return 0;
+    return lineData.charAt(pos);
+  }
+
+  private char getNextChar(int pos)
+  {
+    if (pos < len - 1) return lineData.charAt(pos + 1);
+    return 0;
   }
 
   @Override
