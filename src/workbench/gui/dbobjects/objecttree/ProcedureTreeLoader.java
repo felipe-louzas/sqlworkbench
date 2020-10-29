@@ -48,14 +48,28 @@ public class ProcedureTreeLoader
   {
     if (procListNode == null) return;
     ProcedureReader procReader = ReaderFactory.getProcedureReader(connection.getMetadata());
-    ObjectTreeNode schemaNode = procListNode.getParent();
-    String schemaName = schemaNode.getName();
+    ObjectTreeNode parent = procListNode.getParent();
+    String schemaName = parent.getName();
     String catalog = null;
-    ObjectTreeNode parent = schemaNode.getParent();
-    if (parent != null && parent.isCatalogNode())
+    ObjectTreeNode grandParent = parent.getParent();
+
+    if (parent.isCatalogNode())
     {
+      // this is for stupid MySQL that pretends catalogs are schemas
+      schemaName = null;
       catalog = parent.getName();
     }
+    else
+    {
+      schemaName = parent.getName();
+      catalog = null;
+    }
+
+    if (grandParent != null && grandParent.isCatalogNode())
+    {
+      catalog = grandParent.getName();
+    }
+    
     List<ProcedureDefinition> procedures = procReader.getProcedureList(catalog, schemaName, null);
 
     Map<String, List<ProcedureDefinition>> procs = getPackageProcedures(procedures);
