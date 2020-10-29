@@ -73,6 +73,7 @@ public class TextRowDataConverter
   private String rowIndexColumnName;
   private DataConverter converter;
   private CharacterEscapeType escapeType;
+  private String escapedQuote;
 
   public TextRowDataConverter()
   {
@@ -256,18 +257,15 @@ public class TextRowDataConverter
           }
         }
 
-        if (this.quoteEscape != QuoteEscapeType.none && hasQuoteChar && value.contains(this.quoteCharacter))
+        if (this.quoteEscape == QuoteEscapeType.escape)
         {
-          switch (quoteEscape)
-          {
-            case duplicate:
-              value = StringUtil.replace(value, this.quoteCharacter, this.quoteCharacter + this.quoteCharacter);
-              break;
-            case escape:
-              value = StringUtil.replace(value, "\\", "\\\\");
-              value = StringUtil.replace(value, this.quoteCharacter, "\\" + this.quoteCharacter);
-              break;
-          }
+          // the escaping of the backslash has to be done before escaping the quote character
+          value = StringUtil.replace(value, "\\", "\\\\");
+        }
+
+        if (this.quoteEscape != QuoteEscapeType.none && hasQuoteChar)
+        {
+          value = StringUtil.replace(value, this.quoteCharacter, this.escapedQuote);
         }
       }
 
@@ -333,6 +331,7 @@ public class TextRowDataConverter
   public StringBuilder getStart(int[] colMap)
   {
     this.setAdditionalEncodeCharacters();
+    this.initEscapedQuote();
 
     if (!this.writeHeader) return null;
 
@@ -422,6 +421,28 @@ public class TextRowDataConverter
     {
       this.quoteCharacter = quote;
       setAdditionalEncodeCharacters();
+    }
+  }
+
+  private void initEscapedQuote()
+  {
+    if (this.quoteCharacter != null)
+    {
+      switch (quoteEscape)
+      {
+        case duplicate:
+          this.escapedQuote = this.quoteCharacter + this.quoteCharacter;
+          break;
+        case escape:
+          this.escapedQuote = '\\' + this.quoteCharacter;
+          break;
+        default:
+          this.escapedQuote = this.quoteCharacter;
+      }
+    }
+    else
+    {
+      this.escapedQuote = null;
     }
   }
 
