@@ -29,7 +29,6 @@ import java.sql.Statement;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.db.JdbcUtils;
 import workbench.db.SchemaInformationReader;
 import workbench.db.WbConnection;
 

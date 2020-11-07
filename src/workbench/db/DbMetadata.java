@@ -1494,6 +1494,7 @@ public class DbMetadata
       }
       catch (Throwable ex)
       {
+        LogMgr.logWarning(new CallerInfo(){}, "Could not get current schema from driver. Assuming schemas are not supported", ex);
         supportsGetSchema = false;
       }
     }
@@ -2616,7 +2617,7 @@ public class DbMetadata
       }
       else
       {
-        if (StringUtil.isNonEmpty(catalog))
+        if (StringUtil.isNonEmpty(catalog) && !StringUtil.equalString(catalog, getCurrentCatalog()))
         {
           Exception details = null;
           if (LogMgr.isDebugEnabled())
