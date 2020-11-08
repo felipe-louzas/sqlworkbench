@@ -43,7 +43,13 @@ public class SelectIntoVerifier
 
   public SelectIntoVerifier(String dbId)
   {
+    String alias = Settings.getInstance().getProperty("workbench.db." + dbId + ".aliasid", null);
     String pattern = Settings.getInstance().getProperty("workbench.db." + dbId + ".selectinto.pattern", null);
+    if (pattern == null && alias != null)
+    {
+      pattern = Settings.getInstance().getProperty("workbench.db." + alias + ".selectinto.pattern", null);
+    }
+    
     if (pattern != null)
     {
       try
