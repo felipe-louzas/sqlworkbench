@@ -1,5 +1,5 @@
 @echo off
-echo This batchfile will download the most recent Java 13 JRE (64bit) from https://adoptopenjdk.net/
+echo This batchfile will download the most recent Java 14 JRE (64bit) from https://adoptopenjdk.net/
 echo to be used with SQL Workbench/J
 echo.
 
@@ -25,8 +25,8 @@ rem echo %jdkdir%
 
 FOR /F " usebackq delims==" %%i IN (`dir /b OpenJDK*.zip`) DO set zipfile=%%i
 
-echo Validating ZIP file
-certutil -hashfile %zipfile%.sha256.txt sha256 > nul
+rem echo Validating ZIP file
+rem certutil -hashfile %zipfile%.sha256.txt sha256 > nul
 rem echo level: %errorlevel%
 
 if errorlevel 1 (
