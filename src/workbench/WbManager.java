@@ -572,7 +572,7 @@ public final class WbManager
    * @see workbench.gui.MainWindow#windowClosing(java.awt.event.WindowEvent)
    * @see workbench.gui.MainWindow#connectCancelled()
    */
-  public void closeMainWindow(final MainWindow win)
+  public synchronized void closeMainWindow(final MainWindow win)
   {
     if (this.mainWindows.size() == 1)
     {

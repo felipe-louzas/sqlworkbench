@@ -1661,7 +1661,7 @@ public class MainWindow
   public void windowClosing(WindowEvent windowEvent)
   {
     LogMgr.logDebug(new CallerInfo(){}, "Main window closing");
-    WbManager.getInstance().closeMainWindow(this);
+    WbSwingUtilities.invokeLater(() -> WbManager.getInstance().closeMainWindow(this));
   }
 
   @Override
