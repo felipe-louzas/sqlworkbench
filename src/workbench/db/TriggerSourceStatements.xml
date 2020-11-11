@@ -258,7 +258,7 @@
 
     <void method="put">
       <string>MySQL</string>
-      <object class="workbench.db.GetMetaDataSql">
+      <object id="trg_src_mysql" class="workbench.db.GetMetaDataSql">
         <void property="baseSql">
           <string>SELECT concat('CREATE TRIGGER ',trigger_name, ' ', action_timing, ' ', event_manipulation, '\n  ON ', event_object_table, '\n  FOR EACH ROW\n', action_statement)
             FROM information_schema.triggers</string>
@@ -273,6 +273,11 @@
           <string>trigger_schema</string>
         </void>
       </object>
+    </void>
+
+    <void method="put">
+      <string>MariaDB</string>
+      <object idref="trg_src_mysql"/>
     </void>
 
     <void method="put">

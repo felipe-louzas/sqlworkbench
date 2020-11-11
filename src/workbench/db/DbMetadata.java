@@ -430,6 +430,13 @@ public class DbMetadata
         this.isMariaDB = true;
       }
     }
+    else if (productLower.contains("mariadb"))
+    {
+      this.objectListEnhancer = new MySQLTableCommentReader();
+      this.isMySql = true;
+      this.dbId = DBID.MariaDB.getId();
+      this.isMariaDB = true;
+    }
     else if (productLower.contains("derby"))
     {
       this.isApacheDerby = true;

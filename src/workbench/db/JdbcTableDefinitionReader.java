@@ -395,7 +395,7 @@ public class JdbcTableDefinitionReader
     {
       return new DerbyColumnEnhancer();
     }
-    if (meta.isMySql())
+    if (meta.isMySql() || meta.isMariaDB())
     {
       return new MySQLColumnEnhancer();
     }

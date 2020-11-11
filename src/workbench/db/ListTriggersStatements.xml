@@ -489,7 +489,7 @@ WHERE trigger_name not like 'BIN$%'
 
   <void method="put">
    <string>MySQL</string>
-   <object class="workbench.db.GetMetaDataSql">
+   <object id="trg_list_mysql" class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
        SELECT trigger_name,
@@ -510,6 +510,11 @@ WHERE trigger_name not like 'BIN$%'
     </void>
    </object>
   </void>
+  <void method="put">
+   <string>MariaDB</string>
+   <object idref="trg_list_mysql"/>
+  </void>
+
 
   <void method="put">
    <string>H2</string>

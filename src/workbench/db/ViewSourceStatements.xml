@@ -353,7 +353,7 @@ WHERE table_type='V'
 
  <void method="put">
    <string>MySQL</string>
-   <object class="workbench.db.GetMetaDataSql">
+   <object id="mysql_view_source" class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
 SELECT concat(view_definition,
@@ -372,6 +372,11 @@ FROM INFORMATION_SCHEMA.VIEWS
     </void>
    </object>
   </void>
+
+	<void method="put">
+   <string>MariaDB</string>
+   <object idref="mysql_view_source"/>
+	</void>
 
   <void method="put">
    <string>Solid Database Engine</string>

@@ -167,6 +167,7 @@ public class PostgresColumnEnhancer
       "          when att.attlen = -1 then att.attstorage \n" +
       "          else null \n" +
       "       end as attstorage, \n" +
+      "       att.atttypmod, \n" +
       "       att.attinhcount, \n" +
       "       att.attndims, \n" +
       "       att.atthasdef, \n" +
@@ -207,6 +208,7 @@ public class PostgresColumnEnhancer
         String collation = rs.getString("collcollate");
         String storage = rs.getString("attstorage");
         int ancestorCount = rs.getInt("attinhcount");
+        int typMod = rs.getInt("atttypmod");
         boolean hasDefault = rs.getBoolean("atthasdef");
 
         int arrayDims = rs.getInt("attndims");
@@ -242,6 +244,11 @@ public class PostgresColumnEnhancer
             col.setIsIdentity(true);
           }
           identityColumns.add(col);
+        }
+        else if ((formattedType.startsWith("time") || formattedType.startsWith("interval")) && typMod >= 0)
+        {
+          String type = col.getDbmsType() + "(" + typMod + ")";
+          col.setDbmsType(type);
         }
         else
         {

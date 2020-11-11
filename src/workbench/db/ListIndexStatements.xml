@@ -191,7 +191,7 @@ where idx.rdb$relation_name not like 'RDB$%'
 
   <void method="put">
    <string>MySQL</string>
-   <object class="workbench.db.GetMetaDataSql">
+   <object id="mysql_idx_list" class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
 select index_name,
@@ -234,6 +234,11 @@ from (
       <string>index_name</string>
     </void>
    </object>
+  </void>
+
+  <void method="put">
+   <string>MariaDB</string>
+   <object idref="mysql_idx_list"/>
   </void>
 
   <void method="put">

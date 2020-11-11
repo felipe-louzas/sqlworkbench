@@ -163,6 +163,8 @@ public class DefaultTriggerReader
     DataStore result = createResultDataStore();
 
     String query = getListTriggerSQL(catalog, schema, tableName);
+    if (query == null) return result;
+
     Statement stmt = this.dbConnection.createStatementForQuery();
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "table triggers", query);

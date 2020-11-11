@@ -32,11 +32,11 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
-import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
 import workbench.db.JdbcUtils;
+
 import workbench.util.StringUtil;
 
 /**
@@ -73,6 +73,7 @@ public class MySQLColumnEnhancer
     String sql =
       "select column_name, " +
       "       extra, \n" +
+      "       column_type, \n" +
       "       " + (supportGeneratedColumns ? "generation_expression " : "null as generation_expression ") + " \n" +
       "from information_schema.columns \n" +
       "where table_schema = ?\n" +
@@ -89,9 +90,10 @@ public class MySQLColumnEnhancer
       List<ColumnIdentifier> columns = tbl.getColumns();
       while (rs.next())
       {
-        String colname = rs.getString(1);
-        String extra = rs.getString(2);
-        String expression = rs.getString(3);
+        String colname = rs.getString("column_name");
+        String extra = rs.getString("extra");
+        String expression = rs.getString("generation_expression");
+        String type = rs.getString("column_type");
         ColumnIdentifier col = ColumnIdentifier.findColumnInList(columns, colname);
         if (col != null)
         {
@@ -120,6 +122,10 @@ public class MySQLColumnEnhancer
           {
             // MariaDB 10.3
             col.setSQLOption(extra);
+          }
+          else if (type.startsWith("datetime"))
+          {
+            col.setDbmsType(type.toUpperCase());
           }
         }
       }
