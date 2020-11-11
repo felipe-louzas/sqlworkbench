@@ -20,21 +20,13 @@ goto :eof
 
 setlocal
 
+set zipfile=OpenJDK.zip
+
 FOR /F " usebackq delims==" %%i IN (`dir /ad /b jdk*`) DO set jdkdir=%%i
 rem echo %jdkdir%
 
-FOR /F " usebackq delims==" %%i IN (`dir /b OpenJDK*.zip`) DO set zipfile=%%i
-
-rem echo Validating ZIP file
-rem certutil -hashfile %zipfile%.sha256.txt sha256 > nul
-rem echo level: %errorlevel%
-
-if errorlevel 1 (
-  echo The integrity of the file %zipfile% could not be validated - the checksum did not match
-  goto :eof
-)
-
 ren %jdkdir% jre
+
 echo.
 echo JRE created in %~dp0jre
 echo You can delete the ZIP archive %zipfile% now
