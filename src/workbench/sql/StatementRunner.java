@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import workbench.WbManager;
 import workbench.interfaces.ExecutionController;
@@ -83,6 +84,7 @@ public class StatementRunner
   private WbConnection currentConnection;
 
   private SqlCommand currentCommand;
+  private boolean isTransactionCommand;
   private StatementHook statementHook = StatementHookFactory.DEFAULT_HOOK;
   private ResultSetConsumer currentConsumer;
   private String baseDir;
@@ -399,6 +401,7 @@ public class StatementRunner
     if (command instanceof AlterSessionCommand) return false;
     if (command instanceof SetCommand) return false;
     if (command.isWbCommand()) return command.shouldEndTransaction();
+    if (isTransactionCommand) return false;
     return true;
   }
 
@@ -476,6 +479,16 @@ public class StatementRunner
         }
       };
       throw ex;
+    }
+
+    this.isTransactionCommand = false;
+    if (currentCommand instanceof SqlCommand && currentConnection != null && currentConnection.getDbSettings() != null)
+    {
+      // We only need to check additional "transaction commands" for generic commands.
+      // see endReadonlyTransaction()
+      final String verb = SqlParsingUtil.getInstance(currentConnection).getSqlVerb(aSql);
+      Set<String> commands = currentConnection.getDbSettings().getAdditionalTransactionCommands();
+      this.isTransactionCommand = commands.contains(verb);
     }
 
     this.currentCommand.setStatementRunner(this);

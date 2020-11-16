@@ -2389,6 +2389,12 @@ public class DbSettings
     return getBoolProperty("supports.schema_change", false);
   }
 
+  public Set<String> getAdditionalTransactionCommands()
+  {
+    List<String> commands = getListProperty("transactional.commands", null);
+    return CollectionUtil.caseInsensitiveSet(commands);
+  }
+
   public EndReadOnlyTrans getAutoCloseReadOnlyTransactions()
   {
     String defaultSetting = Settings.getInstance().getProperty("workbench.sql.transaction.readonly.end", EndReadOnlyTrans.never.name());
