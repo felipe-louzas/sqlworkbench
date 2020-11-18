@@ -213,22 +213,19 @@ public class ValuesListCreator
         item = replaceQuotes(item);
       }
 
-      if (item != null && (item.startsWith("'") || StringUtil.isNumber(item)))
+      if (isNull(item))
       {
+        result.append("NULL");
+      }
+      else if (needsQuotes(item))
+      {
+        result.append('\'');
         result.append(item);
+        result.append('\'');
       }
       else
       {
-        if (isNull(item))
-        {
-          result.append("NULL");
-        }
-        else
-        {
-          result.append('\'');
-          result.append(item);
-          result.append('\'');
-        }
+        result.append(item);
       }
       nr ++;
     }
@@ -253,4 +250,23 @@ public class ValuesListCreator
     if (nullString != null && nullString.equals(item)) return true;
     return false;
   }
+
+  public static boolean needsQuotes(String input)
+  {
+    if (input == null) return false;
+    input = input.trim();
+
+    // no need to quote it, if it's already quoted.
+    if (input.startsWith("'") && input.endsWith("'")) return false;
+
+    // if it doesn't start with a digit it can't be a number and has to be quoted.
+    if (input.matches("^[^0-9]+.*")) return true;
+
+    // if it starts with one or more zeros, but isn't a decimal number
+    // assume it's a string
+    if (input.matches("^0+.*") && input.indexOf('.') == -1) return true;
+
+    return !StringUtil.isNumber(input);
+  }
+
 }

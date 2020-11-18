@@ -136,7 +136,7 @@ public class InListCreator
     if (CollectionUtil.isEmpty(lines)) return false;
     for (String line : lines)
     {
-      if (!StringUtil.isNumber(line)) return true;
+      if (ValuesListCreator.needsQuotes(line)) return true;
     }
     return false;
   }
