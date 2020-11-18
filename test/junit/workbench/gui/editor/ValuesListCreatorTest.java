@@ -32,6 +32,21 @@ public class ValuesListCreatorTest
 {
 
   @Test
+  public void testNeedsQuotes()
+  {
+    String[] needQuotes = {"foo", "042", "0,42"};
+    for (String s : needQuotes)
+    {
+      assertTrue(ValuesListCreator.needsQuotes(s));
+    }
+    String[] noQuotes = {"'foo'", "42", "0.42"};
+    for (String s : noQuotes)
+    {
+      assertFalse(ValuesListCreator.needsQuotes(s));
+    }
+  }
+
+  @Test
   public void testDoubleQuotes()
   {
     String input =
