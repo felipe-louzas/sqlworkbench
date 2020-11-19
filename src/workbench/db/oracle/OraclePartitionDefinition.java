@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -56,14 +57,27 @@ public class OraclePartitionDefinition
   private String compressOption;
 
   private List<OraclePartitionDefinition> subPartitions;
-
+  private boolean hasTemplateSubpartitions;
   private boolean isSubpartition;
+
+  // For hash sub-partitioining
+  private int defaultSubpartitionCount;
 
   public OraclePartitionDefinition(String partitionName, String partitionType, int partitionPosition)
   {
     name = partitionName;
     position = partitionPosition;
     type = partitionType;
+  }
+
+  public void setDefaultSubPartitionCount(int count)
+  {
+    this.defaultSubpartitionCount = count;
+  }
+
+  public void setHasTemplateSubPartitions(boolean flag)
+  {
+    this.hasTemplateSubpartitions = flag;
   }
 
   public boolean isSubpartition()
@@ -192,7 +206,8 @@ public class OraclePartitionDefinition
       }
     }
 
-    if (subPartitions != null && !subPartitions.isEmpty())
+    boolean shouldAppendSubPartitions = !hasTemplateSubpartitions && CollectionUtil.isNonEmpty(subPartitions) && !subPartitionType.equals("HASH");
+    if (shouldAppendSubPartitions)
     {
       int maxLength = getMaxPartitionNameLength(subPartitions);
       result.append("\n  ");

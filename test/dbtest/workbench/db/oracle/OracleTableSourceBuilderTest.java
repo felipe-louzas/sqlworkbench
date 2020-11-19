@@ -188,6 +188,68 @@ public class OracleTableSourceBuilderTest
   }
 
   @Test
+  public void testTemplateSubPartitions()
+    throws Exception
+  {
+    WbConnection con = OracleTestUtil.getOracleConnection();
+    assertNotNull("Oracle not available", con);
+    try
+    {
+      String sql =
+        "create table subpart_test (\n" +
+        "  part_key  integer not null, \n" +
+        "  sub_key   integer not null, \n" +
+        "  some_data varchar(50)\n" +
+        ")\n" +
+        "partition by list (part_key)\n" +
+        "subpartition by list (sub_key) \n" +
+        "subpartition template \n" +
+        "(\n" +
+        "  subpartition sp_1 values (1,2,3)," +
+        "  subpartition sp_2 values (4,5,6)" +
+        ")\n" +
+        "(\n" +
+        "  partition p_1 values (1),\n" +
+        "  partition p_2 values (2)\n" +
+        ");";
+
+      TestUtil.executeScript(con, sql);
+
+      TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
+      TableDefinition tbl = con.getMetadata().getTableDefinition(new TableIdentifier("SUBPART_TEST"));
+      String source = builder.getTableSource(tbl.getTable(), tbl.getColumns());
+//      System.out.println(source);
+      String expected =
+        "CREATE TABLE SUBPART_TEST\n" +
+        "(\n" +
+        "   PART_KEY   NUMBER              NOT NULL,\n" +
+        "   SUB_KEY    NUMBER              NOT NULL,\n" +
+        "   SOME_DATA  VARCHAR2(50 Byte)\n" +
+        ")\n" +
+        "PARTITION BY LIST (PART_KEY)\n" +
+        "SUBPARTITION BY LIST (SUB_KEY)\n" +
+        "SUBPARTITIONS TEMPLATE\n" +
+        "(\n" +
+        "  SUBPARTITION SP_1 VALUES (1, 2, 3),\n" +
+        "  SUBPARTITION SP_2 VALUES (4, 5, 6)\n" +
+        ")\n" +
+        "(\n" +
+        "  PARTITION P_1 VALUES (1),\n" +
+        "  PARTITION P_2 VALUES (2)\n" +
+        ")\n" +
+        "TABLESPACE USERS;";
+      assertEquals(expected, source.trim());
+    }
+    finally
+    {
+      String cleanup =
+        "drop table subpart_test cascade constraints purge; \n" +
+        "purge recyclebin;";
+      TestUtil.executeScript(con, cleanup);
+    }
+  }
+
+  @Test
   public void testSubPartitions()
     throws Exception
   {
@@ -202,10 +264,10 @@ public class OracleTableSourceBuilderTest
         "  some_data varchar(50)\n" +
         ")\n" +
         "partition by list (part_key)\n" +
-        "subpartition by list (sub_key) subpartition template (subpartition sp_1 values (1))\n" +
+        "subpartition by list (sub_key) \n" +
         "(\n" +
-        "  partition p_1 values (1),\n" +
-        "  partition p_2 values (2)\n" +
+        "  partition p_1 values (1) (subpartition p1_1 values (1) ),\n" +
+        "  partition p_2 values (2) (subpartition p2_1 values (1) )\n" +
         ");";
 
       TestUtil.executeScript(con, sql);
@@ -213,12 +275,12 @@ public class OracleTableSourceBuilderTest
       TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
       TableDefinition tbl = con.getMetadata().getTableDefinition(new TableIdentifier("SUBPART_TEST"));
       String source = builder.getTableSource(tbl.getTable(), tbl.getColumns());
-//      System.out.println(source);
+      System.out.println(source);
       assertTrue(source.contains("PARTITION BY LIST (PART_KEY)"));
       assertTrue(source.contains("PARTITION P_1 VALUES (1)"));
       assertTrue(source.contains("PARTITION P_2 VALUES (2)"));
-      assertTrue(source.contains("SUBPARTITION P_1_SP_1 VALUES (1)"));
-      assertTrue(source.contains("SUBPARTITION P_2_SP_1 VALUES (1)"));
+      assertTrue(source.contains("SUBPARTITION P1_1 VALUES (1)"));
+      assertTrue(source.contains("SUBPARTITION P2_1 VALUES (1)"));
     }
     finally
     {

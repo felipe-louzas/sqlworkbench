@@ -49,9 +49,10 @@ public abstract class AbstractOraclePartition
 {
   private String type;
   private List<String> columns;
-  private List<OraclePartitionDefinition> partitions;
-  private String subType;
-  private int defaultSubpartitionCount;
+  protected final List<OraclePartitionDefinition> partitions = new ArrayList<>();
+  protected final List<OraclePartitionDefinition> templateSubPartitions = new ArrayList<>();
+  protected String subType;
+  protected int defaultSubpartitionCount;
   private List<String> subColumns;
   protected boolean useCompression;
   protected boolean supportsIntervals;
@@ -213,9 +214,26 @@ public abstract class AbstractOraclePartition
         result.append(" (");
         result.append(StringUtil.listToString(subColumns, ','));
         result.append(')');
-        if (defaultSubpartitionCount > 1)
+        if (this.templateSubPartitions.size() > 0)
         {
           result.append('\n');
+          result.append(indent);
+          result.append("SUBPARTITIONS TEMPLATE\n(\n");
+          int maxLength = forTable ? OraclePartitionDefinition.getMaxPartitionNameLength(templateSubPartitions): 0;
+          for (int i=0; i < templateSubPartitions.size(); i++)
+          {
+            OraclePartitionDefinition part = templateSubPartitions.get(i);
+            if (i > 0)
+            {
+              result.append(",\n");
+            }
+            result.append(part.getSource(forTable, maxLength, indent));
+          }
+          result.append("\n)");
+        }
+        else if (subType.equals("HASH") && defaultSubpartitionCount > 0)
+        {
+          result.append("\n");
           result.append(indent);
           result.append("SUBPARTITIONS ");
           result.append(defaultSubpartitionCount);
@@ -263,6 +281,7 @@ public abstract class AbstractOraclePartition
     String retrievePartitionDefinitionSql = getRetrievePartitionDefinitionSql();
 
     long start = System.currentTimeMillis();
+    partitions.clear();
 
     try
     {
@@ -272,7 +291,6 @@ public abstract class AbstractOraclePartition
       pstmt.setString(1, SqlUtil.removeObjectQuotes(dbObject.getSchema()));
       pstmt.setString(2, SqlUtil.removeObjectQuotes(dbObject.getObjectName()));
       rs = pstmt.executeQuery();
-
       if (rs.next())
       {
         type = rs.getString("PARTITIONING_TYPE");
@@ -286,8 +304,6 @@ public abstract class AbstractOraclePartition
         subKeyCount = rs.getInt("SUBPARTITIONING_KEY_COUNT");
         int colCount = rs.getInt("PARTITIONING_KEY_COUNT");
         columns = new ArrayList<>(colCount);
-        int partCount = rs.getInt("PARTITION_COUNT");
-        partitions = new ArrayList<>(partCount);
         tableSpace = rs.getString("DEF_TABLESPACE_NAME");
         refPartitionConstraint = rs.getString("REF_PTN_CONSTRAINT_NAME");
         objectOwner = dbObject.getSchema();
@@ -389,7 +405,7 @@ public abstract class AbstractOraclePartition
 
   private OraclePartitionDefinition findPartition(String name)
   {
-    if (partitions == null || partitions.isEmpty()) return null;
+    if (partitions.isEmpty()) return null;
     for (OraclePartitionDefinition def : partitions)
     {
       if (def.getName().equals(name))
@@ -400,7 +416,7 @@ public abstract class AbstractOraclePartition
     return null;
   }
 
-  private void retrieveSubPartitions(DbObject object, WbConnection conn)
+  protected void retrieveSubPartitions(DbObject object, WbConnection conn)
     throws SQLException
   {
     PreparedStatement pstmt = null;
@@ -514,9 +530,10 @@ public abstract class AbstractOraclePartition
   {
     if (!shouldRetrievePartitions()) return;
 
-    partitions = loadPartitions(object, conn);
+    partitions.clear();
+    partitions.addAll(loadPartitions(object, conn));
 
-    if (defaultSubpartitionCount <= 1 && subColumns != null)
+    if (subColumns != null)
     {
       retrieveSubPartitions(object, conn);
     }

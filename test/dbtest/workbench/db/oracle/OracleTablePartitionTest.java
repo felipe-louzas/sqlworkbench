@@ -302,7 +302,9 @@ public class OracleTablePartitionTest
       "  PARTITION INVOICES_Q3 VALUES LESS THAN (TO_DATE(' 2010-09-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN')),\n" +
       "  PARTITION INVOICES_Q4 VALUES LESS THAN (TO_DATE(' 2011-01-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))\n" +
       ")";
-    assertEquals(expected, reader.getSourceForTableDefinition().trim());
+    String sql = reader.getSourceForTableDefinition().trim();
+//    System.out.println(sql);
+    assertEquals(expected, sql);
   }
 
   @Test

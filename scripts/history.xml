@@ -7,6 +7,7 @@
     <entry dev-build="1" type="enh">When using "Save data as..." it's now possible to include column comments the way -enableComments is working for WbExport</entry>
     <entry dev-build="1" type="enh">It's now possible to use an external pager when running in console mode</entry>
     <entry dev-build="1" type="fix">For WbExport and WbImport, using -quoteEscape=escape did not work correctly</entry>
+    <entry dev-build="2" type="fix">For Oracle, the DDL for tables using sub-partioning templates wasn't correct.</entry>
     <entry dev-build="2" type="fix">For PostgreSQL, MariaDB and MySQL the precision of timestamp (datetime) columns was not shown.</entry>
     <entry dev-build="1" type="fix">For MySQL, the DbExplorer did not correctly show stored procedures.</entry>
     <entry dev-build="1" type="fix">For PostgreSQL, WbDataDiff did not work if the primary key contained citext columns</entry>
