@@ -31,11 +31,12 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
+
 import workbench.db.JdbcUtils;
+
 import workbench.util.StringUtil;
 
 /**

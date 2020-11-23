@@ -28,11 +28,14 @@ import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -54,9 +57,9 @@ import workbench.sql.SqlCommand;
 import workbench.sql.commands.TransactionEndCommand;
 
 import workbench.util.CollectionUtil;
-import workbench.util.NumberStringCache;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
+import workbench.util.VersionNumber;
 
 /**
  * Stores and manages db specific settings.
@@ -86,8 +89,7 @@ public class DbSettings
 
   private final DbSettings aliasSettings;
   private final String prefix;
-  private final String prefixMajorVersion;
-  private final String prefixFullVersion;
+  private final String versionPrefix;
 
   public static enum GenerateOwnerType
   {
@@ -105,23 +107,11 @@ public class DbSettings
   {
     dbId = id;
     prefix = "workbench.db." + id + ".";
-    prefixMajorVersion = "workbench.db." + id + "_" + NumberStringCache.getNumberString(majorVersion) + ".";
-    prefixFullVersion = "workbench.db." + id + "_" + NumberStringCache.getNumberString(majorVersion) + "_" + NumberStringCache.getNumberString(minorVersion) + ".";
+    versionPrefix = findVersionPrefixTouse(majorVersion, minorVersion);
 
     Settings settings = Settings.getInstance();
 
     CallerInfo nci = new CallerInfo(){};
-    // migrate pre build 117 setting
-    List<String> quote = StringUtil.stringToList(settings.getProperty("workbench.db.neverquote",""));
-    if (CollectionUtil.isNonEmpty(quote))
-    {
-      LogMgr.logInfo(nci, "Migrating deprecated property \"workbench.db.neverquote\" to dbid based properties");
-      for (String nid : quote)
-      {
-        settings.setProperty("workbench.db." + nid + ".neverquote", "true");
-      }
-      settings.removeProperty("workbench.db.neverquote");
-    }
     String aliasID = settings.getProperty(prefix + "aliasid", null);
     if (aliasID != null)
     {
@@ -176,14 +166,61 @@ public class DbSettings
     return getVersionedString(prop, defaultValue);
   }
 
+  /*
+   * Finds the highest "version key" for the current DBMS
+   * that is smaller or equal than the current DB version.
+   */
+  private String findVersionPrefixTouse(int major, int minor)
+  {
+    if (major <= 0) return null;
+
+    Settings set = Settings.getInstance();
+
+    List<String> keys = set.getKeysWithPrefix("workbench.db." + this.dbId + "_");
+    if (keys.isEmpty()) return null;
+
+    Comparator<VersionNumber> comp = (VersionNumber o1, VersionNumber o2) ->
+    {
+      if (o1.equals(o2)) return 0;
+      if (o1.isNewerThan(o2)) return -1;
+      return 1;
+    };
+    VersionNumber dbVersion = new VersionNumber(major, minor);
+
+    List<VersionNumber> numbers = new ArrayList<>();
+
+    Pattern p = Pattern.compile("^[0-9]+(\\_[0-9]+){0,1}$");
+
+    for (String key : keys)
+    {
+      key = key.substring(prefix.length());
+      int pos = key.indexOf('.');
+      key = key.substring(0, pos);
+      Matcher matcher = p.matcher(key);
+      if (matcher.matches())
+      {
+        VersionNumber nr = new VersionNumber(key.replace('_', '.'));
+        if (dbVersion.isNewerOrEqual(nr))
+        {
+          numbers.add(nr);
+        }
+      }
+    }
+
+    if (numbers.isEmpty()) return null;
+
+    Collections.sort(numbers, comp);
+    VersionNumber vn = numbers.get(0);
+    return "workbench.db." + dbId + "_" + vn.toString().replace('.', '_') + ".";
+  }
+
   private String getVersionedString(String prop, String defaultValue)
   {
     Settings set = Settings.getInstance();
 
-    String result = set.getProperty(prefixFullVersion + prop, NOT_THERE);
-    if (result != NOT_THERE) return result;
+    String result = NOT_THERE;
 
-    result = set.getProperty(prefixMajorVersion + prop, NOT_THERE);
+    if (versionPrefix != null) result = set.getProperty(versionPrefix + prop, NOT_THERE);
     if (result != NOT_THERE) return result;
 
     if (aliasSettings == null)

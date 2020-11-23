@@ -44,6 +44,27 @@ public class DbSettingsTest
   }
 
   @Test
+  public void testVersionedProperty()
+  {
+    DbSettings settings19 = new DbSettings("oracle",19,7);
+    int max = settings19.getMaxVarcharLength();
+    assertEquals(32767, max);
+    String limit = settings19.getLimitClause();
+    assertEquals("FETCH FIRST %max_rows% ROWS ONLY", limit);
+
+    DbSettings settings12 = new DbSettings("oracle",12,2);
+    max = settings12.getMaxVarcharLength();
+    assertEquals(32767, max);
+    limit = settings12.getLimitClause();
+    assertEquals("FETCH FIRST %max_rows% ROWS ONLY", limit);
+
+    DbSettings settings11 = new DbSettings("oracle",11,2);
+    max = settings11.getMaxVarcharLength();
+    assertEquals(4000, max);
+    assertNull(settings11.getLimitClause());
+  }
+
+  @Test
   public void testAlias()
   {
     DbSettings maria = new DbSettings("mariadb");
