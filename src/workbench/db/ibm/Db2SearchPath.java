@@ -41,7 +41,7 @@ import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
- *
+ * An implementation of the DbSearchPath interface for DB2 on iSeries.
  * @author Thomas Kellerer
  */
 public class Db2SearchPath
@@ -101,13 +101,13 @@ public class Db2SearchPath
 
   private String getSQL(WbConnection con)
   {
-    String sql = Settings.getInstance().getProperty("workbench.db." + con.getDbId() + "searchpath.sql", null);
+    String sql = Settings.getInstance().getProperty("workbench.db." + con.getDbId() + ".searchpath.sql", null);
     if (sql == null)
     {
       StringBuilder result = new StringBuilder(50);
-      result.append("select current_path from SYSIBM");
+      result.append("select schema_name from QSYS2");
       result.append(con.getMetadata().getSchemaSeparator());
-      result.append("SYSDUMMY1");
+      result.append("LIBRARY_LIST_INFO order by ordinal_position");
       sql = result.toString();
     }
     return sql;
