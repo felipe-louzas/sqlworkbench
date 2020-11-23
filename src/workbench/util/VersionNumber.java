@@ -160,6 +160,29 @@ public class VersionNumber
   }
 
   @Override
+  public int hashCode()
+  {
+    int hash = 3;
+    hash = 47 * hash + this.major;
+    hash = 47 * hash + this.minor;
+    hash = 47 * hash + this.patchLevel;
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    final VersionNumber other = (VersionNumber)obj;
+    if (this.major != other.major) return false;
+    if (this.minor != other.minor) return false;
+    if (this.patchLevel != other.patchLevel) return false;
+    return true;
+  }
+
+  @Override
   public String toString()
   {
     if (major == -1) return "n/a";

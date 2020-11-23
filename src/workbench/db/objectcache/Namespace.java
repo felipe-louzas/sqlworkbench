@@ -154,6 +154,12 @@ public class Namespace
     return this.schema != null && this.catalog != null;
   }
 
+  public static Namespace getCurrentNamespace(WbConnection conn)
+  {
+    if (conn == null || conn.getDbSettings() == null) return NULL_NSP;
+    return new Namespace(conn.getCurrentSchema(), conn.getCurrentCatalog());
+  }
+  
   public static Namespace fromExpression(WbConnection conn, String catalogAndSchema)
   {
     if (conn == null)
