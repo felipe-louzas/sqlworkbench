@@ -47,6 +47,20 @@ public class ValuesListCreatorTest
   }
 
   @Test
+  public void testMixedQuoting()
+  {
+    String input =
+      "1, foo, 42\n" +
+      "2, bar, 0xFF";
+    ValuesListCreator creator = new ValuesListCreator(input, ",", true);
+    String result = creator.createValuesList();
+    String expected =
+       "(1, 'foo', '42'),\n" +
+       "(2, 'bar', '0xFF')";
+    assertEquals(expected, result.trim());
+  }
+  
+  @Test
   public void testDoubleQuotes()
   {
     String input =
@@ -101,7 +115,7 @@ public class ValuesListCreatorTest
     creator.setEmptyStringIsNull(true);
     creator.setTrimDelimiter(false);
     String result = creator.createValuesList();
-    System.out.println(result);
+//    System.out.println(result);
     String expected =
        "('Arthur', 'Dent'),\n" +
        "('Marvin', NULL)";

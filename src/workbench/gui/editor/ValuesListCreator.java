@@ -20,7 +20,9 @@
  */
 package workbench.gui.editor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -69,6 +71,7 @@ public class ValuesListCreator
   private WbStringTokenizer tokenizer;
   private Pattern splitPattern;
   private boolean replaceDoubleQuotes = false;
+  private final List<Boolean> quotesNeeded = new ArrayList<>();
 
   public ValuesListCreator(String input)
   {
@@ -129,10 +132,38 @@ public class ValuesListCreator
   public String createValuesList()
   {
     if (StringUtil.isBlank(input)) return "";
-    List<String> lines = StringUtil.getLines(input);
     StringBuilder result = new StringBuilder(input.length() + 50);
 
+    List<List<String>> lines = parseInput();
+
     int nr = 0;
+    for (List<String> line : lines)
+    {
+      if (nr > 0)
+      {
+        result.append(',');
+        result.append(lineEnding);
+      }
+
+      StringBuilder entry = convertToEntry(line);
+      if (entry.length() > 0)
+      {
+        result.append(entry);
+        nr ++;
+      }
+    }
+
+    return result.toString();
+  }
+
+  private List<List<String>> parseInput()
+  {
+    if (StringUtil.isBlank(input)) return Collections.emptyList();
+    List<String> lines = StringUtil.getLines(input);
+
+    List<List<String>> result = new ArrayList<>(lines.size());
+
+    int numCols = -1;
     for (String line : lines)
     {
       line = line.trim();
@@ -149,23 +180,33 @@ public class ValuesListCreator
       }
 
       List<String> items = splitLine(line);
-      if (items == null) continue;
-
-      if (nr > 0)
+      if (items == null || items.isEmpty()) continue;
+      if (items.size() > numCols)
       {
-        result.append(',');
-        result.append(lineEnding);
+        numCols = items.size();
       }
-
-      StringBuilder entry = convertToEntry(items);
-      if (entry.length() > 0)
-      {
-        result.append(entry);
-        nr ++;
-      }
+      result.add(items);
     }
 
-    return result.toString();
+    this.quotesNeeded.clear();
+    for (int i=0; i < numCols; i++)
+    {
+      boolean columnNeedsQuotes = quoteNeeded(result, i);
+      quotesNeeded.add(columnNeedsQuotes);
+    }
+    return result;
+  }
+
+  private boolean quoteNeeded(List<List<String>> entries, int column)
+  {
+    for (List<String> line : entries)
+    {
+      if (column >= 0 && column < line.size())
+      {
+        if (needsQuotes(line.get(column))) return true;
+      }
+    }
+    return false;
   }
 
   private void initTokenizer()
@@ -180,6 +221,40 @@ public class ValuesListCreator
       tokenizer = new WbStringTokenizer(delimiter, "\"'", true);
       splitPattern = null;
     }
+  }
+
+  private StringBuilder convertToEntry(List<String> items)
+  {
+    StringBuilder result = new StringBuilder(items.size() * 10);
+    result.append('(');
+    for (int col = 0; col < items.size(); col++)
+    {
+      String item = items.get(col);
+      if (trimItems && item != null) item = item.trim();
+      if (col > 0) result.append(", ");
+
+      if (replaceDoubleQuotes)
+      {
+        item = replaceQuotes(item);
+      }
+
+      if (isNull(item))
+      {
+        result.append("NULL");
+      }
+      else if (useQuotes(col) && !isQuoted(item))
+      {
+        result.append('\'');
+        result.append(item);
+        result.append('\'');
+      }
+      else
+      {
+        result.append(item);
+      }
+    }
+    result.append(')');
+    return result;
   }
 
   private List<String> splitLine(String line)
@@ -198,40 +273,22 @@ public class ValuesListCreator
     }
   }
 
-  private StringBuilder convertToEntry(List<String> items)
+  private boolean useQuotes(int column)
   {
-    StringBuilder result = new StringBuilder(items.size() * 10);
-    result.append('(');
-    int nr = 0;
-    for (String item : items)
+    if (column >= 0 && column < quotesNeeded.size())
     {
-      if (trimItems && item != null) item = item.trim();
-      if (nr > 0) result.append(", ");
-
-      if (replaceDoubleQuotes)
-      {
-        item = replaceQuotes(item);
-      }
-
-      if (isNull(item))
-      {
-        result.append("NULL");
-      }
-      else if (needsQuotes(item))
-      {
-        result.append('\'');
-        result.append(item);
-        result.append('\'');
-      }
-      else
-      {
-        result.append(item);
-      }
-      nr ++;
+      return quotesNeeded.get(column);
     }
-    result.append(')');
-    return result;
+    return true;
   }
+
+  private boolean isQuoted(String item)
+  {
+    if (item == null) return false;
+    item = item.trim();
+    return (item.startsWith("'") && item.endsWith("'"));
+  }
+
 
   private String replaceQuotes(String item)
   {
