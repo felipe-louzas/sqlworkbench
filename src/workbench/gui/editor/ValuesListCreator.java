@@ -264,7 +264,7 @@ public class ValuesListCreator
 
     // if it starts with one or more zeros, but isn't a decimal number
     // assume it's a string
-    if (input.matches("^0+.*") && input.indexOf('.') == -1) return true;
+    if (input.matches("^0+.+") && input.indexOf('.') == -1) return true;
 
     return !StringUtil.isNumber(input);
   }

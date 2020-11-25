@@ -39,7 +39,7 @@ public class ValuesListCreatorTest
     {
       assertTrue(ValuesListCreator.needsQuotes(s));
     }
-    String[] noQuotes = {"'foo'", "42", "0.42"};
+    String[] noQuotes = {"'foo'", "42", "0.42", "0"};
     for (String s : noQuotes)
     {
       assertFalse(ValuesListCreator.needsQuotes(s));
