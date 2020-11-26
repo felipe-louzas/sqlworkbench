@@ -50,7 +50,6 @@ public class ConsoleReader implements ConsoleOperations {
     String prompt;
     private boolean useHistory = true;
     private boolean usePagination = false;
-    public static final String CR = System.getProperty("line.separator");
     private static ResourceBundle loc = ResourceBundle.getBundle(CandidateListCompletionHandler.class.getName());
     /**
      * Map that contains the operation name to keymay operation mapping.
@@ -541,6 +540,14 @@ public class ConsoleReader implements ConsoleOperations {
                 if (c == -1) {
                     return null;
                 }
+                //GE    Hitting escape kills the current line
+                if ((terminal instanceof WindowsTerminal && ((c == 27 && code == -63) || (c == 3 && code == -48))) ||
+                    (terminal instanceof UnixTerminal) && ((c == 27 && code == -13)))
+                {
+                  moveInternal(-(buf.buffer.length()));
+                  killLine();
+                  return String.valueOf((char)0);
+                }
 
                 // Search mode.
                 //
@@ -762,16 +769,16 @@ public class ConsoleReader implements ConsoleOperations {
     }
 
     private String readLine(InputStream in) throws IOException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder line = new StringBuilder();
 
         while (true) {
             int i = in.read();
 
             if ((i == -1) || (i == '\n') || (i == '\r')) {
-                return buf.toString();
+                return line.toString();
             }
 
-            buf.append((char) i);
+            line.append((char) i);
         }
 
     // return new BufferedReader (new InputStreamReader (in)).readLine ();
@@ -801,7 +808,7 @@ public class ConsoleReader implements ConsoleOperations {
     /**
      * Move up or down the history tree.
      */
-    private final boolean moveHistory(final boolean next) throws IOException {
+    private boolean moveHistory(final boolean next) throws IOException {
         if (next && !history.next()) {
             return false;
         } else if (!next && !history.previous()) {
@@ -939,9 +946,9 @@ public class ConsoleReader implements ConsoleOperations {
      *
      * @return true if successful
      */
-    private final boolean complete() throws IOException {
+    private boolean complete() throws IOException {
         debug ("tab for (" + buf + ")");
-        if (completors.size() == 0) {
+        if (completors.isEmpty()) {
             return false;
         }
 
@@ -960,7 +967,7 @@ public class ConsoleReader implements ConsoleOperations {
         }
 
         // no candidates? Fail.
-        if (candidates.size() == 0) {
+        if (candidates.isEmpty()) {
             return false;
         }
 
@@ -978,7 +985,7 @@ public class ConsoleReader implements ConsoleOperations {
      *            the stuff to print
      */
     public void printColumns(final Collection stuff) throws IOException {
-        if ((stuff == null) || (stuff.size() == 0)) {
+        if ((stuff == null) || (stuff.isEmpty())) {
             return;
         }
 
@@ -1045,7 +1052,7 @@ public class ConsoleReader implements ConsoleOperations {
      *            the {@link StringBuffer} to which to append the padded
      *            {@link String}.
      */
-    private final void pad(final String toPad, final int len,
+    private void pad(final String toPad, final int len,
             final StringBuffer appendTo) {
         appendTo.append(toPad);
 
@@ -1115,7 +1122,7 @@ public class ConsoleReader implements ConsoleOperations {
      * @param buffer
      *            the new contents of the buffer.
      */
-    private final void setBuffer(final String buffer) throws IOException {
+    private void setBuffer(final String buffer) throws IOException {
         // don't bother modifying it if it is unchanged
         if (buffer.equals(buf.buffer.toString())) {
             return;
@@ -1223,7 +1230,7 @@ public class ConsoleReader implements ConsoleOperations {
     /**
      * Output the specified character, both to the buffer and the output stream.
      */
-    private final void putChar(final int c, final boolean print)
+    private void putChar(final int c, final boolean print)
             throws IOException {
         buf.write((char) c);
 
@@ -1250,7 +1257,7 @@ public class ConsoleReader implements ConsoleOperations {
      * @param clear
      *            the number of characters to clear after the end of the buffer
      */
-    private final void drawBuffer(final int clear) throws IOException {
+    private void drawBuffer(final int clear) throws IOException {
         // debug ("drawBuffer: " + clear);
         if (buf.cursor == buf.length() && clear == 0) {
             return;
@@ -1277,14 +1284,14 @@ public class ConsoleReader implements ConsoleOperations {
      * Redraw the rest of the buffer from the cursor onwards. This is necessary
      * for inserting text into the buffer.
      */
-    private final void drawBuffer() throws IOException {
+    private void drawBuffer() throws IOException {
         drawBuffer(0);
     }
 
     /**
      * Clear ahead the specified number of characters without moving the cursor.
      */
-    private final void clearAhead(final int num) throws IOException {
+    private void clearAhead(final int num) throws IOException {
         if (num == 0) {
             return;
         }
@@ -1313,7 +1320,7 @@ public class ConsoleReader implements ConsoleOperations {
     /**
      * Move the visual cursor backwards without modifying the buffer cursor.
      */
-    private final void back(final int num) throws IOException {
+    private void back(final int num) throws IOException {
         if (num == 0) return;
         if (terminal.isANSISupported()) {
             int width = getTermwidth();
@@ -1351,7 +1358,7 @@ public class ConsoleReader implements ConsoleOperations {
      * Output the specified character to the output stream without manipulating
      * the current buffer.
      */
-    private final void printCharacter(final int c) throws IOException {
+    private void printCharacter(final int c) throws IOException {
         if (c == '\t') {
             char cbuf[] = new char[TAB_WIDTH];
             Arrays.fill(cbuf, ' ');
@@ -1366,7 +1373,7 @@ public class ConsoleReader implements ConsoleOperations {
      * Output the specified characters to the output stream without manipulating
      * the current buffer.
      */
-    private final void printCharacters(final char[] c) throws IOException {
+    private void printCharacters(final char[] c) throws IOException {
         int len = 0;
         for (int i = 0; i < c.length; i++) {
             if (c[i] == '\t') {
@@ -1396,7 +1403,7 @@ public class ConsoleReader implements ConsoleOperations {
         out.write(cbuf);
     }
 
-    private final void printCharacters(final char c, final int num)
+    private void printCharacters(final char c, final int num)
             throws IOException {
         if (num == 1) {
             printCharacter(c);
@@ -1416,7 +1423,7 @@ public class ConsoleReader implements ConsoleOperations {
         out.flush();
     }
 
-    private final int backspaceAll() throws IOException {
+    private int backspaceAll() throws IOException {
         return backspace(Integer.MAX_VALUE);
     }
 
@@ -1425,7 +1432,7 @@ public class ConsoleReader implements ConsoleOperations {
      *
      * @return the number of characters backed up
      */
-    private final int backspace(final int num) throws IOException {
+    private int backspace(final int num) throws IOException {
         if (buf.cursor == 0) {
             return 0;
         }
@@ -1457,7 +1464,7 @@ public class ConsoleReader implements ConsoleOperations {
         return backspace(1) == 1;
     }
 
-    private final boolean moveToEnd() throws IOException {
+    private boolean moveToEnd() throws IOException {
         return moveCursor(buf.length() - buf.cursor) > 0;
     }
 
@@ -1465,7 +1472,7 @@ public class ConsoleReader implements ConsoleOperations {
      * Delete the character at the current position and redraw the remainder of
      * the buffer.
      */
-    private final boolean deleteCurrentCharacter() throws IOException {
+    private boolean deleteCurrentCharacter() throws IOException {
         if (buf.length() == 0 || buf.cursor == buf.length()) {
             return false;
         }
@@ -1475,7 +1482,7 @@ public class ConsoleReader implements ConsoleOperations {
         return true;
     }
 
-    private final boolean previousWord() throws IOException {
+    private boolean previousWord() throws IOException {
         while (isDelimiter(buf.current()) && (moveCursor(-1) != 0)) {
             ;
         }
@@ -1487,7 +1494,7 @@ public class ConsoleReader implements ConsoleOperations {
         return true;
     }
 
-    private final boolean nextWord() throws IOException {
+    private boolean nextWord() throws IOException {
         while (isDelimiter(buf.current()) && (moveCursor(1) != 0)) {
             ;
         }
@@ -1499,7 +1506,7 @@ public class ConsoleReader implements ConsoleOperations {
         return true;
     }
 
-    private final boolean deletePreviousWord() throws IOException {
+    private boolean deletePreviousWord() throws IOException {
         while (isDelimiter(buf.current()) && backspace()) {
             ;
         }
@@ -1562,7 +1569,7 @@ public class ConsoleReader implements ConsoleOperations {
      * @param where
      *            the number of characters to move to the right or left.
      */
-    private final void moveInternal(final int where) throws IOException {
+    private void moveInternal(final int where) throws IOException {
         // debug ("move cursor " + where + " ("
         // + buf.cursor + " => " + (buf.cursor + where) + ")");
         buf.cursor += where;
@@ -1653,7 +1660,7 @@ public class ConsoleReader implements ConsoleOperations {
      *
      *  @return  the number of characters backed up
      */
-    private final int delete(final int num)
+    private int delete(final int num)
             throws IOException {
         /* Commented out beacuse of DWA-2949:
         if (buf.cursor == 0)

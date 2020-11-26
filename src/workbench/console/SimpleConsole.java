@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+import workbench.db.WbConnection;
+
 /**
  * A simple WbConsoleReader using a Scanner
  *
@@ -111,6 +113,11 @@ public class SimpleConsole
 
   @Override
   public void addToHistory(List<String> lines)
+  {
+  }
+
+  @Override
+  public void setConnection(WbConnection currentConnection)
   {
   }
 

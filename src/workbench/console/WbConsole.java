@@ -23,6 +23,8 @@ package workbench.console;
 
 import java.util.List;
 
+import workbench.db.WbConnection;
+
 /**
  *
  * @author Thomas Kellerer
@@ -39,4 +41,5 @@ public interface WbConsole
   void addToHistory(List<String> lines);
   void reset();
   void clearScreen();
+  void setConnection(WbConnection currentConnection);
 }

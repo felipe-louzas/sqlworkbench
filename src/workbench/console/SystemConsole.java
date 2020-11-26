@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import workbench.db.WbConnection;
+
 /**
  * A class to read input from the console.
  * When run on a Java6 VM it uses the new System.console() class, otherwise
@@ -132,4 +134,9 @@ public class SystemConsole
   {
   }
 
+  @Override
+  public void setConnection(WbConnection currentConnection)
+  {
+  }
+  
 }

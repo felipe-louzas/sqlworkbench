@@ -24,8 +24,11 @@
 package workbench.console;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+
+import workbench.db.WbConnection;
+
+import workbench.sql.TableNameCompletor;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
@@ -45,6 +48,7 @@ public class JLineWrapper
   implements WbConsole
 {
   private ConsoleReader reader;
+  private TableNameCompletor currentCompletor;
 
   public JLineWrapper()
     throws IOException
@@ -53,10 +57,7 @@ public class JLineWrapper
     reader.setUseHistory(true);
     reader.setUsePagination(false);
     reader.setBellEnabled(false);
-    List<Completor> completors = new ArrayList<>(2);
-//    completors.add(new WbFilenameCompletor());
-    completors.add(new ClipCompletor());
-    completors.add(new NullCompletor());
+    List<Completor> completors = CollectionUtil.arrayList(new ClipCompletor(), new NullCompletor());
     reader.addCompletor(new ArgumentCompletor(completors));
   }
 
@@ -187,5 +188,22 @@ public class JLineWrapper
     }
   }
 
+  @Override
+  public void setConnection(WbConnection connection)
+  {
+    if (currentCompletor != null && currentCompletor.isSameConnection(connection)) return;
+
+    if (currentCompletor != null)
+    {
+      reader.removeCompletor(currentCompletor);
+      currentCompletor = null;
+    }
+
+    if (connection != null)
+    {
+      currentCompletor = new TableNameCompletor(connection);
+      reader.addCompletor(currentCompletor);
+    }
+  }
 
 }

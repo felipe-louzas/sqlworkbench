@@ -88,6 +88,7 @@ import sun.misc.SignalHandler;
 public class SQLConsole
   implements OutputPrinter, Runnable, SignalHandler
 {
+  private static final String NULL_CHAR = String.valueOf((char)0);
   private static final String HISTORY_FILENAME = "sqlworkbench_history.txt";
   private final ConsolePrompter prompter;
   private static final String DEFAULT_PROMPT = "SQL> ";
@@ -152,13 +153,28 @@ public class SQLConsole
       String previousPrompt = null;
       boolean startOfStatement = true;
 
+      WbConsole console = WbConsoleFactory.getConsole();
+
       InputBuffer buffer = new InputBuffer();
-      buffer.setConnection(runner == null ? null : runner.getConnection());
+      buffer.setConnection(runner.getConnection());
+      console.setConnection(runner.getConnection());
+
       while (true)
       {
         String line = WbConsoleFactory.getConsole().readLine(currentPrompt);
         if (line == null) continue;
 
+        if (line.startsWith(NULL_CHAR))
+        {
+          buffer.clear();
+          currentPrompt = checkConnection(runner, previousPrompt == null ? currentPrompt : previousPrompt);
+          previousPrompt = null;
+          startOfStatement = true;
+          System.out.println();
+          continue;
+        }
+
+        if (line.trim().equals(";") && buffer.getLength() == 0) continue;
         if (buffer.getLength() == 0 && StringUtil.isEmptyString(line)) continue;
 
         boolean isCompleteStatement = buffer.addLine(line);
@@ -605,6 +621,7 @@ public class SQLConsole
       }
     }
     setTerminalTitle(current, false);
+    WbConsoleFactory.getConsole().setConnection(current);
     return (newprompt == null ? DEFAULT_PROMPT : appendSuffix(newprompt));
   }
 

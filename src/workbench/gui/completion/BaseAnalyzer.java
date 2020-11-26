@@ -722,7 +722,7 @@ public abstract class BaseAnalyzer
     return this.context == CONTEXT_COLUMN_LIST;
   }
 
-  protected String getCurrentWord()
+  public String getCurrentWord()
   {
     return StringUtil.getWordLeftOfCursor(this.sql, cursorPos, WORD_DELIM);
   }
