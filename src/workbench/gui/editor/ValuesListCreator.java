@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbStringTokenizer;
 
@@ -191,13 +192,13 @@ public class ValuesListCreator
     this.quotesNeeded.clear();
     for (int i=0; i < numCols; i++)
     {
-      boolean columnNeedsQuotes = quoteNeeded(result, i);
+      boolean columnNeedsQuotes = columnNeedsQuotes(result, i);
       quotesNeeded.add(columnNeedsQuotes);
     }
     return result;
   }
 
-  private boolean quoteNeeded(List<List<String>> entries, int column)
+  private boolean columnNeedsQuotes(List<List<String>> entries, int column)
   {
     for (List<String> line : entries)
     {
@@ -218,7 +219,7 @@ public class ValuesListCreator
     }
     else
     {
-      tokenizer = new WbStringTokenizer(delimiter, "\"'", true);
+      tokenizer = new WbStringTokenizer(delimiter, "", true);
       splitPattern = null;
     }
   }
@@ -230,13 +231,7 @@ public class ValuesListCreator
     for (int col = 0; col < items.size(); col++)
     {
       String item = items.get(col);
-      if (trimItems && item != null) item = item.trim();
       if (col > 0) result.append(", ");
-
-      if (replaceDoubleQuotes)
-      {
-        item = replaceQuotes(item);
-      }
 
       if (isNull(item))
       {
@@ -245,7 +240,7 @@ public class ValuesListCreator
       else if (useQuotes(col) && !isQuoted(item))
       {
         result.append('\'');
-        result.append(item);
+        result.append(SqlUtil.escapeQuotes(item));
         result.append('\'');
       }
       else
@@ -259,18 +254,30 @@ public class ValuesListCreator
 
   private List<String> splitLine(String line)
   {
+    List<String> elements = null;
     if (tokenizer != null)
     {
       if (!line.contains(delimiter)) return null;
       tokenizer.setSourceString(line);
-      return tokenizer.getAllTokens();
+      elements = tokenizer.getAllTokens();
     }
     else
     {
       if (!splitPattern.matcher(line).find()) return null;
       String[] items = splitPattern.split(line);
-      return Arrays.asList(items);
+      elements = Arrays.asList(items);
     }
+    for (int i=0; i < elements.size(); i++)
+    {
+      String item = elements.get(i);
+      if (trimItems && item != null) item = item.trim();
+      if (replaceDoubleQuotes)
+      {
+        item = replaceQuotes(item);
+      }
+      elements.set(i, item);
+    }
+    return elements;
   }
 
   private boolean useQuotes(int column)

@@ -59,7 +59,7 @@ public class ValuesListCreatorTest
        "(2, 'bar', '0xFF')";
     assertEquals(expected, result.trim());
   }
-  
+
   @Test
   public void testDoubleQuotes()
   {
@@ -190,13 +190,13 @@ public class ValuesListCreatorTest
   public void testAlternateDelimiter()
   {
     String input =
-      "|1  | 2020-07-22 18:19:20 | 3.14  | Arthur | Dent |\n" +
+      "|1  | 2020-07-22 18:19:20 | 3.14  | Arthur's | Dent |\n" +
       "| 3 | 2020-06-22 14:12:25 | 6.42  | Tricia | McMillan | \n";
     ValuesListCreator creator = new ValuesListCreator(input, "|", false);
     creator.setTrimDelimiter(true);
     String result = creator.createValuesList();
     String expected =
-       "(1, '2020-07-22 18:19:20', 3.14, 'Arthur', 'Dent'),\n" +
+       "(1, '2020-07-22 18:19:20', 3.14, 'Arthur''s', 'Dent'),\n" +
        "(3, '2020-06-22 14:12:25', 6.42, 'Tricia', 'McMillan')";
     assertEquals(expected, result.trim());
   }
