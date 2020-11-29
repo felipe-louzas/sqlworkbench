@@ -282,7 +282,7 @@ public class SQLConsole
     }
     catch (Throwable th)
     {
-      // this should not happen
+      LogMgr.logError(new CallerInfo(){}, "Error in SQL Console loop:", th);
       System.err.println(ExceptionUtil.getDisplay(th));
     }
     finally

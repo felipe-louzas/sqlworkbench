@@ -1,5 +1,7 @@
 package workbench.sql;
 
+import java.util.ArrayList;
+
 import jline.Completor;
 
 import workbench.db.WbConnection;
@@ -13,31 +15,25 @@ import java.util.stream.Collectors;
 import workbench.gui.completion.SelectAllMarker;
 import workbench.gui.completion.StatementContext;
 
+import workbench.util.StringUtil;
 
 
 /**
  * A JLine Completor that loads up the tables and columns in the DB
  *
- * @author Jeremiah Spaulding
+ * @author Jeremiah Spaulding, Thomas Kellerer
  */
 public class TableNameCompletor
   implements Completor
 {
   /**
-   * When we get a tab session, store the first thing we were given to cycle back through it
-   */
-  private String originalPrefix = "";
-  private String originalToken = "";
-  /**
-   * Current list of potentials so we can cycle through them in the same order
-   */
-  private List<String> currentCycleList;
-  private int nextCycleIndex = -1;
-
-  /**
    * The connection for which this completor works.
    */
   private WbConnection connection;
+
+  private String currentPrefix;
+  private List<String> currentList;
+  private int nextCycleIndex;
 
   /**
    * Simple constructor called only by BatchRunner
@@ -76,47 +72,69 @@ public class TableNameCompletor
     {
       return -1;
     }
-
-    LogMgr.logDebug(new CallerInfo(){}, "Checking code completion at position " + cursor + " for: " + buffer);
+    LogMgr.logDebug(new CallerInfo(){}, "Completer called with cursor position=" + cursor + ", statement: "+ buffer);
 
     StatementContext ctx = new StatementContext(connection, buffer, cursor);
+    if (!ctx.isStatementSupported())
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "Statement not supported");
+      return -1;
+    }
+
     List<Object> data = ctx.getData();
+
     if (!data.isEmpty() && data.get(0) instanceof SelectAllMarker)
     {
       data.remove(0);
     }
-    List<String> toSearch = data.stream().map(Object::toString).collect(Collectors.toList());
+    List<String> names = data.stream().map(Object::toString).collect(Collectors.toList());
 
     String token = ctx.getAnalyzer().getCurrentWord();
-    String prefix = ctx.getAnalyzer().getQualifierLeftOfCursor();
-
-    //This is not the first time they hit tab
-    if (originalPrefix != null && originalPrefix.equals(prefix) && token.startsWith(originalToken) && currentCycleList.contains(token))   //we are cycling through
+		int start = cursor;
+		while (start > 0 && !Character.isWhitespace(buffer.charAt(start-1)))
     {
-      if (nextCycleIndex >= currentCycleList.size()) //back to the beginning
-      {
-        nextCycleIndex = 0;
-      }
-
-      candidates.add(currentCycleList.get(nextCycleIndex++));
-      return prefix.length();
+			start--;
     }
 
-    //otherwise if it is the first time, starting fresh
-    currentCycleList = toSearch.stream().filter(x -> x.startsWith(token)).collect(Collectors.toList());
-    if (currentCycleList.isEmpty())
-    {
-      originalPrefix = "";
-      originalToken = "";
-      nextCycleIndex = -1;
-      return -1;
-    }
-    originalPrefix = prefix;
-    originalToken = token;
-    nextCycleIndex = 0;
-    candidates.add(currentCycleList.get(nextCycleIndex++));
+    String prefix = buffer.substring(0, start);
 
+		if (currentPrefix != null && currentPrefix.equals(prefix) && currentList != null)
+		{
+			if (nextCycleIndex >= currentList.size()) //back to the beginning
+			{
+				nextCycleIndex = 0;
+			}
+
+			candidates.add(currentList.get(nextCycleIndex++));
+			return prefix.length();
+		}
+
+    if (StringUtil.isBlank(token) && !names.isEmpty())
+    {
+      currentList = new ArrayList<>();
+      currentList.add(names.get(0));
+    }
+    else
+    {
+      currentList = names.stream().filter(x -> startsWithIgnoreCase(x, token)).collect(Collectors.toList());
+    }
+
+		if (currentList.isEmpty())
+		{
+			currentPrefix = null;
+			nextCycleIndex = -1;
+			return -1;
+		}
+
+		currentPrefix = prefix;
+		nextCycleIndex = 0;
+		candidates.add(currentList.get(nextCycleIndex++));
     return prefix.length();
   }
 
+  private boolean startsWithIgnoreCase(String input, String compare)
+  {
+    if (input == null || compare == null) return false;
+    return input.toLowerCase().startsWith(compare.toLowerCase());
+  }
 }

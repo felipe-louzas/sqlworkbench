@@ -28,17 +28,16 @@ import java.util.*;
  *  @author  <a href="mailto:mwp1@cornell.edu">Marc Prud'hommeaux</a>
  */
 public class CandidateListCompletionHandler implements CompletionHandler {
-    private static ResourceBundle loc = ResourceBundle.
-        getBundle(CandidateListCompletionHandler.class.getName());
 
+    private static ResourceBundle loc = ResourceBundle.getBundle(CandidateListCompletionHandler.class.getName());
     private boolean eagerNewlines = true;
 
     public void setAlwaysIncludeNewline(boolean eagerNewlines) {
         this.eagerNewlines = eagerNewlines;
     }
 
-    public boolean complete(final ConsoleReader reader, final List candidates,
-                            final int pos) throws IOException {
+    @Override
+    public boolean complete(final ConsoleReader reader, final List candidates, final int pos) throws IOException {
         CursorBuffer buf = reader.getCursorBuffer();
 
         // if there is only one completion, then fill in the buffer
@@ -55,12 +54,10 @@ public class CandidateListCompletionHandler implements CompletionHandler {
             return true;
         } else if (candidates.size() > 1) {
             String value = getUnambiguousCompletions(candidates);
-            String bufString = buf.toString();
             setBuffer(reader, value, pos);
         }
 
-        if (eagerNewlines)
-            reader.printNewline();
+        if (eagerNewlines) reader.printNewline();
         printCandidates(reader, candidates, eagerNewlines);
 
         // redraw the current console buffer
@@ -70,7 +67,8 @@ public class CandidateListCompletionHandler implements CompletionHandler {
     }
 
     public static void setBuffer(ConsoleReader reader, String value, int offset)
-                           throws IOException {
+        throws IOException {
+
         while ((reader.getCursorBuffer().cursor > offset)
                    && reader.backspace()) {
             ;
@@ -87,19 +85,15 @@ public class CandidateListCompletionHandler implements CompletionHandler {
      *
      *  @param  candidates  the list of candidates to print
      */
-    public static final void printCandidates(ConsoleReader reader,
-                                       Collection candidates, boolean eagerNewlines)
-                                throws IOException {
+    public static final void printCandidates(ConsoleReader reader, Collection candidates, boolean eagerNewlines)
+        throws IOException {
+
         Set distinct = new HashSet(candidates);
 
         if (distinct.size() > reader.getAutoprintThreshhold()) {
-            if (!eagerNewlines)
-                reader.printNewline();
-            reader.printString(MessageFormat.format
-                (loc.getString("display-candidates"), new Object[] {
-                    new Integer(candidates .size())
-                    }) + " ");
 
+            if (!eagerNewlines) reader.printNewline();
+            reader.printString(MessageFormat.format(loc.getString("display-candidates"), new Object[] {candidates.size()}) + " ");
             reader.flushConsole();
 
             int c;
@@ -149,8 +143,8 @@ public class CandidateListCompletionHandler implements CompletionHandler {
      *  <i>foobar</i>, <i>foobaz</i>, <i>foobuz</i>, the
      *  method will return <i>foob</i>.
      */
-    private final String getUnambiguousCompletions(final List candidates) {
-        if ((candidates == null) || (candidates.size() == 0)) {
+    private String getUnambiguousCompletions(final List candidates) {
+        if ((candidates == null) || (candidates.isEmpty())) {
             return null;
         }
 
@@ -159,7 +153,7 @@ public class CandidateListCompletionHandler implements CompletionHandler {
             (String[]) candidates.toArray(new String[candidates.size()]);
 
         String first = strings[0];
-        StringBuffer candidate = new StringBuffer();
+        StringBuilder candidate = new StringBuilder();
 
         for (int i = 0; i < first.length(); i++) {
             if (startsWith(first.substring(0, i + 1), strings)) {
@@ -176,14 +170,12 @@ public class CandidateListCompletionHandler implements CompletionHandler {
      *  @return  true is all the elements of <i>candidates</i>
      *                          start with <i>starts</i>
      */
-    private final boolean startsWith(final String starts,
-                                     final String[] candidates) {
+    private boolean startsWith(final String starts, final String[] candidates) {
         for (int i = 0; i < candidates.length; i++) {
             if (!candidates[i].startsWith(starts)) {
                 return false;
             }
         }
-
         return true;
     }
 }

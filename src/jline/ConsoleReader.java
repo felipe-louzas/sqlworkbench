@@ -131,10 +131,9 @@ public class ConsoleReader implements ConsoleOperations {
      * The number of tab-completion candidates above which a warning will be
      * prompted before showing all the candidates.
      */
-    private int autoprintThreshhold = Integer.getInteger(
-            "jline.completion.threshold", 100).intValue(); // same default as
+    // same default as bash
+    private int autoprintThreshhold = Integer.getInteger("jline.completion.threshold", 100).intValue();
 
-    // bash
     /**
      * The Terminal to use.
      */
@@ -540,12 +539,14 @@ public class ConsoleReader implements ConsoleOperations {
                 if (c == -1) {
                     return null;
                 }
-                //GE    Hitting escape kills the current line
+                //GE    Hitting escape kills the current buffer
                 if ((terminal instanceof WindowsTerminal && ((c == 27 && code == -63) || (c == 3 && code == -48))) ||
                     (terminal instanceof UnixTerminal) && ((c == 27 && code == -13)))
                 {
-                  moveInternal(-(buf.buffer.length()));
                   killLine();
+                  backspaceAll();
+                  buf.clearBuffer();
+                  setCursorPosition(0);
                   return String.valueOf((char)0);
                 }
 
