@@ -136,7 +136,7 @@ public class DdlAnalyzer
         context = CONTEXT_TABLE_LIST;
         setTableTypeFilter(dbConnection.getDbSettings().getViewTypes());
       }
-      else if (type.equalsIgnoreCase(mviewType) && showObjectList )
+      else if (StringUtil.equalStringIgnoreCase(type, mviewType) && showObjectList )
       {
         context = CONTEXT_TABLE_LIST;
         setTableTypeFilter(CollectionUtil.arrayList(mviewType));
