@@ -1,3 +1,24 @@
+/*
+ * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
+ *
+ * Copyright 2002-2020, Thomas Kellerer
+ *
+ * Licensed under a modified Apache License, Version 2.0
+ * that restricts the use for certain governments.
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at.
+ *
+ *     https://www.sql-workbench.eu/manual/license.html
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * To contact the author please send an email to: support@sql-workbench.eu
+ *
+ */
 package workbench.sql;
 
 import java.util.ArrayList;
@@ -16,7 +37,6 @@ import workbench.gui.completion.SelectAllMarker;
 import workbench.gui.completion.StatementContext;
 
 import workbench.util.StringUtil;
-
 
 /**
  * A JLine Completor that loads up the tables and columns in the DB
@@ -72,63 +92,86 @@ public class TableNameCompletor
     {
       return -1;
     }
-    LogMgr.logDebug(new CallerInfo(){}, "Completer called with cursor position=" + cursor + ", statement: "+ buffer);
+    LogMgr.logTrace(new CallerInfo(){}, "Completer called with cursor position=" + cursor + ", statement: "+ buffer);
 
     StatementContext ctx = new StatementContext(connection, buffer, cursor);
     if (!ctx.isStatementSupported())
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Statement not supported");
+      reset();
       return -1;
     }
 
     List<Object> data = ctx.getData();
+    if (data == null || data.isEmpty())
+    {
+      reset();
+      return -1;
+    }
 
     if (!data.isEmpty() && data.get(0) instanceof SelectAllMarker)
     {
       data.remove(0);
     }
-    List<String> names = data.stream().map(Object::toString).collect(Collectors.toList());
+    // The "data" list can contain different DbObject instances
+    // We just convert everything to a string here
+    List<String> names = data.stream().
+                              filter(o -> o != null).
+                              map(Object::toString).
+                              collect(Collectors.toList());
 
-    String token = ctx.getAnalyzer().getCurrentWord();
-		int start = cursor;
-		while (start > 0 && !Character.isWhitespace(buffer.charAt(start-1)))
+    String searchToken;
+
+    String word = ctx.getAnalyzer().getCurrentWord();
+    if (connection.getMetadata().isKeyword(word))
     {
-			start--;
+      searchToken = "";
+    }
+    else
+    {
+      searchToken = word;
+    }
+
+    int start = cursor;
+    while (start > 0 && !Character.isWhitespace(buffer.charAt(start - 1)))
+    {
+      start--;
     }
 
     String prefix = buffer.substring(0, start);
 
-		if (currentPrefix != null && currentPrefix.equals(prefix) && currentList != null)
-		{
-			if (nextCycleIndex >= currentList.size()) //back to the beginning
-			{
-				nextCycleIndex = 0;
-			}
-
-			candidates.add(currentList.get(nextCycleIndex++));
-			return prefix.length();
-		}
-
-    if (StringUtil.isBlank(token) && !names.isEmpty())
+    if (currentPrefix != null && currentPrefix.equals(prefix) && currentList != null)
     {
+      if (nextCycleIndex >= currentList.size()) //back to the beginning
+      {
+        nextCycleIndex = 0;
+      }
+
+      candidates.add(currentList.get(nextCycleIndex++));
+      return prefix.length();
+    }
+
+    if (StringUtil.isBlank(searchToken))
+    {
+      // if no search word is available, add all matches.
       currentList = new ArrayList<>();
-      currentList.add(names.get(0));
+      currentList.addAll(names);
     }
     else
     {
-      currentList = names.stream().filter(x -> startsWithIgnoreCase(x, token)).collect(Collectors.toList());
+      currentList = names.stream().
+                          filter(x -> startsWithIgnoreCase(x, searchToken)).
+                          collect(Collectors.toList());
     }
 
-		if (currentList.isEmpty())
-		{
-			currentPrefix = null;
-			nextCycleIndex = -1;
-			return -1;
-		}
+    if (currentList.isEmpty())
+    {
+      reset();
+      return -1;
+    }
 
-		currentPrefix = prefix;
-		nextCycleIndex = 0;
-		candidates.add(currentList.get(nextCycleIndex++));
+    currentPrefix = prefix;
+    nextCycleIndex = 0;
+    candidates.add(currentList.get(nextCycleIndex++));
     return prefix.length();
   }
 
@@ -136,5 +179,11 @@ public class TableNameCompletor
   {
     if (input == null || compare == null) return false;
     return input.toLowerCase().startsWith(compare.toLowerCase());
+  }
+
+  private void reset()
+  {
+    currentPrefix = null;
+    nextCycleIndex = -1;
   }
 }
