@@ -101,28 +101,10 @@ public class TableNameCompletor
       return -1;
     }
 
-    List<Object> data = ctx.getData();
-    if (data == null || data.isEmpty())
-    {
-      reset();
-      return -1;
-    }
-
-    if (!data.isEmpty() && data.get(0) instanceof SelectAllMarker)
-    {
-      data.remove(0);
-    }
-    // The "data" list can contain different DbObject instances
-    // We just convert everything to a string here
-    List<String> names = data.stream().
-                              filter(o -> o != null).
-                              map(Object::toString).
-                              collect(Collectors.toList());
-
     String searchToken;
 
     String word = ctx.getAnalyzer().getCurrentWord();
-    if (connection.getMetadata().isKeyword(word))
+    if (word != null && connection.getMetadata().isKeyword(word))
     {
       searchToken = "";
     }
@@ -149,6 +131,25 @@ public class TableNameCompletor
       candidates.add(currentList.get(nextCycleIndex++));
       return prefix.length();
     }
+
+    List<Object> data = ctx.getData();
+    if (data == null || data.isEmpty())
+    {
+      reset();
+      return -1;
+    }
+
+    if (!data.isEmpty() && data.get(0) instanceof SelectAllMarker)
+    {
+      data.remove(0);
+    }
+    // The "data" list can contain different DbObject instances
+    // We just convert everything to a string here
+    List<String> names = data.stream().
+                              filter(o -> o != null).
+                              map(Object::toString).
+                              collect(Collectors.toList());
+
 
     if (StringUtil.isBlank(searchToken))
     {
