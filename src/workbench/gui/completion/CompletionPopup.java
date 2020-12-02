@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -618,9 +619,27 @@ public class CompletionPopup
 
   private String getTableName(WbConnection conn, TableIdentifier tbl)
   {
-    Namespace schema = this.context.getAnalyzer().getNamespaceForTableList();
+    Namespace nsp = this.context.getAnalyzer().getNamespaceForTableList();
 
-    if (schema == null) return tbl.getObjectExpression(conn);
+    tbl = tbl.createCopy();
+
+    boolean removed = false;
+    Set<String> ignoreSchema = conn.getDbSettings().getIgnoreSchemaForCompletionPaste();
+    Set<String> ignoreCatalog = conn.getDbSettings().getIgnoreCatalogForCompletionPaste();
+    
+    if (ignoreSchema.contains("*") || (nsp != null && nsp.getSchema() != null && ignoreSchema.contains(nsp.getSchema())))
+    {
+      tbl.setSchema(null);
+      removed = true;
+    }
+
+    if (ignoreCatalog.contains("*") || (nsp != null && nsp.getCatalog() != null && ignoreCatalog.contains(nsp.getCatalog())))
+    {
+      tbl.setCatalog(null);
+      removed = true;
+    }
+
+    if (removed || nsp == null) return tbl.getObjectExpression(conn);
 
     BaseAnalyzer analyzer = context.getAnalyzer();
     int currentContext = analyzer.getContext();
@@ -634,8 +653,7 @@ public class CompletionPopup
       return tbl.getObjectExpression(conn);
     }
 
-    tbl = tbl.createCopy();
-    schema.removeNamespaceIfEqual(tbl);
+    nsp.removeNamespaceIfEqual(tbl);
     return tbl.getTableExpression();
   }
 

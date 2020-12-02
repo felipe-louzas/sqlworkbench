@@ -1891,6 +1891,16 @@ public class DbSettings
     Settings.getInstance().setProperty(prefix + "queryinfo.preparedstatement", flag);
   }
 
+  public Set<String> getIgnoreSchemaForCompletionPaste()
+  {
+    return CollectionUtil.caseInsensitiveSet(getListProperty("completion.paste.ignore_schema", null));
+  }
+
+  public Set<String> getIgnoreCatalogForCompletionPaste()
+  {
+    return CollectionUtil.caseInsensitiveSet(getListProperty("completion.paste.ignore_catalog", null));
+  }
+
   public boolean alwaysUseSchemaForCompletion()
   {
     return getBoolProperty("completion.always_use.schema", false);
