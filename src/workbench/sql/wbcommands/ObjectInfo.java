@@ -23,6 +23,7 @@ package workbench.sql.wbcommands;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 
 import workbench.WbManager;
@@ -425,8 +426,14 @@ public class ObjectInfo
         }
       }
 
-      List<String> searchPath = DbSearchPath.Factory.getSearchPathHandler(connection).getSearchPath(connection, null);
+      DbSearchPath handler = DbSearchPath.Factory.getSearchPathHandler(connection);
+      List<String> searchPath = Collections.emptyList();
       boolean searchAllSchemas = connection.getDbSettings().getSearchAllSchemas();
+
+      if (handler.isRealSearchPath() || connection.getDbSettings().useCurrentNamespaceForCompletion())
+      {
+        searchPath = handler.getSearchPath(connection, null);
+      }
 
       if (dbObject.getSchema() == null && !searchPath.isEmpty())
       {

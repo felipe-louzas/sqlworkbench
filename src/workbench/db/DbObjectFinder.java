@@ -62,6 +62,11 @@ public class DbObjectFinder
 
   public TableIdentifier findObject(TableIdentifier tbl, boolean adjustCase, boolean searchAllSchemas)
   {
+    return findObject(tbl, adjustCase, searchAllSchemas, searchAllSchemas);
+  }
+
+  public TableIdentifier findObject(TableIdentifier tbl, boolean adjustCase, boolean searchAllSchemas, boolean searchAllCatalogs)
+  {
     if (tbl == null) return null;
     TableIdentifier result = null;
     TableIdentifier table = tbl.createCopy();
@@ -123,16 +128,19 @@ public class DbObjectFinder
         AndExpression filter = new AndExpression();
         StringEqualsComparator comp = new StringEqualsComparator();
         filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_NAME], comp, table.getRawTableName(), true);
-        if (StringUtil.isNonBlank(schema))
+        
+        if (StringUtil.isNonBlank(schema) && !searchAllSchemas)
         {
           filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_SCHEMA], comp, schema, true);
         }
-        if (StringUtil.isNonBlank(catalog))
+        if (StringUtil.isNonBlank(catalog) && !searchAllCatalogs)
         {
           filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_CATALOG], comp, catalog, true);
         }
-        ds.applyFilter(filter);
-        if (ds.getRowCount() == 1)
+
+        if (filter.hasFilter()) ds.applyFilter(filter);
+
+        if (ds.getRowCount() >= 1)
         {
           result = meta.buildTableIdentifierFromDs(ds, 0);
         }

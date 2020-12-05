@@ -51,7 +51,6 @@ import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 
-import static workbench.sql.BatchRunner.*;
 
 /**
  * A class to store workbench specific variables.
