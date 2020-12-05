@@ -1025,6 +1025,7 @@ public class BatchRunner
       }
       catch (Exception e)
       {
+        VariablePool.getInstance().setLastError(e);
         LogMgr.logError(ci, ResourceMgr.getString("MsgBatchStatementError") + " "  + sql, e);
         printMessage(ExceptionUtil.getDisplay(e));
         status = ExecutionStatus.Error;

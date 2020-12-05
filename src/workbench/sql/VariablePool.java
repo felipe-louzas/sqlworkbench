@@ -25,6 +25,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +51,8 @@ import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 
+import static workbench.sql.BatchRunner.*;
+
 /**
  * A class to store workbench specific variables.
  * This is a singleton which stores the variables inside a Map.
@@ -65,6 +68,10 @@ import workbench.util.WbProperties;
 public class VariablePool
   implements PropertyChangeListener
 {
+  public static final String VAR_NAME_LAST_ERROR_CODE= "wb$last_error_code";
+  public static final String VAR_NAME_LAST_ERROR_STATE= "wb$last_error_state";
+  public static final String VAR_NAME_LAST_ERROR_MSG = "wb$last_error_msg";
+
   public static final String PROP_PREFIX = "wbp.";
   private final Map<String, String> data = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
   private final Map<String, List<String>> lookups = new HashMap<>();
@@ -210,6 +217,17 @@ public class VariablePool
     {
       this.data.clear();
       this.lookups.clear();
+    }
+  }
+
+  public void setLastError(Exception ex)
+  {
+    if (ex instanceof SQLException)
+    {
+      SQLException sqle = (SQLException)ex;
+      setParameterValue(VAR_NAME_LAST_ERROR_CODE, Integer.toString(sqle.getErrorCode()));
+      setParameterValue(VAR_NAME_LAST_ERROR_STATE, sqle.getSQLState());
+      setParameterValue(VAR_NAME_LAST_ERROR_MSG, sqle.getMessage());
     }
   }
 
