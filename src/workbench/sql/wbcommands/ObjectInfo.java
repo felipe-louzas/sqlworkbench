@@ -429,8 +429,9 @@ public class ObjectInfo
       DbSearchPath handler = DbSearchPath.Factory.getSearchPathHandler(connection);
       List<String> searchPath = Collections.emptyList();
       boolean searchAllSchemas = connection.getDbSettings().getSearchAllSchemas();
+      boolean preferCurrentSchema = connection.getDbSettings().getSearchPreferCurrentSchema();
 
-      if (handler.isRealSearchPath() || connection.getDbSettings().useCurrentNamespaceForCompletion())
+      if (handler.isRealSearchPath() || preferCurrentSchema)
       {
         searchPath = handler.getSearchPath(connection, null);
       }

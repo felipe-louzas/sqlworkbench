@@ -1861,6 +1861,11 @@ public class DbSettings
     return getBoolProperty("search.all.schemas", true);
   }
 
+  public boolean getSearchPreferCurrentSchema()
+  {
+    return getBoolProperty("search.prefer.current_schema", true);
+  }
+
   public String getInlinePKKeyword()
   {
     return getProperty("sql.pk.inline", "PRIMARY KEY");
