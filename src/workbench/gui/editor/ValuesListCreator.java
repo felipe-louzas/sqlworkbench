@@ -324,7 +324,7 @@ public class ValuesListCreator
     if (input.startsWith("'") && input.endsWith("'")) return false;
 
     // if it doesn't start with a digit it can't be a number and has to be quoted.
-    if (input.matches("^[^0-9]+.*")) return true;
+    if (input.matches("^[^0-9-]+.*")) return true;
 
     // if it starts with one or more zeros, but isn't a decimal number
     // assume it's a string
