@@ -2,6 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?><history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2020-10-18">
+    <entry dev-build="2" type="enh">The console now supports basic auto-completion</entry>
     <entry dev-build="2" type="enh">When using WbInclude or running SQL scripts in batch mode, the last error is now available in SQL Workbench variables</entry>
     <entry dev-build="1" type="enh">The text and background color for the line numbers in the editor can now be configured</entry>
     <entry dev-build="1" type="enh">For WbExport, it's now possible to specify the literals to be used for boolean values</entry>
