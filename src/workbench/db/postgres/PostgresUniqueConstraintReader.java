@@ -32,12 +32,12 @@ import workbench.log.LogMgr;
 
 import workbench.db.ConstraintDefinition;
 import workbench.db.IndexDefinition;
-import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.UniqueConstraintReader;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
+
 import workbench.db.JdbcUtils;
 
 /**

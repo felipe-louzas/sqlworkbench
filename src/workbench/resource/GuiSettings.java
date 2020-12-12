@@ -74,6 +74,7 @@ public class GuiSettings
 	public static final String PROP_TITLE_REMOVE_URL_PRODUCT = "workbench.gui.display.showurl.removeproduct";
 	public static final String PROP_TITLE_SHOW_PROF_GROUP = "workbench.gui.display.showprofilegroup";
 	public static final String PROP_TITLE_APP_AT_END = "workbench.gui.display.name_at_end";
+	public static final String PROP_TITLE_ORDER_TEMPLATE = "workbench.gui.display.title.template";
 	public static final String PROP_TITLE_SHOW_EDITOR_FILE = "workbench.gui.display.showfilename";
 	public static final String PROP_TITLE_GROUP_SEP = "workbench.gui.display.titlegroupsep";
 	public static final String PROP_TITLE_GROUP_BRACKET = "workbench.gui.display.titlegroupbracket";
@@ -905,6 +906,11 @@ public class GuiSettings
 		return Settings.getInstance().getBoolProperty(PROP_TITLE_SHOW_PROF_GROUP, false);
 	}
 
+  public static String getTitleTemplate()
+  {
+    return Settings.getInstance().getProperty(PROP_TITLE_ORDER_TEMPLATE, null);
+  }
+  
 	public static void setShowProductNameAtEnd(boolean flag)
 	{
 		Settings.getInstance().setProperty(PROP_TITLE_APP_AT_END, flag);

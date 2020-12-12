@@ -32,7 +32,6 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.TableIdentifier;
@@ -41,6 +40,7 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.db.JdbcUtils;
+
 import workbench.util.StringUtil;
 
 /**

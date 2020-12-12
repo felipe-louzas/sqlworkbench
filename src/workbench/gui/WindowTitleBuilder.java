@@ -37,19 +37,27 @@ import workbench.util.StringUtil;
  */
 public class WindowTitleBuilder
 {
-  private static final int NAME_AT_END = 1;
-  private static final int NAME_AT_START = 2;
+  public static final String PARM_APP_NAME = "{app}";
+  public static final String PARM_CONN = "{conn}";
+  public static final String PARM_WKSP = "{wksp}";
+  public static final String PARM_FNAME = "{fname}";
+  public static final String DELIM = " - ";
 
   private boolean showProfileGroup = GuiSettings.getShowProfileGroupInWindowTitle();
   private boolean showURL = GuiSettings.getShowURLinWindowTitle();
   private boolean includeUser = GuiSettings.getIncludeUserInTitleURL();
-  private int productNamePosition = NAME_AT_START;
   private boolean showWorkspace = GuiSettings.getShowWorkspaceInWindowTitle();
   private boolean showNotConnected = true;
+  private String titleTemplate;
 
   public WindowTitleBuilder()
   {
-    setShowProductNameAtEnd(GuiSettings.getShowProductNameAtEnd());
+    titleTemplate = GuiSettings.getTitleTemplate();
+  }
+
+  public void setTitleTemplate(String template)
+  {
+    this.titleTemplate = template;
   }
 
   public void setShowProfileGroup(boolean flag)
@@ -65,18 +73,6 @@ public class WindowTitleBuilder
   public void setIncludeUser(boolean flag)
   {
     this.includeUser = flag;
-  }
-
-  public void setShowProductNameAtEnd(boolean flag)
-  {
-    if (flag)
-    {
-      productNamePosition = NAME_AT_END;
-    }
-    else
-    {
-      productNamePosition = NAME_AT_START;
-    }
   }
 
   public void setShowWorkspace(boolean flag)
@@ -101,110 +97,111 @@ public class WindowTitleBuilder
 
   public String getWindowTitle(WbConnection connection, String workspaceFile, String editorFile, String appName)
   {
-    StringBuilder title = new StringBuilder(50);
+    String title = getTemplate();
 
     ConnectionProfile profile = connection != null ? connection.getProfile() : null;
     String user = connection != null ? connection.getDisplayUser() : null;
 
-    if (appName != null && productNamePosition == NAME_AT_START)
-    {
-      title.append(appName);
-      title.append(' ');
-    }
+    title = replace(title, PARM_APP_NAME, appName);
 
+    String connInfo = "";
     if (profile != null)
     {
-      boolean showUser = includeUser || profile.getPromptForUsername();
-
       if (showURL)
       {
-        if (showProfileGroup)
-        {
-          appendProfileName(title, profile);
-        }
+        boolean showUser = includeUser || profile.getPromptForUsername();
         String url = makeCleanUrl(profile.getActiveUrl());
         if (showUser && user != null)
         {
-          title.append(user);
+          connInfo += user;
           if (url.charAt(0) != '@')
           {
-            title.append('@');
+            connInfo += "@";
           }
         }
-        title.append(url);
+        connInfo += url;
       }
       else
       {
         if (profile.getPromptForUsername())
         {
           // always display the username if prompted
-          title.append(user);
-          title.append(" - ");
+          connInfo = user + DELIM;
         }
-        if (showProfileGroup)
-        {
-          appendProfileName(title, profile);
-        }
-        title.append(profile.getName());
+        connInfo += getProfileName(profile);
       }
     }
     else if (showNotConnected)
     {
-      if (title.length() > 0) title.append("- ");
-      title.append(ResourceMgr.getString("TxtNotConnected"));
+      connInfo = ResourceMgr.getString("TxtNotConnected");
     }
 
+    String wksp = null;
     if (StringUtil.isNonBlank(workspaceFile) && showWorkspace)
     {
       File f = new File(workspaceFile);
       String baseName = f.getName();
-      title.append(" - ");
-      title.append(baseName);
-      title.append(" ");
+      wksp = baseName;
     }
 
+    String fname = null;
     int showFilename = GuiSettings.getShowFilenameInWindowTitle();
     if (StringUtil.isNonBlank(editorFile) && showFilename != GuiSettings.SHOW_NO_FILENAME)
     {
-      title.append(" - ");
       if (showFilename == GuiSettings.SHOW_FULL_PATH)
       {
-        title.append(editorFile);
+        fname = editorFile;
       }
       else
       {
         File f = new File(editorFile);
-        title.append(f.getName());
+        fname = f.getName();
       }
     }
 
-    if (StringUtil.isNonBlank(appName) && productNamePosition == NAME_AT_END)
-    {
-      if (title.length() > 0) title.append(" - ");
-      title.append(appName);
-    }
-
-    return title.toString();
+    title = replace(title, PARM_CONN, connInfo);
+    title = replace(title, PARM_FNAME, fname);
+    title = replace(title, PARM_WKSP, wksp);
+    return title;
   }
 
-  private void appendProfileName(StringBuilder title, ConnectionProfile profile)
+  private String replace(String title, String param, String value)
   {
-    String enclose = GuiSettings.getTitleGroupBracket();
-    String sep = GuiSettings.getTitleGroupSeparator();
-
-    char open = getOpeningBracket(enclose);
-    char close = getClosingBracket(enclose);
-
-    if (open != 0 && close != 0)
+    if (StringUtil.isEmptyString(value))
     {
-      title.append(open);
+      title = title.replace(DELIM + param, "");
+      title = title.replaceFirst("\\s" + StringUtil.quoteRegexMeta(param), "");
+      return title;
     }
-    title.append(profile.getGroup());
-    if (open != 0 && close != 0)
+    return title.replace(param, value);
+  }
+
+  private String getProfileName(ConnectionProfile profile)
+  {
+    String name = "";
+    if(profile == null) return name;
+
+    if (showProfileGroup)
     {
-      title.append(close);
+      String enclose = GuiSettings.getTitleGroupBracket();
+      String sep = GuiSettings.getTitleGroupSeparator();
+
+      char open = getOpeningBracket(enclose);
+      char close = getClosingBracket(enclose);
+
+      if (open != 0 && close != 0)
+      {
+        name += open;
+      }
+      name += profile.getGroup();
+      if (open != 0 && close != 0)
+      {
+        name += close;
+      }
+      if (sep != null) name += sep;
     }
-    if (sep != null) title.append(sep);
+    name += profile.getName();
+    return name;
   }
 
   private char getOpeningBracket(String settingsValue)
@@ -278,6 +275,17 @@ public class WindowTitleBuilder
       }
     }
     return url;
+  }
+
+  private String getTemplate()
+  {
+    if (StringUtil.isNonBlank(titleTemplate)) return titleTemplate;
+
+    if (GuiSettings.getShowProductNameAtEnd())
+    {
+      return PARM_CONN + DELIM + PARM_WKSP + DELIM + PARM_FNAME + DELIM + PARM_APP_NAME;
+    }
+    return PARM_APP_NAME + DELIM + PARM_CONN + DELIM + PARM_WKSP + DELIM + PARM_FNAME;
   }
 
 }

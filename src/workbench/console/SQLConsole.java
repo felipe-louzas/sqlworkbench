@@ -113,8 +113,8 @@ public class SQLConsole
     history.doAppend(true);
     installSignalHandler();
     changeTerminalTitle = !PlatformHelper.isWindows() && ConsoleSettings.changeTerminalTitle();
+    titleBuilder.setTitleTemplate(WindowTitleBuilder.PARM_CONN + WindowTitleBuilder.DELIM + WindowTitleBuilder.PARM_APP_NAME);
     titleBuilder.setShowWorkspace(false);
-    titleBuilder.setShowProductNameAtEnd(ConsoleSettings.termTitleAppNameAtEnd());
     titleBuilder.setShowProfileGroup(false);
     titleBuilder.setShowURL(ConsoleSettings.termTitleIncludeUrl());
     titleBuilder.setShowNotConnected(false);

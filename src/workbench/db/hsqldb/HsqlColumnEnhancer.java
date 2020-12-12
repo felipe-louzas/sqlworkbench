@@ -35,13 +35,13 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
-import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.db.JdbcUtils;
+
 import workbench.util.StringUtil;
 
 /**

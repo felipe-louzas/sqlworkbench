@@ -20,17 +20,7 @@
  */
 package workbench.db;
 
-import java.sql.ResultSet;
-import java.sql.Savepoint;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import workbench.log.LogMgr;
-
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 /**
  *
