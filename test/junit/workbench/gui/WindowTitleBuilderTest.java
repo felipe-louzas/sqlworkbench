@@ -24,9 +24,8 @@
 package workbench.gui;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import workbench.db.ConnectionProfile;
+import static org.junit.Assert.*;
 
 /**
  *
