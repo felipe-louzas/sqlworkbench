@@ -52,12 +52,15 @@ public class WindowTitleBuilder
 
   public WindowTitleBuilder()
   {
-    titleTemplate = GuiSettings.getTitleTemplate();
   }
 
-  public void setTitleTemplate(String template)
+  public final void setTitleTemplate(String template)
   {
-    this.titleTemplate = template;
+    this.titleTemplate = StringUtil.trimToNull(template);
+    if (StringUtil.isNonBlank(titleTemplate))
+    {
+      showWorkspace = titleTemplate.contains(PARM_WKSP);
+    }
   }
 
   public void setShowProfileGroup(boolean flag)
@@ -170,7 +173,8 @@ public class WindowTitleBuilder
     if (StringUtil.isEmptyString(value))
     {
       title = title.replace(DELIM + param, "");
-      title = title.replaceFirst("\\s" + StringUtil.quoteRegexMeta(param), "");
+      title = title.replace(param + DELIM, "");
+      title = title.replaceFirst("\\s{0,1}" + StringUtil.quoteRegexMeta(param), "");
       return title;
     }
     return title.replace(param, value);
@@ -280,6 +284,9 @@ public class WindowTitleBuilder
   private String getTemplate()
   {
     if (StringUtil.isNonBlank(titleTemplate)) return titleTemplate;
+
+    String template = GuiSettings.getTitleTemplate();
+    if (template != null) return template;
 
     if (GuiSettings.getShowProductNameAtEnd())
     {

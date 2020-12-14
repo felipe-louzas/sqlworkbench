@@ -1,5 +1,4 @@
-The files from this archive need to be copied into the same directory
-where sqlworkbench.jar is located
+The files from this archive need to be copied into the ext sub-directory 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
