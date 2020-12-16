@@ -216,6 +216,7 @@ import workbench.gui.toolbar.ToolbarBuilder;
 
 import workbench.storage.DataStore;
 
+import workbench.sql.EndReadOnlyTrans;
 import workbench.sql.ErrorDescriptor;
 import workbench.sql.OutputPrinter;
 import workbench.sql.StatementHistory;
@@ -1789,13 +1790,19 @@ public class SqlPanel
             toolbar.setConnection(dbConnection);
           }
 
-          // avoid the <IDLE> in transaction for Postgres that is caused by retrieving the current schema.
-          // the isBusy() is to prevent the situation where the user manages
-          // to manually run a statement between the above setBusy(false) and this point)
-          if (doRollbackOnSetConnection())
+          // avoid the "idle in transaction" for Postgres that is caused by retrieving the current schema.
+          EndReadOnlyTrans endType = endTransactionOnSetConnection();
+          if (endType != EndReadOnlyTrans.never)
           {
-            LogMgr.logDebug(ci, "Sending a rollback to end the current transaction");
-            dbConnection.rollbackSilently(ci);
+            LogMgr.logDebug(ci, "Sending a " + endType + " to end the current transaction");
+            if (endType == EndReadOnlyTrans.rollback)
+            {
+              dbConnection.rollbackSilently(ci);
+            }
+            else
+            {
+              dbConnection.commitSilently(ci);
+            }
           }
         }
         finally
@@ -1807,21 +1814,22 @@ public class SqlPanel
     info.start();
   }
 
-  private boolean doRollbackOnSetConnection()
+  private EndReadOnlyTrans endTransactionOnSetConnection()
   {
-    if (dbConnection == null) return false;
-    if (dbConnection.getAutoCommit()) return false;
-    if (dbConnection.isBusy()) return false;
+    if (dbConnection == null) return EndReadOnlyTrans.never;
+    if (dbConnection.getAutoCommit()) return EndReadOnlyTrans.never;
+    if (dbConnection.isBusy()) return EndReadOnlyTrans.never;
+
     DbSettings dbs = dbConnection.getDbSettings();
     if (dbs != null)
     {
-      if (!dbs.endTransactionAfterConnect()) return false;
+      return dbs.endTransactionAfterConnect();
     }
     // if we are using a separate connection, we always need to do the rollback
-    if (dbConnection.isShared() == false) return true;
+    if (dbConnection.isShared() == false) return EndReadOnlyTrans.commit;
 
     // a single connection is used for all tabs. Only terminate the transaction for the current tab.
-    return this.isCurrentTab();
+    return this.isCurrentTab() ? EndReadOnlyTrans.commit : EndReadOnlyTrans.never;
   }
 
   /**

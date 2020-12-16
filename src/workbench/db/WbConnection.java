@@ -940,7 +940,19 @@ public class WbConnection
     }
     catch (Exception e)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not rollback!", e);
+      LogMgr.logWarning(context != null ? context : new CallerInfo(){}, "Could not rollback!", e);
+    }
+  }
+
+  public void commitSilently(CallerInfo context)
+  {
+    try
+    {
+      commit();
+    }
+    catch (Exception e)
+    {
+      LogMgr.logWarning(context != null ? context : new CallerInfo(){}, "Could not commit!", e);
     }
   }
 

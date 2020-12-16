@@ -721,7 +721,7 @@ public class WbExportTest
     assertEquals(3, lines.size());
     assertEquals("NR\tDATA", lines.get(0));
     assertTrue(lines.get(1).startsWith("1\tX'ffd8ffe00010"));
-    System.out.println(lines.get(2));
+//    System.out.println(lines.get(2));
     assertTrue(lines.get(2).startsWith("2\tX'"));
 
   }
@@ -1457,7 +1457,7 @@ public class WbExportTest
       assertEquals("LastName1", values[2]);
 
       line = lines.get(1);
-      System.out.println(line);
+//      System.out.println(line);
       values = line.split("\t");
       assertEquals(3, values.length);
       assertEquals("NULL", values[1]);

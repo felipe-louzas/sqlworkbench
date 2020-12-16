@@ -2157,9 +2157,18 @@ public class DbSettings
     return getIntProperty("dbexplorer.locktimeout", 2500);
   }
 
-  public boolean endTransactionAfterConnect()
+  public EndReadOnlyTrans endTransactionAfterConnect()
   {
-    return getBoolProperty("afterconnect.finishtrans", false);
+    String value = getProperty("afterconnect.finishtrans", null);
+    if (StringUtil.isBlank(value)) return EndReadOnlyTrans.never;
+
+    // Old behaviour where afterconnect.finishtrans was a true/false property
+    if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
+    {
+      boolean flag = Boolean.valueOf(value);
+      return flag ? EndReadOnlyTrans.rollback : EndReadOnlyTrans.never;
+    }
+    return Settings.getInstance().getEnumValue(value, EndReadOnlyTrans.never);
   }
 
   public String getTableSelectTemplate(String keyname)
