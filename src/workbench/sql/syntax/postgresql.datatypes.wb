@@ -3,15 +3,18 @@ box
 bytea
 cidr
 circle
-float8
 daterange
+double precision
 double8
+float8
 inet
 int2
 int4
 int4range
 int8
 int8range
+json
+jsonb
 line
 lseg
 macaddr
@@ -24,13 +27,11 @@ polygon
 serial
 smallserial
 text
+timestamptz
 tsquery
 tsrange
 tstzrange
 tsvector
 uuid
 xml
-json
-jsonb
 -binary
-timestamptz

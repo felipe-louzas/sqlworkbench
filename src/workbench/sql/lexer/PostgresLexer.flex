@@ -278,6 +278,7 @@ keyword=(
 "DISTINCT"|
 "DOMAIN"|
 "DOUBLE"|
+(DOUBLE{wsp}PRECISION)|
 "DROP"|
 "ELSE"|
 "ENCODING"|
