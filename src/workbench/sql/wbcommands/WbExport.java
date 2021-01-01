@@ -516,6 +516,9 @@ public class WbExport
     String decimal = cmdLine.getValue(ARG_DECIMAL_SYMBOL);
     String group = cmdLine.getValue(ARG_DECIMAL_GROUP);
 
+    // the formatting options should only default to true if no target sheet was specified
+    boolean targetSheetSpecified = cmdLine.getIntValue(ARG_TARGET_SHEET_IDX, -1) > -1 || StringUtil.isNonBlank(cmdLine.getValue(ARG_TARGET_SHEET_NAME));
+
     if (StringUtil.isNonBlank(decimalFormat))
     {
       exporter.setDecimalFormatString(decimalFormat, decimal, group);
@@ -524,16 +527,29 @@ public class WbExport
     {
       int digits = cmdLine.getIntValue(ARG_MAX_DIGITS, 0);
       boolean fixedDigits = false;
+      boolean formatSpecified = false;
       if (cmdLine.isArgPresent(ARG_MAX_DIGITS))
       {
         fixedDigits = false;
+        formatSpecified = true;
       }
       else if (cmdLine.isArgPresent(ARG_FIXED_DIGITS))
       {
         digits = cmdLine.getIntValue(ARG_FIXED_DIGITS, -1);
         fixedDigits = true;
+        formatSpecified = true;
       }
-      exporter.setDecimalDigits(digits, decimal == null ? "." : decimal, fixedDigits);
+
+      boolean needsNumberFormat = true;
+      if (isSpreadsheet(type) && outputFile != null && outputFile.exists() && targetSheetSpecified)
+      {
+        needsNumberFormat = false;
+      }
+
+      if (needsNumberFormat || formatSpecified)
+      {
+        exporter.setDecimalDigits(digits, decimal == null ? "." : decimal, fixedDigits);
+      }
     }
 
     String integerFormat = cmdLine.getValue(ARG_INTEGER_FORMAT);
@@ -544,11 +560,9 @@ public class WbExport
     exporter.setTargetSheetIndex(cmdLine.getIntValue(ARG_TARGET_SHEET_IDX, -1));
     exporter.setTargetSheetName(cmdLine.getValue(ARG_TARGET_SHEET_NAME));
 
-    // the formatting options should only default to true if no target sheet was specified
-    boolean doFormatting = cmdLine.getIntValue(ARG_TARGET_SHEET_IDX, -1) < 0 && cmdLine.getValue(ARG_TARGET_SHEET_NAME) == null;
-    exporter.setEnableAutoFilter(cmdLine.getBoolean(ARG_AUTOFILTER, doFormatting));
-    exporter.setEnableFixedHeader(cmdLine.getBoolean(ARG_FIXED_HEADER, doFormatting));
-    exporter.setOptimizeSpreadsheetColumns(cmdLine.getBoolean(ARG_OPT_WIDTH, doFormatting));
+    exporter.setEnableAutoFilter(cmdLine.getBoolean(ARG_AUTOFILTER, !targetSheetSpecified));
+    exporter.setEnableFixedHeader(cmdLine.getBoolean(ARG_FIXED_HEADER, !targetSheetSpecified));
+    exporter.setOptimizeSpreadsheetColumns(cmdLine.getBoolean(ARG_OPT_WIDTH, !targetSheetSpecified));
     exporter.setUseMultiRowInserts(cmdLine.getBoolean(ARG_MULTI_ROW_INSERTS, false));
     exporter.setExportHeaders(cmdLine.getBoolean(ARG_HEADER, getHeaderDefault(type)));
     String title = cmdLine.getValue(ARG_PAGE_TITLE, cmdLine.getValue(WbImport.ARG_SHEET_NAME));
@@ -1033,6 +1047,11 @@ public class WbExport
     {
       return PoiHelper.excelToNumbers(value);
     }
+  }
+
+  private boolean isSpreadsheet(String type)
+  {
+    return type != null && type.equals("xls") || type.equals("xlsx") || type.equals("ods");
   }
 
   boolean isTypeValid(String type)
