@@ -87,6 +87,7 @@ public class WbDataDiff
   public static final String PARAM_EXCLUDE_IGNORED = "excludeIgnored";
   public static final String PARAM_SINGLE_FILE = "singleFile";
   public static final String PARAM_IGNORE_MISSING_TARGET = "ignoreMissingTarget";
+  public static final String PARAM_INCLUDE_IDENTITY_COLS = "includeIdentityColumns";
 
   private WbFile outputDir;
   private TableDataDiff dataDiff;
@@ -112,6 +113,7 @@ public class WbDataDiff
     cmdLine.addArgument(PARAM_EXCLUDE_IGNORED, ArgumentType.BoolArgument);
     cmdLine.addArgument(PARAM_SINGLE_FILE, ArgumentType.BoolArgument);
     cmdLine.addArgument(PARAM_IGNORE_MISSING_TARGET, ArgumentType.BoolSwitch);
+    cmdLine.addArgument(PARAM_INCLUDE_IDENTITY_COLS, ArgumentType.BoolArgument);
 
     CommonArgs.addCheckDepsParameter(cmdLine);
     CommonArgs.addSqlDateLiteralParameter(cmdLine);
@@ -306,6 +308,11 @@ public class WbDataDiff
     dataDiff = new TableDataDiff(sourceCon, targetCon);
     dataDiff.setSqlDateLiteralType(literalType);
     dataDiff.setIgnoreMissingTarget(ignoreMissing);
+
+    if (cmdLine.isArgPresent(PARAM_INCLUDE_IDENTITY_COLS))
+    {
+      dataDiff.setIncludeIdentityColumns(cmdLine.getBoolean(PARAM_INCLUDE_IDENTITY_COLS));
+    }
 
     String outputType = cmdLine.getValue(PARAM_OUTPUT_TYPE);
     if (StringUtil.isBlank(outputType)) outputType = "sql";

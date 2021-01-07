@@ -62,6 +62,7 @@ public class RowDataComparer
   private String sqlDateLiteral;
   private WbFile baseDir;
   private boolean applySQLFormatting;
+  private Boolean includeIdentityColumns;
 
   public RowDataComparer()
   {
@@ -94,10 +95,14 @@ public class RowDataComparer
     }
   }
 
+  public void setIncludeIdentityColumns(boolean flag)
+  {
+    this.includeIdentityColumns = flag;
+  }
+
   public void setTypeSql()
   {
     sqlConverter = new SqlRowDataConverter(targetDb);
-    sqlConverter.setBlobMode(blobMode);
     if (resultInfo != null) sqlConverter.setResultInfo(resultInfo);
     if (sqlDateLiteral != null) sqlConverter.setDateLiteralType(sqlDateLiteral);
     if (blobMode != null)
@@ -253,6 +258,10 @@ public class RowDataComparer
       }
       sqlConverter.setApplySQLFormatting(this.applySQLFormatting);
       sqlConverter.setLineEnding(StringUtil.LINE_TERMINATOR);
+      if (includeIdentityColumns != null)
+      {
+        sqlConverter.setIncludeIdentityColumns(includeIdentityColumns);
+      }
       result = sqlConverter.convertRowData(migrationData, rowNumber);
     }
     if (xmlConverter != null)

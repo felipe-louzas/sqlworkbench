@@ -205,6 +205,18 @@ public class TableDataDiff
     this.ignoreMissingTarget = flag;
   }
 
+  /**
+   * Controls if "identity" columns are included in the generated SQL Statements.
+   *
+   * This can be used to overwrite the global setting {@link Settings#getGenerateInsertIgnoreIdentity()}.
+   *
+   * @param flag if true, identity columns are included
+   * @see RowDataComparer#setIncludeIdentityColumns(boolean) 
+   */
+  public void setIncludeIdentityColumns(boolean flag)
+  {
+    this.comparer.setIncludeIdentityColumns(flag);
+  }
 
   /**
    * Define a alternate PK columns.
