@@ -1,6 +1,4 @@
 /*
- * Alias.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -203,7 +201,7 @@ public class Alias
   {
     return "Name: " + this.objectName + ", alias: " + StringUtil.coalesce(alias, "") + ", start: " + startPosInQuery + ", end: " + endPosInQuery;
   }
-  
+
   @Override
   public int hashCode()
   {

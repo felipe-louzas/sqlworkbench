@@ -1,6 +1,4 @@
 /*
- * BlobDecoder.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -82,7 +80,7 @@ public class BlobDecoder
     throws IOException
   {
     if (StringUtil.isEmptyString(value)) return null;
-    
+
     if (type != null)
     {
       switch (type)

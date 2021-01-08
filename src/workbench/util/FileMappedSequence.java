@@ -1,6 +1,4 @@
 /*
- * FileMappedSequence.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -22,6 +20,7 @@
  *
  */
 package workbench.util;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,7 +37,8 @@ import workbench.log.LogMgr;
 
 /**
  * An implementatio of CharacterSequence that does not read the
- * entire file but only a part of it into memory
+ * entire file but only a part of it into memory.
+ * 
  * @author Thomas Kellerer
  */
 public class FileMappedSequence

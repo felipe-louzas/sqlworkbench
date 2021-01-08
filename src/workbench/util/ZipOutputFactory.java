@@ -1,6 +1,4 @@
 /*
- * ZipOutputFactory.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -86,7 +84,7 @@ public class ZipOutputFactory
     throws IOException
   {
     if (this.zout == null) initArchive();
-    
+
     try
     {
       ZipEntry mime = new ZipEntry(name);

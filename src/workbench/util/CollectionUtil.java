@@ -1,6 +1,4 @@
 /*
- * CollectionUtil.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -102,7 +100,7 @@ public class CollectionUtil
     if (c == null) return 0;
     return c.size();
   }
-  
+
   public static boolean isEmpty(Collection c)
   {
     return (c == null || c.isEmpty());
