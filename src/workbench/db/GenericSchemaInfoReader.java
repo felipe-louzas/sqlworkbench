@@ -34,7 +34,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**

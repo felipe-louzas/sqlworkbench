@@ -219,7 +219,7 @@ public class DbObjectCache
     objectCache.flushCachedDatabase();
   }
 
-  public List<String> getAvailableDatabases()
+  public synchronized List<String> getAvailableDatabases()
   {
     return objectCache.getAvailableDatabases(dbConnection);
   }

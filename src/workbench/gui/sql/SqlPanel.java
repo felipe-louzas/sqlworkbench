@@ -1794,7 +1794,7 @@ public class SqlPanel
           EndReadOnlyTrans endType = endTransactionOnSetConnection();
           if (endType != EndReadOnlyTrans.never)
           {
-            LogMgr.logDebug(ci, "Sending a " + endType + " to end the current transaction");
+            LogMgr.logDebug(ci, "Sending a " + endType + " to end the current transaction for connection: " + dbConnection.getId());
             if (endType == EndReadOnlyTrans.rollback)
             {
               dbConnection.rollbackSilently(ci);
@@ -1821,15 +1821,17 @@ public class SqlPanel
     if (dbConnection.isBusy()) return EndReadOnlyTrans.never;
 
     DbSettings dbs = dbConnection.getDbSettings();
-    if (dbs != null)
-    {
-      return dbs.endTransactionAfterConnect();
-    }
-    // if we are using a separate connection, we always need to do the rollback
-    if (dbConnection.isShared() == false) return EndReadOnlyTrans.commit;
+    if (dbs == null) return EndReadOnlyTrans.never;
+    
+    EndReadOnlyTrans result = (dbs != null ? dbs.endTransactionAfterConnect() : null);
 
-    // a single connection is used for all tabs. Only terminate the transaction for the current tab.
-    return this.isCurrentTab() ? EndReadOnlyTrans.commit : EndReadOnlyTrans.never;
+    if (dbConnection.isShared())
+    {
+      // a single connection is used for all tabs. Only terminate the transaction for the current tab.
+      return this.isCurrentTab() ? result : EndReadOnlyTrans.never;
+    }
+    // if we are using a separate connection, use whatever is configured
+    return result;
   }
 
   /**

@@ -257,7 +257,8 @@ public class PgPublication
       "where t.oid in (select rel.prrelid \n" +
       "                from pg_publication_rel rel " +
       "                  join pg_publication pub on pub.oid = rel.prpubid \n" +
-      "                where pub.pubname = ?)";
+      "                where pub.pubname = ?) \n" +
+      "order by 1,2";
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "publication tables", sql);
 

@@ -21,6 +21,7 @@
  */
 package workbench.db.postgres;
 
+import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -230,12 +231,16 @@ public class PostgresUtil
 
     List<String> result = new ArrayList();
 
-    DataStore names = SqlUtil.getResult(conn,
+    String query =
       "select datname " +
       "from pg_catalog.pg_database " +
       "where pg_catalog.has_database_privilege(datname, 'connect') \n" +
       "  and datallowconn \n" +
-      "order by datname", true);
+      "order by datname";
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "database names", query);
+
+    DataStore names = SqlUtil.getResult(conn, query, true);
 
     if (names != null)
     {
@@ -285,6 +290,7 @@ public class PostgresUtil
       "       pg_catalog.shobj_description(d.oid, 'pg_database') as \"Description\" \n" +
       "FROM pg_catalog.pg_database d\n" +
       "ORDER BY 1";
+    LogMgr.logMetadataSql(new CallerInfo(){}, "database info", sql);
     DataStore ds = SqlUtil.getResult(currentConnection, sql, true);
     ds.setGeneratingSql(sql);
     ds.setResultName(ResourceMgr.getString("TxtDbList"));

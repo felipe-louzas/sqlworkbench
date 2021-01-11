@@ -2210,7 +2210,7 @@ public class SqlUtil
     DataStore ds = null;
     try
     {
-      sp = (useSavepoint && !conn.getAutoCommit() ? conn.setSavepoint() : null);
+      sp = (useSavepoint ? conn.setSavepoint() : null);
       stmt = conn.createStatementForQuery();
       rs = stmt.executeQuery(sql);
       ds = new DataStore(rs, true);
