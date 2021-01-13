@@ -21,7 +21,6 @@
  */
 package workbench.db.postgres;
 
-import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1822,13 +1822,13 @@ public class SqlPanel
 
     DbSettings dbs = dbConnection.getDbSettings();
     if (dbs == null) return EndReadOnlyTrans.never;
-    
+
     EndReadOnlyTrans result = (dbs != null ? dbs.endTransactionAfterConnect() : null);
 
     if (dbConnection.isShared())
     {
       // a single connection is used for all tabs. Only terminate the transaction for the current tab.
-      return this.isCurrentTab() ? result : EndReadOnlyTrans.never;
+      return this.isVisible() && this.isCurrentTab() ? result : EndReadOnlyTrans.never;
     }
     // if we are using a separate connection, use whatever is configured
     return result;
