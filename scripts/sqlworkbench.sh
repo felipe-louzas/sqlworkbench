@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Start SQL Workbench/J in GUI mode
 
-SCRIPT_PATH=$(dirname -- "$(readlink -e "${BASH_SOURCE[0]}")")
+SCRIPT_PATH=$(dirname -- "$(readlink "${BASH_SOURCE[0]}")")
 JAVACMD="java"
 
 if [ -x "$SCRIPT_PATH/jre/bin/java" ]
@@ -25,6 +25,15 @@ fi
 cp="$SCRIPT_PATH/sqlworkbench.jar"
 cp="$cp:$SCRIPT_PATH/ext/*"
 
+os=`uname -s`
+
+OPTS="--add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"
+if [ "$os" = Darwin ];
+then
+# this would result in a warning on non MacOS systems
+  OPTS="$OPTS --add-opens java.desktop/com.apple.laf=ALL-UNNAMED"
+fi
+
 # When running in batch mode on a system with no X11 installed, the option
 #   -Djava.awt.headless=true
 # might be needed for some combinations of OS and JDK
@@ -33,7 +42,6 @@ cp="$cp:$SCRIPT_PATH/ext/*"
 # -Dsun.java2d.uiScale=125%
 # -Dsun.java2d.uiScale.enabled=false
 
-exec "$JAVACMD" --add-opens java.desktop/com.apple.laf=ALL-UNNAMED \
-                --add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED \
+exec "$JAVACMD"  $OPTS \
                 -Dawt.useSystemAAFontSettings=on \
                 -Dvisualvm.display.name=SQLWorkbenchJ -cp "$cp" workbench.WbStarter "$@"

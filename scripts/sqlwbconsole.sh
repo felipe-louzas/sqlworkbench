@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Start SQL Workbench/J in console mode
 
-SCRIPT_PATH=$(dirname -- "$(readlink -e "${BASH_SOURCE[0]}")")
+SCRIPT_PATH=$(dirname -- "$(readlink "${BASH_SOURCE[0]}")")
 JAVACMD="java"
 
 if [ -x "$SCRIPT_PATH/jre/bin/java" ]
