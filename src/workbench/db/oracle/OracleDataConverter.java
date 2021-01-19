@@ -23,13 +23,18 @@ package workbench.db.oracle;
 
 import java.lang.reflect.Method;
 import java.sql.Types;
+import java.util.List;
+import java.util.Set;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import workbench.storage.DataConverter;
 
+import workbench.util.CollectionUtil;
 import workbench.util.NumberStringCache;
+import workbench.util.SqlUtil;
 
 /**
  * A class to convert Oracle's RAW datatype to something readable.
@@ -44,6 +49,8 @@ public class OracleDataConverter
   implements DataConverter
 {
   private Method stringValueMethod;
+  private Set<String> convertToHexJdbcTypes = CollectionUtil.caseInsensitiveSet();
+  private Set<String> convertToHexDBMSTypes = CollectionUtil.caseInsensitiveSet();
 
   private static class LazyInstanceHolder
   {
@@ -57,6 +64,16 @@ public class OracleDataConverter
 
   private OracleDataConverter()
   {
+    List<String> jdbcTypes = Settings.getInstance().getListProperty("workbench.db.oracle.convert_to_hex.jdbc_types", true);
+    if (jdbcTypes != null)
+    {
+      convertToHexJdbcTypes.addAll(jdbcTypes);
+    }
+    List<String> dbmsTypes = Settings.getInstance().getListProperty("workbench.db.oracle.convert_to_hex.dbms_types", true);
+    if (dbmsTypes != null)
+    {
+      convertToHexDBMSTypes.addAll(dbmsTypes);
+    }
   }
 
   @Override
@@ -80,9 +97,16 @@ public class OracleDataConverter
   public boolean convertsType(int jdbcType, String dbmsType)
   {
     return (jdbcType == Types.VARBINARY && dbmsType.startsWith("RAW") ||
-            jdbcType == Types.ROWID);
+            jdbcType == Types.ROWID ||
+            isCustomConversion(jdbcType, dbmsType));
+
   }
 
+  private boolean isCustomConversion(int jdbcType, String dbmsType)
+  {
+    return convertToHexDBMSTypes.contains(dbmsType) || convertToHexJdbcTypes.contains(SqlUtil.getTypeName(jdbcType));
+  }
+  
   /**
    * If the type of the originalValue is RAW, then
    * the value is converted into a corresponding hex display, e.g. <br/>

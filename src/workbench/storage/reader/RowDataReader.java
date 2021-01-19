@@ -582,6 +582,10 @@ public class RowDataReader
         {
           value = data.getSubString(1, len);
         }
+        break;
+      case object:
+        value = rs.getObject(column);
+        break;
     }
     return value;
   }
@@ -606,6 +610,10 @@ public class RowDataReader
         {
           value = data.getBytes(1, len);
         }
+        break;
+      case object:
+        value = rs.getObject(column);
+        break;
     }
     return value;
   }

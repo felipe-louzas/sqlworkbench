@@ -29,5 +29,6 @@ public enum BlobAccessType
 {
   byteArray,
   jdbcBlob,
-  binaryStream;
+  binaryStream,
+  object;
 }

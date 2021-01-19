@@ -29,5 +29,6 @@ public enum ClobAccessType
 {
   string,
   jdbcClob,
-  characterStream;
+  characterStream,
+  object;
 }

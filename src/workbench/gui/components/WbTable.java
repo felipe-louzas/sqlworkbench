@@ -42,6 +42,7 @@ import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.SQLException;
+import java.sql.Blob;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2029,7 +2030,9 @@ public class WbTable
 
     this.setDefaultRenderer(Object.class, new ToolTipRenderer());
 
-    this.setDefaultRenderer(byte[].class, new BlobColumnRenderer());
+    BlobColumnRenderer bcr = new BlobColumnRenderer();
+    this.setDefaultRenderer(byte[].class, bcr);
+    this.setDefaultRenderer(Blob.class, bcr);
 
     TableCellRenderer numberRenderer;
     if (StringUtil.isNonBlank(decimalFormat))
