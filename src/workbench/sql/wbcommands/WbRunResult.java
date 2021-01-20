@@ -37,7 +37,6 @@ import workbench.resource.Settings;
 import workbench.storage.DataStore;
 
 import workbench.sql.BatchRunner;
-import workbench.sql.ErrorDescriptor;
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
 
@@ -46,7 +45,6 @@ import workbench.util.ArgumentType;
 import workbench.util.StringUtil;
 
 import static workbench.sql.wbcommands.WbInclude.*;
-
 
 /**
  * A SQL command that runs the result of another SQL statement as a script.
@@ -72,7 +70,7 @@ public class WbRunResult
     cmdLine = new ArgumentParser();
     cmdLine.addArgument(CommonArgs.ARG_CONTINUE, ArgumentType.BoolArgument);
     cmdLine.addArgument(AppArguments.ARG_SHOWPROGRESS, ArgumentType.BoolArgument);
-    cmdLine.addArgument(AppArguments.ARG_DISPLAY_RESULT, ArgumentType.BoolArgument);
+    cmdLine.addArgument(AppArguments.ARG_IGNORE_DROP, ArgumentType.BoolArgument);
     cmdLine.addArgument(CommonArgs.ARG_VERBOSE, ArgumentType.BoolSwitch);
     cmdLine.addArgument(WbInclude.ARG_PRINT_STATEMENTS, ArgumentType.BoolSwitch);
     cmdLine.addArgument(AppArguments.ARG_SHOW_TIMING, ArgumentType.BoolSwitch);

@@ -577,7 +577,7 @@ public class RowDataReader
         break;
       case jdbcClob:
         Clob data = rs.getClob(column);
-        int len = (int)data.length();
+        int len = data == null ? 0 : (int)data.length();
         if (len >= 0)
         {
           value = data.getSubString(1, len);
@@ -605,7 +605,7 @@ public class RowDataReader
         break;
       case jdbcBlob:
         Blob data = rs.getBlob(column);
-        int len = (int)data.length();
+        int len = data == null ? 0 : (int)data.length();
         if (len >= 0)
         {
           value = data.getBytes(1, len);
