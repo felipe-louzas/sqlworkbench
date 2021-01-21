@@ -96,17 +96,32 @@ public class OracleDataConverter
   @Override
   public boolean convertsType(int jdbcType, String dbmsType)
   {
-    return (jdbcType == Types.VARBINARY && dbmsType.startsWith("RAW") ||
-            jdbcType == Types.ROWID ||
-            isCustomConversion(jdbcType, dbmsType));
+    return ((isBinary(jdbcType) && dbmsType.startsWith("RAW")) ||
+             jdbcType == Types.ROWID || isCustomConversion(jdbcType, dbmsType));
 
   }
 
-  private boolean isCustomConversion(int jdbcType, String dbmsType)
+  private boolean isBinary(int jdbcType)
   {
-    return convertToHexDBMSTypes.contains(dbmsType) || convertToHexJdbcTypes.contains(SqlUtil.getTypeName(jdbcType));
+    return jdbcType == Types.VARBINARY || jdbcType == Types.BINARY;
   }
   
+  private boolean isCustomConversion(int jdbcType, String dbmsType)
+  {
+    if (!convertToHexJdbcTypes.isEmpty() && convertToHexJdbcTypes.contains(SqlUtil.getTypeName(jdbcType)))
+    {
+      return true;
+    }
+
+    if (convertToHexDBMSTypes.isEmpty()) return false;
+    int pos = dbmsType.indexOf('(');
+    if (pos > -1)
+    {
+      dbmsType = dbmsType.substring(0, pos);
+    }
+    return convertToHexDBMSTypes.contains(dbmsType);
+  }
+
   /**
    * If the type of the originalValue is RAW, then
    * the value is converted into a corresponding hex display, e.g. <br/>
