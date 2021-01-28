@@ -99,19 +99,19 @@ public class MacroRunner
   protected boolean hasTextKey(String sql)
   {
     if (sql == null) return false;
-    return (sql.indexOf(editorTextKey) > - 1);
+    return (sql.contains(editorTextKey));
   }
 
   protected boolean hasSelectedKey(String sql)
   {
     if (sql == null) return false;
-    return (sql.indexOf(selectedTextKey) > - 1) || (sql.indexOf(selectedStatementKey) > -1);
+    return (sql.contains(selectedTextKey)) || (sql.contains(selectedStatementKey));
   }
 
   protected boolean hasCurrentKey(String sql)
   {
     if (sql == null) return false;
-    return (sql.indexOf(currentStatementKey) > - 1);
+    return (sql.contains(currentStatementKey));
   }
 
   protected String replaceCurrent(String sql, String statementAtCursor)

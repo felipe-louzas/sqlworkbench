@@ -42,6 +42,12 @@ import workbench.util.StringUtil;
 public class MacroDefinition
   implements Sortable
 {
+  public static final int DBTREE_CONTEXT_NONE = 0;
+  public static final int DBTREE_CONTEXT_TABLE = 1;
+  public static final int DBTREE_CONTEXT_COLUMNS = 2;
+  public static final int DBTREE_CONTEXT_ANY = 3;
+  public static final int DBTREE_CONTEXT_MAX = DBTREE_CONTEXT_ANY;
+
   private String name;
   private String text;
   private String tooltip;
@@ -51,6 +57,7 @@ public class MacroDefinition
   private boolean showInMenu = true;
   private boolean showInPopup = true;
   private boolean expandWhileTyping;
+  private int dbTreeContext = DBTREE_CONTEXT_NONE;
   private boolean appendResult;
   private boolean shortcutChanged;
 
@@ -140,6 +147,24 @@ public class MacroDefinition
   {
     modified = modified || (order != sortOrder);
     this.sortOrder = order;
+  }
+
+  public boolean isDbTreeMacro()
+  {
+    return this.dbTreeContext != DBTREE_CONTEXT_NONE;
+  }
+
+  public int getDbTreecontext()
+  {
+    return this.dbTreeContext;
+  }
+  
+  public void setDbTreeContext(int context)
+  {
+    if (context >= DBTREE_CONTEXT_NONE && context <= DBTREE_CONTEXT_MAX)
+    {
+      this.dbTreeContext = context;
+    }
   }
 
   public String getName()
