@@ -462,34 +462,6 @@ public class RedshiftUDFReader
     def.setSource(source);
   }
 
-  private CharSequence buildParameterList(String names, String types, String modes)
-  {
-    List<String> argNames = StringUtil.stringToList(names, ";", true, true);
-    List<String> argTypes = StringUtil.stringToList(types, ";", true, true);
-    List<String> argModes = StringUtil.stringToList(modes, ";", true, true);
-
-    List<ColumnIdentifier> args = convertToColumns(argNames, argTypes, argModes);
-    StringBuilder result = new StringBuilder(args.size() * 10);
-
-    result.append('(');
-    int paramCount = 0;
-    for (ColumnIdentifier col : args)
-    {
-      String mode = col.getArgumentMode();
-      if ("RETURN".equals(mode)) continue;
-
-      if (paramCount > 0) result.append(", ");
-
-      String argName = col.getColumnName();
-      String type = col.getDbmsType();
-      result.append(argName);
-      result.append(' ');
-      result.append(type);
-      paramCount++;
-    }
-    return result;
-  }
-
   protected StringBuilder getAggregateSource(PGProcName name, String schema)
   {
     String baseSelect = "SELECT a.aggtransfn, a.aggfinalfn, format_type(a.aggtranstype, null) as stype, a.agginitval, op.oprname ";
