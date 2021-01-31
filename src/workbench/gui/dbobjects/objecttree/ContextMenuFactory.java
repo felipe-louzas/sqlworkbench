@@ -21,6 +21,7 @@
 package workbench.gui.dbobjects.objecttree;
 
 import java.awt.Window;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -47,9 +48,16 @@ import workbench.gui.actions.DeleteTablesAction;
 import workbench.gui.actions.DropDbObjectAction;
 import workbench.gui.actions.ScriptDbObjectAction;
 import workbench.gui.actions.SpoolDataAction;
+import workbench.gui.components.WbMenu;
 import workbench.gui.components.WbPopupMenu;
 import workbench.gui.dbobjects.EditorTabSelectMenu;
+import workbench.gui.macros.MacroClient;
+import workbench.gui.macros.QueryMacroParser;
 import workbench.gui.sql.PasteType;
+
+import workbench.sql.macros.MacroDefinition;
+import workbench.sql.macros.MacroManager;
+import workbench.sql.macros.MacroStorage;
 
 import workbench.util.CollectionUtil;
 
@@ -219,10 +227,62 @@ class ContextMenuFactory
     deleteData.setEnabled(onlyTables);
     menu.add(deleteData);
 
+    addMacros(menu, dbTree);
     return menu;
   }
 
-  private static boolean onlyColumnsSelected(List<ObjectTreeNode> selectedNodes)
+  private static void addMacros(JPopupMenu menu, DbTreePanel dbTree)
+  {
+    MacroClient macroClient = dbTree.getMacroClient();
+    if (macroClient == null) return;
+    MacroStorage storage = MacroManager.getInstance().getMacros(macroClient.getMacroClientId());
+    if (storage == null) return;
+
+    List<MacroDefinition> macros = getApplicableMacros(storage.getDbTreeMacros(), dbTree);
+    if (macros.isEmpty()) return;
+
+    WbMenu macroMenu = new WbMenu(ResourceMgr.getString("LblMacros"));
+    menu.addSeparator();
+
+    for (MacroDefinition def : macros)
+    {
+      DbTreeMacroAction action = new DbTreeMacroAction(dbTree, def);
+      macroMenu.add(action);
+    }
+    menu.add(macroMenu);
+  }
+
+  private static List<MacroDefinition> getApplicableMacros(List<MacroDefinition> dbTreeMacros, DbTreePanel tree)
+  {
+    List<MacroDefinition> macros = new ArrayList<>();
+    if (dbTreeMacros.isEmpty()) return macros;
+
+    List<DbObject> selectedObjects = tree.getSelectedObjects();
+    long numTables = selectedObjects.stream().filter(o -> o instanceof TableIdentifier).count();
+    long numColumns = selectedObjects.stream().filter(o -> o instanceof ColumnIdentifier).count();
+
+    for (MacroDefinition def : dbTreeMacros)
+    {
+      QueryMacroParser parser = new QueryMacroParser(def);
+
+      boolean usesColumns = parser.hasColumnPlaceholder();
+      boolean usesTable = parser.hasTablePlaceholder();
+
+      if (usesColumns && numColumns == 0) continue;
+
+      if (usesColumns && numColumns > 0)
+      {
+        macros.add(def);
+      }
+      else if (usesTable && numTables > 0)
+      {
+        macros.add(def);
+      }
+    }
+    return macros;
+  }
+
+  public static boolean onlyColumnsSelected(List<ObjectTreeNode> selectedNodes)
   {
     if (CollectionUtil.isEmpty(selectedNodes)) return false;
     for (ObjectTreeNode node : selectedNodes)

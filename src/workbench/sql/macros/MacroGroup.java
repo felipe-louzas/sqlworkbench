@@ -183,7 +183,7 @@ public class MacroGroup
     List<MacroDefinition> result = new ArrayList<>(macros.size());
     for (MacroDefinition macro : macros)
     {
-      if (macro.isVisibleInMenu())
+      if (macro.isVisibleInMenu() && !macro.isDbTreeMacro())
       {
         result.add(macro);
       }
@@ -205,7 +205,7 @@ public class MacroGroup
     List<MacroDefinition> result = new ArrayList<>(macros.size());
     for (MacroDefinition macro : macros)
     {
-      if (macro.isVisibleInPopup())
+      if (macro.isVisibleInPopup() && !macro.isDbTreeMacro())
       {
         result.add(macro);
       }

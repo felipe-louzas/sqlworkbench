@@ -22,6 +22,7 @@ package workbench.gui.macros;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import workbench.db.ColumnIdentifier;
@@ -39,13 +40,14 @@ import workbench.util.StringUtil;
  */
 public class QueryMacroParser
 {
-  public static final String COLUMN_PLACEHOLDR = "${column}$";
+  public static final String COLUMN_PLACEHOLDER = "${column}$";
   public static final String COLUMN_LIST_PLACEHOLDR = "${column_list}$";
   public static final String TABLE_PLACEHOLDER = "${table}$";
   public static final String TABLE_NAME_PLACEHOLDER = "${table_name}$";
   public static final String SCHEMA_NAME_PLACEHOLDER = "${schema_name}$";
   public static final String DB_NAME_PLACEHOLDER = "${db_name}$";
 
+  private final Pattern NUMBERED_COLUMN_PATTERN = Pattern.compile("\\$\\{column_[0-9]+\\}\\$");
   private final MacroDefinition macro;
   private final List<ColumnIdentifier> columns = new ArrayList<>();
   private TableIdentifier table;
@@ -77,7 +79,7 @@ public class QueryMacroParser
     sql = sql.replace(COLUMN_LIST_PLACEHOLDR, getColumnList(conn));
     if (columns.size() == 1)
     {
-      sql = sql.replace(COLUMN_PLACEHOLDR, columns.get(0).getColumnName(conn));
+      sql = sql.replace(COLUMN_PLACEHOLDER, columns.get(0).getColumnName(conn));
     }
 
     if (table != null)
@@ -92,6 +94,23 @@ public class QueryMacroParser
     }
     sql = replaceColumns(sql, conn);
     return sql;
+  }
+
+  public boolean hasTablePlaceholder()
+  {
+    String text = this.macro.getText();
+    if (StringUtil.isBlank(text)) return false;
+    return text.contains(TABLE_NAME_PLACEHOLDER) || text.contains(TABLE_PLACEHOLDER);
+  }
+
+  public boolean hasColumnPlaceholder()
+  {
+    String text = this.macro.getText();
+    if (StringUtil.isBlank(text)) return false;
+
+    return text.contains(COLUMN_PLACEHOLDER) ||
+           text.contains(COLUMN_LIST_PLACEHOLDR) ||
+           NUMBERED_COLUMN_PATTERN.matcher(text).find();
   }
 
   private String quoteName(String name, QuoteHandler handler)

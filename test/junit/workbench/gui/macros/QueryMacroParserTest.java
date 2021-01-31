@@ -32,6 +32,7 @@ import workbench.util.CollectionUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
 
 /**
  *
@@ -53,11 +54,13 @@ public class QueryMacroParserTest
     MacroDefinition macro = new MacroDefinition("test", text);
     ColumnIdentifier c1 = new ColumnIdentifier("category");
     TableIdentifier tbl = new TableIdentifier("public", "product");
-    QueryMacroParser runner = new QueryMacroParser(macro);
-    runner.setTable(tbl);
-    runner.setColumn(CollectionUtil.arrayList(c1));
+    QueryMacroParser parser = new QueryMacroParser(macro);
+    assertTrue(parser.hasColumnPlaceholder());
+    assertTrue(parser.hasTablePlaceholder());
+    parser.setTable(tbl);
+    parser.setColumn(CollectionUtil.arrayList(c1));
 
-    String sql = runner.getSQL(null);
+    String sql = parser.getSQL(null);
     String expected = "select category, count(*) from public.product group by category";
     Assert.assertEquals(expected, sql);
   }
@@ -70,13 +73,35 @@ public class QueryMacroParserTest
     ColumnIdentifier c1 = new ColumnIdentifier("category");
     ColumnIdentifier c2 = new ColumnIdentifier("name");
     TableIdentifier tbl = new TableIdentifier("product");
-    QueryMacroParser runner = new QueryMacroParser(macro);
-    runner.setTable(tbl);
-    runner.setColumn(CollectionUtil.arrayList(c1,c2));
+    QueryMacroParser parser = new QueryMacroParser(macro);
+    assertTrue(parser.hasColumnPlaceholder());
 
-    String sql = runner.getSQL(null);
-    System.out.println(sql);
+    parser.setTable(tbl);
+    parser.setColumn(CollectionUtil.arrayList(c1,c2));
+
+    String sql = parser.getSQL(null);
+//    System.out.println(sql);
     String expected = "select category, count(distinct name) from product group by category";
+    Assert.assertEquals(expected, sql);
+  }
+
+  @Test
+  public void testColumnList()
+  {
+    String text = "select ${column_list}$ from ${table}$";
+    MacroDefinition macro = new MacroDefinition("test", text);
+    ColumnIdentifier c1 = new ColumnIdentifier("category");
+    ColumnIdentifier c2 = new ColumnIdentifier("name");
+    ColumnIdentifier c3 = new ColumnIdentifier("id");
+    TableIdentifier tbl = new TableIdentifier("product");
+    QueryMacroParser parser = new QueryMacroParser(macro);
+    assertTrue(parser.hasColumnPlaceholder());
+    parser.setTable(tbl);
+    parser.setColumn(CollectionUtil.arrayList(c1,c2,c3));
+
+    String sql = parser.getSQL(null);
+//    System.out.println(sql);
+    String expected = "select category, name, id from product";
     Assert.assertEquals(expected, sql);
   }
 

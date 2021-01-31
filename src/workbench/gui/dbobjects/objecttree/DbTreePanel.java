@@ -89,6 +89,7 @@ import workbench.gui.components.WbToolbar;
 import workbench.gui.components.WbToolbarButton;
 import workbench.gui.dbobjects.DbObjectList;
 import workbench.gui.dbobjects.ExplorerUtils;
+import workbench.gui.macros.MacroClient;
 
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
@@ -129,6 +130,7 @@ public class DbTreePanel
   private WbAction resetFilter;
   private List<TreePath> expandedNodes;
   private boolean isPrivateConnection;
+  private MacroClient macroRunner;
 
   public DbTreePanel()
   {
@@ -251,6 +253,16 @@ public class DbTreePanel
     Border b = new CompoundBorder(new DividerBorder(DividerBorder.TOP), new EmptyBorder(2,0,2,0));
     schemaPanel.setBorder(b);
     return schemaPanel;
+  }
+
+  public void setMacroClient(MacroClient client)
+  {
+    this.macroRunner = client;
+  }
+
+  public MacroClient getMacroClient()
+  {
+    return this.macroRunner;
   }
 
   @Override

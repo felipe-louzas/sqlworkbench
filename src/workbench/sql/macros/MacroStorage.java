@@ -555,6 +555,20 @@ public class MacroStorage
     return Collections.unmodifiableList(result);
   }
 
+  public List<MacroDefinition> getDbTreeMacros()
+  {
+    List<MacroDefinition> result = new ArrayList<>();
+    for (MacroDefinition macro : allMacros.values())
+    {
+      if (macro.isDbTreeMacro())
+      {
+        result.add(macro);
+      }
+    }
+    result.sort(new Sorter());
+    return result;
+  }
+  
   public List<MacroGroup> getGroups()
   {
     synchronized (lock)

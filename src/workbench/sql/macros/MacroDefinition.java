@@ -42,12 +42,6 @@ import workbench.util.StringUtil;
 public class MacroDefinition
   implements Sortable
 {
-  public static final int DBTREE_CONTEXT_NONE = 0;
-  public static final int DBTREE_CONTEXT_TABLE = 1;
-  public static final int DBTREE_CONTEXT_COLUMNS = 2;
-  public static final int DBTREE_CONTEXT_ANY = 3;
-  public static final int DBTREE_CONTEXT_MAX = DBTREE_CONTEXT_ANY;
-
   private String name;
   private String text;
   private String tooltip;
@@ -57,7 +51,7 @@ public class MacroDefinition
   private boolean showInMenu = true;
   private boolean showInPopup = true;
   private boolean expandWhileTyping;
-  private int dbTreeContext = DBTREE_CONTEXT_NONE;
+  private boolean isDbTreeMacro = false;
   private boolean appendResult;
   private boolean shortcutChanged;
 
@@ -151,20 +145,13 @@ public class MacroDefinition
 
   public boolean isDbTreeMacro()
   {
-    return this.dbTreeContext != DBTREE_CONTEXT_NONE;
+    return this.isDbTreeMacro;
   }
 
-  public int getDbTreecontext()
+  public void setDbTreeMacro(boolean flag)
   {
-    return this.dbTreeContext;
-  }
-  
-  public void setDbTreeContext(int context)
-  {
-    if (context >= DBTREE_CONTEXT_NONE && context <= DBTREE_CONTEXT_MAX)
-    {
-      this.dbTreeContext = context;
-    }
+    modified = modified || (flag != this.isDbTreeMacro);
+    this.isDbTreeMacro = flag;
   }
 
   public String getName()
@@ -200,6 +187,7 @@ public class MacroDefinition
     def.setShortcut(this.shortcut);
     def.setExpandWhileTyping(this.expandWhileTyping);
     def.setAppendResult(this.appendResult);
+    def.setDbTreeMacro(this.isDbTreeMacro);
   }
 
   public MacroDefinition createCopy()

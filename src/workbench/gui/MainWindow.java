@@ -449,6 +449,8 @@ public class MainWindow
       EventQueue.invokeLater(this::validate);
     }
 
+    treePanel.setMacroClient(getCurrentSqlPanel());
+
     if (DbTreeSettings.useTabConnection())
     {
       treePanel.setConnectionToUse(getCurrentConnection());
@@ -485,6 +487,7 @@ public class MainWindow
     if (treePanel.isVisible()) return;
     treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
     treePanel.setVisible(true);
+    treePanel.setMacroClient(getCurrentSqlPanel());
   }
 
   public DbTreePanel getDbTree()
@@ -1529,6 +1532,11 @@ public class MainWindow
     if (lastIndex > -1 && lastIndex < sqlTab.getTabCount())
     {
       BookmarkManager.getInstance().updateInBackground(MainWindow.this, getPanel(lastIndex).orElse(null), false);
+    }
+
+    if (treePanel != null)
+    {
+      treePanel.setMacroClient(getCurrentSqlPanel());
     }
 
     Predicate<? super MainPanel> isDBExplorerPanel = p -> p instanceof DbExplorerPanel;

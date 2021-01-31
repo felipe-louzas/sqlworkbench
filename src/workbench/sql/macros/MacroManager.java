@@ -182,6 +182,7 @@ public class MacroManager
 
     MacroDefinition macro = storage.getMacro(key);
     if (macro == null) return null;
+    if (macro.isDbTreeMacro()) return null;
     return macro.getText();
   }
 
