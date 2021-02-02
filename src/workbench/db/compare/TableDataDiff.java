@@ -125,6 +125,7 @@ public class TableDataDiff
   private boolean excludeIgnoredColumns;
   private boolean ignoreMissingTarget;
   private String targetSchema;
+  private boolean writeHeader;
 
   public TableDataDiff(WbConnection original, WbConnection compareTo)
     throws SQLException
@@ -138,6 +139,11 @@ public class TableDataDiff
     comparer.setConnection(toSync);
     comparer.setTypeSql();
     comparer.setApplySQLFormatting(Settings.getInstance().getDoFormatInserts() || Settings.getInstance().getDoFormatUpdates());
+  }
+
+  public void setWriteHeader(boolean flag)
+  {
+    this.writeHeader = flag;
   }
 
   public void setTargetSchema(String schema)
@@ -211,7 +217,7 @@ public class TableDataDiff
    * This can be used to overwrite the global setting {@link Settings#getGenerateInsertIgnoreIdentity()}.
    *
    * @param flag if true, identity columns are included
-   * @see RowDataComparer#setIncludeIdentityColumns(boolean) 
+   * @see RowDataComparer#setIncludeIdentityColumns(boolean)
    */
   public void setIncludeIdentityColumns(boolean flag)
   {
@@ -576,7 +582,7 @@ public class TableDataDiff
             if (firstUpdate)
             {
               firstUpdate = false;
-              writeHeader(updateWriter);
+              if (writeHeader) writeHeader(updateWriter);
             }
             writerToUse = updateWriter;
           }
@@ -585,7 +591,7 @@ public class TableDataDiff
             if (firstInsert)
             {
               firstInsert = false;
-              writeHeader(insertWriter);
+              if (writeHeader) writeHeader(insertWriter);
             }
             writerToUse = insertWriter;
           }

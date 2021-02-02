@@ -378,6 +378,8 @@ public class WbDataDiff
     }
 
     boolean singleFile = cmdLine.getBoolean(PARAM_SINGLE_FILE, false);
+    dataDiff.setWriteHeader(!singleFile);
+    
     try
     {
       for (int i=0; i < tableCount; i++)
@@ -802,11 +804,8 @@ public class WbDataDiff
       String line = reader.readLine();
       while (line != null)
       {
-        if (!line.startsWith("--") && StringUtil.isNonEmpty(line))
-        {
-          out.write(line);
-          out.write(newLine);
-        }
+        out.write(line);
+        out.write(newLine);
         line = reader.readLine();
       }
       out.write(newLine);
