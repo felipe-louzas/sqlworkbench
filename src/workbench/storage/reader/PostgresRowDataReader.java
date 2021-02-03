@@ -56,6 +56,9 @@ class PostgresRowDataReader
   private static final int ADJUST_OFFSET = 1;
   private static final int PARSE_STRING = 2;
 
+  private static boolean java8InfoLogged = false;
+  private static boolean strategyLogged = false;
+  
   private final boolean useJava8Time;
   private int timeTzStrategy = PARSE_STRING;
 
@@ -79,19 +82,21 @@ class PostgresRowDataReader
     super(info, conn);
     dbConnection = conn;
     timeTzStrategy = getTimeTZStrategy(conn);
-    if (timeTzStrategy != NO_ADJUST)
+    if (timeTzStrategy != NO_ADJUST && !strategyLogged)
     {
       LogMgr.logInfo(new CallerInfo(){}, "Adjusting timetz values to LocalTime by " +
         (timeTzStrategy == PARSE_STRING ? "parsing the string value" : "adjusting the time zone offset"));
+      strategyLogged = true;
     }
 
     useJava8Time = TimestampTZHandler.Factory.supportsJava8Time(conn);
-    if (useJava8Time)
+    if (useJava8Time && !java8InfoLogged)
     {
       useGetObjectForTimestamps = true;
       useGetObjectForTimestampTZ = true;
       useGetObjectForDates = true;
       LogMgr.logInfo(new CallerInfo(){}, "Using ZonedDateTime to read TIMESTAMP WITH TIME ZONE columns");
+      java8InfoLogged = true;
     }
   }
 
