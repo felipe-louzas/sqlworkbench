@@ -99,7 +99,7 @@ public class WbListSchemas
     String sql =
       "SELECT n.nspname AS \"Schema\",\n" +
       "       pg_catalog.pg_get_userbyid(n.nspowner) AS \"Owner\", \n" +
-      "       pg_catalog.array_to_string(n.nspacl, ', ') as \"Access privileges\", " +
+      "       pg_catalog.array_to_string(n.nspacl, E'\\n') as \"Access privileges\", " +
       "       pg_catalog.obj_description(n.oid, 'pg_namespace') AS \"Description\" " +
       "FROM pg_catalog.pg_namespace n\n" +
       "WHERE n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'\n" +
@@ -107,6 +107,7 @@ public class WbListSchemas
 
     DataStore ds = SqlUtil.getResult(currentConnection, sql, true);
     ds.setGeneratingSql(sql);
+    ds.setOptimizeRowHeight(true);
     return ds;
   }
 

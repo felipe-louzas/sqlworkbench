@@ -31,11 +31,10 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -293,6 +292,7 @@ public class PostgresUtil
     DataStore ds = SqlUtil.getResult(currentConnection, sql, true);
     ds.setGeneratingSql(sql);
     ds.setResultName(ResourceMgr.getString("TxtDbList"));
+    ds.setOptimizeRowHeight(true);
     return ds;
   }
 

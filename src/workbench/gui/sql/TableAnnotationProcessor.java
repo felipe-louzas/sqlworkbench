@@ -25,6 +25,8 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import workbench.resource.GuiSettings;
+
 import workbench.gui.MainWindow;
 import workbench.gui.PanelReloader;
 import workbench.gui.components.RowHeightOptimizer;
@@ -70,8 +72,8 @@ public class TableAnnotationProcessor
 
     List<MacroAnnotation> macros = new ArrayList<>();
 
-    boolean optimizeRowHeight = false;
-    int rowHeightLines = -1;
+    boolean optimizeRowHeight = ds.getOptimizeRowHeight();
+    int rowHeightLines = optimizeRowHeight ? GuiSettings.getAutRowHeightMaxLines() : -1;
     boolean scrollToEnd = false;
     int line = -1;
 
