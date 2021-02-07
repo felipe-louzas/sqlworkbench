@@ -316,13 +316,13 @@
   </target>
 
   <target name="set-history-release-number" depends="set-build-number">
-    <xmltask source="history.xml" dest="history.xml">
+    <xmltask outputter="simple:2" omitHeader="no" source="history.xml" dest="history.xml">
       <attr path="/history/release[1]" attr="build" value="${build.number}"/>
     </xmltask>
   </target>
 
   <target name="set-history-build-date" depends="init" unless="dev-jar">
-    <xmltask source="history.xml" dest="history.xml">
+    <xmltask outputter="simple:2" omitHeader="no" source="history.xml" dest="history.xml">
       <attr path="/history/release[1]" attr="date" value="${today}"/>
     </xmltask>
   </target>
