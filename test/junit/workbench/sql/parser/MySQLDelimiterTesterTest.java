@@ -28,14 +28,22 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MySQLDelimiterTesterTest extends WbTestCase {
+/**
+ *
+ * @author Alfred Porter
+ */
+public class MySQLDelimiterTesterTest
+  extends WbTestCase
+{
 
-  public MySQLDelimiterTesterTest() {
+  public MySQLDelimiterTesterTest()
+  {
     super("MySQLDelimiterTesterTest");
   }
 
   @Test
-  public void testOnlyReservedWordAtStartOfStatement() {
+  public void testOnlyReservedWordAtStartOfStatement()
+  {
     MySQLDelimiterTester tester = new MySQLDelimiterTester();
     SQLToken token = new SQLToken(SQLToken.RESERVED_WORD, "DELIMITER", 0, 0);
     assertTrue(tester.isDelimiterCommand(token, true));
@@ -48,7 +56,8 @@ public class MySQLDelimiterTesterTest extends WbTestCase {
   }
 
   @Test
-  public void testDelimiterUpdates() {
+  public void testDelimiterUpdates()
+  {
     final String testDelimiter = "$$";
 
     MySQLDelimiterTester tester = new MySQLDelimiterTester();
@@ -73,7 +82,8 @@ public class MySQLDelimiterTesterTest extends WbTestCase {
   }
 
   @Test
-  public void testStatementParsing() {
+  public void testStatementParsing()
+  {
     String sql =
       "DELIMITER $$\n" +
       "CREATE PROCEDURE sp_proc() BEGIN \n" +
@@ -85,7 +95,7 @@ public class MySQLDelimiterTesterTest extends WbTestCase {
     ScriptParser parser = new ScriptParser(ParserType.MySQL);
     parser.setScript(sql);
     int count = parser.getStatementCount();
-		assertEquals(4, count);
+    assertEquals(4, count);
     assertTrue(parser.getCommand(0).startsWith("DELIMITER"));
     assertTrue(parser.getCommand(1).startsWith("CREATE"));
     assertTrue(parser.getCommand(2).startsWith("DELIMITER"));

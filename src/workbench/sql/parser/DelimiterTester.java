@@ -60,8 +60,10 @@ public interface DelimiterTester
       case MySQL:
         return new MySQLDelimiterTester();
       case Standard:
-        // Don't use @ for WbInclude for SQL Server or MySQL as that conflicts with parameter prefix
-      return new ShortIncludeDelimiterTester();
+        return new ShortIncludeDelimiterTester();
+      case SqlServer:
+        // Don't use @ for WbInclude for SQL Server as that conflicts with parameter prefix
+        return null;
     }
     return null;
   }

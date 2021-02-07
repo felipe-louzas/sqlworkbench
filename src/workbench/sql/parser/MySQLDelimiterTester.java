@@ -26,68 +26,88 @@ import workbench.sql.DelimiterDefinition;
 import workbench.sql.lexer.SQLToken;
 import workbench.util.CollectionUtil;
 
-public class MySQLDelimiterTester implements DelimiterTester {
+/**
+ *
+ * @author Alfred Porter
+ */
+public class MySQLDelimiterTester
+  implements DelimiterTester
+{
 
   private DelimiterDefinition currentDelimiter = new DelimiterDefinition(";");
   private boolean isDelimiterCommand;
   private final Set<String> delimiterCommands = CollectionUtil.caseInsensitiveSet("DELIMITER");
 
-  public MySQLDelimiterTester() {
+  public MySQLDelimiterTester()
+  {
   }
 
   @Override
-  public boolean supportsMixedDelimiters() {
+  public boolean supportsMixedDelimiters()
+  {
     return true;
   }
 
   @Override
-  public void setAlternateDelimiter(DelimiterDefinition delimiter) {
+  public void setAlternateDelimiter(DelimiterDefinition delimiter)
+  {
   }
 
   @Override
-  public void setDelimiter(DelimiterDefinition delimiter) {
+  public void setDelimiter(DelimiterDefinition delimiter)
+  {
     currentDelimiter.setDelimiter(delimiter.getDelimiter());
   }
 
   public boolean isDelimiterCommand(SQLToken token, boolean isStartOfLineOrStatement)
   {
-    if (isStartOfLineOrStatement && token.isReservedWord() &&
-        delimiterCommands.contains(token.getText())) return true;
-    return false;
+    return isStartOfLineOrStatement && token.isReservedWord() &&
+           delimiterCommands.contains(token.getText());
+
+
   }
 
   @Override
-  public void currentToken(SQLToken token, boolean isStartOfStatement) {
+  public void currentToken(SQLToken token, boolean isStartOfStatement)
+  {
     if (token == null) return;
     if (token.isComment() || token.isWhiteSpace()) return;
-    
+
     if (isDelimiterCommand)
     {
       currentDelimiter.setDelimiter(token.getText());
     }
-  
-    if (isStartOfStatement) {
+
+    if (isStartOfStatement)
+    {
       isDelimiterCommand = isDelimiterCommand(token, isStartOfStatement);
     }
   }
 
   @Override
-  public DelimiterDefinition getCurrentDelimiter() {
+  public DelimiterDefinition getCurrentDelimiter()
+  {
     return currentDelimiter;
   }
 
   @Override
-  public void statementFinished() {
+  public void statementFinished()
+  {
   }
 
   @Override
-  public boolean supportsSingleLineStatements() {
+  public boolean supportsSingleLineStatements()
+  {
     return true;
   }
 
   @Override
-  public boolean isSingleLineStatement(SQLToken token, boolean isStartOfLine) {
+  public boolean isSingleLineStatement(SQLToken token, boolean isStartOfLine)
+  {
     if (token == null) return false;
+
+    // Don't check for @ inside code that was started with non-standard delimiter
+    if (currentDelimiter.isNonStandard()) return false;
 
     if (isStartOfLine && !token.isWhiteSpace())
     {
@@ -99,8 +119,9 @@ public class MySQLDelimiterTester implements DelimiterTester {
   }
 
   @Override
-  public void lineEnd() {
+  public void lineEnd()
+  {
     isDelimiterCommand = false;
   }
- 
+
 }
