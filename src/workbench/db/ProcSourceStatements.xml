@@ -207,7 +207,7 @@ from sys.functions fct
     <void property="objectNameField">
      <string>routine_name</string>
     </void>
-    <void property="schemaField">
+    <void property="catalogField">
      <string>routine_schema</string>
     </void>
    </object>

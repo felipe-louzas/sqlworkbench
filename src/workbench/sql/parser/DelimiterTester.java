@@ -57,6 +57,8 @@ public interface DelimiterTester
         return new OracleDelimiterTester();
       case Postgres:
         return new PostgresDelimiterTester();
+      case MySQL:
+        return new MySQLDelimiterTester();
       case Standard:
         // Don't use @ for WbInclude for SQL Server or MySQL as that conflicts with parameter prefix
       return new ShortIncludeDelimiterTester();

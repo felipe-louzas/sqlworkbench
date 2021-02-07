@@ -271,7 +271,7 @@ keyword=(
 
 
 "DELETE"|
-
+"DELIMITER"|
 "DENSE_RANK"|
 "DESCRIBE"|
 "DISCONNECT"|

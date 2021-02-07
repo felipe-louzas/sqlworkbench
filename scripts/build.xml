@@ -662,7 +662,7 @@
       <replacefilter token='"VARCHAR2"|'/>
       <replacefilter token='"SIMILAR"|'/>
       <replacefilter token='"CYCLE"|'/>
-      <replacefilter token='"DEPTH"|'/>
+      <replacefilter token='"DEPTH"|' value='"DELIMITER"|'/>
       <replacefilter token='"DEFERRABLE"|'/>
       <replacefilter token='"DEFERRED"|'/>
       <replacefilter token='(DATABASE{wsp}LINK)|'/>
