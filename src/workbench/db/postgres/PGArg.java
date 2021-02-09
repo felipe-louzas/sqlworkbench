@@ -35,12 +35,19 @@ class PGArg
     returnValue;
   };
 
-  public final PGType argType;
+  public final String argType;
   public final ArgMode argMode;
 
-  PGArg(PGType type, String mode)
+  PGArg(String type, String mode)
   {
-    argType = type;
+    if (type.equals("character varying"))
+    {
+      argType = "varchar";
+    }
+    else
+    {
+      argType = type;
+    }
     if ("inout".equalsIgnoreCase(mode))
     {
       argMode = ArgMode.inout;

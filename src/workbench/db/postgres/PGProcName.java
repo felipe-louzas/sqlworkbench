@@ -24,6 +24,7 @@ package workbench.db.postgres;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ProcedureDefinition;
@@ -41,7 +42,7 @@ public class PGProcName
   private List<PGArg> arguments;
   private String procName;
 
-  public PGProcName(ProcedureDefinition def, PGTypeLookup typeMap)
+  public PGProcName(ProcedureDefinition def)
   {
     procName = def.getProcedureName();
     List<ColumnIdentifier> parameters = def.getParameters(null);
@@ -51,18 +52,13 @@ public class PGProcName
       for (ColumnIdentifier col : parameters)
       {
         String mode = col.getArgumentMode();
-        PGType typ = typeMap.getEntryByType(col.getDbmsType());
-        if (typ == null)
-        {
-          typ = new PGType(col.getDbmsType(), -1);
-        }
-        PGArg arg = new PGArg(typ, mode);
+        PGArg arg = new PGArg(col.getDbmsType(), mode);
         arguments.add(arg);
       }
     }
     else
     {
-      initFromDisplayName(def.getDisplayName(), typeMap);
+      initFromDisplayName(def.getDisplayName());
     }
   }
 
@@ -75,28 +71,24 @@ public class PGProcName
    * @param fullname
    * @param typeMap
    */
-  public PGProcName(String fullname, PGTypeLookup typeMap)
+  public PGProcName(String fullname)
   {
-    initFromDisplayName(fullname, typeMap);
+    initFromDisplayName(fullname);
   }
 
-  private void initFromDisplayName(String displayName, PGTypeLookup typeMap)
+  private void initFromDisplayName(String displayName)
   {
     int pos = displayName.indexOf('(');
     if (pos > -1)
     {
       procName = displayName.substring(0, pos);
       String args = displayName.substring(pos + 1, displayName.indexOf(')'));
-      String[] elements = args.split(",");
+      List<String> elements = StringUtil.stringToList(args, ",", false, true);
       arguments = new ArrayList<>();
       for (String s : elements)
       {
-        PGType typ = typeMap.getEntryByType(s.trim());
-        if (typ != null)
-        {
-          PGArg arg = new PGArg(typ, "in");
-          arguments.add(arg);
-        }
+        PGArg arg = new PGArg(s, "in");
+        arguments.add(arg);
       }
     }
     else
@@ -106,67 +98,29 @@ public class PGProcName
     }
   }
 
-  public PGProcName(String name, String oidArgs, String modes, PGTypeLookup typeMap)
+  public PGProcName(String name, ArgInfo info)
   {
     procName = name;
-    if (StringUtil.isNonBlank(oidArgs))
+    arguments = new ArrayList<>();
+    for (int i=0; i < info.getNumArgs(); i++)
     {
-      arguments = getTypesFromOid(oidArgs, modes, typeMap);
-    }
-  }
-
-  private List<PGArg> getTypesFromOid(String oidList, String modes, PGTypeLookup typeMap)
-  {
-    String[] items = oidList.split(";");
-    String[] paramModes = modes.split(";");
-
-    List<PGArg> result = new ArrayList<>(items.length);
-    for (int i=0; i < items.length; i++)
-    {
-      String arg = items[i];
-      String mode = (i < paramModes.length ? paramModes[i] : null);
-
+      String argType = info.getArgType(i);
+      String mode = info.getArgMode(i);
       if ("t".equals(mode)) continue;
 
-      Long oid = Long.valueOf(arg.trim());
-      PGType typ = typeMap.getTypeFromOID(oid);
-      if (typ != null)
-      {
-        PGArg parg = new PGArg(typ, mode);
-        result.add(parg);
-      }
+      PGArg parg = new PGArg(argType, mode);
+      arguments.add(parg);
     }
-    return result;
   }
 
-  public String getInputOIDs()
+  public String getInputOIDsAsVector()
   {
-    if (arguments == null || arguments.isEmpty()) return null;
-    StringBuilder argTypes = new StringBuilder(arguments.size() * 4);
-    int argCount = 0;
-    for (PGArg arg : arguments)
-    {
-      if (arg.argMode == PGArg.ArgMode.in || arg.argMode == PGArg.ArgMode.inout)
-      {
-        if (argCount > 0) argTypes.append(' ');
-        argTypes.append(Long.toString(arg.argType.getOid()));
-        argCount ++;
-      }
-    }
-    return argTypes.toString();
-  }
-
-  public String getOIDs()
-  {
-    if (arguments == null || arguments.isEmpty()) return null;
-
-    StringBuilder argTypes = new StringBuilder(arguments.size() * 4);
-    for (int i=0; i < arguments.size(); i++)
-    {
-      if (i > 0) argTypes.append(' ');
-      argTypes.append(Long.toString(arguments.get(i).argType.getOid()));
-    }
-    return argTypes.toString();
+    String oids = arguments.stream().
+      filter(arg -> (arg.argMode == PGArg.ArgMode.in || arg.argMode == PGArg.ArgMode.inout) && StringUtil.isNonBlank(arg.argType) ).
+      map(arg ->  "'"+arg.argType+"'::regtype::oid::text").
+      collect(Collectors.joining("||' '||"));
+    if (StringUtil.isBlank(oids)) return null;
+    return "cast(" + oids + " as oidvector)";
   }
 
   List<PGArg> getArguments()
@@ -191,16 +145,13 @@ public class PGProcName
     StringBuilder b = new StringBuilder(procName.length() + arguments.size() * 10);
     b.append(procName);
     b.append('(');
-    int argCount = 0;
-    for (PGArg arg : arguments)
-    {
-      if (arg.argMode == PGArg.ArgMode.in || arg.argMode == PGArg.ArgMode.inout)
-      {
-        if (argCount > 0) b.append(", ");
-        b.append(arg.argType.getTypeName());
-        argCount ++;
-      }
-    }
+
+    String args = arguments.stream().
+      filter(arg -> (arg.argMode == PGArg.ArgMode.in || arg.argMode == PGArg.ArgMode.inout) ).
+      map(arg ->  arg.argType).
+      collect(Collectors.joining(", "));
+
+    b.append(args);
     b.append(')');
     return b.toString();
   }
@@ -211,11 +162,12 @@ public class PGProcName
     StringBuilder b = new StringBuilder(procName.length() + arguments.size() * 10);
     b.append(procName);
     b.append('(');
-    for (int i=0; i < arguments.size(); i++)
-    {
-      if (i > 0) b.append(", ");
-      b.append(arguments.get(i).argType.getTypeName());
-    }
+
+    String args = arguments.stream().
+      map(arg ->  arg.argType).
+      collect(Collectors.joining(", "));
+
+    b.append(args);
     b.append(')');
     return b.toString();
   }
@@ -247,6 +199,5 @@ public class PGProcName
     hash = 79 * hash + (this.procName != null ? this.procName.hashCode() : 0);
     return hash;
   }
-
 
 }
