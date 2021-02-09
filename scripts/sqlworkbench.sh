@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 # Start SQL Workbench/J in GUI mode
 
+function readlink() {
+  case `uname -s` in
+    Linux*)
+      command readlink -e "$@"
+      ;;
+    *)
+      command readlink "$@"
+      ;;
+  esac
+}
+
 SCRIPT_PATH=$(dirname -- "$(readlink "${BASH_SOURCE[0]}")")
 JAVACMD="java"
 
