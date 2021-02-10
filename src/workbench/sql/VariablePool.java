@@ -67,9 +67,9 @@ import workbench.util.WbProperties;
 public class VariablePool
   implements PropertyChangeListener
 {
-  public static final String VAR_NAME_LAST_ERROR_CODE= "wb$last_error_code";
-  public static final String VAR_NAME_LAST_ERROR_STATE= "wb$last_error_state";
-  public static final String VAR_NAME_LAST_ERROR_MSG = "wb$last_error_msg";
+  public static final String VAR_NAME_LAST_ERROR_CODE= "wb_last_error_code";
+  public static final String VAR_NAME_LAST_ERROR_STATE= "wb_last_error_state";
+  public static final String VAR_NAME_LAST_ERROR_MSG = "wb_last_error_msg";
 
   public static final String PROP_PREFIX = "wbp.";
   private final Map<String, String> data = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
