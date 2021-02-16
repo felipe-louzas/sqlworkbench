@@ -79,6 +79,11 @@ public class ProcedureDefinition
   private CharSequence source;
   private List<ColumnIdentifier> parameters;
 
+  // The JDBC values  procedureReturnsResult or functionReturnsTable
+  // have overlapping values, so the resultType is not enought
+  // to detect if this is a procedure, function or table function
+  private RoutineType routineType = RoutineType.unknown;
+
   /**
    * A DBMS specific name for the type of this procedure/function.
    *
@@ -88,26 +93,36 @@ public class ProcedureDefinition
   private String specificName;
 
 
-  public ProcedureDefinition(String name, int type)
+  public ProcedureDefinition(String name, RoutineType rType)
   {
     procName = name;
-    resultType = type;
+    routineType = rType;
+    resultType = routineType == RoutineType.function ? DatabaseMetaData.procedureReturnsResult : DatabaseMetaData.procedureNoResult;
   }
 
-  public ProcedureDefinition(String cat, String schem, String name, int type)
+  public ProcedureDefinition(String name, RoutineType rType, int jdbcResultType)
+  {
+    procName = name;
+    resultType = jdbcResultType;
+    routineType = rType;
+  }
+
+  public ProcedureDefinition(String cat, String schem, String name, RoutineType rType, int jdbcResultType)
   {
     schema = schem;
     catalog = cat;
     procName = name;
-    resultType = type;
+    resultType = jdbcResultType;
+    routineType = rType;
   }
 
-  public ProcedureDefinition(String cat, String schem, String name)
+  public ProcedureDefinition(String cat, String schem, String name, RoutineType type)
   {
     schema = schem;
     catalog = cat;
     procName = name;
-    resultType = DatabaseMetaData.procedureResultUnknown;
+    routineType = type;
+    resultType = routineType == RoutineType.function ? DatabaseMetaData.procedureReturnsResult : DatabaseMetaData.procedureNoResult;
   }
 
   /**
@@ -122,7 +137,7 @@ public class ProcedureDefinition
    */
   public static ProcedureDefinition createOracleDefinition(String schema, String procedureName, String packageName, int type, String remarks)
   {
-    ProcedureDefinition def = new ProcedureDefinition(packageName, schema, procedureName, type);
+    ProcedureDefinition def = new ProcedureDefinition(packageName, schema, procedureName, RoutineType.procedure, type);
     if (StringUtil.isNonBlank(packageName))
     {
       if ("OBJECT TYPE".equals(remarks))
@@ -518,6 +533,11 @@ public class ProcedureDefinition
     return getObjectName();
   }
 
+  public RoutineType getRoutineType()
+  {
+    return this.routineType;
+  }
+
   public int getResultType()
   {
     return this.resultType;
@@ -751,15 +771,12 @@ public class ProcedureDefinition
 
   public boolean isTableFunction()
   {
-    return resultType == DatabaseMetaData.functionReturnsTable;
+    return this.routineType == RoutineType.tableFunction;
   }
 
   public boolean isFunction()
   {
-    return
-      resultType == DatabaseMetaData.procedureReturnsResult ||
-      resultType == DatabaseMetaData.functionNoTable ||
-      resultType == DatabaseMetaData.functionReturnsTable;
+    return this.routineType == RoutineType.function || this.routineType == RoutineType.tableFunction;
   }
 
   public boolean isFunction(DataStore params)

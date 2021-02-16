@@ -21,6 +21,7 @@
  */
 package workbench.db.postgres;
 
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,6 +44,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -178,15 +180,17 @@ public class PostgresProcedureReader
         int row = ds.addRow();
 
         int resultType = java.sql.DatabaseMetaData.procedureReturnsResult;
+        RoutineType rType = RoutineType.function;
         if (isTableFunc)
         {
-          resultType = java.sql.DatabaseMetaData.functionReturnsTable;
+          rType = RoutineType.tableFunction;
         }
         else if ("procedure".equals(type))
         {
           resultType = java.sql.DatabaseMetaData.procedureNoResult;
+          rType = RoutineType.procedure;
         }
-        ProcedureDefinition def = createDefinition(schema, name, argNames, argTypes, modes, procId);
+        ProcedureDefinition def = createDefinition(schema, name, argNames, argTypes, modes, procId, rType, resultType);
         def.setDbmsProcType(type);
         def.setComment(remark);
         def.setInternalIdentifier(procId);
@@ -223,12 +227,28 @@ public class PostgresProcedureReader
     return "       case when p.proisagg then 'aggregate' else 'function' end as proc_type, \n";
   }
 
-  public ProcedureDefinition createDefinition(String schema, String name, String args, String types, String modes, String procId)
+
+  public ProcedureDefinition createProcedure(String schema, String name, String args, String types, String modes, String procId)
+  {
+    return createDefinition(schema, name, args, types, modes, procId, RoutineType.procedure, DatabaseMetaData.procedureReturnsResult);
+
+  }
+  public ProcedureDefinition createFunction(String schema, String name, String args, String types, String modes, String procId)
+  {
+    return createDefinition(schema, name, args, types, modes, procId, RoutineType.function, DatabaseMetaData.procedureReturnsResult);
+  }
+
+  public ProcedureDefinition createTableFunction(String schema, String name, String args, String types, String modes, String procId)
+  {
+    return createDefinition(schema, name, args, types, modes, procId, RoutineType.tableFunction, DatabaseMetaData.procedureReturnsResult);
+  }
+
+  public ProcedureDefinition createDefinition(String schema, String name, String args, String types, String modes, String procId, RoutineType routineType, int resultType)
   {
     ArgInfo info = new ArgInfo(args, types, modes);
     PGProcName pname = new PGProcName(name, info);
 
-    ProcedureDefinition def = new ProcedureDefinition(null, schema, name, java.sql.DatabaseMetaData.procedureReturnsResult);
+    ProcedureDefinition def = new ProcedureDefinition(null, schema, name, routineType, resultType);
     List<ColumnIdentifier> cols = convertToColumns(info);
     def.setParameters(cols);
     def.setDisplayName(pname.getFormattedName());

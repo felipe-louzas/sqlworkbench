@@ -102,6 +102,8 @@ import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.RoutineType;
+
 import workbench.sql.DelimiterDefinition;
 
 import workbench.storage.DataStore;
@@ -795,6 +797,12 @@ public class ProcedureListPanel
     }
     else
     {
+      Object uo = data.getRow(row).getUserObject();
+      if (uo instanceof ProcedureDefinition)
+      {
+        return (ProcedureDefinition)uo;
+      }
+
       proc = (String)data.getOriginalValue(row, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME);
       schema = (String)data.getOriginalValue(row, ProcedureReader.COLUMN_IDX_PROC_LIST_SCHEMA);
       catalog = (String)data.getOriginalValue(row, ProcedureReader.COLUMN_IDX_PROC_LIST_CATALOG);
@@ -813,7 +821,7 @@ public class ProcedureListPanel
     }
     else
     {
-      def = new ProcedureDefinition(catalog, schema, proc, type);
+      def = new ProcedureDefinition(catalog, schema, proc, RoutineType.fromProcedureResult(type), type);
       def.setComment(comment);
     }
     def.setSpecificName(specificName);

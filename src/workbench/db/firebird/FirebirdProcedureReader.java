@@ -47,6 +47,7 @@ import workbench.storage.DataStore;
 import workbench.sql.DelimiterDefinition;
 
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -166,8 +167,9 @@ public class FirebirdProcedureReader
         String pkg = ds.getValueAsString(row, ProcedureReader.COLUMN_IDX_PROC_LIST_CATALOG);
         String procName = ds.getValueAsString(row, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME);
         String remarks = ds.getValueAsString(row, ProcedureReader.COLUMN_IDX_PROC_LIST_REMARKS);
-        int type = ds.getValueAsInt(row, ProcedureReader.COLUMN_IDX_PROC_LIST_TYPE, DatabaseMetaData.procedureResultUnknown);
-        ProcedureDefinition def = new ProcedureDefinition(procName, type);
+        int resultType = ds.getValueAsInt(row, ProcedureReader.COLUMN_IDX_PROC_LIST_TYPE, DatabaseMetaData.procedureResultUnknown);
+        RoutineType rType = RoutineType.fromProcedureResult(resultType);
+        ProcedureDefinition def = new ProcedureDefinition(procName, rType, resultType);
         def.setComment(remarks);
         def.setPackageName(pkg);
         ds.getRow(row).setUserObject(def);
@@ -372,7 +374,7 @@ public class FirebirdProcedureReader
     {
       sql += "  and package_name = ? \n";
     }
-    sql += "order by parameter_number";
+    sql += "order by parameter_mode desc, parameter_number";
 
 
     String type = null;

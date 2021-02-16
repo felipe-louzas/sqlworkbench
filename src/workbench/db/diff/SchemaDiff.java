@@ -877,7 +877,7 @@ public class SchemaDiff
       {
         ProcDiffEntry entry;
 
-        ProcedureDefinition toFind = new ProcedureDefinition(getTargetCatalog(targetSchema), getTargetSchema(targetSchema), refProc.getProcedureName(), refProc.getResultType());
+        ProcedureDefinition toFind = new ProcedureDefinition(getTargetCatalog(targetSchema), getTargetSchema(targetSchema), refProc.getProcedureName(), refProc.getRoutineType(), refProc.getResultType());
         toFind.setParameters(refProc.getParameters(referenceDb));
 
         ProcedureDefinition targetProc = targetMeta.getProcedureReader().findProcedureDefinition(toFind);

@@ -81,7 +81,8 @@ public class FirebirdDomainReader
     "       end as nullable \n" +
     "FROM rdb$fields \n" +
     "WHERE rdb$field_name NOT LIKE 'RDB$%' \n" +
-    "  AND rdb$field_name NOT LIKE 'SEC$%' "; // for Firebird 3.0
+    "  AND rdb$field_name NOT LIKE 'SEC$%' \n" +
+    "  AND rdb$field_name NOT LIKE 'MON$SEC%'"; // for Firebird 3.0
 
   @Override
   public boolean isDerivedType()

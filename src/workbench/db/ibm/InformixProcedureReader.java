@@ -47,6 +47,7 @@ import workbench.storage.DataStore;
 import workbench.util.CollectionUtil;
 
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -120,7 +121,7 @@ public class InformixProcedureReader
         int type = rs.getInt("PROCEDURE_TYPE");
         int row = ds.addRow();
 
-        ProcedureDefinition def = new ProcedureDefinition(null, schema, name, type);
+        ProcedureDefinition def = new ProcedureDefinition(null, schema, name, RoutineType.fromProcedureResult(type), type);
 
         List<ParamDef> argTypes = convertTypeList(args);
         List<ColumnIdentifier> cols = new ArrayList<>();

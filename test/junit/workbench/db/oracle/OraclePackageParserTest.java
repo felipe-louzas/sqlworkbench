@@ -23,11 +23,11 @@
  */
 package workbench.db.oracle;
 
-import java.sql.DatabaseMetaData;
 import java.util.Collections;
 import java.util.List;
 
 import workbench.db.ProcedureDefinition;
+import workbench.db.RoutineType;
 
 import workbench.util.CollectionUtil;
 
@@ -108,14 +108,14 @@ public class OraclePackageParserTest
   {
     String script = decl + "\n/\n/" + body + "\n/\n/";
     List<String> params = CollectionUtil.arrayList("emp_id", "fire_date");
-    ProcedureDefinition proc = new ProcedureDefinition("FIRE_EMPLOYEE", DatabaseMetaData.procedureNoResult);
+    ProcedureDefinition proc = new ProcedureDefinition("FIRE_EMPLOYEE", RoutineType.procedure);
     CharSequence source = OraclePackageParser.getProcedureSource(script, proc, params);
     assertNotNull(source);
     String src = source.toString().trim();
     assertTrue(src.startsWith("PROCEDURE fire_employee"));
 
     params = CollectionUtil.arrayList("ename", "job", "mgr", "sal","comm", "deptno");
-    proc = new ProcedureDefinition("HIRE_EMPLOYEE", DatabaseMetaData.procedureNoResult);
+    proc = new ProcedureDefinition("HIRE_EMPLOYEE", RoutineType.procedure);
     source = OraclePackageParser.getProcedureSource(script, proc, params);
     assertNotNull(source);
     src = source.toString().trim();
@@ -139,22 +139,22 @@ public class OraclePackageParserTest
   {
     String script = decl + "\n/\n/" + body + "\n/\n";
     int pos = script.indexOf("   PROCEDURE hire_employee(") + 3;
-    ProcedureDefinition proc = new ProcedureDefinition("HIRE_EMPLOYEE", DatabaseMetaData.procedureNoResult);
+    ProcedureDefinition proc = new ProcedureDefinition("HIRE_EMPLOYEE", RoutineType.procedure);
     int procPos = OraclePackageParser.findProcedurePosition(script, proc, CollectionUtil.arrayList("emp_id"));
     assertEquals(pos, procPos);
 
     pos = script.indexOf("PROCEDURE fire_employee(emp_id NUMBER, fire_date DATE DEFAULT TRUNC(SYSDATE) - 1");
-    proc = new ProcedureDefinition("fire_employee", DatabaseMetaData.procedureNoResult);
+    proc = new ProcedureDefinition("fire_employee", RoutineType.procedure);
     procPos = OraclePackageParser.findProcedurePosition(script, proc, CollectionUtil.arrayList("emp_id", "fire_date"));
     assertEquals(pos, procPos);
 
     pos = script.indexOf("PROCEDURE fire_employee(emp_id NUMBER)");
-    proc = new ProcedureDefinition("fire_employee", DatabaseMetaData.procedureNoResult);
+    proc = new ProcedureDefinition("fire_employee", RoutineType.procedure);
     procPos = OraclePackageParser.findProcedurePosition(script, proc, CollectionUtil.arrayList("emp_id"));
     assertEquals(pos, procPos);
 
     pos = script.indexOf("PROCEDURE fire_employee IS");
-    proc = new ProcedureDefinition("fire_employee", DatabaseMetaData.procedureNoResult);
+    proc = new ProcedureDefinition("fire_employee", RoutineType.procedure);
     procPos = OraclePackageParser.findProcedurePosition(script, proc, Collections.emptyList());
     assertEquals(pos, procPos);
   }
@@ -164,17 +164,17 @@ public class OraclePackageParserTest
   {
     String script = decl + "\n/\n";
     int pos = script.indexOf("PROCEDURE hire_employee (");
-    ProcedureDefinition proc = new ProcedureDefinition("HIRE_EMPLOYEE", DatabaseMetaData.procedureNoResult);
+    ProcedureDefinition proc = new ProcedureDefinition("HIRE_EMPLOYEE", RoutineType.procedure);
     int procPos = OraclePackageParser.findProcedurePosition(script, proc, CollectionUtil.arrayList("emp_id"));
     assertEquals(pos, procPos);
 
     pos = script.indexOf("PROCEDURE fire_employee (emp_id NUMBER);");
-    proc = new ProcedureDefinition("FIRE_EMPLOYEE", DatabaseMetaData.procedureNoResult);
+    proc = new ProcedureDefinition("FIRE_EMPLOYEE", RoutineType.procedure);
     procPos = OraclePackageParser.findProcedurePosition(script, proc, CollectionUtil.arrayList("emp_id"));
     assertEquals(pos, procPos);
 
     pos = script.indexOf("PROCEDURE fire_employee (emp_id NUMBER, fire_date DATE); ");
-    proc = new ProcedureDefinition("FIRE_EMPLOYEE", DatabaseMetaData.procedureNoResult);
+    proc = new ProcedureDefinition("FIRE_EMPLOYEE", RoutineType.procedure);
     procPos = OraclePackageParser.findProcedurePosition(script, proc, CollectionUtil.arrayList("EMP_ID", "FIRE_DATE"));
     assertEquals(pos, procPos);
 

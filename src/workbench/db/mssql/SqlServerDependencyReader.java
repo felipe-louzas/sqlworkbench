@@ -43,7 +43,10 @@ import workbench.db.dependency.DependencyReader;
 import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 
 import workbench.util.CollectionUtil;
+
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
+
 import workbench.util.StringUtil;
 
 /**
@@ -146,7 +149,7 @@ public class SqlServerDependencyReader
   {
     catalogChanger.setFireEvents(false);
   }
-  
+
   @Override
   public List<DbObject> getUsedObjects(WbConnection connection, DbObject base)
   {
@@ -278,11 +281,11 @@ public class SqlServerDependencyReader
         DbObject dbo = null;
         if (type.equals("PROCEDURE"))
         {
-          dbo = new ProcedureDefinition(catalog, schema, name);
+          dbo = new ProcedureDefinition(catalog, schema, name, RoutineType.procedure);
         }
         else if (type.equals("FUNCTION"))
         {
-          dbo = new ProcedureDefinition(catalog, schema, name, DatabaseMetaData.procedureReturnsResult);
+          dbo = new ProcedureDefinition(catalog, schema, name, RoutineType.function);
         }
         else if (type.equals("TRIGGER"))
         {

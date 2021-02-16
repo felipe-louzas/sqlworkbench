@@ -31,6 +31,7 @@ import workbench.WbTestCase;
 import workbench.db.DbObjectFinder;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -151,7 +152,7 @@ public class OracleObjectCompilerTest
     assertNull(msg);
 
     TestUtil.executeScript(con, "create procedure nocando as begin null end;");
-    ProcedureDefinition proc = reader.findProcedureByName(new ProcedureDefinition(null, OracleTestUtil.SCHEMA_NAME, "NOCANDO"));
+    ProcedureDefinition proc = reader.findProcedureByName(new ProcedureDefinition(null, OracleTestUtil.SCHEMA_NAME, "NOCANDO", RoutineType.procedure));
     msg = compiler.compileObject(proc);
     assertNotNull(msg);
     assertTrue(msg.contains("PLS-00103"));

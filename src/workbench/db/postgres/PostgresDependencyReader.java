@@ -20,6 +20,7 @@
  */
 package workbench.db.postgres;
 
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Savepoint;
@@ -42,7 +43,9 @@ import workbench.db.dependency.DependencyReader;
 import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 
 import workbench.util.CollectionUtil;
+
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
 
 /**
  *
@@ -356,7 +359,17 @@ public class PostgresDependencyReader
           String args = rs.getString("arg_names");
           String modes = rs.getString("arg_modes");
           String procId = rs.getString("proc_id");
-          ProcedureDefinition proc = procReader.createDefinition(schema, name, args, types, modes, procId);
+          ProcedureDefinition proc = procReader.createFunction(schema, name, args, types, modes, procId);
+          proc.setComment(remarks);
+          result.add(proc);
+        }
+        else if (type.equals("PROCEDURE"))
+        {
+          String types = rs.getString("arg_types");
+          String args = rs.getString("arg_names");
+          String modes = rs.getString("arg_modes");
+          String procId = rs.getString("proc_id");
+          ProcedureDefinition proc = procReader.createProcedure(schema, name, args, types, modes, procId);
           proc.setComment(remarks);
           result.add(proc);
         }

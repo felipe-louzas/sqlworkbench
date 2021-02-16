@@ -43,6 +43,7 @@ import workbench.storage.DataStore;
 import workbench.storage.SortDefinition;
 
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -301,7 +302,7 @@ public class PostgresTriggerReader
     if (funcName != null && funcSchema != null)
     {
       ProcedureReader reader = new PostgresProcedureReader(dbConnection);
-      ProcedureDefinition def = new ProcedureDefinition(null, funcSchema, funcName, DatabaseMetaData.procedureNoResult);
+      ProcedureDefinition def = new ProcedureDefinition(null, funcSchema, funcName, RoutineType.function, DatabaseMetaData.procedureNoResult);
       try
       {
         reader.readProcedureSource(def);

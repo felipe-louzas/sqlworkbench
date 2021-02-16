@@ -40,6 +40,7 @@ import workbench.db.dependency.DependencyReader;
 import workbench.log.LogMgr;
 
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
 
 import workbench.util.CollectionUtil;
 
@@ -126,11 +127,11 @@ public class HanaDependencyReader
         DbObject dbo = null;
         if (type.equals("PROCEDURE"))
         {
-          dbo = new ProcedureDefinition(null, schema, name);
+          dbo = new ProcedureDefinition(null, schema, name, RoutineType.procedure);
         }
         else if (type.equals("FUNCTION"))
         {
-          dbo = new ProcedureDefinition(null, schema, name, DatabaseMetaData.procedureReturnsResult);
+          dbo = new ProcedureDefinition(null, schema, name, RoutineType.function);
         }
         else if (type.equals("TRIGGER"))
         {

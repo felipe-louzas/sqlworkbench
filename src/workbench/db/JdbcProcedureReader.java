@@ -211,7 +211,8 @@ public class JdbcProcedureReader
 
         String displayName = stripProcGroupInfo(name);
 
-        ProcedureDefinition def = new ProcedureDefinition(cat, schema, displayName, procType);
+        RoutineType type = procType == DatabaseMetaData.procedureReturnsResult ? RoutineType.function : RoutineType.procedure;
+        ProcedureDefinition def = new ProcedureDefinition(cat, schema, displayName, type, procType);
         def.setComment(remark);
 
         if (useSpecificName)
@@ -675,6 +676,8 @@ public class JdbcProcedureReader
     namePattern = DbMetadata.cleanupWildcards(namePattern);
 
     List<ProcedureDefinition> result = new ArrayList<>();
+    if (!supportsGetFunctions) return result;
+
     Savepoint sp = null;
     try
     {
@@ -699,7 +702,7 @@ public class JdbcProcedureReader
         int type = rs.getInt("FUNCTION_TYPE");
         if (type == DatabaseMetaData.functionReturnsTable)
         {
-          ProcedureDefinition def = new ProcedureDefinition(cat, schema, name, type);
+          ProcedureDefinition def = new ProcedureDefinition(cat, schema, name, RoutineType.tableFunction, type);
           def.setComment(remark);
           result.add(def);
         }
@@ -750,7 +753,8 @@ public class JdbcProcedureReader
         }
         else
         {
-          def = new ProcedureDefinition(cat, schema, procName, type);
+          RoutineType rType = type == DatabaseMetaData.procedureReturnsResult ? RoutineType.function : RoutineType.procedure;
+          def = new ProcedureDefinition(cat, schema, procName, rType, type);
           def.setComment(remarks);
         }
       }

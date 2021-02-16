@@ -70,6 +70,7 @@ import workbench.util.ExceptionUtil;
 import workbench.util.SqlParsingUtil;
 
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -572,7 +573,7 @@ public class WbCall
     }
     else
     {
-      procDef = new ProcedureDefinition(catalog, schemaToUse, nameToUse);
+      procDef = new ProcedureDefinition(catalog, schemaToUse, nameToUse, RoutineType.procedure);
     }
 
     if (params == null)

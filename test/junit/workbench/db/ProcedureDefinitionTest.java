@@ -55,7 +55,7 @@ public class ProcedureDefinitionTest
   @Test
   public void testGetNameForDrop()
   {
-    ProcedureDefinition proc = new ProcedureDefinition("some_function", DatabaseMetaData.procedureReturnsResult);
+    ProcedureDefinition proc = new ProcedureDefinition("some_function", RoutineType.function);
     ColumnIdentifier col1 = new ColumnIdentifier("p1");
     col1.setArgumentMode("IN");
     col1.setDbmsType("integer");

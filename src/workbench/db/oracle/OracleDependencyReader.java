@@ -45,7 +45,9 @@ import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 import workbench.log.LogMgr;
 
 import workbench.util.CollectionUtil;
+
 import workbench.db.JdbcUtils;
+import workbench.db.RoutineType;
 
 /**
  *
@@ -171,11 +173,11 @@ public class OracleDependencyReader
         DbObject dbo = null;
         if (type.equals("PROCEDURE"))
         {
-          dbo = new ProcedureDefinition(null, owner, name);
+          dbo = new ProcedureDefinition(null, owner, name, RoutineType.procedure);
         }
         else if (type.equals("FUNCTION"))
         {
-          dbo = new ProcedureDefinition(null, owner, name, DatabaseMetaData.procedureReturnsResult);
+          dbo = new ProcedureDefinition(null, owner, name, RoutineType.function);
         }
         else if (type.equals("TRIGGER"))
         {

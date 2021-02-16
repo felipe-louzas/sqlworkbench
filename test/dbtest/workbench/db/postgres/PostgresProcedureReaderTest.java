@@ -32,6 +32,7 @@ import workbench.db.GenericObjectDropper;
 import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -358,7 +359,7 @@ public class PostgresProcedureReaderTest
     TableIdentifier object = new TableIdentifier("foo.bar(integer)", con);
     object.adjustCase(con);
 
-    ProcedureDefinition def = new ProcedureDefinition(object.getCatalog(), object.getSchema(), object.getObjectName());
+    ProcedureDefinition def = new ProcedureDefinition(object.getCatalog(), object.getSchema(), object.getObjectName(), RoutineType.function);
     CharSequence sql = def.getSource(con);
     assertNotNull(sql);
     assertTrue(sql.toString().contains("FUNCTION foo.bar(p_in integer)"));
