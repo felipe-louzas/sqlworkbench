@@ -63,10 +63,15 @@ public class JdbcProcedureReader
 {
   final protected WbConnection connection;
   protected boolean useSavepoint;
+  protected boolean supportsGetFunctions = true;
 
   public JdbcProcedureReader(WbConnection conn)
   {
     this.connection = conn;
+    if (conn != null)
+    {
+      this.supportsGetFunctions = conn.getDbSettings().supportsGetFunctions();
+    }
   }
 
   @Override
@@ -110,21 +115,30 @@ public class JdbcProcedureReader
       // fillProcedureListDataStore() will close the result set
       DataStore ds = fillProcedureListDataStore(rs);
 
-      if (connection.getDbSettings().useGetFunctions())
+      if (connection.getDbSettings().useGetFunctions() && supportsGetFunctions)
       {
         LogMgr.logDebug(new CallerInfo(){}, "Calling getFunctions() to get additional functions");
 
-        rs = this.connection.getSqlConnection().getMetaData().getProcedures(catalog, schema, name);
-        if (Settings.getInstance().getBoolProperty("workbench.db.procreader.debug", false))
+        try
         {
-          SqlUtil.dumpResultSetInfo("getFunctions()", rs.getMetaData());
+          rs = this.connection.getSqlConnection().getMetaData().getFunctions(catalog, schema, name);
+          if (Settings.getInstance().getBoolProperty("workbench.db.procreader.debug", false))
+          {
+            SqlUtil.dumpResultSetInfo("getFunctions()", rs.getMetaData());
+          }
+
+          boolean useSpecificName = JdbcUtils.getColumnIndex(rs, "SPECIFIC_NAME") > -1;
+          fillProcedureListDataStore(rs, ds, useSpecificName);
+
+          // sort the complete combined result according to the JDBC API
+          ds.sort(getProcedureListSort());
         }
-
-        boolean useSpecificName = JdbcUtils.getColumnIndex(rs, "SPECIFIC_NAME") > -1;
-        fillProcedureListDataStore(rs, ds, useSpecificName);
-
-        // sort the complete combined result according to the JDBC API
-        ds.sort(getProcedureListSort());
+        catch (Throwable th)
+        {
+          LogMgr.logWarning(new CallerInfo(){}, "Error calling getFunctions()", th);
+          // assume getFunctions() is not supported
+          supportsGetFunctions = false;
+        }
       }
 
       this.connection.releaseSavepoint(sp);
@@ -650,6 +664,56 @@ public class JdbcProcedureReader
       JdbcUtils.closeAll(rs, stmt);
     }
     return source;
+  }
+
+  @Override
+  public List<ProcedureDefinition> getTableFunctions(String catalogPattern, String schemaPattern, String namePattern)
+    throws SQLException
+  {
+    catalogPattern = DbMetadata.cleanupWildcards(catalogPattern);
+    schemaPattern = DbMetadata.cleanupWildcards(schemaPattern);
+    namePattern = DbMetadata.cleanupWildcards(namePattern);
+
+    List<ProcedureDefinition> result = new ArrayList<>();
+    Savepoint sp = null;
+    try
+    {
+      if (useSavepoint)
+      {
+        sp = this.connection.setSavepoint();
+      }
+
+      if (Settings.getInstance().getDebugMetadataSql())
+      {
+        LogMgr.logDebug(new CallerInfo(){}, "Calling getFunctions() using: catalog="+ catalogPattern + ", schema=" + schemaPattern + ", name=" + namePattern);
+      }
+
+      ResultSet rs = this.connection.getSqlConnection().getMetaData().getFunctions(catalogPattern, schemaPattern, namePattern);
+
+      while (rs.next())
+      {
+        String cat = rs.getString("FUNCTION_CAT");
+        String schema = rs.getString("FUNCTION_SCHEM");
+        String name = rs.getString("FUNCTION_NAME");
+        String remark = rs.getString("REMARKS");
+        int type = rs.getInt("FUNCTION_TYPE");
+        if (type == DatabaseMetaData.functionReturnsTable)
+        {
+          ProcedureDefinition def = new ProcedureDefinition(cat, schema, name, type);
+          def.setComment(remark);
+          result.add(def);
+        }
+      }
+      this.connection.releaseSavepoint(sp);
+    }
+    catch (SQLException sqlEx)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve table functions", sqlEx);
+      // assume getFunctions() is not supported
+      supportsGetFunctions = false;
+      this.connection.rollback(sp);
+    }
+    return result;
   }
 
   /**

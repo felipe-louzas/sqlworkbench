@@ -38,6 +38,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbSearchPath;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
+import workbench.db.ProcedureDefinition;
 import workbench.db.QuoteHandler;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -115,6 +116,7 @@ public abstract class BaseAnalyzer
   public static final int CONTEXT_INDEX_LIST = 14;
   public static final int CONTEXT_VIEW_LIST = 15;
   public static final int CONTEXT_VALUE_LIST = 16;
+  public static final int CONTEXT_PROCEDURE_LIST = 17;
 
   private final SelectAllMarker allColumnsMarker = new SelectAllMarker();
   private List<String> typeFilter;
@@ -623,6 +625,11 @@ public abstract class BaseAnalyzer
       this.title = namespaceForTableList + ".*";
     }
     this.elements = new ArrayList(tables);
+    if (this.dbConnection.getDbSettings().getIncludeTableFunctionsForTableCompletion())
+    {
+      List<ProcedureDefinition> functions = cache.getTableFunctions(namespaceForTableList);
+      this.elements.addAll(functions);
+    }
   }
 
   protected List<ColumnIdentifier> retrieveColumnsForTable(TableIdentifier table)

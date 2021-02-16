@@ -81,7 +81,8 @@ class ObjectCache
   private final Map<TableIdentifier, TableIdentifier> synonymMap = new HashMap<>();
   private final Map<TableIdentifier, List<IndexDefinition>> indexMap= new HashMap<>();
   private final Map<TableIdentifier, PkDefinition> pkMap = new HashMap<>();
-  private final Map<String, List<ProcedureDefinition>> procedureCache = new HashMap<>();
+  private final Map<Namespace, List<ProcedureDefinition>> procedureCache = new HashMap<>();
+  private final Map<Namespace, List<ProcedureDefinition>> tableFunctionsCache = new HashMap<>();
   private ObjectNameFilter schemaFilter;
   private ObjectNameFilter catalogFilter;
   private boolean supportsSchemas;
@@ -150,12 +151,6 @@ class ObjectCache
         this.schemasInCache.add(key);
       }
     }
-  }
-
-  private String getSchemaToUse(WbConnection dbConnection, String schema)
-  {
-    DbMetadata meta = dbConnection.getMetadata();
-    return meta.adjustSchemaNameCase(schema);
   }
 
   List<Namespace> getSearchPath(WbConnection dbConn, Namespace requestedNamespace)
@@ -365,45 +360,95 @@ class ObjectCache
     }
   }
 
-  Map<String, List<ProcedureDefinition>> getProcedures()
+  Map<Namespace, List<ProcedureDefinition>> getProcedures()
   {
     if (procedureCache == null) return new HashMap<>(0);
     return procedureCache;
   }
 
   /**
+   * Return available table functions (aka "set returning functions).
+   */
+  public List<ProcedureDefinition> getTableFunctions(WbConnection dbConnection, Namespace requestedNsp)
+  {
+    List<Namespace> path = getSearchPath(dbConnection, requestedNsp);
+    List<ProcedureDefinition> result = new ArrayList<>();
+    for (Namespace nsp : path)
+    {
+      List<ProcedureDefinition> functions = tableFunctionsCache.get(nsp);
+      if (functions == null)
+      {
+        // nothing in the cache. We can only retrieve this from the database if the connection isn't busy
+        if (dbConnection.isBusy())
+        {
+          continue;
+        }
+        try
+        {
+          functions = dbConnection.getMetadata().getProcedureReader().getTableFunctions(nsp.getCatalog(), nsp.getSchema(), "%");
+          if (dbConnection.getDbSettings().getRetrieveProcParmsForAutoCompletion())
+          {
+            for (ProcedureDefinition func : functions)
+            {
+              func.readParameters(dbConnection);
+            }
+          }
+          tableFunctionsCache.put(nsp, functions);
+        }
+        catch (SQLException e)
+        {
+          LogMgr.logError(new CallerInfo(){}, "Error retrieving table functions", e);
+        }
+      }
+      result.addAll(functions);
+    }
+    return result;
+  }
+
+  /**
    * Get the procedures the are currently in the cache
    */
-  public List<ProcedureDefinition> getProcedures(WbConnection dbConnection, String schema)
+  public List<ProcedureDefinition> getProcedures(WbConnection dbConnection, String catalog, String schema)
   {
-    String schemaToUse = getSchemaToUse(dbConnection, schema);
-    List<ProcedureDefinition> procs = procedureCache.get(schemaToUse);
-    if (procs == null)
-    {
-      // nothing in the cache. We can only retrieve this from the database if the connection isn't busy
-      if (dbConnection.isBusy())
-      {
-        return Collections.emptyList();
-      }
+    Namespace nsp = createNamespace(schema, catalog);
+    return getProcedures(dbConnection, nsp);
+  }
 
-      try
+  public List<ProcedureDefinition> getProcedures(WbConnection dbConnection, Namespace requestedNsp)
+  {
+    List<Namespace> path = getSearchPath(dbConnection, requestedNsp);
+    List<ProcedureDefinition> result = new ArrayList<>();
+    for (Namespace nsp : path)
+    {
+      List<ProcedureDefinition> procs = procedureCache.get(nsp);
+      if (procs == null)
       {
-        procs = dbConnection.getMetadata().getProcedureReader().getProcedureList(null, schemaToUse, "%");
-        if (dbConnection.getDbSettings().getRetrieveProcParmsForAutoCompletion())
+        // nothing in the cache. We can only retrieve this from the database if the connection isn't busy
+        if (dbConnection.isBusy())
         {
-          for (ProcedureDefinition proc : procs)
-          {
-            proc.readParameters(dbConnection);
-          }
+          continue;
         }
-        procedureCache.put(schemaToUse, procs);
+
+        try
+        {
+          procs = dbConnection.getMetadata().getProcedureReader().getProcedureList(nsp.getCatalog(), nsp.getSchema(), "%");
+          if (dbConnection.getDbSettings().getRetrieveProcParmsForAutoCompletion())
+          {
+            for (ProcedureDefinition proc : procs)
+            {
+              proc.readParameters(dbConnection);
+            }
+          }
+          procedureCache.put(nsp, procs);
+        }
+        catch (SQLException e)
+        {
+          LogMgr.logError(new CallerInfo(){}, "Error retrieving procedures", e);
+        }
       }
-      catch (SQLException e)
-      {
-        LogMgr.logError(new CallerInfo(){}, "Error retrieving procedures", e);
-      }
+      result.addAll(procs);
     }
-    return procs;
+    return result;
   }
 
   private Set<TableIdentifier> filterTablesByType(WbConnection conn, List<Namespace> schemas, Collection<String> requestedTypes)
@@ -627,10 +672,10 @@ class ObjectCache
   synchronized void removeProcedure(WbConnection dbConn, ProcedureDefinition toRemove)
   {
     if (toRemove == null) return;
-    String schema = toRemove.getSchema();
     String fullName = toRemove.getObjectNameForDrop(dbConn);
 
-    List<ProcedureDefinition> procedures = getProcedures(dbConn, schema);
+    Namespace nsp = createNamespace(toRemove.getSchema(), toRemove.getCatalog());
+    List<ProcedureDefinition> procedures = getProcedures(dbConn, nsp);
     Iterator<ProcedureDefinition> itr = procedures.iterator();
     while (itr.hasNext())
     {
@@ -680,9 +725,10 @@ class ObjectCache
     LogMgr.logDebug(new CallerInfo(){}, "Added " + count + " objects");
   }
 
-  synchronized void addProcedureList(DataStore procs, String schema)
+  synchronized void addProcedureList(DataStore procs, String catalog, String schema)
   {
     if (schema == null) return;
+    Namespace nsp = createNamespace(schema, catalog);
     int count = procs.getRowCount();
     List<ProcedureDefinition> procList = new ArrayList<>();
     for (int row=0; row < count; row++)
@@ -694,7 +740,7 @@ class ObjectCache
         procList.add(proc);
       }
     }
-    procedureCache.put(schema, procList);
+    procedureCache.put(nsp, procList);
     LogMgr.logDebug(new CallerInfo(){}, "Added " + procList.size() + " procedures");
   }
 
@@ -952,7 +998,7 @@ class ObjectCache
     Map<TableIdentifier, List<ColumnIdentifier>> newObjects, Collection<Namespace> schemas,
     Map<TableIdentifier, List<DependencyNode>> referencedTables,
     Map<TableIdentifier, List<DependencyNode>> referencingTables,
-    Map<String, List<ProcedureDefinition>> procs,
+    Map<Namespace, List<ProcedureDefinition>> procs,
     Map<TableIdentifier, TableIdentifier> synonyms,
     Map<TableIdentifier, List<IndexDefinition>> indexes,
     Map<TableIdentifier, PkDefinition> pk)

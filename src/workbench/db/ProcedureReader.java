@@ -76,6 +76,9 @@ public interface ProcedureReader
   List<ProcedureDefinition> getProcedureList(String catalog, String schema, String name)
     throws SQLException;
 
+  List<ProcedureDefinition> getTableFunctions(String catalogPattern, String schemaPattern, String namePattern)
+    throws SQLException;
+
   ProcedureDefinition findProcedureByName(DbObject procName)
     throws SQLException;
 

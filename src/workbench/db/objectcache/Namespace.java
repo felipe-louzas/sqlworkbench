@@ -159,6 +159,27 @@ public class Namespace
     if (conn == null || conn.getDbSettings() == null) return NULL_NSP;
     return new Namespace(conn.getCurrentSchema(), conn.getCurrentCatalog());
   }
+
+
+  public static Namespace fromCatalogAndSchema(WbConnection conn, String catalog, String schema)
+  {
+    if (conn == null)
+    {
+      return new Namespace(schema, catalog);
+    }
+    boolean supportsSchemas = conn.getDbSettings().supportsSchemas();
+    boolean supportsCatalogs = conn.getDbSettings().supportsCatalogs();
+
+    if (supportsSchemas && !supportsCatalogs)
+    {
+      return new Namespace(schema, null);
+    }
+    if (supportsCatalogs && !supportsSchemas)
+    {
+      return new Namespace(schema, catalog);
+    }
+    return new Namespace(schema, catalog);
+  }
   
   public static Namespace fromExpression(WbConnection conn, String catalogAndSchema)
   {

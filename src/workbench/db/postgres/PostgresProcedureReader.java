@@ -118,6 +118,7 @@ public class PostgresProcedureReader
           "       " + argTypesExp + ", \n" +
           "       array_to_string(p.proargnames, ';') as argnames, \n" +
           "       array_to_string(p.proargmodes, ';') as argmodes, \n"+
+          "       p.proretset, \n" +
           getProctypeColumnExpression() +
           "       p.oid::text as procid \n" +
           " FROM pg_catalog.pg_proc p \n " +
@@ -172,11 +173,16 @@ public class PostgresProcedureReader
         String argNames = rs.getString("argnames");
         String modes = rs.getString("argmodes");
         String type = rs.getString("proc_type");
+        boolean isTableFunc = rs.getBoolean("proretset");
         String procId = rs.getString("procid");
         int row = ds.addRow();
 
         int resultType = java.sql.DatabaseMetaData.procedureReturnsResult;
-        if ("procedure".equals(type))
+        if (isTableFunc)
+        {
+          resultType = java.sql.DatabaseMetaData.functionReturnsTable;
+        }
+        else if ("procedure".equals(type))
         {
           resultType = java.sql.DatabaseMetaData.procedureNoResult;
         }

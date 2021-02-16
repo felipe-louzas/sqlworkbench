@@ -26,6 +26,7 @@ package workbench.gui.completion;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.WbConnection;
+import workbench.db.objectcache.Namespace;
 
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
@@ -88,7 +89,8 @@ public class ExecAnalyzer
     {
       schema = this.dbConnection.getCurrentSchema();
     }
-    elements = dbConnection.getObjectCache().getProcedures(schema);
+    Namespace nsp = Namespace.fromCatalogAndSchema(dbConnection, this.dbConnection.getCurrentCatalog(), schema);
+    elements = dbConnection.getObjectCache().getProcedures(nsp);
   }
 
 }

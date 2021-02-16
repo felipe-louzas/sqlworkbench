@@ -93,7 +93,7 @@ class ObjectCachePersistence
     Collection<Namespace> schemas = null;
     Map<TableIdentifier, List<DependencyNode>> referencedTables = null;
     Map<TableIdentifier, List<DependencyNode>> referencingTables = null;
-    Map<String, List<ProcedureDefinition>> procs = null;
+    Map<Namespace, List<ProcedureDefinition>> procs = null;
     Map<TableIdentifier, TableIdentifier> syns = null;
     Map<TableIdentifier, List<IndexDefinition>> indexes = null;
     Map<TableIdentifier, PkDefinition> pk = null;
@@ -131,7 +131,7 @@ class ObjectCachePersistence
       {
         in = zipFile.getInputStream(entry);
         ois = new ObjectInputStream(in);
-        procs = (Map<String, List<ProcedureDefinition>>) ois.readObject();
+        procs = (Map<Namespace, List<ProcedureDefinition>>) ois.readObject();
       }
 
       entry = zipFile.getEntry(SYNONYMS_ENTRY);
@@ -222,7 +222,7 @@ class ObjectCachePersistence
       Map<TableIdentifier, List<DependencyNode>> referencingTables = objectCache.getReferencingTables();
       writeObject(zout, REFERENCING_TABLES_ENTRY, referencingTables);
 
-      Map<String, List<ProcedureDefinition>> procs = objectCache.getProcedures();
+      Map<Namespace, List<ProcedureDefinition>> procs = objectCache.getProcedures();
       writeObject(zout, PROCEDURES_ENTRY, procs);
 
       Map<TableIdentifier, TableIdentifier> syns = objectCache.getSynonyms();

@@ -563,7 +563,7 @@ public class ProcedureListPanel
       DbMetadata meta = dbConnection.getMetadata();
       DataStore ds = meta.getProcedureReader().getProcedures(currentCatalog, currentSchema, null);
       procList.setOriginalOrder(ds);
-      dbConnection.getObjectCache().addProcedureList(ds, currentSchema);
+      dbConnection.getObjectCache().addProcedureList(ds, currentCatalog, currentSchema);
       final DataStoreTableModel model = new DataStoreTableModel(ds);
       model.setSortDefinition(JdbcProcedureReader.getProcedureListSort());
 

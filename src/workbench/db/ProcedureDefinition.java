@@ -61,13 +61,14 @@ public class ProcedureDefinition
 
   private Object internalIdentifier;
 
-
   /**
    * The result type as returned by the JDBC driver.
    * Corresponds to:
    * <ul>
    *   <li>DatabaseMetaData.procedureNoResult</li>
    *   <li>DatabaseMetaData.procedureReturnsResult</li>
+   *   <li>DatabaseMetaData.functionReturnsTable</li>
+   *   <li>DatabaseMetaData.functionNoTable</li>
    * </ul>
    */
   private int resultType;
@@ -535,7 +536,7 @@ public class ProcedureDefinition
       return "TYPE";
     }
 
-    if (resultType == DatabaseMetaData.procedureReturnsResult)
+    if (isFunction())
     {
       return "FUNCTION";
     }
@@ -548,7 +549,11 @@ public class ProcedureDefinition
     String name = procType != null ? catalog + "." + procName : procName;
     if (CollectionUtil.isNonEmpty(parameters))
     {
-      return name + "( " + StringUtil.listToString(getParameterNames(), ", ", false) + " )";
+      return name + "(" + StringUtil.listToString(getParameterNames(), ", ", false) + ")";
+    }
+    else if (isFunction())
+    {
+      name = name + "()";
     }
     return name;
   }
@@ -744,9 +749,17 @@ public class ProcedureDefinition
     return false;
   }
 
+  public boolean isTableFunction()
+  {
+    return resultType == DatabaseMetaData.functionReturnsTable;
+  }
+
   public boolean isFunction()
   {
-    return resultType == DatabaseMetaData.procedureReturnsResult;
+    return
+      resultType == DatabaseMetaData.procedureReturnsResult ||
+      resultType == DatabaseMetaData.functionNoTable ||
+      resultType == DatabaseMetaData.functionReturnsTable;
   }
 
   public boolean isFunction(DataStore params)
@@ -758,6 +771,7 @@ public class ProcedureDefinition
     }
     return false;
   }
+
   private static enum ProcType
     implements Serializable
   {

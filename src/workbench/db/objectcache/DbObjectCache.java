@@ -98,9 +98,9 @@ public class DbObjectCache
     objectCache.addTableList(dbConnection, tables, schema);
   }
 
-  public void addProcedureList(DataStore procs, String schema)
+  public void addProcedureList(DataStore procs, String catalog, String schema)
   {
-    objectCache.addProcedureList(procs, schema);
+    objectCache.addProcedureList(procs, catalog, schema);
   }
 
   /**
@@ -143,9 +143,14 @@ public class DbObjectCache
     return objectCache.getColumns(dbConnection, tbl);
   }
 
-  public List<ProcedureDefinition> getProcedures(String schema)
+  public List<ProcedureDefinition> getTableFunctions(Namespace nsp)
   {
-    return objectCache.getProcedures(dbConnection, schema);
+    return objectCache.getTableFunctions(dbConnection, nsp);
+  }
+
+  public List<ProcedureDefinition> getProcedures(Namespace nsp)
+  {
+    return objectCache.getProcedures(dbConnection, nsp);
   }
 
   public Set<TableIdentifier> getTables(Namespace nsp)

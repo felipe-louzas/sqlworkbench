@@ -901,6 +901,11 @@ public class DbSettings
     return getTruncateCommand(false) != null;
   }
 
+  public boolean supportsGetFunctions()
+  {
+    return getBoolProperty("metadata.getfunctions.supported", true);
+  }
+
   public boolean isViewType(String type)
   {
     if (type == null) return false;
@@ -1308,6 +1313,11 @@ public class DbSettings
     {
       return SetObjectStrategy.Never;
     }
+  }
+
+  public boolean getIncludeTableFunctionsForTableCompletion()
+  {
+    return getBoolProperty("completion.tables.include.functions", true);
   }
 
   public boolean getRetrieveProcParmsForAutoCompletion()
