@@ -43,6 +43,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.DbObject;
 import workbench.db.DbObjectFinder;
 import workbench.db.DbSearchPath;
 import workbench.db.DbSwitcher;
@@ -367,12 +368,27 @@ class ObjectCache
   }
 
   /**
-   * Return available table functions (aka "set returning functions).
+   * Return available table functions (aka "set returning" functions).
    */
   public List<ProcedureDefinition> getTableFunctions(WbConnection dbConnection, Namespace requestedNsp)
   {
     List<Namespace> path = getSearchPath(dbConnection, requestedNsp);
     List<ProcedureDefinition> result = new ArrayList<>();
+
+    String currentSchema = null;
+    String currentCatalog = null;
+    if (requestedNsp != null)
+    {
+      currentSchema = requestedNsp.getSchema();
+      currentCatalog = requestedNsp.getCatalog();
+    }
+    else if (path.size() > 0)
+    {
+      currentSchema = path.get(0).getSchema();
+      currentCatalog = dbConnection.getMetadata().getCurrentCatalog();
+    }
+
+    boolean alwaysUseSchema = dbConnection.getDbSettings().alwaysUseSchemaForCompletion() || path.size() > 1;
     for (Namespace nsp : path)
     {
       List<ProcedureDefinition> functions = tableFunctionsCache.get(nsp);
@@ -383,6 +399,7 @@ class ObjectCache
         {
           continue;
         }
+
         try
         {
           functions = dbConnection.getMetadata().getProcedureReader().getTableFunctions(nsp.getCatalog(), nsp.getSchema(), "%");
@@ -400,8 +417,14 @@ class ObjectCache
           LogMgr.logError(new CallerInfo(){}, "Error retrieving table functions", e);
         }
       }
-      result.addAll(functions);
+      for (ProcedureDefinition func : functions)
+      {
+        ProcedureDefinition copy = func.createCopy();
+        adjustSchemaAndCatalog(dbConnection, copy, currentSchema, currentCatalog, alwaysUseSchema);
+        result.add(copy);
+      }
     }
+
     return result;
   }
 
@@ -477,7 +500,7 @@ class ObjectCache
     return result;
   }
 
-  private void adjustSchemaAndCatalog(WbConnection conn, TableIdentifier table, String currentSchema, String currentCatalog, boolean alwaysUseSchema)
+  private void adjustSchemaAndCatalog(WbConnection conn, DbObject table, String currentSchema, String currentCatalog, boolean alwaysUseSchema)
   {
     if (!conn.getDbSettings().useCurrentNamespaceForCompletion()) return;
 

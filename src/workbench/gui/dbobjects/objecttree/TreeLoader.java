@@ -888,7 +888,14 @@ public class TreeLoader
       ObjectTreeNode p = null;
       if (mode.equals("RETURN"))
       {
-        p = new ObjectTreeNode("RETURNS " + col.getDbmsType(), TYPE_PROC_PARAMETER);
+        if (proc.isTableFunction())
+        {
+          p = new ObjectTreeNode("RETURNS TABLE", TYPE_PROC_PARAMETER);
+        }
+        else
+        {
+          p = new ObjectTreeNode("RETURNS " + col.getDbmsType(), TYPE_PROC_PARAMETER);
+        }
       }
       else
       {

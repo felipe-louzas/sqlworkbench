@@ -1695,6 +1695,13 @@ public class SqlUtil
     return buildExpression(conn, object.getCatalog(), object.getSchema(), object.getObjectName());
   }
 
+  public static QuoteHandler getQuoteHandler(WbConnection conn)
+  {
+    if (conn == null) return QuoteHandler.STANDARD_HANDLER;
+    if (conn.getMetadata() == null) return QuoteHandler.STANDARD_HANDLER;
+    return conn.getMetadata();
+  }
+
   /**
    * Return a fully qualified name string for the database object.
    *
@@ -1712,7 +1719,7 @@ public class SqlUtil
    */
   public static String fullyQualifiedName(WbConnection conn, DbObject object)
   {
-    QuoteHandler quoter = (conn != null ? conn.getMetadata() : QuoteHandler.STANDARD_HANDLER);
+    QuoteHandler quoter = getQuoteHandler(conn);
     return fullyQualifiedName(quoter, conn, object);
   }
 

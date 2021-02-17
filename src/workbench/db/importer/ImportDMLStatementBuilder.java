@@ -42,6 +42,7 @@ import workbench.db.mssql.SqlServerUtil;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -251,7 +252,7 @@ public class ImportDMLStatementBuilder
 
   private QuoteHandler getQuoteHandler()
   {
-    return dbConn == null ? QuoteHandler.STANDARD_HANDLER : dbConn.getMetadata();
+    return SqlUtil.getQuoteHandler(dbConn);
   }
 
   private String getInsertString()

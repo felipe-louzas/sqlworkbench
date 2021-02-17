@@ -45,11 +45,13 @@ public class TablePartition
   private String subPartitionsStrategy;
   private String partitionStrategy;
 
+  @Override
   public void setCatalog(String catalog)
   {
     this.catalog = catalog;
   }
 
+  @Override
   public void setSchema(String schema)
   {
     this.schema = schema;

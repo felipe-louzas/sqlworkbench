@@ -61,6 +61,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.ProcedureDefinition;
 import workbench.db.QuoteHandler;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -585,6 +586,15 @@ public class CompletionPopup
         value += name;
         tables.add((TableIdentifier)o);
       }
+      else if (o instanceof ProcedureDefinition)
+      {
+        if (value.length() > 0)
+        {
+          value += ", ";
+        }
+        ProcedureDefinition proc = (ProcedureDefinition)o;
+        value += proc.buildSelectable(this.context.getAnalyzer().getConnection());
+      }
       else
       {
         if (value.length() > 0 && needsComma)
@@ -626,7 +636,7 @@ public class CompletionPopup
     boolean removed = false;
     Set<String> ignoreSchema = conn.getDbSettings().getIgnoreSchemaForCompletionPaste();
     Set<String> ignoreCatalog = conn.getDbSettings().getIgnoreCatalogForCompletionPaste();
-    
+
     if (ignoreSchema.contains("*") || (nsp != null && nsp.getSchema() != null && ignoreSchema.contains(nsp.getSchema())))
     {
       tbl.setSchema(null);

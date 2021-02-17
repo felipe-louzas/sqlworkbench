@@ -806,6 +806,7 @@ public class PostgresProcedureReader
         "       " + argTypesExp + ", \n" +
         "       array_to_string(p.proargnames, ';') as argnames, \n" +
         "       array_to_string(p.proargmodes, ';') as argmodes, \n" +
+        "       p.proretset, \n" +
         "       t.typtype \n" +
         "FROM pg_catalog.pg_proc p \n" +
         "   JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid \n" +
@@ -851,10 +852,11 @@ public class PostgresProcedureReader
         String names = rs.getString("argnames");
         String modes = rs.getString("argmodes");
         String returnTypeType = rs.getString("typtype");
+        boolean isTableFunc = rs.getBoolean("proretset");
 
         boolean isFunction = (returnTypeType.equals("b") || returnTypeType.equals("d") || (returnTypeType.equals("p") && modes == null));
 
-        if (isFunction)
+        if (isFunction & !isTableFunc)
         {
           int row = result.addRow();
           result.setValue(row, ProcedureReader.COLUMN_IDX_PROC_COLUMNS_COL_NAME, "returnValue");
@@ -867,6 +869,9 @@ public class PostgresProcedureReader
 
         for (int i=0; i < info.getNumArgs(); i++)
         {
+          // Don't add the output columns of a table function as parameters
+          if (isTableFunc && "t".equals(info.getArgType(i))) continue;
+
           int row = result.addRow();
           result.setValue(row, ProcedureReader.COLUMN_IDX_PROC_COLUMNS_RESULT_TYPE,info.getJDBCArgMode(i));
           result.setValue(row, ProcedureReader.COLUMN_IDX_PROC_COLUMNS_JDBC_DATA_TYPE, getJavaType(info.getArgType(i)));

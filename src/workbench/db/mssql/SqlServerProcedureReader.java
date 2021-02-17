@@ -26,16 +26,26 @@ package workbench.db.mssql;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+
+import workbench.db.DbMetadata;
 import workbench.db.JdbcProcedureReader;
+import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -143,4 +153,72 @@ public class SqlServerProcedureReader
     CharSequence sql = runner.getSource(connection, def.getCatalog(), def.getSchema(), procName);
     return sql;
   }
+
+  /**
+   * The MS JDBC driver marks all functions returned from getFunctions() with DatabaseMetaData.functionReturnsTable which is not helpful.
+   */
+  @Override
+  public List<ProcedureDefinition> getTableFunctions(String catalogPattern, String schemaPattern, String namePattern)
+    throws SQLException
+  {
+    catalogPattern = DbMetadata.cleanupWildcards(catalogPattern);
+    schemaPattern = DbMetadata.cleanupWildcards(schemaPattern);
+    namePattern = DbMetadata.cleanupWildcards(namePattern);
+
+    List<ProcedureDefinition> result = new ArrayList<>();
+    String sql =
+      "select ROUTINE_CATALOG, \n" +
+      "       ROUTINE_SCHEMA, \n" +
+      "       ROUTINE_NAME \n" +
+      "from INFORMATION_SCHEMA.ROUTINES \n" +
+      "where ROUTINE_TYPE = 'FUNCTION' \n" +
+      "  and DATA_TYPE = 'TABLE'";
+
+    StringBuilder condition = new StringBuilder(50);
+    if (StringUtil.isNonBlank(catalogPattern))
+    {
+      condition.append("\n  AND ");
+      SqlUtil.appendExpression(condition, "ROUTINE_CATALOG", catalogPattern, connection);
+    }
+    if (StringUtil.isNonBlank(schemaPattern))
+    {
+      condition.append("\n  AND ");
+      SqlUtil.appendExpression(condition, "ROUTINE_SCHEMA", schemaPattern, connection);
+    }
+    if (StringUtil.isNonBlank(namePattern))
+    {
+      condition.append("\n  AND ");
+      SqlUtil.appendExpression(condition, "ROUTINE_NAME", namePattern, connection);
+    }
+    sql += condition;
+    Statement stmt = null;
+    ResultSet rs = null;
+    try
+    {
+      LogMgr.logMetadataSql(new CallerInfo(){}, "table functions", sql);
+
+      stmt = connection.getSqlConnection().createStatement();
+      rs = stmt.executeQuery(sql);
+
+      while (rs.next())
+      {
+        String cat = rs.getString(1);
+        String schema = rs.getString(2);
+        String name = rs.getString(3);
+        ProcedureDefinition def = new ProcedureDefinition(cat, schema, name, RoutineType.tableFunction, DatabaseMetaData.functionReturnsTable);
+        result.add(def);
+      }
+    }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "table functions", sql);
+    }
+    finally
+    {
+      JdbcUtils.closeAll(rs, stmt);
+    }
+    return result;
+  }
+
+
 }

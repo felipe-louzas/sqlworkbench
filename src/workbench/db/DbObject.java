@@ -128,6 +128,8 @@ public interface DbObject
   void setComment(String cmt);
 
   default void setName(String name) {}
+  default void setSchema(String schema) {}
+  default void setCatalog(String catalog) {}
 
   String getDropStatement(WbConnection con, boolean cascade);
 

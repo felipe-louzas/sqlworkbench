@@ -146,7 +146,7 @@ public abstract class TemplateHandler
   {
     if (sql == null) return sql;
     if (table == null) return sql;
-    QuoteHandler handler = connection == null ? QuoteHandler.STANDARD_HANDLER : connection.getMetadata();
+    QuoteHandler handler = SqlUtil.getQuoteHandler(connection);
     if (handler == null)
     {
       handler = QuoteHandler.STANDARD_HANDLER;

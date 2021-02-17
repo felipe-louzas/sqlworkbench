@@ -110,6 +110,18 @@ public class DomainIdentifier
   }
 
   @Override
+  public void setCatalog(String catalog)
+  {
+    this.catalog = catalog;
+  }
+
+  @Override
+  public void setSchema(String schema)
+  {
+    this.schema = schema;
+  }
+
+  @Override
   public String getSchema()
   {
     return schema;

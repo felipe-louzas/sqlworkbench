@@ -32,6 +32,7 @@ import workbench.db.WbConnection;
 
 import workbench.sql.macros.MacroDefinition;
 
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -75,7 +76,7 @@ public class QueryMacroParser
   {
     String sql = macro.getText();
 
-    QuoteHandler handler = (conn == null ? QuoteHandler.STANDARD_HANDLER : conn.getMetadata());
+    QuoteHandler handler = SqlUtil.getQuoteHandler(conn);
     sql = sql.replace(COLUMN_LIST_PLACEHOLDR, getColumnList(conn));
     if (columns.size() == 1)
     {

@@ -42,6 +42,21 @@ public class MySQLDelimiterTesterTest
   }
 
   @Test
+  public void testWithAlternateDelimiter()
+  {
+    ScriptParser parser = new ScriptParser(ParserType.MySQL);
+    parser.setAlternateDelimiter(DelimiterDefinition.DEFAULT_ORA_DELIMITER);
+    String sql =
+      "CREATE PROCEDURE foo(OUT p1 INT) \n"+
+      "BEGIN \n" +
+      "   SELECT COUNT(*) INTO p1 FROM t;\n" +
+      "END\n" +
+      "/";
+    parser.setScript(sql);
+    assertEquals(1, parser.getSize());
+  }
+
+  @Test
   public void testOnlyReservedWordAtStartOfStatement()
   {
     MySQLDelimiterTester tester = new MySQLDelimiterTester();

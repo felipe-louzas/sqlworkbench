@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -190,6 +191,18 @@ public class ProcedureDefinition
   public String getDbmsProcType()
   {
     return dbmsProcType;
+  }
+
+  @Override
+  public void setSchema(String schema)
+  {
+    this.schema = schema;
+  }
+
+  @Override
+  public void setCatalog(String catalog)
+  {
+    this.catalog = catalog;
   }
 
   @Override
@@ -566,16 +579,43 @@ public class ProcedureDefinition
   @Override
   public String toString()
   {
-    String name = procType != null ? catalog + "." + procName : procName;
+    String name = procType != null ? catalog + "." + procName : SqlUtil.buildExpression(null, null, schema, procName);
     if (CollectionUtil.isNonEmpty(parameters))
     {
-      return name + "(" + StringUtil.listToString(getParameterNames(), ", ", false) + ")";
+      return name + "(" + getInputParameterNames() + ")";
     }
     else if (isFunction())
     {
       name = name + "()";
     }
     return name;
+  }
+
+  private String getInputParameterNames()
+  {
+    if (CollectionUtil.isEmpty(parameters)) return "";
+
+    return this.parameters.stream().
+        filter(c -> c.getArgumentMode().startsWith("IN")).
+        map(c -> c.getColumnName()).
+        collect(Collectors.joining(", "));
+  }
+
+  public String buildSelectable(WbConnection con)
+  {
+    QuoteHandler handler = SqlUtil.getQuoteHandler(con);
+
+    String name;
+    if (procType != null)
+    {
+      name = handler.quoteObjectname(catalog) + "." + handler.quoteObjectname(procName);
+    }
+    else
+    {
+      name = SqlUtil.buildExpression(con, catalog, schema, procName);
+    }
+
+    return name + "(" + getInputParameterNames() + ")";
   }
 
   public String createSql(WbConnection con)
@@ -787,6 +827,26 @@ public class ProcedureDefinition
       if ("RETURN".equals(resultMode)) return true;
     }
     return false;
+  }
+
+  public ProcedureDefinition createCopy()
+  {
+    ProcedureDefinition copy = new ProcedureDefinition(catalog, schema, procName, routineType, resultType);
+    copy.setPackageName(getPackageName());
+    if (this.parameters != null)
+    {
+      copy.parameters = new ArrayList<>(this.parameters.size());
+      for (ColumnIdentifier p : parameters)
+      {
+        copy.parameters.add(p.createCopy());
+      }
+    }
+    copy.source = this.source;
+    copy.internalIdentifier = this.internalIdentifier;
+    copy.specificName = this.specificName;
+    copy.dbmsProcType = this.dbmsProcType;
+    copy.oracleOverloadIndex = this.oracleOverloadIndex;
+    return copy;
   }
 
   private static enum ProcType

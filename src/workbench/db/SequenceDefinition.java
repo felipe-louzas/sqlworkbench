@@ -110,6 +110,13 @@ public class SequenceDefinition
     return schema;
   }
 
+  @Override
+  public void setSchema(String schema)
+  {
+    this.schema = schema;
+  }
+
+  @Override
   public void setCatalog(String cat)
   {
     catalog = cat;

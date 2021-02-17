@@ -35,6 +35,7 @@ public class MySQLDelimiterTester
 {
 
   private DelimiterDefinition currentDelimiter = new DelimiterDefinition(";");
+  private DelimiterDefinition alternateDelimiter;
   private boolean isDelimiterCommand;
   private final Set<String> delimiterCommands = CollectionUtil.caseInsensitiveSet("DELIMITER");
 
@@ -51,6 +52,14 @@ public class MySQLDelimiterTester
   @Override
   public void setAlternateDelimiter(DelimiterDefinition delimiter)
   {
+    if (delimiter == null)
+    {
+      this.alternateDelimiter = null;
+    }
+    else
+    {
+      this.alternateDelimiter = delimiter.createCopy();
+    }
   }
 
   @Override
@@ -87,6 +96,11 @@ public class MySQLDelimiterTester
   @Override
   public DelimiterDefinition getCurrentDelimiter()
   {
+    // if an alternate delimiter was explicitly set,  use that
+    if (alternateDelimiter != null)
+    {
+      return alternateDelimiter;
+    }
     return currentDelimiter;
   }
 

@@ -1315,6 +1315,11 @@ public class DbSettings
     }
   }
 
+  public boolean getFunctionsAlwaysNeedSchema()
+  {
+    return getBoolProperty("functioncall.schema.required", false);
+  }
+
   public boolean getIncludeTableFunctionsForTableCompletion()
   {
     return getBoolProperty("completion.tables.include.functions", true);

@@ -45,7 +45,10 @@ import workbench.db.WbConnection;
 import workbench.db.search.ServerSideTableSearcher;
 
 import workbench.util.CollectionUtil;
+
 import workbench.db.JdbcUtils;
+
+import workbench.util.SqlUtil;
 
 /**
  * A class to retrieve the data from the table that is referenced through a FK constraint from another table.
@@ -136,7 +139,7 @@ public class LookupDataLoader
   {
     if (pk == null || CollectionUtil.isEmpty(pk.getColumns())) return "";
 
-    QuoteHandler handler = (conn == null ? QuoteHandler.STANDARD_HANDLER : conn.getMetadata());
+    QuoteHandler handler = SqlUtil.getQuoteHandler(conn);
 
     StringBuilder order = new StringBuilder(50);
     order.append(" ORDER BY ");

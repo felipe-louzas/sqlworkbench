@@ -592,7 +592,7 @@ public class ColumnIdentifier
    */
   public String getColumnName(WbConnection con)
   {
-    QuoteHandler handler = (con == null ? QuoteHandler.STANDARD_HANDLER : con.getMetadata());
+    QuoteHandler handler = SqlUtil.getQuoteHandler(con);
     return handler.quoteObjectname(name);
   }
 

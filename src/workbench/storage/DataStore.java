@@ -1350,7 +1350,7 @@ public class DataStore
 
   private int findColumn(String name)
   {
-    return this.resultInfo.findColumn(name, this.originalConnection != null ? originalConnection.getMetadata() : QuoteHandler.STANDARD_HANDLER);
+    return this.resultInfo.findColumn(name, SqlUtil.getQuoteHandler(originalConnection));
   }
 
   public Map<String, Object> getRowData(int row)

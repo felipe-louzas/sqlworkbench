@@ -696,7 +696,7 @@ public class JdbcProcedureReader
       while (rs.next())
       {
         String cat = rs.getString("FUNCTION_CAT");
-        String schema = rs.getString("FUNCTION_SCHEM");
+        String schema = stripProcGroupInfo(rs.getString("FUNCTION_SCHEM"));
         String name = rs.getString("FUNCTION_NAME");
         String remark = rs.getString("REMARKS");
         int type = rs.getInt("FUNCTION_TYPE");

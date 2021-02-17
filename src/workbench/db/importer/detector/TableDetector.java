@@ -468,7 +468,7 @@ public abstract class TableDetector
 
   private String getColumnName(WbConnection conn, ColumnIdentifier col)
   {
-    QuoteHandler quoter = conn == null ? QuoteHandler.STANDARD_HANDLER : conn.getMetadata();
+    QuoteHandler quoter = SqlUtil.getQuoteHandler(conn);
 
     String name = col.getColumnName();
     if (!quoter.isLegalIdentifier(name) || isReservedWord(conn, name))

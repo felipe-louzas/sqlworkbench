@@ -164,10 +164,7 @@ public abstract class BaseAnalyzer
 
   public QuoteHandler getQuoteHandler()
   {
-    if (dbConnection == null) return QuoteHandler.STANDARD_HANDLER;
-    QuoteHandler handler = dbConnection.getMetadata();
-    if (handler == null) return QuoteHandler.STANDARD_HANDLER;
-    return handler;
+    return SqlUtil.getQuoteHandler(dbConnection);
   }
 
   public WbConnection getConnection()
