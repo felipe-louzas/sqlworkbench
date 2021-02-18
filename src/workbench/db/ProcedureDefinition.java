@@ -622,7 +622,7 @@ public class ProcedureDefinition
 
     name = name + "(" + getInputParameterNames() + ")";
 
-    if (DBID.Oracle.isDB(con))
+    if (con != null && con.getDbSettings().getTableFunctionNeedsTableKeyword())
     {
       name = "table(" + name + ")";
     }

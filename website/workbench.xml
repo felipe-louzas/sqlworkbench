@@ -359,37 +359,40 @@ WHERE id=42;</p>
       <h2 style="text-align:left;padding-top:25px">WbSchemaReport transformations</h2>
       <p>The following files will transform the output of the <a href="manual/wb-commands.html#command-schema-report">WbSchemaReport</a> command</p>
       <ul>
-        <li><a href="wbreport2html.xslt">HTML output</a></li>
-        <li><a href="wbreport2pg.xslt">Create a script for PostgreSQL</a></li>
-        <li><a href="wbreport2oracle.xslt">Create a script for Oracle</a></li>
-        <li><a href="wbreport2liquibase.xslt">Generate a Liquibase Changeset</a><br/>
-            The script includes <a href="liquibase_common.xslt">liquibase_common.xslt</a>. Both files are needed</li>
-        <li><a href="wbreport2proc.xslt">Extract procedures</a></li>
-        <li><a href="wbreport2confluence.xslt">Generate Confluence Wiki code</a></li>
-        <li><a href="wbreport2benerator.xslt">Generate an initial stub for a</a> <a target="_blank" href="http://databene.org/databene-benerator/">Benerator</a> script</li>
+        <li><a href="xslt/wbreport2html.xslt">HTML output</a></li>
+        <li><a href="xslt/wbreport2pg.xslt">Create a script for PostgreSQL</a></li>
+        <li><a href="xslt/wbreport2oracle.xslt">Create a script for Oracle</a></li>
+        <li><a href="xslt/wbreport2liquibase.xslt">Generate a Liquibase Changeset</a><br/>
+            The script also needs <a href="xslt/liquibase_common.xslt">liquibase_common.xslt</a>.</li>
+        <li><a href="xslt/wbreport2proc.xslt">Extract procedures</a></li>
+        <li><a href="xslt/wbreport2confluence.xslt">Generate Confluence Wiki code</a></li>
+        <!-- <li><a href="xslt/wbreport2benerator.xslt">Generate an initial stub for a</a> <a target="_blank" href="http://databene.org/databene-benerator/">Benerator</a> script</li> -->
        </ul>
 
       <h2 style="text-align:left;padding-top:5px">WbSchemaDiff transformations</h2>
       <p>The following files will transform the output of the <a href="manual/wb-commands.html#command-schema-diff">WbSchemaDiff</a>
       command</p>
       <ul>
-        <li><a href="wbdiff2pg.xslt">Transform to a PostgreSQL script</a></li>
-        <li><a href="wbdiff2oracle.xslt">Transform to an Oracle script</a></li>
-        <li><a href="wbdiff2liquibase.xslt">Transform to a Liquibase changeset</a><br/>
-            The script includes <a href="liquibase_common.xslt">liquibase_common.xslt</a>. Both files are needed</li>
-        <li><a href="wbdiff2derby.xslt">Transform to an Apache Derby script</a></li>
-        <li><a href="wbdiff2mssql.xslt">Transform to an Microsoft SQL Server script</a></li>
+        <li><a href="xslt/wbdiff2pg.xslt">Transform to a PostgreSQL script</a></li>
+        <li><a href="xslt/wbdiff2oracle.xslt">Transform to an Oracle script</a></li>
+        <li><a href="xslt/wbdiff2liquibase.xslt">Transform to a Liquibase changeset</a><br/>
+            The script also needs <a href="xslt/liquibase_common.xslt">liquibase_common.xslt</a>.</li>
+        <li><a href="xslt/wbdiff2derby.xslt">Transform to an Apache Derby script</a></li>
+        <li><a href="xslt/wbdiff2mssql.xslt">Transform to an Microsoft SQL Server script</a></li>
       </ul>
 
       <h2 style="text-align:left;padding-top:5px">WbExport transformations</h2>
       <p>The following files will transform the XML output of the <a href="manual/command-export.html">WbExport</a> command</p>
       <ul>
-        <li><a href="wbexport2lbinsert.xslt">Transform an XML export into a Liquibase INSERT changeset</a>&nbsp;&nbsp;&nbsp;(See <a target="_blank" href="http://www.liquibase.org/manual/insert_data">Liquibase Insert Data</a>)</li>
-        <li><a href="wbexport2text.xslt">Transform an XML export into a CSV file</a></li>
-        <li><a href="wbexport2dbunit.xslt">Transform an XML export int a DbUnit XML file</a></li>
-        <li><a href="wbexport2dbunitflat.xslt">Transform an XML export into a DbUnit flat XML file</a></li>
+        <li><a href="xslt/wbexport2lbinsert.xslt">Transform an XML export into a Liquibase INSERT changeset</a>&nbsp;&nbsp;&nbsp;(See <a target="_blank" href="http://www.liquibase.org/manual/insert_data">Liquibase Insert Data</a>)</li>
+        <li><a href="xslt/wbexport2text.xslt">Transform an XML export into a CSV file</a></li>
+        <li><a href="xslt/wbexport2dbunit.xslt">Transform an XML export int a DbUnit XML file</a></li>
+        <li><a href="xslt/wbexport2dbunitflat.xslt">Transform an XML export into a DbUnit flat XML file</a></li>
       </ul>
 
+      <p>
+        The scripts can also be downloaded from the <a target="_new" href="https://codeberg.org/sql-workbench/workbench/src/branch/master/xslt">Git repository</a>.
+      </p>
     </content>
   </page>
 

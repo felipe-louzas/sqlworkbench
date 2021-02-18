@@ -45,6 +45,7 @@ import workbench.db.hana.HanaSynonymReader;
 import workbench.db.hana.HanaViewReader;
 import workbench.db.hsqldb.HsqlConstraintReader;
 import workbench.db.hsqldb.HsqlIndexReader;
+import workbench.db.hsqldb.HsqlProcedureReader;
 import workbench.db.hsqldb.HsqlSequenceReader;
 import workbench.db.hsqldb.HsqlSynonymReader;
 import workbench.db.hsqldb.HsqlUniqueConstraintReader;
@@ -112,6 +113,8 @@ public class ReaderFactory
       case DB2_ISERIES:
       case DB2_ZOS:
         return new Db2ProcedureReader(meta.getWbConnection(), meta.getDbId());
+      case HSQLDB:
+        return new HsqlProcedureReader(meta.getWbConnection());
       case Oracle:
         return new OracleProcedureReader(meta.getWbConnection());
       case Postgres:

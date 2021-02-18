@@ -1320,6 +1320,11 @@ public class DbSettings
     return getBoolProperty("functioncall.schema.required", false);
   }
 
+  public boolean getTableFunctionNeedsTableKeyword()
+  {
+    return getBoolProperty("srf.call.needs.table", false);
+  }
+
   public boolean getIncludeTableFunctionsForTableCompletion()
   {
     return getBoolProperty("completion.tables.include.functions", true);
