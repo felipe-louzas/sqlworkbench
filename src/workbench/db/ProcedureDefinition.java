@@ -138,7 +138,7 @@ public class ProcedureDefinition
    */
   public static ProcedureDefinition createOracleDefinition(String schema, String procedureName, String packageName, int type, String remarks)
   {
-    ProcedureDefinition def = new ProcedureDefinition(packageName, schema, procedureName, RoutineType.procedure, type);
+    ProcedureDefinition def = new ProcedureDefinition(packageName, schema, procedureName, RoutineType.fromProcedureResult(type), type);
     if (StringUtil.isNonBlank(packageName))
     {
       if ("OBJECT TYPE".equals(remarks))
@@ -546,6 +546,11 @@ public class ProcedureDefinition
     return getObjectName();
   }
 
+  public void setRoutineType(RoutineType type)
+  {
+    this.routineType = type;
+  }
+
   public RoutineType getRoutineType()
   {
     return this.routineType;
@@ -615,7 +620,13 @@ public class ProcedureDefinition
       name = SqlUtil.buildExpression(con, catalog, schema, procName);
     }
 
-    return name + "(" + getInputParameterNames() + ")";
+    name = name + "(" + getInputParameterNames() + ")";
+
+    if (DBID.Oracle.isDB(con))
+    {
+      name = "table(" + name + ")";
+    }
+    return name;
   }
 
   public String createSql(WbConnection con)

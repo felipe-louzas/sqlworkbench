@@ -38,17 +38,17 @@ import workbench.resource.Settings;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcProcedureReader;
+import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.sql.DelimiterDefinition;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -72,6 +72,21 @@ public class OracleProcedureReader
 
   private OracleTypeReader typeReader = new OracleTypeReader();
   private final StringBuilder procHeader = new StringBuilder("CREATE OR REPLACE ");
+
+  // ALL_PROCEDURES does not return invalid procedures
+  // so an outer join against ALL_OBJECTS is necessary
+  private final String standardProcSQL =
+      "  select null as package_name,   \n" +
+      "         ao.owner as procedure_owner,   \n" +
+      "         ao.object_name as procedure_name,  \n" +
+      "         null as overload_index,  \n" +
+      "         null as remarks,  \n" +
+      "         decode(ao.object_type, 'PROCEDURE', 1, 'FUNCTION', 2, 0) as PROCEDURE_TYPE,  \n" +
+      "         ao.status, \n" +
+      "         ap.pipelined \n " +
+      "  from all_objects ao  \n" +
+      "    left join all_procedures ap on ao.object_name = ap.object_name and ao.owner = ap.owner   \n" +
+      "  where ao.object_type in ('PROCEDURE', 'FUNCTION') ";
 
   public OracleProcedureReader(WbConnection conn)
   {
@@ -369,6 +384,8 @@ public class OracleProcedureReader
     return "= '" + name + "'";
   }
 
+
+
   @Override
   public DataStore getProcedures(String pkgName, String schema, String name)
     throws SQLException
@@ -387,17 +404,7 @@ public class OracleProcedureReader
 
     // ALL_PROCEDURES does not return invalid procedures
     // so an outer join against ALL_OBJECTS is necessary
-    String standardProcs =
-      "  select null as package_name,   \n" +
-      "         ao.owner as procedure_owner,   \n" +
-      "         ao.object_name as procedure_name,  \n" +
-      "         null as overload_index,  \n" +
-      "         null as remarks,  \n" +
-      "         decode(ao.object_type, 'PROCEDURE', 1, 'FUNCTION', 2, 0) as PROCEDURE_TYPE,  \n" +
-      "         ao.status  \n" +
-      "  from all_objects ao  \n" +
-      "    left join all_procedures ap on ao.object_name = ap.object_name and ao.owner = ap.owner   \n" +
-      "  where ao.object_type in ('PROCEDURE', 'FUNCTION') ";
+    String standardProcs = standardProcSQL;
 
     if (StringUtil.isNonBlank(schema))
     {
@@ -419,6 +426,7 @@ public class OracleProcedureReader
       "           decode(ao.object_type, 'TYPE', 'OBJECT TYPE', ao.object_type) as remarks, \n" +
       "           decode(aa.anz, 1, " + DatabaseMetaData.procedureReturnsResult + ", " + DatabaseMetaData.procedureNoResult + " ) as procedure_type, \n" +
       "           ao.status,  \n" +
+      "           ap.pipelined, \n " +
       "           row_number() over (partition by ap.owner, ap.object_name, ap.procedure_name, ap.overload order by ao.object_type desc) as rn \n" +
       "    from all_procedures ap \n" +
       "      join all_objects ao on ap.object_name = ao.object_name and ap.owner = ao.owner \n" +
@@ -466,9 +474,9 @@ public class OracleProcedureReader
       sql += pkgProcs;
     }
 
-      sql +=
-        "\n)\n" +
-        "ORDER BY 2,3,4";
+    sql +=
+      "\n)\n" +
+      "ORDER BY 2,3,4";
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "procedures", sql);
 
@@ -488,6 +496,7 @@ public class OracleProcedureReader
         String procedureName = rs.getString("PROCEDURE_NAME");
         String remark = rs.getString("REMARKS");
         String overloadIndicator = rs.getString("OVERLOAD_INDEX");
+        String pipelined = rs.getString("PIPELINED");
         int type = rs.getInt("PROCEDURE_TYPE");
         String status = rs.getString("STATUS");
 
@@ -503,6 +512,10 @@ public class OracleProcedureReader
         }
         ProcedureDefinition def = ProcedureDefinition.createOracleDefinition(owner, procedureName, packageName, type, remark);
         def.setOracleOverloadIndex(overloadIndicator);
+        if ("YES".equals(pipelined))
+        {
+          def.setRoutineType(RoutineType.tableFunction);
+        }
         int row = ds.addRow();
         ds.setValue(row, ProcedureReader.COLUMN_IDX_PROC_LIST_CATALOG, packageName);
         ds.setValue(row, ProcedureReader.COLUMN_IDX_PROC_LIST_SCHEMA, owner);
@@ -527,6 +540,59 @@ public class OracleProcedureReader
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving procedures took: " + duration + "ms");
     return ds;
+  }
+
+  @Override
+  public List<ProcedureDefinition> getTableFunctions(String catalog, String schema, String name)
+    throws SQLException
+  {
+    schema = DbMetadata.cleanupWildcards(schema);
+    name = DbMetadata.cleanupWildcards(name);
+
+    schema = connection.getMetadata().adjustObjectnameCase(schema);
+    name = connection.getMetadata().adjustObjectnameCase(name);
+
+    String query = standardProcSQL + "\n    and ap.pipelined = 'YES' ";
+
+    if (StringUtil.isNonBlank(schema))
+    {
+      query += "\n    and ao.owner = '" + schema + "' ";
+    }
+
+    if (StringUtil.isNonBlank(name))
+    {
+      query += "\n    and ao.object_name " + getNameCondition(name);
+    }
+    query += "\nORDER BY 2,3";
+
+    List<ProcedureDefinition> result = new ArrayList<>();
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table functions", query);
+    long start = System.currentTimeMillis();
+    Statement stmt = null;
+    ResultSet rs = null;
+    try
+    {
+      stmt = connection.createStatementForQuery();
+      rs = stmt.executeQuery(query);
+      while (rs.next())
+      {
+        String owner = rs.getString("PROCEDURE_OWNER");
+        String procedureName = rs.getString("PROCEDURE_NAME");
+        ProcedureDefinition def = new ProcedureDefinition(null, owner, procedureName, RoutineType.tableFunction, DatabaseMetaData.procedureReturnsResult);
+        result.add(def);
+      }
+    }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "table functions", query);
+    }
+    finally
+    {
+      JdbcUtils.closeAll(rs, stmt);
+    }
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving table functions took: " + duration + "ms");
+    return result;
   }
 
   private CharSequence retrieveUsingDbmsMetadata(ProcedureDefinition def)

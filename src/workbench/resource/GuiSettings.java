@@ -383,6 +383,11 @@ public class GuiSettings
 		Settings.getInstance().setProperty("workbench.gui.table.rownumber.show", flag);
 	}
 
+  public static boolean getCompletionSortFunctionsWithTables()
+  {
+		return Settings.getInstance().getBoolProperty("workbench.gui.autocompletion.sort.functions.with.tables", true);
+  }
+
 	public static boolean getCycleCompletionPopup()
 	{
 		return Settings.getInstance().getBoolProperty("workbench.gui.autocompletion.cycle.popup", true);
