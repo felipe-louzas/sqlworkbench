@@ -32,6 +32,7 @@ import workbench.interfaces.TextContainer;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
 import workbench.db.WbConnection;
 
 import workbench.sql.DelimiterDefinition;
@@ -80,7 +81,7 @@ public class CopyCurrentStatementAction
     String sql = script.getText();
     if (StringUtil.isEmptyString(sql)) return;
 
-    ScriptParser parser = new ScriptParser(sql, ParserType.getTypeFromDBID(dbid));
+    ScriptParser parser = new ScriptParser(sql, DBID.fromID(dbid));
     parser.setAlternateDelimiter(alternateDelimiter);
     parser.setCheckEscapedQuotes(Settings.getInstance().useNonStandardQuoteEscaping(dbid));
     parser.setEmptyLineIsDelimiter(Settings.getInstance().getEmptyLineIsDelimiter());

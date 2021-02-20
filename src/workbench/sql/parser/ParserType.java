@@ -35,7 +35,8 @@ public enum ParserType
   Postgres,
   SqlServer,
   Oracle,
-  MySQL;
+  MySQL,
+  Firebird;
 
   public static ParserType getTypeFromConnection(WbConnection conn)
   {
@@ -43,6 +44,12 @@ public enum ParserType
     return getTypeFromDBID(conn.getDbId());
   }
 
+  public static ParserType getTypeFromDBID(DBID id)
+  {
+    if (id == null) return Standard;
+    return getTypeFromDBID(id.getId());
+  }
+  
   public static ParserType getTypeFromDBID(String dbid)
   {
     if (dbid == null) return Standard;
@@ -52,6 +59,7 @@ public enum ParserType
     if (DBID.Vertica.isDB(dbid)) return Postgres;
     if (DBID.Greenplum.isDB(dbid)) return Postgres;
     if (DBID.Redshift.isDB(dbid)) return Postgres;
+    if (DBID.Firebird.isDB(dbid)) return Firebird;
 
     // This will allow mixing the standard delimiter with the alternate delimiter
     if (DBID.Oracle.isDB(dbid)) return Oracle;

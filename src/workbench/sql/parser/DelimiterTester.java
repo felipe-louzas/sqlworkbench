@@ -58,7 +58,8 @@ public interface DelimiterTester
       case Postgres:
         return new PostgresDelimiterTester();
       case MySQL:
-        return new MySQLDelimiterTester();
+      case Firebird:
+        return new DynamicDelimiterTester();
       case Standard:
         return new ShortIncludeDelimiterTester();
       case SqlServer:

@@ -103,6 +103,12 @@ public class LexerBasedParser
     return parserType;
   }
 
+  public void enableDynamicDelimiter()
+  {
+    delimiterTester = new DynamicDelimiterTester();
+    this.delimiterTester.setAlternateDelimiter(alternateDelimiter);
+  }
+
   @Override
   public boolean supportsMixedDelimiter()
   {

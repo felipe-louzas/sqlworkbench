@@ -270,6 +270,7 @@ keyword=(
 "DEFAULT"|
 
 
+"DELIMITER"|
 "DELETE"|
 
 "DENSE_RANK"|

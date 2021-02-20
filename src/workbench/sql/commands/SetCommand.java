@@ -166,6 +166,12 @@ public class SetCommand
         WbFetchSize.setFetchSize(value, result, currentConnection);
         execSql = false;
       }
+      else if (command.equalsIgnoreCase("TERM") && currentConnection.getMetadata().isFirebird())
+      {
+        result = new StatementRunnerResult(userSql);
+        result.setSuccess();
+        execSql = false;
+      }
       else if (currentConnection.getMetadata().isOracle())
       {
         Set<String> allowed = CollectionUtil.caseInsensitiveSet("constraints","constraint","transaction","role");

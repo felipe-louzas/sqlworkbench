@@ -56,6 +56,7 @@ import workbench.sql.wbcommands.WbCopy;
 import workbench.sql.wbcommands.WbDataDiff;
 import workbench.sql.wbcommands.WbDefinePk;
 import workbench.sql.wbcommands.WbDefineVar;
+import workbench.sql.wbcommands.WbDelimiter;
 import workbench.sql.wbcommands.WbDescribeObject;
 import workbench.sql.wbcommands.WbDisableOraOutput;
 import workbench.sql.wbcommands.WbEcho;
@@ -263,6 +264,7 @@ public class CommandMapper
 
     addCommand(new WbSetMasterPwd());
     addCommand(new WbRemoveMasterPwd());
+    addCommand(new WbDelimiter());
 
     for (DdlCommand cmd : DdlCommand.getDdlCommands())
     {
@@ -367,6 +369,8 @@ public class CommandMapper
     {
       DdlCommand recreate = DdlCommand.getRecreateCommand();
       addDBMSCommand(recreate.getVerb(), recreate);
+      WbDelimiter delim = new WbDelimiter("SET TERM");
+      addDBMSCommand(delim.getVerb(), delim);
     }
 
     if (metaData.isPostgres())
@@ -403,6 +407,8 @@ public class CommandMapper
     {
       MySQLShow show = new MySQLShow();
       addDBMSCommand(show.getVerb(), show);
+      WbDelimiter delim = new WbDelimiter(WbDelimiter.ALTERNATE_VERB);
+      addDBMSCommand(delim.getVerb(), delim);
     }
 
     List<String> startTrans = aConn.getDbSettings().getListProperty("start_transaction");
@@ -433,6 +439,15 @@ public class CommandMapper
     {
       if (verb == null) continue;
       IgnoredCommand cmd = new IgnoredCommand(verb);
+      addDBMSCommand(verb, cmd);
+    }
+
+    List<String> silentVerbs = aConn.getDbSettings().getListProperty("ignore.silent");
+    for (String verb : silentVerbs)
+    {
+      if (verb == null) continue;
+      IgnoredCommand cmd = new IgnoredCommand(verb);
+      cmd.setSilent(true);
       addDBMSCommand(verb, cmd);
     }
 

@@ -417,7 +417,7 @@ public class OracleProcedureReader
     }
 
     String pkgProcs =
-      "  select package_name, procedure_owner, procedure_name, overload_index, remarks, procedure_type, status \n" +
+      "  select package_name, procedure_owner, procedure_name, overload_index, remarks, procedure_type, status, pipelined \n" +
       "  from ( \n" +
       "    select ap.object_name as package_name, \n" +
       "           ap.owner as procedure_owner, \n" +

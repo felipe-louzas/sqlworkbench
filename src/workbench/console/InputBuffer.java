@@ -23,10 +23,14 @@
  */
 package workbench.console;
 
+import workbench.db.DBID;
 import workbench.db.WbConnection;
+
 import workbench.sql.ScriptCommandDefinition;
-import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
+
+import workbench.util.StringUtil;
+
 
 /**
  * A buffer that collects pieces of text entered by the user until
@@ -38,12 +42,11 @@ public class InputBuffer
 {
   private StringBuilder script;
   private ScriptParser parser;
-  private ParserType parserType = ParserType.Standard;
 
   public InputBuffer()
   {
     script = new StringBuilder(1000);
-    parser = new ScriptParser(parserType);
+    parser = new ScriptParser();
   }
 
   public void setConnection(WbConnection conn)
@@ -55,12 +58,8 @@ public class InputBuffer
 
   public void setDbId(String dbid)
   {
-    ParserType type = ParserType.getTypeFromDBID(dbid);
-    if (type != this.parserType)
-    {
-      parser = new ScriptParser(type);
-      parserType = type;
-    }
+    if (StringUtil.isBlank(dbid)) return;
+    parser = new ScriptParser(DBID.fromID(dbid));
   }
 
   public String getScript()

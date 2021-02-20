@@ -2582,6 +2582,11 @@ public class DbSettings
     return getProperty("change.connection.readwrite.sql", null);
   }
 
+  public boolean enableDynamicDelimiter()
+  {
+    return getBoolProperty("delimiter.dynamic.enabled", true);
+  }
+
   public Set<String> getTypesRequiringAlternateDelimiter()
   {
     Set<String> types = CollectionUtil.caseInsensitiveSet();

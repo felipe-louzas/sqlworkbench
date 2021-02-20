@@ -519,8 +519,27 @@
 					file="../src/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/workbench/sql/lexer/PostgresLexer.flex"/>
 
+    <copy quiet="true" overwrite="true"
+					file="../src/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/workbench/sql/lexer/FirebirdLexer.flex"/>
+
     <replace file="../src/workbench/sql/lexer/StandardLexer.flex">
       <replacefilter token="XXXX_DBMS_XXXX|"/>
+    </replace>
+
+    <replace file="../src/workbench/sql/lexer/FirebirdLexer.flex">
+      <replacefilter>
+        <replacetoken>StandardLexer</replacetoken>
+        <replacevalue>FirebirdLexer</replacevalue>
+      </replacefilter>
+      <replacefilter token="XXXX_DBMS_XXXX|"
+                     value='"DELIMITER"|(SET{wsp}TERM)|'/>
+      <replacefilter token="(FOREIGN{wsp}DATA{wsp}WRAPPER)|"/>
+      <replacefilter token='"VARCHAR2"|'/>
+      <replacefilter token="(SNAPSHOT{wsp}LOG)|"/>
+      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
+      <replacefilter token="(DATABASE{wsp}LINK)|"/>
+      <replacefilter token="(DISTINCT{wsp}ON)|"/>
     </replace>
 
     <replace file="../src/workbench/sql/lexer/PostgresLexer.flex">
@@ -662,7 +681,7 @@
       <replacefilter token='"VARCHAR2"|'/>
       <replacefilter token='"SIMILAR"|'/>
       <replacefilter token='"CYCLE"|'/>
-      <replacefilter token='"DEPTH"|' value='"DELIMITER"|'/>
+      <replacefilter token='"DEPTH"|'/>
       <replacefilter token='"DEFERRABLE"|'/>
       <replacefilter token='"DEFERRED"|'/>
       <replacefilter token='(DATABASE{wsp}LINK)|'/>
@@ -700,6 +719,13 @@
       <arg value="-q"/>
       <arg value="-nobak"/>
       <arg value="../src/workbench/sql/lexer/PostgresLexer.flex"/>
+    </java>
+
+    <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">
+      <jvmarg value="-Xmx256m"/>
+      <arg value="-q"/>
+      <arg value="-nobak"/>
+      <arg value="../src/workbench/sql/lexer/FirebirdLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="../libs/jflex/JFlex.jar" fork="true">

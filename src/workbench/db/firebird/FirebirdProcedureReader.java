@@ -127,7 +127,7 @@ public class FirebirdProcedureReader
       "         null as procedure_schem,  \n" +
       "         trim(rdb$procedure_name) as procedure_name,  \n" +
       "         rdb$description as remarks,  \n" +
-      "         rdb$procedure_outputs as procedure_type  \n" +
+      "         " + DatabaseMetaData.procedureNoResult + " as procedure_type  \n" +
       "  from rdb$procedures  \n" +
       "  where rdb$private_flag = 0 \n" +
       "     or rdb$package_name is null \n" +
@@ -136,7 +136,7 @@ public class FirebirdProcedureReader
       "         null as procedure_schem,  \n" +
       "         trim(rdb$function_name),  \n" +
       "         rdb$description as remarks,  \n" +
-      "         2 -- returns result \n" +
+      "         " + DatabaseMetaData.procedureReturnsResult + " as procedure_type  \n" +
       "  from rdb$functions \n" +
       "  where rdb$private_flag = 0 \n" +
       "     or rdb$package_name is null \n" +

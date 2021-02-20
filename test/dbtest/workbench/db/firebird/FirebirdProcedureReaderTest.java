@@ -30,6 +30,7 @@ import workbench.WbTestCase;
 
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -148,6 +149,7 @@ public class FirebirdProcedureReaderTest
     assertEquals(2, procs.size());
     ProcedureDefinition proc = procs.get(1);
     assertEquals("BBB_MULTIPLE", proc.getProcedureName());
+    assertEquals(RoutineType.procedure, proc.getRoutineType());
     DataStore cols = reader.getProcedureColumns(proc);
 
     assertEquals(4, cols.getRowCount()); // two input parameter, two output parameter
@@ -159,7 +161,7 @@ public class FirebirdProcedureReaderTest
     assertEquals("B", colName);
 
     String sql = proc.getSource(con).toString();
-    System.out.println(sql);
+//    System.out.println(sql);
     assertTrue(sql.startsWith(
       "CREATE OR ALTER PROCEDURE BBB_MULTIPLE (X INTEGER, Y INTEGER)\n" +
       "  RETURNS (A INTEGER, B INTEGER)"));

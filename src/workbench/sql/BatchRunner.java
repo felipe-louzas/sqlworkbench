@@ -765,7 +765,7 @@ public class BatchRunner
 
   private ScriptParser createParser()
   {
-    ScriptParser parser = new ScriptParser(ParserType.getTypeFromConnection(connection));
+    ScriptParser parser = new ScriptParser(connection);
     // If no delimiter has been defined, then use the alternate delimiter from the connection
     if (this.delimiter == null)
     {

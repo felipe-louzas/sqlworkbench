@@ -31,6 +31,8 @@ import java.util.List;
 
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
+import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 
 import workbench.sql.DelimiterDefinition;
@@ -66,6 +68,7 @@ public class ScriptParser
   private boolean useAlternateDelimiter;
   private ParserType parserType = ParserType.Standard;
   private File source;
+  private boolean useDynamicDelimiterTester;
 
   public ScriptParser()
   {
@@ -77,6 +80,28 @@ public class ScriptParser
     parserType = type;
   }
 
+  public ScriptParser(DBID dbms)
+  {
+    parserType = ParserType.getTypeFromDBID(dbms);
+    DbSettings dbs = new DbSettings(dbms.getId());
+    useDynamicDelimiterTester = dbs.enableDynamicDelimiter();
+  }
+
+  public ScriptParser(WbConnection conn)
+  {
+    parserType = ParserType.getTypeFromConnection(conn);
+    if (conn != null && conn.getDbSettings() != null)
+    {
+      useDynamicDelimiterTester = conn.getDbSettings().enableDynamicDelimiter();
+    }
+  }
+
+  public ScriptParser(String aScript, DBID dbms)
+  {
+    this(dbms);
+    this.setScript(aScript);
+  }
+
   public ScriptParser(String aScript, ParserType type)
   {
     this(type);
@@ -86,6 +111,25 @@ public class ScriptParser
   public ScriptParser(String aScript)
   {
     this.setScript(aScript);
+  }
+
+  public boolean isDynamicDelimiterEnabled()
+  {
+    return this.useDynamicDelimiterTester;
+  }
+
+  public void setDynamicDelimiterEnabled(boolean flag)
+  {
+    if (flag)
+    {
+      this.useAlternateDelimiter = false;
+    }
+    this.commands = null;
+    this.useDynamicDelimiterTester = flag;
+    if (scriptIterator != null)
+    {
+      scriptIterator = getParserInstance();
+    }
   }
 
   public void setParserType(ParserType type)
@@ -475,6 +519,10 @@ public class ScriptParser
   private ScriptIterator getParserInstance()
   {
     LexerBasedParser p = new LexerBasedParser(parserType);
+    if (useDynamicDelimiterTester)
+    {
+      p.enableDynamicDelimiter();
+    }
     p.setCheckEscapedQuotes(this.checkEscapedQuotes);
     if (p.supportsMixedDelimiter())
     {
@@ -660,8 +708,11 @@ public class ScriptParser
    */
   public static ScriptParser createScriptParser(WbConnection dbConnection)
   {
-    ScriptParser scriptParser = new ScriptParser(ParserType.getTypeFromConnection(dbConnection));
-    scriptParser.setAlternateDelimiter(Settings.getInstance().getAlternateDelimiter(dbConnection, null));
+    ScriptParser scriptParser = new ScriptParser(dbConnection);
+    if (scriptParser.isDynamicDelimiterEnabled())
+    {
+      scriptParser.setAlternateDelimiter(Settings.getInstance().getAlternateDelimiter(dbConnection, null));
+    }
     scriptParser.setCheckEscapedQuotes(Settings.getInstance().useNonStandardQuoteEscaping(dbConnection));
     scriptParser.setEmptyLineIsDelimiter(Settings.getInstance().getEmptyLineIsDelimiter());
     return scriptParser;

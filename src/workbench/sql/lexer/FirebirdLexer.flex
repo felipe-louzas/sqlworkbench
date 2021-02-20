@@ -1,10 +1,10 @@
-/* NonStandardLexer.java is a generated file.  You probably want to
- * edit NonStandardLexer.lex to make changes.  Use JFlex to generate it.
- * To generate NonStandardLexer.java
+/* FirebirdLexer.java is a generated file.  You probably want to
+ * edit FirebirdLexer.lex to make changes.  Use JFlex to generate it.
+ * To generate FirebirdLexer.java
  * Install <a href="http://jflex.de/">JFlex</a> v1.3.2 or later.
  * Once JFlex is in your classpath run<br>
- * <code>java JFlex.Main NonStandardLexer.lex</code><br>
- * You will then have a file called NonStandardLexer.java
+ * <code>java JFlex.Main FirebirdLexer.lex</code><br>
+ * You will then have a file called FirebirdLexer.java
  */
 
 /*
@@ -32,10 +32,10 @@ import java.io.*;
 import workbench.util.CharSequenceReader;
 
 /**
- * NonStandardLexer is a SQL language lexer.  Created with JFlex.  An example of how it is used:
+ * FirebirdLexer is a SQL language lexer.  Created with JFlex.  An example of how it is used:
  *  <CODE>
  *  <PRE>
- *  NonStandardLexer shredder = new NonStandardLexer(System.in);
+ *  FirebirdLexer shredder = new FirebirdLexer(System.in);
  *  SQLToken t;
  *  while ((t = shredder.getNextToken()) != null){
  *      System.out.println(t);
@@ -50,7 +50,7 @@ import workbench.util.CharSequenceReader;
 
 %public
 %implements SQLLexer
-%class NonStandardLexer
+%class FirebirdLexer
 %function getNextToken
 %type SQLToken
 %column
@@ -136,12 +136,12 @@ import workbench.util.CharSequenceReader;
     }
   }
 
-	NonStandardLexer(String source)
+	FirebirdLexer(String source)
 	{
 		this(new StringReader(source));
 	}
 
-	NonStandardLexer(CharSequence source)
+	FirebirdLexer(CharSequence source)
 	{
 		this(new CharSequenceReader(source));
 	}
@@ -151,7 +151,7 @@ import workbench.util.CharSequenceReader;
 wsp = [ \r\n\t\f]+
 
 keyword=(
-
+"DELIMITER"|(SET{wsp}TERM)|
 (ALTER{wsp}SESSION)|
 (CONNECT{wsp}BY)|
 (PRIMARY{wsp}KEY)|
@@ -198,7 +198,7 @@ keyword=(
 (CHARACTER{wsp}VARYING)|
 (DISTINCT{wsp}ON)|
 (PRIMARY{wsp}KEY)|
-(SNAPSHOT{wsp}LOG)|
+
 (IF{wsp}EXISTS)|
 (IF{wsp}NOT{wsp}EXISTS)|
 (WITHIN{wsp}GROUP)|
@@ -455,7 +455,7 @@ keyword=(
 "VALID"|
 "VALUES"|
 "VARCHAR"|
-"VARCHAR2"|
+
 "VARIABLE"|
 "VERBOSE"|
 "VERSION"|
@@ -512,9 +512,9 @@ identifier=([^ \"\r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\~\?\(\)\[\]\,\;\:\.0-9][^ \r
 digit=([0-9])
 digits=({digit}+)
 separator=([\(\)\[\]\,\;\:\*])
-operator=([\+\-\*\/\<\>\=\~\!\%\^\&\?]|"||"|"|/"|"||/"|"!!"|"<<"|">>"|"##"|"~"|"~*"|"!~"|"!~*"|"@-@"|"@@"|"@@@"|"?&"|"#-"|"#>"|"#>>"|"->"|"->>"|"<->"|"&<"|"&>"|"<<|"|"|>>"|"&<|"|"|&>"|"<^"|">^"|"?#"|"?-"|"?|"|"?-|"|"?|"|"~="|"!="|"<>"|"<="|">="|"=>"|"@>"|"<@")|"<<="|">>="
+operator=([\+\-\*\/\<\>\=\~\!\%\^\&\?]|"||"|"!="|"<>"|"<="|">="|"=>"|"(+)")
 integer=([-+]?{digits})
-string=([\'](([^\']|\'\'|\\\')*)[\'])
+string=([\'](([^\']|\'\')*)[\']|[Nn][\'](([^\']|\'\')*)[\'])
 
 bitstring=("B"[\']([01]+)[\'])
 stringerror=([\'](([^\r\n\'])*)[\r\n])

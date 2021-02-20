@@ -200,7 +200,7 @@ public class DropScriptGenerator
   private void createRootRestoreStatements(List<String> restore, TableIdentifier root)
   {
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(connection);
-    ScriptParser p = new ScriptParser(ParserType.getTypeFromConnection(connection));
+    ScriptParser p = new ScriptParser(connection);
     StringBuilder fkSource = builder.getFkSource(root);
     if (fkSource.length() > 0)
     {
@@ -216,7 +216,7 @@ public class DropScriptGenerator
   private void createRestoreStatements(List<String> restore, DependencyNode node)
   {
     TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(connection);
-    ScriptParser p = new ScriptParser(ParserType.getTypeFromConnection(connection));
+    ScriptParser p = new ScriptParser(connection);
     p.setScript(builder.getFkSource(node.getTable()).toString());
     int count = p.getSize();
     for (int i=0; i < count; i++)

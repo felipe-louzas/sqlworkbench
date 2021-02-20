@@ -32,19 +32,20 @@ import static org.junit.Assert.*;
  *
  * @author Alfred Porter
  */
-public class MySQLDelimiterTesterTest
+public class DynamicDelimiterTesterTest
   extends WbTestCase
 {
 
-  public MySQLDelimiterTesterTest()
+  public DynamicDelimiterTesterTest()
   {
-    super("MySQLDelimiterTesterTest");
+    super("DynamicDelimiterTesterTest");
   }
 
   @Test
   public void testWithAlternateDelimiter()
   {
-    ScriptParser parser = new ScriptParser(ParserType.MySQL);
+    ScriptParser parser = new ScriptParser(ParserType.Standard);
+    parser.setDynamicDelimiterEnabled(true);
     parser.setAlternateDelimiter(DelimiterDefinition.DEFAULT_ORA_DELIMITER);
     String sql =
       "CREATE PROCEDURE foo(OUT p1 INT) \n"+
@@ -59,7 +60,7 @@ public class MySQLDelimiterTesterTest
   @Test
   public void testOnlyReservedWordAtStartOfStatement()
   {
-    MySQLDelimiterTester tester = new MySQLDelimiterTester();
+    DynamicDelimiterTester tester = new DynamicDelimiterTester();
     SQLToken token = new SQLToken(SQLToken.RESERVED_WORD, "DELIMITER", 0, 0);
     assertTrue(tester.isDelimiterCommand(token, true));
     assertFalse(tester.isDelimiterCommand(token, false));
@@ -75,7 +76,7 @@ public class MySQLDelimiterTesterTest
   {
     final String testDelimiter = "$$";
 
-    MySQLDelimiterTester tester = new MySQLDelimiterTester();
+    DynamicDelimiterTester tester = new DynamicDelimiterTester();
     assertEquals(DelimiterDefinition.STANDARD_DELIMITER, tester.getCurrentDelimiter());
 
     SQLToken token = new SQLToken(SQLToken.RESERVED_WORD, "DELIMITER", 0, 0);
@@ -107,7 +108,8 @@ public class MySQLDelimiterTesterTest
       "$$\n" +
       "DELIMITER ;\n" +
       "SELECT 1;\n";
-    ScriptParser parser = new ScriptParser(ParserType.MySQL);
+    ScriptParser parser = new ScriptParser();
+    parser.setDynamicDelimiterEnabled(true);
     parser.setScript(sql);
     int count = parser.getStatementCount();
     assertEquals(4, count);

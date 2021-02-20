@@ -24,22 +24,24 @@ import java.util.Set;
 
 import workbench.sql.DelimiterDefinition;
 import workbench.sql.lexer.SQLToken;
+import workbench.sql.wbcommands.WbDelimiter;
+
 import workbench.util.CollectionUtil;
 
 /**
  *
  * @author Alfred Porter
  */
-public class MySQLDelimiterTester
+public class DynamicDelimiterTester
   implements DelimiterTester
 {
 
   private DelimiterDefinition currentDelimiter = new DelimiterDefinition(";");
   private DelimiterDefinition alternateDelimiter;
   private boolean isDelimiterCommand;
-  private final Set<String> delimiterCommands = CollectionUtil.caseInsensitiveSet("DELIMITER");
+  private final Set<String> delimiterCommands = CollectionUtil.caseInsensitiveSet(WbDelimiter.ALTERNATE_VERB, WbDelimiter.VERB, "SET TERM");
 
-  public MySQLDelimiterTester()
+  public DynamicDelimiterTester()
   {
   }
 
@@ -70,10 +72,8 @@ public class MySQLDelimiterTester
 
   public boolean isDelimiterCommand(SQLToken token, boolean isStartOfLineOrStatement)
   {
-    return isStartOfLineOrStatement && token.isReservedWord() &&
-           delimiterCommands.contains(token.getText());
-
-
+    return WbDelimiter.VERB.equalsIgnoreCase(token.getText()) ||
+          (isStartOfLineOrStatement && token.isReservedWord() && delimiterCommands.contains(token.getText()));
   }
 
   @Override

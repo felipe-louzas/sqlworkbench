@@ -709,7 +709,7 @@ public class SqlCommand
       // the initial execute() did not return a result set, so the first "result" is an updateCount
       try
       {
-        updateCount = this.currentStatement.getUpdateCount();
+        if (currentStatement != null) updateCount = this.currentStatement.getUpdateCount();
       }
       catch (Exception e)
       {

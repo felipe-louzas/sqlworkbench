@@ -33,7 +33,6 @@ import workbench.gui.sql.EditorPanel;
 
 import workbench.sql.formatter.FormatterUtil;
 import workbench.sql.formatter.WbSqlFormatter;
-import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
 
 import workbench.util.StringUtil;
@@ -60,7 +59,7 @@ public class EditorDropHandler
     String id = selection.getConnectionId();
     WbConnection conn = ConnectionMgr.getInstance().findConnection(id);
 
-    ScriptParser parser = new ScriptParser(ParserType.getTypeFromConnection(conn));
+    ScriptParser parser = new ScriptParser(conn);
     parser.setScript(editor.getSelectedStatement());
 
     int editorPos = editor.xyToOffset((int)location.getX() - editor.getPainter().getGutterWidth(), (int)location.getY());

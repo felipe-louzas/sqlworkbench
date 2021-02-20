@@ -60,10 +60,10 @@ public class ResultProcessor
       currentResult = null;
       return rs;
     }
-    
+
     try
     {
-      return currentStatement.getResultSet();
+      return currentStatement == null ? null : currentStatement.getResultSet();
     }
     catch (Exception ex)
     {
@@ -104,7 +104,7 @@ public class ResultProcessor
   private boolean checkForMoreResults()
     throws SQLException
   {
-    return currentStatement.getMoreResults();
+    return currentStatement != null && currentStatement.getMoreResults();
   }
 
 }
