@@ -1325,6 +1325,11 @@ public class DbSettings
     return getBoolProperty("srf.call.needs.table", false);
   }
 
+  public boolean getTableFunctionAlwaysNeedsParens()
+  {
+    return getBoolProperty("srf.call.needs.parentheses", true);
+  }
+
   public boolean getIncludeTableFunctionsForTableCompletion()
   {
     return getBoolProperty("completion.tables.include.functions", true);

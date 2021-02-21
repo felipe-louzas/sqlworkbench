@@ -29,6 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -106,6 +108,69 @@ public class FirebirdProcedureReader
   }
 
   @Override
+  public List<ProcedureDefinition> getTableFunctions(String catalogPattern, String schemaPattern, String namePattern)
+    throws SQLException
+  {
+    List<ProcedureDefinition> result = new ArrayList<>();
+    if (!JdbcUtils.hasMinimumServerVersion(connection, "2.5"))
+    {
+      return result;
+    }
+    StringBuilder sql = new StringBuilder(150);
+    sql.append(
+      "  select trim(rdb$package_name) as procedure_package, \n" +
+      "         trim(rdb$procedure_name) as procedure_name, \n" +
+      "         trim(rdb$description) as remarks,  \n" +
+      "         case rdb$procedure_type\n" +
+      "           when 1 then " + DatabaseMetaData.procedureReturnsResult + " \n" +
+      "           when 2 then " + DatabaseMetaData.procedureNoResult + " \n" +
+      "           else " + DatabaseMetaData.procedureResultUnknown + " \n" +
+      "         end as procedure_type\n " +
+      "  from rdb$procedures  \n" +
+      "  where (rdb$private_flag = 0 or rdb$package_name is null) \n" +
+      "    and rdb$procedure_type = 1"
+      );
+
+    namePattern = DbMetadata.cleanupWildcards(namePattern);
+
+    if (StringUtil.isNonEmpty(namePattern))
+    {
+      SqlUtil.appendAndCondition(sql, "procedure_name", namePattern, connection);
+    }
+    sql.append(" \nORDER BY rdb$procedure_name");
+
+    Statement stmt = null;
+    ResultSet rs = null;
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table functions", sql);
+    try
+    {
+      stmt = connection.createStatementForQuery();
+      rs = stmt.executeQuery(sql.toString());
+      while (rs.next())
+      {
+        String pkg = rs.getString("procedure_package");
+        String procName = rs.getString("procedure_name");
+        String remarks = rs.getString("remarks");
+        int type = rs.getInt("procedure_type");
+        ProcedureDefinition def = new ProcedureDefinition(procName, RoutineType.tableFunction, type);
+        def.setComment(remarks);
+        def.setPackageName(pkg);
+        result.add(def);
+      }
+    }
+    catch (Exception ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "table functions", sql);
+    }
+    finally
+    {
+      JdbcUtils.closeAll(rs, stmt);
+    }
+    return result;
+  }
+
+
+  @Override
   public DataStore getProcedures(String catalog, String schema, String name)
     throws SQLException
   {
@@ -113,10 +178,10 @@ public class FirebirdProcedureReader
     {
       return super.getProcedures(catalog, schema, name);
     }
-    return getProceduresAndPackages(schema, name);
+    return getProceduresAndPackages(name);
   }
 
-  private DataStore getProceduresAndPackages(String schema, String name)
+  private DataStore getProceduresAndPackages(String name)
     throws SQLException
   {
     StringBuilder sql = new StringBuilder(150);
@@ -127,7 +192,11 @@ public class FirebirdProcedureReader
       "         null as procedure_schem,  \n" +
       "         trim(rdb$procedure_name) as procedure_name,  \n" +
       "         rdb$description as remarks,  \n" +
-      "         " + DatabaseMetaData.procedureNoResult + " as procedure_type  \n" +
+      "         case rdb$procedure_type\n" +
+      "           when 1 then " + DatabaseMetaData.procedureReturnsResult + " \n" +
+      "           when 2 then " + DatabaseMetaData.procedureNoResult + " \n" +
+      "           else " + DatabaseMetaData.procedureResultUnknown + " \n" +
+      "         end as procedure_type\n " +
       "  from rdb$procedures  \n" +
       "  where rdb$private_flag = 0 \n" +
       "     or rdb$package_name is null \n" +
@@ -142,13 +211,12 @@ public class FirebirdProcedureReader
       "     or rdb$package_name is null \n" +
       ") t \n");
 
-
-    schema = DbMetadata.cleanupWildcards(schema);
     name = DbMetadata.cleanupWildcards(name);
 
     if (StringUtil.isNonEmpty(name))
     {
-      SqlUtil.appendAndCondition(sql, "procedure_name", name, connection);
+      sql.append("WHERE ");
+      SqlUtil.appendExpression(sql, "procedure_name", name, connection);
     }
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "procedures", sql);
@@ -186,6 +254,10 @@ public class FirebirdProcedureReader
       LogMgr.logMetadataError(new CallerInfo(){}, ex, "procedures", sql);
       throw ex;
     }
+    finally
+    {
+      JdbcUtils.closeStatement(stmt);
+    }
   }
 
   @Override
@@ -198,7 +270,7 @@ public class FirebirdProcedureReader
       source.append("CREATE OR ALTER ");
 
       boolean isFunction = false;
-      if (is30 && def.isFunction())
+      if (is30 && def.isFunction() && !def.isTableFunction())
       {
         source.append("FUNCTION "); // Firebird 3.0
         isFunction = true;
@@ -378,7 +450,7 @@ public class FirebirdProcedureReader
 
 
     String type = null;
-    if (def.isFunction())
+    if (def.isFunction() && !def.isTableFunction())
     {
       type =  "function";
     }

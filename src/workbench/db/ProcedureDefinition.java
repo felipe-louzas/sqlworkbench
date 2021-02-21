@@ -620,9 +620,22 @@ public class ProcedureDefinition
       name = SqlUtil.buildExpression(con, catalog, schema, procName);
     }
 
-    name = name + "(" + getInputParameterNames() + ")";
+    boolean alwaysNeedsParens = true;
+    boolean needsTableKeyword = false;
 
-    if (con != null && con.getDbSettings().getTableFunctionNeedsTableKeyword())
+    if (con != null)
+    {
+      alwaysNeedsParens = con.getDbSettings().getTableFunctionAlwaysNeedsParens();
+      needsTableKeyword = con.getDbSettings().getTableFunctionNeedsTableKeyword();
+    }
+
+    if (parameters.size() > 0 || alwaysNeedsParens)
+    {
+      name = name + "(" + getInputParameterNames() + ")";
+    }
+
+
+    if (needsTableKeyword)
     {
       name = "table(" + name + ")";
     }
