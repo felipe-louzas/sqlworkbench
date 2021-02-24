@@ -32,10 +32,10 @@ import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.renderer.ColorUtils;
 
 import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
-
 
 /**
  * The text area repaint manager. It performs double buffering and paints
@@ -239,8 +239,22 @@ public class TextAreaPainter
     if (bg == null) bg = getDefaultColor("TextArea.background", Color.WHITE);
     setBackground(bg);
 
-    gutterBackground = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, DEFAULT_GUTTER_BG);
-    gutterTextColor = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, DEFAULT_GUTTER_TEXT_COLOR);
+    Color defaultGutterBg;
+    Color defaultGutterText;
+
+    if (ColorUtils.isDark(bg))
+    {
+      defaultGutterBg = bg.brighter();
+      defaultGutterText = textColor.brighter();
+    }
+    else
+    {
+      defaultGutterBg = DEFAULT_GUTTER_BG;
+      defaultGutterText = DEFAULT_GUTTER_TEXT_COLOR;
+    }
+
+    gutterBackground = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, defaultGutterBg);
+    gutterTextColor = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, defaultGutterText);
 
     setStyles(SyntaxUtilities.getDefaultSyntaxStyles());
     caretColor = Settings.getInstance().getEditorCursorColor();

@@ -58,4 +58,18 @@ public class ColorUtils
     return new Color(blended);
   }
 
+  public static double distance(Color c1, Color c2)
+  {
+    double a = (c2.getRed() / 255.0) - (c1.getRed() / 255.0);
+    double b = (c2.getGreen() / 255.0) - (c1.getGreen() / 255.0);
+    double c = (c2.getBlue() / 255.0) - (c1.getBlue() / 255.0);
+    return Math.sqrt(a * a + b * b + c * c);
+  }
+
+  public static boolean isDark(Color color)
+  {
+    double dWhite = distance(color, Color.WHITE);
+    double dBlack = distance(color, Color.BLACK);
+    return dBlack < dWhite;
+  }
 }

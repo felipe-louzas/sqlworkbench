@@ -70,7 +70,6 @@ import workbench.gui.profiles.ProfileKey;
 import workbench.storage.DataStore;
 import workbench.storage.RowActionMonitor;
 
-import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
 import workbench.sql.wbcommands.CommonArgs;
 import workbench.sql.wbcommands.ConnectionDescriptor;
