@@ -53,12 +53,12 @@ import workbench.ssh.SshConfigMgr;
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 
-import workbench.gui.DisconnectInfo;
 import workbench.gui.MainWindow;
 import workbench.gui.WbKeyDispatcher;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.bookmarks.BookmarkManager;
 import workbench.gui.components.ColumnOrderMgr;
+import workbench.gui.components.FeedbackWindow;
 import workbench.gui.dbobjects.DbExplorerWindow;
 import workbench.gui.filter.FilterDefinitionManager;
 import workbench.gui.lnf.LnFHelper;
@@ -409,7 +409,7 @@ public final class WbManager
       doShutdown(0);
     };
 
-    this.closeMessage = new DisconnectInfo(parent, abort, "MsgAbortImmediately");
+    this.closeMessage = new FeedbackWindow(parent, "MsgClosingConnections", abort, "MsgAbortImmediately");
     WbSwingUtilities.center(this.closeMessage, parent);
   }
 

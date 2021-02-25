@@ -25,6 +25,8 @@ package workbench.gui.renderer;
 
 import java.awt.Color;
 
+import workbench.resource.GuiSettings;
+
 /**
  * @author Thomas Kellerer
  */
@@ -71,5 +73,27 @@ public class ColorUtils
     double dWhite = distance(color, Color.WHITE);
     double dBlack = distance(color, Color.BLACK);
     return dBlack < dWhite;
+  }
+
+  public static Color getContrastColor(Color color)
+  {
+    if (color == null) return Color.BLACK;
+
+    // Calculate the perceptive luminance (aka luma)
+    double luma = 0.5;
+    switch (GuiSettings.getConstrastColorFormula())
+    {
+      case 1:
+        luma = ((0.2126 * color.getRed()) + (0.7152 * color.getGreen()) + (0.0722 * color.getBlue())) / 255;
+        break;
+      case 2:
+        luma = Math.sqrt( Math.pow(0.299*color.getRed(),2) + Math.pow(0.587 * color.getGreen(), 2) + Math.pow(0.114 * color.getBlue(), 2));
+        break;
+      case 3:
+        luma = ((0.299 * color.getRed()) + (0.587 * color.getGreen()) + (0.114 * color.getBlue())) / 255;
+        break;
+    }
+    // Return black for bright colors, white for dark colors
+    return luma >= 0.5 ? Color.BLACK : Color.WHITE;
   }
 }

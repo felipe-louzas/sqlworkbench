@@ -90,6 +90,7 @@ import workbench.gui.components.WbColorPicker;
 import workbench.gui.components.WbFileChooser;
 import workbench.gui.components.WbTraversalPolicy;
 import workbench.gui.help.HelpManager;
+import workbench.gui.renderer.ColorUtils;
 
 import workbench.sql.DelimiterDefinition;
 import workbench.sql.macros.MacroFileSelector;
@@ -1817,7 +1818,7 @@ public class ConnectionEditorPanel
       this.groupNameLabel.setBackground(color);
       if (GuiSettings.useContrastColor())
       {
-        this.groupNameLabel.setForeground(WbSwingUtilities.getContrastColor(color));
+        this.groupNameLabel.setForeground(ColorUtils.getContrastColor(color));
       }
     }
   }

@@ -153,55 +153,6 @@ public class WbSwingUtilities
     return false;
   }
 
-  public static boolean isNearlyBlack(Color color)
-  {
-    if (color == null) return false;
-    return color.getRed() <= 100 && color.getBlue() <= 100 && color.getGreen() <= 100;
-  }
-
-  public static Color getContrastColor(Color color)
-  {
-    if (color == null) return Color.BLACK;
-
-    // Calculate the perceptive luminance (aka luma)
-    double luma = 0.5;
-    switch (GuiSettings.getConstrastColorFormula())
-    {
-      case 1:
-        luma = ((0.2126 * color.getRed()) + (0.7152 * color.getGreen()) + (0.0722 * color.getBlue())) / 255;
-        break;
-      case 2:
-        luma = Math.sqrt( Math.pow(0.299*color.getRed(),2) + Math.pow(0.587 * color.getGreen(), 2) + Math.pow(0.114 * color.getBlue(), 2));
-        break;
-      case 3:
-        luma = ((0.299 * color.getRed()) + (0.587 * color.getGreen()) + (0.114 * color.getBlue())) / 255;
-        break;
-    }
-    // Return black for bright colors, white for dark colors
-    return luma >= 0.5 ? Color.BLACK : Color.WHITE;
-  }
-
-  public static void waitForEmptyQueue()
-  {
-    if (EventQueue.isDispatchThread())
-    {
-      return;
-    }
-    EventQueue queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-    int counter = 0;
-    final int tries = 20;
-    while (queue.peekEvent() != null)
-    {
-      WbThread.sleepSilently(25);
-      counter++;
-      if (counter > tries)
-      {
-        LogMgr.logDebug(new CallerInfo(){}, "Queue still not empty after " + tries + " tries!");
-        break;
-      }
-    }
-  }
-
   public static void setLabel(final JLabel label, final String text, final String tooltip)
   {
     invoke(() ->
@@ -210,6 +161,18 @@ public class WbSwingUtilities
       label.setToolTipText(tooltip);
       callRepaint(label);
     });
+  }
+
+  public static void setVisible(Window window, final boolean flag)
+  {
+    if (window == null) return;
+    invoke(() -> window.setVisible(flag));
+  }
+
+  public static void dispose(Window window)
+  {
+    if (window == null) return;
+    invoke(() -> window.dispose());
   }
 
   /**

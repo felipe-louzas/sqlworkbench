@@ -491,7 +491,7 @@ public class DbDriver
         }
       }
     }
-    catch (ClassNotFoundException | UnsupportedClassVersionError e)
+    catch (ClassNotFoundException | UnsupportedClassVersionError | ThreadDeath e )
     {
       throw e;
     }

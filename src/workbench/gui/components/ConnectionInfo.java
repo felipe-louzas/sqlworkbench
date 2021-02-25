@@ -54,6 +54,7 @@ import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
+import workbench.gui.renderer.ColorUtils;
 import workbench.gui.tools.ConnectionInfoPanel;
 
 /**
@@ -200,7 +201,7 @@ public class ConnectionInfo
         bkg = p.getInfoDisplayColor();
         if (GuiSettings.useContrastColor() && bkg != null)
         {
-          fg = WbSwingUtilities.getContrastColor(bkg);
+          fg = ColorUtils.getContrastColor(bkg);
         }
       }
     }

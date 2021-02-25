@@ -21,7 +21,6 @@
 package workbench.gui.profiles;
 
 import java.awt.Window;
-import java.util.Collections;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -30,18 +29,13 @@ import javax.swing.SwingUtilities;
 import workbench.resource.ResourceMgr;
 import workbench.ssh.SshHostConfig;
 
-import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
-import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.components.FeedbackWindow;
 import workbench.gui.components.ValidatingDialog;
 
-import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
-import workbench.util.WbThread;
 
 /**
  *
@@ -139,38 +133,8 @@ public class ConnectionGuiHelper
 
     if (!doPrompt(window, profile)) return;
 
-    final FeedbackWindow connectingInfo = new FeedbackWindow((JDialog)window, ResourceMgr.getString("MsgConnecting"));
-
-    WbThread testThread = new WbThread("ConnectionTest")
-    {
-      @Override
-      public void run()
-      {
-        try
-        {
-          WbConnection conn = ConnectionMgr.getInstance().getConnection(profile, "$Connection-Test");
-
-          connectingInfo.setVisible(false);
-          ConnectionMgr.getInstance().abortAll(Collections.singletonList(conn));
-
-          WbSwingUtilities.showMessage(window, ResourceMgr.getFormattedString("MsgBatchConnectOk", profile.getUrl()));
-        }
-        catch (Exception ex)
-        {
-          String error = ExceptionUtil.getDisplay(ex, false);
-          connectingInfo.setVisible(false);
-          WbSwingUtilities.showFriendlyErrorMessage(window, ResourceMgr.getString("ErrConnectFailed"), error);
-        }
-        finally
-        {
-          connectingInfo.dispose();
-        }
-      }
-    };
-    testThread.start();
-
-    WbSwingUtilities.center(connectingInfo, window);
-    connectingInfo.setVisible(true);
+    ConnectionTester tester = new ConnectionTester((JDialog)window, profile);
+    tester.showAndStart();
   }
 
 }
