@@ -351,33 +351,9 @@ public class WbConnection
     {
       if (sqlConnection.isReadOnly() == isSessionReadOnly()) return;
 
-      // this property can not be changed while a transaction is running
-      // so we have to end any pending transaction
-      rollbackSilently();
-
-      // It seems e.g. Postgres can only turn on READ ONLY for the session using a SQL statement
-      // Using Connection.setReadOnly() seems to only work if auto commit is turned off
-      String sql;
+      ReadOnlyChanger changer = ReadOnlyChanger.Factory.createChanger(this);
       boolean readOnly = isSessionReadOnly();
-      if (readOnly)
-      {
-        sql = getDbSettings().getSetReadOnlySQL();
-      }
-      else
-      {
-        sql = getDbSettings().getSetReadWriteSQL();
-      }
-
-      boolean isSet = false;
-      if (StringUtil.isNonBlank(sql))
-      {
-        LogMgr.logInfo(new CallerInfo(){}, "Setting connection to " + (readOnly ? "read only" : "read/write") + " using: " + sql);
-        isSet = JdbcUtils.runStatement(this, sql);
-      }
-      if (!isSet)
-      {
-        sqlConnection.setReadOnly(readOnly);
-      }
+      changer.setReadOnly(this, readOnly);
     }
     catch (Throwable th)
     {

@@ -67,6 +67,8 @@ import workbench.util.VersionNumber;
 import workbench.util.WbFile;
 import workbench.util.WbPersistence;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 /**
  * A connection factory for the application.
  *
@@ -621,16 +623,22 @@ public class ConnectionMgr
    */
   public void abortAll(List<WbConnection> toAbort)
   {
-    LogMgr.logWarning(new CallerInfo(){}, "Aborting all connections");
+    if (CollectionUtils.isEmpty(toAbort)) return;
 
     for (WbConnection con : toAbort)
     {
-      activeConnections.remove(con.getId());
+      if (con != null)
+      {
+        activeConnections.remove(con.getId());
+      }
     }
 
     for (WbConnection con : toAbort)
     {
-      con.shutdownInBackround();
+      if (con != null)
+      {
+        con.shutdownInBackround();
+      }
     }
   }
 

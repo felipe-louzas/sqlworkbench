@@ -72,13 +72,11 @@ public class ConnectionTester
   @Override
   public void run()
   {
+    WbConnection conn = null;
     try
     {
-      WbConnection conn = ConnectionMgr.getInstance().getConnection(profile, "$Connection-Test$-" + (id++));
-
+      conn = ConnectionMgr.getInstance().getConnection(profile, "$Connection-Test$-" + (id++));
       WbSwingUtilities.setVisible(connectingInfo, false);
-      ConnectionMgr.getInstance().abortAll(Collections.singletonList(conn));
-
       WbSwingUtilities.showMessage(parentWindow, ResourceMgr.getFormattedString("MsgBatchConnectOk", profile.getUrl()));
     }
     catch (ThreadDeath td)
@@ -96,6 +94,10 @@ public class ConnectionTester
     }
     finally
     {
+      if (conn != null)
+      {
+        ConnectionMgr.getInstance().abortAll(Collections.singletonList(conn));
+      }
       WbSwingUtilities.invokeLater(connectingInfo::dispose);
     }
   }
@@ -108,7 +110,6 @@ public class ConnectionTester
       cancelled = true;
       WbSwingUtilities.showWaitCursor(connectingInfo);
       worker.interrupt();
-      worker.join(500);
 
       if (worker.isAlive())
       {
@@ -121,6 +122,7 @@ public class ConnectionTester
           // ignore
         }
       }
+      connectingInfo.setVisible(false);
     }
     catch (Throwable th)
     {
