@@ -71,6 +71,61 @@ public class SqlRowDataConverterTest
   }
 
   @Test
+  public void testMerge()
+    throws Exception
+  {
+    ColumnIdentifier id = new ColumnIdentifier("id", Types.INTEGER);
+    id.setIsPkColumn(true);
+    ColumnIdentifier fname = new ColumnIdentifier("fname", Types.VARCHAR);
+    ColumnIdentifier lname = new ColumnIdentifier("lname", Types.VARCHAR);
+    ColumnIdentifier data = new ColumnIdentifier("data", Types.VARCHAR);
+    ResultInfo info = new ResultInfo(new ColumnIdentifier[] { id, fname, lname, data });
+
+    TableIdentifier tbl = new TableIdentifier("person");
+    info.setUpdateTable(tbl);
+    DataStore ds = new DataStore(info);
+    ds.forceUpdateTable(tbl);
+    int row = ds.addRow();
+    ds.setValue(row, 0, Integer.valueOf(42));
+    ds.setValue(row, 1, "Arthur");
+    ds.setValue(row, 2, "Dent");
+    ds.setValue(row, 3, "one");
+
+    row = ds.addRow();
+    ds.setValue(row, 0, Integer.valueOf(24));
+    ds.setValue(row, 1, "Ford");
+    ds.setValue(row, 2, "Prefect");
+    ds.setValue(row, 3, "two");
+    SqlRowDataConverter converter = new SqlRowDataConverter(null);
+    converter.setCreateMerge();
+
+    converter.setResultInfo(info);
+    List<ColumnIdentifier> cols = CollectionUtil.arrayList(id, lname, fname);
+    converter.setColumnsToExport(cols);
+    StringBuilder result = converter.getStart();
+    result.append(converter.convertRowData(ds.getRow(0), 0));
+    result.append(converter.convertRowData(ds.getRow(1), 1));
+    result.append(converter.getEnd(2));
+    String expected =
+      "MERGE INTO person ut\n" +
+      "USING (\n" +
+      "  VALUES\n" +
+      "    (42, 'Arthur', 'Dent'),\n" +
+      "    (24, 'Ford', 'Prefect')\n" +
+      ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
+      "WHEN MATCHED THEN UPDATE\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
+      "WHEN NOT MATCHED THEN\n" +
+      "  INSERT (id, fname, lname)\n" +
+      "  VALUES (md.id, md.fname, md.lname);\n" +
+      "\n" +
+      "\n" +
+      "COMMIT;";
+    assertEquals(expected, result.toString().trim());
+  }
+
+  @Test
   public void testDuplicateColumns()
     throws Exception
   {
@@ -317,7 +372,7 @@ public class SqlRowDataConverterTest
 
       RowData data = new RowData(info);
       data.setValue(0, "data1");
-      data.setValue(1, new Integer(42));
+      data.setValue(1, Integer.valueOf(42));
       Calendar c = Calendar.getInstance();
       c.set(2006, 9, 26, 17, 0);
       c.set(Calendar.SECOND, 0);

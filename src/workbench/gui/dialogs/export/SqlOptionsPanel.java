@@ -59,7 +59,8 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnSelectorPanel;
 import workbench.gui.components.KeyColumnSelectorPanel;
 
-import workbench.storage.MergeGenerator;
+import workbench.sql.generator.merge.MergeGenerator;
+
 import workbench.storage.ResultInfo;
 
 import workbench.util.StringUtil;

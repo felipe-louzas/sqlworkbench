@@ -42,7 +42,9 @@ import workbench.db.WbConnection;
 
 import workbench.storage.BlobLiteralType;
 import workbench.storage.DmlStatement;
-import workbench.storage.MergeGenerator;
+
+import workbench.sql.generator.merge.MergeGenerator;
+
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.RowDataContainer;
@@ -406,6 +408,7 @@ public class SqlRowDataConverter
       {
         mergeGenerator = MergeGenerator.Factory.createGenerator(originalConnection);
       }
+      mergeGenerator.setColumns(exportColumns);
     }
     return mergeGenerator;
   }

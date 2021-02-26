@@ -50,7 +50,9 @@ import workbench.db.exporter.PoiHelper;
 import workbench.db.exporter.WrongFormatFileException;
 
 import workbench.storage.DataStore;
-import workbench.storage.MergeGenerator;
+
+import workbench.sql.generator.merge.MergeGenerator;
+
 import workbench.storage.RowActionMonitor;
 
 import workbench.sql.SqlCommand;

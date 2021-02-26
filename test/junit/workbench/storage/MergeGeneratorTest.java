@@ -23,8 +23,12 @@
  */
 package workbench.storage;
 
+import workbench.sql.generator.merge.MergeGenerator;
+
 import java.util.Collection;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
