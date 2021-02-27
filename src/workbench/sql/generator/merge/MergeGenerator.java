@@ -1,6 +1,4 @@
 /*
- * MergeGenerator.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -27,17 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import workbench.sql.generator.merge.AnsiSQLMergeGenerator;
-
-import workbench.db.DBID;
-import workbench.db.JdbcUtils;
-import workbench.db.WbConnection;
-
-import workbench.sql.generator.merge.SqlServerMergeGenerator;
-
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
+import workbench.db.JdbcUtils;
+import workbench.db.QuoteHandler;
+import workbench.db.WbConnection;
 
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
@@ -110,6 +104,7 @@ public interface MergeGenerator
    */
   void setColumns(List<ColumnIdentifier> columns);
 
+  void setQuoteHandler(QuoteHandler handler);
 
   /**
    * The factory go create MergeGenerator instances depending on the DBMS.
@@ -140,7 +135,9 @@ public interface MergeGenerator
       {
         return new Postgres95MergeGenerator();
       }
-      return createGenerator(conn.getDbId());
+      MergeGenerator generator = createGenerator(conn.getDbId());
+      generator.setQuoteHandler(conn.getMetadata());
+      return generator;
     }
 
     /**
@@ -178,11 +175,6 @@ public interface MergeGenerator
       if (DBID.SQL_Server.isDB(type) || "sqlserver".equals(type))
       {
         return new SqlServerMergeGenerator(type);
-      }
-
-      if (type.startsWith("hsql"))
-      {
-        return new HsqlMergeGenerator();
       }
 
       if (type.startsWith("db2"))

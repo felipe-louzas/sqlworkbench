@@ -39,11 +39,9 @@ import workbench.storage.SqlLiteralFormatter;
 public class MySQLMergeGenerator
   extends AbstractMergeGenerator
 {
-  private SqlLiteralFormatter formatter;
-
   public MySQLMergeGenerator()
   {
-    this.formatter = new SqlLiteralFormatter("mysql");
+    super(new SqlLiteralFormatter("mysql"));
   }
 
   @Override
@@ -90,7 +88,7 @@ public class MySQLMergeGenerator
       ColumnIdentifier id = info.getColumn(col);
       if (!includeColumn(id)) continue;
       if (id.isPkColumn()) continue;
-      
+
       if (colCount > 0) sql.append(",\n");
       sql.append("  ");
       sql.append(info.getColumnName(col));
@@ -101,6 +99,7 @@ public class MySQLMergeGenerator
     }
     sql.append(';');
   }
+  
   private void generateInsert(StringBuilder sql, RowDataContainer data, boolean withData)
   {
     TableIdentifier tbl = data.getUpdateTable();

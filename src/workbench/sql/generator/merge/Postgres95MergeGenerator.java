@@ -24,7 +24,6 @@ package workbench.sql.generator.merge;
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
 
-import workbench.storage.ColumnData;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.RowDataContainer;
@@ -39,39 +38,29 @@ import workbench.util.SqlUtil;
 public class Postgres95MergeGenerator
   extends AbstractMergeGenerator
 {
-  private SqlLiteralFormatter formatter;
-
   public Postgres95MergeGenerator()
   {
-    this.formatter = new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE);
+    super(new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE));
   }
 
   @Override
   public String generateMergeStart(RowDataContainer data)
   {
     TableIdentifier tbl = data.getUpdateTable();
-    String result = "INSERT INTO ";
-    result += tbl.getTableExpression();
-    result += "\n  (";
+    StringBuilder result = new StringBuilder(100);
+    result.append("INSERT INTO " + tbl.getTableExpression() + "\n  (");
     ResultInfo info = data.getResultInfo();
-    int colNr = 0;
-    for (int col=0; col < info.getColumnCount(); col ++)
-    {
-      if (!includeColumn(info.getColumn(col))) continue;
-
-      if (colNr > 0) result += ", ";
-      result += info.getColumnName(col);
-      colNr ++;
-    }
-    result += ")\nVALUES\n";
-    return result;
+    appendColumnNames(result, info);
+    result.append(")\nVALUES\n");
+    return result.toString();
   }
 
   @Override
   public String addRow(ResultInfo info, RowData row, long rowIndex)
   {
     StringBuilder result = new StringBuilder(100);
-    appendValues(result, row, info, rowIndex);
+    if (rowIndex > 0) result.append(",\n");
+    appendValues(result, info, row);
     return result.toString();
   }
 
@@ -108,30 +97,16 @@ public class Postgres95MergeGenerator
   {
     StringBuilder sql = new StringBuilder(data.getRowCount() * 20);
     sql.append(generateMergeStart(data));
-    for (int i=0; i < data.getRowCount(); i++)
+    for (int rowNr=0; rowNr < data.getRowCount(); rowNr++)
     {
-      RowData row = data.getRow(i);
-      appendValues(sql, row, data.getResultInfo(), i);
+      RowData row = data.getRow(rowNr);
+      if (rowNr > 0) sql.append(",\n");
+      sql.append("  (");
+      appendValues(sql, data.getResultInfo(), row);
+      sql.append(')');
     }
     sql.append(generateMergeEnd(data));
     return sql.toString();
-  }
-
-  private void appendValues(StringBuilder sql, RowData rd, ResultInfo info, long rowNumber)
-  {
-    if (rowNumber > 0) sql.append(",\n");
-    sql.append("  (");
-    int colNr = 0;
-    for (int col=0; col < info.getColumnCount(); col++)
-    {
-      if (!includeColumn(info.getColumn(col))) continue;
-
-      if (colNr > 0) sql.append(", ");
-      ColumnData cd = new ColumnData(rd.getValue(col), info.getColumn(col));
-      sql.append(formatter.getDefaultLiteral(cd));
-      colNr ++;
-    }
-    sql.append(')');
   }
 
 }

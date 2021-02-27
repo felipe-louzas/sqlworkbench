@@ -24,7 +24,6 @@ package workbench.sql.generator.merge;
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
 
-import workbench.storage.ColumnData;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.RowDataContainer;
@@ -37,11 +36,14 @@ import workbench.storage.SqlLiteralFormatter;
 public class AnsiSQLMergeGenerator
   extends AbstractMergeGenerator
 {
-  private SqlLiteralFormatter formatter;
-
   public AnsiSQLMergeGenerator()
   {
-    this.formatter = new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE);
+    this(new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE));
+  }
+
+  public AnsiSQLMergeGenerator(SqlLiteralFormatter formatter)
+  {
+    super(formatter);
   }
 
   @Override
@@ -77,7 +79,6 @@ public class AnsiSQLMergeGenerator
   public String generateMerge(RowDataContainer data)
   {
     StringBuilder sql = new StringBuilder(data.getRowCount());
-
     generateStart(sql, data, true);
     appendJoin(sql, data);
     appendUpdate(sql, data);
@@ -85,7 +86,7 @@ public class AnsiSQLMergeGenerator
     return sql.toString();
   }
 
-  private void generateStart(StringBuilder sql, RowDataContainer data, boolean withData)
+  protected void generateStart(StringBuilder sql, RowDataContainer data, boolean withData)
   {
     TableIdentifier tbl = data.getUpdateTable();
     sql.append("MERGE INTO ");
@@ -104,18 +105,12 @@ public class AnsiSQLMergeGenerator
     }
   }
 
-  private void appendJoin(StringBuilder sql, RowDataContainer data)
+  protected void appendJoin(StringBuilder sql, RowDataContainer data)
   {
     ResultInfo info = data.getResultInfo();
     sql.append("\n) AS md (");
-    int colNr = 0;
-    for (int col=0; col < info.getColumnCount(); col ++)
-    {
-      if (!includeColumn(info.getColumn(col))) continue;
-      if (colNr > 0) sql.append(", ");
-      sql.append(info.getColumnName(col));
-      colNr ++;
-    }
+    appendColumnNames(sql, info);
+
     sql.append(") ON (");
     int pkCount = 0;
     for (int col=0; col < info.getColumnCount(); col ++)
@@ -125,29 +120,17 @@ public class AnsiSQLMergeGenerator
       if (!includeColumn(colid)) continue;
 
       if (pkCount > 0)  sql.append(" AND ");
+      String colName = quoteObjectname(colid.getColumnName());
       sql.append("ut.");
-      sql.append(info.getColumnName(col));
+      sql.append(colName);
       sql.append(" = md.");
-      sql.append(info.getColumnName(col));
+      sql.append(colName);
       pkCount ++;
     }
     sql.append(")");
   }
 
-  private void appendValues(StringBuilder sql, ResultInfo info, RowData rd)
-  {
-    int colNr = 0;
-    for (int col=0; col < info.getColumnCount(); col++)
-    {
-      if (!includeColumn(info.getColumn(col))) continue;
-      if (colNr > 0) sql.append(", ");
-      ColumnData cd = new ColumnData(rd.getValue(col), info.getColumn(col));
-      sql.append(formatter.getDefaultLiteral(cd));
-      colNr ++;
-    }
-  }
-
-  private void appendUpdate(StringBuilder sql, RowDataContainer data)
+  protected void appendUpdate(StringBuilder sql, RowDataContainer data)
   {
     sql.append("\nWHEN MATCHED THEN UPDATE");
     ResultInfo info = data.getResultInfo();
@@ -161,14 +144,15 @@ public class AnsiSQLMergeGenerator
 
       if (colCount == 0) sql.append("\n     SET ");
       if (colCount > 0) sql.append(",\n         ");
-      sql.append(info.getColumnName(col));
+      String name = quoteObjectname(id.getColumnName());
+      sql.append(name);
       sql.append(" = md.");
-      sql.append(info.getColumnName(col));
+      sql.append(name);
       colCount ++;
     }
   }
 
-  private void appendInsert(StringBuilder sql, RowDataContainer data)
+  protected void appendInsert(StringBuilder sql, RowDataContainer data)
   {
     sql.append("\nWHEN NOT MATCHED THEN\n  INSERT (");
     ResultInfo info = data.getResultInfo();
@@ -183,9 +167,10 @@ public class AnsiSQLMergeGenerator
         sql.append(", ");
         cols.append(", ");
       }
-      sql.append(info.getColumnName(col));
+      String colName = quoteObjectname(info.getColumn(col).getColumnName());
+      sql.append(colName);
       cols.append("md.");
-      cols.append(info.getColumnName(col));
+      cols.append(colName);
       colNr ++;
     }
     sql.append(")\n");

@@ -23,9 +23,6 @@ package workbench.sql.generator.merge;
 
 import workbench.db.TableIdentifier;
 
-import workbench.storage.ColumnData;
-
-
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.RowDataContainer;
@@ -38,11 +35,9 @@ import workbench.storage.SqlLiteralFormatter;
 public class H2MergeGenerator
   extends AbstractMergeGenerator
 {
-  private SqlLiteralFormatter formatter;
-
   public H2MergeGenerator()
   {
-    this.formatter = new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE);
+    super(new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE));
   }
 
   @Override
@@ -92,7 +87,7 @@ public class H2MergeGenerator
     {
       if (!includeColumn(info.getColumn(col))) continue;
       if (colNr > 0) sql.append(", ");
-      sql.append(info.getColumnName(col));
+      sql.append(quoteObjectname(info.getColumnName(col)));
       colNr ++;
     }
     sql.append(")\n  KEY (");
@@ -102,7 +97,7 @@ public class H2MergeGenerator
       if (info.getColumn(col).isPkColumn())
       {
         if (pkCount > 0) sql.append(", ");
-        sql.append(info.getColumnName(col));
+        sql.append(quoteObjectname(info.getColumnName(col)));
         pkCount ++;
       }
     }
@@ -116,20 +111,6 @@ public class H2MergeGenerator
         appendValues(sql, info, data.getRow(row));
         sql.append(')');
       }
-    }
-  }
-
-  private void appendValues(StringBuilder sql, ResultInfo info, RowData rd)
-  {
-    int colNr = 0;
-    for (int col=0; col < info.getColumnCount(); col++)
-    {
-      if (!includeColumn(info.getColumn(col))) continue;
-      if (colNr > 0) sql.append(", ");
-
-      ColumnData cd = new ColumnData(rd.getValue(col), info.getColumn(col));
-      sql.append(formatter.getDefaultLiteral(cd));
-      colNr ++;
     }
   }
 

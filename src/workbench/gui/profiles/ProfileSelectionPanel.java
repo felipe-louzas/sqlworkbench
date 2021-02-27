@@ -170,21 +170,41 @@ public class ProfileSelectionPanel
       resetFilter.setIcon("resetfilter");
       resetFilter.setEnabled(true);
 
-      JPanel filterPanel = new JPanel(new BorderLayout(0, 1));
+      JPanel filterPanel = new JPanel(new GridBagLayout());
       filterPanel.setBorder(new DividerBorder(DividerBorder.TOP));
       filterValue = new JTextField();
       WbLabel lbl = new WbLabel();
       lbl.setTextByKey("LblConnFilter");
       lbl.setLabelFor(filterValue);
-      lbl.setBorder(new EmptyBorder(0, 5, 0, 5));
-      filterPanel.add(lbl, BorderLayout.LINE_START);
-      filterPanel.add(filterValue, BorderLayout.CENTER);
+      //lbl.setBorder(new EmptyBorder(0, 5, 0, 5));
+
+      GridBagConstraints gc = new GridBagConstraints();
+      gc.anchor = GridBagConstraints.LINE_START;
+      gc.gridx = 0;
+      gc.gridy = 0;
+      gc.fill = GridBagConstraints.NONE;
+      gc.weightx = 0.0;
+      gc.weighty = 0.0;
+      gc.insets = new Insets(0,0,0,5);
+      filterPanel.add(lbl, gc);
+
+      gc.gridx ++;
+      gc.fill = GridBagConstraints.HORIZONTAL;
+      gc.weightx = 1.0;
+      filterPanel.add(filterValue, gc);
+
       WbToolbar filterBar = new WbToolbar();
       filterBar.add(applyFilter);
       filterBar.add(resetFilter);
       filterBar.setMargin(WbSwingUtilities.getEmptyInsets());
+      filterBar.setBorder(new EmptyBorder(0,0,0,0));
       filterBar.setBorderPainted(true);
-      filterPanel.add(filterBar, BorderLayout.LINE_END);
+
+      gc.gridx ++;
+      gc.fill = GridBagConstraints.NONE;
+      gc.weightx = 0.0;
+      filterPanel.add(filterBar, gc);
+      
       p.add(filterPanel, BorderLayout.PAGE_END);
       filterValue.setToolTipText(ResourceMgr.getDescription("LblConnTagFilter", true));
     }

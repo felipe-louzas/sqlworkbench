@@ -83,8 +83,8 @@ public class PostgresWriteableCTEGeneratorTest
       "with merge_data (id, fname, lname, dob) as \n" +
       "(\n" +
       "  values\n" +
-      "    (42,'Arthur','Dent',DATE '2012-01-01'),\n" +
-      "    (24,'Ford','Prefect',DATE '2012-01-02')\n" +
+      "    (42, 'Arthur', 'Dent', DATE '2012-01-01'),\n" +
+      "    (24, 'Ford', 'Prefect', DATE '2012-01-02')\n" +
       "),\n" +
       "upsert as\n" +
       "(\n" +
@@ -111,7 +111,7 @@ public class PostgresWriteableCTEGeneratorTest
       "with merge_data (id, fname, lname, dob) as \n" +
       "(\n" +
       "  values\n" +
-      "    (24,'Ford','Prefect',DATE '2012-01-02')\n" +
+      "    (24, 'Ford', 'Prefect', DATE '2012-01-02')\n" +
       "),\n" +
       "upsert as\n" +
       "(\n" +
@@ -175,8 +175,8 @@ public class PostgresWriteableCTEGeneratorTest
       "with merge_data (id, fname, lname) as \n" +
       "(\n" +
       "  values\n" +
-      "    (42,'Arthur','Dent'),\n" +
-      "    (24,'Ford','Prefect')\n" +
+      "    (42, 'Arthur', 'Dent'),\n" +
+      "    (24, 'Ford', 'Prefect')\n" +
       "),\n" +
       "upsert as\n" +
       "(\n" +

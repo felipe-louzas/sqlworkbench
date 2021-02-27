@@ -37,10 +37,10 @@ import javax.swing.ComboBoxEditor;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -66,7 +66,7 @@ import workbench.util.CollectionUtil;
  * @author Thomas Kellerer
  */
 public class MultiSelectComboBox<T extends Object>
-  extends WbComboBox
+  extends JComboBox
   implements PopupMenuListener
 {
   private static final String PROP_KEY = "userObject";
@@ -159,8 +159,8 @@ public class MultiSelectComboBox<T extends Object>
       values = newItems;
     }
 
-    int scrollWidth = UIManager.getInt("ScrollBar.width");
-    setPopupWidth(maxElementWidth + scrollWidth + 5);
+    // int scrollWidth = UIManager.getInt("ScrollBar.width");
+    //setPopupWidth(maxElementWidth + scrollWidth + 5);
     setMaximumRowCount(Math.min(getItemCount() + 1, 25));
     this.setToolTipText(getSelectedItemsDisplay());
     super.addActionListener(this);

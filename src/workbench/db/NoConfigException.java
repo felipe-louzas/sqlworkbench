@@ -1,6 +1,4 @@
 /*
- * NoConfigException.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -27,7 +25,7 @@ package workbench.db;
  * @author Thomas Kellerer
  */
 public class NoConfigException
-  extends java.lang.Exception
+  extends Exception
 {
 
   public NoConfigException(String msg)

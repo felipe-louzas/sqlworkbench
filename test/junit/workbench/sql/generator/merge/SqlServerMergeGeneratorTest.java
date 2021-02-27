@@ -85,8 +85,8 @@ public class SqlServerMergeGeneratorTest
       "    (24, 'Ford', 'Prefect')\n" +
       ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.fname = md.fname,\n" +
-      "         ut.lname = md.lname\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, fname, lname)\n" +
       "  VALUES (md.id, md.fname, md.lname);";
@@ -104,8 +104,8 @@ public class SqlServerMergeGeneratorTest
       "    (42, 'Arthur', 'Dent')\n" +
       ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.fname = md.fname,\n" +
-      "         ut.lname = md.lname\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, fname, lname)\n" +
       "  VALUES (md.id, md.fname, md.lname);";
@@ -156,13 +156,13 @@ public class SqlServerMergeGeneratorTest
       "    (24, 'Ford', 'Prefect')\n" +
       ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.fname = md.fname,\n" +
-      "         ut.lname = md.lname\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, fname, lname)\n" +
       "  VALUES (md.id, md.fname, md.lname);";
 //    System.out.println("----- expected: \n" + expected + "\n****** result: \n" + result.toString() + "\n-------");
-    assertEquals(expected, result.toString());
+    assertEquals(expected, result.toString().trim());
 
     List<ColumnIdentifier> cols = CollectionUtil.arrayList(id, lname);
     generator.setColumns(cols);
@@ -176,11 +176,11 @@ public class SqlServerMergeGeneratorTest
       "    (24, 'Prefect')\n" +
       ") AS md (id, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.lname = md.lname\n" +
+      "     SET lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, lname)\n" +
       "  VALUES (md.id, md.lname);";
-    assertEquals(expected, sql);
+    assertEquals(expected, sql.trim());
 
   }
 }

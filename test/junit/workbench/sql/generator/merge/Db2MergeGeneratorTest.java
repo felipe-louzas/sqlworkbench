@@ -89,14 +89,14 @@ public class Db2MergeGeneratorTest
       "  VALUES\n" +
       "    (42, 'Arthur', 'Dent'),\n" +
       "    (24, 'Ford', 'Prefect')\n" +
-      ") md(id, fname, lname) ON (ut.id = md.id)\n" +
+      ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
       "     SET fname = md.fname,\n" +
       "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, fname, lname)\n" +
       "  VALUES (md.id, md.fname, md.lname);";
-    // System.out.println("----- expected: \n" + expected + "\n****** result: \n" + sql + "\n-------");
+//    System.out.println("----- expected: \n" + expected + "\n****** result: \n" + sql + "\n-------");
     assertEquals(expected, sql.trim());
 
     RowDataContainer selected = RowDataContainer.Factory.createContainer(ds, new int[] {0});
@@ -108,7 +108,7 @@ public class Db2MergeGeneratorTest
       "USING TABLE (\n" +
       "  VALUES\n" +
       "    (42, 'Arthur', 'Dent')\n" +
-      ") md(id, fname, lname) ON (ut.id = md.id)\n" +
+      ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
       "     SET fname = md.fname,\n" +
       "         lname = md.lname\n" +
@@ -160,7 +160,7 @@ public class Db2MergeGeneratorTest
       "  VALUES\n" +
       "    (42, 'Arthur', 'Dent'),\n" +
       "    (24, 'Ford', 'Prefect')\n" +
-      ") md(id, fname, lname) ON (ut.id = md.id)\n" +
+      ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
       "     SET fname = md.fname,\n" +
       "         lname = md.lname\n" +

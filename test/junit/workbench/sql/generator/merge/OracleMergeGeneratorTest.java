@@ -85,13 +85,13 @@ public class OracleMergeGeneratorTest
       "  SELECT 24, 'Ford', 'Prefect' FROM dual\n" +
       ") md ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.fname = md.fname,\n" +
-      "         ut.lname = md.lname\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, fname, lname)\n" +
       "  VALUES (md.id, md.fname, md.lname);";
 //    System.out.println("----- expected: \n" + expected + "\n****** result: \n" + sql + "\n-------");
-    assertEquals(expected, sql);
+    assertEquals(expected, sql.trim());
 
     List<ColumnIdentifier> cols = CollectionUtil.arrayList(id, lname);
     generator.setColumns(cols);
@@ -104,12 +104,12 @@ public class OracleMergeGeneratorTest
       "  SELECT 24, 'Prefect' FROM dual\n" +
       ") md ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.lname = md.lname\n" +
+      "     SET lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, lname)\n" +
       "  VALUES (md.id, md.lname);";
 
-    assertEquals(expected2, sql2);
+    assertEquals(expected2, sql2.trim());
 
     generator.setColumns(null);
     RowDataContainer selected = RowDataContainer.Factory.createContainer(ds, new int[] {0});
@@ -122,13 +122,13 @@ public class OracleMergeGeneratorTest
       "  SELECT 42 AS id, 'Arthur' AS fname, 'Dent' AS lname FROM dual\n" +
       ") md ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.fname = md.fname,\n" +
-      "         ut.lname = md.lname\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, fname, lname)\n" +
       "  VALUES (md.id, md.fname, md.lname);";
 //    System.out.println("----- expected: \n" + expected + "\n****** result: \n" + sql + "\n-------");
-    assertEquals(expected, sql);
+    assertEquals(expected, sql.trim());
   }
 
   @Test
@@ -179,12 +179,12 @@ public class OracleMergeGeneratorTest
       "  SELECT 24, 'Ford', 'Prefect' FROM dual\n" +
       ") md ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.fname = md.fname,\n" +
-      "         ut.lname = md.lname\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
       "  INSERT (id, fname, lname)\n" +
       "  VALUES (md.id, md.fname, md.lname);";
 //    System.out.println("----- expected: \n" + expected + "\n****** result: \n" + result.toString() + "\n-------");
-    assertEquals(expected, result.toString());
+    assertEquals(expected, result.toString().trim());
   }
 }

@@ -24,9 +24,6 @@ package workbench.sql.generator.merge;
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
 
-import workbench.sql.generator.merge.AbstractMergeGenerator;
-
-import workbench.storage.ColumnData;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.RowDataContainer;
@@ -39,11 +36,9 @@ import workbench.storage.SqlLiteralFormatter;
 public class PostgresWriteableCTEGenerator
   extends AbstractMergeGenerator
 {
-  private SqlLiteralFormatter formatter;
-
   public PostgresWriteableCTEGenerator()
   {
-    this.formatter = new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE);
+    super(new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE));
   }
 
   @Override
@@ -104,12 +99,7 @@ public class PostgresWriteableCTEGenerator
   {
     if (rowNumber > 0) sql.append(",\n");
     sql.append("    (");
-    for (int col=0; col < info.getColumnCount(); col++)
-    {
-      if (col > 0) sql.append(',');
-      ColumnData cd = new ColumnData(rd.getValue(col), info.getColumn(col));
-      sql.append(formatter.getDefaultLiteral(cd));
-    }
+    super.appendValues(sql, info, rd);
     sql.append(')');
   }
 

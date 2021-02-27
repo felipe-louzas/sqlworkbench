@@ -95,7 +95,7 @@ public class TabButtonComponent
     BorderLayout layout = (BorderLayout)getLayout();
     layout.setHgap((int)(imgSize / 3));
 
-    Icon img = new CloseIcon(imgSize);
+    Icon img = new CloseIcon((int)(imgSize * 0.9));
     Icon rolloverImg = new CloseIcon(imgSize, Color.WHITE, Color.RED);
     Icon pressedImg = new CloseIcon(imgSize, Color.WHITE, Color.RED.darker());
 

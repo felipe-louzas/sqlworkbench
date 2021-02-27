@@ -70,22 +70,23 @@ public class FeedbackWindow
     super(owner, false);
     initComponents(msg, null, null);
   }
-  public FeedbackWindow(Frame owner, String msgKey, ActionListener action, String buttonTextKey)
+
+  public FeedbackWindow(Frame owner, String message, ActionListener action, String buttonTextKey)
   {
     super(owner, false);
-    initComponents(msgKey, action, buttonTextKey);
+    initComponents(message, action, buttonTextKey);
   }
 
-  public FeedbackWindow(Dialog owner, String msgKey)
+  public FeedbackWindow(Dialog owner, String message)
   {
     super(owner, true);
-    initComponents(msgKey, null, null);
+    initComponents(message, null, null);
   }
 
-  public FeedbackWindow(Dialog owner, String msgKey, ActionListener action, String buttonTextKey)
+  public FeedbackWindow(Dialog owner, String message, ActionListener action, String buttonTextKey)
   {
     super(owner, true);
-    initComponents(msgKey, action, buttonTextKey);
+    initComponents(message, action, buttonTextKey);
   }
 
   private void initComponents(String msg, ActionListener action, String buttonTextKey)
@@ -100,7 +101,7 @@ public class FeedbackWindow
     }
     else
     {
-      borderColor = background.darker().darker();
+      borderColor = background.darker();
     }
 
     int hgap = (int)(IconMgr.getInstance().getToolbarIconSize() * 1.25);
@@ -115,7 +116,6 @@ public class FeedbackWindow
     int height = (int)(fm.getHeight());
     Dimension labelSize = new Dimension((int)(width * 1.5), (int)(height * 1.2));
     connectLabel.setMinimumSize(labelSize);
-    connectLabel.setPreferredSize(labelSize);
     connectLabel.setHorizontalAlignment(SwingConstants.CENTER);
     p.add(connectLabel, BorderLayout.CENTER);
 

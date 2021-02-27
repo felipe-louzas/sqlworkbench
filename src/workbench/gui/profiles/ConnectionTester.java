@@ -38,7 +38,6 @@ import workbench.gui.components.FeedbackWindow;
 import workbench.util.ExceptionUtil;
 import workbench.util.WbThread;
 
-
 /**
  *
  * @author Thomas Kellerer

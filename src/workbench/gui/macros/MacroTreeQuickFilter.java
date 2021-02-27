@@ -21,8 +21,10 @@
  */
 package workbench.gui.macros;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -63,8 +65,8 @@ public class MacroTreeQuickFilter
 
   public JPanel createFilterPanel()
   {
-    JPanel filterPanel = new JPanel(new BorderLayout(0, 1));
-    filterPanel.setBorder(new EmptyBorder(2, 0, 2, 4));
+    JPanel filterPanel = new JPanel(new GridBagLayout());
+    filterPanel.setBorder(new EmptyBorder(0,0,0,4));
     filterValue = new JTextField();
 
     filterAction = new QuickFilterAction(this);
@@ -83,10 +85,23 @@ public class MacroTreeQuickFilter
     filterBar.add(filterAction);
     filterBar.add(resetFilter);
     filterBar.setMargin(WbSwingUtilities.getEmptyInsets());
+    filterBar.setBorder(new EmptyBorder(0,0,0,0));
     filterBar.setBorderPainted(true);
 
-    filterPanel.add(filterBar, BorderLayout.LINE_START);
-    filterPanel.add(filterValue, BorderLayout.CENTER);
+    GridBagConstraints gc = new GridBagConstraints();
+    gc.anchor = GridBagConstraints.LINE_START;
+    gc.gridx = 0;
+    gc.gridy = 0;
+    gc.fill = GridBagConstraints.NONE;
+    gc.weightx = 0.0;
+    gc.weighty = 0.0;
+    gc.insets = new Insets(0,0,0,0);
+    filterPanel.add(filterBar, gc);
+
+    gc.gridx ++;
+    gc.fill = GridBagConstraints.HORIZONTAL;
+    gc.weightx = 1.0;
+    filterPanel.add(filterValue, gc);
 
     filterValue.addKeyListener(this);
     return filterPanel;

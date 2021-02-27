@@ -82,21 +82,21 @@ public class Firebird21MergeGeneratorTest
     List<ColumnIdentifier> cols = CollectionUtil.arrayList(id, lname, fname);
     generator.setColumns(cols);
     String sql = generator.generateMerge(ds);
-//    System.out.println(sql);
+    System.out.println(sql);
     String expected =
       "MERGE INTO person ut\n" +
       "USING (\n" +
       "  SELECT 42 AS id, 'Arthur' AS fname, 'Dent' AS lname FROM rdb$database\n" +
       "  UNION ALL\n" +
       "  SELECT 24, 'Ford', 'Prefect' FROM rdb$database\n" +
-      ") md ON (ut.id = md.id)\n" +
+      ") AS md (id, fname, lname) ON (ut.id = md.id)\n" +
       "WHEN MATCHED THEN UPDATE\n" +
-      "     SET ut.fname = md.fname,\n" +
-      "         ut.lname = md.lname\n" +
+      "     SET fname = md.fname,\n" +
+      "         lname = md.lname\n" +
       "WHEN NOT MATCHED THEN\n" +
-      "  INSERT (id, fname, lname, data)\n" +
-      "  VALUES (md.id, md.fname, md.lname, md.data);";
-    assertEquals(expected, sql);
+      "  INSERT (id, fname, lname)\n" +
+      "  VALUES (md.id, md.fname, md.lname);";
+    assertEquals(expected, sql.trim());
   }
 
 }

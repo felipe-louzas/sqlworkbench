@@ -1,6 +1,4 @@
 /*
- * ScriptParser.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -41,8 +39,6 @@ import workbench.sql.ScriptCommandDefinition;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
-
-
 
 /**
  * A class to parse a SQL script and return the individual commands in the script.
@@ -290,18 +286,25 @@ public class ScriptParser
   }
 
   /**
-   *  Try to find out which delimiter should be used for the current script.
-   *  First it will check if the script ends with the alternate delimiter
-   *  if this is not the case, the script will be checked if it ends with GO
-   *  If so, GO will be used (MS SQL Server script style)
-   *  If none of the above is true, ; (semicolon) will be used
+   * Checks if the current script ends with the defined alternate delimiter.
+   *
+   * <p>
+   * If no {@link #alternateDelimiter} was defined, this function does nothing.
+   * </p>
+   *
+   * <p>
+   * If the script ends with the {@link #alternateDelimiter} the flag {@link #useAlternateDelimiter}
+   * is set to true
+   * </p>
    */
-  private void findDelimiterToUse()
+  private void checkAlternateDelimiter()
   {
+    this.useAlternateDelimiter = false;
+
     if (this.alternateDelimiter == null) return;
     if (this.originalScript == null) return;
 
-    useAlternateDelimiter = alternateDelimiter.terminatesScript(originalScript, this.parserType == ParserType.MySQL, '\"');
+    this.useAlternateDelimiter = alternateDelimiter.terminatesScript(originalScript, this.parserType == ParserType.MySQL, '\"');
     this.commands = null;
   }
 
@@ -524,18 +527,24 @@ public class ScriptParser
       p.enableDynamicDelimiter();
     }
     p.setCheckEscapedQuotes(this.checkEscapedQuotes);
+
+    checkAlternateDelimiter();
+
     if (p.supportsMixedDelimiter())
     {
       p.setDelimiter(delimiter);
-      p.setAlternateDelimiter(alternateDelimiter);
+      if (useAlternateDelimiter)
+      {
+        p.setAlternateDelimiter(alternateDelimiter);
+      }
+      else
+      {
+        p.setAlternateDelimiter(null);
+      }
       p.setEmptyLineIsDelimiter(emptyLineIsSeparator);
     }
     else
     {
-      // the parser does not support mixed delimiters
-      // so we need to find the delimiter to be used
-      findDelimiterToUse();
-
       // and disable the alternate delimiter alltogether
       // because only a single delimiter will be used
       p.setAlternateDelimiter(null);

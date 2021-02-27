@@ -35,13 +35,11 @@ import workbench.storage.SqlLiteralFormatter;
  * @author Thomas Kellerer
  */
 public class OracleMergeGenerator
-  extends AbstractMergeGenerator
+  extends AnsiSQLMergeGenerator
 {
-  private SqlLiteralFormatter formatter;
-
   public OracleMergeGenerator()
   {
-    this.formatter = new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE);
+    super();
   }
 
   @Override
@@ -83,7 +81,8 @@ public class OracleMergeGenerator
     return sql.toString();
   }
 
-  private void generateStart(StringBuilder sql, RowDataContainer data, boolean withData)
+  @Override
+  protected void generateStart(StringBuilder sql, RowDataContainer data, boolean withData)
   {
     TableIdentifier tbl = data.getUpdateTable();
     sql.append("MERGE INTO ");
@@ -100,7 +99,8 @@ public class OracleMergeGenerator
     }
   }
 
-  private void appendJoin(StringBuilder sql, RowDataContainer data)
+  @Override
+  protected void appendJoin(StringBuilder sql, RowDataContainer data)
   {
     ResultInfo info = data.getResultInfo();
     sql.append("\n) md ON (");
@@ -139,54 +139,6 @@ public class OracleMergeGenerator
       colNr ++;
     }
     sql.append(" FROM dual");
-  }
-
-  private void appendUpdate(StringBuilder sql, RowDataContainer data)
-  {
-    sql.append("\nWHEN MATCHED THEN UPDATE");
-    ResultInfo info = data.getResultInfo();
-
-    int colCount = 0;
-    for (int col=0; col < info.getColumnCount(); col ++)
-    {
-      ColumnIdentifier id = info.getColumn(col);
-      if (id.isPkColumn()) continue;
-      if (!includeColumn(id)) continue;
-
-      if (colCount == 0) sql.append("\n     SET ");
-      if (colCount > 0) sql.append(",\n         ");
-      sql.append("ut.");
-      sql.append(info.getColumnName(col));
-      sql.append(" = md.");
-      sql.append(info.getColumnName(col));
-      colCount ++;
-    }
-  }
-
-  private void appendInsert(StringBuilder sql, RowDataContainer data)
-  {
-    sql.append("\nWHEN NOT MATCHED THEN\n  INSERT (");
-    ResultInfo info = data.getResultInfo();
-    StringBuilder cols = new StringBuilder(info.getColumnCount() * 10);
-    int colNr = 0;
-    for (int col=0; col < info.getColumnCount(); col ++)
-    {
-      if (!includeColumn(info.getColumn(col))) continue;
-
-      if (colNr > 0)
-      {
-        sql.append(", ");
-        cols.append(", ");
-      }
-      sql.append(info.getColumnName(col));
-      cols.append("md.");
-      cols.append(info.getColumnName(col));
-      colNr ++;
-    }
-    sql.append(")\n");
-    sql.append("  VALUES (");
-    sql.append(cols);
-    sql.append(");");
   }
 
 }

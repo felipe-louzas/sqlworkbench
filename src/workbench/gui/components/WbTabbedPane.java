@@ -38,8 +38,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.function.IntConsumer;
 
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolTip;
 import javax.swing.UIManager;
@@ -52,6 +54,8 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
+
+import workbench.gui.lnf.LnFHelper;
 
 /**
  * A JTabbedPane that allows re-ordering of the tabs using drag & drop.
@@ -66,7 +70,7 @@ import workbench.resource.Settings;
  */
 public class WbTabbedPane
   extends JTabbedPane
-  implements MouseListener, MouseMotionListener, ChangeListener, PropertyChangeListener
+  implements MouseListener, MouseMotionListener, ChangeListener, PropertyChangeListener, IntConsumer
 {
   private Moveable tabMover;
   private int draggedTabIndex;
@@ -76,6 +80,7 @@ public class WbTabbedPane
   private Point dragStart;
   private Rectangle tabBounds;
   private int previousTabIndex;
+  private boolean isFlatLaf;
 
   public WbTabbedPane()
   {
@@ -107,10 +112,22 @@ public class WbTabbedPane
   {
     if (tabCloser == null) return;
 
-    TabButtonComponent comp = getTabButton(index);
-    if (comp != null)
+    if (isFlatLaf)
     {
-      comp.setEnabled(flag);
+      JComponent comp = (JComponent)getComponentAt(index);
+      if (comp != null)
+      {
+        comp.putClientProperty("JTabbedPane.tabClosable", flag);
+        comp.putClientProperty("JTabbedPane.tabCloseCallback", flag ? this : null);
+      }
+    }
+    else
+    {
+      TabButtonComponent comp = getTabButton(index);
+      if (comp != null)
+      {
+        comp.setEnabled(flag);
+      }
     }
   }
 
@@ -217,33 +234,65 @@ public class WbTabbedPane
   {
     if (tabCloser == null) return;
 
-    for (int i=0; i < getTabCount(); i++)
+    if (isFlatLaf)
     {
-      String title = getTitleAt(i);
-      Icon icon = getIconAt(i);
-      TabButtonComponent comp = new TabButtonComponent(title, this, true);
-      comp.setIcon(icon);
-      comp.setFont(getFont());
-      comp.setBackground(getBackgroundAt(i));
-      comp.setForeground(getForegroundAt(i));
-      setTabComponentAt(i, comp);
+      putClientProperty("JTabbedPane.tabClosable", Boolean.TRUE);
+      putClientProperty("JTabbedPane.tabCloseCallback", this);
+    }
+    else
+    {
+      for (int i=0; i < getTabCount(); i++)
+      {
+        String title = getTitleAt(i);
+        Icon icon = getIconAt(i);
+        TabButtonComponent comp = new TabButtonComponent(title, this, true);
+        comp.setIcon(icon);
+        comp.setFont(getFont());
+        comp.setBackground(getBackgroundAt(i));
+        comp.setForeground(getForegroundAt(i));
+        setTabComponentAt(i, comp);
+      }
     }
   }
 
   protected void removeCloseButtons()
   {
+    if (isFlatLaf)
+    {
+      putClientProperty("JTabbedPane.tabClosable", Boolean.FALSE);
+      putClientProperty("JTabbedPane.tabCloseCallback", null);
+    }
+
     for (int i=0; i < getTabCount(); i++)
     {
-      TabButtonComponent comp = getTabButton(i);
-      if (comp != null)
+      if (isFlatLaf)
       {
-        comp.setButtonVisible(false);
+        JComponent c = (JComponent)getComponentAt(i);
+        if (c != null)
+        {
+          c.putClientProperty("JTabbedPane.tabClosable", Boolean.FALSE);
+          c.putClientProperty("JTabbedPane.tabCloseCallback", null);
+        }
       }
       else
       {
-        setTabComponentAt(i, null);
+        TabButtonComponent comp = getTabButton(i);
+        if (comp != null)
+        {
+          comp.setButtonVisible(false);
+        }
+        else
+        {
+          setTabComponentAt(i, null);
+        }
       }
     }
+  }
+
+  @Override
+  public void accept(int index)
+  {
+    closeButtonClicked(index);
   }
 
   public void closeButtonClicked(final int index)
@@ -304,17 +353,22 @@ public class WbTabbedPane
     putClientProperty("jgoodies.embeddedTabs", Boolean.FALSE);
     putClientProperty("jgoodies.tabIconsEnabled", Boolean.FALSE);
 
-    try
+    isFlatLaf = LnFHelper.isFlatLaf();
+    
+    if (!isFlatLaf)
     {
-      TabbedPaneUI tui = TabbedPaneUIFactory.getBorderLessUI();
-      if (tui != null)
+      try
       {
-        this.setUI(tui);
+        TabbedPaneUI tui = TabbedPaneUIFactory.getBorderLessUI();
+        if (tui != null)
+        {
+          this.setUI(tui);
+        }
       }
-    }
-    catch (Exception e)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Error during init", e);
+      catch (Exception e)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Error during init", e);
+      }
     }
     onlyCloseActive = GuiSettings.getCloseActiveTabOnly();
     Settings.getInstance().addPropertyChangeListener(this, GuiSettings.PROPERTY_CLOSE_ACTIVE_TAB);
@@ -370,7 +424,10 @@ public class WbTabbedPane
     super.insertTab(title, icon, component, tip, index);
     if (tabCloser != null)
     {
-      setTabComponentAt(index, new TabButtonComponent(title, this, tabCloser != null));
+      if (!isFlatLaf)
+      {
+        setTabComponentAt(index, new TabButtonComponent(title, this, tabCloser != null));
+      }
       updateButtons();
     }
   }
@@ -528,12 +585,9 @@ public class WbTabbedPane
       }
       setCloseButtonEnabled(i, canClose);
       TabButtonComponent tab = getTabButton(i);
-      if (tab != null)
+      if (tab != null && hideDisabledButtons)
       {
-        if (hideDisabledButtons)
-        {
-          tab.setButtonVisible(canClose);
-        }
+        tab.setButtonVisible(canClose);
       }
     }
   }

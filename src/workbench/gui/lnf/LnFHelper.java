@@ -26,6 +26,7 @@ package workbench.gui.lnf;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ import workbench.resource.Settings;
 
 import workbench.gui.components.TabbedPaneUIFactory;
 
+import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
@@ -286,18 +288,14 @@ public class LnFHelper
           UIManager.put("RootPane.setupButtonVisible", false);
         }
 
+        LnFLoader loader = new LnFLoader(def);
+
         // Enable configuration of FlatLaf options
         if (className.startsWith("com.formdev.flatlaf"))
         {
-          Color color = Settings.getInstance().getColor("workbench.lnf.flatlaf.tab.selectedbackground");
-          if (color != null)
-          {
-            UIManager.put("TabbedPane.selectedBackground", color);
-          }
-          boolean flag = Settings.getInstance().getBoolProperty("lnf.flatlaf.tab.showseparator", true);
-          UIManager.put("TabbedPane.showTabSeparators", flag);
+          configureFlatLaf(loader);
         }
-        LnFLoader loader = new LnFLoader(def);
+
         LookAndFeel lnf = loader.getLookAndFeel();
 
         UIManager.setLookAndFeel(lnf);
@@ -311,6 +309,27 @@ public class LnFHelper
     }
 
     checkWindowsClassic(UIManager.getLookAndFeel().getClass().getName());
+  }
+
+  private void configureFlatLaf(LnFLoader loader)
+  {
+    try
+    {
+      Class flatLaf = loader.loadClass("com.formdev.flatlaf.FlatLaf");
+      Method registerPackage = flatLaf.getMethod("registerCustomDefaultsSource", String.class, ClassLoader.class);
+      registerPackage.invoke(null, "workbench.resource", getClass().getClassLoader());
+
+      Method registerDir = flatLaf.getMethod("registerCustomDefaultsSource", File.class);
+      ClasspathUtil util = new ClasspathUtil();
+      File extDir = util.getExtDir();
+      File jarDir = util.getJarDir();
+      registerDir.invoke(null, extDir);
+      registerDir.invoke(null, jarDir);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not initialize FlatLaf");
+    }
   }
 
   private void initializeWebLaf()

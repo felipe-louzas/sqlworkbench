@@ -24,6 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.QuoteHandler;
+
+import workbench.storage.ColumnData;
+import workbench.storage.ResultInfo;
+import workbench.storage.RowData;
+import workbench.storage.SqlLiteralFormatter;
 
 /**
  *
@@ -33,6 +39,19 @@ public abstract class AbstractMergeGenerator
   implements MergeGenerator
 {
   protected final List<ColumnIdentifier> columns = new ArrayList<>();
+  protected final SqlLiteralFormatter formatter;
+  protected QuoteHandler quoteHandler = QuoteHandler.STANDARD_HANDLER;
+
+  protected AbstractMergeGenerator(SqlLiteralFormatter formatter)
+  {
+    this.formatter = formatter == null ? new SqlLiteralFormatter(SqlLiteralFormatter.ANSI_DATE_LITERAL_TYPE) : formatter;
+  }
+
+  @Override
+  public void setQuoteHandler(QuoteHandler handler)
+  {
+    this.quoteHandler = handler == null ? QuoteHandler.STANDARD_HANDLER : handler;
+  }
 
   @Override
   public void setColumns(List<ColumnIdentifier> columns)
@@ -44,10 +63,42 @@ public abstract class AbstractMergeGenerator
     }
   }
 
+  protected String quoteObjectname(String column)
+  {
+    return quoteHandler.quoteObjectname(column);
+  }
+
   protected boolean includeColumn(ColumnIdentifier column)
   {
     if (this.columns.isEmpty()) return true;
     return this.columns.contains(column);
+  }
+
+  protected void appendColumnNames(StringBuilder sql, ResultInfo info)
+  {
+    int colNr = 0;
+    for (int col=0; col < info.getColumnCount(); col ++)
+    {
+      if (!includeColumn(info.getColumn(col))) continue;
+
+      if (colNr > 0) sql.append(", ");
+      sql.append(quoteObjectname(info.getColumnName(col)));
+      colNr ++;
+    }
+  }
+
+  protected void appendValues(StringBuilder sql, ResultInfo info, RowData rd)
+  {
+    int colNr = 0;
+    for (int col=0; col < info.getColumnCount(); col++)
+    {
+      if (!includeColumn(info.getColumn(col))) continue;
+
+      if (colNr > 0) sql.append(", ");
+      ColumnData cd = new ColumnData(rd.getValue(col), info.getColumn(col));
+      sql.append(formatter.getDefaultLiteral(cd));
+      colNr ++;
+    }
   }
 
 }

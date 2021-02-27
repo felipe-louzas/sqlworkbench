@@ -21,10 +21,7 @@
  */
 package workbench.sql.generator.merge;
 
-
 import workbench.storage.DmlStatement;
-
-
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.RowDataContainer;
@@ -38,12 +35,11 @@ import workbench.storage.StatementFactory;
 public class Firebird20MergeGenerator
   extends AbstractMergeGenerator
 {
-  private SqlLiteralFormatter formatter;
   private StatementFactory stmtFactory;
 
   public Firebird20MergeGenerator()
   {
-    formatter = new SqlLiteralFormatter("firebird");
+    super(new SqlLiteralFormatter("firebird"));
   }
 
   @Override
@@ -51,11 +47,11 @@ public class Firebird20MergeGenerator
   {
     StringBuilder result = new StringBuilder(data.getRowCount() * 100);
     ResultInfo info = data.getResultInfo();
-    StatementFactory factory = new StatementFactory(info, data.getOriginalConnection());
+    this.stmtFactory = new StatementFactory(info, data.getOriginalConnection());
 
     for (int row=0; row < data.getRowCount(); row++)
     {
-      result.append(generateUpsert(factory, info, data.getRow(row)));
+      result.append(generateUpsert(this.stmtFactory, info, data.getRow(row)));
       result.append('\n');
     }
     return result.toString();
@@ -88,8 +84,8 @@ public class Firebird20MergeGenerator
   private String generateUpsert(StatementFactory factory, ResultInfo info, RowData row)
   {
     DmlStatement dml = factory.createInsertStatement(row, true, "\n", columns);
-
     dml.setFormatSql(false);
+    
     CharSequence sql =  dml.getExecutableStatement(formatter);
     StringBuilder result = new StringBuilder(sql.length() + 50);
     result.append("UPDATE OR ");

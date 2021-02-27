@@ -106,6 +106,7 @@ public final class WbManager
 
   private final AppArguments cmdLine = new AppArguments();
   private boolean isWindowsClassic;
+  private boolean isFlatLaf;
   private JDialog closeMessage;
 
   private WbManager()
@@ -248,11 +249,17 @@ public final class WbManager
     return isWindowsClassic;
   }
 
+  public boolean isFlatLaf()
+  {
+    return isFlatLaf;
+  }
+
   private void initUI()
   {
     LnFHelper helper = new LnFHelper();
     helper.initUI();
     this.isWindowsClassic = helper.isWindowsClassic();
+    this.isFlatLaf = LnFHelper.isFlatLaf();
     Settings.getInstance().addFontChangedListener(this);
     if (GuiSettings.installFocusManager())
     {
@@ -409,7 +416,7 @@ public final class WbManager
       doShutdown(0);
     };
 
-    this.closeMessage = new FeedbackWindow(parent, "MsgClosingConnections", abort, "MsgAbortImmediately");
+    this.closeMessage = new FeedbackWindow(parent, ResourceMgr.getString("MsgClosingConnections"), abort, "MsgAbortImmediately");
     WbSwingUtilities.center(this.closeMessage, parent);
   }
 
