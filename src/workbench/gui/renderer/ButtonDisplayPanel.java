@@ -1,6 +1,4 @@
 /*
- * BlobColumnPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -32,14 +30,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import workbench.resource.IconMgr;
-
-import workbench.gui.WbSwingUtilities;
-import workbench.gui.components.FlatButton;
 
 import workbench.util.StringUtil;
 
@@ -56,8 +52,8 @@ public class ButtonDisplayPanel
   extends JPanel
   implements WbRenderer
 {
-  private final int BUTTON_WIDTH = IconMgr.getInstance().getSizeForLabel();
-  private FlatButton openButton = new FlatButton("...");
+  private final int BUTTON_WIDTH = IconMgr.getInstance().getSizeForLabel()+1;
+  private JButton openButton = new JButton("...");
   private JLabel label = new JLabel();
   private Insets insets = ToolTipRenderer.getDefaultInsets();
 
@@ -66,9 +62,6 @@ public class ButtonDisplayPanel
     super();
     setLayout(new GridBagLayout());
     Dimension d = new Dimension(BUTTON_WIDTH,BUTTON_WIDTH);
-    openButton.setBasicUI();
-    openButton.setFlatLook();
-    openButton.setBorder(WbSwingUtilities.FLAT_BUTTON_BORDER);
     openButton.setPreferredSize(d);
     openButton.setMinimumSize(d);
     openButton.setEnabled(true);

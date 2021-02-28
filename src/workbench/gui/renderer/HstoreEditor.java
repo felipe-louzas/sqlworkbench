@@ -23,6 +23,7 @@ package workbench.gui.renderer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.CellEditor;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -47,6 +49,7 @@ import javax.swing.text.JTextComponent;
 
 import workbench.interfaces.Disposable;
 import workbench.interfaces.NullableEditor;
+import workbench.resource.IconMgr;
 import workbench.resource.Settings;
 
 import workbench.db.postgres.HstoreMap;
@@ -54,7 +57,6 @@ import workbench.db.postgres.HstoreSupport;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.SetNullAction;
-import workbench.gui.components.FlatButton;
 import workbench.gui.components.MapEditor;
 import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.components.ValidatingDialog;
@@ -69,10 +71,11 @@ import workbench.storage.DataStore;
 public class HstoreEditor
   implements CellEditor, TableCellEditor, ActionListener, MouseListener, NullableEditor, Disposable
 {
+  private final int BUTTON_WIDTH = IconMgr.getInstance().getSizeForLabel()+1;
   private final String CONFIG_PROP = "workbench.gui.hstoreeditor";
   private JPanel component;
   private JTextField textField;
-  private FlatButton openButton;
+  private JButton openButton;
   private final List<CellEditorListener> listeners = Collections.synchronizedList(new ArrayList<>());
   private SetNullAction setNull;
   private TextComponentMouseListener contextMenu;
@@ -109,10 +112,10 @@ public class HstoreEditor
 
     component.add(textField, BorderLayout.CENTER);
 
-    openButton = new FlatButton("...");
-    openButton.setBasicUI();
-    openButton.setFlatLook();
-    openButton.setBorder(WbSwingUtilities.FLAT_BUTTON_BORDER);
+    openButton = new JButton("...");
+    Dimension d = new Dimension(BUTTON_WIDTH,BUTTON_WIDTH);
+    openButton.setPreferredSize(d);
+    openButton.setMinimumSize(d);
     openButton.setEnabled(true);
     openButton.setFocusable(false);
     openButton.addActionListener(this);

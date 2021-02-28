@@ -130,14 +130,16 @@ public class HstoreSupport
     // we need at least 4 characters for a valid literal "k=>v"
     if (len < 4) return result;
 
-    if (literal.toLowerCase().endsWith("::hstore"))
+    // not a valid literal, return an empty map
+    if (!literal.contains("=>")) return result;
+
+    // remove possible typecast
+    int pos = literal.lastIndexOf("'::");
+    if (pos > 0 && literal.indexOf("hstore", pos) > 0)
     {
-      literal = literal.substring(0, literal.indexOf("::"));
+      literal = literal.substring(0, pos + 1);
     }
     len = literal.length();
-
-    // not a valid literal, return an empty map
-    if (literal.indexOf("=>") < 0) return result;
 
     // trim leading and trailing single quotes, in case the user entered them
     if (literal.charAt(0) == '\'' && literal.charAt(len - 1) == '\'')
@@ -228,4 +230,21 @@ public class HstoreSupport
     }
     return sb.toString();
   }
+
+  public static boolean isHstoreType(String type)
+  {
+    if (type == null) return false;
+    int pos1 = type.indexOf("hstore");
+    if (pos1 < 0) return false;
+    
+    int pos = type.indexOf('.');
+    if (pos > 0)
+    {
+      // fully qualified type name
+      type = type.substring(pos+1);
+    }
+    type = StringUtil.removeQuotes(type, "\"");
+    return "hstore".equals(type);
+  }
+
 }

@@ -83,9 +83,8 @@ import workbench.util.VersionNumber;
 import workbench.util.WbFile;
 import workbench.util.WbThread;
 
-
 /**
- * The main application "controller" for the SQL Workbench/J
+ * The main application "controller" for SQL Workbench/J.
  *
  * @author Thomas Kellerer
  */
@@ -105,8 +104,6 @@ public final class WbManager
   private DeadlockMonitor deadlockMonitor;
 
   private final AppArguments cmdLine = new AppArguments();
-  private boolean isWindowsClassic;
-  private boolean isFlatLaf;
   private JDialog closeMessage;
 
   private WbManager()
@@ -244,22 +241,10 @@ public final class WbManager
     }
   }
 
-  public boolean isWindowsClassic()
-  {
-    return isWindowsClassic;
-  }
-
-  public boolean isFlatLaf()
-  {
-    return isFlatLaf;
-  }
-
   private void initUI()
   {
     LnFHelper helper = new LnFHelper();
     helper.initUI();
-    this.isWindowsClassic = helper.isWindowsClassic();
-    this.isFlatLaf = LnFHelper.isFlatLaf();
     Settings.getInstance().addFontChangedListener(this);
     if (GuiSettings.installFocusManager())
     {

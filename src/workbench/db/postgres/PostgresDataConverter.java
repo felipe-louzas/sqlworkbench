@@ -47,18 +47,25 @@ public class PostgresDataConverter
   @Override
   public boolean convertsType(int jdbcType, String dbmsType)
   {
-    return jdbcType == Types.OTHER && "hstore".equals(dbmsType);
+    return jdbcType == Types.OTHER && HstoreSupport.isHstoreType(dbmsType);
   }
 
   @Override
   public Object convertValue(int jdbcType, String dbmsType, Object originalValue)
   {
+    if (originalValue == null) return null;
+
     if (convertsType(jdbcType, dbmsType))
     {
+      // some driver versions return hstore values as a Map
       if (originalValue instanceof Map)
       {
         // HstoreMap implements toString() so that a valid hstore literal is generated
         return new HstoreMap((Map)originalValue);
+      }
+      else
+      {
+        return new HstoreMap(HstoreSupport.parseLiteral(originalValue.toString()));
       }
     }
     return originalValue;

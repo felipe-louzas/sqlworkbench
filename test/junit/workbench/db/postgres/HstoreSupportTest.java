@@ -73,6 +73,10 @@ public class HstoreSupportTest
     assertEquals(1, result.size());
     assertTrue(result.containsKey("key"));
     assertNull(result.get("key"));
+
+    result = HstoreSupport.parseLiteral("'key=>42'::\"ext\".\"hstore\"");
+    assertEquals(1, result.size());
+    assertEquals(result.get("key"), "42");
   }
 
   @Test

@@ -1,6 +1,4 @@
 /*
- * LnFHelper.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -57,7 +55,6 @@ public class LnFHelper
   public static final String LABEL_FONT_KEY = "Label.font";
   public static final String TREE_FONT_KEY = "Tree.font";
 
-  private boolean isWindowsClassic;
 	private LnFManager lnfManager = new LnFManager();
 
   // Font properties that are automatically scaled by Java
@@ -101,11 +98,6 @@ public class LnFHelper
     "ToolTip.font",
     TREE_FONT_KEY,
     "ViewPort.font");
-
-  public boolean isWindowsClassic()
-  {
-    return isWindowsClassic;
-  }
 
   public static int getMenuFontHeight()
   {
@@ -307,8 +299,6 @@ public class LnFHelper
       LogMgr.logError(new CallerInfo(){}, "Could not set look and feel to [" + className + "]. Look and feel will be ignored", e);
       setSystemLnF();
     }
-
-    checkWindowsClassic(UIManager.getLookAndFeel().getClass().getName());
   }
 
   private void configureFlatLaf(LnFLoader loader)
@@ -358,46 +348,7 @@ public class LnFHelper
     }
     catch (Exception ex)
     {
-      // should not ahppen
+      // should not happen
     }
   }
-
-  private void checkWindowsClassic(String clsname)
-  {
-    try
-    {
-      if (clsname.contains("com.sun.java.swing.plaf.windows"))
-      {
-        String osVersion = System.getProperty("os.version", "1.0");
-        Float version = Float.valueOf(osVersion);
-        if (version <= 5.0)
-        {
-          isWindowsClassic = true;
-        }
-        else
-        {
-          isWindowsClassic = clsname.contains("WindowsClassicLookAndFeel");
-          if (!isWindowsClassic)
-          {
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
-            Boolean themeActive = (Boolean) toolkit.getDesktopProperty("win.xpstyle.themeActive");
-            if (themeActive != null)
-            {
-              isWindowsClassic = !themeActive;
-            }
-            else
-            {
-              isWindowsClassic = true;
-            }
-          }
-        }
-      }
-    }
-    catch (Throwable e)
-    {
-      isWindowsClassic = false;
-    }
-
-  }
-
 }

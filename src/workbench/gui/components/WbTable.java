@@ -41,8 +41,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.SQLException;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,6 +95,8 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
+import workbench.db.WbConnection;
+import workbench.db.postgres.HstoreSupport;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.CopyAction;
@@ -2145,11 +2147,21 @@ public class WbTable
     return (Map.class.isAssignableFrom(colClass));
   }
 
+  protected WbConnection getOriginalConnection()
+  {
+    if (this.dwModel == null) return null;
+    return this.dwModel.getDataStore().getOriginalConnection();
+  }
+
   private boolean isHstoreColumn(int col)
   {
+    WbConnection conn = getOriginalConnection();
+    if (conn == null) return false;
+    if (!conn.getMetadata().isPostgres()) return false;
+    
     ColumnIdentifier column = getColumnDefinition(col);
     if (column == null) return false;
-    return "hstore".equals(column.getDbmsType());
+    return HstoreSupport.isHstoreType(column.getDbmsType());
   }
 
   private boolean isMultiLineColumn(int col)

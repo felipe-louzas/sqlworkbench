@@ -1,6 +1,4 @@
 /*
- * FlatButton.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -28,7 +26,6 @@ import java.awt.Insets;
 import javax.swing.Action;
 import javax.swing.Icon;
 
-import workbench.WbManager;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.WbSwingUtilities;
@@ -40,9 +37,7 @@ import workbench.gui.WbSwingUtilities;
 public class FlatButton
   extends WbButton
 {
-
   public static final Insets SMALL_MARGIN = new Insets(3,5,3,5);
-  public static final Insets LARGER_MARGIN = new Insets(5,7,5,7);
   private boolean useDefaultMargin;
   private Insets customInsets;
   private String enableMsgKey;
@@ -50,41 +45,26 @@ public class FlatButton
   public FlatButton()
   {
     super();
-    init();
   }
 
   public FlatButton(Action action)
   {
     super(action);
-    init();
   }
 
   public FlatButton(Icon icon)
   {
     super(icon);
-    init();
   }
 
   public FlatButton(String label)
   {
     super(label);
-    init();
   }
 
   public void showMessageOnEnable(String resourceKey)
   {
     this.enableMsgKey = resourceKey;
-  }
-
-  private void init()
-  {
-    // WbManager.getInstance() can be null if this component
-    // is created e.g. in the GUI designer of NetBeans
-    if (WbManager.getInstance() == null) return;
-    if (WbManager.getInstance().isWindowsClassic())
-    {
-      setFlatLook();
-    }
   }
 
   public void setFlatLook()

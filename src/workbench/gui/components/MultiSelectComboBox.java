@@ -1,6 +1,4 @@
 /*
- * MultiSelectComboBox.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -37,16 +35,18 @@ import javax.swing.ComboBoxEditor;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
+
+import workbench.gui.lnf.LnFHelper;
 
 import workbench.util.CollectionUtil;
 
@@ -66,7 +66,7 @@ import workbench.util.CollectionUtil;
  * @author Thomas Kellerer
  */
 public class MultiSelectComboBox<T extends Object>
-  extends JComboBox
+  extends WbComboBox
   implements PopupMenuListener
 {
   private static final String PROP_KEY = "userObject";
@@ -159,8 +159,13 @@ public class MultiSelectComboBox<T extends Object>
       values = newItems;
     }
 
-    // int scrollWidth = UIManager.getInt("ScrollBar.width");
-    //setPopupWidth(maxElementWidth + scrollWidth + 5);
+    // For other Look & Feels this seems to break
+    // the layout of the DbTree
+    if (LnFHelper.isWindowsLookAndFeel())
+    {
+      int scrollWidth = UIManager.getInt("ScrollBar.width");
+      setPopupWidth(maxElementWidth + scrollWidth + 5);
+    }
     setMaximumRowCount(Math.min(getItemCount() + 1, 25));
     this.setToolTipText(getSelectedItemsDisplay());
     super.addActionListener(this);

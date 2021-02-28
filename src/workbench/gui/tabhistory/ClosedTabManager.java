@@ -72,6 +72,7 @@ public class ClosedTabManager
 
   public void updateMenu(JMenu historyMenu)
   {
+    if (historyMenu == null) return;
     historyMenu.removeAll();
 
     for (ClosedTabInfo info : recentTabs)

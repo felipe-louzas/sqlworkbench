@@ -1,6 +1,4 @@
 /*
- * SortArrowIcon.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -102,6 +100,7 @@ public class CloseIcon
 
   private Color getForeground(Component c)
   {
+    if (c == null) return Color.BLACK;
     if (c.isEnabled())
     {
       return foregroundColor == null ? c.getForeground() : foregroundColor;
