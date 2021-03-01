@@ -1,6 +1,4 @@
 /*
- * WbComboBox.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -40,7 +38,7 @@ public class WbComboBox
   extends JComboBox
 {
   private boolean layingOut;
-  private int popupWidth;
+  private int popupWidth = -1;
 
   public WbComboBox()
   {
@@ -75,13 +73,15 @@ public class WbComboBox
   }
 
   /**
-   * Overriden to handle the popup Size
+   * Overriden to handle the popup size.
    */
   @Override
   public Dimension getSize()
   {
     Dimension dim = super.getSize();
-    if (!layingOut && popupWidth != 0 && dim.width < popupWidth)
+    if (popupWidth == -1) return dim;
+
+    if (isPopupVisible() && !layingOut && popupWidth != 0 && dim.width < popupWidth)
     {
       dim.width = popupWidth;
     }

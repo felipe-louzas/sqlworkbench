@@ -1,6 +1,4 @@
 /*
- * DbObjectCache.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -173,6 +171,11 @@ public class DbObjectCache
     {
       objectCache.removeProcedure(dbConnection, (ProcedureDefinition)obj);
     }
+  }
+
+  public void removeSchema(String schema)
+  {
+    objectCache.removeSchema(dbConnection, schema);
   }
 
   public void removeTable(TableIdentifier tbl)

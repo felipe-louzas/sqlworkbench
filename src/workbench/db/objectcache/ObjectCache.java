@@ -713,6 +713,26 @@ class ObjectCache
     }
   }
 
+  synchronized void removeSchema(WbConnection dbConn, String schema)
+  {
+    Namespace nsp = Namespace.fromSchemaName(dbConn, schema);
+    schemasInCache.remove(nsp);
+    tableFunctionsCache.remove(nsp);
+    procedureCache.remove(nsp);
+    Set<TableIdentifier> keys = new HashSet(objects.keySet());
+    for (TableIdentifier tbl : keys)
+    {
+      Namespace tnsp = Namespace.fromTable(tbl, dbConn);
+      if (nsp.equals(tnsp))
+      {
+        objects.remove(tbl);
+        referencedTables.remove(tbl);
+        referencingTables.remove(tbl);
+      }
+    }
+    LogMgr.logDebug(new CallerInfo(){}, "Removed objects for schema " + nsp + " from the cache");
+  }
+
   synchronized void removeTable(WbConnection dbConn, TableIdentifier tbl)
   {
     if (tbl == null) return;

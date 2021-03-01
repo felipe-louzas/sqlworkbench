@@ -98,7 +98,6 @@ import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
 
-
 /**
  *
  * @author  Thomas Kellerer
@@ -196,9 +195,10 @@ public class DbTreePanel
     bar.add(closeButton);
     typeFilter.addActionListener(this);
 
-    JPanel filterPanel = new JPanel(new BorderLayout(0, 1));
-    filterPanel.setBorder(new EmptyBorder(2,0,2,4));
+    JPanel filterPanel = new JPanel(new GridBagLayout());
+    filterPanel.setBorder(new EmptyBorder(5,0,2,0));
     filterValue = new JTextField();
+    filterValue.addKeyListener(this);
 
     filterAction = new QuickFilterAction(this);
     resetFilter = new WbAction()
@@ -216,12 +216,23 @@ public class DbTreePanel
     filterBar.add(filterAction);
     filterBar.add(resetFilter);
     filterBar.setMargin(WbSwingUtilities.getEmptyInsets());
+    filterBar.setBorder(new EmptyBorder(0,0,0,0));
     filterBar.setBorderPainted(true);
 
-    filterPanel.add(filterBar, BorderLayout.LINE_START);
-    filterPanel.add(filterValue, BorderLayout.CENTER);
-
-    filterValue.addKeyListener(this);
+    GridBagConstraints gcf = new GridBagConstraints();
+    gcf.gridx = 0;
+    gcf.gridy = 0;
+    gcf.fill = GridBagConstraints.NONE;
+    gcf.weightx = 0.0;
+    gcf.weighty = 0.0;
+    gcf.anchor = GridBagConstraints.LINE_START;
+    gcf.insets = WbSwingUtilities.getEmptyInsets();
+    filterPanel.add(filterBar, gcf);
+    gcf.gridx ++;
+    gcf.fill = GridBagConstraints.HORIZONTAL;
+    gcf.insets = new Insets(0,0,0,5);
+    gcf.weightx = 1.0;
+    filterPanel.add(filterValue, gcf);
 
     gc.gridy = 1;
     gc.gridx = 0;

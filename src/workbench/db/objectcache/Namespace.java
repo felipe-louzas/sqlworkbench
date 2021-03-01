@@ -176,11 +176,32 @@ public class Namespace
     }
     if (supportsCatalogs && !supportsSchemas)
     {
-      return new Namespace(schema, catalog);
+      return new Namespace(null, catalog);
     }
     return new Namespace(schema, catalog);
   }
-  
+
+  public static Namespace fromSchemaName(WbConnection conn, String catalogOrSchema)
+  {
+    if (conn == null)
+    {
+      return new Namespace(catalogOrSchema, '.', true, true);
+    }
+    boolean supportsSchemas = conn.getDbSettings().supportsSchemas();
+    boolean supportsCatalogs = conn.getDbSettings().supportsCatalogs();
+
+    if (supportsSchemas && !supportsCatalogs)
+    {
+      return new Namespace(catalogOrSchema, null);
+    }
+    if (supportsCatalogs && !supportsSchemas)
+    {
+      return new Namespace(null, catalogOrSchema);
+    }
+    char separator = SqlUtil.getCatalogSeparator(conn);
+    return new Namespace(catalogOrSchema, separator, supportsSchemas, supportsCatalogs);
+  }
+
   public static Namespace fromExpression(WbConnection conn, String catalogAndSchema)
   {
     if (conn == null)

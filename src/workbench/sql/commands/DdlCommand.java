@@ -248,7 +248,14 @@ public class DdlCommand
     if (StringUtil.isEmptyString(info.getObjectName())) return;
     if (currentConnection == null) return;
 
-    currentConnection.getObjectCache().removeTable(new TableIdentifier(info.getObjectName(), currentConnection));
+    if ("SCHEMA".equalsIgnoreCase(info.getObjectType()))
+    {
+      currentConnection.getObjectCache().removeSchema(info.getObjectName());
+    }
+    else
+    {
+      currentConnection.getObjectCache().removeTable(new TableIdentifier(info.getObjectName(), currentConnection));
+    }
   }
 
   @Override

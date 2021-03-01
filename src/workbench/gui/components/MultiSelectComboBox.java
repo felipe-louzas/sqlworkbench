@@ -50,7 +50,6 @@ import workbench.gui.lnf.LnFHelper;
 
 import workbench.util.CollectionUtil;
 
-
 /**
  * A JComboBox containing checkboxes to allow multiple items to be selected.
  *
@@ -159,9 +158,9 @@ public class MultiSelectComboBox<T extends Object>
       values = newItems;
     }
 
-    // For other Look & Feels this seems to break
-    // the layout of the DbTree
-    if (LnFHelper.isWindowsLookAndFeel())
+    Dimension pref = getPreferredSize();
+    this.setMinimumSize(new Dimension(maxElementWidth / 2, pref.height));
+    if (!LnFHelper.isFlatLaf())
     {
       int scrollWidth = UIManager.getInt("ScrollBar.width");
       setPopupWidth(maxElementWidth + scrollWidth + 5);

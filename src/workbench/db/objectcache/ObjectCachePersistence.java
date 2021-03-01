@@ -18,7 +18,6 @@
  *
  * To contact the author please send an email to: support@sql-workbench.eu
  */
-
 package workbench.db.objectcache;
 
 import java.io.FileOutputStream;
@@ -60,7 +59,6 @@ import workbench.util.WbFile;
 class ObjectCachePersistence
 {
   private static final String OBJECTS_ENTRY = "objects.dat";
-  private static final String SCHEMAS_ENTRY = "schemas.dat";
   private static final String NAMESPACES_ENTRY = "namespaces.dat";
   private static final String REFERENCING_TABLES_ENTRY = "referencing_tables.data";
   private static final String REFERENCED_TABLES_ENTRY = "referenced_tables.data";

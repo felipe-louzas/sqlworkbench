@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +38,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbSearchPath;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
+import workbench.db.ObjectNameSorter;
 import workbench.db.ProcedureDefinition;
 import workbench.db.QuoteHandler;
 import workbench.db.SequenceDefinition;
@@ -627,10 +627,10 @@ public abstract class BaseAnalyzer
     {
       List<ProcedureDefinition> functions = cache.getTableFunctions(namespaceForTableList);
       this.elements.addAll(functions);
-    }
-    if (GuiSettings.getCompletionSortFunctionsWithTables())
-    {
-      Collections.sort(elements, (Object o1, Object o2) -> o1.toString().compareToIgnoreCase(o2.toString()));
+      if (functions.size() > 0 && GuiSettings.getCompletionSortFunctionsWithTables())
+      {
+        Collections.sort(elements, new ObjectNameSorter(true));
+      }
     }
   }
 
@@ -646,7 +646,7 @@ public abstract class BaseAnalyzer
     // By doing this we avoid retrieving a synonym base table if the table is already in the cache
     List<ColumnIdentifier> cols = cache.getColumns(toCheck);
 
-    if (cols == null)
+    if (cols == null && dbConnection.getMetadata().supportsSynonyms())
     {
       toCheck = cache.getSynonymTable(tableForColumnList);
       cols = cache.getColumns(toCheck);
