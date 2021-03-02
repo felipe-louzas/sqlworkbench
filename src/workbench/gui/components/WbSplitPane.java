@@ -93,16 +93,28 @@ public class WbSplitPane
   {
     if (LnFHelper.isWebLaf())
     {
-      try
-      {
-        Class clz = Class.forName("com.alee.laf.splitpane.WebSplitPaneUI");
-        return (SplitPaneUI)clz.newInstance();
-      }
-      catch (Throwable th)
-      {
-      }
+      SplitPaneUI sui = createInstance("com.alee.laf.splitpane.WebSplitPaneUI");
+      if (sui != null) return sui;
+    }
+    else if (LnFHelper.isFlatLaf())
+    {
+      SplitPaneUI sui = createInstance("com.formdev.flatlaf.ui.FlatSplitPaneUI");
+      if (sui != null) return sui;
     }
     return new WbSplitPaneUI();
+  }
+
+  private SplitPaneUI createInstance(String className)
+  {
+    try
+    {
+      Class clz = Class.forName(className);
+      return (SplitPaneUI)clz.newInstance();
+    }
+    catch (Throwable th)
+    {
+    }
+    return null;
   }
 
   @Override
