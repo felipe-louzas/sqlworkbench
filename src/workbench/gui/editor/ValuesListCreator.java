@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbStringTokenizer;
@@ -257,13 +258,13 @@ public class ValuesListCreator
     List<String> elements = null;
     if (tokenizer != null)
     {
-      if (!line.contains(delimiter)) return null;
+      if (!line.contains(delimiter)) return CollectionUtil.arrayList(line);
       tokenizer.setSourceString(line);
       elements = tokenizer.getAllTokens();
     }
     else
     {
-      if (!splitPattern.matcher(line).find()) return null;
+      if (!splitPattern.matcher(line).find()) return CollectionUtil.arrayList(line);
       String[] items = splitPattern.split(line);
       elements = Arrays.asList(items);
     }

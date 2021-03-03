@@ -61,6 +61,20 @@ public class ValuesListCreatorTest
   }
 
   @Test
+  public void testSingleColumn()
+  {
+    String input =
+      "1\n" +
+      "2";
+    ValuesListCreator creator = new ValuesListCreator(input, ",", true);
+    String result = creator.createValuesList();
+    String expected =
+       "(1),\n" +
+       "(2)";
+    assertEquals(expected, result.trim());
+  }
+
+  @Test
   public void testDoubleQuotes()
   {
     String input =
@@ -169,8 +183,9 @@ public class ValuesListCreatorTest
     ValuesListCreator creator = new ValuesListCreator(input);
     String result = creator.createValuesList();
     String expected =
-      "(1, 'Arthur', 'Dent', 42),\n" +
-      "(2, 'Tricia', 'McMillan')";
+      "('1', 'Arthur', 'Dent', 42),\n" +
+      "('2', 'Tricia', 'McMillan'),\n" +
+      "('foo')";
     assertEquals(expected, result.trim());
   }
 
