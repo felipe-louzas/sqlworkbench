@@ -99,6 +99,31 @@ public class LnFHelper
     TREE_FONT_KEY,
     "ViewPort.font");
 
+  private static boolean isWebLaf;
+  private static boolean isFlatLaf;
+  private static boolean isJGoodies;
+  private static boolean isWindowsLnF;
+
+  public static boolean isJGoodies()
+  {
+    return isJGoodies;
+  }
+
+  public static boolean isWebLaf()
+  {
+    return isWebLaf;
+  }
+
+  public static boolean isFlatLaf()
+  {
+    return isFlatLaf;
+  }
+
+  public static boolean isWindowsLookAndFeel()
+  {
+    return isWindowsLnF;
+  }
+
   public static int getMenuFontHeight()
   {
     return getFontHeight(MENU_FONT_KEY);
@@ -139,11 +164,6 @@ public class LnFHelper
       scaleDefaultFonts();
     }
 
-    if (isWebLaf())
-    {
-      initializeWebLaf();
-    }
-
     Font dataFont = settings.getDataFont();
     if (dataFont != null)
     {
@@ -162,30 +182,6 @@ public class LnFHelper
 
     def.put("Button.showMnemonics", Boolean.valueOf(GuiSettings.getShowMnemonics()));
     UIManager.put("Synthetica.extendedFileChooser.rememberLastDirectory", false);
-  }
-
-  public static boolean isWebLaf()
-  {
-    String lnf = UIManager.getLookAndFeel().getClass().getName();
-    return lnf.contains("WebLookAndFeel");
-  }
-
-  public static boolean isGTKLookAndFeel()
-  {
-    String lnf = UIManager.getLookAndFeel().getClass().getName();
-    return lnf.contains("GTKLookAndFeel");
-  }
-
-  public static boolean isWindowsLookAndFeel()
-  {
-    String lnf = UIManager.getLookAndFeel().getClass().getName();
-    return lnf.contains("plaf.windows");
-  }
-
-  public static boolean isNonStandardLookAndFeel()
-  {
-    String lnf = UIManager.getLookAndFeel().getClass().getName();
-    return (lnf.startsWith("com.sun.java") == false && lnf.startsWith("javax.swing.plaf") == false);
   }
 
   private void scaleDefaultFonts()
@@ -212,18 +208,6 @@ public class LnFHelper
         def.put(property, scaled);
       }
     }
-  }
-
-  public static boolean isFlatLaf()
-  {
-    String lnf = UIManager.getLookAndFeel().getClass().getName();
-    return lnf.startsWith("com.formdev.flatlaf");
-  }
-
-  public static boolean isJGoodies()
-  {
-    String lnf = UIManager.getLookAndFeel().getClass().getName();
-    return lnf.startsWith("com.jgoodies.looks.plastic");
   }
 
 	private String getDefaultLookAndFeel()
@@ -285,12 +269,26 @@ public class LnFHelper
         // Enable configuration of FlatLaf options
         if (className.startsWith("com.formdev.flatlaf"))
         {
+          isFlatLaf = true;
           configureFlatLaf(loader);
+        }
+        else if (className.contains("plaf.windows"))
+        {
+          isWindowsLnF = true;
+        }
+        else if (className.startsWith("com.jgoodies.looks.plastic"))
+        {
+          isJGoodies = true;
         }
 
         LookAndFeel lnf = loader.getLookAndFeel();
 
         UIManager.setLookAndFeel(lnf);
+        if (className.startsWith("com.alee.laf"))
+        {
+          isWebLaf = true;
+          initializeWebLaf();
+        }
         PlatformHelper.installGtkPopupBugWorkaround();
       }
     }

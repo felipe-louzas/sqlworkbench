@@ -1,6 +1,4 @@
 /*
- * JdbcUtils.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -41,7 +39,6 @@ import workbench.log.LogMgr;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.VersionNumber;
-
 
 /**
  *

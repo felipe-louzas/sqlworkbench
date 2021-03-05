@@ -1,6 +1,4 @@
 /*
- * SourceStatementsHelp.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -22,7 +20,6 @@
  *
  */
 package workbench.db;
-
 
 import workbench.util.ClasspathUtil;
 import workbench.util.WbFile;

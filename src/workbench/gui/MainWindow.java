@@ -1373,7 +1373,13 @@ public class MainWindow
   public boolean usesSeparateConnection(Optional<MainPanel> panel)
   {
     if (!canUseSeparateConnection()) return false;
-    return panel.map(MainPanel::getConnection).map(t -> t.isShared() == false).orElse(false);
+    if (!panel.isPresent()) return false;
+
+    MainPanel mp = panel.get();
+    WbConnection conn = mp.getConnection();
+    if (conn == null) return false;
+
+    return conn != currentConnection;
   }
 
   public void createNewConnectionForCurrentPanel()

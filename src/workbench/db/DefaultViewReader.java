@@ -1,6 +1,4 @@
 /*
- * DefaultViewReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -22,6 +20,7 @@
  *
  */
 package workbench.db;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,9 +36,7 @@ import workbench.sql.formatter.WbSqlFormatter;
 
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
-
 
 /**
  * A class to read the source of a database view.

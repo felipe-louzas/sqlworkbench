@@ -1,6 +1,4 @@
 /*
- * WbSplitPane.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -26,6 +24,7 @@ package workbench.gui.components;
 import java.awt.Component;
 
 import javax.swing.JSplitPane;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.SplitPaneUI;
@@ -38,10 +37,8 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.lnf.LnFHelper;
 import workbench.gui.sql.SplitPaneExpander;
 
-
 /**
- * A JSplitPane which restores the divider size after a UI Change
- * and an updateUI()
+ * A JSplitPane which restores the divider size after a UI Change and an updateUI().
  *
  * @author  Thomas Kellerer
  */
@@ -91,14 +88,9 @@ public class WbSplitPane
 
   private SplitPaneUI getSplitPaneUI()
   {
-    if (LnFHelper.isWebLaf())
+    if (LnFHelper.isFlatLaf() || LnFHelper.isWebLaf())
     {
-      SplitPaneUI sui = createInstance("com.alee.laf.splitpane.WebSplitPaneUI");
-      if (sui != null) return sui;
-    }
-    else if (LnFHelper.isFlatLaf())
-    {
-      SplitPaneUI sui = createInstance("com.formdev.flatlaf.ui.FlatSplitPaneUI");
+      SplitPaneUI sui = createInstance((String)UIManager.getDefaults().get("SplitPaneUI"));
       if (sui != null) return sui;
     }
     return new WbSplitPaneUI();
