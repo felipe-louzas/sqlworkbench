@@ -21,6 +21,7 @@
 package workbench.sql.parser;
 
 import workbench.WbTestCase;
+
 import workbench.sql.DelimiterDefinition;
 import workbench.sql.lexer.SQLToken;
 
@@ -52,9 +53,32 @@ public class DynamicDelimiterTesterTest
       "BEGIN \n" +
       "   SELECT COUNT(*) INTO p1 FROM t;\n" +
       "END\n" +
+      "/\n" +
+      "create table x (id int)\n" +
       "/";
     parser.setScript(sql);
-    assertEquals(1, parser.getSize());
+    assertEquals(2, parser.getSize());
+  }
+
+  @Test
+  public void testWithAlternateDelimiter2()
+  {
+    ScriptParser parser = new ScriptParser(ParserType.Standard);
+    parser.setDynamicDelimiterEnabled(true);
+    parser.setAlternateDelimiter(DelimiterDefinition.DEFAULT_ORA_DELIMITER);
+    String sql =
+      "WbDelimiter $$\n" +
+      "CREATE PROCEDURE foo(OUT p1 INT) \n"+
+      "BEGIN \n" +
+      "   SELECT COUNT(*) INTO p1 FROM t;\n" +
+      "END\n" +
+      "$$\n" +
+      "WbDelimiter ;\n" +
+      "create table x (id int);";
+    parser.setScript(sql);
+    assertEquals(4, parser.getSize());
+    assertTrue(parser.getCommand(1).startsWith("CREATE PROCEDURE"));
+    assertTrue(parser.getCommand(3).startsWith("create table"));
   }
 
   @Test
