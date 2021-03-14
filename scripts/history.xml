@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2021-02-06">
+
+  <release build="-1" date="2021-03-14">
     <entry dev-build="4" type="enh">Improved compatibility with the FlatLaf look and feel.</entry>
     <entry dev-build="4" type="enh">It's now possible to dynamically change the statement delimiter using the WbDelimiter command.</entry>
     <entry dev-build="4" type="enh">When code completion for tables is shown, "table functions" (aka "set returning functions") are now included for DBMS that support them.</entry>
