@@ -37,8 +37,6 @@ import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
-import workbench.gui.components.TabbedPaneUIFactory;
-
 import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.PlatformHelper;
@@ -170,9 +168,6 @@ public class LnFHelper
       def.put("Table.font", dataFont);
       def.put("TableHeader.font", dataFont);
     }
-
-    String cls = TabbedPaneUIFactory.getTabbedPaneUIClass();
-    if (cls != null) def.put("TabbedPaneUI", cls);
 
     if (settings.getBoolProperty("workbench.gui.adjustgridcolor", true))
     {

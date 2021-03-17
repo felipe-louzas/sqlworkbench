@@ -1,6 +1,4 @@
 /*
- * WbTabbedPane.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -56,6 +54,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.gui.lnf.LnFHelper;
+
 
 /**
  * A JTabbedPane that allows re-ordering of the tabs using drag & drop.
@@ -354,7 +353,7 @@ public class WbTabbedPane
     putClientProperty("jgoodies.tabIconsEnabled", Boolean.FALSE);
 
     isFlatLaf = LnFHelper.isFlatLaf();
-    
+
     if (!isFlatLaf)
     {
       try
@@ -363,11 +362,12 @@ public class WbTabbedPane
         if (tui != null)
         {
           this.setUI(tui);
+          LogMgr.logDebug(new CallerInfo(){}, "Installed custom TabbedPaneUI");
         }
       }
-      catch (Exception e)
+      catch (Throwable e)
       {
-        LogMgr.logError(new CallerInfo(){}, "Error during init", e);
+        LogMgr.logError(new CallerInfo(){}, "Cannot set custom TabbedPaneUI", e);
       }
     }
     onlyCloseActive = GuiSettings.getCloseActiveTabOnly();

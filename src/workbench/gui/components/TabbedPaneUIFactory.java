@@ -1,6 +1,4 @@
 /*
- * TabbedPaneUIFactory.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -30,6 +28,8 @@ import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.plaf.TabbedPaneUI;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
@@ -100,13 +100,11 @@ public class TabbedPaneUIFactory
     try
     {
       Class cls = Class.forName(className);
-      ui = (TabbedPaneUI)cls.newInstance();
+      ui = (TabbedPaneUI)cls.getDeclaredConstructor().newInstance();
     }
-    catch (Exception e)
+    catch (Throwable th)
     {
-      JTabbedPane pane = new JTabbedPane();
-      ui = (TabbedPaneUI)UIManager.getUI(pane);
-      UIManager.getDefaults().put("TabbedPaneUI", ui.getClass().getName());
+      LogMgr.logError(new CallerInfo(){}, "Cannot create custom TabbedPaneUI: " + className, th);
     }
     return ui;
   }
