@@ -768,7 +768,8 @@ r=$(java \
 	-Dapple.laf.useScreenMenuBar=true \
 	-Xmx4096m \
 	-Xdock:name=SQLWorkbench/J \
-	workbench.WbStarter 2>&1)]]></p>
+	workbench.WbStarter 2>&1)
+$r]]></p>
       </li>
       
       <li>You have to adjust the installation path on the first line of the script to match your installation location.</li>
