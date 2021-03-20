@@ -1,5 +1,5 @@
 @echo off
-echo This batchfile will download the most recent Java 14 JRE (64bit) from https://adoptopenjdk.net/
+echo This batchfile will download a Java 16 JRE (64bit) from https://www.sql-workbench.eu
 echo to be used with SQL Workbench/J
 echo.
 

@@ -1,13 +1,11 @@
 #!/bin/sh
 
-rm -f jre14.tar.gz
-
 case "$(uname -s)" in
   Darwin)
-    jre_os="mac"
+    url="https://api.adoptopenjdk.net/v3/binary/latest/16/ga/mac/x64/jre/hotspot/normal/adoptopenjdk?project=jdk"
     ;;
   Linux*)
-    jre_os="linux"
+    url="https://www.sql-workbench.eu/jre/jre_linux64.tar.gz"
     ;;
   *)
     echo "Unknown system: $(uname)"
@@ -15,9 +13,9 @@ case "$(uname -s)" in
     ;;
 esac
 
-curl --insecure -L "https://api.adoptopenjdk.net/v2/binary/releases/openjdk14?openjdk_impl=hotspot&os=${jre_os}&arch=x64&release=latest&type=jre" -o jre14.tar.gz
+curl --insecure -L "${url}" -o jre16.tar.gz
 
 rm -Rf jre
 mkdir jre
 
-tar xf jre14.tar.gz --strip-components=1 --directory jre
+tar xf jre16.tar.gz --strip-components=1 --directory jre
