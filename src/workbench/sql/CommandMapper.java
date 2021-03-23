@@ -98,6 +98,7 @@ import workbench.sql.wbcommands.WbRemoveVar;
 import workbench.sql.wbcommands.WbRestoreConnection;
 import workbench.sql.wbcommands.WbRowCount;
 import workbench.sql.wbcommands.WbRunLB;
+import workbench.sql.wbcommands.WbRunResult;
 import workbench.sql.wbcommands.WbSavePkMapping;
 import workbench.sql.wbcommands.WbSchemaDiff;
 import workbench.sql.wbcommands.WbSchemaReport;
@@ -127,7 +128,6 @@ import workbench.sql.wbcommands.console.WbListMacros;
 import workbench.sql.wbcommands.console.WbListProfiles;
 import workbench.sql.wbcommands.console.WbRemoveMasterPwd;
 import workbench.sql.wbcommands.console.WbRun;
-import workbench.sql.wbcommands.WbRunResult;
 import workbench.sql.wbcommands.console.WbSaveProfiles;
 import workbench.sql.wbcommands.console.WbSetDisplaySize;
 import workbench.sql.wbcommands.console.WbSetMasterPwd;
@@ -472,7 +472,7 @@ public class CommandMapper
 
   /**
    *
-   * Returns the SqlCommand to be used for the given SQL string.
+   * Returns the command context to be used for the given SQL string.
    *
    * This also checks for "SELECT ... INTO ... " style statments that
    * don't actually select something but create a new table.
@@ -481,10 +481,9 @@ public class CommandMapper
    *
    * @param sql the statement to be executed
    *
-   * @return the instance of SqlCommand to be used to run the sql, or null if the
-   *         given sql is empty or contains comments only
+   * @return the CommandCtx with instance of SqlCommand to be used to run the sql. Never null
    */
-  public SqlCommand getCommandToUse(String sql)
+  public CommandCtx getCommandToUse(String sql)
   {
     WbConnection conn = metaData == null ? null : metaData.getWbConnection();
     String verb = SqlParsingUtil.getInstance(conn).getSqlVerb(sql);
@@ -492,11 +491,11 @@ public class CommandMapper
     {
       LogMgr.logDebug(new CallerInfo(){}, "Found 'SELECT ... INTO new_table'");
       // use the generic SqlCommand implementation for this and not the SelectCommand
-      return this.cmdDispatch.get("*");
+      return new CommandCtx(this.cmdDispatch.get("*"), verb);
     }
-    return getCommandFromVerb(verb);
-
+    return new CommandCtx(getCommandFromVerb(verb), verb);
   }
+
   public SqlCommand getCommandFromVerb(String verb)
   {
     SqlCommand cmd = null;

@@ -271,7 +271,7 @@ public class BatchRunner
 
   public SqlCommand getCommand(String verb)
   {
-    return stmtRunner.cmdMapper.getCommandToUse(verb);
+    return stmtRunner.cmdMapper.getCommandFromVerb(verb);
   }
 
   public void addCommand(SqlCommand cmd)

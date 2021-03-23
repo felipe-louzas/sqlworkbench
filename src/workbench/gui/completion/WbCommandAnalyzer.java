@@ -66,7 +66,6 @@ import workbench.util.WbFile;
 
 import static workbench.gui.completion.BaseAnalyzer.*;
 
-
 /**
  * @author Thomas Kellerer
  */
@@ -142,7 +141,7 @@ public class WbCommandAnalyzer
       return;
     }
 
-    SqlCommand cmd = mapper.getCommandToUse(this.sql);
+    SqlCommand cmd = mapper.getCommandToUse(this.sql).getCommand();
 
     if (cmd == null)
     {

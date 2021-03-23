@@ -1252,11 +1252,6 @@ public class WbSqlFormatter
     return t;
   }
 
-  private void appendSubSelect(StringBuilder subSql, int lastIndent, int maxSubLength)
-  {
-    appendSubSelect(subSql, lastIndent, maxSubLength, this.newLineForSubSelects);
-  }
-
   private void appendSubSelect(StringBuilder subSql, int lastIndent, int maxSubLength, boolean useNewline)
   {
     WbSqlFormatter f = new WbSqlFormatter(subSql.toString(), lastIndent, maxSubLength, this.dbId);
@@ -1453,7 +1448,7 @@ public class WbSqlFormatter
     CommandMapper mapper = new CommandMapper();
 
     SQLToken t = this.lexer.getNextToken(true,false);
-    SqlCommand cmd = mapper.getCommandToUse(wbVerb);
+    SqlCommand cmd = mapper.getCommandToUse(wbVerb).getCommand();
 
     boolean first = true;
     boolean isParm = false;
@@ -1828,7 +1823,7 @@ public class WbSqlFormatter
         if (word.equals("INSERT"))
         {
           lastToken = t;
-          t = this.processInsert(t);
+          t = this.processInsert();
           if (t == null) return;
           firstToken = false;
           continue;
@@ -1973,7 +1968,7 @@ public class WbSqlFormatter
     }
   }
 
-  private SQLToken processInsert(SQLToken last)
+  private SQLToken processInsert()
   {
 
     SQLToken t = skipComments();

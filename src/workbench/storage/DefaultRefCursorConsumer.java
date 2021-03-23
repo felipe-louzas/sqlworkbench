@@ -35,12 +35,12 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.reader.ResultHolder;
 
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 
 /**
  *
@@ -91,9 +91,12 @@ public class DefaultRefCursorConsumer
     try
     {
       refCursor = (ResultSet)rs.getObject(columnIndex);
-      DataStore ds = new DataStore(refCursor, sourceConnection, true);
-      ds.setResultName(name);
-      this.refCursorData.add(ds);
+      if (refCursor != null && !rs.wasNull())
+      {
+        DataStore ds = new DataStore(refCursor, sourceConnection, true);
+        ds.setResultName(name);
+        this.refCursorData.add(ds);
+      }
     }
     catch (SQLException ex)
     {

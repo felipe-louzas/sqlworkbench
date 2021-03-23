@@ -68,6 +68,8 @@ import workbench.util.SqlParsingUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
+import static workbench.sql.commands.TransactionStartCommand.*;
+
 /**
  *
  * @author  Thomas Kellerer
@@ -84,6 +86,7 @@ public class StatementRunner
   private WbConnection currentConnection;
 
   private SqlCommand currentCommand;
+  private String currentSqlVerb;
   private boolean isTransactionCommand;
   private StatementHook statementHook = StatementHookFactory.DEFAULT_HOOK;
   private ResultSetConsumer currentConsumer;
@@ -402,7 +405,19 @@ public class StatementRunner
     if (command instanceof SetCommand) return false;
     if (command.isWbCommand()) return command.shouldEndTransaction();
     if (isTransactionCommand) return false;
+    if (isInManualTransaction()) return false;
+    if (currentSqlVerb != null)
+    {
+      Set<String> commands = this.currentConnection.getDbSettings().getNeverEndTransactionCommands();
+      if (commands.contains(currentSqlVerb)) return false;
+    }
     return true;
+  }
+
+  private boolean isInManualTransaction()
+  {
+    String prop = getSessionAttribute(MANUAL_TRANSACTION_IN_PROGRESS);
+    return ("true".equalsIgnoreCase(prop));
   }
 
   private void endReadOnlyTransaction()
@@ -431,7 +446,7 @@ public class StatementRunner
 
   public SqlCommand getCommandToUse(String sql)
   {
-    return this.cmdMapper.getCommandToUse(sql);
+    return this.cmdMapper.getCommandToUse(sql).getCommand();
   }
 
   public StatementRunnerResult runStatement(String aSql)
@@ -450,7 +465,9 @@ public class StatementRunner
       }
     }
 
-    this.currentCommand = this.cmdMapper.getCommandToUse(aSql);
+    CommandCtx ctx = this.cmdMapper.getCommandToUse(aSql);
+    this.currentCommand = ctx == null ? null : ctx.getCommand();
+    this.currentSqlVerb = ctx == null ? null : ctx.getVerb();
 
     if (this.currentCommand == null)
     {

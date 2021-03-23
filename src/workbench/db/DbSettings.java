@@ -1,6 +1,4 @@
 /*
- * DbSettings.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -2478,6 +2476,12 @@ public class DbSettings
   public Set<String> getAdditionalTransactionCommands()
   {
     List<String> commands = getListProperty("transactional.commands", null);
+    return CollectionUtil.caseInsensitiveSet(commands);
+  }
+
+  public Set<String> getNeverEndTransactionCommands()
+  {
+    List<String> commands = getListProperty("transaction.readonly.end.never");
     return CollectionUtil.caseInsensitiveSet(commands);
   }
 
