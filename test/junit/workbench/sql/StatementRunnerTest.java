@@ -191,7 +191,7 @@ public class StatementRunnerTest
       runner.setVerboseLogging(true);
 
       String sql = "--comment\n\nwbfeedback off";
-      SqlCommand command = runner.cmdMapper.getCommandToUse(sql);
+      SqlCommand command = runner.getCommandToUse(sql);
       assertTrue(command instanceof WbFeedback);
       runner.runStatement(sql);
 
@@ -210,51 +210,51 @@ public class StatementRunnerTest
   {
     String sql = "\n\ninsert into bla (col) values (1)";
     StatementRunner runner = new StatementRunner();
-    SqlCommand command = runner.cmdMapper.getCommandToUse(sql);
+    SqlCommand command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "INSERT");
     assertEquals(true, command.isUpdatingCommand());
     assertTrue(command instanceof UpdatingCommand);
 
     sql = "--do something\nupdate bla set col = value";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "UPDATE");
     assertTrue(command instanceof UpdatingCommand);
     assertEquals(true, command.isUpdatingCommand());
 
     sql = "  delete from bla";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "DELETE");
     assertEquals(true, command.isUpdatingCommand());
     assertTrue(command instanceof UpdatingCommand);
 
     sql = "  create table bla (col integer);";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "CREATE");
     assertEquals(true, command.isUpdatingCommand());
     assertTrue(command instanceof DdlCommand);
 
     sql = "-- comment\n\n\ncreate view bla as select * from blub;";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "CREATE");
     assertTrue(command instanceof DdlCommand);
 
     sql = "-- comment\n\n\ncreate \nor \nreplace \nview bla as select * from blub;";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "CREATE");
     assertTrue(command instanceof DdlCommand);
 
     sql = "-- comment\n\n\ncreate trigger bla;";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "CREATE");
 
     sql = "  drop table bla (col integer);";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "DROP");
     assertTrue(command instanceof DdlCommand);
     assertEquals(true, command.isUpdatingCommand());
 
     sql = "/* this is \n a comment \n*/\n-- comment\nalter table bla drop constraint xyz;";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertEquals(command.getVerb(), "ALTER");
     assertTrue(command instanceof DdlCommand);
     assertEquals(true, command.isUpdatingCommand());
@@ -263,20 +263,20 @@ public class StatementRunnerTest
     assertEquals(true, isDrop);
 
     sql = "-- bla\nwbvardef x=42;";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertTrue(command instanceof WbDefineVar);
     assertEquals(false, command.isUpdatingCommand());
 
     sql = "   -- comment\nwbcopy -sourceprofile=x";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertTrue(command instanceof WbCopy);
 
     sql = "@file.sql";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertTrue(command instanceof WbInclude);
 
     sql = "-- run the second script\n/* bla blub */\nwbinclude -file=file.sql";
-    command = runner.cmdMapper.getCommandToUse(sql);
+    command = runner.getCommandToUse(sql);
     assertTrue(command instanceof WbInclude);
   }
 }
