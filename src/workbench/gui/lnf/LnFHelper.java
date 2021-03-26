@@ -43,7 +43,7 @@ import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 
 /**
- * Initialize some gui elements during startup.
+ * Initialize some GUI elements during startup.
  *
  * @author Thomas Kellerer
  */
@@ -298,7 +298,7 @@ public class LnFHelper
   {
     try
     {
-      Class flatLaf = loader.loadClass("com.formdev.flatlaf.FlatLaf");
+      Class flatLaf = loader.loadClass("com.formdev.flatlaf.FlatLaf", false);
       Method registerPackage = flatLaf.getMethod("registerCustomDefaultsSource", String.class, ClassLoader.class);
       registerPackage.invoke(null, "workbench.resource", getClass().getClassLoader());
 

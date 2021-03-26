@@ -1,6 +1,4 @@
 /*
- * LnFLoader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -32,6 +30,8 @@ import java.util.List;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.util.ClasspathUtil;
@@ -68,8 +68,6 @@ public class LnFLoader
     }
   }
 
-
-
   private ClassLoader createLoader()
     throws MalformedURLException
   {
@@ -101,10 +99,10 @@ public class LnFLoader
   public Class loadClass()
     throws ClassNotFoundException
   {
-    return loadClass(this.lnfDef.getClassName());
+    return loadClass(this.lnfDef.getClassName(), true);
   }
 
-  public Class loadClass(String lnfClassName)
+  public Class loadClass(String lnfClassName, boolean logVersion)
     throws ClassNotFoundException
   {
     Class lnfClass = null;
@@ -114,7 +112,7 @@ public class LnFLoader
       if (loader != null)
       {
         // Tell the LNF class which classloader to use!
-        // This is important otherwise, the LnF will no
+        // This is important otherwise, the LnF will not
         // initialize correctly
         UIManager.getDefaults().put("ClassLoader", loader);
         Thread.currentThread().setContextClassLoader(loader);
@@ -128,6 +126,21 @@ public class LnFLoader
         // so I assume this means "use system classloader"
         UIManager.getDefaults().put("ClassLoader", null);
         lnfClass = Class.forName(lnfClassName);
+      }
+
+      if (logVersion)
+      {
+        Package pkg = lnfClass.getPackage();
+        String version = pkg.getImplementationVersion();
+        if (version != null)
+        {
+          version = ", version: " + version;
+        }
+        else
+        {
+          version = "";
+        }
+        LogMgr.logInfo(new CallerInfo(){}, "Loaded look and feel: " + lnfClass.getSimpleName() + version);
       }
     }
     catch (Exception e)
