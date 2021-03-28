@@ -291,6 +291,11 @@ public class DataExporterTest
       }
 
       @Override
+      public void setBlobMode(BlobMode mode)
+      {
+      }
+
+      @Override
       public BlobMode getBlobMode()
       {
         return BlobMode.AnsiLiteral;

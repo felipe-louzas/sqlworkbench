@@ -67,6 +67,7 @@ public abstract class ConsolePrinter
   protected String nullString;
   protected boolean showResultName = true;
   protected boolean printHeader = true;
+  protected boolean useMarkdownFormatting = false;
 
   public ConsolePrinter()
   {
@@ -74,6 +75,12 @@ public abstract class ConsolePrinter
     converter.setDefaultNumberFormatter(Settings.getInstance().createDefaultDecimalFormatter());
     converter.setDefaultIntegerFormatter(Settings.getInstance().createDefaultIntegerFormatter());
     nullString = ConsoleSettings.getNullString();
+    useMarkdownFormatting = Settings.getInstance().useMarkDownForConsolePrint();
+  }
+
+  public void setUseMarkdownFormatting(boolean flag)
+  {
+    this.useMarkdownFormatting = flag;
   }
 
   public void setShowResultName(boolean showResultName)
@@ -178,7 +185,7 @@ public abstract class ConsolePrinter
 
         if (currentCol > 0)
         {
-          if (Settings.getInstance().useMarkDownForConsolePrint())
+          if (useMarkdownFormatting)
           {
             pw.print("-|-");
           }

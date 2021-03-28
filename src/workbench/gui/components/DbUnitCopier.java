@@ -23,13 +23,16 @@
  */
 package workbench.gui.components;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+
+import workbench.storage.DataStore;
 
 import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-
-import workbench.storage.DataStore;
 
 /**
  *
@@ -51,4 +54,16 @@ public class DbUnitCopier
     return s.toString();
   }
 
+  public void writeToFile(File output, DataStore data, int selectedRows[], Charset encoding)
+    throws Exception
+  {
+    if (data == null) return;
+    if (data.getRowCount() <= 0) return;
+
+    DBUnitTableAdapter dataTable = new DBUnitTableAdapter(data);
+    dataTable.setSelectedRows(selectedRows);
+    IDataSet fullDataSet = new DefaultDataSet(dataTable);
+    FileWriter writer = new FileWriter(output, encoding);
+    FlatXmlDataSet.write(fullDataSet, writer);
+  }
 }

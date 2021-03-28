@@ -55,6 +55,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionProfile;
+import workbench.db.JdbcUtils;
 import workbench.db.ResultBufferingController;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -78,9 +79,6 @@ import workbench.util.EncodingUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.MessageBuffer;
 import workbench.util.QuoteEscapeType;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbDateFormatter;
@@ -265,6 +263,12 @@ public class DataExporter
   public void setLocale(Locale locale)
   {
     this.localeToUse = locale;
+  }
+
+  @Override
+  public boolean selectedRowsOnly()
+  {
+    return false;
   }
 
   @Override
@@ -1513,6 +1517,29 @@ public class DataExporter
     return numRows;
   }
 
+  public long writeTo(Writer output, DataStore ds, List<ColumnIdentifier> columnsToExport, int[] selectedRows)
+  {
+    try
+    {
+      this.exportWriter.setOutputWriter(output);
+      this.exportWriter.configureConverter();
+
+      this.exportWriter.exportStarting();
+      this.exportWriter.writeExport(ds, columnsToExport, selectedRows);
+    }
+    catch (Exception e)
+    {
+      this.addError(ExceptionUtil.getDisplay(e));
+      LogMgr.logError(new CallerInfo(){}, "Could not export data", e);
+    }
+    finally
+    {
+      exportFinished();
+    }
+    long numRows = this.exportWriter.getNumberOfRecords();
+    return numRows;
+  }
+
   public long startExport(WbFile output, DataStore ds, List<ColumnIdentifier> columnsToExport)
     throws IOException, SQLException, Exception
   {
@@ -1521,7 +1548,7 @@ public class DataExporter
       this.outputfile = output;
       configureExportWriter();
       this.exportWriter.exportStarting();
-      this.exportWriter.writeExport(ds, columnsToExport);
+      this.exportWriter.writeExport(ds, columnsToExport, null);
     }
     catch (Exception e)
     {

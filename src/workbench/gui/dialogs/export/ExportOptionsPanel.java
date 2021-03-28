@@ -60,6 +60,7 @@ import workbench.db.exporter.PoiHelper;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnSelectorPanel;
+import workbench.gui.components.DbUnitHelper;
 import workbench.gui.components.ExtensionFileFilter;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbFilePicker;
@@ -97,6 +98,7 @@ public class ExportOptionsPanel
   private SpreadSheetOptionsPanel xlsOptions;
   private SpreadSheetOptionsPanel xlsmOptions;
   private SpreadSheetOptionsPanel xlsxOptions;
+  private FormattedTextOptionsPanel formattedTextOptions;
   private ExportType currentType;
   private List<ColumnIdentifier> selectedColumns;
   private Object columnSelectEventSource;
@@ -107,41 +109,69 @@ public class ExportOptionsPanel
   private boolean poiAvailable = false;
   private boolean xlsxAvailable = false;
   private boolean allowOpenFile = true;
+  private boolean forClipboard;
+  private String settingsKey = "export";
 
   private final String ODS_ITEM = ResourceMgr.getString("TxtOdsName");
   private final String XLS_ITEM = ResourceMgr.getString("TxtXlsName");
+  private final String FORMATTED_TEXT_ITEM = ResourceMgr.getString("LblCopyFormatedTxt");
+  private final String DBUNIT_XML = "DBUnit XML";
+
   private final String XLSM_ITEM = "Excel XML Spreadsheet (xml)";
   private final String XLSX_ITEM = "Excel Workbook (xlsx)";
 
-  public ExportOptionsPanel()
+  public ExportOptionsPanel(ResultInfo columns)
   {
-    this(null);
+    this(columns, false);
   }
 
-  public ExportOptionsPanel(ResultInfo columns)
+  public ExportOptionsPanel(ResultInfo columns, boolean forClipboard)
   {
     super();
     this.setLayout(new BorderLayout());
     poiAvailable = PoiHelper.isPoiAvailable();
     xlsxAvailable = PoiHelper.isXLSXAvailable();
 
-    picker = new WbFilePicker(true);
-    picker.addPropertyChangeListener(WbFilePicker.PROP_FILENAME, this);
+    this.forClipboard = forClipboard;
+    if (!forClipboard)
+    {
+      picker = new WbFilePicker(true);
+      picker.addPropertyChangeListener(WbFilePicker.PROP_FILENAME, this);
+    }
+    else
+    {
+      settingsKey = "clipboard";
+    }
     typeSelector = new JComboBox();
+    if (forClipboard)
+    {
+      typeSelector.addItem(FORMATTED_TEXT_ITEM);
+    }
     typeSelector.addItem("Text");
     typeSelector.addItem("SQL");
     typeSelector.addItem("XML");
     typeSelector.addItem("JSON");
-    typeSelector.addItem(ODS_ITEM);
-    typeSelector.addItem("HTML");
-    if (poiAvailable)
+    if (!forClipboard)
     {
-      typeSelector.addItem(XLS_ITEM);
+      typeSelector.addItem(ODS_ITEM);
     }
-    typeSelector.addItem(XLSM_ITEM);
-    if (xlsxAvailable)
+    typeSelector.addItem("HTML");
+    if (!forClipboard)
     {
-      typeSelector.addItem(XLSX_ITEM);
+      if (poiAvailable)
+      {
+        typeSelector.addItem(XLS_ITEM);
+      }
+      typeSelector.addItem(XLSM_ITEM);
+      if (xlsxAvailable)
+      {
+        typeSelector.addItem(XLSX_ITEM);
+      }
+    }
+
+    if (DbUnitHelper.isDbUnitAvailable())
+    {
+      typeSelector.addItem(DBUNIT_XML);
     }
 
     pickerPanel = createPickerPanel();
@@ -150,6 +180,14 @@ public class ExportOptionsPanel
     this.dataStoreColumns = columns;
     this.generalOptions = new GeneralExportOptionsPanel();
     generalOptions.allowSelectColumns(allowColumnSelection);
+    if (forClipboard)
+    {
+      generalOptions.hideEncodingPanel();
+    }
+    else
+    {
+      generalOptions.hideSelectedRowsCbx();
+    }
 
     if (allowColumnSelection)
     {
@@ -164,10 +202,17 @@ public class ExportOptionsPanel
 
     this.add(baseOptionsPanel, BorderLayout.PAGE_START);
 
+    this.formattedTextOptions = new FormattedTextOptionsPanel();
+
     this.textOptions = new TextOptionsPanel();
     this.typeOptionsPanel = new JPanel();
     this.card = new CardLayout();
     this.typeOptionsPanel.setLayout(card);
+
+    if (forClipboard)
+    {
+      this.typeOptionsPanel.add(this.formattedTextOptions, "formatted-text");
+    }
     this.typeOptionsPanel.add(this.textOptions, "text");
 
     this.sqlOptions = new SqlOptionsPanel(columns);
@@ -176,8 +221,11 @@ public class ExportOptionsPanel
     xmlOptions = new XmlOptionsPanel();
     this.typeOptionsPanel.add(xmlOptions, "xml");
 
-    odsOptions = new SpreadSheetOptionsPanel("ods");
-    this.typeOptionsPanel.add(odsOptions, "ods");
+    if (!forClipboard)
+    {
+      odsOptions = new SpreadSheetOptionsPanel("ods");
+      this.typeOptionsPanel.add(odsOptions, "ods");
+    }
 
     htmlOptions = new HtmlOptionsPanel();
     this.typeOptionsPanel.add(htmlOptions, "html");
@@ -187,24 +235,28 @@ public class ExportOptionsPanel
 
     this.typeOptionsPanel.add(new JPanel(), "empty");
 
-    if (poiAvailable)
+    if (!forClipboard)
     {
-      xlsOptions = new SpreadSheetOptionsPanel("xls");
-      this.typeOptionsPanel.add(xlsOptions, "xls");
-    }
+      if (poiAvailable)
+      {
+        xlsOptions = new SpreadSheetOptionsPanel("xls");
+        this.typeOptionsPanel.add(xlsOptions, "xls");
+      }
 
-    if (xlsxAvailable)
-    {
-      xlsxOptions = new SpreadSheetOptionsPanel("xlsx");
-      typeOptionsPanel.add(xlsxOptions, "xlsx");
+      if (xlsxAvailable)
+      {
+        xlsxOptions = new SpreadSheetOptionsPanel("xlsx");
+        typeOptionsPanel.add(xlsxOptions, "xlsx");
+      }
     }
-
     this.add(typeOptionsPanel, BorderLayout.CENTER);
     typeSelector.addActionListener(this);
   }
 
   public void setExportInfo(String info)
   {
+    if (pickerPanel == null) return;
+
     if (StringUtil.isNonBlank(info))
     {
       int gap = IconMgr.getInstance().getSizeForLabel() / 2;
@@ -236,55 +288,65 @@ public class ExportOptionsPanel
     int gap = IconMgr.getInstance().getSizeForLabel() / 2;
 
     JPanel panel = new JPanel(new GridBagLayout());
-    pickerLabel = new JLabel(ResourceMgr.getString("LblExportOutput"));
-    JLabel typeLabel = new JLabel(ResourceMgr.getString("LblExportType"));
-    openFile = new JCheckBox(ResourceMgr.getString("LblExportOpenOutput"));
-    openFile.setMargin(new Insets(0,0,0,0));
-    boolean desktopSupported = allowOpenFile && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.OPEN);
-    openFile.setEnabled(desktopSupported);
-    if (!desktopSupported)
+    if (!forClipboard)
     {
-      openFile.setSelected(false);
+      pickerLabel = new JLabel(ResourceMgr.getString("LblExportOutput"));
+      openFile = new JCheckBox(ResourceMgr.getString("LblExportOpenOutput"));
+      openFile.setMargin(new Insets(0,0,0,0));
+      boolean desktopSupported = allowOpenFile && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.OPEN);
+      openFile.setEnabled(desktopSupported);
+      if (!desktopSupported)
+      {
+        openFile.setSelected(false);
+      }
     }
 
+    // first line
     GridBagConstraints gc = new GridBagConstraints();
     gc.anchor = GridBagConstraints.LINE_START;
     gc.fill = GridBagConstraints.NONE;
     gc.gridwidth = 1;
+    gc.gridy = 0;
     gc.gridx = 0;
-    gc.gridy = 1;
     gc.weightx = 0;
-    gc.insets = new Insets(0, 0, 0, gap);
-    panel.add(pickerLabel, gc);
 
-    gc.gridy = 2;
+    if (picker != null)
+    {
+      gc.insets = new Insets(0, 0, gap, gap);
+      panel.add(pickerLabel, gc);
+
+      gc.gridx = 1;
+      gc.fill = GridBagConstraints.HORIZONTAL;
+      gc.weightx = 1.0;
+      gc.insets = new Insets(0, 0, gap, gap);
+      panel.add(picker, gc);
+
+      gc.gridx = 2;
+      gc.weightx = 0;
+      gc.fill = GridBagConstraints.NONE;
+      gc.insets = new Insets(0, gap, gap, gap);
+      panel.add(openFile, gc);
+    }
+
+    // second line
+    gc.gridx = 0;
+    gc.gridy++;
+    gc.weightx = 0;
+    gc.fill = GridBagConstraints.NONE;
+    gc.anchor = GridBagConstraints.LINE_START;
+    gc.insets = new Insets(0, 0, 0, gap);
+    JLabel typeLabel = new JLabel(ResourceMgr.getString("LblExportType"));
     panel.add(typeLabel, gc);
 
     gc.gridx = 1;
-    gc.gridy = 1;
-    gc.insets = new Insets(0, 0, 0, 0);
+    gc.gridwidth = picker == null ? 1 : 2;
     gc.fill = GridBagConstraints.HORIZONTAL;
-    gc.weightx = 1.0;
-    panel.add(picker, gc);
-
-    gc.gridx = 2;
-    gc.gridy = 1;
-    gc.weightx = 0;
-    gc.fill = GridBagConstraints.NONE;
-    //gc.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-    gc.insets = new Insets(0, gap, 0, gap);
-    panel.add(openFile, gc);
-
-    gc.gridx = 1;
-    gc.gridy = 2;
-    gc.gridwidth = 2;
-    gc.fill = GridBagConstraints.NONE;
-    gc.insets = new Insets(gap, 0, 0, 0);
     panel.add(typeSelector, gc);
 
+    // third line
     gc.gridx = 0;
-    gc.gridy = 4;
-    gc.gridwidth = 3;
+    gc.gridy++;
+    gc.gridwidth = picker == null ? 2 : 3;
     gc.weightx = 1.0;
     gc.weighty = 1.0;
     gc.fill = GridBagConstraints.HORIZONTAL;
@@ -297,6 +359,8 @@ public class ExportOptionsPanel
 
   public void setSelectDirectoriesOnly(boolean selectDirs)
   {
+    if (picker == null) return;
+
     this.picker.setSelectDirectoryOnly(selectDirs);
     if (pickerLabel != null)
     {
@@ -307,30 +371,35 @@ public class ExportOptionsPanel
 
   public void setLastDirProperty(String prop)
   {
-    this.picker.setLastDirProperty(prop);
+    if (picker != null) this.picker.setLastDirProperty(prop);
   }
 
   public boolean doOpenFile()
   {
+    if (picker == null) return false;
     return this.openFile.isEnabled() && this.openFile.isSelected();
   }
 
-  public File getSelectedFile()
+  public WbFile getSelectedFile()
   {
-    return picker.getSelectedFile();
+    if (picker == null) return null;
+    return new WbFile(picker.getSelectedFile());
   }
 
   public FileFilter getFileFilter()
   {
+    if (picker == null) return null;
     return picker.getFileFilter();
   }
 
   @Override
   public boolean validateInput()
   {
+    if (forClipboard) return true;
+
     if (getSelectedFile() == null)
     {
-      WbSwingUtilities.showErrorMessageKey(this, "ErrExportOutputFileRequired");
+      WbSwingUtilities.showErrorMessageKey(this, "ErrExportFileRequired");
       return false;
     }
     return true;
@@ -373,6 +442,11 @@ public class ExportOptionsPanel
         }
       }
     }
+  }
+
+  public void setSelectedRowsEnabled(boolean flag)
+  {
+    this.generalOptions.setSelectedRowsEnabled(flag);
   }
 
   public void updateSqlOptions(DataStore source)
@@ -425,49 +499,70 @@ public class ExportOptionsPanel
 
   public void saveSettings()
   {
-    this.generalOptions.saveSettings();
-    this.sqlOptions.saveSettings();
-    this.textOptions.saveSettings();
-    this.htmlOptions.saveSettings();
-    this.xmlOptions.saveSettings();
-    this.odsOptions.saveSettings();
-    this.xlsmOptions.saveSettings();
-    if (this.xlsOptions != null)
+    this.generalOptions.saveSettings(settingsKey);
+    this.sqlOptions.saveSettings(settingsKey);
+    this.textOptions.saveSettings(settingsKey);
+    this.htmlOptions.saveSettings(settingsKey);
+    this.xmlOptions.saveSettings(settingsKey);
+    if (forClipboard)
     {
-      this.xlsOptions.saveSettings();
+      this.formattedTextOptions.saveSettings(settingsKey);
     }
-    if (this.xlsxOptions != null)
+    else
     {
-      this.xlsxOptions.saveSettings();
+      this.odsOptions.saveSettings(settingsKey);
+      this.xlsmOptions.saveSettings(settingsKey);
+      if (this.xlsOptions != null)
+      {
+        this.xlsOptions.saveSettings(settingsKey);
+      }
+      if (this.xlsxOptions != null)
+      {
+        this.xlsxOptions.saveSettings(settingsKey);
+      }
     }
-    Settings.getInstance().setProperty("workbench.export.type", this.currentType.getCode());
-    Settings.getInstance().setProperty("workbench.export.open.output", doOpenFile());
+    Settings.getInstance().setProperty("workbench." + settingsKey + ".type", this.currentType.getCode());
+    if (!forClipboard)
+    {
+      Settings.getInstance().setProperty("workbench.export.open.output", doOpenFile());
+    }
   }
 
   public void restoreSettings()
   {
-    this.generalOptions.restoreSettings();
-    this.sqlOptions.restoreSettings();
-    this.textOptions.restoreSettings();
-    this.htmlOptions.restoreSettings();
-    this.xmlOptions.restoreSettings();
-    this.odsOptions.restoreSettings();
-    this.xlsmOptions.restoreSettings();
-    if (this.xlsOptions != null)
+    this.generalOptions.restoreSettings(settingsKey);
+    this.sqlOptions.restoreSettings(settingsKey);
+    this.textOptions.restoreSettings(settingsKey);
+    this.htmlOptions.restoreSettings(settingsKey);
+    this.xmlOptions.restoreSettings(settingsKey);
+    if (forClipboard)
     {
-      this.xlsOptions.restoreSettings();
+      this.formattedTextOptions.restoreSettings(settingsKey);
     }
-    if (this.xlsxOptions != null)
+    else
     {
-      this.xlsxOptions.restoreSettings();
+      this.odsOptions.restoreSettings(settingsKey);
+      this.xlsmOptions.restoreSettings(settingsKey);
+      if (this.xlsOptions != null)
+      {
+        this.xlsOptions.restoreSettings(settingsKey);
+      }
+      if (this.xlsxOptions != null)
+      {
+        this.xlsxOptions.restoreSettings(settingsKey);
+      }
     }
-    String code = Settings.getInstance().getProperty("workbench.export.type", ExportType.TEXT.getCode());
+    String code = Settings.getInstance().getProperty("workbench." + settingsKey + ".type", ExportType.TEXT.getCode());
     ExportType type = ExportType.getTypeFromCode(code);
     this.setExportType(type);
-    boolean openOutput = Settings.getInstance().getBoolProperty("workbench.export.open.output", false);
-    if (this.openFile.isEnabled())
+
+    if (!forClipboard)
     {
-      openFile.setSelected(openOutput);
+      boolean openOutput = Settings.getInstance().getBoolProperty("workbench.export.open.output", false);
+      if (this.openFile.isEnabled())
+      {
+        openFile.setSelected(openOutput);
+      }
     }
   }
 
@@ -496,8 +591,14 @@ public class ExportOptionsPanel
       case TEXT:
         setTypeText();
         break;
+      case FORMATTED_TEXT:
+        setTypeFormattedText();
+        break;
       case XML:
         setTypeXml();
+        break;
+      case DBUNIT_XML:
+        setTypeDBUnitXML();
         break;
       case ODS:
         setTypeOds();
@@ -525,7 +626,20 @@ public class ExportOptionsPanel
   private void showTextOptions()
   {
     this.card.show(this.typeOptionsPanel, "text");
-    picker.setFileFilter(ExtensionFileFilter.getTextFileFilter());
+    if (picker != null) picker.setFileFilter(ExtensionFileFilter.getTextFileFilter());
+  }
+
+  private void showFormattedTextOptions()
+  {
+    this.card.show(this.typeOptionsPanel, "formatted-text");
+    if (picker != null) picker.setFileFilter(ExtensionFileFilter.getTextFileFilter());
+  }
+
+  public void setTypeFormattedText()
+  {
+    showFormattedTextOptions();
+    this.currentType = ExportType.FORMATTED_TEXT;
+    typeSelector.setSelectedItem(FORMATTED_TEXT_ITEM);
   }
 
   public void setTypeText()
@@ -538,7 +652,7 @@ public class ExportOptionsPanel
   private void showSqlOptions()
   {
     this.card.show(this.typeOptionsPanel, "sql");
-    this.picker.setFileFilter(ExtensionFileFilter.getSqlFileFilter());
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getSqlFileFilter());
   }
 
   public void setTypeSql()
@@ -551,7 +665,7 @@ public class ExportOptionsPanel
   private void showXmlOptions()
   {
     this.card.show(this.typeOptionsPanel, "xml");
-    this.picker.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
   }
 
   public void setTypeXml()
@@ -563,14 +677,14 @@ public class ExportOptionsPanel
 
   private void showJsonOption()
   {
-    this.card.show(this.typeOptionsPanel, "empty");
-    this.picker.setFileFilter(ExtensionFileFilter.getJsonFilterFilter());
+    showEmptyOptions();
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getJsonFilterFilter());
   }
 
   private void showHtmlOptions()
   {
     this.card.show(this.typeOptionsPanel, "html");
-    this.picker.setFileFilter(ExtensionFileFilter.getHtmlFileFilter());
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getHtmlFileFilter());
   }
 
   public void setTypeHtml()
@@ -583,7 +697,7 @@ public class ExportOptionsPanel
   private void showOdsOptions()
   {
     this.card.show(this.typeOptionsPanel, "ods");
-    picker.setFileFilter(ExtensionFileFilter.getOdsFileFilter());
+    if (picker != null) picker.setFileFilter(ExtensionFileFilter.getOdsFileFilter());
   }
 
   public void setTypeOds()
@@ -596,19 +710,37 @@ public class ExportOptionsPanel
   private void showXlsOptions()
   {
     this.card.show(this.typeOptionsPanel, "xls");
-    this.picker.setFileFilter(ExtensionFileFilter.getXlsFileFilter());
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getXlsFileFilter());
   }
 
   private void showXlsXOptions()
   {
     this.card.show(this.typeOptionsPanel, "xlsx");
-    this.picker.setFileFilter(ExtensionFileFilter.getXlsXFileFilter());
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getXlsXFileFilter());
   }
 
   private void showXlsMOptions()
   {
     this.card.show(this.typeOptionsPanel, "xlsm");
-    this.picker.setFileFilter(ExtensionFileFilter.getXlsMFileFilter());
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getXlsMFileFilter());
+  }
+
+  private void showEmptyOptions()
+  {
+    this.card.show(this.typeOptionsPanel, "empty");
+  }
+
+  public void showDBUnitOptions()
+  {
+    showEmptyOptions();
+    if (picker != null) this.picker.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
+  }
+
+  public void setTypeDBUnitXML()
+  {
+    showEmptyOptions();
+    currentType = ExportType.DBUNIT_XML;
+    typeSelector.setSelectedItem(DBUNIT_XML);
   }
 
   public void setTypeXls()
@@ -684,6 +816,11 @@ public class ExportOptionsPanel
     return textOptions;
   }
 
+  public FormattedTextOptions getFormattedTextOptions()
+  {
+    return formattedTextOptions;
+  }
+
   @Override
   public String getEncoding()
   {
@@ -751,6 +888,16 @@ public class ExportOptionsPanel
       {
         type = ExportType.JSON;
         showJsonOption();
+      }
+      else if (item == FORMATTED_TEXT_ITEM)
+      {
+        type = ExportType.FORMATTED_TEXT;
+        showFormattedTextOptions();
+      }
+      else if (item == DBUNIT_XML)
+      {
+        type = ExportType.DBUNIT_XML;
+        showDBUnitOptions();
       }
 
       this.currentType = type;

@@ -53,31 +53,31 @@ public class SpreadSheetOptionsPanel
     initComponents();
   }
 
-  public void saveSettings()
+  public void saveSettings(String settingsType)
   {
     Settings s = Settings.getInstance();
-    s.setProperty("workbench.export." + exportType + ".pagetitle", this.getPageTitle());
-    s.setProperty("workbench.export." + exportType + ".header", getExportHeaders());
-    s.setProperty("workbench.export." + exportType + ".fixedheader", getCreateFixedHeaders());
-    s.setProperty("workbench.export." + exportType + ".autofilter", getCreateAutoFilter());
-    s.setProperty("workbench.export." + exportType + ".infosheet", getCreateInfoSheet());
-    s.setProperty("workbench.export." + exportType + ".optimizecols", getOptimizeColumns());
+    s.setProperty("workbench." + settingsType + "." + exportType + ".pagetitle", this.getPageTitle());
+    s.setProperty("workbench." + settingsType + "." + exportType + ".header", getExportHeaders());
+    s.setProperty("workbench." + settingsType + "." + exportType + ".fixedheader", getCreateFixedHeaders());
+    s.setProperty("workbench." + settingsType + "." + exportType + ".autofilter", getCreateAutoFilter());
+    s.setProperty("workbench." + settingsType + "." + exportType + ".infosheet", getCreateInfoSheet());
+    s.setProperty("workbench." + settingsType + "." + exportType + ".optimizecols", getOptimizeColumns());
   }
 
-  public void restoreSettings()
+  public void restoreSettings(String settingsType)
   {
     Settings s = Settings.getInstance();
-    this.setPageTitle(s.getProperty("workbench.export." + exportType + ".pagetitle", ""));
-    boolean headerDefault = s.getBoolProperty("workbench.export." + exportType + ".default.header", false);
-    boolean header = s.getBoolProperty("workbench.export." + exportType + ".header", headerDefault);
+    this.setPageTitle(s.getProperty("workbench." + settingsType + "." + exportType + ".pagetitle", ""));
+    boolean headerDefault = s.getBoolProperty("workbench." + settingsType + "." + exportType + ".default.header", false);
+    boolean header = s.getBoolProperty("workbench." + settingsType + "." + exportType + ".header", headerDefault);
     this.setExportHeaders(header);
     if (createAutoFilter.isEnabled())
     {
-      setCreateAutoFilter(s.getBoolProperty("workbench.export." + exportType + ".autofilter", true));
+      setCreateAutoFilter(s.getBoolProperty("workbench." + settingsType + "." + exportType + ".autofilter", true));
     }
-    setCreateInfoSheet(s.getBoolProperty("workbench.export." + exportType + ".infosheet", false));
-    setCreateFixedHeaders(s.getBoolProperty("workbench.export." + exportType + ".fixedheader", true));
-    setOptimizeColumns(s.getBoolProperty("workbench.export." + exportType + ".optimizecols", true));
+    setCreateInfoSheet(s.getBoolProperty("workbench." + settingsType + "." + exportType + ".infosheet", false));
+    setCreateFixedHeaders(s.getBoolProperty("workbench." + settingsType + "." + exportType + ".fixedheader", true));
+    setOptimizeColumns(s.getBoolProperty("workbench." + settingsType + "." + exportType + ".optimizecols", true));
     checkHeaderSettings();
   }
 

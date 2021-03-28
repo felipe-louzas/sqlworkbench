@@ -44,6 +44,7 @@ public class IndexDefinition
   private boolean isPK;
   private boolean isUnique;
   private String schema;
+  private String catalog;
   private String indexName;
   private String indexType;
   private TableIdentifier baseTable;
@@ -200,11 +201,13 @@ public class IndexDefinition
     this.indexName = name;
   }
 
+  @Override
   public void setCatalog(String idxCatalog)
   {
-    // not yet implemented
+    this.catalog = idxCatalog;
   }
 
+  @Override
   public void setSchema(String idxSchema)
   {
     this.schema = idxSchema;
@@ -220,7 +223,8 @@ public class IndexDefinition
   @Override
   public String getCatalog()
   {
-    return null;
+    if (catalog != null) return catalog;
+    return baseTable.getCatalog();
   }
 
   public boolean isNonStandardExpression()
@@ -237,7 +241,6 @@ public class IndexDefinition
   {
     this.indexExpression = expression;
   }
-
 
   public boolean isUniqueConstraint()
   {
@@ -312,7 +315,7 @@ public class IndexDefinition
   @Override
   public String getObjectName(WbConnection conn)
   {
-    return conn.getMetadata().quoteObjectname(indexName);
+    return SqlUtil.getQuoteHandler(conn).quoteObjectname(indexName);
   }
 
   @Override
@@ -509,6 +512,7 @@ public class IndexDefinition
     idx.enabled = this.enabled;
     idx.columns = new ArrayList<>(this.columns);
     idx.comment = this.comment;
+    idx.catalog = this.catalog;
     idx.direction = this.direction;
     idx.displayName = this.displayName;
     idx.indexExpression = this.indexExpression;

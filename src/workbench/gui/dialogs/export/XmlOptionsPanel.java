@@ -1,6 +1,4 @@
 /*
- * XmlOptionsPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -49,20 +47,20 @@ public class XmlOptionsPanel
     initComponents();
   }
 
-  public void saveSettings()
+  public void saveSettings(String type)
   {
     Settings s = Settings.getInstance();
-    s.setProperty("workbench.export.xml.usecdata", this.getUseCDATA());
-    s.setProperty("workbench.export.xml.verbosexml", this.getUseVerboseXml());
-    s.setProperty("workbench.export.xml.xmlversion", getXMLVersion());
+    s.setProperty("workbench." + type + ".xml.usecdata", this.getUseCDATA());
+    s.setProperty("workbench." + type + ".xml.verbosexml", this.getUseVerboseXml());
+    s.setProperty("workbench." + type + ".xml.xmlversion", getXMLVersion());
   }
 
-  public void restoreSettings()
+  public void restoreSettings(String type)
   {
     Settings s = Settings.getInstance();
-    this.setUseCDATA(s.getBoolProperty("workbench.export.xml.usecdata"));
-    this.setUseVerboseXml(s.getBoolProperty("workbench.export.xml.verbosexml", true));
-    String version = s.getProperty("workbench.export.xml.xmlversion", s.getDefaultXmlVersion());
+    this.setUseCDATA(s.getBoolProperty("workbench." + type + ".xml.usecdata"));
+    this.setUseVerboseXml(s.getBoolProperty("workbench." + type + ".xml.verbosexml", true));
+    String version = s.getProperty("workbench." + type + ".xml.xmlversion", s.getDefaultXmlVersion());
     if (version.equals("1.0"))
     {
       xml10.setSelected(true);

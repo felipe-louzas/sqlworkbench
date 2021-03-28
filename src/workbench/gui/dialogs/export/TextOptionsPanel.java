@@ -147,38 +147,37 @@ public class TextOptionsPanel
     combo.setPopupWidth(prefWidth);
   }
 
-  public void saveSettings()
+  public void saveSettings(String type)
   {
     Settings s = Settings.getInstance();
-    //s.setProperty("workbench.export.text.cleanup", this.getCleanupCarriageReturns());
-    s.setProperty("workbench.export.text.includeheader", this.getExportHeaders());
-    s.setProperty("workbench.export.text.quotealways", this.getQuoteAlways());
-    s.setProperty("workbench.export.text.quoteheader", this.getQuoteHeader());
-    s.setProperty("workbench.export.text.escaperange", this.getEscapeRange().getId());
-    s.setProperty("workbench.export.text.lineending", (String)this.lineEnding.getSelectedItem());
+    s.setProperty("workbench." + type + ".text.includeheader", this.getExportHeaders());
+    s.setProperty("workbench." + type + ".text.quotealways", this.getQuoteAlways());
+    s.setProperty("workbench." + type + ".text.quoteheader", this.getQuoteHeader());
+    s.setProperty("workbench." + type + ".text.escaperange", this.getEscapeRange().getId());
+    s.setProperty("workbench." + type + ".text.lineending", (String)this.lineEnding.getSelectedItem());
     s.setLastExportDecimalSeparator(getDecimalSymbol());
     s.setDefaultExportTextDelimiter(getTextDelimiter());
     s.setQuoteChar(this.getTextQuoteChar());
-    s.setProperty("workbench.export.text.quote.escape", getQuoteEscaping().toString());
-    s.setProperty("workbench.export.text.formatfiles", controlFiles.getText());
-    s.setProperty("workbench.export.text.blobmode", this.getBlobMode().getTypeString());
+    s.setProperty("workbench." + type + ".text.quote.escape", getQuoteEscaping().toString());
+    s.setProperty("workbench." + type + ".text.formatfiles", controlFiles.getText());
+    s.setProperty("workbench." + type + ".text.blobmode", this.getBlobMode().getTypeString());
 
   }
 
-  public void restoreSettings()
+  public void restoreSettings(String type)
   {
     Settings s = Settings.getInstance();
-    this.setExportHeaders(s.getBoolProperty("workbench.export.text.includeheader"));
-    this.setQuoteAlways(s.getBoolProperty("workbench.export.text.quotealways"));
-    this.setQuoteHeader(s.getBoolProperty("workbench.export.text.quoteheader"));
-    int id = s.getIntProperty("workbench.export.text.escaperange", CharacterRange.RANGE_NONE.getId());
+    this.setExportHeaders(s.getBoolProperty("workbench." + type + ".text.includeheader"));
+    this.setQuoteAlways(s.getBoolProperty("workbench." + type + ".text.quotealways"));
+    this.setQuoteHeader(s.getBoolProperty("workbench." + type + ".text.quoteheader"));
+    int id = s.getIntProperty("workbench." + type + ".text.escaperange", CharacterRange.RANGE_NONE.getId());
     CharacterRange range = CharacterRange.getRangeById(id);
     this.setEscapeRange(range);
-    this.setLineEnding(s.getProperty("workbench.export.text.lineending", "LF"));
+    this.setLineEnding(s.getProperty("workbench." + type + ".text.lineending", "LF"));
     this.setTextQuoteChar(s.getQuoteChar());
     this.setTextDelimiter(s.getDefaultTextDelimiter(true));
     setDecimalSymbol(s.getLastExportDecimalSeparator());
-    String quote = s.getProperty("workbench.export.text.quote.escape", "none");
+    String quote = s.getProperty("workbench." + type + ".text.quote.escape", "none");
     QuoteEscapeType escape = null;
     try
     {
@@ -189,9 +188,9 @@ public class TextOptionsPanel
       escape = QuoteEscapeType.none;
     }
     ((QuoteEscapeSelector)escapeSelect).setEscapeType(escape);
-    controlFiles.setText(s.getProperty("workbench.export.text.formatfiles", ""));
-    String type = s.getProperty("workbench.export.text.blobmode", BlobMode.SaveToFile.getTypeString());
-    this.blobTypes.setSelectedItem(type);
+    controlFiles.setText(s.getProperty("workbench." + type + ".text.formatfiles", ""));
+    String blobMode = s.getProperty("workbench." + type + ".text.blobmode", BlobMode.SaveToFile.getTypeString());
+    this.blobTypes.setSelectedItem(blobMode);
   }
 
   @Override

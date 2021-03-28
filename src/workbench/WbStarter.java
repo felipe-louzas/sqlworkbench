@@ -47,6 +47,7 @@ import javax.swing.WindowConstants;
  *
  * @author Thomas Kellerer
  */
+@SuppressWarnings("unchecked")
 public class WbStarter
 {
 

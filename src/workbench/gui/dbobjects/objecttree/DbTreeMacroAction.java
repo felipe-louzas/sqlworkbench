@@ -30,6 +30,8 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObject;
+import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
 
 import workbench.gui.actions.WbAction;
@@ -73,12 +75,13 @@ class DbTreeMacroAction
     List<ObjectTreeNode> nodes = tree.getSelectedNodes();
     if (nodes.isEmpty()) return;
 
-    TableIdentifier table = null;
+    DbObject object = null;
     List<ColumnIdentifier> columns = new ArrayList<>();
-    Optional<ObjectTreeNode> obj = nodes.stream().filter(n -> n.getDbObject() instanceof TableIdentifier).findFirst();
+    Optional<ObjectTreeNode> obj = nodes.stream().filter(n -> isMainNode(n)).findFirst();
+
     if (obj.isPresent())
     {
-      table = (TableIdentifier)obj.get().getDbObject();
+      object = obj.get().getDbObject();
     }
 
     for (ObjectTreeNode node : nodes)
@@ -91,7 +94,7 @@ class DbTreeMacroAction
 
     if (columns.size() == nodes.size())
     {
-      // only columns selected, get the table from the first column's parent
+      // only columns selected, we need to get the table from the first column's parent
       // the direct parent of the column node is the "Columns" folder.
       // The parent of that must be the actual table node
       ObjectTreeNode folder = nodes.get(0).getParent();
@@ -100,16 +103,24 @@ class DbTreeMacroAction
         ObjectTreeNode parent = folder.getParent();
         if (parent.getDbObject() instanceof TableIdentifier)
         {
-          table = (TableIdentifier)parent.getDbObject();
+          object = parent.getDbObject();
         }
       }
     }
+
     QueryMacroParser parser = new QueryMacroParser(macro);
-    parser.setTable(table);
+    parser.setObject(object);
     parser.setColumn(columns);
     String sql = parser.getSQL(tree.getConnection());
     LogMgr.logDebug(new CallerInfo(){}, "Running DbTree macro: " + sql);
     tree.getMacroClient().executeMacroSql(sql, false, macro.isAppendResult());
+  }
+
+  private boolean isMainNode(ObjectTreeNode node)
+  {
+    if (node == null) return false;
+    DbObject object = node.getDbObject();
+    return (object instanceof TableIdentifier || object instanceof IndexDefinition);
   }
 
   @Override

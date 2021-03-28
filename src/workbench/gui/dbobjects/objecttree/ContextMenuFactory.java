@@ -36,6 +36,7 @@ import workbench.resource.ResourceMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
 
 import workbench.gui.MainWindow;
@@ -260,6 +261,7 @@ class ContextMenuFactory
     List<DbObject> selectedObjects = tree.getSelectedObjects();
     long numTables = selectedObjects.stream().filter(o -> o instanceof TableIdentifier).count();
     long numColumns = selectedObjects.stream().filter(o -> o instanceof ColumnIdentifier).count();
+    long numIndex = selectedObjects.stream().filter(o -> o instanceof IndexDefinition).count();
 
     for (MacroDefinition def : dbTreeMacros)
     {
@@ -267,14 +269,22 @@ class ContextMenuFactory
 
       boolean usesColumns = parser.hasColumnPlaceholder();
       boolean usesTable = parser.hasTablePlaceholder();
+      boolean usesIndex = parser.hasIndexPlaceholder();
 
-      if (usesColumns && numColumns == 0) continue;
-
+      boolean added = false;
       if (usesColumns && numColumns > 0)
       {
         macros.add(def);
+        added = true;
       }
-      else if (usesTable && numTables > 0)
+
+      if (!added && usesTable && numTables > 0)
+      {
+        macros.add(def);
+        added = true;
+      }
+
+      if (!added && usesIndex && numIndex > 0)
       {
         macros.add(def);
       }

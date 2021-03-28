@@ -42,7 +42,9 @@ public enum ExportType
   XLS("XLS"),
   XLSM("XLSM"),
   XLSX("XLSX"),
-  JSON("JSON");
+  JSON("JSON"),
+  FORMATTED_TEXT("Formatted text"),
+  DBUNIT_XML("DBUnit XML");
 
   private final String display;
 
@@ -68,6 +70,8 @@ public enum ExportType
     if (type.equalsIgnoreCase("sqldelete")) return SQL_DELETE;
     if (type.equalsIgnoreCase("sqlmerge")) return SQL_MERGE;
     if (type.equalsIgnoreCase("merge")) return SQL_MERGE;
+    if (type.equalsIgnoreCase("formattedtext")) return FORMATTED_TEXT;
+    if (type.equalsIgnoreCase("dbunit")) return DBUNIT_XML;
 
     try
     {
@@ -91,6 +95,9 @@ public enum ExportType
     if (code.equals("7")) return XLSM;
     if (code.equals("8")) return XLSX;
     if (code.equals("9")) return JSON;
+    if (code.equals("10")) return FORMATTED_TEXT;
+    if (code.equals("11")) return DBUNIT_XML;
+
     return null;
   }
 
@@ -111,9 +118,11 @@ public enum ExportType
         return ".sql";
 
       case TEXT:
+      case FORMATTED_TEXT:
         return ".txt";
 
       case XML:
+      case DBUNIT_XML:
         return ".xml";
 
       case HTML:
@@ -171,6 +180,12 @@ public enum ExportType
 
       case JSON:
         return "9";
+
+      case FORMATTED_TEXT:
+        return "10";
+
+      case DBUNIT_XML:
+        return "11";
 
     }
     return null;

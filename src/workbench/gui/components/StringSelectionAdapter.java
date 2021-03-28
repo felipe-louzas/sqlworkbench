@@ -29,11 +29,13 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.*;
+import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.util.WbStringTokenizer;
 
 /**
  * A class to put plain text and HTML content into the clipboard.
@@ -50,11 +52,16 @@ public class StringSelectionAdapter
 
   public StringSelectionAdapter(String text, boolean includeHtml)
   {
+    this(text, includeHtml, "\t", "\"");
+  }
+
+  public StringSelectionAdapter(String text, boolean includeHtml, String delimiter, String quoteChar)
+  {
     this.data = text;
     if (includeHtml)
     {
       flavors = new DataFlavor[] { DataFlavor.fragmentHtmlFlavor, DataFlavor.stringFlavor };
-      dataAsHTML = createHtmlFragment(text);
+      dataAsHTML = createHtmlFragment(text, delimiter, quoteChar);
     }
     else
     {
@@ -63,7 +70,7 @@ public class StringSelectionAdapter
     }
   }
 
-  private String createHtmlFragment(String text)
+  private String createHtmlFragment(String text, String delimiter, String quoteChar)
   {
     try
     {
@@ -84,19 +91,19 @@ public class StringSelectionAdapter
       BufferedReader src = new BufferedReader(srctext);
       StringBuilder dst = new StringBuilder(text.length());
 
-
       dst.append(preHtml);
+
+      WbStringTokenizer tok = new WbStringTokenizer(delimiter, quoteChar, false);
       for (String line = src.readLine(); line != null; line = src.readLine())
       {
-        String[] fields = line.split("\t");
-        for (int i = 0; i < fields.length; i++)
-        {
-          fields[i] = tdOpen + fields[i] + tdClose;
-        }
+        tok.setSourceString(line);
+        List<String> fields = tok.getAllTokens();
         dst.append(trOpen);
-        for (String tk : fields)
+        for (String field : fields)
         {
-          dst.append(tk);
+          dst.append(tdOpen);
+          dst.append(field);
+          dst.append(tdClose);
         }
         dst.append(trClose);
       }
@@ -147,5 +154,13 @@ public class StringSelectionAdapter
   @Override
   public void lostOwnership(Clipboard clipboard, Transferable contents)
   {
+  }
+
+  /**
+   * For testing purposes.
+   */
+  public String getHTMLContent()
+  {
+    return dataAsHTML;
   }
 }

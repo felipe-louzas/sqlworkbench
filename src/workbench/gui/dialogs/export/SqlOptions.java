@@ -47,5 +47,6 @@ public interface SqlOptions
   List<String> getKeyColumns();
   String getDateLiteralType();
   BlobMode getBlobMode();
+  void setBlobMode(BlobMode mode);
   String getMergeType();
 }

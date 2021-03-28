@@ -23,6 +23,7 @@ package workbench.gui.macros;
 import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
 
 import workbench.sql.macros.MacroDefinition;
@@ -57,7 +58,7 @@ public class QueryMacroParserTest
     QueryMacroParser parser = new QueryMacroParser(macro);
     assertTrue(parser.hasColumnPlaceholder());
     assertTrue(parser.hasTablePlaceholder());
-    parser.setTable(tbl);
+    parser.setObject(tbl);
     parser.setColumn(CollectionUtil.arrayList(c1));
 
     String sql = parser.getSQL(null);
@@ -76,11 +77,10 @@ public class QueryMacroParserTest
     QueryMacroParser parser = new QueryMacroParser(macro);
     assertTrue(parser.hasColumnPlaceholder());
 
-    parser.setTable(tbl);
+    parser.setObject(tbl);
     parser.setColumn(CollectionUtil.arrayList(c1,c2));
 
     String sql = parser.getSQL(null);
-//    System.out.println(sql);
     String expected = "select category, count(distinct name) from product group by category";
     Assert.assertEquals(expected, sql);
   }
@@ -96,12 +96,27 @@ public class QueryMacroParserTest
     TableIdentifier tbl = new TableIdentifier("product");
     QueryMacroParser parser = new QueryMacroParser(macro);
     assertTrue(parser.hasColumnPlaceholder());
-    parser.setTable(tbl);
+    parser.setObject(tbl);
     parser.setColumn(CollectionUtil.arrayList(c1,c2,c3));
 
     String sql = parser.getSQL(null);
-//    System.out.println(sql);
     String expected = "select category, name, id from product";
+    Assert.assertEquals(expected, sql);
+  }
+
+  @Test
+  public void testIndex()
+  {
+    String text = "drop index ${index}$";
+    MacroDefinition macro = new MacroDefinition("test", text);
+    IndexDefinition idx = new IndexDefinition(new TableIdentifier("base_table"), "idx_foo");
+    idx.setSchema("public");
+    QueryMacroParser parser = new QueryMacroParser(macro);
+    assertTrue(parser.hasIndexPlaceholder());
+    parser.setObject(idx);
+
+    String sql = parser.getSQL(null);
+    String expected = "drop index public.idx_foo";
     Assert.assertEquals(expected, sql);
   }
 

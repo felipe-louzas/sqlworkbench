@@ -27,7 +27,10 @@ import java.awt.event.ActionEvent;
 
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.components.ClipBoardCopier;
+import workbench.db.exporter.ExportType;
+
+import workbench.gui.components.ColumnSelection;
+import workbench.gui.components.TextClipboardCopier;
 import workbench.gui.components.WbTable;
 
 /**
@@ -70,7 +73,7 @@ public class CopySelectedAsTextAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    ClipBoardCopier copier = new ClipBoardCopier(this.client);
+    TextClipboardCopier copier = new TextClipboardCopier(ExportType.TEXT, this.client);
     boolean copyHeaders = true;
     boolean selectColumns = false;
     if (invokedByMouse(e))
@@ -78,6 +81,18 @@ public class CopySelectedAsTextAction
       copyHeaders = !isShiftPressed(e);
       selectColumns = isCtrlPressed(e);
     }
-    copier.copyDataToClipboard(copyHeaders, true, selectColumns);
+
+    if (selectColumns)
+    {
+      ColumnSelection select = new ColumnSelection(client);
+      select.selectColumns(copyHeaders, false, true, true, false);
+      copier.setIncludeHeader(select.getIncludeHeaders());
+      copier.setColumnsToCopy(select.getColumns());
+    }
+    else
+    {
+      copier.setIncludeHeader(copyHeaders);
+    }
+    copier.doCopy();
   }
 }

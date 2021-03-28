@@ -22,13 +22,11 @@
 package workbench.gui.components;
 
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.List;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
@@ -50,7 +48,6 @@ import workbench.sql.parser.ScriptParser;
 
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
-import workbench.util.StringUtil;
 
 import org.junit.Test;
 
@@ -95,34 +92,6 @@ public class ClipBoardCopierTest
 
     ds.setUpdateTableToBeUsed(tbl);
     return ds;
-  }
-
-  @Test
-  public void testCopyDataToClipboard()
-    throws Exception
-  {
-    final Clipboard testClip = new TestClipboard("testCopyDataToClipboard");
-
-    DataStore ds = createDataStore();
-    ds.setValue(0, 1, "Arthur\t");
-    ClipBoardCopier copier = new ClipBoardCopier(ds)
-    {
-      @Override
-      protected Clipboard getClipboard()
-      {
-        return testClip;
-      }
-    };
-    copier.copyDataToClipboard(true, false, false);
-    Transferable contents = testClip.getContents(copier);
-    Object data = contents.getTransferData(DataFlavor.stringFlavor);
-    assertNotNull(data);
-    assertTrue(data instanceof String);
-    List<String> lines = StringUtil.getLines((String)data);
-    assertEquals(3, lines.size());
-    assertEquals("id\tfirstname\tlastname", lines.get(0));
-    assertEquals("1\t\"Arthur\t\"\tDent", lines.get(1));
-    assertEquals("2\tFord\tPrefect", lines.get(2));
   }
 
   @Test
@@ -348,23 +317,5 @@ public class ClipBoardCopierTest
     assertTrue(p.getCommand(0).contains("id = 1"));
     assertTrue(p.getCommand(1).contains("id = 2"));
   }
-
-  private static class TestClipboard
-    extends Clipboard
-  {
-    public TestClipboard(String name)
-    {
-      super(name);
-    }
-
-    @Override
-    public synchronized void setContents(Transferable contents, ClipboardOwner owner)
-    {
-      this.owner = owner;
-      this.contents = contents;
-    }
-
-  }
-
 }
 

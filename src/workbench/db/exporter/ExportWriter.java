@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -147,7 +148,7 @@ public abstract class ExportWriter
     return rows;
   }
 
-  public void writeExport(DataStore ds, List<ColumnIdentifier> columnsToExport)
+  public void writeExport(DataStore ds, List<ColumnIdentifier> columnsToExport, int[] selectedRows)
     throws SQLException, IOException
   {
     ResultInfo info = ds.getResultInfo();
@@ -167,15 +168,26 @@ public abstract class ExportWriter
 
     writeStart();
 
+    Set<Integer> toExport = new HashSet<>(selectedRows == null ? 0 : selectedRows.length);
+    if (selectedRows != null)
+    {
+      for (int r : selectedRows)
+      {
+        toExport.add(r);
+      }
+    }
+
     int rowCount = ds.getRowCount();
     for (int i=0; i < rowCount; i++)
     {
       if (this.cancel) break;
-
-      updateProgress(rows);
-      RowData row = ds.getRow(i);
-      writeRow(row, rows);
-      rows ++;
+      if (toExport.isEmpty() || toExport.contains(i))
+      {
+        updateProgress(rows);
+        RowData row = ds.getRow(i);
+        writeRow(row, rows);
+        rows++;
+      }
     }
     writeEnd(rows);
   }

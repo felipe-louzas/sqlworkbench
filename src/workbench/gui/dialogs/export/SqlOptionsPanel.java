@@ -59,9 +59,9 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnSelectorPanel;
 import workbench.gui.components.KeyColumnSelectorPanel;
 
-import workbench.sql.generator.merge.MergeGenerator;
-
 import workbench.storage.ResultInfo;
+
+import workbench.sql.generator.merge.MergeGenerator;
 
 import workbench.util.StringUtil;
 
@@ -130,33 +130,33 @@ public class SqlOptionsPanel
     return this.multiRowInserts.isSelected();
   }
 
-  public void saveSettings()
+  public void saveSettings(String type)
   {
     Settings s = Settings.getInstance();
-    s.setProperty("workbench.export.sql.commitevery", this.getCommitEvery());
-    s.setProperty("workbench.export.sql.insert.multirow", getUseMultiRowInserts());
-    s.setProperty("workbench.export.sql.createtable", this.getCreateTable());
-    s.setProperty("workbench.export.sql.ignoreidentity", this.ignoreIdentityColumns());
-    s.setProperty("workbench.export.sql.saveas.dateliterals", this.getDateLiteralType());
-    s.setProperty("workbench.export.sql.saveas.blobliterals", this.getBlobMode().getTypeString());
+    s.setProperty("workbench." + type+ ".sql.commitevery", this.getCommitEvery());
+    s.setProperty("workbench." + type+ ".sql.insert.multirow", getUseMultiRowInserts());
+    s.setProperty("workbench." + type+ ".sql.createtable", this.getCreateTable());
+    s.setProperty("workbench." + type+ ".sql.ignoreidentity", this.ignoreIdentityColumns());
+    s.setProperty("workbench." + type+ ".sql.saveas.dateliterals", this.getDateLiteralType());
+    s.setProperty("workbench." + type+ ".sql.saveas.blobliterals", this.getBlobMode().getTypeString());
   }
 
-  public void restoreSettings()
+  public void restoreSettings(String type)
   {
     Settings s = Settings.getInstance();
-    this.setCommitEvery(s.getIntProperty("workbench.export.sql.commitevery", 0));
-    this.setCreateTable(s.getBoolProperty("workbench.export.sql.createtable"));
-    String def = s.getProperty("workbench.export.sql.default.dateliterals", "dbms");
-    String type = s.getProperty("workbench.export.sql.saveas.dateliterals", def);
-    this.literalTypes.setSelectedItem(type);
+    this.setCommitEvery(s.getIntProperty("workbench." + type + ".sql.commitevery", 0));
+    this.setCreateTable(s.getBoolProperty("workbench." + type + ".sql.createtable"));
+    String def = s.getProperty("workbench." + type + ".sql.default.dateliterals", "dbms");
+    String dateLiterals = s.getProperty("workbench." + type + ".sql.saveas.dateliterals", def);
+    this.literalTypes.setSelectedItem(dateLiterals);
 
-    type = s.getProperty("workbench.export.sql.saveas.blobliterals", BlobMode.SaveToFile.getTypeString());
-    this.blobTypes.setSelectedItem(type);
+    String blobMode = s.getProperty("workbench." + type + ".sql.saveas.blobliterals", BlobMode.SaveToFile.getTypeString());
+    this.blobTypes.setSelectedItem(blobMode);
 
-    boolean ignore = s.getBoolProperty("workbench.export.sql.ignoreidentity", Settings.getInstance().getGenerateInsertIgnoreIdentity());
+    boolean ignore = s.getBoolProperty("workbench." + type + ".sql.ignoreidentity", Settings.getInstance().getGenerateInsertIgnoreIdentity());
     ignoreIdentity.setSelected(ignore);
 
-    boolean multiRow = s.getBoolProperty("workbench.export.sql.insert.multirow", false);
+    boolean multiRow = s.getBoolProperty("workbench." + type + ".sql.insert.multirow", false);
     multiRowInserts.setSelected(multiRow);
   }
 
@@ -170,6 +170,15 @@ public class SqlOptionsPanel
   public String getMergeType()
   {
     return (String)mergeTypes.getSelectedItem();
+  }
+
+  @Override
+  public void setBlobMode(BlobMode mode)
+  {
+    if (mode != null)
+    {
+      blobTypes.setSelectedItem(mode.getTypeString());
+    }
   }
 
   @Override

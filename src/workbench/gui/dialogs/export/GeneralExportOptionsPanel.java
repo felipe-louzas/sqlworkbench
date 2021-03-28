@@ -23,16 +23,19 @@
  */
 package workbench.gui.dialogs.export;
 
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -51,28 +54,80 @@ public class GeneralExportOptionsPanel
   implements ExportOptions
 {
 
+  private GridBagConstraints encodingPanelConstraints;
+  private GridBagConstraints selectedRowsConstraints;
+
   public GeneralExportOptionsPanel()
   {
     super();
     initComponents();
+    GridBagLayout gbl = (GridBagLayout)this.getLayout();
+    this.encodingPanelConstraints = gbl.getConstraints(encodingPanel);
+    this.selectedRowsConstraints = gbl.getConstraints(selectedRows);
   }
 
-  public void saveSettings()
+  public void saveSettings(String type)
   {
     Settings s = Settings.getInstance();
-    s.setProperty("workbench.export.general.dateformat", this.getDateFormat());
-    s.setProperty("workbench.export.general.timestampformat", this.getTimestampFormat());
-    s.setProperty("workbench.export.general.encoding", this.getEncoding());
-    s.setExportNullString(this.getNullString());
+    s.setProperty("workbench." + type + ".general.dateformat", this.getDateFormat());
+    s.setProperty("workbench." + type + ".general.timestampformat", this.getTimestampFormat());
+    s.setProperty("workbench." + type + ".general.encoding", this.getEncoding());
+    s.setProperty("workbench." + type + ".general.selectedrows", this.selectedRowsOnly());
+    s.setProperty("workbench." + type + ".nullstring", this.getNullString());
   }
 
-  public void restoreSettings()
+  public void restoreSettings(String type)
   {
     Settings s = Settings.getInstance();
-    this.setDateFormat(s.getProperty("workbench.export.general.dateformat", ""));
-    this.setTimestampFormat(s.getProperty("workbench.export.general.timestampformat", ""));
-    this.setEncoding(s.getProperty("workbench.export.general.encoding", s.getDefaultDataEncoding()));
-    this.setNullString(s.getExportNullString());
+    this.setDateFormat(s.getProperty("workbench." + type + ".general.dateformat", ""));
+    this.setTimestampFormat(s.getProperty("workbench." + type + ".general.timestampformat", ""));
+    this.setEncoding(s.getProperty("workbench." + type + ".general.encoding", s.getDefaultDataEncoding()));
+    this.setNullString(s.getProperty("workbench." + type + ".nullstring", null));
+    this.selectedRows.setSelected(s.getBoolProperty("workbench." + type + ".general.selectedrows"));
+  }
+
+  public void setSelectedRowsEnabled(boolean flag)
+  {
+    this.selectedRows.setEnabled(flag);
+  }
+
+  @Override
+  public boolean selectedRowsOnly()
+  {
+    return selectedRows.isSelected();
+  }
+
+  public void showSelectedRowsCbx()
+  {
+    if (isComponentVisible(selectedRows)) return;
+    this.add(selectedRows, selectedRowsConstraints);
+  }
+
+  public void hideSelectedRowsCbx()
+  {
+    if (!isComponentVisible(encodingPanel)) return;
+    this.remove(selectedRows);
+  }
+
+  public void showEncodingsPanel()
+  {
+    if (isComponentVisible(encodingPanel)) return;
+    this.add(encodingPanel, encodingPanelConstraints);
+  }
+
+  public void hideEncodingPanel()
+  {
+    if (!isComponentVisible(encodingPanel)) return;
+    this.remove(encodingPanel);
+  }
+
+  private boolean isComponentVisible(Component toCheck)
+  {
+    for (Component component : getComponents())
+    {
+      if (component == toCheck) return true;
+    }
+    return false;
   }
 
   @Override
@@ -166,6 +221,7 @@ public class GeneralExportOptionsPanel
     nullStringLabel = new JLabel();
     nullString = new JTextField();
     jSeparator1 = new JSeparator();
+    selectedRows = new JCheckBox();
 
     setLayout(new GridBagLayout());
     gridBagConstraints = new GridBagConstraints();
@@ -211,7 +267,7 @@ public class GeneralExportOptionsPanel
     selectColumnsButton.setToolTipText(ResourceMgr.getString("d_LblSelectColumns")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(6, 0, 7, 4);
@@ -235,7 +291,8 @@ public class GeneralExportOptionsPanel
     gridBagConstraints.insets = new Insets(0, 4, 7, 4);
     add(nullString, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
@@ -243,6 +300,16 @@ public class GeneralExportOptionsPanel
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(2, 0, 0, 0);
     add(jSeparator1, gridBagConstraints);
+
+    selectedRows.setText(ResourceMgr.getString("LblSelectedRowsOnly")); // NOI18N
+    selectedRows.setHorizontalTextPosition(SwingConstants.LEADING);
+    selectedRows.setMargin(new Insets(2, 0, 2, 2));
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    add(selectedRows, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
@@ -254,6 +321,7 @@ public class GeneralExportOptionsPanel
   private JTextField nullString;
   private JLabel nullStringLabel;
   private JButton selectColumnsButton;
+  private JCheckBox selectedRows;
   private JTextField timestampFormat;
   private JLabel timestampFormatLabel;
   // End of variables declaration//GEN-END:variables

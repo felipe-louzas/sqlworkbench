@@ -53,7 +53,6 @@ import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 
 import workbench.util.ExceptionUtil;
-import workbench.util.WbFile;
 import workbench.util.WbThread;
 
 import static workbench.db.exporter.ExportType.*;
@@ -75,6 +74,7 @@ public class ExportFileDialog
 
   private final DataStore source;
   private boolean sqlChecked = false;
+  private final boolean forClipboard;
 
   private Component parentComponent;
 
@@ -83,20 +83,38 @@ public class ExportFileDialog
     source = null;
     exportOptions = new ExportOptionsPanel(null);
     parentComponent = caller;
+    forClipboard = false;
   }
 
   public ExportFileDialog(Component caller, DataStore ds)
   {
-    source = ds;
-    exportOptions = new ExportOptionsPanel(source == null ? null : source.getResultInfo());
-    parentComponent = caller;
+    this(caller, ds, false);
+  }
+
+  public ExportFileDialog(Component caller, DataStore ds, boolean forClipboard)
+  {
+    this.source = ds;
+    this.forClipboard = forClipboard;
+    this.exportOptions = new ExportOptionsPanel(source == null ? null : source.getResultInfo(), forClipboard);
+    this.parentComponent = caller;
   }
 
   public ExportFileDialog(Component caller, ResultInfo info)
   {
-    source = null;
-    exportOptions = new ExportOptionsPanel(info);
-    parentComponent = caller;
+    this(caller,info, false);
+  }
+
+  public ExportFileDialog(Component caller, ResultInfo info, boolean forClipboard)
+  {
+    this.source = null;
+    this.forClipboard = forClipboard;
+    this.exportOptions = new ExportOptionsPanel(info, forClipboard);
+    this.parentComponent = caller;
+  }
+
+  public void setSelectedRowsEnabled(boolean flag)
+  {
+    this.exportOptions.setSelectedRowsEnabled(flag);
   }
 
   public void setQuerySql(String sql, WbConnection con)
@@ -162,6 +180,11 @@ public class ExportFileDialog
   public ExportOptions getBasicExportOptions()
   {
     return exportOptions.getExportOptions();
+  }
+
+  public FormattedTextOptions getFormattedTextOptions()
+  {
+    return exportOptions.getFormattedTextOptions();
   }
 
   public String getSelectedFilename()
@@ -292,9 +315,11 @@ public class ExportFileDialog
       this.isCancelled = false;
 
       this.exportType = this.exportOptions.getExportType();
-      WbFile fl = new WbFile(exportOptions.getSelectedFile());
+      if (!forClipboard)
+      {
+        this.selectedFilename = exportOptions.getSelectedFile().getFullPath();
+      }
       this.saveSettings();
-      this.selectedFilename = fl.getFullPath();
       result = true;
     }
     else

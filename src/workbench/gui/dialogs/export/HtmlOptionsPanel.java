@@ -1,6 +1,4 @@
 /*
- * HtmlOptionsPanel.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -49,20 +47,20 @@ public class HtmlOptionsPanel
     initComponents();
   }
 
-  public void saveSettings()
+  public void saveSettings(String type)
   {
     Settings s = Settings.getInstance();
-    s.setProperty("workbench.export.html.createfullpage", this.getCreateFullPage());
-    s.setProperty("workbench.export.html.escape", this.getEscapeHtml());
-    s.setProperty("workbench.export.html.pagetitle", this.getPageTitle());
+    s.setProperty("workbench." + type + ".html.createfullpage", this.getCreateFullPage());
+    s.setProperty("workbench." + type + ".html.escape", this.getEscapeHtml());
+    s.setProperty("workbench." + type + ".html.pagetitle", this.getPageTitle());
   }
 
-  public void restoreSettings()
+  public void restoreSettings(String type)
   {
     Settings s = Settings.getInstance();
-    this.setCreateFullPage(s.getBoolProperty("workbench.export.html.createfullpage"));
-    this.setEscapeHtml(s.getBoolProperty("workbench.export.html.escape"));
-    this.setPageTitle(s.getProperty("workbench.export.html.pagetitle", ""));
+    this.setCreateFullPage(s.getBoolProperty("workbench." + type + ".html.createfullpage"));
+    this.setEscapeHtml(s.getBoolProperty("workbench." + type + ".html.escape"));
+    this.setPageTitle(s.getProperty("workbench." + type + ".html.pagetitle", ""));
   }
 
   @Override
