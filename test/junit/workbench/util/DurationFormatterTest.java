@@ -23,6 +23,8 @@
  */
 package workbench.util;
 
+import workbench.WbTestCase;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -32,13 +34,18 @@ import static org.junit.Assert.*;
  * @author Thomas Kellerer
  */
 public class DurationFormatterTest
+  extends WbTestCase
 {
+  public DurationFormatterTest()
+  {
+    super("DurationFormatterTest");
+  }
 
   @Test
   public void testFixedFormat()
   {
     DurationFormatter f = new DurationFormatter('.');
-    
+
     long millis = 1234;
     assertEquals("1234ms", f.formatDuration(millis, DurationFormat.millis, true));
     assertEquals("1234ms", f.formatDuration(millis, DurationFormat.millis, false));
@@ -97,5 +104,8 @@ public class DurationFormatterTest
 
     s = f.formatDuration(DurationFormatter.ONE_MINUTE, DurationFormat.dynamic, false, false);
     assertEquals("1m", s.trim());
+
+    s = f.formatDuration(42, DurationFormat.dynamic, false, false, 100);
+    assertEquals("42ms", s.trim());
   }
 }

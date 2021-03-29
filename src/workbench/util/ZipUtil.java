@@ -39,18 +39,28 @@ public class ZipUtil
 
   /**
    * Test if the given File is a ZIP Archive.
+   *
+   * <p>This is the same as using <code>getArchiveType(f) == ZipType.ZIP</code>.</p>
+   * <p>This does not return true for GZIP archives!</p>
+   *
    * @param f the File to test
    * @return true if the file is a ZIP Archive, false otherwise
+   * @see #getArchiveType(java.io.File)
    */
   public static boolean isZipFile(File f)
   {
+    return getArchiveType(f) == ZipType.ZIP;
+  }
+
+  public static ZipType getArchiveType(File f)
+  {
     // The JVM crashes (sometimes) if I pass my "fake" ClipboardFile object
     // to the ZipFile constructor, so this is checked beforehand
-    if (f instanceof ClipboardFile) return false;
+    if (f instanceof ClipboardFile) return ZipType.None;
 
-    if (!f.exists()) return false;
+    if (!f.exists()) return ZipType.None;
 
-    boolean isZip = false;
+    ZipType result = ZipType.None;
 
     InputStream in = null;
     try
@@ -60,23 +70,32 @@ public class ZipUtil
       int bytes = in.read(buffer);
       if (bytes == 4)
       {
-        isZip = (buffer[0] == 'P' && buffer[1] == 'K');
-        isZip = isZip && (buffer[2] == 3 && buffer[3] == 4);
+        if (buffer[0] == 'P' && buffer[1] == 'K' && buffer[2] == 3 && buffer[3] == 4)
+        {
+          // PKZIP format
+          result = ZipType.ZIP;
+        }
+        else if (buffer[0] == (byte)0x1f && buffer[1] == (byte)0x8b)
+        {
+          // GZIP format
+          result = ZipType.GZIP;
+        }
       }
     }
     catch (Throwable e)
     {
-      isZip = false;
+      result = ZipType.None;
     }
     finally
     {
       FileUtil.closeQuietely(in);
     }
-    return isZip;
+    return result;
   }
 
   /**
    * Get the directory listing of a zip archive.
+   *
    * Sub-Directories are not scanned.
    *
    * @param archive

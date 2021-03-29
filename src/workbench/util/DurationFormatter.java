@@ -24,6 +24,7 @@ package workbench.util;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
+import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 /**
@@ -52,7 +53,8 @@ public class DurationFormatter
     DecimalFormatSymbols symb = new DecimalFormatSymbols();
     symb.setDecimalSeparator(decimalSep);
     DecimalFormat numberFormatter = new DecimalFormat("0.#s", symb);
-    numberFormatter.setMaximumFractionDigits(2);
+    int digits = Settings.getInstance().getIntProperty(Settings.PROP_DURATION_DIGITS, 2);
+    numberFormatter.setMaximumFractionDigits(digits);
     return numberFormatter;
   }
 
@@ -107,23 +109,32 @@ public class DurationFormatter
     return formatDuration(millis, format, includeFractionalSeconds, true);
   }
 
+  public String formatDuration(long millis, DurationFormat format, boolean includeFractionalSeconds, boolean includeZeroSeconds)
+  {
+    int millisThreshold = GuiSettings.useMillisForDurationThreshohold();
+    return formatDuration(millis, format, includeFractionalSeconds, includeZeroSeconds, millisThreshold);
+  }
+
   /**
    * Formats the number of milliseconds according to the given DurationFormat.
    *
    * When using {@link DurationFormat#dynamic} <tt>includeFractionalSeconds</tt> controls if
    * fractional seconds should be included.
    *
+   * If a dynamic format is used and millistThreshold is greater than zero, then durations smaller than that
+   * will be shown as milliseconds directly.
+   *
    * @param millis                   the duration to format
    * @param format                   the format to use
    * @param includeFractionalSeconds only used for format = dynamic, ignored otherwise
    * @param includeZeroSeconds       only used for format = dynamic, ignored otherwise
+   * @param millisThreshold          only used for format = dynamic, ignored otherwise
    *
    * @return the formatted duration
    * @see Settings#getDurationFormat()
    */
-  public String formatDuration(long millis, DurationFormat format, boolean includeFractionalSeconds, boolean includeZeroSeconds)
+  public String formatDuration(long millis, DurationFormat format, boolean includeFractionalSeconds, boolean includeZeroSeconds, int millisThreshold)
   {
-
     StringBuilder result = new StringBuilder(20);
 
     if (format == DurationFormat.millis)
@@ -134,6 +145,11 @@ public class DurationFormatter
     else if (format == DurationFormat.seconds)
     {
       result.append(getDurationAsSeconds(millis));
+    }
+    else if (millisThreshold > 0 && millis <= millisThreshold)
+    {
+      result.append(millis);
+      result.append("ms");
     }
     else
     {

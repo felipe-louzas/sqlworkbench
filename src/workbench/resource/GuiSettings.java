@@ -1666,4 +1666,9 @@ public class GuiSettings
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.infocolor.use.bold", false);
   }
+
+  public static int useMillisForDurationThreshohold()
+  {
+    return Settings.getInstance().getIntProperty(Settings.PROP_DURATION_MS_THRESHOLD, 100);
+  }
 }

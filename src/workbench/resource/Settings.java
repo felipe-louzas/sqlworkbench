@@ -167,6 +167,8 @@ public class Settings
 
   public static final String PROP_DURATION_FORMAT = "workbench.log.timing.format";
   public static final String PROP_DURATION_DECIMAL = "workbench.log.timing.decimal";
+  public static final String PROP_DURATION_DIGITS = "workbench.log.timing.decimal_digits";
+  public static final String PROP_DURATION_MS_THRESHOLD = "workbench.log.timing.ms.threshold";
 
   /** The property that controls if the statement causing an error should be logged as well */
 	public static final String PROPERTY_ERROR_STATEMENT_LOG_LEVEL = "workbench.gui.log.errorstatement";

@@ -31,9 +31,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Enumeration;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -47,6 +49,7 @@ import workbench.util.ClipboardFile;
 import workbench.util.EncodingUtil;
 import workbench.util.FileUtil;
 import workbench.util.WbFile;
+import workbench.util.ZipType;
 import workbench.util.ZipUtil;
 
 /**
@@ -63,7 +66,7 @@ public class ImportFileHandler
   private File baseFile;
   private File baseDir;
   private String encoding;
-  private boolean isZip;
+  private ZipType zipType = ZipType.None;
   private ZipFile mainArchive;
   private ZipFile attachments;
   private BufferedReader mainReader;
@@ -89,7 +92,7 @@ public class ImportFileHandler
     this.baseFile = mainFile;
     this.baseDir = baseFile.getParentFile();
     if (this.baseDir == null) baseDir = new File(".");
-    isZip = ZipUtil.isZipFile(baseFile);
+    zipType = ZipUtil.getArchiveType(baseFile);
     this.initAttachements();
   }
 
@@ -100,7 +103,7 @@ public class ImportFileHandler
    */
   boolean isZip()
   {
-    return isZip;
+    return zipType == ZipType.ZIP;
   }
 
   /**
@@ -122,7 +125,7 @@ public class ImportFileHandler
       ClipboardFile cb = (ClipboardFile)baseFile;
       r = new StringReader(cb.getContents());
     }
-    else if (isZip)
+    else if (zipType == ZipType.ZIP)
     {
       if (mainArchive == null)
       {
@@ -142,6 +145,12 @@ public class ImportFileHandler
         throw new FileNotFoundException("Zipfile " + this.baseFile.getAbsolutePath() + " does not contain any entries!");
       }
     }
+    else if (zipType == ZipType.GZIP)
+    {
+      // GZIP is not a container, it always contains exactly one file
+      GZIPInputStream in = new GZIPInputStream(new FileInputStream(baseFile));
+      r = new InputStreamReader(in, encoding);
+    }
     else
     {
       r = EncodingUtil.createReader(baseFile, encoding);
@@ -154,7 +163,7 @@ public class ImportFileHandler
   {
     if (this.baseFile == null) return "";
     String result = baseFile.getAbsolutePath();
-    if (this.isZip && usedZipEntry != null)
+    if (this.zipType == ZipType.ZIP && usedZipEntry != null)
     {
       result += ":" + usedZipEntry;
     }
@@ -205,7 +214,7 @@ public class ImportFileHandler
   {
     if (baseFile instanceof ClipboardFile) throw new IOException("Attachments not supported for Clipboard");
 
-    if (this.isZip)
+    if (this.zipType == ZipType.ZIP)
     {
       ZipEntry entry = findEntry(attachmentFile);
       return attachments.getInputStream(entry);
@@ -256,9 +265,13 @@ public class ImportFileHandler
   public long getCharacterLength(File f)
     throws IOException
   {
-    if (this.isZip)
+    if (this.zipType == ZipType.ZIP)
     {
       return getLength(f);
+    }
+    else if (this.zipType == ZipType.None)
+    {
+      return 0;
     }
 
     File inputFile = getRealFile(f);
@@ -275,10 +288,14 @@ public class ImportFileHandler
   public long getLength(File toTest)
     throws IOException
   {
-    if (this.isZip)
+    if (this.zipType == ZipType.ZIP)
     {
       ZipEntry entry = findEntry(toTest);
       return entry.getSize();
+    }
+    else if (this.zipType == ZipType.None)
+    {
+      return 0;
     }
 
     File realFile = getRealFile(toTest);
