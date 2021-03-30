@@ -48,12 +48,21 @@ public class DurationFormatter
     numberFormatter = createTimingFormatter(decimalSep);
   }
 
+  public DurationFormatter(char decimalSep, int digits)
+  {
+    numberFormatter = createTimingFormatter(decimalSep, digits);
+  }
+
   public static DecimalFormat createTimingFormatter(char decimalSep)
+  {
+    return createTimingFormatter(decimalSep, Settings.getInstance().getIntProperty(Settings.PROP_DURATION_DIGITS, 2));
+  }
+  
+  public static DecimalFormat createTimingFormatter(char decimalSep, int digits)
   {
     DecimalFormatSymbols symb = new DecimalFormatSymbols();
     symb.setDecimalSeparator(decimalSep);
     DecimalFormat numberFormatter = new DecimalFormat("0.#s", symb);
-    int digits = Settings.getInstance().getIntProperty(Settings.PROP_DURATION_DIGITS, 2);
     numberFormatter.setMaximumFractionDigits(digits);
     return numberFormatter;
   }

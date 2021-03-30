@@ -105,7 +105,17 @@ public class DurationFormatterTest
     s = f.formatDuration(DurationFormatter.ONE_MINUTE, DurationFormat.dynamic, false, false);
     assertEquals("1m", s.trim());
 
-    s = f.formatDuration(42, DurationFormat.dynamic, false, false, 100);
+    s = f.formatDuration(42, DurationFormat.dynamic, true, false, 100);
     assertEquals("42ms", s.trim());
+
+    s = f.formatDuration(101, DurationFormat.dynamic, true, false, 100);
+    assertEquals("0.1s", s.trim());
+
+    s = f.formatDuration(123, DurationFormat.dynamic, true, false, -1);
+    assertEquals("0.12s", s.trim());
+
+    f = new DurationFormatter('.', 3);
+    s = f.formatDuration(123, DurationFormat.dynamic, true, false, 100);
+    assertEquals("0.123s", s.trim());
   }
 }
