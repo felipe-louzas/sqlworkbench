@@ -51,6 +51,7 @@ public class IndexDefinition
   private List<IndexColumn> columns = new ArrayList<>();
   private String comment;
   private ConstraintDefinition uniqueConstraint;
+  private boolean includeIndexForUniqueConstraint;
   private String indexExpression;
   private String displayName;
   private String status;
@@ -254,6 +255,16 @@ public class IndexDefinition
       LogMgr.logError(new CallerInfo(){}, "setUniqueConstraint() called with a different constraint type", new IllegalArgumentException("Invalid type: " + constraint.getConstraintType()));
     }
     this.uniqueConstraint = constraint;
+  }
+
+  public void setIncludeIndexForUniqueConstraint(boolean flag)
+  {
+    this.includeIndexForUniqueConstraint = flag;
+  }
+  
+  public boolean includeIndexForUniqueConstraint()
+  {
+    return includeIndexForUniqueConstraint;
   }
 
   public String getUniqueConstraintName()

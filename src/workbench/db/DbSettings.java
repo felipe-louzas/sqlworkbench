@@ -679,6 +679,11 @@ public class DbSettings
     return value.toLowerCase().trim().replaceAll("\\s+", "_");
   }
 
+  public String getCheckConstraintTemplate()
+  {
+    return getProperty("sql.constraint.check", null);
+  }
+
   /**
    * Return the complete DDL to drop the given type of DB-Object.
    * <br/>

@@ -31,23 +31,20 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import workbench.db.ConstraintDefinition;
 import workbench.db.IndexDefinition;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.UniqueConstraintReader;
 import workbench.db.WbConnection;
-
-import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -95,6 +92,7 @@ public class OracleUniqueConstraintReader
         cons.setEnabled(StringUtil.equalStringIgnoreCase(status, "ENABLED"));
         cons.setValid(StringUtil.equalStringIgnoreCase(validated, "VALIDATED"));
         def.setUniqueConstraint(cons);
+        def.setIncludeIndexForUniqueConstraint(!consName.equals(idxName));
       }
     }
   }

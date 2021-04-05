@@ -55,9 +55,11 @@ import workbench.db.ibm.Db2IndexReader;
 import workbench.db.ibm.Db2ProcedureReader;
 import workbench.db.ibm.Db2SequenceReader;
 import workbench.db.ibm.Db2SynonymReader;
+import workbench.db.ibm.InformixConstraintReader;
 import workbench.db.ibm.InformixProcedureReader;
 import workbench.db.ibm.InformixSequenceReader;
 import workbench.db.ibm.InformixSynonymReader;
+import workbench.db.ibm.InformixUniqueConstraintReader;
 import workbench.db.ingres.IngresSequenceReader;
 import workbench.db.ingres.IngresSynonymReader;
 import workbench.db.mariadb.MariaDBSequenceReader;
@@ -257,6 +259,8 @@ public class ReaderFactory
         return new HsqlConstraintReader(meta.getWbConnection());
       case SQL_Server:
         return new SqlServerConstraintReader(meta.getWbConnection());
+      case Informix:
+        return new InformixConstraintReader(meta.getWbConnection());
       case DB2_ISERIES:
       case DB2_LUW:
       case DB2_ZOS:
@@ -308,6 +312,8 @@ public class ReaderFactory
       case DB2_LUW:
       case DB2_ZOS:
         return new DB2UniqueConstraintReader();
+      case Informix:
+        return new InformixUniqueConstraintReader();
       case SQL_Server:
         return new SqlServerUniqueConstraintReader();
       case HSQLDB:

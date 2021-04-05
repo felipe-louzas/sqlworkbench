@@ -1,6 +1,4 @@
 /*
- * DB2UniqueConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -34,12 +32,12 @@ import workbench.log.LogMgr;
 import workbench.db.ConstraintDefinition;
 import workbench.db.DBID;
 import workbench.db.IndexDefinition;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.UniqueConstraintReader;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 
 /**
  *
@@ -145,6 +143,7 @@ public class DB2UniqueConstraintReader
         {
           ConstraintDefinition cons = ConstraintDefinition.createUniqueConstraint(consName);
           def.setUniqueConstraint(cons);
+          def.setIncludeIndexForUniqueConstraint(false);
         }
       }
     }

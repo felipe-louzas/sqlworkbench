@@ -1,6 +1,4 @@
 /*
- * FirebirdConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -25,6 +23,7 @@ package workbench.db.firebird;
 
 import workbench.db.AbstractConstraintReader;
 import workbench.db.DBID;
+import workbench.db.TableIdentifier;
 
 /**
  * An implementation of {@link AbstractConstraintReader} for the
@@ -50,13 +49,13 @@ public class FirebirdConstraintReader
   }
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return null;
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     return TABLE_SQL;
   }

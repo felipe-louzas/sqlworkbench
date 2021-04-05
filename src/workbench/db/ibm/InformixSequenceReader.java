@@ -31,14 +31,12 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
-import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -98,12 +96,9 @@ public class InformixSequenceReader
   @Override
   public DataStore getRawSequenceDefinition(String catalog, String schema, String namePattern)
   {
-    String systemSchema = dbConn.getDbSettings().getProperty("systemschema", "informix");
-    TableIdentifier sysTabs = new TableIdentifier(catalog, systemSchema, "systables");
-    TableIdentifier seqTabs = new TableIdentifier(catalog, systemSchema, "syssequences");
-
-    String systables = sysTabs.getFullyQualifiedName(this.dbConn);
-    String syssequences = seqTabs.getFullyQualifiedName(this.dbConn);
+    InformixSystemTables systemTables = new InformixSystemTables(catalog, dbConn);
+    String systables = systemTables.getSysTables();
+    String syssequences = systemTables.getSysSequences();
 
     StringBuilder sql = new StringBuilder(100);
     sql.append(

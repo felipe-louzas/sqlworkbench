@@ -35,7 +35,7 @@ import workbench.db.TableSourceBuilderFactory;
 import workbench.db.WbConnection;
 
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -53,8 +53,8 @@ public class OracleMViewReaderTest
     super("OracleMViewReaderTest");
   }
 
-  @BeforeClass
-  public static void setUpClass()
+  @Before
+  public void setUpClass()
     throws Exception
   {
     OracleTestUtil.initTestCase();

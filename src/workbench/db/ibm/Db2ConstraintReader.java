@@ -1,6 +1,4 @@
 /*
- * Db2ConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -28,6 +26,7 @@ import java.util.regex.Pattern;
 
 import workbench.db.AbstractConstraintReader;
 import workbench.db.DBID;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 /**
@@ -77,13 +76,13 @@ public class Db2ConstraintReader
   }
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return null;
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     switch (dbid)
     {

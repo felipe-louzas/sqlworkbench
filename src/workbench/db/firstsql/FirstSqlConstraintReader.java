@@ -95,13 +95,13 @@ public class FirstSqlConstraintReader
   }
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return null;
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     return SQL;
   }

@@ -19,7 +19,7 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.db.h2database;
+package workbench.db.ibm;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,7 +42,7 @@ import workbench.util.CollectionUtil;
  *
  * @author Thomas Kellerer
  */
-public class H2UniqueConstraintReader
+public class InformixUniqueConstraintReader
   implements UniqueConstraintReader
 {
 
@@ -52,44 +52,51 @@ public class H2UniqueConstraintReader
     if (CollectionUtil.isEmpty(indexList))  return;
     if (con == null) return;
 
-    String baseSql =
-        "select unique_index_name, constraint_name\n" +
-        "from information_schema.constraints \n" +
-        "where (table_catalog, table_schema, table_name) = (?,?,?)";
+    long count = indexList.stream().filter(idx -> idx.isUnique()).count();
+    if (count == 0) return;
 
-    LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", baseSql, table.getCatalog(), table.getSchema(), table.getTableName());
+    String catalog = table.getCatalog();
+    InformixSystemTables systemTables = new InformixSystemTables(catalog, con);
 
-    PreparedStatement pstmt = null;
+    String sysTabs = systemTables.getSysTables();
+    String sysCons = systemTables.getSysConstraints();
+
+    String sql =
+      "select c.idxname, t.owner, c.constrname \n" +
+      "from " + sysCons + " c\n" +
+      " join " + sysTabs + " t on t.tabid = c.tabid\n" +
+      "where c.constrtype = 'U' \n" +
+      "  and t.tabname = ?";
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", sql);
+
+    PreparedStatement stmt = null;
     ResultSet rs = null;
     try
     {
-      pstmt = con.getSqlConnection().prepareStatement(baseSql);
-      pstmt.setString(1, table.getCatalog());
-      pstmt.setString(2, table.getSchema());
-      pstmt.setString(3, table.getTableName());
-
-      rs = pstmt.executeQuery();
+      stmt = con.getSqlConnection().prepareStatement(sql);
+      stmt.setString(1, table.getRawTableName());
+      rs = stmt.executeQuery();
       while (rs.next())
       {
-        String idxName = rs.getString(1);
-        String consName = rs.getString(2);
-
-        IndexDefinition def = IndexDefinition.findIndex(indexList, idxName, null);
-        if (def != null)
+        String idxName = rs.getString(1).trim();
+        String idxSchema = rs.getString(2).trim();
+        String consName = rs.getString(3).trim();
+        IndexDefinition idx = IndexDefinition.findIndex(indexList, idxName, idxSchema);
+        if (idx != null)
         {
           ConstraintDefinition cons = ConstraintDefinition.createUniqueConstraint(consName);
-          def.setUniqueConstraint(cons);
-          def.setIncludeIndexForUniqueConstraint(!idxName.equals(consName));
+          idx.setUniqueConstraint(cons);
         }
       }
     }
     catch (SQLException se)
     {
-      LogMgr.logMetadataError(new CallerInfo(){}, se, "unique constraints", baseSql, table.getCatalog(), table.getSchema(), table.getTableName());
+      LogMgr.logMetadataError(new CallerInfo(){}, se, "unique constraints", sql);
     }
     finally
     {
-      JdbcUtils.closeAll(rs, pstmt);
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 

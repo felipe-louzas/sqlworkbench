@@ -1,6 +1,4 @@
 /*
- * AbstractConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -38,7 +36,6 @@ import workbench.db.sqltemplates.ColumnDefinitionTemplate;
 import workbench.db.sqltemplates.ConstraintNameTester;
 
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -56,8 +53,8 @@ public abstract class AbstractConstraintReader
     nameTester = new ConstraintNameTester(dbId);
   }
 
-  public abstract String getColumnConstraintSql();
-  public abstract String getTableConstraintSql();
+  public abstract String getColumnConstraintSql(TableIdentifier tbl);
+  public abstract String getTableConstraintSql(TableIdentifier tbl);
 
   public int getIndexForSchemaParameter()
   {
@@ -94,7 +91,7 @@ public abstract class AbstractConstraintReader
   @Override
   public void retrieveColumnConstraints(WbConnection dbConnection, TableDefinition def)
   {
-    String sql = this.getColumnConstraintSql();
+    String sql = this.getColumnConstraintSql(def.getTable());
     if (sql == null) return;
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "column constraints", sql);
@@ -178,7 +175,7 @@ public abstract class AbstractConstraintReader
   @Override
   public List<TableConstraint> getTableConstraints(WbConnection dbConnection, TableDefinition table)
   {
-    String sql = this.getTableConstraintSql();
+    String sql = this.getTableConstraintSql(table.getTable());
     if (sql == null) return null;
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "table constraints",  sql);
@@ -238,7 +235,8 @@ public abstract class AbstractConstraintReader
           {
             constraint = "(" + constraint + ")";
           }
-          TableConstraint c = new TableConstraint(name, constraint);
+          String template = dbConnection.getDbSettings().getCheckConstraintTemplate();
+          TableConstraint c = new TableConstraint(name, constraint, template);
           c.setIsSystemName(isSystemConstraintName(name));
           c.setComment(comment);
           result.add(c);

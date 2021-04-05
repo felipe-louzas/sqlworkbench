@@ -26,15 +26,15 @@ import java.sql.ResultSet;
 import java.util.List;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.AbstractConstraintReader;
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.TableConstraint;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.log.LogMgr;
 
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
@@ -42,9 +42,6 @@ import workbench.sql.lexer.SQLToken;
 import workbench.sql.parser.ParserType;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 
 /**
@@ -87,13 +84,13 @@ public class OracleConstraintReader
   }
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return null;
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     return TABLE_SQL;
   }
@@ -101,7 +98,7 @@ public class OracleConstraintReader
   @Override
   public List<TableConstraint> getTableConstraints(WbConnection dbConnection, TableDefinition def)
   {
-    String sql = this.getTableConstraintSql();
+    String sql = this.getTableConstraintSql(def.getTable());
     if (sql == null) return null;
     List<TableConstraint> result = CollectionUtil.arrayList();
 

@@ -1,6 +1,4 @@
 /*
- * SqlServerConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -24,6 +22,7 @@
 package workbench.db.mssql;
 
 import workbench.db.AbstractConstraintReader;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 /**
@@ -82,7 +81,7 @@ public class SqlServerConstraintReader
     "  and s.name = ? ";
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     if (is2000)
     {
@@ -92,7 +91,7 @@ public class SqlServerConstraintReader
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     if (is2000)
     {

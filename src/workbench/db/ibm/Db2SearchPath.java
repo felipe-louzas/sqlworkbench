@@ -1,6 +1,4 @@
 /*
- * Db2SearchPath.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -35,9 +33,9 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DbSearchPath;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**

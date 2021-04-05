@@ -1,6 +1,4 @@
 /*
- * InformixTableSourceBuilder.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -32,12 +30,12 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -81,9 +79,9 @@ public class InformixTableSourceBuilder
   private void readLockMode(TableIdentifier table)
   {
     boolean showExtents = Settings.getInstance().getBoolProperty("workbench.db.informix_dynamic_server.showextentinfo", true);
-    String systemSchema = Settings.getInstance().getProperty("workbench.db.informix_dynamic_server.systemschema", "informix");
-    TableIdentifier syst = new TableIdentifier(table.getRawCatalog(), systemSchema, "systables");
-    String systables = syst.getFullyQualifiedName(dbConnection);
+
+    InformixSystemTables systemTables = new InformixSystemTables(table.getRawCatalog(), this.dbConnection);
+    String systables = systemTables.getSysTables();
 
     String sql = "select locklevel ";
 

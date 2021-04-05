@@ -34,12 +34,22 @@ public class TableConstraint
   extends ConstraintDefinition
   implements Comparable<TableConstraint>
 {
-  private String expression;
+  public static final String NAME_PLACEHOLDER = "%constraintname%";
+  public static final String EXPR_PLACEHOLDER = "%expression%";
 
-  public TableConstraint(String cName, String expr)
+  private String expression;
+  private String checkConstraintTemplate;
+
+  public TableConstraint(String constraintName, String expr)
   {
-    super(cName);
+    this(constraintName, expr, null);
+  }
+
+  public TableConstraint(String constraintName, String expr, String sqlTemplate)
+  {
+    super(constraintName);
     expression = StringUtil.isNonBlank(expr) ? expr.trim() : null;
+    checkConstraintTemplate = StringUtil.trimToNull(sqlTemplate);
     setConstraintType(ConstraintType.Check);
 
     // this is for Postgres
@@ -102,6 +112,11 @@ public class TableConstraint
 
   public String getSql()
   {
+    if (this.checkConstraintTemplate != null)
+    {
+      return replaceTemplate();
+    }
+
     StringBuilder result = new StringBuilder(50);
 
     if (StringUtil.isNonBlank(getConstraintName()) && !isSystemName())
@@ -113,7 +128,7 @@ public class TableConstraint
 
     // Check if the returned expression already includes the CHECK keyword
     // PostgreSQL 9.0 supports "exclusion constraint which start with EXCLUDE
-    // in that case the keyword CHECK may not be added as well.
+    // in that case the keyword CHECK may not be added either.
     if (!expression.toLowerCase().startsWith("check") && !expression.toLowerCase().startsWith("exclude"))
     {
       result.append("CHECK ");
@@ -122,4 +137,20 @@ public class TableConstraint
     return result.toString();
   }
 
+  private String replaceTemplate()
+  {
+    String sql = this.checkConstraintTemplate;
+
+    String name = getConstraintName();
+    if (StringUtil.isBlank(name))
+    {
+      sql = sql.replaceFirst("(?i)CONSTRAINT\\s+" + NAME_PLACEHOLDER, "");
+    }
+    else
+    {
+      sql = sql.replace(NAME_PLACEHOLDER, name);
+    }
+    sql = sql.replace(EXPR_PLACEHOLDER, expression);
+    return sql;
+  }
 }

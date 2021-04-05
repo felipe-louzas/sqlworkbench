@@ -37,18 +37,15 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.JdbcProcedureReader;
+import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
-import workbench.db.TableIdentifier;
+import workbench.db.RoutineType;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-import workbench.db.RoutineType;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -193,7 +190,8 @@ public class InformixProcedureReader
   {
     StringBuilder sql = new StringBuilder(100);
 
-    String sysProcs = getSysProceduresTable(catalog);
+    InformixSystemTables systemTables = new InformixSystemTables(catalog, this.connection);
+    String sysProcs = systemTables.getSysProceduresTable();
 
     sql.append(
       "SELECT '' as PROCEDURE_CAT,  \n" +
@@ -256,8 +254,9 @@ public class InformixProcedureReader
 
   private DataStore retrieveColumns(ProcedureDefinition def)
   {
-    String sysProcs = getSysProceduresTable(def.getCatalog());
-    String sysCols = getSysProcColumnsTable(def.getCatalog());
+    InformixSystemTables systemTables = new InformixSystemTables(def.getCatalog(), this.connection);
+    String sysProcs = systemTables.getSysProceduresTable();
+    String sysCols = systemTables.getSysProcColumnsTable();
 
     String sql =
       "select col.paramid,  \n" +
@@ -393,25 +392,6 @@ public class InformixProcedureReader
       typeMap.put("timestamptz", Integer.valueOf(Types.TIMESTAMP));
     }
     return typeMap;
-  }
-
-  private String getSysProceduresTable(String catalog)
-  {
-    String systemSchema = getSystemSchema();
-    TableIdentifier procs = new TableIdentifier(catalog, systemSchema, "sysprocedures");
-    return procs.getFullyQualifiedName(connection);
-  }
-
-  private String getSysProcColumnsTable(String catalog)
-  {
-    String systemSchema = getSystemSchema();
-    TableIdentifier cols = new TableIdentifier(catalog, systemSchema, "sysproccolumns");
-    return cols.getFullyQualifiedName(connection);
-  }
-
-  private String getSystemSchema()
-  {
-    return connection.getDbSettings().getProperty("systemschema", "informix");
   }
 
   private static class ParamDef

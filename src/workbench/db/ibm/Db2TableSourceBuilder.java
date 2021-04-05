@@ -1,6 +1,4 @@
 /*
- * Db2TableSourceBuilder.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -31,12 +29,11 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 /**
  *

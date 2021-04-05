@@ -1,6 +1,4 @@
 /*
- * InformixSynonymReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -32,11 +30,10 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 /**
  * A class to retrieve synonym definitions from an Informix database.
@@ -64,12 +61,10 @@ public class InformixSynonymReader
   public TableIdentifier getSynonymTable(WbConnection con, String catalog, String schema, String synonymName)
     throws SQLException
   {
-    String systemSchema = con.getDbSettings().getProperty("systemschema", "informix");
-    TableIdentifier sysTabs = new TableIdentifier(catalog, systemSchema, "systables");
-    TableIdentifier synTabs = new TableIdentifier(catalog, systemSchema, "syssyntable");
+    InformixSystemTables systemTables = new InformixSystemTables(catalog, con);
 
-    String systables = sysTabs.getFullyQualifiedName(con);
-    String syntable = synTabs.getFullyQualifiedName(con);
+    String systables = systemTables.getSysTables();
+    String syntable = systemTables.getSysSynonyms();
 
     String sql =
       "select bt.owner as table_schema, \n" +

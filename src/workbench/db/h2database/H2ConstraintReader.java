@@ -1,6 +1,4 @@
 /*
- * H2ConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -28,6 +26,7 @@ import java.util.regex.Pattern;
 
 import workbench.db.AbstractConstraintReader;
 import workbench.db.DBID;
+import workbench.db.TableIdentifier;
 
 /**
  * Constraint reader for <a href="https://www.h2database.com">H2 Database</a>
@@ -76,13 +75,13 @@ public class H2ConstraintReader
   }
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return this.COLUMN_SQL;
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     return this.TABLE_SQL;
   }

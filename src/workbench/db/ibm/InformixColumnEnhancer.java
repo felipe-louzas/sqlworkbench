@@ -33,15 +33,12 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
-import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -121,12 +118,9 @@ public class InformixColumnEnhancer
   {
     String catalog = table.getTable().getRawCatalog();
 
-    String systemSchema = conn.getDbSettings().getProperty("systemschema", "informix");
-    TableIdentifier sysTabs = new TableIdentifier(catalog, systemSchema, "systables");
-    TableIdentifier sysCols = new TableIdentifier(catalog, systemSchema, "syscolumns");
-
-    String systables = sysTabs.getFullyQualifiedName(conn);
-    String syscolumns = sysCols.getFullyQualifiedName(conn);
+    InformixSystemTables systemTables = new InformixSystemTables(catalog, conn);
+    String systables = systemTables.getSysTables();
+    String syscolumns = systemTables.getSysColumns();
 
     String typeValues = conn.getDbSettings().getProperty("qualifier.typevalues", "10,14,266,270");
 

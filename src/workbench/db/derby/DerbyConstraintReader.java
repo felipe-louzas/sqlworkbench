@@ -25,6 +25,7 @@ package workbench.db.derby;
 
 import workbench.db.AbstractConstraintReader;
 import workbench.db.DBID;
+import workbench.db.TableIdentifier;
 
 /**
  * Constraint reader for the Derby database
@@ -49,13 +50,13 @@ public class DerbyConstraintReader
 
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return null;
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     return TABLE_SQL;
   }

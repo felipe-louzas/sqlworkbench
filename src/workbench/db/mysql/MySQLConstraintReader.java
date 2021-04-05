@@ -1,6 +1,4 @@
 /*
- * H2ConstraintReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -25,6 +23,7 @@ package workbench.db.mysql;
 
 import workbench.db.AbstractConstraintReader;
 import workbench.db.DBID;
+import workbench.db.TableIdentifier;
 
 /**
  * @author  Thomas Kellerer
@@ -64,7 +63,7 @@ public class MySQLConstraintReader
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     return this.TABLE_SQL;
   }
@@ -76,7 +75,7 @@ public class MySQLConstraintReader
   }
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return null;
   }

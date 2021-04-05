@@ -839,8 +839,11 @@ class ObjectCache
 
       for (Namespace nsp : schemas)
       {
-        key.setCatalog(nsp.getCatalog());
-        key.setSchema(nsp.getSchema());
+        if (nsp != null)
+        {
+          key.setCatalog(nsp.getCatalog());
+          key.setSchema(nsp.getSchema());
+        }
         TableIdentifier tbl = findInCache(key);
         if (tbl != null)
         {

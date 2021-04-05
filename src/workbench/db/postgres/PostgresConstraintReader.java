@@ -27,6 +27,7 @@ import workbench.db.AbstractConstraintReader;
 import workbench.db.ConstraintType;
 import workbench.db.IndexDefinition;
 import workbench.db.TableConstraint;
+import workbench.db.TableIdentifier;
 
 import workbench.util.CollectionUtil;
 
@@ -57,13 +58,13 @@ public class PostgresConstraintReader
 
 
   @Override
-  public String getColumnConstraintSql()
+  public String getColumnConstraintSql(TableIdentifier tbl)
   {
     return null;
   }
 
   @Override
-  public String getTableConstraintSql()
+  public String getTableConstraintSql(TableIdentifier tbl)
   {
     return TABLE_SQL;
   }

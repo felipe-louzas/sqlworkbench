@@ -493,7 +493,7 @@ public class JdbcIndexReader
     if (indexDefinition.isUniqueConstraint())
     {
       uniqueConstraint = getUniqueConstraint(table, indexDefinition);
-      if (indexDefinition.getUniqueConstraintName().equals(indexDefinition.getName()))
+      if (!indexDefinition.includeIndexForUniqueConstraint())
       {
         return uniqueConstraint;
       }

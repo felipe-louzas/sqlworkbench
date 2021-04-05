@@ -1,6 +1,4 @@
 /*
- * DB2TypeReader.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -36,6 +34,7 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
@@ -43,9 +42,6 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.StringUtil;
 
 /**
