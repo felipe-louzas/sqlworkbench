@@ -1,6 +1,4 @@
 /*
- * DataStorePrinterTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -88,6 +86,31 @@ public class DataStorePrinterTest
     ds.setValue(row, 1, Integer.valueOf(5));
     ds.setValue(row, 2, null);
     return ds;
+  }
+
+  @Test
+  public void testMarkdown()
+  {
+    DataStore ds = createTestData();
+    ds.deleteRow(1);
+    ds.deleteRow(1);
+
+    DataStorePrinter printer = new DataStorePrinter(ds);
+    printer.setUseMarkdownFormatting(true);
+    printer.setFormatColumns(true);
+
+    StringWriter sw = new StringWriter(500);
+    TextPrinter pw = TextPrinter.createPrinter(sw);
+    printer.printTo(pw);
+    String out = sw.toString();
+    String[] lines = out.split(StringUtil.LINE_TERMINATOR);
+    int linecount = lines.length;
+    assertEquals(7, linecount);
+
+    assertEquals("|DESCRIPTION          | QUANTITY | LASTNAME  |", lines[0]);
+    assertEquals("|---------------------|----------|-----------|", lines[1]);
+    assertEquals("|Very long test value |        1 | Beeblebrox|", lines[2]);
+    assertEquals("|Some Comment         |          | Some name |", lines[3]);
   }
 
   @Test

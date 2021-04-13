@@ -154,6 +154,10 @@ public abstract class ConsolePrinter
     }
     int headerWidth = 0;
     int currentCol = 0;
+    if (doFormat && useMarkdownFormatting)
+    {
+      pw.print("|");
+    }
     for (int col = 0; col < getColumnCount(); col ++)
     {
       String colName = getColumnName(col);
@@ -173,11 +177,19 @@ public abstract class ConsolePrinter
       }
       currentCol ++;
     }
+    if (doFormat && useMarkdownFormatting)
+    {
+      pw.print("|");
+    }
     pw.println();
 
     if (headerWidth > 0 && doFormat)
     {
       currentCol = 0;
+      if (doFormat && useMarkdownFormatting)
+      {
+        pw.print("|");
+      }
       // Print divider line
       for (int i=0; i < getColumnCount(); i++)
       {
@@ -196,6 +208,10 @@ public abstract class ConsolePrinter
         }
         pw.print(StringUtil.padRight("-", columnWidths.get(Integer.valueOf(i)), '-'));
         currentCol ++;
+      }
+      if (doFormat && useMarkdownFormatting)
+      {
+        pw.print("|");
       }
       pw.println();
     }
@@ -274,7 +290,6 @@ public abstract class ConsolePrinter
         pw.println(value);
       }
     }
-
   }
 
   protected String getDisplayValue(RowData row, int col)
@@ -317,6 +332,10 @@ public abstract class ConsolePrinter
       Map<Integer, String[]> continuationLines = new HashMap<>(colcount);
 
       int realColCount = 0;
+      if (doFormat && useMarkdownFormatting)
+      {
+        pw.print("|");
+      }
       for (int col = 0; col < colcount; col ++)
       {
         if (!isColumnIncluded(col)) continue;
@@ -347,6 +366,10 @@ public abstract class ConsolePrinter
           pw.print(StringUtil.escapeText(value, CharacterRange.RANGE_CONTROL));
         }
         realColCount ++;
+      }
+      if (doFormat && useMarkdownFormatting)
+      {
+        pw.print("|");
       }
       pw.println();
       printContinuationLines(pw, continuationLines);
