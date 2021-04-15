@@ -89,7 +89,9 @@ public class TextClipboardCopierTest
     contents = testClip.getContents(copier);
     data = contents.getTransferData(DataFlavor.stringFlavor);
     lines = StringUtil.getLines((String)data);
-    assertEquals("---|-----------|---------", lines.get(1));
+    assertEquals("|id | firstname | lastname|", lines.get(0));
+    assertEquals("|---|-----------|---------|", lines.get(1));
+    assertEquals("| 1 | Arthur    | Dent    |", lines.get(2));
   }
 
   @Test
