@@ -804,4 +804,10 @@ public class FileUtil
     }
   }
 
+  public static boolean fileExists(String fname)
+  {
+    if (StringUtil.isEmptyString(fname)) return false;
+    File f = new File(fname);
+    return f.exists();
+  }
 }

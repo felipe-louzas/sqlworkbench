@@ -21,9 +21,12 @@
 
 package workbench.gui.components;
 
+import java.awt.Dialog;
+import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,12 +38,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.profiles.LibraryElement;
 
+import workbench.util.FileUtil;
 import workbench.util.WbFile;
 
 /**
@@ -177,7 +182,14 @@ public class ClasspathEditor
     }
     else if (e.getSource() == btnAdd)
     {
-      selectFile();
+      if (GuiSettings.useAWTFileDialog())
+      {
+        selectFileAWT();
+      }
+      else
+      {
+        selectFile();
+      }
     }
   }
 
@@ -220,31 +232,61 @@ public class ClasspathEditor
     }
   }
 
+  private void selectFileAWT()
+  {
+    FileDialog dialog = new FileDialog((Dialog)SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("TxtWindowTitleSelectDrv"));
+    dialog.setMode(FileDialog.LOAD);
+    if (FileUtil.fileExists(lastDir))
+    {
+      dialog.setDirectory(lastDir);
+    }
+    FilenameFilter filter = (File file, String fname) ->
+    {
+      if (fname == null) return false;
+      return fname.toLowerCase().endsWith("jar") || fname.toLowerCase().endsWith("zip");
+    };
+    dialog.setFilenameFilter(filter);
+    dialog.setMultipleMode(true);
+    dialog.setVisible(true);
+    File[] files = dialog.getFiles();
+    if (files != null)
+    {
+      setSelectedFiles(files);
+    }
+  }
+
   private void selectFile()
   {
-    DefaultListModel model = (DefaultListModel)libList.getModel();
     JFileChooser jf = new WbFileChooser();
     jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     jf.setMultiSelectionEnabled(true);
+    jf.setDialogTitle(ResourceMgr.getString("TxtWindowTitleSelectDrv"));
     if (this.lastDir != null)
     {
       jf.setCurrentDirectory(new File(this.lastDir));
     }
     jf.setFileFilter(ExtensionFileFilter.getJarFileFilter());
+    jf.setDialogTitle(ResourceMgr.getString("TxtWindowTitleSelectDrv"));
     int answer = jf.showOpenDialog(SwingUtilities.getWindowAncestor(this));
     if (answer == JFileChooser.APPROVE_OPTION)
     {
       File[] selectedFiles = jf.getSelectedFiles();
-      removeSelected();
-      removeSingleInvalidEntry();
-      for (File f : selectedFiles)
-      {
-        model.addElement(new LibraryElement(new WbFile(f)));
-      }
-      lastDir = selectedFiles[0].getParent();
-      saveSettings();
-      fireLiblistChanged();
+      setSelectedFiles(selectedFiles);
     }
+  }
+
+  private void setSelectedFiles(File[] selectedFiles)
+  {
+    DefaultListModel model = (DefaultListModel)libList.getModel();
+    removeSelected();
+    removeSingleInvalidEntry();
+    for (File f : selectedFiles)
+    {
+      model.addElement(new LibraryElement(new WbFile(f)));
+    }
+    lastDir = selectedFiles[0].getParent();
+    saveSettings();
+    fireLiblistChanged();
   }
 
   private void fireLiblistChanged()

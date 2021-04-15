@@ -1,6 +1,4 @@
 /*
- * WbFileChooser.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -47,6 +45,7 @@ import workbench.gui.WbSwingUtilities;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
+import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 
 /**
@@ -83,7 +82,10 @@ public class WbFileChooser
   private void init()
   {
     addPropertyChangeListener(this);
-    putClientProperty("FileChooser.useShellFolder", GuiSettings.getUseShellFolders());
+    if (PlatformHelper.isWindows())
+    {
+      putClientProperty("FileChooser.useShellFolder", GuiSettings.getUseShellFolders());
+    }
   }
 
   public void setSettingsID(String id)

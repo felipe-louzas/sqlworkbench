@@ -40,6 +40,7 @@ import workbench.gui.sql.FileReloadType;
 
 import workbench.util.CollectionUtil;
 import workbench.util.MacOSHelper;
+import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 
 /**
@@ -1670,5 +1671,10 @@ public class GuiSettings
   public static int useMillisForDurationThreshohold()
   {
     return Settings.getInstance().getIntProperty(Settings.PROP_DURATION_MS_THRESHOLD, 100);
+  }
+
+  public static boolean useAWTFileDialog()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.filedialog.use.awt", PlatformHelper.isMacOS());
   }
 }
