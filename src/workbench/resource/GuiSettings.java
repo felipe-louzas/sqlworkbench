@@ -40,7 +40,6 @@ import workbench.gui.sql.FileReloadType;
 
 import workbench.util.CollectionUtil;
 import workbench.util.MacOSHelper;
-import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 
 /**
@@ -1675,6 +1674,6 @@ public class GuiSettings
 
   public static boolean useAWTFileDialog()
   {
-    return Settings.getInstance().getBoolProperty("workbench.gui.filedialog.use.awt", PlatformHelper.isMacOS());
+    return Settings.getInstance().getBoolProperty("workbench.gui.filedialog.use.awt", false);
   }
 }
