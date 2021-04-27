@@ -785,10 +785,10 @@ public class FileUtil
     return null;
   }
 
-  public static void createBackup(WbFile f)
+  public static File createBackup(WbFile f)
   {
-    if (f == null) return;
-    if (!f.exists()) return;
+    if (f == null) return null;
+    if (!f.exists()) return null;
 
     int maxVersions = getInstance().getMaxBackupFiles();
     String dir = getInstance().getBackupDir();
@@ -796,12 +796,13 @@ public class FileUtil
     FileVersioner version = new FileVersioner(maxVersions, dir, sep);
     try
     {
-      version.createBackup(f);
+      return version.createBackup(f);
     }
     catch (Exception e)
     {
       LogMgr.logWarning(new CallerInfo(){}, "Error when creating backup for: " + f.getAbsolutePath(), e);
     }
+    return null;
   }
 
   public static boolean fileExists(String fname)

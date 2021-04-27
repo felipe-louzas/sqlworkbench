@@ -39,7 +39,6 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -187,7 +186,6 @@ import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.FileDialogUtil;
 import workbench.util.FileUtil;
-import workbench.util.FileVersioner;
 import workbench.util.HtmlUtil;
 import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
@@ -3491,26 +3489,13 @@ public class MainWindow
     File backupFile = null;
     boolean deleteBackup = false;
     boolean restoreBackup = false;
-    boolean createTempBackup = !Settings.getInstance().getCreateWorkspaceBackup();
 
     if (Settings.getInstance().getCreateWorkspaceBackup())
     {
-      int maxVersions = Settings.getInstance().getMaxBackupFiles();
-      String dir = Settings.getInstance().getBackupDir();
-      char sep = Settings.getInstance().getFileVersionDelimiter();
-      FileVersioner version = new FileVersioner(maxVersions, dir, sep);
-      try
-      {
-        backupFile = version.createBackup(workspaceFile);
-      }
-      catch (IOException e)
-      {
-        LogMgr.logWarning(ci, "Error when creating backup file!", e);
-        createTempBackup = true;
-      }
+      backupFile = FileUtil.createBackup(workspaceFile);
     }
 
-    if (createTempBackup)
+    if (backupFile == null)
     {
       // create a backup of the current workspace in order to preserve it
       // in case something goes wrong when writing the new workspace, at least the last good version can be restored
