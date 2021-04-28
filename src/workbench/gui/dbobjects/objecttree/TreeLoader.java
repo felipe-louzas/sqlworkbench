@@ -389,7 +389,7 @@ public class TreeLoader
       else
       {
         LogMgr.logDebug(new CallerInfo(){}, "Ending DbTree transaction using rollback on connection: " + connection.getId());
-        connection.rollbackSilently(new CallerInfo(){});
+        connection.rollbackSilently(context);
       }
     }
   }
@@ -1221,7 +1221,7 @@ public class TreeLoader
       if (node.loadChildren(connection, this))
       {
         model.nodeStructureChanged(node);
-        connection.releaseSavepoint(sp);
+        connection.releaseSavepoint(sp, ci);
         return;
       }
 

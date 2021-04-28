@@ -35,10 +35,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 import workbench.interfaces.DbExecutionListener;
@@ -131,7 +129,7 @@ public class WbConnection
   private String switchedUrl;
 
   private boolean logSavepoints;
-  private final Set<Integer> usedSavepoints = new HashSet<>(2);
+  private final List<Integer> usedSavepoints = new ArrayList<>(2);
   private final List<PropertyChangeEvent> pendingEvents = new ArrayList<>();
 
   /**
@@ -841,8 +839,26 @@ public class WbConnection
     }
     finally
     {
-      usedSavepoints.remove(spId);
+      removeSavepoint(spId, context);
     }
+  }
+
+  private void removeSavepoint(int spId, CallerInfo context)
+  {
+    int index = usedSavepoints.indexOf(spId);
+    if (index < 0) return;
+
+    List<Integer> toRemove = usedSavepoints.subList(index, usedSavepoints.size());
+    if (toRemove.size() > 1)
+    {
+      String msg = "Removing savepoint ID=" + spId + " on connection [" + this.id + "] removes " + toRemove;
+      if (context != null)
+      {
+        msg += " Context: " + context;
+      }
+      LogMgr.logWarning(new CallerInfo(){}, msg);
+    }
+    toRemove.clear();
   }
 
   /**
@@ -865,7 +881,7 @@ public class WbConnection
       spId = sp.getSavepointId();
       if (!usedSavepoints.contains(spId))
       {
-        LogMgr.logWarning(new CallerInfo(){}, "Release for non existing savepoint with ID=" + spId + " on connection [" + id + "] called. Context: " + context);
+        LogMgr.logWarning(new CallerInfo(){}, "Release for non existing savepoint with ID=" + spId + " on connection [" + id + "] called, Context: " + context);
       }
       else
       {
@@ -875,11 +891,11 @@ public class WbConnection
     }
     catch (Throwable e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error releasing savepoint (context: " + context + ") for connection: " + id, e);
+      LogMgr.logError(new CallerInfo(){}, "Error releasing savepoint with ID=" + spId + " for connection: [" + id + "], context: " + context, e);
     }
     finally
     {
-      usedSavepoints.remove(spId);
+      removeSavepoint(spId, context);
     }
   }
 
