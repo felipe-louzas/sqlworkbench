@@ -259,6 +259,28 @@ public class ScriptParserTest
   }
 
   @Test
+  public void testOraAlternate()
+  {
+    String sql =
+      "alter table t1 modify (\n" +
+      "    c1 varchar2(20)\n" +
+      ")\n" +
+      "/\n" +
+      "alter table t2 modify (\n" +
+      "    c2 varchar2(42)\n" +
+      ")\n" +
+      "/\n";
+    ScriptParser p = new ScriptParser(ParserType.Oracle);
+    p.setAlternateDelimiter(DelimiterDefinition.DEFAULT_ORA_DELIMITER);
+    p.setDynamicDelimiterEnabled(true);
+    p.setScript(sql);
+    int count = p.getSize();
+    assertEquals(2, count);
+    assertTrue(p.getCommand(0).startsWith("alter table t1"));
+    assertTrue(p.getCommand(1).startsWith("alter table t2"));
+  }
+
+  @Test
   public void testOra()
   {
     String sql =

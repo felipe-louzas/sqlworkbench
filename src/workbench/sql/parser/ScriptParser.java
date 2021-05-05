@@ -718,10 +718,7 @@ public class ScriptParser
   public static ScriptParser createScriptParser(WbConnection dbConnection)
   {
     ScriptParser scriptParser = new ScriptParser(dbConnection);
-    if (scriptParser.isDynamicDelimiterEnabled())
-    {
-      scriptParser.setAlternateDelimiter(Settings.getInstance().getAlternateDelimiter(dbConnection, null));
-    }
+    scriptParser.setAlternateDelimiter(Settings.getInstance().getAlternateDelimiter(dbConnection, null));
     scriptParser.setCheckEscapedQuotes(Settings.getInstance().useNonStandardQuoteEscaping(dbConnection));
     scriptParser.setEmptyLineIsDelimiter(Settings.getInstance().getEmptyLineIsDelimiter());
     return scriptParser;
