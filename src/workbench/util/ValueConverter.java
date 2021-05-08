@@ -104,7 +104,7 @@ public class ValueConverter
   private String defaultDateFormat;
   private String defaultTimestampFormat;
   private char decimalCharacter = '.';
-
+  private String decimalGroupingChar;
   private final WbDateFormatter dateFormatter = new WbDateFormatter();
   private final WbDateFormatter timestampFormatter = new WbDateFormatter();
   private final WbDateFormatter formatter = new WbDateFormatter();
@@ -274,6 +274,11 @@ public class ValueConverter
 
     bigDecimalFalse = BigDecimal.valueOf(falseValue);
     bigDecimalTrue = BigDecimal.valueOf(trueValue);
+  }
+
+  public void setDecimalGroupingChar(String groupingChar)
+  {
+    this.decimalGroupingChar = StringUtil.trimToNull(groupingChar);
   }
 
   public char getDecimalCharacter()
@@ -896,13 +901,7 @@ public class ValueConverter
 
   private String adjustDecimalString(String input)
   {
-    if (input == null)
-    {
-      return input;
-    }
-
-    int len = input.length();
-    if (len == 0)
+    if (input == null || input.length() == 0)
     {
       return input;
     }
@@ -912,10 +911,15 @@ public class ValueConverter
       return cleanupNumberString(input);
     }
 
-    if (decimalCharacter == '.')
+    if (decimalCharacter == '.' && decimalGroupingChar == null)
     {
       // no need to search and replace the decimal character
       return input;
+    }
+
+    if (decimalGroupingChar != null)
+    {
+      input = input.replace(decimalGroupingChar, "");
     }
 
     int pos = input.lastIndexOf(this.decimalCharacter);

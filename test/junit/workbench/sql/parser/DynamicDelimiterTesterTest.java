@@ -45,8 +45,8 @@ public class DynamicDelimiterTesterTest
   @Test
   public void testWithAlternateDelimiter()
   {
-    ScriptParser parser = new ScriptParser(ParserType.Standard);
-    parser.setDynamicDelimiterEnabled(true);
+    ScriptParser parser = new ScriptParser(ParserType.Oracle);
+    parser.setDynamicDelimiterEnabled(false);
     parser.setAlternateDelimiter(DelimiterDefinition.DEFAULT_ORA_DELIMITER);
     String sql =
       "CREATE PROCEDURE foo(OUT p1 INT) \n"+
@@ -58,6 +58,8 @@ public class DynamicDelimiterTesterTest
       "/";
     parser.setScript(sql);
     assertEquals(2, parser.getSize());
+    assertTrue(parser.getCommand(0).startsWith("CREATE PROCEDURE"));
+    assertTrue(parser.getCommand(1).startsWith("create table x"));
   }
 
   @Test

@@ -1,6 +1,4 @@
 /*
- * ValueConverterTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -263,7 +261,13 @@ public class ValueConverterTest
 
     data = converter.convertValue("3.14152", Types.DECIMAL);
     BigDecimal d = (BigDecimal)data;
-    assertEquals("Wrong value", 3.14152, d.doubleValue(), 0.001);
+    assertEquals("Wrong value", 3.14152, d.doubleValue(), 0.0001);
+
+    converter.setDecimalGroupingChar(".");
+    converter.setDecimalCharacter(',');
+    data = converter.convertValue("1.234,56", Types.DECIMAL);
+    BigDecimal d2 = (BigDecimal)data;
+    assertEquals("Wrong value", 1234.56, d2.doubleValue(), 0.0001);
   }
 
   @Test

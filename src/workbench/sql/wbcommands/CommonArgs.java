@@ -1,6 +1,4 @@
 /*
- * CommonArgs.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -80,6 +78,7 @@ public class CommonArgs
   public static final String ARG_LOCALE = "locale";
   public static final String ARG_TIMESTAMP_FORMAT = "timestampFormat";
   public static final String ARG_DECIMAL_CHAR = "decimal";
+  public static final String ARG_DECIMAL_GROUPING = "decimalGroup";
   public static final String ARG_NUMERIC_TRUE = "numericTrue";
   public static final String ARG_NUMERIC_FALSE = "numericFalse";
   public static final String ARG_FALSE_LITERALS = "literalsFalse";
@@ -332,6 +331,7 @@ public class CommonArgs
   {
     cmdLine.addArgument(ARG_AUTO_BOOLEAN, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_DECIMAL_CHAR);
+    cmdLine.addArgument(ARG_DECIMAL_GROUPING);
     if (includeDateFormats)
     {
       cmdLine.addArgument(ARG_DATE_FORMAT);
@@ -407,6 +407,8 @@ public class CommonArgs
 
     String decimal = cmdLine.getValue(ARG_DECIMAL_CHAR);
     if (decimal != null) converter.setDecimalCharacter(decimal.charAt(0));
+    String groupingChar = cmdLine.getValue(ARG_DECIMAL_GROUPING);
+    if (groupingChar != null) converter.setDecimalGroupingChar(groupingChar);
 
     List<String> falseValues = cmdLine.getListValue(ARG_FALSE_LITERALS);
     List<String> trueValues = cmdLine.getListValue(ARG_TRUE_LITERALS);
