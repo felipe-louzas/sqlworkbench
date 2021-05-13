@@ -49,6 +49,7 @@ import workbench.ssh.SshManager;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.WbFilePicker;
 
+import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
@@ -108,6 +109,11 @@ public class SshHostConfigPanel
     keyPassFile.setAllowMultiple(false);
     keyPassFile.setLastDirProperty("workbench.ssh.keypass.lastdir");
     keyPassFile.setToolTipText(labelKeyPass.getToolTipText());
+    if (!PlatformHelper.isWindows())
+    {
+      // On Linux and MacOS keypass files are often stored in a hidden directory .ssh
+      keyPassFile.setShowHiddenFiles(true);
+    }
   }
 
   public void setValidator(Validator validator)

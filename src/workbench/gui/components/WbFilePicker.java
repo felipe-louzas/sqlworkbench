@@ -61,6 +61,7 @@ public class WbFilePicker
   private String lastDirProperty;
   private boolean selectDirectory;
   private boolean showSaveAsDialog;
+  private boolean showHiddenFiles;
 
   public WbFilePicker()
   {
@@ -72,6 +73,11 @@ public class WbFilePicker
     this.showSaveAsDialog = saveAsDialog;
     initComponents();
     WbSwingUtilities.adjustButtonWidth(selectFileButton,22,22);
+  }
+
+  public void setShowHiddenFiles(boolean flag)
+  {
+    this.showHiddenFiles = flag;
   }
 
   public void setSelectDirectoryOnly(boolean flag)
@@ -197,6 +203,7 @@ public class WbFilePicker
       {
         jf.setFileSelectionMode(JFileChooser.FILES_ONLY);
         jf.setMultiSelectionEnabled(allowMultiple);
+        jf.setFileHidingEnabled(!this.showHiddenFiles);
         if (this.lastDir != null)
         {
           jf.setCurrentDirectory(new File(this.lastDir));
@@ -217,7 +224,7 @@ public class WbFilePicker
       {
         answer = jf.showOpenDialog(SwingUtilities.getWindowAncestor(this));
       }
-      
+
       if (answer == JFileChooser.APPROVE_OPTION)
       {
         if (this.allowMultiple)
