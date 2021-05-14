@@ -34,7 +34,6 @@ import javax.crypto.spec.SecretKeySpec;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-
 /**
  * @author  Thomas Kellerer
  */
@@ -44,36 +43,42 @@ public class WbAESCipher
   private static final byte[] SALT = new byte[] {42,10,33,17,8,52,-17,19,26,65,-42,17,-88};
   private static final byte[] IV = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  private Cipher cipher;
-  private IvParameterSpec ivspec;
-  private SecretKeySpec secretKey;
+  private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
+  private Cipher encrypter;
+  private Cipher decrypter;
 
   public WbAESCipher(String password)
   {
+    long start = System.currentTimeMillis();
     try
     {
-      this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-      this.ivspec = new IvParameterSpec(IV);
+      decrypter = Cipher.getInstance(ALGORITHM);
+      encrypter = Cipher.getInstance(ALGORITHM);
+      IvParameterSpec ivspec = new IvParameterSpec(IV);
       SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
       KeySpec spec = new PBEKeySpec(password.toCharArray(), SALT, 65536, 256);
       SecretKey tmp = factory.generateSecret(spec);
-      this.secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+      SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+      decrypter.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
+      encrypter.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
     }
     catch (Exception e)
     {
       LogMgr.logWarning(new CallerInfo(){}, "No encryption available!", e);
     }
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Initializing WbAESCipher took " + duration + "ms");
   }
 
   @Override
   public String decryptString(String toDecrypt)
   {
-    if (toDecrypt == null) return toDecrypt;
+    if (StringUtil.isEmptyString(toDecrypt)) return toDecrypt;
+
     try
     {
-      cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
       byte[] decoded = Base64.getDecoder().decode(toDecrypt);
-      byte[] decrypted = cipher.doFinal(decoded);
+      byte[] decrypted = decrypter.doFinal(decoded);
       return new String(decrypted, "UTF-8");
     }
     catch (Exception e)
@@ -86,13 +91,11 @@ public class WbAESCipher
   @Override
   public String encryptString(String toEncrypt)
   {
-    if (toEncrypt == null) return null;
-    if (cipher == null) return toEncrypt;
+    if (StringUtil.isEmptyString(toEncrypt)) return toEncrypt;
 
     try
     {
-      cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-      byte[] encrypted = cipher.doFinal(toEncrypt.getBytes("UTF-8"));
+      byte[] encrypted = encrypter.doFinal(toEncrypt.getBytes("UTF-8"));
       return Base64.getEncoder().encodeToString(encrypted);
     }
     catch (Exception e)

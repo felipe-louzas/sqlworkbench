@@ -1,6 +1,4 @@
 /*
- * MacroExpander.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -128,7 +126,7 @@ public class MacroExpander
     if (start < end && start >= 0)
     {
       String word = line.substring(start, end);
-      String replacement = getReplacement(word);
+      String replacement = getReplacement(word.trim());
       if (replacement != null)
       {
         insertMacroText(replacement, start, end);
@@ -203,7 +201,7 @@ public class MacroExpander
 
   private boolean shouldSelect(String replacement)
   {
-    return replacement.indexOf(SELECT_PLACEHOLDER) > -1;
+    return replacement.contains(SELECT_PLACEHOLDER);
   }
 
 }

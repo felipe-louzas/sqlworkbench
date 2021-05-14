@@ -102,15 +102,17 @@ public class GlobalPasswordManager
   {
     List<ConnectionProfile> profiles = ConnectionMgr.getInstance().getProfiles();
 
+    long start = System.currentTimeMillis();
+
     WbAESCipher newCipher = null;
     if (newPassword != null)
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Applying new master password");
+      LogMgr.logInfo(new CallerInfo(){}, "Applying new master password");
       newCipher = new WbAESCipher(newPassword);
     }
     else
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Removing master password");
+      LogMgr.logInfo(new CallerInfo(){}, "Removing master password");
     }
 
     for (ConnectionProfile profile : profiles)
@@ -129,13 +131,14 @@ public class GlobalPasswordManager
         }
         adjustSshPassword(profile.getSshHostConfig(), newCipher);
       }
-
-      List<SshHostConfig> configs = SshConfigMgr.getDefaultInstance().getGlobalConfigs();
-      for (SshHostConfig config : configs)
-      {
-        adjustSshPassword(config, newCipher);
-      }
     }
+
+    List<SshHostConfig> configs = SshConfigMgr.getDefaultInstance().getGlobalConfigs();
+    for (SshHostConfig config : configs)
+    {
+      adjustSshPassword(config, newCipher);
+    }
+
     this.masterCipher = newCipher;
     if (masterCipher != null)
     {
@@ -145,6 +148,8 @@ public class GlobalPasswordManager
     {
       Settings.getInstance().setEncryptedMasterPassword(null);
     }
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Applying new master password took " + duration + "ms");
   }
 
 

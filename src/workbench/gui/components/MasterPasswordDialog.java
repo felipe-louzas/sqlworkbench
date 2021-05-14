@@ -37,7 +37,6 @@ import workbench.resource.Settings;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -83,6 +82,17 @@ public class MasterPasswordDialog
     WbSwingUtilities.makeEqualHeight(pwdInput, showPwd);
     showRepeat.setMargin(pwdInput.getMargin());
     WbSwingUtilities.makeEqualHeight(repeatPwd, showRepeat);
+
+    WbTraversalPolicy policy = new WbTraversalPolicy();
+    policy.addComponent(pwdInput);
+    policy.addComponent(repeatPwd);
+    policy.addComponent(okButton);
+    policy.addComponent(cancelButton);
+    policy.addComponent(showPwd);
+    policy.addComponent(showRepeat);
+    policy.setDefaultComponent(pwdInput);
+    setFocusCycleRoot(false);
+    setFocusTraversalPolicy(policy);
   }
 
   public boolean doRemoveMasterPassword()
