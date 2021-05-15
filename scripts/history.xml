@@ -4,7 +4,7 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
 
-  <release build="-1" date="2021-03-14">
+  <release build="-1" date="2021-05-15">
     <entry dev-build="5" type="enh">WbImport now allows to specify a grouping character for importing numbers formatted with one</entry>
     <entry dev-build="5" type="enh">For Informix, unique and check constraint are not correctly included in the generated DDL.</entry>
     <entry dev-build="5" type="enh">WbImport can now read directly from GZipped files.</entry>
@@ -21,6 +21,7 @@
     <entry dev-build="1" type="enh">For WbExport, it's now possible to specify the literals to be used for boolean values</entry>
     <entry dev-build="1" type="enh">When using "Save data as..." it's now possible to include column comments the way -enableComments is working for WbExport</entry>
     <entry dev-build="1" type="enh">It's now possible to use an external pager when running in console mode</entry>
+    <entry dev-build="5" type="fix">Setting a (new) master password did not work if global SSH passwords were defined</entry>
     <entry dev-build="5" type="fix">For Oracle, using the alternate delimiter sometimes didn't work.</entry>
     <entry dev-build="5" type="fix">Fixed startup problems with the Windows launcher and Java 16.</entry>
     <entry dev-build="4" type="fix">Resetting a "separate connection" in a panel of the main window did not longer work if the DbTree was enabled.</entry>
