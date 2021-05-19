@@ -431,14 +431,15 @@ public class OracleProcedureReader
       "    from all_procedures ap \n" +
       "      join all_objects ao on ap.object_name = ao.object_name and ap.owner = ao.owner \n" +
       "      left join (\n" +
-      "        select owner, package_name, object_name, count(*) as anz \n" +
+      "        select owner, package_name, object_name, overload, count(*) as anz \n" +
       "        from all_arguments \n" +
       "        where in_out = 'OUT' \n" +
       "          and argument_name is null \n" +
-      "        group by owner, package_name, object_name \n" +
+      "        group by owner, package_name, object_name, overload \n" +
       "      ) aa on aa.owner = ap.owner \n" +
       "          and aa.package_name = ap.object_name \n" +
       "          and aa.object_name = ap.procedure_name \n" +
+      "          and aa.overload = ap.overload \n" +
       "    where ao.object_type IN ('PACKAGE BODY', 'PACKAGE', 'TYPE', 'OBJECT TYPE') \n" +
       "      and ap.procedure_name is not null \n" +
       "      and ap.object_name    is not null \n" +
