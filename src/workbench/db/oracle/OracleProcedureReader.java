@@ -439,7 +439,7 @@ public class OracleProcedureReader
       "      ) aa on aa.owner = ap.owner \n" +
       "          and aa.package_name = ap.object_name \n" +
       "          and aa.object_name = ap.procedure_name \n" +
-      "          and aa.overload = ap.overload \n" +
+      "          and ((aa.overload = ap.overload) or (ap.overload is null and aa.overload is null)) \n" +
       "    where ao.object_type IN ('PACKAGE BODY', 'PACKAGE', 'TYPE', 'OBJECT TYPE') \n" +
       "      and ap.procedure_name is not null \n" +
       "      and ap.object_name    is not null \n" +
@@ -498,9 +498,8 @@ public class OracleProcedureReader
         String remark = rs.getString("REMARKS");
         String overloadIndicator = rs.getString("OVERLOAD_INDEX");
         String pipelined = rs.getString("PIPELINED");
-        int type = rs.getInt("PROCEDURE_TYPE");
-        String status = rs.getString("STATUS");
 
+        int type = rs.getInt("PROCEDURE_TYPE");
         Integer iType;
         if (rs.wasNull() || type == DatabaseMetaData.procedureResultUnknown)
         {
@@ -511,6 +510,7 @@ public class OracleProcedureReader
         {
           iType = Integer.valueOf(type);
         }
+        String status = rs.getString("STATUS");
         ProcedureDefinition def = ProcedureDefinition.createOracleDefinition(owner, procedureName, packageName, type, remark);
         def.setOracleOverloadIndex(overloadIndicator);
         if ("YES".equals(pipelined))
