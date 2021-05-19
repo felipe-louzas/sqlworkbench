@@ -1,6 +1,4 @@
 /*
- * WbAbout.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -25,13 +23,16 @@ package workbench.sql.wbcommands.console;
 
 import java.sql.SQLException;
 
-import workbench.db.ConnectionInfoBuilder;
-import workbench.db.ConnectionMgr;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
+import workbench.db.ConnectionInfoBuilder;
+import workbench.db.ConnectionMgr;
+
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+
 import workbench.util.MemoryWatcher;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;

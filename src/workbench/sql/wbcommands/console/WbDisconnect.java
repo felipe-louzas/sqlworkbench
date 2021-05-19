@@ -1,6 +1,4 @@
 /*
- * WbDisconnect.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -26,6 +24,7 @@ package workbench.sql.wbcommands.console;
 import java.sql.SQLException;
 
 import workbench.RunMode;
+
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
 

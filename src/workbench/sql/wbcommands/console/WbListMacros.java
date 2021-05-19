@@ -1,6 +1,4 @@
 /*
- * WbListProfiles.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -39,7 +37,6 @@ import workbench.sql.macros.MacroDefinition;
 import workbench.sql.macros.MacroGroup;
 import workbench.sql.macros.MacroManager;
 import workbench.sql.macros.MacroStorage;
-
 
 /**
  * List all defined profiles

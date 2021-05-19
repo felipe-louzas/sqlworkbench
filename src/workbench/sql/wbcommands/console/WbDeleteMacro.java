@@ -1,6 +1,4 @@
 /*
- * WbListProfiles.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -33,7 +31,6 @@ import workbench.sql.macros.MacroStorage;
 
 import workbench.util.ArgumentParser;
 import workbench.util.StringUtil;
-
 
 /**
  * Create a new macro.

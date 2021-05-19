@@ -1,6 +1,4 @@
 /*
- * WbDisplay.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -28,8 +26,10 @@ import java.sql.SQLException;
 import workbench.RunMode;
 import workbench.console.ConsoleSettings;
 import workbench.resource.Settings;
+
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+
 import workbench.util.StringUtil;
 
 /**
