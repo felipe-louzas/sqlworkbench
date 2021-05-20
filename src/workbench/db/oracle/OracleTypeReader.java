@@ -36,15 +36,13 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -162,7 +160,7 @@ public class OracleTypeReader
     List<OracleObjectType> result = new ArrayList<>();
     try
     {
-      stmt = con.getSqlConnection().prepareStatement(select.toString());
+      stmt = OracleUtils.prepareQuery(con, select.toString());
       if (schemaIndex > -1)
       {
         stmt.setString(schemaIndex, schema);

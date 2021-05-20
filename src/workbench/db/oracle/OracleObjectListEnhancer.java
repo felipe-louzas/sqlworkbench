@@ -33,12 +33,12 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -131,7 +131,7 @@ public class OracleObjectListEnhancer
     LogMgr.logMetadataSql(new CallerInfo(){}, "snapshots", sql, schema);
     try
     {
-      stmt = connection.getSqlConnection().prepareStatement(sql);
+      stmt = OracleUtils.prepareQuery(connection, sql);
       if (schema != null)
       {
         stmt.setString(1, schema);

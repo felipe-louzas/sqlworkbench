@@ -154,7 +154,7 @@ public class OracleUniqueConstraintReader
     DataStore result = null;
     try
     {
-      stmt = con.createStatement();
+      stmt = OracleUtils.createStatement(con);
       rs = stmt.executeQuery(sql.toString());
       result = new DataStore(rs, true);
     }
@@ -212,7 +212,7 @@ public class OracleUniqueConstraintReader
     LogMgr.logMetadataSql(new CallerInfo(){}, "constraints", sql, owner);
     try
     {
-      pstmt = con.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(con, sql);
       pstmt.setString(1, owner);
       rs = pstmt.executeQuery();
       DataStore ds = new DataStore(rs, true);

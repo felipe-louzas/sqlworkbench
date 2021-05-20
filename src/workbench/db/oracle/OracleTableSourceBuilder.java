@@ -36,6 +36,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DependencyNode;
 import workbench.db.DropType;
 import workbench.db.IndexDefinition;
+import workbench.db.JdbcUtils;
 import workbench.db.PkDefinition;
 import workbench.db.TableGrantReader;
 import workbench.db.TableIdentifier;
@@ -44,9 +45,6 @@ import workbench.db.WbConnection;
 import workbench.db.sqltemplates.TemplateHandler;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -189,7 +187,7 @@ public class OracleTableSourceBuilder
     final CallerInfo ci = new CallerInfo(){};
     try
     {
-      pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(dbConnection, sql);
       pstmt.setString(1, tbl.getRawTableName());
       if (!useUserTables)
       {
@@ -462,7 +460,7 @@ public class OracleTableSourceBuilder
     try
     {
       boolean first = true;
-      stmt = this.dbConnection.createStatementForQuery();
+      stmt = OracleUtils.createStatement(dbConnection);
       rs = stmt.executeQuery(sql);
       while (rs.next())
       {
@@ -632,7 +630,7 @@ public class OracleTableSourceBuilder
     final CallerInfo ci = new CallerInfo(){};
     try
     {
-      pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(dbConnection, sql);
       pstmt.setString(1, tbl.getSchema());
       pstmt.setString(2, tbl.getTableName());
       LogMgr.logMetadataSql(ci, "flashback archive information", sql, tbl.getSchema(), tbl.getTableName());
@@ -733,7 +731,7 @@ public class OracleTableSourceBuilder
     final CallerInfo ci = new CallerInfo(){};
     try
     {
-      pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(dbConnection, sql);
       pstmt.setString(1, tbl.getTableName());
       pstmt.setString(2, tbl.getSchema());
       LogMgr.logMetadataSql(ci, "nested table", sql, tbl.getTableName(), tbl.getSchema());
@@ -914,7 +912,7 @@ public class OracleTableSourceBuilder
 
     try
     {
-      pstmt = dbConnection.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(dbConnection, sql);
       pstmt.setString(1, tbl.getRawTableName());
       if (!useUserTables)
       {
@@ -1002,7 +1000,7 @@ public class OracleTableSourceBuilder
     String column = null;
     try
     {
-      pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(dbConnection, sql);
       pstmt.setString(1, pkIndexName);
       pstmt.setString(2, owner);
       pstmt.setString(3, tableName);
@@ -1239,7 +1237,7 @@ public class OracleTableSourceBuilder
     ResultSet rs = null;
     try
     {
-      pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(dbConnection, sql);
       pstmt.setString(1, table.getRawSchema());
       pstmt.setString(2, table.getRawTableName());
 

@@ -38,15 +38,13 @@ import workbench.db.DbSettings;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.PkDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -237,7 +235,7 @@ public class OracleIndexReader
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "index information ", sql, tbl.getRawTableName(), tbl.getRawSchema());
 
-    this.indexStatement = this.metaData.getWbConnection().getSqlConnection().prepareStatement(sql);
+    this.indexStatement = OracleUtils.prepareQuery(this.metaData.getWbConnection(), sql);
 
     this.indexStatement.setString(1,table.getRawTableName());
     if (table.getSchema() != null && !useUserTables) this.indexStatement.setString(2, table.getRawSchema());
@@ -450,7 +448,7 @@ public class OracleIndexReader
     Statement stmt = null;
     try
     {
-      stmt = this.metaData.getWbConnection().createStatementForQuery();
+      stmt = OracleUtils.createStatement(this.metaData.getWbConnection());
       rs = stmt.executeQuery(sql.toString());
       while (rs.next())
       {

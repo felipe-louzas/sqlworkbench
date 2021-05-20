@@ -40,7 +40,6 @@ import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 
 import workbench.util.ExceptionUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -260,7 +259,7 @@ public class OracleMViewReader
     {
       LogMgr.logMetadataSql(ci, "MVIEW details", sql, mview.getRawSchema(), mview.getRawTableName());
 
-      stmt = dbConnection.getSqlConnection().prepareStatement(sql);
+      stmt = OracleUtils.prepareQuery(dbConnection, sql);
       stmt.setString(1, mview.getRawSchema());
       stmt.setString(2, mview.getRawTableName());
 

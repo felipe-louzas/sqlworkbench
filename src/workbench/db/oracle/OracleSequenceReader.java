@@ -32,6 +32,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.TableIdentifier;
@@ -39,8 +40,6 @@ import workbench.db.WbConnection;
 
 import workbench.storage.ColumnRemover;
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -132,7 +131,7 @@ public class OracleSequenceReader
     DataStore result = null;
     try
     {
-      stmt = this.connection.createStatement();
+      stmt = OracleUtils.createStatement(connection);
       rs = stmt.executeQuery(sql.toString());
       result = new DataStore(rs, this.connection, true);
     }

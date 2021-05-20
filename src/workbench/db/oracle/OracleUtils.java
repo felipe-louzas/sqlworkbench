@@ -21,6 +21,7 @@
  */
 package workbench.db.oracle;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,14 +34,12 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionProfile;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -426,6 +425,11 @@ public class OracleUtils
     return Settings.getInstance().getBoolProperty(PROP_FIX_PLSQL_RESULTSET, true);
   }
 
+  public static int getInternalFetchSize()
+  {
+    return Settings.getInstance().getIntProperty("workbench.db.oracle.internal.fetchsize", 250);
+  }
+
   public static String[] adjustTableTypes(WbConnection dbConnection, String[] types)
   {
     // When TABLE and MATERIALIZED VIEW is specified for getTables() the Oracle driver returns
@@ -449,5 +453,33 @@ public class OracleUtils
     return SqlUtil.getResultData(conn,
       "select con_id, name, open_mode, restricted \n" +
       "from gv$pdbs", false);
+  }
+
+  public static Statement createStatement(WbConnection conn)
+    throws SQLException
+  {
+    Statement stmt = conn.createStatement();
+    setFetchSize(stmt);
+    return stmt;
+  }
+
+  public static PreparedStatement prepareQuery(WbConnection conn, String sql)
+    throws SQLException
+  {
+    PreparedStatement stmt = conn.getSqlConnection().prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+    setFetchSize(stmt);
+    return stmt;
+  }
+
+  private static void setFetchSize(Statement stmt)
+    throws SQLException
+  {
+    if (stmt == null) return;
+    
+    int fetchSize = getInternalFetchSize();
+    if (fetchSize > 0)
+    {
+      stmt.setFetchSize(fetchSize);
+    }
   }
 }

@@ -29,10 +29,10 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -67,7 +67,7 @@ public class OracleExternalTableReader
 
     try
     {
-      pstmt = conn.getSqlConnection().prepareStatement(baseSql);
+      pstmt = OracleUtils.prepareQuery(conn, baseSql);
       pstmt.setString(1, table.getRawSchema());
       pstmt.setString(2, table.getRawTableName());
       rs = pstmt.executeQuery();

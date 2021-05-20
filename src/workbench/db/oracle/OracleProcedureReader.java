@@ -184,7 +184,7 @@ public class OracleProcedureReader
 
       synchronized (connection)
       {
-        stmt = this.connection.getSqlConnection().prepareStatement(sql);
+        stmt = OracleUtils.prepareQuery(connection, sql);
         stmt.setString(1, packageName);
         stmt.setString(2, owner);
         stmt.setString(3, "PACKAGE");
@@ -487,7 +487,7 @@ public class OracleProcedureReader
     DataStore ds = buildProcedureListDataStore(this.connection.getMetadata(), false);
     try
     {
-      stmt = this.connection.createStatementForQuery();
+      stmt = OracleUtils.createStatement(connection);
       rs = stmt.executeQuery(sql);
 
       while (rs.next())
@@ -573,7 +573,7 @@ public class OracleProcedureReader
     ResultSet rs = null;
     try
     {
-      stmt = connection.createStatementForQuery();
+      stmt = OracleUtils.createStatement(connection);
       rs = stmt.executeQuery(query);
       while (rs.next())
       {
@@ -758,5 +758,4 @@ public class OracleProcedureReader
     }
     return procSrc;
   }
-
 }

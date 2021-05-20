@@ -29,13 +29,12 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.PartitionLister;
 import workbench.db.SubPartitionState;
 import workbench.db.TableIdentifier;
 import workbench.db.TablePartition;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 
@@ -114,7 +113,7 @@ public class OraclePartitionLister
     long start = System.currentTimeMillis();
     try
     {
-      pstmt = conn.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(conn, sql);
       LogMgr.logMetadataSql(new CallerInfo(){}, "sub-partitions", sql, baseTable.getRawSchema(), baseTable.getRawTableName(), mainPartName);
 
       pstmt.setString(1, baseTable.getRawSchema());

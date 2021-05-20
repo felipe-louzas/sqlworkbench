@@ -21,7 +21,6 @@
  */
 package workbench.db.oracle;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,7 +32,6 @@ import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
 
 /**
  * A class to read information about a partitioned table in Oracle
@@ -202,7 +200,7 @@ public class OracleTablePartition
     TableIdentifier tbl = (TableIdentifier)object;
     try
     {
-      pstmt = conn.getSqlConnection().prepareStatement(sql);
+      pstmt = OracleUtils.prepareQuery(conn, sql);
       LogMgr.logMetadataSql(new CallerInfo(){}, "sub-partition templates", sql, object.getSchema(), object.getObjectName());
 
       pstmt.setString(1, tbl.getRawSchema());

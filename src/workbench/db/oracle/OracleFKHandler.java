@@ -29,13 +29,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import workbench.log.CallerInfo;
-
-import workbench.db.DefaultFKHandler;
-import workbench.db.TableIdentifier;
-import workbench.db.WbConnection;
-
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
+import workbench.db.DefaultFKHandler;
+import workbench.db.JdbcUtils;
+import workbench.db.TableIdentifier;
+import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 import workbench.storage.SortDefinition;
@@ -43,7 +43,6 @@ import workbench.storage.filter.AndExpression;
 import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.util.CaseInsensitiveComparator;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -188,7 +187,7 @@ public class OracleFKHandler
     DataStore result = null;
     try
     {
-      retrievalStatement = this.getConnection().getSqlConnection().prepareStatement(sql.toString());
+      retrievalStatement = OracleUtils.prepareQuery(this.getConnection(), sql.toString());
       retrievalStatement.setString(1, tbl.getRawTableName());
       retrievalStatement.setString(2, tbl.getRawSchema());
       rs = retrievalStatement.executeQuery();
@@ -271,7 +270,7 @@ public class OracleFKHandler
     DataStore result = null;
     try
     {
-      retrievalStatement = this.getConnection().getSqlConnection().prepareStatement(sql.toString());
+      retrievalStatement = OracleUtils.prepareQuery(this.getConnection(), sql.toString());
       retrievalStatement.setString(1, tbl.getRawTableName());
       retrievalStatement.setString(2, tbl.getRawSchema());
       rs = retrievalStatement.executeQuery();
@@ -356,7 +355,7 @@ public class OracleFKHandler
     try
     {
       long start = System.currentTimeMillis();
-      retrievalStatement = this.getConnection().getSqlConnection().prepareStatement(sql.toString());
+      retrievalStatement = OracleUtils.prepareQuery(this.getConnection(), sql.toString());
       if (addOwner)
       {
         retrievalStatement.setString(1, owner);

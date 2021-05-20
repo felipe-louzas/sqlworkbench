@@ -36,8 +36,6 @@ import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
-
 /**
  *
  * @author  Thomas Kellerer
@@ -103,7 +101,7 @@ public class OracleSynonymReader
     TableIdentifier result = null;
     try
     {
-      stmt = con.getSqlConnection().prepareStatement(sql);
+      stmt = OracleUtils.prepareQuery(con, sql);
       stmt.setString(1, synonym);
       stmt.setString(2, owner);
       stmt.setString(3, synonym);

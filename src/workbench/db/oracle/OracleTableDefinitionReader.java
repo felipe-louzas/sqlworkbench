@@ -21,7 +21,6 @@
  */
 package workbench.db.oracle;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
@@ -42,11 +43,7 @@ import workbench.db.PkDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.log.LogMgr;
-import workbench.resource.Settings;
-
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -450,7 +447,7 @@ public class OracleTableDefinitionReader
       }
     }
 
-    PreparedStatement stmt = dbConnection.getSqlConnection().prepareStatement(sql);
+    PreparedStatement stmt = OracleUtils.prepareQuery(dbConnection, sql);
     stmt.setString(1, table);
     if (!useUserTables)
     {
@@ -489,7 +486,7 @@ public class OracleTableDefinitionReader
     {
       synchronized (dbConnection)
       {
-        stmt = dbConnection.getSqlConnection().prepareStatement(sql);
+        stmt = OracleUtils.prepareQuery(dbConnection, sql);
         stmt.setString(1, dblink);
         stmt.setString(2, owner);
         rs = stmt.executeQuery();
