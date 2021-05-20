@@ -1,6 +1,4 @@
 /*
- * WbGenerateScript.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -29,6 +27,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import workbench.interfaces.ScriptGenerationMonitor;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.DbExplorerSettings;
+import workbench.resource.ResourceMgr;
+
 import workbench.db.DbObject;
 import workbench.db.ObjectScripter;
 import workbench.db.ProcedureDefinition;
@@ -37,17 +41,11 @@ import workbench.db.TriggerDefinition;
 import workbench.db.TriggerReader;
 import workbench.db.TriggerReaderFactory;
 
-import workbench.interfaces.ScriptGenerationMonitor;
-import workbench.log.CallerInfo;
-import workbench.log.LogMgr;
-import workbench.resource.DbExplorerSettings;
-import workbench.resource.ResourceMgr;
+import workbench.storage.RowActionMonitor;
 
 import workbench.sql.DelimiterDefinition;
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
-
-import workbench.storage.RowActionMonitor;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;

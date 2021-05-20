@@ -1,6 +1,4 @@
 /*
- * WbDataDiff.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -379,7 +377,7 @@ public class WbDataDiff
 
     boolean singleFile = cmdLine.getBoolean(PARAM_SINGLE_FILE, false);
     dataDiff.setWriteHeader(!singleFile);
-    
+
     try
     {
       for (int i=0; i < tableCount; i++)

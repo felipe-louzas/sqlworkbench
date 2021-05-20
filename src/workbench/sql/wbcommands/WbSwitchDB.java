@@ -21,7 +21,6 @@
  */
 package workbench.sql.wbcommands;
 
-
 import java.sql.SQLException;
 
 import workbench.resource.ResourceMgr;

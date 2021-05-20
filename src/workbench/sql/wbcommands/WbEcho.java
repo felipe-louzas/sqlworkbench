@@ -18,7 +18,6 @@
  *
  * To contact the author please send an email to: support@sql-workbench.eu
  */
-
 package workbench.sql.wbcommands;
 
 import java.io.IOException;

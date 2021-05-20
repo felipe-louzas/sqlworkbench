@@ -1,6 +1,4 @@
 /*
- * MySQLShow.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -28,13 +26,12 @@ import java.util.List;
 
 import workbench.storage.DataStore;
 
-import workbench.sql.parser.ParserType;
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
 import workbench.sql.lexer.SQLToken;
-
+import workbench.sql.parser.ParserType;
 
 /**
  * A class to display the output of MySQL's "show engine innodb status" as a message

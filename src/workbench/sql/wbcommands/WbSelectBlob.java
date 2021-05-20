@@ -1,6 +1,4 @@
 /*
- * WbSelectBlob.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -38,6 +36,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.BlobAccessType;
+import workbench.db.JdbcUtils;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
@@ -47,7 +46,6 @@ import workbench.sql.lexer.SQLToken;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 

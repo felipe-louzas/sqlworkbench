@@ -1,6 +1,4 @@
 /*
- * WbSetProp.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -44,7 +42,6 @@ import workbench.util.ArgumentParser;
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
-
 
 /**
  *

@@ -1,6 +1,4 @@
 /*
- * ColumnWidthDefinition.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -26,7 +24,9 @@ package workbench.sql.wbcommands;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import workbench.db.ColumnIdentifier;
+
 import workbench.util.StringUtil;
 
 /**

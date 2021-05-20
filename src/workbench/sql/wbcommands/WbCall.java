@@ -34,22 +34,28 @@ import java.util.Map;
 
 import workbench.WbManager;
 import workbench.console.ConsolePrompter;
-
-import workbench.db.DbMetadata;
-import workbench.db.ProcedureDefinition;
-import workbench.db.ProcedureReader;
-import workbench.db.oracle.DbmsOutput;
-import workbench.db.oracle.OracleProcedureReader;
-import workbench.db.oracle.OracleUtils;
-
-import workbench.gui.preparedstatement.ParameterEditor;
-
 import workbench.interfaces.StatementParameterPrompter;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
+import workbench.db.ProcedureDefinition;
+import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
+import workbench.db.oracle.DbmsOutput;
+import workbench.db.oracle.OracleProcedureReader;
+import workbench.db.oracle.OracleUtils;
+
+import workbench.gui.preparedstatement.ParameterEditor;
+
+import workbench.storage.DataStore;
+import workbench.storage.ResultInfo;
+import workbench.storage.reader.CallableStmtResultHolder;
+import workbench.storage.reader.RowDataReader;
+import workbench.storage.reader.RowDataReaderFactory;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
@@ -59,19 +65,9 @@ import workbench.sql.lexer.SQLToken;
 import workbench.sql.preparedstatement.ParameterDefinition;
 import workbench.sql.preparedstatement.StatementParameters;
 
-import workbench.storage.DataStore;
-import workbench.storage.ResultInfo;
-import workbench.storage.reader.CallableStmtResultHolder;
-import workbench.storage.reader.RowDataReader;
-import workbench.storage.reader.RowDataReaderFactory;
-
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.SqlParsingUtil;
-
-import workbench.db.JdbcUtils;
-import workbench.db.RoutineType;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -246,6 +242,11 @@ public class WbCall
         }
       }
 
+      int fetchSize = currentConnection.getFetchSize();
+      if (fetchSize > 0 && cstmt != null)
+      {
+        cstmt.setFetchSize(fetchSize);
+      }
       boolean hasResult = (cstmt != null ? cstmt.execute() : false);
       result.setSuccess();
 

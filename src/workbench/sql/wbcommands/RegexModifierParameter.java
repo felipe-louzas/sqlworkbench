@@ -1,6 +1,4 @@
 /*
- * RegexModifierParameter.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -26,10 +24,9 @@ package workbench.sql.wbcommands;
 import java.util.regex.PatternSyntaxException;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.exporter.RegexReplacingModifier;
-
-import workbench.log.LogMgr;
 
 import workbench.util.ArgumentParser;
 import workbench.util.StringUtil;

@@ -1,6 +1,4 @@
 /*
- * SchemaCopy.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -34,7 +32,10 @@ import java.util.Map;
 
 import workbench.AppArguments;
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
 
+import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
 import workbench.db.DropType;
 import workbench.db.TableIdentifier;
@@ -45,14 +46,9 @@ import workbench.db.datacopy.DataCopier;
 import workbench.db.importer.DataReceiver;
 import workbench.db.importer.TableDependencySorter;
 
-import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
-
-import workbench.db.DbObjectFinder;
+import workbench.storage.RowActionMonitor;
 
 import workbench.sql.StatementRunnerResult;
-
-import workbench.storage.RowActionMonitor;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ExceptionUtil;
