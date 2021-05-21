@@ -329,13 +329,17 @@ public class TablePartitionsPanel
     int[] types = new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR };
 
     DataStore ds = new DataStore(columns, types, sizes);
-    for (TablePartition part : partitions)
+    
+    if(partitions != null)
     {
-      int row = ds.addRow();
-      ds.setValue(row, 0, part.getObjectName());
-      ds.setValue(row, 1, part.getPartitionStrategy());
-      ds.setValue(row, 2, StringUtil.trim(part.getDefinition()));
-      ds.getRow(row).setUserObject(part);
+       for (TablePartition part : partitions)
+       {
+         int row = ds.addRow();
+         ds.setValue(row, 0, part.getObjectName());
+         ds.setValue(row, 1, part.getPartitionStrategy());
+         ds.setValue(row, 2, StringUtil.trim(part.getDefinition()));
+         ds.getRow(row).setUserObject(part);
+       }
     }
     ds.resetStatus();
     DataStoreTableModel model = new DataStoreTableModel(ds);
