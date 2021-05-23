@@ -287,12 +287,22 @@ public class PostgresProcedureReader
     boolean is96 = JdbcUtils.hasMinimumServerVersion(connection, "9.6");
     boolean is92 = JdbcUtils.hasMinimumServerVersion(connection, "9.2");
     boolean is84 = JdbcUtils.hasMinimumServerVersion(connection, "8.4");
+    boolean is14 = JdbcUtils.hasMinimumServerVersion(connection, "14");
     boolean showExtension = is92;
+
+    String srcColumn = "p.prosrc";
+    String isSQLFuncCol = "false as is_sql_function";
+    if (is14)
+    {
+      srcColumn = "coalesce(nullif(trim(p.prosrc),''), pg_get_functiondef(p.oid)) as prosrc";
+      isSQLFuncCol = "p.prosqlbody is not null as is_sql_function";
+    }
 
     PGProcName name = new PGProcName(def);
 
     String sql =
-      "SELECT p.prosrc, \n" +
+      "SELECT " + srcColumn + ", \n" +
+      "       " + isSQLFuncCol + ", \n" +
       "       l.lanname as lang_name, \n" +
       "       n.nspname as schema_name, \n";
 
@@ -373,12 +383,6 @@ public class PostgresProcedureReader
     Savepoint sp = null;
     Statement stmt = null;
 
-    String procType = def.getDbmsProcType();
-    boolean isAggregate = false;
-    boolean isFunction = false;
-    String comment = null;
-    String schema = null;
-
     try
     {
       if (useSavepoint)
@@ -389,156 +393,9 @@ public class PostgresProcedureReader
       rs = stmt.executeQuery(sql);
 
       boolean hasRow = rs.next();
-
       if (hasRow)
       {
-        procType = rs.getString("proc_type");
-        comment = rs.getString("remarks");
-        schema = rs.getString("schema_name");
-      }
-
-      isAggregate = "aggregate".equals(procType);
-      isFunction = "function".equals(procType);
-
-      if (!isAggregate && hasRow)
-      {
-        source.append("CREATE OR REPLACE " + procType.toUpperCase() + " ");
-        source.append(schemaForSource == null ? schema : schemaForSource);
-        source.append('.');
-        source.append(name.getName());
-
-        String src = rs.getString(1);
-        if (rs.wasNull() || src == null) src = "";
-
-        String lang = rs.getString("lang_name");
-        String returnType = rs.getString("return_type");
-        String readableReturnType = rs.getString("formatted_return_type");
-
-        String types = rs.getString("argtypes");
-        String names = rs.getString("argnames");
-        String modes = rs.getString("argmodes");
-        String config = rs.getString("proconfig");
-        String parallel = rs.getString("proparallel");
-        boolean returnSet = rs.getBoolean("proretset");
-        boolean leakproof = rs.getBoolean("proleakproof");
-
-        boolean securityDefiner = rs.getBoolean("prosecdef");
-        boolean strict = rs.getBoolean("proisstrict");
-        String volat = rs.getString("provolatile");
-        String extname = rs.getString("extname");
-        Double cost = null;
-        Double rows = null;
-        if (hasCost)
-        {
-          cost = rs.getDouble("procost");
-          rows = rs.getDouble("prorows");
-        }
-        CharSequence parameters = rs.getString("formatted_parameters");
-        if (parameters == null)
-        {
-          parameters = buildParameterList(names, types, modes);
-        }
-
-        source.append('(');
-        source.append(parameters);
-
-        source.append(")");
-        if (procType.equalsIgnoreCase("function"))
-        {
-          source.append("\n  RETURNS ");
-          if (readableReturnType == null)
-          {
-            if (returnSet)
-            {
-              source.append("SETOF ");
-            }
-            source.append(returnType);
-          }
-          else
-          {
-            source.append(readableReturnType);
-          }
-        }
-        source.append("\n  LANGUAGE ");
-        source.append(lang);
-        source.append("\nAS\n$body$\n");
-        src = src.trim();
-        source.append(StringUtil.makePlainLinefeed(src));
-        if (!src.endsWith(";")) source.append(';');
-        source.append("\n$body$\n");
-
-        if (StringUtil.isNonBlank(config))
-        {
-          source.append("  SET ");
-          source.append(config);
-          source.append('\n');
-        }
-
-        if (isFunction)
-        {
-          switch (volat)
-          {
-            case "i":
-              source.append("  IMMUTABLE");
-              break;
-            case "s":
-              source.append("  STABLE");
-              break;
-            default:
-              source.append("  VOLATILE");
-              break;
-          }
-
-          if (strict)
-          {
-            source.append("\n  STRICT");
-          }
-
-          if (leakproof)
-          {
-            source.append("\n  LEAKPROOF");
-          }
-
-          if (cost != null)
-          {
-            source.append("\n  COST ");
-            source.append(cost.longValue());
-          }
-
-          if (rows != null && returnSet)
-          {
-            source.append("\n  ROWS ");
-            source.append(rows.longValue());
-          }
-        }
-
-        if (isFunction || isAggregate)
-        {
-          if (nonDefaultParallel(parallel))
-          {
-            source.append("\n  PARALLEL " + codeToParallelType(parallel));
-          }
-        }
-
-        if (securityDefiner)
-        {
-          source.append("\n SECURITY DEFINER");
-        }
-        source.append(";\n");
-        if (StringUtil.isNonBlank(comment))
-        {
-          source.append("\nCOMMENT ON FUNCTION ");
-          source.append(name.getSignature());
-          source.append(" IS '");
-          source.append(SqlUtil.escapeQuotes(def.getComment()));
-          source.append("';\n\n");
-        }
-
-        if (StringUtil.isNonBlank(extname))
-        {
-          source.append("\n-- Created through extension: " + extname + "\n");
-        }
-
+        appendSource(rs, source, schemaForSource, name, hasCost);
       }
       connection.releaseSavepoint(sp);
     }
@@ -552,20 +409,169 @@ public class PostgresProcedureReader
     {
       JdbcUtils.closeAll(rs, stmt);
     }
-
-    if (isAggregate)
-    {
-      source.append(getAggregateSource(name, def.getSchema()));
-      if (StringUtil.isNonBlank(comment))
-      {
-        source.append("\n\nCOMMENT ON AGGREGATE ");
-        source.append(name.getSignature());
-        source.append(" IS '");
-        source.append(SqlUtil.escapeQuotes(def.getComment()));
-        source.append("';\n\n");
-      }
-    }
     def.setSource(source);
+  }
+
+  private void appendSource(ResultSet rs, StringBuilder source, String schemaForSource, PGProcName name, boolean hasCost)
+    throws SQLException
+  {
+    String procType = rs.getString("proc_type");
+    String comment = rs.getString("remarks");
+    String schema = rs.getString("schema_name");
+    boolean isSQLBody = rs.getBoolean("is_sql_function");
+    String extname = rs.getString("extname");
+
+    String src = rs.getString("prosrc");
+    if (rs.wasNull() || src == null) src = "";
+
+    boolean isAggregate = "aggregate".equals(procType);
+    boolean isFunction = "function".equals(procType);
+
+    if (isSQLBody)
+    {
+      source.append(StringUtil.trim(src));
+      source.append("\n;");
+    }
+    else if (isAggregate)
+    {
+      source.append(getAggregateSource(name, schema));
+    }
+    else
+    {
+      source.append("CREATE OR REPLACE " + procType.toUpperCase() + " ");
+      source.append(schemaForSource == null ? schema : schemaForSource);
+      source.append('.');
+      source.append(name.getName());
+
+      String lang = rs.getString("lang_name");
+      String returnType = rs.getString("return_type");
+      String readableReturnType = rs.getString("formatted_return_type");
+
+      String types = rs.getString("argtypes");
+      String names = rs.getString("argnames");
+      String modes = rs.getString("argmodes");
+      String config = rs.getString("proconfig");
+      String parallel = rs.getString("proparallel");
+      boolean returnSet = rs.getBoolean("proretset");
+      boolean leakproof = rs.getBoolean("proleakproof");
+
+      boolean securityDefiner = rs.getBoolean("prosecdef");
+      boolean strict = rs.getBoolean("proisstrict");
+      String volat = rs.getString("provolatile");
+      Double cost = null;
+      Double rows = null;
+      if (hasCost)
+      {
+        cost = rs.getDouble("procost");
+        rows = rs.getDouble("prorows");
+      }
+      CharSequence parameters = rs.getString("formatted_parameters");
+      if (parameters == null)
+      {
+        parameters = buildParameterList(names, types, modes);
+      }
+
+      source.append('(');
+      source.append(parameters);
+
+      source.append(")");
+      if (procType.equalsIgnoreCase("function"))
+      {
+        source.append("\n  RETURNS ");
+        if (readableReturnType == null)
+        {
+          if (returnSet)
+          {
+            source.append("SETOF ");
+          }
+          source.append(returnType);
+        }
+        else
+        {
+          source.append(readableReturnType);
+        }
+      }
+      source.append("\n  LANGUAGE ");
+      source.append(lang);
+      source.append("\nAS\n$body$\n");
+      src = src.trim();
+      source.append(StringUtil.makePlainLinefeed(src));
+      if (!src.endsWith(";")) source.append(';');
+      source.append("\n$body$\n");
+
+      if (StringUtil.isNonBlank(config))
+      {
+        source.append("  SET ");
+        source.append(config);
+        source.append('\n');
+      }
+
+      if (isFunction)
+      {
+        switch (volat)
+        {
+          case "i":
+            source.append("  IMMUTABLE");
+            break;
+          case "s":
+            source.append("  STABLE");
+            break;
+          default:
+            source.append("  VOLATILE");
+            break;
+        }
+
+        if (strict)
+        {
+          source.append("\n  STRICT");
+        }
+
+        if (leakproof)
+        {
+          source.append("\n  LEAKPROOF");
+        }
+
+        if (cost != null)
+        {
+          source.append("\n  COST ");
+          source.append(cost.longValue());
+        }
+
+        if (rows != null && returnSet)
+        {
+          source.append("\n  ROWS ");
+          source.append(rows.longValue());
+        }
+      }
+
+      if (isFunction)
+      {
+        if (nonDefaultParallel(parallel))
+        {
+          source.append("\n  PARALLEL " + codeToParallelType(parallel));
+        }
+      }
+
+      if (securityDefiner)
+      {
+        source.append("\n SECURITY DEFINER");
+      }
+      source.append(";\n");
+    }
+
+    if (StringUtil.isNonBlank(comment))
+    {
+      source.append("\nCOMMENT ON " + procType.toUpperCase());
+      source.append(name.getSignature());
+      source.append(" IS '");
+      source.append(SqlUtil.escapeQuotes(comment));
+      source.append("';\n\n");
+    }
+
+    if (StringUtil.isNonBlank(extname))
+    {
+      source.append("\n-- Created through extension: " + extname + "\n");
+    }
   }
 
   private CharSequence buildParameterList(String names, String types, String modes)

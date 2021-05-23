@@ -306,13 +306,10 @@ public class TablePartitionsPanel
         partitions = reader.getSubPartitions(currentTable, mainPart);
       }
 
-      if (CollectionUtil.isNonEmpty(partitions))
+      EventQueue.invokeLater(() ->
       {
-        EventQueue.invokeLater(() ->
-        {
-          showPartitions(partitions, subPartitions);
-        });
-      }
+        showPartitions(partitions, subPartitions);
+      });
     }
     finally
     {
@@ -325,21 +322,21 @@ public class TablePartitionsPanel
   private void showPartitions(List<? extends TablePartition> partitions, WbTable display)
   {
     String[] columns = new String[] {"PARTITION", "TYPE", "DEFINITION"};
-    int[] sizes = new int[] {30, 20, 60 };
+    int[] sizes = new int[] {40, 20, 60 };
     int[] types = new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR };
 
     DataStore ds = new DataStore(columns, types, sizes);
-    
-    if(partitions != null)
+
+    if (partitions != null)
     {
-       for (TablePartition part : partitions)
-       {
-         int row = ds.addRow();
-         ds.setValue(row, 0, part.getObjectName());
-         ds.setValue(row, 1, part.getPartitionStrategy());
-         ds.setValue(row, 2, StringUtil.trim(part.getDefinition()));
-         ds.getRow(row).setUserObject(part);
-       }
+      for (TablePartition part : partitions)
+      {
+        int row = ds.addRow();
+        ds.setValue(row, 0, part.getObjectName());
+        ds.setValue(row, 1, part.getPartitionStrategy());
+        ds.setValue(row, 2, StringUtil.trim(part.getDefinition()));
+        ds.getRow(row).setUserObject(part);
+      }
     }
     ds.resetStatus();
     DataStoreTableModel model = new DataStoreTableModel(ds);

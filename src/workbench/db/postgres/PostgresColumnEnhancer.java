@@ -33,11 +33,10 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -154,12 +153,13 @@ public class PostgresColumnEnhancer
     boolean is91 = JdbcUtils.hasMinimumServerVersion(conn, "9.1");
     boolean is10 = JdbcUtils.hasMinimumServerVersion(conn, "10");
     boolean is12 = JdbcUtils.hasMinimumServerVersion(conn, "12");
+    boolean is14 = JdbcUtils.hasMinimumServerVersion(conn, "14");
 
     String collateColumn = is91 ? "col.collcollate" : "null as collcollate";
     String identityAtt = (is10 ? "nullif(att.attidentity, '') " : "null") + " as attidentity";
     String generatedExpr = (is12 ? "pg_get_expr(d.adbin, d.adrelid)" : "null") + " as generated_expr";
-    String generationType = (is12 ? "attgenerated" : "null") + " as attgenerated";
-
+    String generationType = (is12 ? "att.attgenerated" : "null") + " as attgenerated";
+    String compression = (is14 ? "att.attcompression" : "null") + " as attcompression";
     String sql =
       "select att.attname, \n" +
       "       " + collateColumn + ", \n" +
@@ -174,7 +174,8 @@ public class PostgresColumnEnhancer
       "       pg_catalog.format_type(att.atttypid, att.atttypmod) as display_type, \n" +
       "       " + identityAtt + ", \n" +
       "       " + generatedExpr + ", \n" +
-      "       " + generationType + " \n" +
+      "       " + generationType + ", \n" +
+      "       " + compression + " \n" +
       "from pg_catalog.pg_attribute att  \n" +
       "  join pg_catalog.pg_class tbl on tbl.oid = att.attrelid   \n" +
       "  join pg_catalog.pg_namespace ns on tbl.relnamespace = ns.oid   \n" +
@@ -289,6 +290,12 @@ public class PostgresColumnEnhancer
           // currently the JDBC driver returns the generated expression as the default value
           col.setDefaultValue(null);
           col.setComputedColumnExpression("GENERATED ALWAYS AS " + expr + " STORED");
+        }
+
+        String compressType = rs.getString("attcompression");
+        if ("l".equals(compressType))
+        {
+          col.setSQLOption("COMPRESSION lz4");
         }
       }
       conn.releaseSavepoint(sp);

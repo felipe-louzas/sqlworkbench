@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2021-05-15">
+    <entry dev-build="6" type="enh">Added support for new features in PostgreSQL 14</entry>
     <entry dev-build="5" type="enh">WbImport now allows to specify a grouping character for importing numbers formatted with one</entry>
     <entry dev-build="5" type="enh">For Informix, unique and check constraint are not correctly included in the generated DDL.</entry>
     <entry dev-build="5" type="enh">WbImport can now read directly from GZipped files.</entry>

@@ -67,12 +67,12 @@ public class PostgresProcedureReaderTest
     if (con == null) return;
 
     String sql =
-      "CREATE AGGREGATE array_accum (anyelement) \n" +
-       "( \n" +
-       "  sfunc = array_append, \n" +
-       "  stype = anyarray, \n" +
-       "  initcond = '{}' \n" +
-       ");\n" +
+      "CREATE AGGREGATE array_accum(int4) \n" +
+      "( \n" +
+      "  sfunc = array_append, \n" +
+      "  stype = int[], \n" +
+      "  initcond = '{}' \n" +
+      ");\n" +
        "commit;\n";
     TestUtil.executeScript(con, sql);
 
@@ -233,6 +233,69 @@ public class PostgresProcedureReaderTest
   }
 
   @Test
+  public void testCreateProcedure()
+    throws Exception
+  {
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
+    if (!JdbcUtils.hasMinimumServerVersion(con, "11")) return;
+    String sql =
+      "drop procedure if exists do_something cascade;\n" +
+      "create procedure do_something(p_one int)\n" +
+      "as\n" +
+      "$$\n" +
+      "begin\n" +
+      "  p_one := p_one * 2;\n" +
+      "end;\n" +
+      "$$\n" +
+      "language plpgsql;";
+    TestUtil.executeScript(con, sql);
+    PostgresProcedureReader reader = new PostgresProcedureReader(con);
+    List<ProcedureDefinition> procs = reader.getProcedureList(null, TEST_ID, "do_something");
+    assertEquals(1, procs.size());
+    ProcedureDefinition def = procs.get(0);
+    String source = def.getSource(con).toString();
+    String expected =
+      "CREATE OR REPLACE PROCEDURE " + TEST_ID + ".do_something(p_one integer)\n" +
+      "  LANGUAGE plpgsql\n" +
+      "AS\n" +
+      "$body$\n" +
+      "begin\n" +
+      "  p_one := p_one * 2;\n" +
+      "end;\n" +
+      "$body$\n" +
+      ";";
+    assertEquals(expected, source.trim());
+  }
+
+  @Test
+  public void testSQLBodyFunction()
+    throws Exception
+  {
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
+    if (!JdbcUtils.hasMinimumServerVersion(con, "14")) return;
+
+    String sql =
+      "drop function if exists the_answer cascade;\n" +
+      "CREATE FUNCTION the_answer() \n" +
+      "  RETURNS integer\n" +
+      "  LANGUAGE SQL\n" +
+      "  IMMUTABLE\n" +
+      "  RETURN 42;";
+
+    TestUtil.executeScript(con, sql);
+    PostgresProcedureReader reader = new PostgresProcedureReader(con);
+    List<ProcedureDefinition> procs = reader.getProcedureList(null, TEST_ID, "the_answer");
+    assertEquals(1, procs.size());
+    ProcedureDefinition def = procs.get(0);
+    String source = def.getSource(con).toString();
+    assertFalse(source.contains("$"));
+    assertTrue(source.contains("LANGUAGE sql"));
+    assertTrue(source.contains("RETURN 42"));
+  }
+
+  @Test
   public void testGetAggregateSource()
     throws Exception
   {
@@ -245,13 +308,13 @@ public class PostgresProcedureReaderTest
     ProcedureDefinition def = procs.get(0);
     assertEquals("array_accum", def.getProcedureName());
     assertEquals("aggregate", def.getDbmsProcType());
-    assertEquals("array_accum(anyelement)", def.getDisplayName());
+    assertEquals("array_accum(integer)", def.getDisplayName());
     String source = def.getSource(con).toString();
     String expected =
-      "CREATE AGGREGATE array_accum(anyelement)\n" +
+      "CREATE AGGREGATE array_accum(integer)\n" +
       "(\n"+
       "  sfunc = array_append,\n" +
-      "  stype = anyarray,\n" +
+      "  stype = integer[],\n" +
       "  initcond = '{}'\n" +
       ");";
 //    System.out.println("--- expected --- \n" + expected + "\n--- actual ---\n"  + source.trim() + "\n-------");
@@ -260,7 +323,7 @@ public class PostgresProcedureReaderTest
     dropper.setConnection(con);
     String drop = dropper.getDropForObject(def).toString();
 //    System.out.println(drop);
-    assertEquals("DROP AGGREGATE array_accum(anyelement);", drop);
+    assertEquals("DROP AGGREGATE array_accum(integer);", drop);
   }
 
   @Test
