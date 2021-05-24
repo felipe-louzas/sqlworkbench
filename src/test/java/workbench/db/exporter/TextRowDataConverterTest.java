@@ -1,6 +1,4 @@
 /*
- * TextRowDataConverterTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -38,15 +36,14 @@ import workbench.storage.BlobLiteralType;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 
+import workbench.util.CharacterEscapeType;
+import workbench.util.CharacterRange;
 import workbench.util.CollectionUtil;
+import workbench.util.WbNumberFormatter;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
-import workbench.util.CharacterEscapeType;
-import workbench.util.CharacterRange;
-import workbench.util.WbNumberFormatter;
 
 /**
  *

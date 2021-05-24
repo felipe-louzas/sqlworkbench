@@ -1,6 +1,4 @@
 /*
- * ObjectDiffTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -25,16 +23,18 @@ package workbench.db.diff;
 
 import java.sql.Types;
 
+import workbench.TestUtil;
+
 import workbench.db.BaseObjectType;
 import workbench.db.ColumnIdentifier;
 
 import workbench.util.CollectionUtil;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import workbench.TestUtil;
+import static org.junit.Assert.*;
 
 /**
  *

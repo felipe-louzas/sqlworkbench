@@ -1,6 +1,4 @@
 /*
- * WbDateFormatterTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -137,7 +135,7 @@ public class WbDateFormatterTest
     formatter.applyPattern("yyyy-MM-dd HH:mm:ss VV");
     tz = formatter.parseTimestampTZ("2017-01-01 04:00:00 " + ZoneId.systemDefault().toString());
     assertTrue(tz instanceof ZonedDateTime);
-    System.out.println(tz);
+//    System.out.println(tz);
     ZonedDateTime zdt = ZonedDateTime.of(2017, 1, 1, 4, 0, 0, 0, ZoneId.systemDefault());
     assertEquals(zdt, tz);
   }

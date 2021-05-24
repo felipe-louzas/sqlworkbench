@@ -1,6 +1,4 @@
 /*
- * ConsoleSettings.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -205,5 +203,5 @@ public class ConsoleSettings
     if (StringUtil.isBlank(pager)) return null;
     return new WbFile(pager);
   }
-  
+
 }

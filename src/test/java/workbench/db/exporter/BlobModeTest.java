@@ -1,6 +1,4 @@
 /*
- * BlobModeTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -23,8 +21,10 @@
  */
 package workbench.db.exporter;
 
-import org.junit.Test;
 import workbench.WbTestCase;
+
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**

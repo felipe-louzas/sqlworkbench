@@ -1,6 +1,4 @@
 /*
- * OdsDateStyleBuilderTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -24,6 +22,7 @@
 package workbench.db.exporter;
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 /**

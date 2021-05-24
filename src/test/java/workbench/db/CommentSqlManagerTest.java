@@ -1,6 +1,4 @@
 /*
- * CommentSqlManagerTest.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer

@@ -1,6 +1,4 @@
 /*
- * H2TestTrigger.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -25,6 +23,7 @@ package workbench.db.diff;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import org.h2.api.Trigger;
 
 /**
