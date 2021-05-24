@@ -1,6 +1,11 @@
+/target/
+*/target/**
+**/META-INF/
 /build/
 /dist/
 /release/
 /website/*.html
 /website/history_rss.txt
 *.java~
+**/nb-configuration.xml
+**/nbactions.xml
