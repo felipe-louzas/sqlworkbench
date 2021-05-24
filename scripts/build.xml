@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="make-dev-jar" name="Workbench">
+<project basedir="." default="jar" name="SQLWorkbench">
 
   <property name="root" value=".."/>
   <property name="src" value="../src"/>
-  <property name="testsrc" value="../test"/>
-  <property name="unittest" value="../test/junit"/>
-  <property name="dbtest" value="../test/dbtest"/>
-  <property name="junitdir" value="../build/junit"/>
-  <property name="junitlibs" value="../libs/junit"/>
+  <property name="javasrc" value="../src/main/java"/>
+  <property name="testsrc" value="../src/test/java"/>
   <property name="scriptsrc" value="."/>
   <property name="libdir" value="../libs"/>
   <property name="build" value="../build/classes"/>
   <property name="build.test" value="../build/test"/>
   <property name="distdir" value="../dist"/>
   <property name="jarfile" value="sqlworkbench.jar"/>
-  <property name="javadocdir" value="../javadoc"/>
   <property name="srczipname" value="WorkbenchSrc.zip"/>
   <property name="srczip" value="${root}/../${srczipname}"/>
   <property name="target.version" value="11"/>
@@ -69,9 +65,7 @@
 
   <target name="clean">
     <delete dir="${build}" failonerror="false"/>
-    <delete dir="${instrumented.dir}" failonerror="false"/>
     <delete dir="${build.test}"/>
-    <delete dir="${junitdir}"/>
     <delete dir="${pdfwork}" failonerror="false"/>
     <delete failonerror="false">
       <fileset dir="${distdir}">
@@ -81,15 +75,6 @@
     </delete>
   </target>
 
-  <target name="clean-junit">
-    <delete failonerror="false">
-      <fileset dir="${junitdir}">
-        <include name="**/*.txt"/>
-      </fileset>
-    </delete>
-    <delete dir="${instrumented.dir}" />
-  </target>
-
   <target name="prepare" depends="init">
     <mkdir dir="${build}"/>
     <mkdir dir="${distdir}"/>
@@ -97,30 +82,13 @@
 
   <target name="copy-resources" depends="init">
     <copy overwrite="true" todir="${build}">
-      <fileset defaultexcludes="true" dir="${src}">
+      <fileset defaultexcludes="true" dir="${src}/main/resources">
         <include name="**/*.*"/>
         <exclude name="**/*.html"/>
         <exclude name="**/*.java"/>
         <exclude name="**/*.form"/>
         <exclude name="**/*.class"/>
         <exclude name="**/*.flex"/>
-      </fileset>
-    </copy>
-  </target>
-
-  <target name="prepare-test" depends="prepare,copy-resources">
-    <mkdir dir="${build.test}"/>
-    <mkdir dir="${junitdir}"/>
-    <copy overwrite="true"  todir="${build.test}">
-      <fileset defaultexcludes="true" dir="${testsrc}/junit">
-        <include name="**/*.sql"/>
-        <include name="**/*.xml"/>
-        <include name="**/*.xslt"/>
-        <include name="**/*.xlsx"/>
-        <include name="**/*.xls"/>
-        <include name="**/*.ods"/>
-        <include name="**/*.txt"/>
-        <include name="**/*.properties"/>
       </fileset>
     </copy>
   </target>
@@ -132,10 +100,10 @@
     <javac debug="on"
            debuglevel="source,lines"
            destdir="${build}"
-           srcdir="${src}"
+           srcdir="${javasrc}"
            target="1.6"
            source="1.6"
-           encoding="ISO-8859-1"
+           encoding="ISO-8859-15"
            includeantruntime="false"
            includes="workbench/WbStarter.java"/>
 
@@ -143,10 +111,10 @@
     <javac debug="on"
            debuglevel="source,lines"
            destdir="${build}"
-           srcdir="${src}"
+           srcdir="${javasrc}"
            includeantruntime="false"
-           encoding="ISO-8859-1">
-      <compilerarg line="-Xlint:none --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
+           encoding="ISO-8859-15">
+      <compilerarg line="-Xlint:none --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
       <exclude name="workbench/WbStarter.java"/>
       <classpath>
           <fileset dir="../libs/odf" includes="*.jar"/>
@@ -177,81 +145,6 @@
       </fileset>
     </jar>
 
-  </target>
-
-  <target name="embeddable-jar" depends="clean, set-dev-prop, copy-resources, compile, get-dev-build, replace-build-number, -jar-noclasspath"/>
-  <target name="-jar-noclasspath" depends="prepare,compile">
-    <jar compress="true" level="6" jarfile="${distdir}/${jarfile}">
-      <manifest>
-        <attribute name="Main-Class" value="workbench.WbStarter"/>
-        <attribute name="Created-By" value="Thomas Kellerer (support@sql-workbench.eu)"/>
-        <attribute name="Implementation-Title" value="SQL Workbench/J"/>
-        <attribute name="Implementation-URL" value="http://www.sql-workbench.eu"/>
-        <attribute name="WbBuild-Number" value="${build.number}"/>
-        <attribute name="WbBuild-Date" value="${build_timestamp}"/>
-      </manifest>
-      <fileset dir="${build}">
-        <exclude name="**/package.html"/>
-      </fileset>
-    </jar>
-  </target>
-
-  <!-- alias for make-src-zip -->
-  <target name="src" depends="make-src-zip"/>
-
-  <target name="make-src-zip">
-    <delete file="${srczip}"/>
-
-    <zip zipfile="${srczip}">
-
-      <zipfileset dir="${src}" prefix="workbench/src">
-        <include name="**/*.*"/>
-        <exclude name="**/*.class"/>
-        <exclude name="**/*.java~"/>
-        <exclude name="**/workbench.settings"/>
-        <exclude name="**/.git/**"/>
-        <exclude name="**/.nb*"/>
-        <exclude name="**/tags"/>
-        <exclude name="**/Test/*"/>
-        <exclude name="**/*.tws"/>
-      </zipfileset>
-
-      <zipfileset dir="${scriptsrc}" prefix="workbench/scripts">
-        <exclude name="**/.nb*"/>
-        <exclude name="**/.new"/>
-        <exclude name="**/*test*"/>
-        <exclude name="**/*.txt"/>
-        <exclude name="history.html"/>
-        <exclude name="make_manual.cmd"/>
-        <exclude name="make_release.cmd"/>
-        <exclude name="docbook-history.xml"/>
-      </zipfileset>
-
-      <zipfileset dir="${testsrc}" prefix="workbench/test">
-        <exclude name="**/.nb*"/>
-      </zipfileset>
-
-      <zipfileset dir="../../manual" prefix="manual">
-        <include name="**/*.*"/>
-        <exclude name=".gitignore"/>
-        <exclude name="./dist/**"/>
-        <exclude name="./build/**"/>
-      </zipfileset>
-
-      <zipfileset dir="../website" prefix="workbench/website">
-        <include name="**/*.*"/>
-        <exclude name="*.html"/>
-        <exclude name="test*.*"/>
-        <exclude name="*.jar"/>
-        <exclude name="*.png"/>
-      </zipfileset>
-      <zipfileset dir="../xslt" prefix="workbench/xslt">
-        <include name="**/*.*"/>
-      </zipfileset>
-      <zipfileset dir="../../launcher" prefix="launcher">
-        <include name="**/*.*"/>
-      </zipfileset>
-    </zip>
   </target>
 
   <target name="make-release-manual">
@@ -298,9 +191,7 @@
     <property name="dev-jar" value="1"/>
   </target>
 
-  <target name="jar-only" depends="set-dev-prop, copy-resources, compile, get-dev-build, replace-build-number, -make-jar"/>
-
-  <target name="make-dev-jar" depends="set-dev-prop, clean, copy-resources, compile, test, get-dev-build, replace-build-number, -make-jar"/>
+  <target name="jar" depends="set-dev-prop, copy-resources, compile, get-dev-build, replace-build-number, -make-jar"/>
 
   <!-- build a development release -->
   <target name="dev-release" depends="clean, compile, set-dev-build, set-history-build-date, make-dev-manual, -make-jar, release-package, release-src-zip, -make-sha1">
@@ -366,7 +257,7 @@
         <include name="sqlwbconsole.sh"/>
         <include name="download_jre.sh"/>
       </zipfileset>
-      <zipfileset dir="${src}/workbench/resource/images">
+      <zipfileset dir="${src}/main/resources/workbench/resource/images">
         <include name="workbench32.png"/>
       </zipfileset>
       <zipfileset dir="../../manual/dist" prefix="manual">
@@ -417,7 +308,7 @@
         <include name="sqlwbconsole.sh"/>
         <include name="download_jre.sh"/>
       </zipfileset>
-      <zipfileset dir="${src}/workbench/resource/images">
+      <zipfileset dir="${javasrc}/workbench/resource/images">
         <include name="workbench32.png"/>
       </zipfileset>
       <zipfileset dir="../../manual/dist" prefix="manual">
@@ -445,16 +336,12 @@
   <target name="release-src-zip" depends="init,fixshellscripts">
 
     <zip zipfile="${distdir}/WorkbenchSrc-Build${build.number}.zip">
-      <zipfileset dir="${src}" prefix="src">
-        <include name="**/*.*"/>
-        <exclude name="**/workbench.settings"/>
-        <exclude name="**/.nb*"/>
-        <exclude name="**/*.dfPackage"/>
-        <exclude name="**/tags"/>
-        <exclude name="**/*.tws"/>
+      <zipfileset dir="..">
+        <include name="pom.xml"/>
+        <include name="README.md"/>
       </zipfileset>
 
-      <zipfileset dir="${testsrc}" prefix="test">
+      <zipfileset dir="${src}" prefix="src">
         <include name="**/*.*"/>
       </zipfileset>
 
@@ -492,7 +379,12 @@
       </zipfileset>
 
       <zipfileset dir="../../launcher" prefix="launcher">
-        <include name="**/*"/>
+        <include name="**/*.*"/>
+        <exclude name="Workbench Launcher.*"/>
+        <exclude name=".vscode/**"/>
+        <exclude name="bin/**"/>
+        <exclude name="obj/**"/>
+        <exclude name="release/**"/>
       </zipfileset>
     </zip>
   </target>
@@ -756,192 +648,6 @@
       <arg value="../src/workbench/sql/lexer/PgEscapingLexer.flex"/>
     </java>
 
-  </target>
-
-  <path id="junit.path">
-    <fileset dir="${junitlibs}">
-      <include name="*.jar"/>
-    </fileset>
-    <fileset dir="../libs/poi">
-      <include name="*.jar"/>
-    </fileset>
-    <fileset dir="../libs/log4j">
-      <include name="*.jar"/>
-    </fileset>
-    <fileset dir="../libs/odf">
-      <include name="*.jar"/>
-    </fileset>
-    <fileset dir="../libs/dbunit">
-      <include name="*.jar"/>
-    </fileset>
-  </path>
-
-  <target name="compile-tests" depends="prepare-test, compile">
-    <javac debug="on"
-           includeantruntime="false"
-           destdir="${build.test}"
-           optimize="off"
-           srcdir="${unittest}"
-           target="${target.version}"
-           source="${target.version}"
-           encoding="ISO-8859-1">
-      <classpath>
-        <pathelement location="${build}"/>
-        <path refid="junit.path"/>
-      </classpath>
-    </javac>
-  </target>
-
-  <target name="compile-db-tests" depends="prepare-test, compile-tests">
-    <javac debug="on"
-           includeantruntime="false"
-           destdir="${build.test}"
-           optimize="off"
-           srcdir="${dbtest}"
-           target="${target.version}"
-           source="${target.version}"
-           encoding="ISO-8859-1">
-      <classpath>
-        <pathelement location="${build}"/>
-        <path refid="junit.path"/>
-      </classpath>
-    </javac>
-  </target>
-
-  <target name="test" depends="compile-tests, clean-junit">
-
-    <junit fork="true"
-           forkmode="perBatch"
-           maxmemory="512m"
-           showoutput="false"
-           haltonerror="true"
-           haltonfailure="true"
-           printsummary="true"
-           includeantruntime="true">
-
-      <classpath>
-        <pathelement location="${build}"/>
-        <pathelement location="${build.test}"/>
-        <path refid="junit.path"/>
-      </classpath>
-
-      <batchtest todir="${junitdir}">
-        <formatter type="plain"/>
-        <fileset dir="${unittest}">
-          <exclude name="**/XsltTransformerTest.java"/>
-          <exclude name="**/ClassFinderTest.java"/>
-          <include name="**/*Test.java"/>
-        </fileset>
-      </batchtest>
-
-      <!--
-        for some reasons running the XsltTransformerTest on a 64bit JVM
-        bombs out with an OutOfMemory error in the PermGen space
-        Moving this - and the ClassFinderTest - to a separate VM solves the problem
-      -->
-      <batchtest todir="${junitdir}">
-        <formatter type="plain"/>
-        <fileset dir="${unittest}">
-          <include name="**/XsltTransformerTest.java"/>
-        </fileset>
-      </batchtest>
-
-      <batchtest todir="../junit">
-        <formatter type="plain"/>
-        <fileset dir="${unittest}">
-          <include name="**/ClassFinderTest.java.java"/>
-        </fileset>
-      </batchtest>
-
-    </junit>
-  </target>
-
-  <target name="echo-dbtest-type" if="test.db">
-    <echo message="Testing ${test.db}"/>
-  </target>
-
-  <target name="echo-dbtest" unless="test.db">
-    <echo message="Testing all DBMS"/>
-  </target>
-
-  <target name="db-test" depends="compile-db-tests, clean-junit, echo-dbtest-type, echo-dbtest">
-
-    <junit fork="true" forkmode="perBatch" showoutput="false" haltonerror="true" haltonfailure="true" printsummary="true" includeantruntime="true">
-      <classpath>
-        <pathelement location="${build}"/>
-        <pathelement location="${build.test}"/>
-        <path refid="junit.path"/>
-      </classpath>
-
-      <sysproperty key="wbjunit.db2.testdb" value="${wbjunit.db2.testdb}"/>
-      <sysproperty key="wbjunit.db2.username" value="${wbjunit.db2.username}"/>
-      <sysproperty key="wbjunit.db2.password" value="${wbjunit.db2.password}"/>
-      <sysproperty key="wbjunit.db2.schema" value="${wbjunit.db2.schema}"/>
-
-      <batchtest todir="${junitdir}" if="test.db">
-        <formatter type="plain"/>
-        <fileset dir="${dbtest}/">
-          <include name="workbench/db/${test.db}/*Test.java"/>
-        </fileset>
-      </batchtest>
-
-      <batchtest todir="${junitdir}" unless="test.db">
-        <formatter type="plain"/>
-        <fileset dir="${dbtest}">
-          <include name="**/*Test.java"/>
-        </fileset>
-      </batchtest>
-
-    </junit>
-  </target>
-
-  <target name="test-mysql">
-    <property name="test.db" value="mysql"/>
-    <antcall target="db-test"/>
-  </target>
-
-  <target name="test-db2">
-    <property name="test.db" value="ibm"/>
-    <property file="db2.test.properties"/>
-    <antcall target="db-test"/>
-  </target>
-
-  <target name="test-fb">
-    <property name="test.db" value="firebird"/>
-    <antcall target="db-test"/>
-  </target>
-
-  <target name="test-mssql">
-    <property name="test.db" value="mssql"/>
-    <antcall target="db-test"/>
-  </target>
-
-  <target name="test-pg">
-    <property name="test.db" value="postgres"/>
-    <antcall target="db-test"/>
-  </target>
-
-  <target name="test-ora">
-    <property name="test.db" value="oracle"/>
-    <antcall target="db-test"/>
-  </target>
-
-  <target name="javadoc">
-    <javadoc destdir="${javadocdir}"
-             noqualifier="java.*:javax.*"
-             notree="true"
-             sourcepath="${src}"
-             link="http://docs.oracle.com/javase/8/docs/api/"
-             packagenames="workbench.*"/>
-  </target>
-
-  <target name="pdf-javadoc">
-    <javadoc doclet="com.tarsec.javadoc.pdfdoclet.PDFDoclet"
-             docletpath="../libs/doclet/pdfdoclet-1.0.3-all.jar"
-             sourcepath="${src}"
-             additionalparam="-pdf ${javadocdir}/workbench-api.pdf -config pdf_javadoc.properties"
-             packagenames="workbench.*"
-    />
   </target>
 
   <target name="fixshellscripts">
