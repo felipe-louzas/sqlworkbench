@@ -114,7 +114,8 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbPluginUtil;
 import workbench.util.WbThread;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 /**
  * A panel that display the list of procedures/functions available in the database.

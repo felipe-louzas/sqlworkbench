@@ -249,7 +249,8 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbThread;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 /**
  * A panel with an SQL editor (EditorPanel), a log panel and

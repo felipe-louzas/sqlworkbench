@@ -1,6 +1,4 @@
 /*
- * SaveWorkspaceAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -21,40 +19,38 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.gui.actions;
+package workbench.gui.actions.workspace;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 
-import javax.swing.KeyStroke;
-
-import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.MainWindow;
+import workbench.gui.actions.WbAction;
 
 /**
+ * Action to close the current workspace
+ *
+ * @see workbench.gui.MainWindow#closeWorkspace(boolean)
  * @author Thomas Kellerer
  */
-public class SaveWorkspaceAction
+public class CloseWorkspaceAction
   extends WbAction
 {
   private MainWindow client;
 
-  public SaveWorkspaceAction(MainWindow aClient)
+  public CloseWorkspaceAction(MainWindow aClient)
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtSaveWorkspace", KeyStroke.getKeyStroke(KeyEvent.VK_S, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
-    this.setMenuItemName(ResourceMgr.MNU_TXT_FILE);
+    this.initMenuDefinition("MnuTxtCloseWorkspace", null);
+    this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
     this.setIcon(null);
   }
 
   @Override
   public void executeAction(ActionEvent e)
   {
-    this.client.saveWorkspace(this.client.getCurrentWorkspaceFile(), false);
+    this.client.closeWorkspace(true);
   }
-
 }

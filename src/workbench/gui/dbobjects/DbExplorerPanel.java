@@ -87,7 +87,8 @@ import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 /**
  * The main container panel for the DbExplorer.

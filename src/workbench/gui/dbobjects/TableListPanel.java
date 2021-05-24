@@ -148,7 +148,8 @@ import workbench.util.LowMemoryException;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 import static workbench.storage.NamedSortDefinition.*;
 

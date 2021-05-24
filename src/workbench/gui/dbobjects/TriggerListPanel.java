@@ -84,7 +84,8 @@ import workbench.util.FilteredProperties;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 /**
  * A Panel that display a list of triggers defined in the database

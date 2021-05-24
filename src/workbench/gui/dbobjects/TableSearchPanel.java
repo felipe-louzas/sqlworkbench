@@ -88,7 +88,8 @@ import workbench.storage.DataStore;
 import workbench.util.FilteredProperties;
 import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 
 /**

@@ -1,6 +1,4 @@
 /*
- * RecentFileManager.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -35,8 +33,8 @@ import workbench.resource.SettingsListener;
 
 import workbench.gui.MainWindow;
 import workbench.gui.actions.LoadMacroFileAction;
-import workbench.gui.actions.LoadWorkspaceFileAction;
 import workbench.gui.actions.OpenFileAction;
+import workbench.gui.actions.workspace.LoadWorkspaceFileAction;
 
 import workbench.util.FixedSizeList;
 import workbench.util.WbFile;

@@ -83,6 +83,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 import workbench.resource.ShortcutManager;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
@@ -92,15 +93,12 @@ import workbench.db.objectcache.DbObjectCacheFactory;
 import workbench.gui.actions.AboutAction;
 import workbench.gui.actions.AddMacroAction;
 import workbench.gui.actions.AddTabAction;
-import workbench.gui.actions.AssignWorkspaceAction;
 import workbench.gui.actions.BookmarksAction;
-import workbench.gui.actions.CloseWorkspaceAction;
 import workbench.gui.actions.ConfigureShortcutsAction;
 import workbench.gui.actions.ConfigureToolbarAction;
 import workbench.gui.actions.CreateNewConnection;
 import workbench.gui.actions.DataPumperAction;
 import workbench.gui.actions.DisconnectTabAction;
-import workbench.gui.actions.EditWorkspaceVarsAction;
 import workbench.gui.actions.FileCloseAction;
 import workbench.gui.actions.FileConnectAction;
 import workbench.gui.actions.FileDiscardAction;
@@ -114,7 +112,6 @@ import workbench.gui.actions.HelpContactAction;
 import workbench.gui.actions.ImportProfilesAction;
 import workbench.gui.actions.InsertTabAction;
 import workbench.gui.actions.LoadMacrosAction;
-import workbench.gui.actions.LoadWorkspaceAction;
 import workbench.gui.actions.ManageDriversAction;
 import workbench.gui.actions.ManageMacroAction;
 import workbench.gui.actions.NewDbExplorerPanelAction;
@@ -124,12 +121,9 @@ import workbench.gui.actions.ObjectSearchAction;
 import workbench.gui.actions.OpenFileAction;
 import workbench.gui.actions.OptionsDialogAction;
 import workbench.gui.actions.PrevTabAction;
-import workbench.gui.actions.ReloadProfileWkspAction;
 import workbench.gui.actions.RemoveTabAction;
 import workbench.gui.actions.RenameTabAction;
-import workbench.gui.actions.SaveAsNewWorkspaceAction;
 import workbench.gui.actions.SaveMacrosAction;
-import workbench.gui.actions.SaveWorkspaceAction;
 import workbench.gui.actions.SearchAllEditorsAction;
 import workbench.gui.actions.SelectTabAction;
 import workbench.gui.actions.ShowDbExplorerAction;
@@ -144,6 +138,14 @@ import workbench.gui.actions.ViewLogfileAction;
 import workbench.gui.actions.ViewToolbarAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.actions.WhatsNewAction;
+import workbench.gui.actions.workspace.AssignWorkspaceAction;
+import workbench.gui.actions.workspace.CloseWorkspaceAction;
+import workbench.gui.actions.workspace.EditWorkspaceVarsAction;
+import workbench.gui.actions.workspace.LoadWorkspaceAction;
+import workbench.gui.actions.workspace.LoadWorkspaceFromBackup;
+import workbench.gui.actions.workspace.ReloadProfileWkspAction;
+import workbench.gui.actions.workspace.SaveAsNewWorkspaceAction;
+import workbench.gui.actions.workspace.SaveWorkspaceAction;
 import workbench.gui.bookmarks.BookmarkManager;
 import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.components.ConnectionSelector;
@@ -193,7 +195,6 @@ import workbench.util.VersionNumber;
 import workbench.util.WbFile;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
-import workbench.util.WbWorkspace;
 
 /**
  * The main window for SQL Workbench.
@@ -226,6 +227,7 @@ public class MainWindow
   private EditWorkspaceVarsAction editWorkspaceVariables;
   private CloseWorkspaceAction closeWorkspaceAction;
   private SaveWorkspaceAction saveWorkspaceAction;
+  private LoadWorkspaceFromBackup loadWkspFromBackupAction;
   private SaveAsNewWorkspaceAction saveAsWorkspaceAction;
   private LoadWorkspaceAction loadWorkspaceAction;
   private AssignWorkspaceAction assignWorkspaceAction;
@@ -610,6 +612,7 @@ public class MainWindow
   {
     final boolean workspaceSet = this.currentWorkspace != null;
     this.saveWorkspaceAction.setEnabled(workspaceSet);
+    this.loadWkspFromBackupAction.setEnabled(workspaceSet);
     this.assignWorkspaceAction.setEnabled(workspaceSet && this.currentProfile != null);
     this.closeWorkspaceAction.setEnabled(workspaceSet);
     this.editWorkspaceVariables.setEnabled(workspaceSet);
@@ -631,6 +634,7 @@ public class MainWindow
 
     this.loadWorkspaceAction = new LoadWorkspaceAction(this);
     this.saveWorkspaceAction = new SaveWorkspaceAction(this);
+    this.loadWkspFromBackupAction = new LoadWorkspaceFromBackup(this);
 
     this.createMacro = new AddMacroAction(getMacroClientId());
     this.manageMacros = new ManageMacroAction(this);
@@ -681,32 +685,31 @@ public class MainWindow
     menuBar.setBorderPainted(false);
     menuBar.putClientProperty("jgoodies.headerStyle", "Single");
 
-    // Create the file menu for all tabs
-    JMenu menu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_FILE));
-    menu.setName(ResourceMgr.MNU_TXT_FILE);
-    menuBar.add(menu);
-    menus.put(ResourceMgr.MNU_TXT_FILE, menu);
+    final JMenu fileMenu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_FILE));
+    fileMenu.setName(ResourceMgr.MNU_TXT_FILE);
+    menuBar.add(fileMenu);
+    menus.put(ResourceMgr.MNU_TXT_FILE, fileMenu);
 
     connectAction = new FileConnectAction(this);
-    connectAction.addToMenu(menu);
-    disconnectAction.addToMenu(menu);
-    reconnectAction.addToMenu(menu);
+    connectAction.addToMenu(fileMenu);
+    disconnectAction.addToMenu(fileMenu);
+    reconnectAction.addToMenu(fileMenu);
     fileCloseAction = new FileCloseAction(this);
-    fileCloseAction.addToMenu(menu);
-    menu.addSeparator();
-    this.createNewConnection.addToMenu(menu);
-    this.disconnectTab.addToMenu(menu);
-    menu.addSeparator();
+    fileCloseAction.addToMenu(fileMenu);
+    fileMenu.addSeparator();
+    this.createNewConnection.addToMenu(fileMenu);
+    this.disconnectTab.addToMenu(fileMenu);
+    fileMenu.addSeparator();
 
     saveProfilesAction = new FileSaveProfiles();
-    saveProfilesAction.addToMenu(menu);
+    saveProfilesAction.addToMenu(fileMenu);
 
     newWindowAction = new FileNewWindowAction();
-    newWindowAction.addToMenu(menu);
+    newWindowAction.addToMenu(fileMenu);
 
     fileOpenAction = new OpenFileAction(this);
-    menu.addSeparator();
-    fileOpenAction.addToMenu(menu);
+    fileMenu.addSeparator();
+    fileOpenAction.addToMenu(fileMenu);
 
     // now create the menus for the current tab
     List<Object> menuItems = panel.getMenuItems();
@@ -714,41 +717,41 @@ public class MainWindow
     // Create the menus in the correct order
     if (isSQLPanel(panel))
     {
-      menu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_EDIT));
-      menu.setName(ResourceMgr.MNU_TXT_EDIT);
-      menu.setVisible(false);
-      menuBar.add(menu);
-      menus.put(ResourceMgr.MNU_TXT_EDIT, menu);
+      final JMenu editMenu= new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_EDIT));
+      editMenu.setName(ResourceMgr.MNU_TXT_EDIT);
+      editMenu.setVisible(false);
+      menuBar.add(editMenu);
+      menus.put(ResourceMgr.MNU_TXT_EDIT, editMenu);
     }
 
-    menu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_VIEW));
-    menu.setName(ResourceMgr.MNU_TXT_VIEW);
-    menu.setVisible(true);
-    menuBar.add(menu);
-    menus.put(ResourceMgr.MNU_TXT_VIEW, menu);
+    final JMenu viewMenu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_VIEW));
+    viewMenu.setName(ResourceMgr.MNU_TXT_VIEW);
+    viewMenu.setVisible(true);
+    menuBar.add(viewMenu);
+    menus.put(ResourceMgr.MNU_TXT_VIEW, viewMenu);
 
     int tabCount = this.sqlTab.getTabCount();
     for (int i = 0; i < tabCount; i++)
     {
-      menu.add(new SelectTabAction(this.sqlTab, i));
+      viewMenu.add(new SelectTabAction(this.sqlTab, i));
     }
-    menu.addSeparator();
-    menu.add(nextTab.getMenuItem());
-    menu.add(prevTab.getMenuItem());
+    viewMenu.addSeparator();
+    viewMenu.add(nextTab.getMenuItem());
+    viewMenu.add(prevTab.getMenuItem());
 
     if (isSQLPanel(panel))
     {
-      menu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_DATA));
-      menu.setName(ResourceMgr.MNU_TXT_DATA);
-      menu.setVisible(false);
-      menuBar.add(menu);
-      menus.put(ResourceMgr.MNU_TXT_DATA, menu);
+      final JMenu dataMenu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_DATA));
+      dataMenu.setName(ResourceMgr.MNU_TXT_DATA);
+      dataMenu.setVisible(false);
+      menuBar.add(dataMenu);
+      menus.put(ResourceMgr.MNU_TXT_DATA, dataMenu);
 
-      menu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_SQL));
-      menu.setName(ResourceMgr.MNU_TXT_SQL);
-      menu.setVisible(false);
-      menuBar.add(menu);
-      menus.put(ResourceMgr.MNU_TXT_SQL, menu);
+      final JMenu sqlMenu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_SQL));
+      sqlMenu.setName(ResourceMgr.MNU_TXT_SQL);
+      sqlMenu.setVisible(false);
+      menuBar.add(sqlMenu);
+      menus.put(ResourceMgr.MNU_TXT_SQL, sqlMenu);
 
       final WbMenu macroMenu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_MACRO));
       macroMenu.setName(ResourceMgr.MNU_TXT_MACRO);
@@ -758,23 +761,24 @@ public class MainWindow
       buildMacroMenu(macroMenu);
     }
 
-    menu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_WORKSPACE));
-    menu.setName(ResourceMgr.MNU_TXT_WORKSPACE);
-    menuBar.add(menu);
-    menus.put(ResourceMgr.MNU_TXT_WORKSPACE, menu);
-    menu.add(this.saveWorkspaceAction);
-    menu.add(this.saveAsWorkspaceAction);
-    menu.add(this.loadWorkspaceAction);
-    menu.add(this.reloadWorkspace);
-    menu.add(this.editWorkspaceVariables);
-    menu.addSeparator();
-    menu.add(this.closeWorkspaceAction);
-    menu.add(this.assignWorkspaceAction);
-    menu.addSeparator();
+    JMenu wkspMenu = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_WORKSPACE));
+    wkspMenu.setName(ResourceMgr.MNU_TXT_WORKSPACE);
+    menuBar.add(wkspMenu);
+    menus.put(ResourceMgr.MNU_TXT_WORKSPACE, wkspMenu);
+    wkspMenu.add(this.saveWorkspaceAction);
+    wkspMenu.add(this.saveAsWorkspaceAction);
+    wkspMenu.add(this.loadWorkspaceAction);
+    wkspMenu.add(this.loadWkspFromBackupAction);
+    wkspMenu.add(this.reloadWorkspace);
+    wkspMenu.add(this.editWorkspaceVariables);
+    wkspMenu.addSeparator();
+    wkspMenu.add(this.closeWorkspaceAction);
+    wkspMenu.add(this.assignWorkspaceAction);
+    wkspMenu.addSeparator();
     JMenu recentWorkspace = new JMenu(ResourceMgr.getString("MnuTxtRecentWorkspace"));
     recentWorkspace.setName("recent-workspace");
     RecentFileManager.getInstance().populateRecentWorkspaceMenu(recentWorkspace, this);
-    menu.add(recentWorkspace);
+    wkspMenu.add(recentWorkspace);
 
     for (Object entry : menuItems)
     {
@@ -798,7 +802,7 @@ public class MainWindow
 
       if (menuName == null) continue;
 
-      menu = menus.get(menuName);
+      JMenu menu = menus.get(menuName);
 
       if (menu == null)
       {
@@ -831,17 +835,14 @@ public class MainWindow
       menu.setVisible(true);
     }
 
-    final JMenu filemenu = menus.get(ResourceMgr.MNU_TXT_FILE);
-
-    filemenu.addSeparator();
-    filemenu.add(new ManageDriversAction());
-    filemenu.add(new ImportProfilesAction());
-    filemenu.addSeparator();
+    fileMenu.addSeparator();
+    fileMenu.add(new ManageDriversAction());
+    fileMenu.add(new ImportProfilesAction());
+    fileMenu.addSeparator();
 
     fileExitAction = new FileExitAction();
-    filemenu.add(fileExitAction);
+    fileMenu.add(fileExitAction);
 
-    final JMenu viewMenu = menus.get(workbench.resource.ResourceMgr.MNU_TXT_VIEW);
     AddTabAction add = new AddTabAction(this);
     viewMenu.addSeparator();
     viewMenu.add(add);
@@ -2095,7 +2096,7 @@ public class MainWindow
     this.checkWorkspaceActions();
   }
 
-  private void loadWorkspace(WbWorkspace toLoad, boolean updateRecent)
+  public void loadWorkspace(WbWorkspace toLoad, boolean updateRecent)
   {
     final CallerInfo ci = new CallerInfo(){};
     long start = System.currentTimeMillis();

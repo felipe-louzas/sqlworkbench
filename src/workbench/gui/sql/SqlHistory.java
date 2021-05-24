@@ -67,6 +67,12 @@ public class SqlHistory
   private LastStatementAction lastStmtAction;
   private ClearStatementHistoryAction clearAction;
 
+  public SqlHistory(int size)
+  {
+    this.maxSize = size;
+    this.history = new ArrayList<>(size + 2);
+  }
+
   public SqlHistory(EditorPanel ed, int size)
   {
     this.maxSize = size;
@@ -120,18 +126,22 @@ public class SqlHistory
     String text = edit.getText();
     if (text == null || text.length() == 0) return;
 
+    if (edit.currentSelectionIsTemporary())
+    {
+      addContent(text, edit.getCaretPosition(), 0, 0);
+    }
+    else
+    {
+      addContent(text, edit.getCaretPosition(), 0, 0);
+    }
+    checkActions();
+  }
+
+  public synchronized void addContent(String content, int caretPos, int selectionStart, int selectionEnd)
+  {
+    SqlHistoryEntry entry = new SqlHistoryEntry(content, caretPos, selectionStart, selectionEnd);
     try
     {
-      SqlHistoryEntry entry = null;
-      if (edit.currentSelectionIsTemporary())
-      {
-        entry = new SqlHistoryEntry(text, edit.getCaretPosition(), 0, 0);
-      }
-      else
-      {
-        entry = new SqlHistoryEntry(text, edit.getCaretPosition(), edit.getSelectionStart(), edit.getSelectionEnd());
-      }
-
       SqlHistoryEntry top = this.getTopEntry();
       if (top != null && top.equals(entry)) return;
       this.addEntry(entry);
@@ -140,7 +150,6 @@ public class SqlHistory
     {
       LogMgr.logError(new CallerInfo(){}, "Could not add entry", e);
     }
-    checkActions();
   }
 
   public void addEntry(SqlHistoryEntry entry)
@@ -181,6 +190,7 @@ public class SqlHistory
   public void showLastStatement()
   {
     if (this.history.isEmpty()) return;
+    if (editor == null) return;
     if (!editor.isEditable()) return;
     this.currentEntry = this.history.size() - 1;
     SqlHistoryEntry entry = this.history.get(this.currentEntry);
@@ -191,6 +201,7 @@ public class SqlHistory
   public void showFirstStatement()
   {
     if (this.history.isEmpty()) return;
+    if (editor == null) return;
     if (!editor.isEditable()) return;
     this.currentEntry = 0;
     SqlHistoryEntry entry = this.history.get(this.currentEntry);
@@ -201,6 +212,7 @@ public class SqlHistory
   public void showCurrent()
   {
     if (this.currentEntry >= this.history.size()) return;
+    if (editor == null) return;
     if (!editor.isEditable()) return;
     SqlHistoryEntry entry = this.history.get(this.currentEntry);
     entry.applyTo(editor, true);
@@ -210,6 +222,7 @@ public class SqlHistory
   public void showPreviousStatement()
   {
     if (!this.hasPrevious()) return;
+    if (editor == null) return;
     if (!editor.isEditable()) return;
     SqlHistoryEntry entry = this.getPreviousEntry();
     entry.applyTo(editor);
@@ -219,6 +232,7 @@ public class SqlHistory
   public void showNextStatement()
   {
     if (!this.hasNext()) return;
+    if (editor == null) return;
     SqlHistoryEntry entry = this.getNextEntry();
     entry.applyTo(editor);
     checkActions();
@@ -278,7 +292,7 @@ public class SqlHistory
         // Make sure the editor text is converted to the correct line ending
         BufferedReader reader = new BufferedReader(new StringReader(entry.getText()));
         String line = reader.readLine();
-        while(line != null)
+        while (line != null)
         {
           int len = StringUtil.getRealLineLength(line);
           if (len > 0)

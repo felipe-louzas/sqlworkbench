@@ -36,7 +36,7 @@ import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.dbobjects.objecttree.ObjectFinder;
 
-import workbench.util.WbWorkspace;
+import workbench.workspace.WbWorkspace;
 
 /**
  *

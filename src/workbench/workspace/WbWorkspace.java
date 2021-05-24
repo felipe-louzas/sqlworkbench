@@ -19,7 +19,7 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.util;
+package workbench.workspace;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -42,6 +42,13 @@ import workbench.resource.Settings;
 
 import workbench.gui.sql.PanelType;
 import workbench.gui.sql.SqlHistory;
+
+import workbench.util.CharacterRange;
+import workbench.util.CollectionUtil;
+import workbench.util.FileUtil;
+import workbench.util.StringUtil;
+import workbench.util.WbFile;
+import workbench.util.WbProperties;
 
 /**
  *

@@ -32,7 +32,8 @@ import workbench.resource.Settings;
 import workbench.gui.settings.ExternalFileHandling;
 
 import workbench.util.WbProperties;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 /**
  *

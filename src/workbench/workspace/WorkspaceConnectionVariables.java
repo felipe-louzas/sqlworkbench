@@ -18,13 +18,16 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.util;
+package workbench.workspace;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import workbench.db.WbConnection;
+
+import workbench.util.StringUtil;
+import workbench.util.WbProperties;
 
 /**
  *

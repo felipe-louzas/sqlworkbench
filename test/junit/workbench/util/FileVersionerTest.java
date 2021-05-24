@@ -38,6 +38,16 @@ public class FileVersionerTest
 {
 
   @Test
+  public void testGetVersion()
+  {
+    File f = new File("mystuff.wksp.1");
+    assertEquals(1, FileVersioner.getFileVersion(f, '.'));
+
+    f = new File("mystuff.wksp;42");
+    assertEquals(42, FileVersioner.getFileVersion(f, ';'));
+  }
+
+  @Test
   public void testBackupDir()
     throws Exception
   {

@@ -1,6 +1,4 @@
 /*
- * CloseWorkspaceAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -21,29 +19,34 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.gui.actions;
+package workbench.gui.actions.workspace;
 
 import java.awt.event.ActionEvent;
 
-import workbench.gui.MainWindow;
 import workbench.resource.ResourceMgr;
 
+import workbench.gui.MainWindow;
+import workbench.gui.actions.WbAction;
+
 /**
- * Action to close the current workspace
+ * Action to (re)load the workspace assigned to the current connection profile
  *
- * @see workbench.gui.MainWindow#closeWorkspace(boolean)
+ * @see workbench.gui.MainWindow#assignWorkspace()
+ * @see workbench.db.ConnectionProfile
+ * @see workbench.util.WbWorkspace
+ *
  * @author Thomas Kellerer
  */
-public class CloseWorkspaceAction
+public class ReloadProfileWkspAction
   extends WbAction
 {
   private MainWindow client;
 
-  public CloseWorkspaceAction(MainWindow aClient)
+  public ReloadProfileWkspAction(MainWindow aClient)
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtCloseWorkspace", null);
+    this.initMenuDefinition("MnuTxtLoadProfileWksp", null);
     this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
     this.setIcon(null);
   }
@@ -51,6 +54,14 @@ public class CloseWorkspaceAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    this.client.closeWorkspace(true);
+    if (client.hasProfileWorkspace())
+    {
+      boolean canSwitch = client.saveWorkspace();
+      if (canSwitch)
+      {
+        client.loadCurrentProfileWorkspace();
+      }
+    }
   }
+
 }

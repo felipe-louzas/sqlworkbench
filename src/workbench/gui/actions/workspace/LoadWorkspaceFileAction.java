@@ -1,6 +1,4 @@
 /*
- * LoadWorkspaceFileAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -21,11 +19,12 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.gui.actions;
+package workbench.gui.actions.workspace;
 
 import java.awt.event.ActionEvent;
 
 import workbench.gui.MainWindow;
+import workbench.gui.actions.WbAction;
 
 import workbench.util.WbFile;
 

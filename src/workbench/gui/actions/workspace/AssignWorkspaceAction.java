@@ -1,6 +1,4 @@
 /*
- * SaveAsNewWorkspaceAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -21,35 +19,42 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.gui.actions;
+package workbench.gui.actions.workspace;
 
 import java.awt.event.ActionEvent;
 
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.MainWindow;
+import workbench.gui.actions.WbAction;
 
 /**
+ * Action to assign the currently loaded workspace to the current connection profile
+ *
+ * @see workbench.gui.MainWindow#assignWorkspace()
+ * @see workbench.db.ConnectionProfile
+ * @see workbench.util.WbWorkspace
+ *
  * @author Thomas Kellerer
  */
-public class SaveAsNewWorkspaceAction
+public class AssignWorkspaceAction
   extends WbAction
 {
   private MainWindow client;
 
-  public SaveAsNewWorkspaceAction(MainWindow aClient)
+  public AssignWorkspaceAction(MainWindow aClient)
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtSaveAsNewWorkspace");
-    this.setMenuItemName(ResourceMgr.MNU_TXT_FILE);
+    this.initMenuDefinition("MnuTxtAssignWorkspace", null);
+    this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
     this.setIcon(null);
   }
 
   @Override
   public void executeAction(ActionEvent e)
   {
-    this.client.saveWorkspace(null, false);
+    this.client.assignWorkspace();
   }
 
 }

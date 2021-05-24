@@ -1,6 +1,4 @@
 /*
- * AssignWorkspaceAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -21,33 +19,28 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.gui.actions;
+package workbench.gui.actions.workspace;
 
 import java.awt.event.ActionEvent;
 
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.MainWindow;
+import workbench.gui.actions.WbAction;
 
 /**
- * Action to (re)load the workspace assigned to the current connection profile
- *
- * @see workbench.gui.MainWindow#assignWorkspace()
- * @see workbench.db.ConnectionProfile
- * @see workbench.util.WbWorkspace
- *
  * @author Thomas Kellerer
  */
-public class ReloadProfileWkspAction
+public class SaveAsNewWorkspaceAction
   extends WbAction
 {
   private MainWindow client;
 
-  public ReloadProfileWkspAction(MainWindow aClient)
+  public SaveAsNewWorkspaceAction(MainWindow aClient)
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtLoadProfileWksp", null);
+    this.initMenuDefinition("MnuTxtSaveAsNewWorkspace");
     this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
     this.setIcon(null);
   }
@@ -55,14 +48,7 @@ public class ReloadProfileWkspAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    if (client.hasProfileWorkspace())
-    {
-      boolean canSwitch = client.saveWorkspace();
-      if (canSwitch)
-      {
-        client.loadCurrentProfileWorkspace();
-      }
-    }
+    this.client.saveWorkspace(null, false);
   }
 
 }

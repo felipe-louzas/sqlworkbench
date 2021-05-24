@@ -67,7 +67,8 @@ import workbench.storage.DataStore;
 
 import workbench.util.FilteredProperties;
 import workbench.util.WbThread;
-import workbench.util.WbWorkspace;
+
+import workbench.workspace.WbWorkspace;
 
 /**
  * A panel with projection information for Vertica

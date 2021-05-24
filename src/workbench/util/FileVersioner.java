@@ -179,6 +179,15 @@ public class FileVersioner
     return maxVersions;
   }
 
+  public static int getFileVersion(File target, char versionSeparator)
+  {
+    if (target == null) return -1;
+    String name = target.getName();
+    int idx = name.lastIndexOf(versionSeparator);
+    if (idx < 0) return -1;
+    return Integer.valueOf(name.substring(idx + 1));
+  }
+
   private void slideVersions(File target)
   {
     long start = System.currentTimeMillis();
