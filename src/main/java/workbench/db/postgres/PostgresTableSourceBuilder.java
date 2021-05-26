@@ -41,15 +41,13 @@ import workbench.db.DomainIdentifier;
 import workbench.db.DropType;
 import workbench.db.EnumIdentifier;
 import workbench.db.IndexDefinition;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -758,7 +756,25 @@ public class PostgresTableSourceBuilder
   {
     if (table == null) return null;
 
-    String sql =
+    boolean is14 = JdbcUtils.hasMinimumServerVersion(dbConnection, "14");
+
+    String sql;
+
+    if (is14)
+    {
+      sql =
+        "SELECT st.stxname as statistic_name, \n" +
+        "       st.stxnamespace::pg_catalog.regnamespace AS statistic_schema, \n" +
+        "       pg_catalog.pg_get_statisticsobjdef_columns(st.oid) AS columns,\n" +
+        "       replace(array_to_string(stxkind, ''),'e','') as stxkind\n" +
+        "FROM pg_catalog.pg_statistic_ext st\n" +
+        "WHERE st.stxnamespace = to_regnamespace(?) \n" +
+        "  AND st.stxrelid = to_regclass(?) \n" +
+        "ORDER BY st.stxname";
+    }
+    else
+    {
+      sql =
       "select st.stxname as statistic_name, \n" +
       "       sn.nspname as statistic_schema, \n" +
       "       string_agg(col.attname, ',') as columns, \n" +
@@ -770,10 +786,11 @@ public class PostgresTableSourceBuilder
       "  join pg_attribute col on t.oid = col.attrelid and col.attnum = any(stxkeys)\n" +
       "where nsp.nspname = ? \n"+
       "  and t.relname = ? \n" +
-      "group by st.stxname, sn.nspname, st.stxkind";
+      "group by st.stxname, sn.nspname, st.stxkind \n" +
+      "order by st.stxname";
+    }
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    StringBuilder b = new StringBuilder(100);
 
     Savepoint sp = null;
     StringBuilder result = null;
