@@ -8,4 +8,4 @@
 /website/history_rss.txt
 *.java~
 **/nb-configuration.xml
-**/nbactions.xml
+**/nbactions*.xml
