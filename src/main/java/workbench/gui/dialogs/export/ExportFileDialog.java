@@ -112,6 +112,11 @@ public class ExportFileDialog
     this.parentComponent = caller;
   }
 
+  public void setSelectedColumn(ResultInfo info, List<ColumnIdentifier> columns)
+  {
+    this.exportOptions.setSelectedColumns(info, columns);
+  }
+
   public void setSelectedRowsEnabled(boolean flag)
   {
     this.exportOptions.setSelectedRowsEnabled(flag);

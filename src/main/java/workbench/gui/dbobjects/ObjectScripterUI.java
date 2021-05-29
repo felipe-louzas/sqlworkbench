@@ -39,7 +39,7 @@ import workbench.resource.Settings;
 import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.actions.CreateSnippetAction;
+import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.actions.OpenFileAction;
 import workbench.gui.components.RunningJobIndicator;
 import workbench.gui.components.WbStatusLabel;

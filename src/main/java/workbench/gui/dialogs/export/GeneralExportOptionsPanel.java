@@ -35,6 +35,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -189,9 +190,24 @@ public class GeneralExportOptionsPanel
   {
     selectColumnsButton.setText(ResourceMgr.getString("LblSelectColumns"));
   }
+
   public void allowSelectColumns(boolean flag)
   {
     this.selectColumnsButton.setEnabled(flag);
+  }
+
+  public void setSelectedColumnsInfo(String tooltip)
+  {
+    if (tooltip != null)
+    {
+      this.selectColumnsButton.setIcon(IconMgr.getInstance().getLabelIcon("tick"));
+      this.selectColumnsButton.setToolTipText(tooltip);
+    }
+    else
+    {
+      this.selectColumnsButton.setIcon(null);
+      this.selectColumnsButton.setToolTipText(null);
+    }
   }
 
   public Object addColumnSelectListener(ActionListener l)

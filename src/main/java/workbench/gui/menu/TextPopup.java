@@ -23,7 +23,7 @@ package workbench.gui.menu;
 
 import workbench.interfaces.ClipboardSupport;
 
-import workbench.gui.actions.ClearAction;
+import workbench.gui.actions.clipboard.ClearAction;
 import workbench.gui.actions.SelectAllAction;
 import workbench.gui.actions.WbAction;
 

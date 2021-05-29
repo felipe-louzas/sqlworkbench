@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -127,6 +128,7 @@ public abstract class RowDataConverter
 
   protected DataExporter exporter;
   private Map<Integer, Boolean> multilineInfo;
+  protected Set<String> formulaColumns = CollectionUtil.caseInsensitiveSet();
 
   /**
    * Spreadsheet option to add an additional sheet with the generating SQL
@@ -158,6 +160,25 @@ public abstract class RowDataConverter
   public void setExporter(DataExporter exporter)
   {
     this.exporter = exporter;
+  }
+
+  public void setFormulaColumns(Collection<String> columns)
+  {
+    this.formulaColumns.clear();
+    if (columns != null)
+    {
+      this.formulaColumns.addAll(columns);
+    }
+  }
+
+  public boolean isFormulaColumn(int columnIndex)
+  {
+    return isFormulaColumn(this.metaData.getColumnName(columnIndex));
+  }
+
+  public boolean isFormulaColumn(String column)
+  {
+    return formulaColumns.contains(column);
   }
 
   /**

@@ -50,13 +50,11 @@ import workbench.db.exporter.PoiHelper;
 import workbench.db.exporter.WrongFormatFileException;
 
 import workbench.storage.DataStore;
-
-import workbench.sql.generator.merge.MergeGenerator;
-
 import workbench.storage.RowActionMonitor;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.generator.merge.MergeGenerator;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -116,6 +114,7 @@ public class WbExport
   public static final String ARG_TARGET_SHEET_IDX = "targetSheet";
   public static final String ARG_TARGET_SHEET_NAME = "targetSheetName";
   public static final String ARG_DATA_OFFSET = "offset";
+  public static final String ARG_FORMULA_COLS = "formulaColumns";
 
   public static final String ARG_PAGE_TITLE = "title";
 
@@ -255,6 +254,7 @@ public class WbExport
     cmdLine.addArgument(ARG_TARGET_SHEET_IDX);
     cmdLine.addArgument(ARG_TARGET_SHEET_NAME);
     cmdLine.addArgument(ARG_DATA_OFFSET);
+    cmdLine.addArgument(ARG_FORMULA_COLS);
     cmdLine.addArgument(ARG_INCLUDE_IDENTITY, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_INCLUDE_READONLY, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_FALSE_LITERAL);
@@ -567,6 +567,8 @@ public class WbExport
     exporter.setOptimizeSpreadsheetColumns(cmdLine.getBoolean(ARG_OPT_WIDTH, !targetSheetSpecified));
     exporter.setUseMultiRowInserts(cmdLine.getBoolean(ARG_MULTI_ROW_INSERTS, false));
     exporter.setExportHeaders(cmdLine.getBoolean(ARG_HEADER, getHeaderDefault(type)));
+    exporter.setFormulaColumns(cmdLine.getListValue(ARG_FORMULA_COLS));
+
     String title = cmdLine.getValue(ARG_PAGE_TITLE, cmdLine.getValue(WbImport.ARG_SHEET_NAME));
     exporter.setPageTitle(title);
     exporter.setIncludeColumnComments(cmdLine.getBoolean(ARG_COL_COMMENTS, false));

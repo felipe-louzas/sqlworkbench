@@ -25,10 +25,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import javax.swing.table.TableColumnModel;
 
 import workbench.WbManager;
 import workbench.log.CallerInfo;
@@ -286,9 +283,9 @@ public class ClipBoardCopier
     checkUpdateTable();
 
     List<ColumnIdentifier> columnsToInclude = null;
-    if (selectedOnly  && !showSelectColumns && this.client.getColumnSelectionAllowed())
+    if (selectedOnly && !showSelectColumns && this.client.getColumnSelectionAllowed())
     {
-      columnsToInclude = getColumnsFromSelection();
+      columnsToInclude = client.getColumnsFromSelection();
     }
 
     if (showSelectColumns && !WbManager.isTest())
@@ -471,19 +468,5 @@ public class ClipBoardCopier
     }
   }
 
-  private List<ColumnIdentifier> getColumnsFromSelection()
-  {
-    int[] cols = this.client.getSelectedColumns();
-    DataStore ds = this.client.getDataStore();
-    if (ds == null) return Collections.emptyList();
-    List<ColumnIdentifier> result = new ArrayList<>(cols.length);
-    TableColumnModel model = client.getColumnModel();
-    for (int i=0; i < cols.length; i++)
-    {
-      int realIndex = model.getColumn(cols[i]).getModelIndex();
-      result.add(ds.getResultInfo().getColumn(realIndex));
-    }
-    return result;
-  }
 }
 

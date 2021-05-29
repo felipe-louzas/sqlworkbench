@@ -33,7 +33,9 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -68,6 +70,7 @@ import workbench.gui.components.WbFilePicker;
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 
+import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -490,6 +493,29 @@ public class ExportOptionsPanel
   public void setIncludeSqlDeleteInsert(boolean flag)
   {
     this.sqlOptions.setIncludeDeleteInsert(flag);
+  }
+
+  public void setSelectedColumns(ResultInfo result, List<ColumnIdentifier> selected)
+  {
+    this.dataStoreColumns = result;
+
+    if (allColumnsSelected(result, selected))
+    {
+      this.selectedColumns = null;
+      this.generalOptions.setSelectedColumnsInfo(null);
+    }
+    else
+    {
+      this.selectedColumns = new ArrayList<>(selected);
+      String columns = this.selectedColumns.stream().map(c -> c.getColumnName()).collect(Collectors.joining(", "));
+      this.generalOptions.setSelectedColumnsInfo(columns);
+    }
+  }
+
+  private boolean allColumnsSelected(ResultInfo result, List<ColumnIdentifier> selected)
+  {
+    if (result == null || CollectionUtil.isEmpty(selected)) return true;
+    return result.getColumnCount() == selected.size();
   }
 
   public List<ColumnIdentifier> getColumnsToExport()
@@ -942,12 +968,8 @@ public class ExportOptionsPanel
     if (this.columnSelectorPanel == null)
     {
       this.columnSelectorPanel = new ColumnSelectorPanel(this.dataStoreColumns.getColumns());
-      this.columnSelectorPanel.selectAll();
     }
-    else
-    {
-      this.columnSelectorPanel.selectColumns(this.selectedColumns);
-    }
+    this.columnSelectorPanel.selectColumns(this.selectedColumns);
 
     int choice = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), this.columnSelectorPanel, ResourceMgr.getString("MsgSelectColumnsWindowTitle"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 

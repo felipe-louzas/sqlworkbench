@@ -21,6 +21,10 @@
  */
 package workbench.gui.actions;
 
+import workbench.gui.actions.clipboard.CopySelectedAsSqlUpdateAction;
+import workbench.gui.actions.clipboard.CopySelectedAsTextAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlDeleteInsertAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlInsertAction;
 import workbench.gui.dbobjects.objecttree.FindObjectAction;
 
 /**

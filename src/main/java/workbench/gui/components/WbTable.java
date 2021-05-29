@@ -46,6 +46,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
@@ -99,23 +100,6 @@ import workbench.db.WbConnection;
 import workbench.db.postgres.HstoreSupport;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.actions.CopyAction;
-import workbench.gui.actions.CopyAllColumnNamesAction;
-import workbench.gui.actions.CopyAsDbUnitXMLAction;
-import workbench.gui.actions.CopyAsSqlDeleteAction;
-import workbench.gui.actions.CopyAsSqlDeleteInsertAction;
-import workbench.gui.actions.CopyAsSqlInsertAction;
-import workbench.gui.actions.CopyAsSqlMergeAction;
-import workbench.gui.actions.CopyAsSqlUpdateAction;
-import workbench.gui.actions.CopyAsTextAction;
-import workbench.gui.actions.CopyColumnNameAction;
-import workbench.gui.actions.CopySelectedAsDbUnitXMLAction;
-import workbench.gui.actions.CopySelectedAsSqlDeleteAction;
-import workbench.gui.actions.CopySelectedAsSqlDeleteInsertAction;
-import workbench.gui.actions.CopySelectedAsSqlInsertAction;
-import workbench.gui.actions.CopySelectedAsSqlMergeAction;
-import workbench.gui.actions.CopySelectedAsSqlUpdateAction;
-import workbench.gui.actions.CopySelectedAsTextAction;
 import workbench.gui.actions.DisplayDataFormAction;
 import workbench.gui.actions.FilterDataAction;
 import workbench.gui.actions.OptimizeAllColumnsAction;
@@ -134,6 +118,23 @@ import workbench.gui.actions.SortAscendingAction;
 import workbench.gui.actions.SortDescendingAction;
 import workbench.gui.actions.TransposeRowAction;
 import workbench.gui.actions.WbAction;
+import workbench.gui.actions.clipboard.CopyAction;
+import workbench.gui.actions.clipboard.CopyAllColumnNamesAction;
+import workbench.gui.actions.clipboard.CopyAsDbUnitXMLAction;
+import workbench.gui.actions.clipboard.CopyAsSqlDeleteAction;
+import workbench.gui.actions.clipboard.CopyAsSqlDeleteInsertAction;
+import workbench.gui.actions.clipboard.CopyAsSqlInsertAction;
+import workbench.gui.actions.clipboard.CopyAsSqlMergeAction;
+import workbench.gui.actions.clipboard.CopyAsSqlUpdateAction;
+import workbench.gui.actions.clipboard.CopyAsTextAction;
+import workbench.gui.actions.clipboard.CopyColumnNameAction;
+import workbench.gui.actions.clipboard.CopySelectedAsDbUnitXMLAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlDeleteAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlDeleteInsertAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlInsertAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlMergeAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlUpdateAction;
+import workbench.gui.actions.clipboard.CopySelectedAsTextAction;
 import workbench.gui.filter.FilterDefinitionManager;
 import workbench.gui.fontzoom.DecreaseFontSize;
 import workbench.gui.fontzoom.FontZoomProvider;
@@ -483,6 +484,33 @@ public class WbTable
     {
       im.put(copyShortcut, uiAction);
     }
+  }
+
+  /**
+   * Return the currently selected column names.
+   *
+   * This only returns a sensible result, if column selection is currently
+   * enabled.
+   *
+   * @return the list of columns if column selection is enabled
+   * @see #getColumnSelectionAllowed()
+   */
+  public List<ColumnIdentifier> getColumnsFromSelection()
+  {
+    DataStore ds = getDataStore();
+    if (ds == null) return Collections.emptyList();
+    int[] cols = cols = getSelectedColumns();
+    List<ColumnIdentifier> result = new ArrayList<>(cols.length);
+    TableColumnModel model = getColumnModel();
+    if (cols != null)
+    {
+      for (int i=0; i < cols.length; i++)
+      {
+        int realIndex = model.getColumn(cols[i]).getModelIndex();
+        result.add(ds.getResultInfo().getColumn(realIndex));
+      }
+    }
+    return result;
   }
 
   public int getColumnIndex(String colName)
@@ -2158,7 +2186,7 @@ public class WbTable
     WbConnection conn = getOriginalConnection();
     if (conn == null) return false;
     if (!conn.getMetadata().isPostgres()) return false;
-    
+
     ColumnIdentifier column = getColumnDefinition(col);
     if (column == null) return false;
     return HstoreSupport.isHstoreType(column.getDbmsType());

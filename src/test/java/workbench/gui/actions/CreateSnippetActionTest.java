@@ -21,9 +21,13 @@
  */
 package workbench.gui.actions;
 
+import workbench.gui.actions.clipboard.CreateSnippetAction;
+
 import org.junit.Assume;
 import org.junit.Test;
+
 import workbench.WbTestCase;
+
 import static org.junit.Assert.*;
 
 /**

@@ -121,6 +121,8 @@ public abstract class ExportWriter
     converter.setIncludeColumnComments(exporter.getIncludeColumnComments());
     converter.setMaxLobFilesPerDirectory(exporter.getMaxLobFilesPerDirectory());
     converter.setInfinityLiterals(exporter.getInfinityLiterals());
+    converter.setFormulaColumns(exporter.getFormulaColumns());
+
     trimCharData = exporter.getTrimCharData();
   }
 

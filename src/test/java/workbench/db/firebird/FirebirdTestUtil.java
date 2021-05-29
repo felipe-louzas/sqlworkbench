@@ -59,7 +59,7 @@ public class FirebirdTestUtil
       if (con != null) return con;
 
       ArgumentParser parser = new AppArguments();
-      parser.parse("-url='jdbc:firebirdsql://localhost:3050/wbjunit' -autocommit=false -username=" + TEST_USER + " -password=" + TEST_PWD + " -driver=org.firebirdsql.jdbc.FBDriver");
+      parser.parse("-url='jdbc:firebirdsql://localhost:3050/wbjunit?charSet=UTF-8' -autocommit=false -username=" + TEST_USER + " -password=" + TEST_PWD + " -driver=org.firebirdsql.jdbc.FBDriver");
       ConnectionProfile prof = BatchRunner.createCmdLineProfile(parser);
       prof.setName("WBJUnitFirebird");
       ConnectionMgr.getInstance().addProfile(prof);

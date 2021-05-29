@@ -25,9 +25,9 @@ import javax.swing.JPopupMenu;
 
 import workbench.interfaces.ClipboardSupport;
 
-import workbench.gui.actions.CopyAction;
-import workbench.gui.actions.CutAction;
-import workbench.gui.actions.PasteAction;
+import workbench.gui.actions.clipboard.CopyAction;
+import workbench.gui.actions.clipboard.CutAction;
+import workbench.gui.actions.clipboard.PasteAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.WbMenu;
 

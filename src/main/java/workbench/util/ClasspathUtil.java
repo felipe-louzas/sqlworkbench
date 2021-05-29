@@ -31,6 +31,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
+import workbench.WbManager;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
@@ -76,6 +77,8 @@ public class ClasspathUtil
 
   public List<File> getExtLibs()
   {
+    if (WbManager.isTest()) return Collections.emptyList();
+
     FileFilter ff = (File pathname) -> pathname.getName().toLowerCase().endsWith(".jar");
     File[] files = extDir.listFiles(ff);
 
@@ -149,8 +152,9 @@ public class ClasspathUtil
         return f;
       }
     }
+    
     File jarFile = getJarFile();
-    if (jarFile == null)
+    if (jarFile == null || jarFile.isDirectory())
     {
       // This can happen when running from within the IDE
       return new WbFile(".", EXT_DIR);

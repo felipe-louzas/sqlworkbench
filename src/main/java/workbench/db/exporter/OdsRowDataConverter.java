@@ -524,7 +524,16 @@ public class OdsRowDataConverter
 
   private StringBuilder getCellAttribs(Object data, int column)
   {
-    StringBuilder attr = new StringBuilder("office:value-type=");
+    StringBuilder attr = new StringBuilder(50);
+    if (isFormulaColumn(column) && data != null)
+    {
+      attr.append("table:formula=\"");
+      attr.append(data.toString());
+      attr.append("\"");
+      return attr;
+    }
+    
+    attr.append("office:value-type=");
     int type = metaData.getColumnType(column);
 
     if (SqlUtil.isNumberType(type))

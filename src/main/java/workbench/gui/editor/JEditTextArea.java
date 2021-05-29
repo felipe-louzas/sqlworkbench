@@ -70,9 +70,9 @@ import workbench.resource.Settings;
 import workbench.db.QuoteHandler;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.actions.CopyAction;
-import workbench.gui.actions.CutAction;
-import workbench.gui.actions.PasteAction;
+import workbench.gui.actions.clipboard.CopyAction;
+import workbench.gui.actions.clipboard.CutAction;
+import workbench.gui.actions.clipboard.PasteAction;
 import workbench.gui.actions.ScrollDownAction;
 import workbench.gui.actions.ScrollUpAction;
 import workbench.gui.actions.SelectAllAction;

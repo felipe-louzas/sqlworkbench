@@ -24,10 +24,11 @@ package workbench.gui.menu;
 import java.util.Optional;
 
 import javax.swing.JPopupMenu;
+
 import workbench.gui.MainWindow;
 import workbench.gui.actions.AddTabAction;
 import workbench.gui.actions.CloseOtherTabsAction;
-import workbench.gui.actions.CopyFileNameAction;
+import workbench.gui.actions.clipboard.CopyFileNameAction;
 import workbench.gui.actions.FileDiscardAction;
 import workbench.gui.actions.NewDbExplorerPanelAction;
 import workbench.gui.actions.RemoveTabAction;
@@ -35,7 +36,9 @@ import workbench.gui.actions.RenameTabAction;
 import workbench.gui.actions.RestoreClosedTabAction;
 import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.SqlPanel;
+
 import workbench.interfaces.MainPanel;
+
 import workbench.gui.actions.InsertTabAction;
 import workbench.gui.actions.LockPanelAction;
 import workbench.gui.actions.MoveSqlTabLeft;

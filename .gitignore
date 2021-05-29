@@ -9,3 +9,4 @@
 *.java~
 **/nb-configuration.xml
 **/nbactions*.xml
+/nbproject/

@@ -48,6 +48,7 @@ import workbench.util.StringUtil;
 import workbench.util.WbDateFormatter;
 import workbench.util.WbFile;
 
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.ss.usermodel.Cell;
@@ -60,8 +61,10 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.streaming.SXSSFFormulaEvaluator;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookType;
@@ -367,6 +370,22 @@ public class XlsRowDataConverter
       writeInfoSheet();
     }
 
+    if (!formulaColumns.isEmpty())
+    {
+      if (workbook instanceof XSSFWorkbook)
+      {
+        XSSFFormulaEvaluator.evaluateAllFormulaCells((XSSFWorkbook)workbook);
+      }
+      else if (workbook instanceof SXSSFWorkbook)
+      {
+        SXSSFFormulaEvaluator.evaluateAllFormulaCells((SXSSFWorkbook)workbook, false);
+      }
+      else if (workbook instanceof HSSFWorkbook)
+      {
+        HSSFFormulaEvaluator.evaluateAllFormulaCells((HSSFWorkbook)workbook);
+      }
+    }
+
     if (getEnableFixedHeader() && writeHeader)
     {
       sheet.createFreezePane(0, firstRow);
@@ -619,6 +638,18 @@ public class XlsRowDataConverter
       else if (type == Types.DATE)
       {
         useFormat = useFormat || applyDateFormat();
+      }
+    }
+    else if (isFormulaColumn(column) && !isHead)
+    {
+      try
+      {
+        cell.setCellFormula(value.toString());
+      }
+      catch (Throwable th)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Could not set formula \"" + value + "\" for column " + metaData.getColumnName(column), th);
+        cell.setCellValue(value.toString());
       }
     }
     else if (value instanceof BigDecimal)

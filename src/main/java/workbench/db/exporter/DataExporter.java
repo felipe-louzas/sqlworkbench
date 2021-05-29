@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -204,6 +205,8 @@ public class DataExporter
   private Point dataOffset;
   private Locale localeToUse;
 
+  private Collection<String> formulaColumns;
+
   private final ResultBufferingController bufferController;
 
   /**
@@ -345,6 +348,15 @@ public class DataExporter
     this.trimCharData = trim;
   }
 
+  public Collection<String> getFormulaColumns()
+  {
+    return this.formulaColumns;
+  }
+  
+  public void setFormulaColumns(Collection<String> columns)
+  {
+    this.formulaColumns = columns;
+  }
 
   public String getMergeType()
   {

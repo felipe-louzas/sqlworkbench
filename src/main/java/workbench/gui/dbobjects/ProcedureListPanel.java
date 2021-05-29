@@ -72,7 +72,7 @@ import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.AlterProcedureAction;
 import workbench.gui.actions.CompileDbObjectAction;
-import workbench.gui.actions.CreateSnippetAction;
+import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.actions.DropDbObjectAction;
 import workbench.gui.actions.ReloadAction;
 import workbench.gui.actions.ScriptDbObjectAction;

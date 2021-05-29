@@ -43,7 +43,7 @@ import workbench.db.TableSelectBuilder;
 import workbench.db.WbConnection;
 
 import workbench.gui.MainWindow;
-import workbench.gui.actions.CreateSnippetAction;
+import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.WbMenu;
 import workbench.gui.components.WbMenuItem;
