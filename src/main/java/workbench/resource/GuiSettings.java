@@ -1676,4 +1676,10 @@ public class GuiSettings
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.filedialog.use.awt", false);
   }
+
+  public static int getCopyDataRowsThreshold()
+  {
+    return Settings.getInstance().getIntProperty("workbench.gui.copy.data.rowcount.threshold", 500);
+  }
+
 }

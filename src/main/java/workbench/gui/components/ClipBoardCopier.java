@@ -24,12 +24,15 @@ package workbench.gui.components;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import workbench.WbManager;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.GuiSettings;
 import workbench.resource.MultiRowInserts;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -40,6 +43,7 @@ import workbench.db.exporter.BlobMode;
 import workbench.db.exporter.ExportType;
 import workbench.db.exporter.SqlRowDataConverter;
 
+import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 
 import workbench.storage.DataStore;
@@ -66,9 +70,12 @@ import workbench.util.WbThread;
  * @author Thomas Kellerer
  */
 public class ClipBoardCopier
+  implements ActionListener
 {
   private final DataStore data;
   private final WbTable client;
+  private boolean cancelled = false;
+  private FeedbackWindow feedback;
 
   /**
    * Create a new ClipBoardCopier to copy the contents of the given table.
@@ -115,18 +122,25 @@ public class ClipBoardCopier
       return;
     }
 
-    // For some reason the statusbar will not be updated if
-    // this is run in the AWT thread, so we have to
-    // create a new thread to run the actual copy
+    createFeedbackWindow();
+    cancelled = false;
     WbThread t = new WbThread("CopyThread")
     {
       @Override
       public void run()
       {
-        doCopyAsDBUnitXML(selectedOnly, showSelectColumns);
+        try
+        {
+          doCopyAsDBUnitXML(selectedOnly, showSelectColumns);
+        }
+        finally
+        {
+          closeFeedback();
+        }
       }
     };
     t.start();
+    showFeedback();
   }
 
   public void doCopyAsDBUnitXML(boolean selectedOnly, final boolean showSelectColumns)
@@ -151,7 +165,7 @@ public class ClipBoardCopier
 
       String xml = copier.createDBUnitXMLDataString(data, selected);
 
-      if (xml != null)
+      if (xml != null && !cancelled)
       {
         Clipboard clp = getClipboard();
         StringSelection sel = new StringSelection(xml);
@@ -160,23 +174,27 @@ public class ClipBoardCopier
     }
     catch (Throwable e)
     {
-      if (e instanceof OutOfMemoryError)
+      if (!cancelled)
       {
-        WbManager.getInstance().showOutOfMemoryError();
-      }
-      else
-      {
-        String msg = ResourceMgr.getString("ErrClipCopy");
-        msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(e));
-        if (!WbManager.isTest())
+        if (e instanceof OutOfMemoryError)
         {
-          WbSwingUtilities.showErrorMessage(client, msg);
+          WbManager.getInstance().showOutOfMemoryError();
         }
+        else
+        {
+          String msg = ResourceMgr.getString("ErrClipCopy");
+          msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(e));
+          if (!WbManager.isTest())
+          {
+            WbSwingUtilities.showErrorMessage(client, msg);
+          }
+        }
+        LogMgr.logError(new CallerInfo(){}, "Error when copying as SQL", e);
       }
-      LogMgr.logError(new CallerInfo(){}, "Error when copying as SQL", e);
     }
     finally
     {
+      closeFeedback();
       WbSwingUtilities.showDefaultCursorOnWindow(this.client);
     }
   }
@@ -219,9 +237,8 @@ public class ClipBoardCopier
       return;
     }
 
-    // For some reason the statusbar will not be updated if
-    // this is run in the AWT thread, so we have to
-    // create a new thread to run the actual copy
+    cancelled = false;
+    createFeedbackWindow();
     WbThread t = new WbThread("CopyThread")
     {
       @Override
@@ -231,6 +248,7 @@ public class ClipBoardCopier
       }
     };
     t.start();
+    showFeedback();
   }
 
   private boolean needsPK(ExportType type)
@@ -240,12 +258,20 @@ public class ClipBoardCopier
 
   public void doCopyAsSql(final ExportType type, boolean selectedOnly, final boolean showSelectColumns)
   {
-    String sql = createSqlString(type, selectedOnly, showSelectColumns);
-    if (sql != null)
+    try
     {
-      Clipboard clp = getClipboard();
-      StringSelection sel = new StringSelection(sql);
-      clp.setContents(sel, sel);
+      String sql = createSqlString(type, selectedOnly, showSelectColumns);
+      if (sql != null && !cancelled)
+      {
+        Clipboard clp = getClipboard();
+        StringSelection sel = new StringSelection(sql);
+        clp.setContents(sel, sel);
+      }
+    }
+    finally
+    {
+      closeFeedback();
+      cancelled = false;
     }
   }
 
@@ -282,6 +308,11 @@ public class ClipBoardCopier
 
     checkUpdateTable();
 
+    if (cancelled)
+    {
+      return null;
+    }
+
     List<ColumnIdentifier> columnsToInclude = null;
     if (selectedOnly && !showSelectColumns && this.client.getColumnSelectionAllowed())
     {
@@ -292,7 +323,12 @@ public class ClipBoardCopier
     {
       ColumnSelection select = new ColumnSelection(this.client);
       boolean ok = select.selectColumns(false, selectedOnly, false, client.getSelectedRowCount() > 0, false);
-      if (!ok) return null;
+      if (!ok)
+      {
+        cancelled = true;
+        return null;
+      }
+
       columnsToInclude = select.getColumns();
       selectedOnly = select.getSelectedOnly();
     }
@@ -314,6 +350,7 @@ public class ClipBoardCopier
       {
         LogMgr.logError(new CallerInfo(){}, "Cannot create UPDATE statement with only key columns!", null);
         if (!WbManager.isTest()) WbSwingUtilities.showErrorMessageKey(client, "ErrCopyNoNonKeyCols");
+        cancelled = true;
         return null;
       }
     }
@@ -399,6 +436,9 @@ public class ClipBoardCopier
       {
         result.append(start);
       }
+
+      if (cancelled) return null;
+
       for (int row = 0; row < count; row ++)
       {
         if (rows == null)
@@ -424,7 +464,9 @@ public class ClipBoardCopier
         {
           result.append('\n');
         }
+        if (cancelled) return null;
       }
+
       StringBuilder end = converter.getEnd(count);
       if (end != null)
       {
@@ -434,17 +476,20 @@ public class ClipBoardCopier
     }
     catch (Throwable e)
     {
-      if (e instanceof OutOfMemoryError)
+      if (!cancelled)
       {
-        WbManager.getInstance().showOutOfMemoryError();
+        if (e instanceof OutOfMemoryError)
+        {
+          WbManager.getInstance().showOutOfMemoryError();
+        }
+        else
+        {
+          String msg = ResourceMgr.getString("ErrClipCopy");
+          msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(e));
+          if (!WbManager.isTest()) WbSwingUtilities.showErrorMessage(client, msg);
+        }
+        LogMgr.logError(new CallerInfo(){}, "Error when copying as SQL", e);
       }
-      else
-      {
-        String msg = ResourceMgr.getString("ErrClipCopy");
-        msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(e));
-        if (!WbManager.isTest()) WbSwingUtilities.showErrorMessage(client, msg);
-      }
-      LogMgr.logError(new CallerInfo(){}, "Error when copying as SQL", e);
     }
     finally
     {
@@ -468,5 +513,42 @@ public class ClipBoardCopier
     }
   }
 
+  @Override
+  public void actionPerformed(ActionEvent e)
+  {
+    this.cancelled = true;
+  }
+
+  private void showFeedback()
+  {
+    if (feedback != null)
+    {
+      feedback.setVisible(true);
+    }
+  }
+
+  private void createFeedbackWindow()
+  {
+    if (client != null && client.getRowCount() >= GuiSettings.getCopyDataRowsThreshold())
+    {
+      MainWindow window = WbSwingUtilities.getMainWindow(client);
+      feedback = new FeedbackWindow(window, ResourceMgr.getString("MsgCopying"), this, "LblCancelPlain", true);
+      WbSwingUtilities.center(feedback, window);
+    }
+    else
+    {
+      feedback = null;
+    }
+  }
+
+  private void closeFeedback()
+  {
+    if (feedback != null)
+    {
+      feedback.setVisible(false);
+      feedback.dispose();
+      feedback = null;
+    }
+  }
 }
 

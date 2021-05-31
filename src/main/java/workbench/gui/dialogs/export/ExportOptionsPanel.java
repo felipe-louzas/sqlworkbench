@@ -499,14 +499,25 @@ public class ExportOptionsPanel
   {
     this.dataStoreColumns = result;
 
-    if (allColumnsSelected(result, selected))
+    if (CollectionUtil.isEmpty(selected))
     {
       this.selectedColumns = null;
-      this.generalOptions.setSelectedColumnsInfo(null);
     }
     else
     {
       this.selectedColumns = new ArrayList<>(selected);
+    }
+    updateSelectedColumnsInfo();
+  }
+
+  private void updateSelectedColumnsInfo()
+  {
+    if (allColumnsSelected(dataStoreColumns, selectedColumns))
+    {
+      this.generalOptions.setSelectedColumnsInfo(null);
+    }
+    else
+    {
       String columns = this.selectedColumns.stream().map(c -> c.getColumnName()).collect(Collectors.joining(", "));
       this.generalOptions.setSelectedColumnsInfo(columns);
     }
@@ -977,6 +988,7 @@ public class ExportOptionsPanel
     {
       this.selectedColumns = this.columnSelectorPanel.getSelectedColumns();
     }
+    updateSelectedColumnsInfo();
   }
 
 }

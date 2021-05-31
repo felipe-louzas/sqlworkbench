@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.swing.SwingConstants;
 
+import workbench.interfaces.Interruptable;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
@@ -50,6 +51,7 @@ import workbench.util.StringUtil;
  * @author Thomas Kellerer
  */
 public abstract class ConsolePrinter
+  implements Interruptable
 {
   protected Map<Integer, Integer> columnWidths;
   protected TextRowDataConverter converter = new TextRowDataConverter();
@@ -68,6 +70,7 @@ public abstract class ConsolePrinter
   protected boolean showResultName = true;
   protected boolean printHeader = true;
   protected boolean useMarkdownFormatting = false;
+  protected boolean cancelled;
 
   public ConsolePrinter()
   {
@@ -135,6 +138,18 @@ public abstract class ConsolePrinter
   public void setPrintHeader(boolean flag)
   {
     this.printHeader = flag;
+  }
+
+  @Override
+  public void cancelExecution()
+  {
+    this.cancelled = true;
+  }
+
+  @Override
+  public boolean confirmCancel()
+  {
+    return true;
   }
 
   protected void printHeader(TextPrinter pw)

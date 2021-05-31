@@ -182,6 +182,7 @@ public class DataStorePrinter
         int row = rows == null ? i : rows[i];
         RowData rowData = data.getRow(row);
         printRow(pw, rowData, row);
+        if (cancelled) break;
       }
       if (showRowCount)
       {

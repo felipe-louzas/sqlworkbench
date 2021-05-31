@@ -35,11 +35,13 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
 import workbench.WbManager;
 import workbench.console.DataStorePrinter;
 import workbench.console.TextPrinter;
+import workbench.interfaces.Interruptable;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
@@ -52,8 +54,10 @@ import workbench.db.exporter.BlobMode;
 import workbench.db.exporter.DataExporter;
 import workbench.db.exporter.ExportType;
 
+import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
+import workbench.gui.components.FeedbackWindow;
 import workbench.gui.components.StringSelectionAdapter;
 import workbench.gui.components.WbTable;
 import workbench.gui.dialogs.export.ExportFileDialog;
@@ -78,6 +82,10 @@ public class CopyAsTextAction
 {
   private final WbTable client;
   protected boolean copySelected;
+  private WbThread worker;
+  private JDialog feedback;
+  private Interruptable job;
+  private boolean cancelled = false;
 
   public CopyAsTextAction(WbTable aClient)
   {
@@ -129,7 +137,15 @@ public class CopyAsTextAction
       rows = null;
     }
 
-    WbThread t = new WbThread("CopyThread")
+    if (client.getRowCount() >= GuiSettings.getCopyDataRowsThreshold())
+    {
+      MainWindow window = WbSwingUtilities.getMainWindow(client);
+      feedback = new FeedbackWindow(window, ResourceMgr.getString("MsgCopying"), this, "LblCancelPlain", true);
+      WbSwingUtilities.center(feedback, window);
+    }
+
+    cancelled = false;
+    worker = new WbThread("CopyThread")
     {
       @Override
       public void run()
@@ -137,7 +153,34 @@ public class CopyAsTextAction
         doCopy(type, dialog, rows);
       }
     };
-    t.start();
+    worker.start();
+    if (feedback != null)
+    {
+      feedback.setVisible(true);
+    }
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e)
+  {
+    super.actionPerformed(e);
+    if (e.getSource() == this.feedback && this.job != null)
+    {
+      cancelled = true;
+      job.cancelExecution();
+      try
+      {
+        if (worker != null)
+        {
+          worker.interrupt();
+          worker.stop();
+        }
+      }
+      catch (Throwable th)
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Could not interrupt worker thread");
+      }
+    }
   }
 
   private void doCopy(ExportType type, ExportFileDialog dialog, int[] rows)
@@ -145,6 +188,8 @@ public class CopyAsTextAction
     WbStringWriter output = new WbStringWriter(client.getRowCount() * 100);
     try
     {
+      WbSwingUtilities.showWaitCursorOnWindow(this.client);
+
       if (type == ExportType.FORMATTED_TEXT)
       {
         writeFormattedText(dialog, output, rows);
@@ -152,6 +197,12 @@ public class CopyAsTextAction
       else
       {
         writeExport(dialog, output, rows);
+      }
+
+      if (cancelled)
+      {
+        LogMgr.logDebug(new CallerInfo(){}, "Copy as text cancelled");
+        return;
       }
 
       final Transferable transferable;
@@ -179,34 +230,52 @@ public class CopyAsTextAction
     }
     catch (Throwable ex)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error copying to clipboard", ex);
-      if (ex instanceof OutOfMemoryError)
+      if (!cancelled)
       {
-        WbManager.getInstance().showOutOfMemoryError();
+        LogMgr.logError(new CallerInfo(){}, "Error copying to clipboard", ex);
+        if (ex instanceof OutOfMemoryError)
+        {
+          WbManager.getInstance().showOutOfMemoryError();
+        }
+        else
+        {
+          String msg = ResourceMgr.getString("ErrClipCopy");
+          msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(ex));
+          WbSwingUtilities.showErrorMessage(client, msg);
+        }
       }
-      else
+    }
+    finally
+    {
+      WbSwingUtilities.showDefaultCursorOnWindow(this.client);
+
+      if (feedback != null)
       {
-        String msg = ResourceMgr.getString("ErrClipCopy");
-        msg = StringUtil.replace(msg, "%errmsg%", ExceptionUtil.getDisplay(ex));
-        WbSwingUtilities.showErrorMessage(client, msg);
+        feedback.setVisible(false);
+        feedback.dispose();
+        feedback = null;
       }
+      cancelled = false;
+      worker = null;
+      job = null;
     }
   }
 
-  private boolean writeExport(ExportFileDialog dialog, Writer out, int[] selectedRows)
+  private void writeExport(ExportFileDialog dialog, Writer out, int[] selectedRows)
   {
     DataExporter exporter = new DataExporter(client.getDataStore().getOriginalConnection());
+    this.job = exporter;
     dialog.setExporterOptions(exporter);
 
     BlobMode blobMode = dialog.getSqlOptions().getBlobMode();
     if (blobMode == BlobMode.SaveToFile)
     {
       LogMgr.logWarning(new CallerInfo(){}, "Blob mode \"file\" not supported for clipboard actions. Using DBMS specific format");
-      dialog.getSqlOptions().setBlobMode(BlobMode.DbmsLiteral);
+      exporter.setBlobMode(BlobMode.DbmsLiteral);
     }
 
     exporter.writeTo(out, client.getDataStore(), dialog.getColumnsToExport(), selectedRows);
-    if (!exporter.isSuccess())
+    if (!cancelled && !exporter.isSuccess())
     {
       CharSequence msg = exporter.getErrors();
       if (msg != null)
@@ -214,12 +283,12 @@ public class CopyAsTextAction
         WbSwingUtilities.showErrorMessage(client, msg.toString());
       }
     }
-    return exporter.isSuccess();
   }
 
   private void writeFormattedText(ExportFileDialog dialog, Writer out, int[] selectedRows)
   {
       DataStorePrinter printer = new DataStorePrinter(client.getDataStore());
+      this.job = printer;
       printer.setNullString(dialog.getBasicExportOptions().getNullString());
       printer.setFormatColumns(true);
       printer.setPrintRowCount(false);
@@ -235,6 +304,7 @@ public class CopyAsTextAction
         }
         printer.setColumnsToPrint(colNames);
       }
+      if (cancelled) return;
       TextPrinter pw = TextPrinter.createPrinter(new PrintWriter(out));
       printer.printTo(pw, selectedRows);
   }

@@ -71,7 +71,12 @@ public class FeedbackWindow
 
   public FeedbackWindow(Frame owner, String message, ActionListener action, String buttonTextKey)
   {
-    super(owner, false);
+    this(owner, message, action, buttonTextKey, false);
+  }
+  
+  public FeedbackWindow(Frame owner, String message, ActionListener action, String buttonTextKey, boolean modal)
+  {
+    super(owner, modal);
     initComponents(message, action, buttonTextKey);
   }
 
@@ -180,6 +185,7 @@ public class FeedbackWindow
   {
     if (cancelAction != null)
     {
+      evt.setSource(this);
       cancelAction.actionPerformed(evt);
     }
   }

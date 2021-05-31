@@ -201,6 +201,7 @@ public class ResultSetPrinter
         printRow(output, row, count);
         reader.closeStreams();
         count ++;
+        if (cancelled) break;
       }
 
       if (showRowCount)
