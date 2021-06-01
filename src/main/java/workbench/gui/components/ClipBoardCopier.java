@@ -24,12 +24,11 @@ package workbench.gui.components;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import workbench.WbManager;
+import workbench.interfaces.Interruptable;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
@@ -45,8 +44,10 @@ import workbench.db.exporter.SqlRowDataConverter;
 
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.dbobjects.ProgressDialog;
 
 import workbench.storage.DataStore;
+import workbench.storage.RowActionMonitor;
 import workbench.storage.RowData;
 
 import workbench.util.ExceptionUtil;
@@ -70,12 +71,12 @@ import workbench.util.WbThread;
  * @author Thomas Kellerer
  */
 public class ClipBoardCopier
-  implements ActionListener
+  implements Interruptable
 {
   private final DataStore data;
   private final WbTable client;
   private boolean cancelled = false;
-  private FeedbackWindow feedback;
+  private ProgressDialog progress;
 
   /**
    * Create a new ClipBoardCopier to copy the contents of the given table.
@@ -449,6 +450,10 @@ public class ClipBoardCopier
         {
           rowdata = data.getRow(rows[row]);
         }
+        if (this.progress != null)
+        {
+          progress.getMonitor().setCurrentRow(row, -1);
+        }
         StringBuilder sql = converter.convertRowData(rowdata, row);
         result.append(sql);
         boolean needsNewLine = false;
@@ -514,16 +519,22 @@ public class ClipBoardCopier
   }
 
   @Override
-  public void actionPerformed(ActionEvent e)
+  public void cancelExecution()
   {
     this.cancelled = true;
   }
 
+  @Override
+  public boolean confirmCancel()
+  {
+    return true;
+  }
+
   private void showFeedback()
   {
-    if (feedback != null)
+    if (progress != null)
     {
-      feedback.setVisible(true);
+      progress.showProgressWindow();
     }
   }
 
@@ -532,22 +543,23 @@ public class ClipBoardCopier
     if (client != null && client.getRowCount() >= GuiSettings.getCopyDataRowsThreshold())
     {
       MainWindow window = WbSwingUtilities.getMainWindow(client);
-      feedback = new FeedbackWindow(window, ResourceMgr.getString("MsgCopying"), this, "LblCancelPlain", true);
-      WbSwingUtilities.center(feedback, window);
+      progress = new ProgressDialog(ResourceMgr.getString("MsgCopying"), window, this, false);
+      progress.getInfoPanel().setMonitorType(RowActionMonitor.MONITOR_PLAIN);
+      progress.getInfoPanel().setInfoText(ResourceMgr.getString("MsgSpoolingRow"));
     }
     else
     {
-      feedback = null;
+      progress = null;
     }
   }
 
   private void closeFeedback()
   {
-    if (feedback != null)
+    if (progress != null)
     {
-      feedback.setVisible(false);
-      feedback.dispose();
-      feedback = null;
+      progress.setVisible(false);
+      progress.dispose();
+      progress = null;
     }
   }
 }

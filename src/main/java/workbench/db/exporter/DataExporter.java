@@ -352,7 +352,7 @@ public class DataExporter
   {
     return this.formulaColumns;
   }
-  
+
   public void setFormulaColumns(Collection<String> columns)
   {
     this.formulaColumns = columns;
@@ -1533,6 +1533,8 @@ public class DataExporter
   {
     try
     {
+      this.exportWriter.setRowMonitor(rowMonitor);
+      this.exportWriter.setProgressInterval(progressInterval);
       this.exportWriter.setOutputWriter(output);
       this.exportWriter.configureConverter();
 

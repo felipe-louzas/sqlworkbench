@@ -35,7 +35,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
 import workbench.WbManager;
@@ -57,12 +56,13 @@ import workbench.db.exporter.ExportType;
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
-import workbench.gui.components.FeedbackWindow;
 import workbench.gui.components.StringSelectionAdapter;
 import workbench.gui.components.WbTable;
+import workbench.gui.dbobjects.ProgressDialog;
 import workbench.gui.dialogs.export.ExportFileDialog;
 
 import workbench.storage.DataStore;
+import workbench.storage.RowActionMonitor;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
@@ -79,11 +79,12 @@ import workbench.util.WbThread;
  */
 public class CopyAsTextAction
   extends WbAction
+  implements Interruptable
 {
   private final WbTable client;
   protected boolean copySelected;
   private WbThread worker;
-  private JDialog feedback;
+  private ProgressDialog progress;
   private Interruptable job;
   private boolean cancelled = false;
 
@@ -140,8 +141,10 @@ public class CopyAsTextAction
     if (client.getRowCount() >= GuiSettings.getCopyDataRowsThreshold())
     {
       MainWindow window = WbSwingUtilities.getMainWindow(client);
-      feedback = new FeedbackWindow(window, ResourceMgr.getString("MsgCopying"), this, "LblCancelPlain", true);
-      WbSwingUtilities.center(feedback, window);
+      progress = new ProgressDialog(ResourceMgr.getString("MsgCopying"), window, this, false);
+      progress.getInfoPanel().setMonitorType(RowActionMonitor.MONITOR_PLAIN);
+      progress.getInfoPanel().setInfoText(ResourceMgr.getString("MsgSpoolingRow"));
+      progress.showProgressWindow();
     }
 
     cancelled = false;
@@ -154,33 +157,31 @@ public class CopyAsTextAction
       }
     };
     worker.start();
-    if (feedback != null)
+  }
+
+  @Override
+  public void cancelExecution()
+  {
+    cancelled = true;
+    job.cancelExecution();
+    try
     {
-      feedback.setVisible(true);
+      if (worker != null)
+      {
+        worker.interrupt();
+        worker.stop();
+      }
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not interrupt worker thread");
     }
   }
 
   @Override
-  public void actionPerformed(ActionEvent e)
+  public boolean confirmCancel()
   {
-    super.actionPerformed(e);
-    if (e.getSource() == this.feedback && this.job != null)
-    {
-      cancelled = true;
-      job.cancelExecution();
-      try
-      {
-        if (worker != null)
-        {
-          worker.interrupt();
-          worker.stop();
-        }
-      }
-      catch (Throwable th)
-      {
-        LogMgr.logWarning(new CallerInfo(){}, "Could not interrupt worker thread");
-      }
-    }
+    return true;
   }
 
   private void doCopy(ExportType type, ExportFileDialog dialog, int[] rows)
@@ -249,11 +250,11 @@ public class CopyAsTextAction
     {
       WbSwingUtilities.showDefaultCursorOnWindow(this.client);
 
-      if (feedback != null)
+      if (progress != null)
       {
-        feedback.setVisible(false);
-        feedback.dispose();
-        feedback = null;
+        progress.setVisible(false);
+        progress.dispose();
+        progress = null;
       }
       cancelled = false;
       worker = null;
@@ -264,6 +265,11 @@ public class CopyAsTextAction
   private void writeExport(ExportFileDialog dialog, Writer out, int[] selectedRows)
   {
     DataExporter exporter = new DataExporter(client.getDataStore().getOriginalConnection());
+    if (progress != null)
+    {
+      exporter.setReportInterval(1);
+      exporter.setRowMonitor(progress.getMonitor());
+    }
     this.job = exporter;
     dialog.setExporterOptions(exporter);
 
@@ -288,6 +294,10 @@ public class CopyAsTextAction
   private void writeFormattedText(ExportFileDialog dialog, Writer out, int[] selectedRows)
   {
       DataStorePrinter printer = new DataStorePrinter(client.getDataStore());
+      if (progress != null)
+      {
+        printer.setRowMonitor(progress.getMonitor());
+      }
       this.job = printer;
       printer.setNullString(dialog.getBasicExportOptions().getNullString());
       printer.setFormatColumns(true);

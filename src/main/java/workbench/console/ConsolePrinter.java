@@ -37,6 +37,7 @@ import workbench.resource.Settings;
 
 import workbench.db.exporter.TextRowDataConverter;
 
+import workbench.storage.RowActionMonitor;
 import workbench.storage.RowData;
 
 import workbench.util.CharacterRange;
@@ -71,6 +72,7 @@ public abstract class ConsolePrinter
   protected boolean printHeader = true;
   protected boolean useMarkdownFormatting = false;
   protected boolean cancelled;
+  protected RowActionMonitor rowMonitor;
 
   public ConsolePrinter()
   {
@@ -99,6 +101,19 @@ public abstract class ConsolePrinter
   public void setPrintContinuationIndicator(boolean flag)
   {
     this.printContinuationIndicator = flag;
+  }
+
+  public void setRowMonitor(RowActionMonitor monitor)
+  {
+    this.rowMonitor = monitor;
+  }
+
+  protected void updateProgress(long currentRow)
+  {
+    if (this.rowMonitor != null)
+    {
+      this.rowMonitor.setCurrentRow((int)currentRow, -1);
+    }
   }
 
   /**
@@ -244,6 +259,7 @@ public abstract class ConsolePrinter
 
   protected void printRow(TextPrinter pw, RowData row, int rowNumber)
   {
+    updateProgress(rowNumber + 1);
     if (printRowAsLine)
     {
       printAsLine(pw, row);

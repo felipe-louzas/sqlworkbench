@@ -134,7 +134,6 @@ import workbench.gui.actions.clipboard.CopySelectedAsSqlDeleteInsertAction;
 import workbench.gui.actions.clipboard.CopySelectedAsSqlInsertAction;
 import workbench.gui.actions.clipboard.CopySelectedAsSqlMergeAction;
 import workbench.gui.actions.clipboard.CopySelectedAsSqlUpdateAction;
-import workbench.gui.actions.clipboard.CopySelectedAsTextAction;
 import workbench.gui.filter.FilterDefinitionManager;
 import workbench.gui.fontzoom.DecreaseFontSize;
 import workbench.gui.fontzoom.FontZoomProvider;
@@ -212,7 +211,6 @@ public class WbTable
   private CopyAsSqlDeleteAction copyDeleteAction;
   private CopyAsSqlUpdateAction copyUpdateAction;
 
-  private CopySelectedAsTextAction copySelectedAsTextAction;
   private CopySelectedAsSqlMergeAction copySelectedAsMergeAction;
   private CopySelectedAsDbUnitXMLAction copySelectedAsDBUnitXMLAction;
 
@@ -352,11 +350,6 @@ public class WbTable
 
       WbMenu copy = this.getCopySelectedMenu();
       this.addPopupSubMenu(copy, false);
-    }
-    else
-    {
-      this.copySelectedAsTextAction = new CopySelectedAsTextAction(this, "MnuTxtCopySelectedAsTextSingle");
-      this.addPopupAction(this.copySelectedAsTextAction, false);
     }
 
     this.addPopupAction(this.replacer.getFindAction(), true);
@@ -774,11 +767,6 @@ public class WbTable
 
   public void populateCopySelectedMenu(WbMenu copyMenu)
   {
-    if (copySelectedAsTextAction == null)
-    {
-      copySelectedAsTextAction = new CopySelectedAsTextAction(this);
-    }
-
     if (copySelectedAsDBUnitXMLAction == null && DbUnitHelper.isDbUnitAvailable())
     {
       copySelectedAsDBUnitXMLAction = new CopySelectedAsDbUnitXMLAction(this);
@@ -808,8 +796,6 @@ public class WbTable
     {
       copySelectedAsUpdateAction = new CopySelectedAsSqlUpdateAction(this);
     }
-
-    copyMenu.add(this.copySelectedAsTextAction);
 
     if (copySelectedAsInsertAction != null) copyMenu.add(copySelectedAsInsertAction);
     if (copySelectedAsUpdateAction != null) copyMenu.add(copySelectedAsUpdateAction);
@@ -911,7 +897,7 @@ public class WbTable
       popup = null;
     }
 
-    WbAction.dispose(copySelectedAsTextAction, copySelectedAsInsertAction, copySelectedAsMergeAction, copySelectedAsUpdateAction,
+    WbAction.dispose(copySelectedAsInsertAction, copySelectedAsMergeAction, copySelectedAsUpdateAction,
       copySelectedAsDeleteInsertAction, copySelectedDeleteAction, copySelectedAsDBUnitXMLAction, copyDbUnitXMLAction, copyInsertAction,
       copyDeleteInsertAction, copyDeleteAction, copyMergeAction, copyUpdateAction, saveDataAsAction, copyAsTextAction, filterAction,
       resetFilterAction, resetHighlightAction, optimizeAllCol, optimizeCol, printDataAction,  printPreviewAction, setColWidth,
@@ -1093,11 +1079,6 @@ public class WbTable
     if (e.getValueIsAdjusting()) return;
 
     boolean selected = this.getSelectedRowCount() > 0;
-
-    if (this.copySelectedAsTextAction != null)
-    {
-      this.copySelectedAsTextAction.setEnabled(selected);
-    }
 
     if (this.copySelectedAsDBUnitXMLAction != null)
     {

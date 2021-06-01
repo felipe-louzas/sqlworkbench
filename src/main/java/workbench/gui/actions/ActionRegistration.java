@@ -21,10 +21,9 @@
  */
 package workbench.gui.actions;
 
-import workbench.gui.actions.clipboard.CopySelectedAsSqlUpdateAction;
-import workbench.gui.actions.clipboard.CopySelectedAsTextAction;
 import workbench.gui.actions.clipboard.CopySelectedAsSqlDeleteInsertAction;
 import workbench.gui.actions.clipboard.CopySelectedAsSqlInsertAction;
+import workbench.gui.actions.clipboard.CopySelectedAsSqlUpdateAction;
 import workbench.gui.dbobjects.objecttree.FindObjectAction;
 
 /**
@@ -40,7 +39,6 @@ public class ActionRegistration
   {
     new ToggleTableSourceAction(null);
     new ReloadAction(null);
-    new CopySelectedAsTextAction(null);
     new CopySelectedAsSqlDeleteInsertAction(null);
     new CopySelectedAsSqlInsertAction(null);
     new CopySelectedAsSqlUpdateAction(null);
