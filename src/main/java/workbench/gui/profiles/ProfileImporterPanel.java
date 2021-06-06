@@ -198,6 +198,10 @@ public class ProfileImporterPanel
         ProfileManager mgr = new ProfileManager(f);
         mgr.load();
         ProfileListModel model = new ProfileListModel(mgr.getProfiles());
+        if (model.getSize() == 0)
+        {
+          model.addGroup(ResourceMgr.getString("LblDefGroup"));
+        }
         model.setSourceFile(f);
         model.resetChanged();
         return model;
