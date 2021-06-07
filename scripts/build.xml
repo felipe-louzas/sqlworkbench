@@ -6,7 +6,7 @@
   <property name="src" value="../src"/>
   <property name="javasrc" value="../src/main/java"/>
   <property name="scriptsrc" value="."/>
-  <property name="build" value="../build/classes"/>
+  <property name="build" value="../target/classes"/>
   <property name="distdir" value="../dist"/>
   <property name="jarfile" value="sqlworkbench.jar"/>
   <property name="srczipname" value="WorkbenchSrc.zip"/>
