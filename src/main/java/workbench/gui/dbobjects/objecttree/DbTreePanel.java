@@ -559,6 +559,12 @@ public class DbTreePanel
       typeString = DbExplorerSettings.getDefaultExplorerObjectType();
     }
     selectedTypes = StringUtil.stringToList(typeString, ",", true, true, false);
+    if (CollectionUtil.isEmpty(selectedTypes))
+    {
+      // avoid an empty list here
+      selectedTypes.add("TABLE");
+      selectedTypes.add("VIEW");
+    }
     tree.setTypesToShow(selectedTypes);
 
     if (location > -1)

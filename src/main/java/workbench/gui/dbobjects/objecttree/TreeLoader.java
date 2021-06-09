@@ -237,9 +237,18 @@ public class TreeLoader
   public void setSelectedTypes(List<String> types)
   {
     typesToShow.clear();
-    if (types != null)
+    if (types != null && availableTypes != null)
+    {
+      types.retainAll(availableTypes);
+    }
+
+    if (CollectionUtil.isNonEmpty(types))
     {
       typesToShow.addAll(types);
+    }
+    else if (this.availableTypes != null)
+    {
+      typesToShow.addAll(availableTypes);
     }
     if (globalNode != null && DbTreeSettings.applyTypeFilterForGlobalObjects())
     {
