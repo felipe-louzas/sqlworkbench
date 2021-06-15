@@ -35,14 +35,12 @@ import workbench.resource.Settings;
 import workbench.db.DbMetadata;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -439,6 +437,14 @@ public class PostgresIndexReader
   public boolean supportsIndexComments()
   {
     return true;
+  }
+
+  @Override
+  protected String quoteIndexColumn(String colName)
+  {
+    if (colName == null) return null;
+    if (colName.startsWith("(")) return colName;
+    return metaData.quoteObjectname(colName);
   }
 
 }
