@@ -16,6 +16,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
@@ -811,6 +812,7 @@ public class TextAreaPainter
   protected void paintCaret(Graphics2D gfx, Segment lineSegment, int line, float y, int height, Token token)
   {
     int offset = textArea.getCaretPosition() - textArea.getLineStartOffset(line);
+    y += computeTextYCorrection(gfx);
 
     if (bracketHighlightBoth && textArea.getBracketPosition() > -1)
     {
@@ -835,4 +837,46 @@ public class TextAreaPainter
       }
     }
   }
+
+  private boolean adjustYPosition()
+  {
+    return GuiSettings.useHiDPIYCorrection();
+  }
+
+  // This is taken from FlatLaf's HiDPIUtils
+  // https://github.com/JFormDesigner/FlatLaf/blob/main/flatlaf-core/src/main/java/com/formdev/flatlaf/util/HiDPIUtils.java
+	private float computeTextYCorrection(Graphics2D g)
+  {
+    if (!adjustYPosition()) return 0;
+
+    AffineTransform t = g.getTransform();
+    double scaleY = t.getScaleY();
+    if (scaleY < 1.25) return 0;
+
+    if (scaleY <= 1.25)
+    {
+      return -0.875f;
+    }
+    if (scaleY <= 1.5)
+    {
+      return -0.625f;
+    }
+    if (scaleY <= 1.75)
+    {
+      return -0.875f;
+    }
+    if (scaleY <= 2.0)
+    {
+      return -0.75f;
+    }
+    if (scaleY <= 2.25)
+    {
+      return -0.875f;
+    }
+    if (scaleY <= 3.5)
+    {
+      return -0.75f;
+    }
+    return -0.875f;
+	}
 }

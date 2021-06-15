@@ -1682,4 +1682,8 @@ public class GuiSettings
     return Settings.getInstance().getIntProperty("workbench.gui.copy.data.rowcount.threshold", 500);
   }
 
+  public static boolean useHiDPIYCorrection()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.editor.hidpi.ycorrection", false);
+  }
 }
