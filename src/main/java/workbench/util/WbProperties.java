@@ -61,6 +61,7 @@ public class WbProperties
 
   private Object changeNotificationSource = null;
   private boolean changed = false;
+  private boolean checkContinuationLines = true;
 
   private Comparator<String> sortComparator = null;
 
@@ -84,6 +85,11 @@ public class WbProperties
     super();
     this.changeNotificationSource = (notificationSource == null ? this : notificationSource);
     this.distinctSections = num;
+  }
+
+  public void setCheckContinuationLines(boolean flag)
+  {
+    this.checkContinuationLines = flag;
   }
 
   public boolean isModified()

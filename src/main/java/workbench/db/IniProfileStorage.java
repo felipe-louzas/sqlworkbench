@@ -122,6 +122,7 @@ public class IniProfileStorage
   {
     LogMgr.logDebug(new CallerInfo(){}, "Loading connection profiles from " + inifile.getFullPath());
     WbProperties props = new WbProperties(1);
+    props.setCheckContinuationLines(false);
     BufferedReader reader = null;
     List<ConnectionProfile> profiles = new ArrayList<>(25);
 
@@ -587,7 +588,7 @@ public class IniProfileStorage
     }
     return config;
   }
-  
+
   private SshConfig readSshConfig(PropertyStorage props, String prefix, String key)
   {
     String dbHost = props.getProperty(prefix + key + PROP_SSH_DB_HOST, null);
