@@ -753,10 +753,10 @@ class ObjectCache
       String type = tables.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
       if (selectable.contains(type))
       {
-        TableIdentifier tbl = createIdentifier(tables, row);
+        TableIdentifier tbl = dbConnection.getMetadata().buildTableIdentifierFromDs(tables, row);
+        tbl.checkQuotesNeeded(dbConnection);
         if (objects.get(tbl) == null)
         {
-          // The table is either not there, or no columns have been retrieved so it's safe to add
           objects.put(tbl, null);
           count ++;
         }
@@ -783,21 +783,6 @@ class ObjectCache
     }
     procedureCache.put(nsp, procList);
     LogMgr.logDebug(new CallerInfo(){}, "Added " + procList.size() + " procedures");
-  }
-
-
-  private TableIdentifier createIdentifier(DataStore tableList, int row)
-  {
-    String name = tableList.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-    String schema = tableList.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-    String catalog = tableList.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG);
-    String type = tableList.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
-    String comment = tableList.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS);
-    TableIdentifier tbl = new TableIdentifier(catalog, schema, name);
-    tbl.setType(type);
-    tbl.setNeverAdjustCase(true);
-    tbl.setComment(comment);
-    return tbl;
   }
 
   public synchronized void addTable(TableIdentifier table, WbConnection con)
