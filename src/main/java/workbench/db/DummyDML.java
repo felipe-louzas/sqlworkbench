@@ -49,6 +49,8 @@ public class DummyDML
   protected boolean doFormat;
   protected boolean generatePreparedStatements;
   protected final TableIdentifier table;
+  protected String lineEnd = Settings.getInstance().getInternalEditorLineEnding();
+
   private List<ColumnIdentifier> columns;
 
   protected DummyDML(TableIdentifier tbl)
@@ -67,6 +69,11 @@ public class DummyDML
   public void setDoFormatSql(boolean flag)
   {
     doFormat = flag;
+  }
+
+  public void setLineEnd(String lineEnd)
+  {
+    this.lineEnd = lineEnd;
   }
 
   @Override

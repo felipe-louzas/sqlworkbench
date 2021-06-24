@@ -60,7 +60,6 @@ public class DummyInsert
   {
     List<ColumnIdentifier> columns = getColumns(con);
 
-    String lineEnd = Settings.getInstance().getInternalEditorLineEnding();
     StringBuilder sql = new StringBuilder(columns.size() * 20 + 100);
     sql.append(FormatterUtil.getKeyword("insert into"));
     sql.append(' ');

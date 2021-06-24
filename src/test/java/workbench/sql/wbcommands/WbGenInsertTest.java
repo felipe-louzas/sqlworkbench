@@ -29,6 +29,9 @@ import workbench.db.WbConnection;
 
 import workbench.sql.StatementRunnerResult;
 
+import workbench.util.FileUtil;
+import workbench.util.WbFile;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -72,7 +75,6 @@ public class WbGenInsertTest
     StatementRunnerResult result = genInsert.execute(genInsert.getVerb() + " -tables=customer,orders,order_item -fullInsert=true");
     assertTrue(result.isSuccess());
     String script = result.getMessages().toString();
-    System.out.println(script);
     String expected =
       "INSERT INTO CUSTOMER\n" +
       "  (CUST_ID)\n" +
@@ -88,7 +90,19 @@ public class WbGenInsertTest
       "  (ITEM_ID, ORDER_ID, CURRENCY_ID)\n" +
       "VALUES\n" +
       "  (ITEM_ID_value, ORDER_ID_value, CURRENCY_ID_value);";
-     assertEquals(expected, script.trim());
+    script = script.replace("\r\n", "\n").trim();
+//    System.out.println("--- expected ---\n" + script + "--- result ---\n"  + script.trim());
+    assertEquals(expected, script);
+
+    WbFile out = new WbFile(util.getBaseDir(), "insert_test.sql");
+
+    result = genInsert.execute(genInsert.getVerb() + " -tables=customer,orders,order_item -fullInsert=true -file=\"" + out.getFullPath() + "\" ");
+    assertTrue(result.isSuccess());
+    assertTrue(out.exists());
+
+    script = FileUtil.readFile(out, "UTF-8");
+    script = script.replace("\r\n", "\n").trim();
+    assertEquals(expected, script);
   }
 
   @Test

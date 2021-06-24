@@ -59,7 +59,6 @@ public class DummyUpdate
   {
     List<ColumnIdentifier> columns = getColumns(con);
 
-    String lineEnd = Settings.getInstance().getInternalEditorLineEnding();
     StringBuilder sql = new StringBuilder(columns.size() * 20 + 100);
     sql.append(FormatterUtil.getKeyword("UPDATE "));
     sql.append(FormatterUtil.getIdentifier(table.getTableExpression(con)));

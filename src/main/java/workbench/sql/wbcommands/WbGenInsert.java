@@ -40,6 +40,9 @@ import workbench.sql.StatementRunnerResult;
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
 import workbench.util.CollectionUtil;
+import workbench.util.FileUtil;
+import workbench.util.StringUtil;
+import workbench.util.WbFile;
 
 /**
  * A SqlCommand to create a script of INSERT statements for a list of tables respecting FK constraints.
@@ -62,6 +65,7 @@ public class WbGenInsert
     this.isUpdatingCommand = true;
     cmdLine = new ArgumentParser();
     cmdLine.addArgument(CommonArgs.ARG_TABLES, ArgumentType.TableArgument);
+    cmdLine.addArgument(CommonArgs.ARG_FILE, ArgumentType.Filename);
     cmdLine.addArgument(PARAM_FULL_INSERT, ArgumentType.BoolArgument);
   }
 
@@ -102,6 +106,8 @@ public class WbGenInsert
       return result;
     }
 
+    WbFile output = evaluateFileArgument(cmdLine.getValue(CommonArgs.ARG_FILE));
+
     List<String> missingTables = tableArgs.getMissingTables();
 
     tableSorter = new TableDependencySorter(this.currentConnection);
@@ -135,21 +141,36 @@ public class WbGenInsert
         result.addMessageNewLine();
       }
 
+      String nl = StringUtil.LINE_TERMINATOR;
+      StringBuilder script = new StringBuilder(sorted.size() * 40);
       for (TableIdentifier table : sorted)
       {
         if (fullInsert)
         {
           DummyInsert insert = new DummyInsert(table);
+          insert.setLineEnd(nl);
           insert.setDoFormatSql(false);
           String source = insert.getSource(currentConnection).toString();
-          result.addMessage(source + "\n");
+          script.append(source);
+          script.append(nl);
         }
         else
         {
-          result.addMessage("    " + table.getTableExpression());
+          script.append("    " + table.getTableExpression());
         }
-        result.setSuccess();
+        script.append(nl);
       }
+
+      if (output != null)
+      {
+        FileUtil.writeString(output, script.toString(), "UTF-8", false);
+        result.addMessageByKey("MsgScriptWritten", output.getFullPath());
+      }
+      else
+      {
+        result.addMessage(script);
+      }
+      result.setSuccess();
 
       if (CollectionUtil.isNonEmpty(missingTables))
       {
@@ -160,6 +181,7 @@ public class WbGenInsert
         {
           result.addMessage("    " + tbl);
         }
+        result.setWarning();
       }
 
     }
