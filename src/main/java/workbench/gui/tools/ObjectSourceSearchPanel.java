@@ -57,6 +57,8 @@ import workbench.resource.Settings;
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbObject;
+import workbench.db.ProcedureReader;
+import workbench.db.TriggerReader;
 import workbench.db.WbConnection;
 import workbench.db.search.ObjectSourceSearcher;
 
@@ -575,9 +577,9 @@ public class ObjectSourceSearchPanel
     // what the searcher is checking as well.
     // getObjectTypes() returns a sorted set, so the new
     // values will automatically be sorted.
-    types.add("FUNCTION");
-    types.add("PROCEDURE");
-    types.add("TRIGGER");
+    types.add(ProcedureReader.TYPE_NAME_FUNC);
+    types.add(ProcedureReader.TYPE_NAME_PROC);
+    types.add(TriggerReader.TYPE_NAME);
 
     List<String> selected = StringUtil.stringToList(objectTypes.getText(), ",", true, true, false, false);
 

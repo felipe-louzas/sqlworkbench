@@ -54,6 +54,9 @@ public interface ProcedureReader
   String PROC_RESULT_YES = "RESULT";
   String PROC_RESULT_NO = "NO RESULT";
 
+  String TYPE_NAME_PROC = "PROCEDURE";
+  String TYPE_NAME_FUNC = "FUNCTION";
+
   StringBuilder getProcedureHeader(ProcedureDefinition def);
 
   DataStore getProcedures(String catalog, String schema, String name)

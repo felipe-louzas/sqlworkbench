@@ -30,6 +30,7 @@ import workbench.resource.ResourceMgr;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DbObjectFinder;
+import workbench.db.ProcedureReader;
 import workbench.db.TableIdentifier;
 import workbench.db.dependency.DependencyReader;
 import workbench.db.dependency.DependencyReaderFactory;
@@ -131,7 +132,7 @@ public class WbListDependencies
 
     DbObject toUse = null;
 
-    if ("procedure".equalsIgnoreCase(objectType))
+    if (ProcedureReader.TYPE_NAME_PROC.equalsIgnoreCase(objectType))
     {
       toUse = currentConnection.getMetadata().getProcedureReader().findProcedureByName(base);
     }

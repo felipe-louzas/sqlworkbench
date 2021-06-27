@@ -20,7 +20,6 @@
  */
 package workbench.db.mssql;
 
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -34,19 +33,19 @@ import workbench.log.LogMgr;
 import workbench.db.CatalogChanger;
 import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
+import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.TableIdentifier;
 import workbench.db.TriggerDefinition;
+import workbench.db.TriggerReader;
 import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
 
 import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-import workbench.db.RoutineType;
-
 import workbench.util.StringUtil;
 
 /**
@@ -279,15 +278,15 @@ public class SqlServerDependencyReader
         String type = rs.getString(4);
 
         DbObject dbo = null;
-        if (type.equals("PROCEDURE"))
+        if (type.equals(ProcedureReader.TYPE_NAME_PROC))
         {
           dbo = new ProcedureDefinition(catalog, schema, name, RoutineType.procedure);
         }
-        else if (type.equals("FUNCTION"))
+        else if (type.equals(ProcedureReader.TYPE_NAME_FUNC))
         {
           dbo = new ProcedureDefinition(catalog, schema, name, RoutineType.function);
         }
-        else if (type.equals("TRIGGER"))
+        else if (type.equals(TriggerReader.TYPE_NAME))
         {
           TriggerDefinition trg = new TriggerDefinition(catalog, schema, name);
           if (hasTriggerDetails)

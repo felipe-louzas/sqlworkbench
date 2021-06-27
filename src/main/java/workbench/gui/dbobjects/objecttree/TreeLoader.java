@@ -44,6 +44,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.ObjectNameSorter;
 import workbench.db.PartitionLister;
 import workbench.db.ProcedureDefinition;
+import workbench.db.ProcedureReader;
 import workbench.db.SchemaIdentifier;
 import workbench.db.SubPartitionState;
 import workbench.db.TableDefinition;
@@ -213,9 +214,10 @@ public class TreeLoader
       }
       availableTypes.removeAll(globalTypes);
     }
+    availableTypes.add(ProcedureReader.TYPE_NAME_PROC);
     if (DbExplorerSettings.getShowTriggerPanel())
     {
-      availableTypes.add("TRIGGER");
+      availableTypes.add(TriggerReader.TYPE_NAME);
     }
     procLoader = new ProcedureTreeLoader();
     dependencyLoader = DependencyReaderFactory.getReader(connection);
@@ -523,7 +525,7 @@ public class TreeLoader
 
     for (String type : availableTypes)
     {
-      if (type.equalsIgnoreCase("TRIGGER") || type.equalsIgnoreCase("PROCEDURE")) continue;
+      if (type.equalsIgnoreCase(TriggerReader.TYPE_NAME) || type.equalsIgnoreCase(ProcedureReader.TYPE_NAME_PROC)) continue;
       if (typesToShow.isEmpty() || typesToShow.contains(type))
       {
         ObjectTreeNode node = new ObjectTreeNode(type, TYPE_DBO_TYPE_NODE);
@@ -532,7 +534,7 @@ public class TreeLoader
       }
     }
 
-    if (typesToShow.isEmpty() || typesToShow.contains("PROCEDURE"))
+    if (typesToShow.isEmpty() || typesToShow.contains(ProcedureReader.TYPE_NAME_PROC))
     {
       String label = ResourceMgr.getString("TxtDbExplorerProcs");
       if (connection.getMetadata().isPostgres() && !JdbcUtils.hasMinimumServerVersion(connection, "11.0"))
@@ -546,7 +548,7 @@ public class TreeLoader
     }
 
     // always add triggers at the end
-    if (typesToShow.isEmpty() || typesToShow.contains("TRIGGER"))
+    if (typesToShow.isEmpty() || typesToShow.contains(TriggerReader.TYPE_NAME))
     {
       ObjectTreeNode node = new ObjectTreeNode(ResourceMgr.getString("TxtDbExplorerTriggers"), TYPE_TRIGGERS_NODE);
       node.setAllowsChildren(true);

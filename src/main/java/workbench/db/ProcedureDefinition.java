@@ -576,9 +576,9 @@ public class ProcedureDefinition
 
     if (isFunction())
     {
-      return "FUNCTION";
+      return ProcedureReader.TYPE_NAME_FUNC;
     }
-    return "PROCEDURE";
+    return ProcedureReader.TYPE_NAME_PROC;
   }
 
   @Override

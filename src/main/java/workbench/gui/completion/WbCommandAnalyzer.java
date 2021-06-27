@@ -37,6 +37,8 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionMgr;
+import workbench.db.ProcedureReader;
+import workbench.db.TriggerReader;
 import workbench.db.WbConnection;
 import workbench.db.importer.SpreadsheetReader;
 
@@ -208,9 +210,9 @@ public class WbCommandAnalyzer
         this.elements  = new ArrayList<>(dbConnection.getMetadata().getObjectTypes());
         if (verb.equalsIgnoreCase(WbGrepSource.VERB))
         {
-          elements.add("FUNCTION");
-          elements.add("PROCEDURE");
-          elements.add("TRIGGER");
+          elements.add(ProcedureReader.TYPE_NAME_FUNC);
+          elements.add(ProcedureReader.TYPE_NAME_PROC);
+          elements.add(TriggerReader.TYPE_NAME);
         }
       }
       else if (type == ArgumentType.SchemaArgument)

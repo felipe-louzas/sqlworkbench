@@ -91,6 +91,8 @@ public interface TriggerReader {
     TRIGGER_LEVEL_COLUMN
   };
 
+  String TYPE_NAME = "TRIGGER";
+
   TriggerDefinition findTrigger(String catalog, String schema, String name)
     throws SQLException;
 

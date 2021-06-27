@@ -70,8 +70,10 @@ import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.ProcedureReader;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
+import workbench.db.TriggerReader;
 import workbench.db.WbConnection;
 
 import workbench.gui.MainWindow;
@@ -452,10 +454,10 @@ public class DbTreePanel
 
     LogMgr.logDebug(new CallerInfo(){}, "Using the following object types for the type filter: " + types);
 
-    types.add("PROCEDURE");
+    types.add(ProcedureReader.TYPE_NAME_PROC);
     if (DbExplorerSettings.getShowTriggerPanel())
     {
-      types.add("TRIGGER");
+      types.add(TriggerReader.TYPE_NAME);
     }
 
     final List<String> toSelect = CollectionUtil.firstNonEmpty(selectedTypes, types);
@@ -482,9 +484,9 @@ public class DbTreePanel
     missing.removeAll(items);
     if (!missing.isEmpty())
     {
-      types.remove("TRIGGER");
-      types.remove("PROCEDURE");
-      LogMgr.logWarning(new CallerInfo(){}, "Not all types shown in the dropdown!\nTypes from the driver: " + types + "\nTypes missing: " + missing);
+      types.remove(TriggerReader.TYPE_NAME);
+      types.remove(ProcedureReader.TYPE_NAME_PROC);
+      LogMgr.logWarning(new CallerInfo(){}, "Not all types are shown in the dropdown!\nTypes from the driver: " + types + "\nTypes missing: " + missing);
     }
   }
 

@@ -29,6 +29,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.JdbcProcedureReader;
+import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
 import workbench.db.WbConnection;
@@ -37,7 +38,6 @@ import workbench.storage.DataStore;
 
 import workbench.sql.DelimiterDefinition;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -75,7 +75,7 @@ public class MySqlProcedureReader
       stmt.setString(1, def.getCatalog());
       stmt.setString(2, def.getProcedureName());
       rs = stmt.executeQuery();
-      String proctype = "PROCEDURE";
+      String proctype = ProcedureReader.TYPE_NAME_PROC;
       String returntype = "";
       if (rs.next())
       {
