@@ -72,21 +72,19 @@ public class FontScaler
     }
   }
 
+  public boolean isHiDPI()
+  {
+    return dpi >= 120;
+  }
+
   public boolean doScaleFonts()
   {
     return scaleFont;
   }
-  
+
   public void logSettings()
   {
-    if (scaleFont)
-    {
-      LogMgr.logInfo(new CallerInfo(){}, "Current DPI: "  + dpi + ", Default DPI: " + defaultDPI + ", scale factor: " + scaleFactor);
-    }
-    else
-    {
-      LogMgr.logInfo(new CallerInfo(){}, "Current DPI: "  + dpi + ", Default DPI: " + defaultDPI);
-    }
+    LogMgr.logInfo(new CallerInfo(){}, "Current DPI: "  + dpi + ", Default DPI: " + defaultDPI + ", isHiDPI: " + isHiDPI());
   }
 
   public float getScaleFactor()

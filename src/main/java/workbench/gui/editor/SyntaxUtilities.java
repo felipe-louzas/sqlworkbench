@@ -10,7 +10,6 @@ package workbench.gui.editor;
  */
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 import javax.swing.text.Segment;
@@ -200,36 +199,6 @@ public class SyntaxUtilities
     }
 
     return x;
-  }
-
-  public static float getTabbedTextWidth(Segment s, Graphics2D gfx, FontMetrics metrics, float x, TabExpander expander, int startOffset)
-  {
-    float nextX = x;
-    final char[] txt = s.array;
-    final int txtOffset = s.offset;
-    final int n = s.offset + s.count;
-    int charCount = 0;
-
-    for (int i = txtOffset; i < n; i++)
-    {
-      if (txt[i] == '\t')
-      {
-        nextX += metrics.getStringBounds(txt, i - charCount, i, gfx).getBounds2D().getWidth();
-        nextX = expander.nextTabStop(nextX, startOffset + i - txtOffset);
-        charCount = 0;
-      }
-      else if (txt[i] == '\n')
-      {
-        nextX += metrics.getStringBounds(txt, i - charCount, i, gfx).getBounds2D().getWidth();
-        charCount = 0;
-      }
-      else
-      {
-        charCount++;
-      }
-    }
-    nextX += metrics.getStringBounds(txt, n - charCount, n, gfx).getBounds2D().getWidth();
-    return nextX - x;
   }
 
 }

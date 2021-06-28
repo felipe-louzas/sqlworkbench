@@ -1392,6 +1392,10 @@ public class Settings
 		this.setFont(PROPERTY_STANDARD_FONT, f);
 	}
 
+  public String getReferenceFontName()
+  {
+    return Settings.getInstance().getProperty("workbench.gui.desktop.reference.font", "Menu.font");
+  }
   /**
    * Return a user-configured scale factor for default fonts.
    *

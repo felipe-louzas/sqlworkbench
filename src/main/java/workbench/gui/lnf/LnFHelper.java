@@ -179,12 +179,47 @@ public class LnFHelper
     UIManager.put("Synthetica.extendedFileChooser.rememberLastDirectory", false);
   }
 
+  private void setDefaultFonts()
+  {
+    // for some reason the default font is scal
+
+		Font font = UIManager.getFont(Settings.getInstance().getReferenceFontName());
+    if (font == null)
+    {
+      font = UIManager.getFont("Menu.font");
+    }
+    UIDefaults def = UIManager.getDefaults();
+    for (String property : fontProperties)
+    {
+      Font base = def.getFont(property);
+      if (base != null)
+      {
+        Font scaled = base.deriveFont(base.getStyle(), font.getSize());
+        def.put(property, scaled);
+      }
+      else
+      {
+        System.out.println("No font for property: " + property);
+      }
+    }
+  }
+
   private void scaleDefaultFonts()
   {
     FontScaler scaler = new FontScaler();
     scaler.logSettings();
-    if (!Settings.getInstance().getScaleFonts()) return;
-    if (!scaler.doScaleFonts()) return;
+
+    if (!Settings.getInstance().getScaleFonts() || !scaler.doScaleFonts())
+    {
+      if (scaler.isHiDPI())
+      {
+        // It seems that Java scales the Menu font properly, but not the rest
+        // by applying the size of the menu font to all other controls
+        // we get at least a consistent font size
+        setDefaultFonts();
+      }
+      return;
+    }
 
     LogMgr.logInfo(new CallerInfo(){}, "Scaling default fonts by: " + scaler.getScaleFactor());
 

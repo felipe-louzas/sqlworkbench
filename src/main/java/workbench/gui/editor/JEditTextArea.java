@@ -55,6 +55,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.Segment;
+import javax.swing.text.Utilities;
 
 import workbench.WbManager;
 import workbench.interfaces.ClipboardSupport;
@@ -70,13 +71,13 @@ import workbench.resource.Settings;
 import workbench.db.QuoteHandler;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.actions.clipboard.CopyAction;
-import workbench.gui.actions.clipboard.CutAction;
-import workbench.gui.actions.clipboard.PasteAction;
 import workbench.gui.actions.ScrollDownAction;
 import workbench.gui.actions.ScrollUpAction;
 import workbench.gui.actions.SelectAllAction;
 import workbench.gui.actions.WbAction;
+import workbench.gui.actions.clipboard.CopyAction;
+import workbench.gui.actions.clipboard.CutAction;
+import workbench.gui.actions.clipboard.PasteAction;
 import workbench.gui.fontzoom.FontZoomProvider;
 import workbench.gui.fontzoom.FontZoomer;
 import workbench.gui.macros.MacroClient;
@@ -1143,7 +1144,7 @@ public class JEditTextArea
     {
       lineSegment.count = offset;
       FontMetrics fm = gfx.getFontMetrics();
-      return x + SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, fm, x, painter, 0);
+      return x + Utilities.getTabbedTextWidth(lineSegment, fm, x, painter, segmentOffset);
     }
     else
     {
@@ -1155,15 +1156,15 @@ public class JEditTextArea
         if (offset + segmentOffset < lineSegment.offset + length)
         {
           lineSegment.count = offset - (lineSegment.offset - segmentOffset);
-          float tokenWidth = SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
-          x += Math.round(tokenWidth);
+          float tokenWidth = Utilities.getTabbedTextWidth(lineSegment, styledMetrics, x, painter, 0);
+          x += tokenWidth;
           break;
         }
         else
         {
           lineSegment.count = length;
-          float tokenWidth = SyntaxUtilities.getTabbedTextWidth(lineSegment, gfx, styledMetrics, x, painter, 0);
-          x += Math.round(tokenWidth);
+          float tokenWidth = Utilities.getTabbedTextWidth(lineSegment, styledMetrics, x, painter, 0);
+          x += tokenWidth;
           lineSegment.offset += length;
         }
         token = token.next;

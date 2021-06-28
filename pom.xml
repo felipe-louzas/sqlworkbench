@@ -63,9 +63,10 @@
             <configuration>
               <showDeprecation>false</showDeprecation>
               <useIncrementalCompilation>false</useIncrementalCompilation>
+              <debuglevel>lines,vars,source</debuglevel>
               <compilerArgs>
                 <arg>-Xlint:none</arg>
-                <arg>-g</arg>
+                <arg>-g:source,lines</arg>
                 <arg>--add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED</arg>
               </compilerArgs>
             </configuration>
@@ -90,9 +91,10 @@
               <excludes>
                 <exclude>workbench/gui/components/BorderLessWindowsTabbedPaneUI.java</exclude>
               </excludes>
+              <debuglevel>lines,vars,source</debuglevel>
               <compilerArgs>
                 <arg>-Xlint:none</arg>
-                <arg>-g</arg>
+                <arg>-g:source,lines</arg>
               </compilerArgs>
             </configuration>
           </plugin>

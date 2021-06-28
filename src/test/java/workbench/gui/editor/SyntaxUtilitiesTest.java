@@ -21,15 +21,7 @@
 
 package workbench.gui.editor;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-
-import javax.swing.JTextField;
 import javax.swing.text.Segment;
-import javax.swing.text.TabExpander;
-import javax.swing.text.Utilities;
 
 import org.junit.Test;
 
@@ -69,86 +61,5 @@ public class SyntaxUtilitiesTest
     line.count = 10;
     pos = SyntaxUtilities.findMatch(line, "foo", 0, true);
     assertEquals(7, pos);
-  }
-
-
-  @Test
-  public void testGetTabbedWidth()
-    throws Exception {
-
-    if (GraphicsEnvironment.isHeadless()) return;
-
-    String text =         "123456\t";
-    String textExpanded = "123456  ";
-    testGetTabbedWidth(text, textExpanded, 2);
-
-    text =         "12345678\t";
-    textExpanded = "12345678  ";
-    testGetTabbedWidth(text, textExpanded, 2);
-
-    text =         "1234\t56\t";
-    textExpanded = "1234    56  ";
-    testGetTabbedWidth(text, textExpanded, 4);
-
-    text =         "123\t456";
-    textExpanded = "123   456";
-    testGetTabbedWidth(text, textExpanded, 6);
-
-    text =         "123\t456\t789";
-    textExpanded = "123   456   789";
-    testGetTabbedWidth(text, textExpanded, 6);
-
-    text =         "\t123\t456\t789";
-    textExpanded = "      123   456   789";
-    testGetTabbedWidth(text, textExpanded, 6);
-
-    text =         "123456";
-    textExpanded = "123456";
-    testGetTabbedWidth(text, textExpanded, 6);
-  }
-
-  private void testGetTabbedWidth(String text, String textExpanded, int tabSize)
-    throws Exception
-  {
-    JTextField  p = new JTextField();
-    Font f = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-    p.setFont(f);
-    Graphics2D g = (Graphics2D)p.getGraphics();
-    FontMetrics fm = p.getFontMetrics(f);
-    final int tabChars = fm.charWidth(' ') * tabSize;
-    TabExpander expander = new TabExpander()
-    {
-      @Override
-      public float nextTabStop(float x, int tabOffset)
-      {
-        try
-        {
-          int ntabs = ((int)x) / tabChars;
-          return (ntabs + 1) * tabChars;
-        }
-        catch (Throwable th)
-        {
-          th.printStackTrace();
-          return 0;
-        }
-      }
-    };
-
-    Segment sTab = new Segment(text.toCharArray(), 0, text.length());
-    double width = SyntaxUtilities.getTabbedTextWidth(sTab, g, fm, 0, expander, 0);
-//    System.out.println("width tabs \"" + text.trim() + "\": " + width);
-
-    Segment s2 = new Segment(textExpanded.toCharArray(), 0, textExpanded.length());
-    double widthX = Utilities.getTabbedTextWidth(sTab, fm, 0, expander, 0);
-    double width2 = SyntaxUtilities.getTabbedTextWidth(s2, g, fm, 0, expander, 0);
-//    System.out.println("width expanded \"" + textExpanded + "\": " + width2);
-    assertEquals(width2, width, 0.1);
-    assertEquals(width2, widthX, 0.1);
-
-    if (text.indexOf('\t') < 0)
-    {
-      double widthFm = fm.charsWidth(s2.array, 0, text.length());
-      assertEquals(width2, widthFm, 0.1);
-    }
   }
 }
