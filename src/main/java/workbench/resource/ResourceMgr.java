@@ -168,17 +168,16 @@ public class ResourceMgr
 
 	public static void setWindowIcons(Window window, String baseName)
 	{
-		List<Image> icons = new ArrayList<>(2);
-		ImageIcon image16 = IconMgr.getInstance().getPngIcon(baseName, 16);
-		if (image16 != null)
-		{
-			icons.add(image16.getImage());
-		}
-		ImageIcon image32 = IconMgr.getInstance().getPngIcon(baseName, 32);
-		if (image32 != null)
-		{
-			icons.add(image32.getImage());
-		}
+    int[] sizes = new int[] {128,64,48,32,16};
+		List<Image> icons = new ArrayList<>(sizes.length);
+    for (int size : sizes)
+    {
+      ImageIcon image = IconMgr.getInstance().getPngIcon(baseName, size);
+      if (image != null)
+      {
+        icons.add(image.getImage());
+      }
+    }
 		if (icons.size() > 0)
 		{
 			window.setIconImages(icons);

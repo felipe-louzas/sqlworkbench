@@ -181,25 +181,27 @@ public class LnFHelper
 
   private void setDefaultFonts()
   {
-    // for some reason the default font is scal
-
-		Font font = UIManager.getFont(Settings.getInstance().getReferenceFontName());
-    if (font == null)
+    // for some reason the default menu font is properly scaled
+    // on HiDPI displays. So we are adjusting all other fonts
+    // to the size of the menu font.
+    String prop = Settings.getInstance().getReferenceFontName();
+		Font referenceFont = UIManager.getFont(prop);
+    if (referenceFont == null)
     {
-      font = UIManager.getFont("Menu.font");
+      referenceFont = UIManager.getFont("Menu.font");
+      prop = "Menu.font";
     }
+
     UIDefaults def = UIManager.getDefaults();
     for (String property : fontProperties)
     {
+      if (prop.equals(property)) continue;
+
       Font base = def.getFont(property);
       if (base != null)
       {
-        Font scaled = base.deriveFont(base.getStyle(), font.getSize());
+        Font scaled = base.deriveFont(base.getStyle(), referenceFont.getSize());
         def.put(property, scaled);
-      }
-      else
-      {
-        System.out.println("No font for property: " + property);
       }
     }
   }
@@ -213,9 +215,7 @@ public class LnFHelper
     {
       if (scaler.isHiDPI())
       {
-        // It seems that Java scales the Menu font properly, but not the rest
-        // by applying the size of the menu font to all other controls
-        // we get at least a consistent font size
+        // It seems that Java scales the Menu font properly, but not the rest.
         setDefaultFonts();
       }
       return;
