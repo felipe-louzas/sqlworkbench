@@ -29,9 +29,9 @@ package workbench.resource;
  */
 public interface SettingsListener
 {
-	/**
-	 * This is called before the configuration settings are persisted to the
-	 * external file.
-	 */
-	void beforeSettingsSave();
+  /**
+   * This is called before the configuration settings are persisted to the
+   * external file.
+   */
+  void beforeSettingsSave();
 }

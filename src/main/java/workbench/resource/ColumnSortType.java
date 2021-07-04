@@ -32,18 +32,18 @@ package workbench.resource;
  */
 public enum ColumnSortType
 {
-	name("LblSortPastColName"),
-	position("LblSortPastColPos");
+  name("LblSortPastColName"),
+  position("LblSortPastColPos");
 
-	private String label;
-	private ColumnSortType(String key)
-	{
-		this.label = ResourceMgr.getString(key);
-	}
+  private String label;
+  private ColumnSortType(String key)
+  {
+    this.label = ResourceMgr.getString(key);
+  }
 
-	@Override
-	public String toString()
-	{
-		return label;
-	}
+  @Override
+  public String toString()
+  {
+    return label;
+  }
 }

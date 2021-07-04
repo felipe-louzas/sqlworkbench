@@ -26,20 +26,20 @@ package workbench.resource;
  */
 public enum ResourcePath
 {
-	DEFAULT("language"),
-	EXTENSION("workbench/extensions"),
-	ICONS("workbench/resource/images");
+  DEFAULT("language"),
+  EXTENSION("workbench/extensions"),
+  ICONS("workbench/resource/images");
 
-	private final String path;
+  private final String path;
 
-	private ResourcePath(final String path)
-	{
-		this.path = path;
-	}
+  private ResourcePath(final String path)
+  {
+    this.path = path;
+  }
 
-	public String getPath()
-	{
-		return path;
-	}
+  public String getPath()
+  {
+    return path;
+  }
 
 }

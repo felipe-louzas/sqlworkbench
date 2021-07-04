@@ -34,18 +34,18 @@ import java.util.ResourceBundle;
  * @author Thomas Kellerer
  */
 public class WbResourceBundle
-	extends PropertyResourceBundle
+  extends PropertyResourceBundle
 {
 
-	public WbResourceBundle(Reader reader)
-		throws IOException
-	{
-		super(reader);
-	}
+  public WbResourceBundle(Reader reader)
+    throws IOException
+  {
+    super(reader);
+  }
 
-	@Override
-	public void setParent(ResourceBundle parent)
-	{
-		super.setParent(parent);
-	}
+  @Override
+  public void setParent(ResourceBundle parent)
+  {
+    super.setParent(parent);
+  }
 }

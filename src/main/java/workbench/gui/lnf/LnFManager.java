@@ -47,8 +47,8 @@ import workbench.util.StringUtil;
 public class LnFManager
 {
   private List<LnFDefinition> lnfList;
-	public static final String FLATLAF_LIGHT_CLASS = "com.formdev.flatlaf.FlatLightLaf";
-	public static final String FLATLAF_DARK_CLASS = "com.formdev.flatlaf.FlatDarkLaf";
+  public static final String FLATLAF_LIGHT_CLASS = "com.formdev.flatlaf.FlatLightLaf";
+  public static final String FLATLAF_DARK_CLASS = "com.formdev.flatlaf.FlatDarkLaf";
 
   public LnFManager()
   {
@@ -72,7 +72,7 @@ public class LnFManager
 
   public int addDefinition(LnFDefinition lnf)
   {
-		List<LnFDefinition> list = getLnFList();
+    List<LnFDefinition> list = getLnFList();
     list.add(lnf);
     return list.size() - 1;
   }
@@ -115,47 +115,47 @@ public class LnFManager
     }
   }
 
-	public boolean isFlatLafLibPresent()
-	{
-		ClasspathUtil util = new ClasspathUtil();
-		List<File> libs = util.getExtLibs();
-		for (File f : libs)
-		{
-			if (f.getName().toLowerCase().contains("flatlaf"))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  public boolean isFlatLafLibPresent()
+  {
+    ClasspathUtil util = new ClasspathUtil();
+    List<File> libs = util.getExtLibs();
+    for (File f : libs)
+    {
+      if (f.getName().toLowerCase().contains("flatlaf"))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	private synchronized List<LnFDefinition> getLnFList()
-	{
-		if (lnfList != null) return lnfList;
+  private synchronized List<LnFDefinition> getLnFList()
+  {
+    if (lnfList != null) return lnfList;
     long start = System.currentTimeMillis();
 
-		lnfList = new ArrayList<>();
-		Settings set = Settings.getInstance();
+    lnfList = new ArrayList<>();
+    Settings set = Settings.getInstance();
 
-		boolean lightConfigure = false;
-		boolean darkConfigured = false;
+    boolean lightConfigure = false;
+    boolean darkConfigured = false;
 
     int count = set.getIntProperty("workbench.lnf.count", 0);
-		for (int i = 0; i < count; i++)
-		{
-			String clz = set.getProperty("workbench.lnf." + i + ".class", "");
+    for (int i = 0; i < count; i++)
+    {
+      String clz = set.getProperty("workbench.lnf." + i + ".class", "");
       if (clz == null) continue;
 
-			if (!lightConfigure && clz.equals(FLATLAF_LIGHT_CLASS))
-			{
-				lightConfigure = true;
-			}
-			if (!darkConfigured && clz.equals(FLATLAF_DARK_CLASS))
-			{
-				darkConfigured = true;
-			}
-			String name = set.getProperty("workbench.lnf." + i + ".name", clz);
-			String libs = set.getProperty("workbench.lnf." + i + ".classpath", "");
+      if (!lightConfigure && clz.equals(FLATLAF_LIGHT_CLASS))
+      {
+        lightConfigure = true;
+      }
+      if (!darkConfigured && clz.equals(FLATLAF_DARK_CLASS))
+      {
+        darkConfigured = true;
+      }
+      String name = set.getProperty("workbench.lnf." + i + ".name", clz);
+      String libs = set.getProperty("workbench.lnf." + i + ".classpath", "");
 
       if (libs.equals(ClasspathUtil.EXT_DIR))
       {
@@ -182,47 +182,47 @@ public class LnFManager
           lnfList.add(lnf);
         }
       }
-		}
+    }
 
-		if ((!lightConfigure || !darkConfigured) && isFlatLafLibPresent())
-		{
-			if (!lightConfigure)
-			{
-				LnFDefinition light = LnFDefinition.newExtLaf("FlatLaf Light", FLATLAF_LIGHT_CLASS);
-				lnfList.add(light);
-				LogMgr.logDebug(new CallerInfo(){}, "Added " + light.debugString());
-			}
+    if ((!lightConfigure || !darkConfigured) && isFlatLafLibPresent())
+    {
+      if (!lightConfigure)
+      {
+        LnFDefinition light = LnFDefinition.newExtLaf("FlatLaf Light", FLATLAF_LIGHT_CLASS);
+        lnfList.add(light);
+        LogMgr.logDebug(new CallerInfo(){}, "Added " + light.debugString());
+      }
 
-			if (!darkConfigured)
-			{
-				LnFDefinition dark = LnFDefinition.newExtLaf("FlatLaf Dark", FLATLAF_DARK_CLASS);
-				lnfList.add(dark);
-				LogMgr.logDebug(new CallerInfo(){}, "Added " + dark.debugString());
-			}
-		}
+      if (!darkConfigured)
+      {
+        LnFDefinition dark = LnFDefinition.newExtLaf("FlatLaf Dark", FLATLAF_DARK_CLASS);
+        lnfList.add(dark);
+        LogMgr.logDebug(new CallerInfo(){}, "Added " + dark.debugString());
+      }
+    }
 
-		// The Liquid Look & Feel "installs" itself as a System L&F and if
-		// activated is returned in getInstalledLookAndFeels(). To avoid
-		// a duplicate entry we check this before adding a "system" look and feel
-		LookAndFeelInfo[] systemLnf = UIManager.getInstalledLookAndFeels();
+    // The Liquid Look & Feel "installs" itself as a System L&F and if
+    // activated is returned in getInstalledLookAndFeels(). To avoid
+    // a duplicate entry we check this before adding a "system" look and feel
+    LookAndFeelInfo[] systemLnf = UIManager.getInstalledLookAndFeels();
 
-		for (LookAndFeelInfo lnfInfo : systemLnf)
-		{
-			LnFDefinition lnf = new LnFDefinition(lnfInfo.getName(), lnfInfo.getClassName());
-			if (!lnfList.contains(lnf))
-			{
-				lnfList.add(lnf);
-			}
-		}
+    for (LookAndFeelInfo lnfInfo : systemLnf)
+    {
+      LnFDefinition lnf = new LnFDefinition(lnfInfo.getName(), lnfInfo.getClassName());
+      if (!lnfList.contains(lnf))
+      {
+        lnfList.add(lnf);
+      }
+    }
 
-		Comparator<LnFDefinition> nameComp = (LnFDefinition first, LnFDefinition second) -> StringUtil.compareStrings(first.getName(), second.getName(), true);
-		lnfList.sort(nameComp);
+    Comparator<LnFDefinition> nameComp = (LnFDefinition first, LnFDefinition second) -> StringUtil.compareStrings(first.getName(), second.getName(), true);
+    lnfList.sort(nameComp);
 
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Checking look & feels took: " + duration + "ms");
 
-		return lnfList;
-	}
+    return lnfList;
+  }
 
   /**
    * returns all LnFs defined in the system. This is
@@ -238,15 +238,15 @@ public class LnFManager
   }
 
   public boolean isRegistered(String className)
-	{
-		return findLookAndFeel(className) != null;
-	}
+  {
+    return findLookAndFeel(className) != null;
+  }
 
   public LnFDefinition findLookAndFeel(String className)
   {
     if (className == null) return null;
 
-		for (LnFDefinition lnf : getLnFList())
+    for (LnFDefinition lnf : getLnFList())
     {
       if (lnf.getClassName().equals(className))
       {

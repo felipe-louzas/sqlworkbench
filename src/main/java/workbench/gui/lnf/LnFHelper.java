@@ -23,6 +23,8 @@ package workbench.gui.lnf;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.io.File;
 import java.lang.reflect.Method;
@@ -206,6 +208,20 @@ public class LnFHelper
     }
   }
 
+  private boolean isSystemScaled()
+  {
+    try
+    {
+      GraphicsConfiguration config = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+      return config.getDefaultTransform().getScaleX() > 1.0;
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not get graphics configuration", th);
+    }
+    return false;
+  }
+
   private void scaleDefaultFonts()
   {
     FontScaler scaler = new FontScaler();
@@ -213,9 +229,10 @@ public class LnFHelper
 
     if (!Settings.getInstance().getScaleFonts() || !scaler.doScaleFonts())
     {
-      if (scaler.isHiDPI())
+      if (Settings.getInstance().getUseReferenceFont() && (scaler.isHiDPI() || isSystemScaled()))
       {
         // It seems that Java scales the Menu font properly, but not the rest.
+        // so we use the menu font as the default font for everything
         setDefaultFonts();
       }
       return;
@@ -240,18 +257,18 @@ public class LnFHelper
     }
   }
 
-	private String getDefaultLookAndFeel()
-	{
-		if (PlatformHelper.isWindows())
-		{
-			return UIManager.getSystemLookAndFeelClassName();
-		}
-		if (PlatformHelper.isLinux() && lnfManager.isFlatLafLibPresent())
-		{
-			return LnFManager.FLATLAF_LIGHT_CLASS;
-		}
-		return UIManager.getSystemLookAndFeelClassName();
-	}
+  private String getDefaultLookAndFeel()
+  {
+    if (PlatformHelper.isWindows())
+    {
+      return UIManager.getSystemLookAndFeelClassName();
+    }
+    if (PlatformHelper.isLinux() && lnfManager.isFlatLafLibPresent())
+    {
+      return LnFManager.FLATLAF_LIGHT_CLASS;
+    }
+    return UIManager.getSystemLookAndFeelClassName();
+  }
 
   protected void initializeLookAndFeel()
   {

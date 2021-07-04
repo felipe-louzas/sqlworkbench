@@ -30,20 +30,20 @@ package workbench.resource;
  */
 public enum GeneratedIdentifierCase
 {
-	lower("LblLowercase"),
-	upper("LblUppercase"),
-	asIs("LblAsIs");
+  lower("LblLowercase"),
+  upper("LblUppercase"),
+  asIs("LblAsIs");
 
-	private String label;
+  private String label;
 
-	private GeneratedIdentifierCase(String resourceKey)
-	{
-		this.label = ResourceMgr.getString(resourceKey);
-	}
+  private GeneratedIdentifierCase(String resourceKey)
+  {
+    this.label = ResourceMgr.getString(resourceKey);
+  }
 
-	@Override
-	public String toString()
-	{
-		return label;
-	}
+  @Override
+  public String toString()
+  {
+    return label;
+  }
 }
