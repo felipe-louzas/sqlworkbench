@@ -24,11 +24,11 @@ package workbench.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -320,10 +320,17 @@ public class MainWindow
     ResourceMgr.setWindowIcons(this, "workbench");
 
     getContentPane().add(this.sqlTab, BorderLayout.CENTER);
-
-    restoreSettings();
-
-    updateTabPolicy();
+    restoreSize(graphics);
+    if (!WbSwingUtilities.hasMultipleDisplays())
+    {
+      // on a single display system we can restore the size
+      // early to avoid the window "jumping around"
+      // On a multi display system, restoring the size
+      // must be done after setVisible(true)
+      restorePosition(graphics);
+    }
+    restoreTabPolicy();
+    this.deviceId = getDeviceID(graphics);
 
     Color color = GuiSettings.getEditorTabHighlightColor();
     if (color != null)
@@ -367,9 +374,23 @@ public class MainWindow
 
   private String getCurrentDeviceID()
   {
-    GraphicsConfiguration config = this.getGraphicsConfiguration();
+    return getDeviceID(this.getGraphicsConfiguration());
+  }
+
+  private String getDeviceID(GraphicsConfiguration config)
+  {
+    if (config == null) return "";
     GraphicsDevice device = config.getDevice();
+    if (device == null) return "";
     return device.getIDstring();
+  }
+
+  protected final void restoreTabPolicy()
+  {
+    if (LnFHelper.isWebLaf()) return;
+
+    int tabPolicy = Settings.getInstance().getIntProperty(Settings.PROPERTY_TAB_POLICY, JTabbedPane.WRAP_TAB_LAYOUT);
+    sqlTab.setTabLayoutPolicy(tabPolicy);
   }
 
   protected final void updateTabPolicy()
@@ -379,18 +400,27 @@ public class MainWindow
     final JComponent content = (JComponent)this.getContentPane();
     WbSwingUtilities.invoke(() ->
     {
-      int tabPolicy = Settings.getInstance().getIntProperty(Settings.PROPERTY_TAB_POLICY, JTabbedPane.WRAP_TAB_LAYOUT);
-      sqlTab.setTabLayoutPolicy(tabPolicy);
+      restoreTabPolicy();
       sqlTab.invalidate();
       content.revalidate();
     });
-    WbSwingUtilities.repaintLater(this);
   }
 
-  public void display()
+  public void display(GraphicsConfiguration graphics)
   {
     this.restoreState();
+    LogMgr.logDebug(new CallerInfo(){}, "Before restore: location: " + WbSwingUtilities.displayString(getX(), getY()) + ", size: " + WbSwingUtilities.displayString(getSize()));
     this.setVisible(true);
+
+    if (WbSwingUtilities.hasMultipleDisplays())
+    {
+      // restoring the position on a multi-display system
+      // should be done after the window has been made visible
+      restorePosition(graphics);
+    }
+
+    LogMgr.logDebug(new CallerInfo(){}, "After restore: location: " + WbSwingUtilities.displayString(getX(), getY()) + ", size: " + WbSwingUtilities.displayString(getSize()));
+
     this.addTab();
     this.updateWindowTitle();
 
@@ -1587,27 +1617,29 @@ public class MainWindow
 
   public void restoreState()
   {
-    String state = Settings.getInstance().getProperty(this.getClass().getName() + ".state", "0");
-    int i = StringUtil.getIntValue(state, NORMAL);
-    if (i == MAXIMIZED_BOTH)
+    int state = Settings.getInstance().getIntProperty(this.getClass().getName() + ".state", 0);
+    if (state == MAXIMIZED_BOTH)
     {
-      setExtendedState(i);
+      setExtendedState(state);
     }
   }
 
-  public final void restoreSettings()
+  public final void restoreSize(GraphicsConfiguration config)
   {
-    Settings s = Settings.getInstance();
-
-    if (!s.restoreWindowSize(this))
+    if (!Settings.getInstance().restoreWindowSize(config, this, getClass().getName()))
     {
-      Dimension screenSize = WbSwingUtilities.getScreenSize();
+      if (config == null) return;
+
+      Rectangle screenSize = WbSwingUtilities.getUsableScreenSize(config);
       int w = (int)(screenSize.width * 0.75);
       int h = (int)(w * 0.75);
       this.setSize(w, h);
     }
+  }
 
-    if (!s.restoreWindowPosition(this))
+  public final void restorePosition(GraphicsConfiguration config)
+  {
+    if (!Settings.getInstance().restoreWindowPosition(config, this, getClass().getName()))
     {
       WbSwingUtilities.center(this, null);
     }
@@ -1637,16 +1669,32 @@ public class MainWindow
   @Override
   public void componentMoved(ComponentEvent e)
   {
-    GraphicsConfiguration config = this.getGraphicsConfiguration();
-    if (config == null) return;
-    GraphicsDevice device = config.getDevice();
-    if (device == null) return;
-    this.deviceId = device.getIDstring();
+    String newDevice = getCurrentDeviceID();
+    if (deviceId != null && !StringUtil.equalString(deviceId, newDevice))
+    {
+      LogMgr.logTrace(new CallerInfo(){}, "Window moved from " + deviceId + " to " + newDevice);
+      for (int i=0; i < this.sqlTab.getTabCount(); i++)
+      {
+        Optional<SqlPanel> panel = getSqlPanel(i);
+        if (panel.isPresent())
+        {
+          SqlPanel sqlPanel = panel.get();
+          sqlPanel.invalidate();
+        }
+      }
+    }
+    this.deviceId = newDevice;
   }
 
   @Override
   public void componentShown(ComponentEvent e)
   {
+    String currentId = getCurrentDeviceID();
+    if (!StringUtil.equalString(deviceId, currentId))
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "DeviceId before componentShown(): " + deviceId + ", deviceId after: " + currentId);
+    }
+    this.deviceId = currentId;
   }
 
   @Override
@@ -1657,7 +1705,12 @@ public class MainWindow
   @Override
   public void windowOpened(WindowEvent windowEvent)
   {
-    this.deviceId = getCurrentDeviceID();
+    String currentId = getCurrentDeviceID();
+    if (!StringUtil.equalString(deviceId, currentId))
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "DeviceId before windowOpened(): " + deviceId + ", deviceId after: " + currentId);
+    }
+    this.deviceId = currentId;
   }
 
   @Override

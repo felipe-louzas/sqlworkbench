@@ -408,6 +408,25 @@ public class TextAreaPainter
     return getFontMetrics(getFont());
   }
 
+  public void clearFontCache()
+  {
+//    synchronized (stylesLockMonitor)
+//    {
+//      if (styles != null)
+//      {
+//        for (SyntaxStyle style : styles)
+//        {
+//          if (style != null)
+//          {
+//            style.clearFontCache();
+//          }
+//        }
+//      }
+//    }
+    calculateTabSize();
+    calculateGutterWidth(getGraphics());
+  }
+
   /**
    * Sets the font for this component.
    *
@@ -419,21 +438,7 @@ public class TextAreaPainter
   public void setFont(Font font)
   {
     super.setFont(font);
-    synchronized (stylesLockMonitor)
-    {
-      if (styles != null)
-      {
-        for (SyntaxStyle style : styles)
-        {
-          if (style != null)
-          {
-            style.clearFontCache();
-          }
-        }
-      }
-    }
-    calculateTabSize();
-    calculateGutterWidth(getFontMetrics(font));
+    clearFontCache();
   }
 
   private void calculateGutterWidth(Graphics gfx)

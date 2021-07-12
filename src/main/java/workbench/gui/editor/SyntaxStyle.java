@@ -173,13 +173,14 @@ public class SyntaxStyle
    */
   public Font getStyledFont(Font font)
   {
-    if (font.equals(lastFont))
-    {
-      return lastStyledFont;
-    }
-    lastFont = font;
-    lastStyledFont = new Font(font.getFamily(), style, font.getSize());
-    return lastStyledFont;
+    return new Font(font.getFamily(), style, font.getSize());
+//    if (font.equals(lastFont))
+//    {
+//      return lastStyledFont;
+//    }
+//    lastFont = font;
+//    lastStyledFont = new Font(font.getFamily(), style, font.getSize());
+//    return lastStyledFont;
   }
 
   /**

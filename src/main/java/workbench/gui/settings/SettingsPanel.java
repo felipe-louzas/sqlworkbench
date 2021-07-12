@@ -218,8 +218,8 @@ public class SettingsPanel
     dialog.setTitle(ResourceMgr.getString("TxtSettingsDialogTitle"));
     dialog.getContentPane().add(this);
     dialog.addWindowListener(this);
-    int width = Settings.getInstance().getWindowWidth(this.getClass().getName());
-    int height = Settings.getInstance().getWindowHeight(this.getClass().getName());
+    int width = Settings.getInstance().getWindowWidth(this.getGraphicsConfiguration(), this.getClass().getName());
+    int height = Settings.getInstance().getWindowHeight(this.getGraphicsConfiguration(), this.getClass().getName());
 
     if (width > 0 && height > 0)
     {
@@ -261,7 +261,7 @@ public class SettingsPanel
 
   private void closeWindow()
   {
-    Settings.getInstance().setWindowSize(this.getClass().getName(),this.dialog.getWidth(),this.dialog.getHeight());
+    Settings.getInstance().setWindowSize(this.getGraphicsConfiguration(), this.getClass().getName(), this.dialog.getWidth(),this.dialog.getHeight());
     for (OptionPanelPage page : pages)
     {
       page.dispose();

@@ -84,6 +84,7 @@ import workbench.resource.ErrorPromptType;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
@@ -115,17 +116,8 @@ import workbench.gui.actions.CloseAllResultsAction;
 import workbench.gui.actions.CloseResultTabAction;
 import workbench.gui.actions.CommitAction;
 import workbench.gui.actions.ConsolidateLogAction;
-import workbench.gui.actions.clipboard.CopyAsDbUnitXMLAction;
-import workbench.gui.actions.clipboard.CopyAsSqlDeleteAction;
-import workbench.gui.actions.clipboard.CopyAsSqlDeleteInsertAction;
-import workbench.gui.actions.clipboard.CopyAsSqlInsertAction;
-import workbench.gui.actions.clipboard.CopyAsSqlMergeAction;
-import workbench.gui.actions.clipboard.CopyAsSqlUpdateAction;
-import workbench.gui.actions.clipboard.CopyAsTextAction;
-import workbench.gui.actions.clipboard.CopyCurrentStatementAction;
 import workbench.gui.actions.CopyRowAction;
 import workbench.gui.actions.CreateDeleteScriptAction;
-import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.actions.DeleteDependentRowsAction;
 import workbench.gui.actions.DeleteRowAction;
 import workbench.gui.actions.DisplayDataFormAction;
@@ -146,7 +138,6 @@ import workbench.gui.actions.FormatSqlAction;
 import workbench.gui.actions.HighlightCurrentStatement;
 import workbench.gui.actions.HighlightErrorLineAction;
 import workbench.gui.actions.IgnoreErrorsAction;
-import workbench.gui.actions.clipboard.ImportClipboardAction;
 import workbench.gui.actions.ImportFileAction;
 import workbench.gui.actions.InsertRowAction;
 import workbench.gui.actions.JoinCompletionAction;
@@ -183,6 +174,16 @@ import workbench.gui.actions.UndoExpandAction;
 import workbench.gui.actions.UpdateDatabaseAction;
 import workbench.gui.actions.ViewMessageLogAction;
 import workbench.gui.actions.WbAction;
+import workbench.gui.actions.clipboard.CopyAsDbUnitXMLAction;
+import workbench.gui.actions.clipboard.CopyAsSqlDeleteAction;
+import workbench.gui.actions.clipboard.CopyAsSqlDeleteInsertAction;
+import workbench.gui.actions.clipboard.CopyAsSqlInsertAction;
+import workbench.gui.actions.clipboard.CopyAsSqlMergeAction;
+import workbench.gui.actions.clipboard.CopyAsSqlUpdateAction;
+import workbench.gui.actions.clipboard.CopyAsTextAction;
+import workbench.gui.actions.clipboard.CopyCurrentStatementAction;
+import workbench.gui.actions.clipboard.CreateSnippetAction;
+import workbench.gui.actions.clipboard.ImportClipboardAction;
 import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.components.ConnectionInfo;
 import workbench.gui.components.DataStoreTableModel;
@@ -249,8 +250,6 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbThread;
-
-import workbench.workspace.WbWorkspace;
 
 /**
  * A panel with an SQL editor (EditorPanel), a log panel and
@@ -480,6 +479,7 @@ public class SqlPanel
     stmtRunner.setRetryHandler(this);
 
     tabDropHandler = new ResultTabDropHandler(this, resultTab, log);
+    contentPanel.setDividerLocation(0.5);
   }
 
   public boolean isCmdModeEnabled()

@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsConfiguration;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -3381,9 +3382,9 @@ public class Settings
     return value;
   }
 
-  public int getWindowPosX(String windowClass)
+  public int getWindowPosX(GraphicsConfiguration config, String windowClass)
   {
-    int xPos = getIntProperty(getResolutionDependentKey(windowClass, "x"), Integer.MIN_VALUE);
+    int xPos = getIntProperty(getResolutionDependentKey(config, windowClass, "x"), Integer.MIN_VALUE);
     if (xPos == Integer.MIN_VALUE)
     {
       xPos = getIntProperty(windowClass + ".x", Integer.MIN_VALUE);
@@ -3391,9 +3392,9 @@ public class Settings
     return xPos;
   }
 
-  public int getWindowPosY(String windowClass)
+  public int getWindowPosY(GraphicsConfiguration config, String windowClass)
   {
-    int yPos = getIntProperty(getResolutionDependentKey(windowClass, "y"), Integer.MIN_VALUE);
+    int yPos = getIntProperty(getResolutionDependentKey(config, windowClass, "y"), Integer.MIN_VALUE);
     if (yPos == Integer.MIN_VALUE)
     {
       yPos = getIntProperty(windowClass + ".y", Integer.MIN_VALUE);
@@ -3401,9 +3402,9 @@ public class Settings
     return yPos;
   }
 
-  public int getWindowWidth(String windowClass)
+  public int getWindowWidth(GraphicsConfiguration config, String windowClass)
   {
-    int width = getIntProperty(getResolutionDependentKey(windowClass, "width"), Integer.MIN_VALUE);
+    int width = getIntProperty(getResolutionDependentKey(config, windowClass, "width"), Integer.MIN_VALUE);
     if (width == Integer.MIN_VALUE)
     {
       width = getIntProperty(windowClass + ".width", Integer.MIN_VALUE);
@@ -3411,9 +3412,9 @@ public class Settings
     return width;
   }
 
-  public int getWindowHeight(String windowClass)
+  public int getWindowHeight(GraphicsConfiguration config, String windowClass)
   {
-    int height = getIntProperty(getResolutionDependentKey(windowClass, "height"), Integer.MIN_VALUE);
+    int height = getIntProperty(getResolutionDependentKey(config, windowClass, "height"), Integer.MIN_VALUE);
     if (height == Integer.MIN_VALUE)
     {
       height = getIntProperty(windowClass + ".height", Integer.MIN_VALUE);
@@ -3428,8 +3429,10 @@ public class Settings
 
   public void storeWindowPosition(Component target, String id)
   {
-    Point p = target.getLocation();
-    this.setWindowPosition(id, p.x, p.y);
+    Point p = target.getLocationOnScreen();
+    GraphicsConfiguration config = target.getGraphicsConfiguration();
+    Rectangle bounds = config.getBounds();
+    this.setWindowPosition(config, id, p.x - bounds.x, p.y - bounds.y);
   }
 
   public void storeWindowSize(Component target)
@@ -3437,11 +3440,11 @@ public class Settings
     this.storeWindowSize(target, null);
   }
 
-  private String getScreenResolutionKey()
+  private String getScreenResolutionKey(GraphicsConfiguration config)
   {
     try
     {
-      Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension screen = config.getBounds().getSize();
       return Long.toString((long)screen.getWidth()) + "x" + Long.toString((long)screen.getHeight());
     }
     catch (Throwable th)
@@ -3450,9 +3453,9 @@ public class Settings
     }
   }
 
-  private String getResolutionDependentKey(String base, String attribute)
+  private String getResolutionDependentKey(GraphicsConfiguration config, String base, String attribute)
   {
-    String resKey = getScreenResolutionKey();
+    String resKey = getScreenResolutionKey(config);
     if (resKey == null)
     {
       return base + "." + attribute;
@@ -3465,19 +3468,19 @@ public class Settings
     if (target == null) return;
     Dimension d = target.getSize();
     if (id == null) id = target.getClass().getName();
-    this.setWindowSize(id, d.width, d.height);
+    this.setWindowSize(target.getGraphicsConfiguration(), id, d.width, d.height);
   }
 
-  public void setWindowPosition(String windowClass, int x, int y)
+  public void setWindowPosition(GraphicsConfiguration config, String windowClass, int x, int y)
   {
-    this.props.setProperty(getResolutionDependentKey(windowClass, "x"), Integer.toString(x));
-    this.props.setProperty(getResolutionDependentKey(windowClass, "y"), Integer.toString(y));
+    this.props.setProperty(getResolutionDependentKey(config, windowClass, "x"), Integer.toString(x));
+    this.props.setProperty(getResolutionDependentKey(config, windowClass, "y"), Integer.toString(y));
   }
 
-  public void setWindowSize(String windowClass, int width, int height)
+  public void setWindowSize(GraphicsConfiguration config, String windowClass, int width, int height)
   {
-    this.props.setProperty(getResolutionDependentKey(windowClass, "width"), Integer.toString(width));
-    this.props.setProperty(getResolutionDependentKey(windowClass, "height"), Integer.toString(height));
+    this.props.setProperty(getResolutionDependentKey(config, windowClass, "width"), Integer.toString(width));
+    this.props.setProperty(getResolutionDependentKey(config, windowClass, "height"), Integer.toString(height));
   }
 
   public boolean restoreWindowSize(Component target)
@@ -3530,56 +3533,73 @@ public class Settings
 
   public boolean restoreWindowSize(final Component target, final String id)
   {
+    return restoreWindowSize(target.getGraphicsConfiguration(), target, id);
+  }
+
+  public boolean restoreWindowSize(GraphicsConfiguration config, final Component target, final String id)
+  {
     if (StringUtil.isEmptyString(id)) return false;
 
     if (resetSizeIfNeeded(id)) return false;
 
     boolean result = false;
-    final int w = this.getWindowWidth(id);
-    final int h = this.getWindowHeight(id);
-    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+    target.getGraphicsConfiguration();
+    int w = this.getWindowWidth(config, id);
+    int h = this.getWindowHeight(config, id);
+
+    // No size stored
+    if (w == Integer.MIN_VALUE || h == Integer.MIN_VALUE) return false;
+
+    Rectangle screen = WbSwingUtilities.getUsableScreenSize(config);
 
     if (w > 0 && h > 0 && w <= screen.getWidth() && h <= screen.getHeight())
     {
       result = true;
-      WbSwingUtilities.invoke(() ->
-      {
-        target.setSize(new Dimension(w, h));
-      });
+      target.setSize(w, h);
+    }
+    else
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Requested size: " +
+        WbSwingUtilities.displayString(w, h) + " is smaller than screen size: " + WbSwingUtilities.displayString(screen));
     }
     return result;
   }
 
   public boolean restoreWindowPosition(Component target)
   {
-    return this.restoreWindowPosition(target, target.getClass().getName());
+    return this.restoreWindowPosition(target.getGraphicsConfiguration(), target, target.getClass().getName());
   }
 
-  public boolean restoreWindowPosition(final Component target, final String id)
+  public boolean restoreWindowPosition(Component target, String id)
+  {
+    return restoreWindowPosition(target.getGraphicsConfiguration(), target, id);
+  }
+
+  public boolean restoreWindowPosition(GraphicsConfiguration config, Component target, String id)
   {
     if (target == null) return false;
 
-    final int x = this.getWindowPosX(id);
-    final int y = this.getWindowPosY(id);
+    if (config == null) config = target.getGraphicsConfiguration();
+    Rectangle screen = config.getBounds();
+    int x = this.getWindowPosX(config, id);
+    int y = this.getWindowPosY(config, id);
 
     // nothing stored, nothing to do
     if (x == Integer.MIN_VALUE || y == Integer.MIN_VALUE) return false;
 
-    Rectangle screen = WbSwingUtilities.getVirtualBounds();
-    Rectangle toDisplay = new Rectangle(x, y, target.getWidth(), target.getHeight());
-    if (WbSwingUtilities.isOutsideOfScreen(toDisplay))
-    {
-      LogMgr.logInfo(new CallerInfo(){}, "Stored window position " + WbSwingUtilities.displayString(toDisplay) + " not restored because it is outside the current screen size: " + WbSwingUtilities.displayString(screen));
-      return false;
-    }
+    if (x > (screen.x + screen.width) || x < screen.x) x = 0;
+    if (y > (screen.y + screen.height) || y < screen.y) y = 0;
 
-    LogMgr.logDebug(new CallerInfo(){}, "Restoring window position for '" + id + "', " +
-      "current screen size: " + WbSwingUtilities.displayString(screen)  + ", requested position: " + WbSwingUtilities.displayString(toDisplay));
+    int realX = x + screen.x;
+    int realY = y + screen.y;
 
-    WbSwingUtilities.invoke(() ->
-    {
-      target.setLocation(new Point(x, y));
-    });
+    LogMgr.logDebug(new CallerInfo(){}, "Restoring window position for '" + id + "' " +
+      ", device: " + config.getDevice().getIDstring() +
+      ", device screen size: " + WbSwingUtilities.displayString(screen)  +
+      ", requested position: " + WbSwingUtilities.displayString(x,y) +
+      ", real position: " + WbSwingUtilities.displayString(realX, realY));
+
+    target.setLocation(realX, realY);
 
     return true;
   }

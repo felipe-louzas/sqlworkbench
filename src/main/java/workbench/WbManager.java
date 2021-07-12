@@ -621,7 +621,7 @@ public final class WbManager
    */
   public void openNewWindow()
   {
-    EventQueue.invokeLater(() ->
+    WbSwingUtilities.invoke(() ->
     {
       openNewWindow(false);
     });
@@ -629,7 +629,8 @@ public final class WbManager
 
   private void openNewWindow(boolean checkCmdLine)
   {
-    GraphicsConfiguration screenToUse = null;
+    GraphicsConfiguration screenToUse = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+
     if (checkCmdLine)
     {
       // checkCmdLine will be true for the first window that is opened
@@ -650,9 +651,13 @@ public final class WbManager
       }
     }
 
+    LogMgr.logDebug(new CallerInfo(){},
+        "Using screen: " + screenToUse.getDevice().getIDstring() + " " +
+          WbSwingUtilities.displayString(screenToUse.getBounds()));
+
     final MainWindow main = new MainWindow(screenToUse);
     mainWindows.add(main);
-    main.display();
+    main.display(screenToUse);
     boolean connected = false;
 
     if (checkCmdLine)

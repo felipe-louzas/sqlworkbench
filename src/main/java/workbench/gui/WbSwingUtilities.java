@@ -214,26 +214,33 @@ public class WbSwingUtilities
     }
   }
 
+  public static boolean hasMultipleDisplays()
+  {
+    if (GraphicsEnvironment.isHeadless()) return false;
+    GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+    return screens != null && screens.length > 1;
+  }
+
   public static String displayString(Dimension d)
   {
     if (d == null) return "";
-    return "[w:" + (int)d.getWidth() + ",h:" + (int)d.getHeight() + "]";
+    return "[w:" + (int)d.getWidth() + ", h:" + (int)d.getHeight() + "]";
   }
 
   public static String displayString(Rectangle d)
   {
     if (d == null) return "";
-    return "[x: " + d.x + ", y: " + d.y + ", w:" + (int)d.getWidth() + ",h:" + (int)d.getHeight() + "]";
+    return "[x:" + d.x + ", y:" + d.y + ", w:" + (int)d.getWidth() + ", h:" + (int)d.getHeight() + "]";
   }
 
   public static String displayString(int x, int y)
   {
-    return "[x:" + x + ",y:" + y + "]";
+    return "[x:" + x + ", y:" + y + "]";
   }
 
-  public static boolean isOutsideOfScreen(Rectangle toDisplay)
+  public static boolean isOutsideOfScreen(Rectangle screen, Rectangle toDisplay)
   {
-    return !isFullyVisible(toDisplay);
+    return !isFullyVisible(screen, toDisplay);
   }
 
   public static Rectangle getVirtualBounds()
@@ -256,26 +263,24 @@ public class WbSwingUtilities
     }
     else
     {
-      Dimension screenSize = getScreenSize();
-      result = new Rectangle(screenSize);
+      GraphicsConfiguration conf = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+      result = getUsableScreenSize(conf);
     }
     return result;
   }
 
-  public static boolean isFullyVisible(int x, int y, Dimension size)
+  public static boolean isFullyVisible(Rectangle screen, int x, int y, Dimension size)
   {
-    return isFullyVisible(new Rectangle(x, y, size.width, size.height));
+    return isFullyVisible(screen, new Rectangle(x, y, size.width, size.height));
   }
 
-  public static boolean isFullyVisible(Point p, Dimension size)
+  public static boolean isFullyVisible(Rectangle screen, Point p, Dimension size)
   {
-    return isFullyVisible(new Rectangle(p, size));
+    return isFullyVisible(screen, new Rectangle(p, size));
   }
 
-  public static boolean isFullyVisible(Rectangle toDisplay)
+  public static boolean isFullyVisible(Rectangle screen, Rectangle toDisplay)
   {
-    Rectangle screen = getVirtualBounds();
-
     // make sure at least something of the window is visible
     return screen.intersects(toDisplay);
   }
@@ -290,8 +295,9 @@ public class WbSwingUtilities
    */
   public static void center(Window aWinToCenter, Component aReference)
   {
+    Rectangle screen = aWinToCenter.getGraphicsConfiguration().getBounds();
     Point location = getLocationToCenter(aWinToCenter, aReference);
-    if (!isFullyVisible(location, aWinToCenter.getSize()))
+    if (!isFullyVisible(screen, location, aWinToCenter.getSize()))
     {
       // centering against the reference would move the dialog outside
       // the current screen --> display the window centered on the current screen
@@ -320,23 +326,16 @@ public class WbSwingUtilities
     return SwingUtilities.getWindowAncestor(caller);
   }
 
-  public static Insets getScreenOffset()
+  public static Insets getScreenOffset(GraphicsConfiguration conf)
   {
-    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    GraphicsConfiguration conf = ge.getDefaultScreenDevice().getDefaultConfiguration();
-
     Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(conf);
     return insets;
   }
 
-  public static Dimension getScreenSize()
+  public static Rectangle getUsableScreenSize(GraphicsConfiguration config)
   {
-    return getScreenSize(getScreenOffset());
-  }
-
-  public static Dimension getScreenSize(Insets insets)
-  {
-    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+    Insets insets = getScreenOffset(config);
+    Rectangle screen = config.getBounds();
 
     screen.width -= (insets.left + insets.right);
     screen.height -= (insets.bottom + insets.top);
@@ -345,8 +344,8 @@ public class WbSwingUtilities
 
   public static Point getLocationToCenter(Window aWinToCenter, Component aReference)
   {
-    Insets offset = getScreenOffset();
-    Dimension screen = getScreenSize(offset);
+    Insets offset = getScreenOffset(aWinToCenter.getGraphicsConfiguration());
+    Dimension screen = getUsableScreenSize(aWinToCenter.getGraphicsConfiguration()).getSize();
 
     boolean centerOnScreen = false;
 

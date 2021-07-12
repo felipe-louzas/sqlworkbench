@@ -114,7 +114,7 @@ public class CloseIcon
     Graphics2D g2 = (Graphics2D)g;
 
     int p1 = offset;
-    int p2 = size - offset - 1;
+    int p2 = size - offset;
 
     g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
