@@ -60,6 +60,7 @@ public interface DataReceiver
   void processFile(StreamImporter stream)
     throws SQLException, IOException;
 
+  boolean isColumnExpression(String colName);
   /**
    * Import a single row into the table previously defined by setTargetTable().
    *

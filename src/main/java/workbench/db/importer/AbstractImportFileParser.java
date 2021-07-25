@@ -288,21 +288,21 @@ public abstract class AbstractImportFileParser
     return defaultBlobMode;
   }
 
-	@Override
+  @Override
   public void setDefaultBlobMode(BlobMode mode)
   {
     defaultBlobMode = mode;
   }
 
-	@Override
-	public void setColumnBlobModes(Map<String, BlobMode> modes)
-	{
-		if (modes != null)
-		{
-			columnBlobModes.clear();
-			columnBlobModes.putAll(modes);
-		}
-	}
+  @Override
+  public void setColumnBlobModes(Map<String, BlobMode> modes)
+  {
+    if (modes != null)
+    {
+      columnBlobModes.clear();
+      columnBlobModes.putAll(modes);
+    }
+  }
 
   @Override
   public abstract void setColumns(List<ColumnIdentifier> columnList)
@@ -404,17 +404,17 @@ public abstract class AbstractImportFileParser
       }
       else
       {
-				if (table.getSchema() == null)
-				{
-					// if no schema was specified make sure we search the table on the search path (if supported)
-					// otherwise e.g. temporary tables in Postgres wouldn't be found
-					DbSearchPath handler = DbSearchPath.Factory.getSearchPathHandler(connection);
-					if (handler.isRealSearchPath())
-					{
+        if (table.getSchema() == null)
+        {
+          // if no schema was specified make sure we search the table on the search path (if supported)
+          // otherwise e.g. temporary tables in Postgres wouldn't be found
+          DbSearchPath handler = DbSearchPath.Factory.getSearchPathHandler(connection);
+          if (handler.isRealSearchPath())
+          {
             DbObjectFinder finder = new DbObjectFinder(connection);
-						table = finder.searchObjectOnPath(table, connection.getMetadata().getTableTypesArray());
-					}
-				}
+            table = finder.searchObjectOnPath(table, connection.getMetadata().getTableTypesArray());
+          }
+        }
         targetTable = connection.getMetadata().getTableDefinition(table, true);
       }
     }

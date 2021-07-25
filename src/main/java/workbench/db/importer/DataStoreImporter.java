@@ -89,6 +89,13 @@ public class DataStoreImporter
     }
   }
 
+
+  @Override
+  public boolean isColumnExpression(String colName)
+  {
+    return false;
+  }
+
   @Override
   public boolean isTransactionControlEnabled()
   {

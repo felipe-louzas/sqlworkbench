@@ -323,8 +323,8 @@ public class GenericXmlFileParser
         {
           columns.add(col);
         }
-				// This is needed in case the attributes are written in different case than the columns
-				columnMap.put(att, col.getColumnName());
+        // This is needed in case the attributes are written in different case than the columns
+        columnMap.put(att, col.getColumnName());
       }
     }
     return columns;
@@ -433,21 +433,25 @@ public class GenericXmlFileParser
     {
       value = null;
     }
-		if (this.valueModifier != null)
+    if (this.valueModifier != null)
     {
       value = this.valueModifier.modifyValue(colId, value);
     }
 
     try
     {
-			if (SqlUtil.isBlobType(type))
-			{
-				this.currentRow[colIndex] = blobDecoder.decodeBlob(value, getBlobMode(colId.getColumnName()));
-			}
-			else
-			{
-				this.currentRow[colIndex] = this.converter.convertValue(value, type);
-			}
+      if (receiver.isColumnExpression(colId.getColumnName()))
+      {
+        this.currentRow[colIndex] = value;
+      }
+      else if (SqlUtil.isBlobType(type))
+      {
+        this.currentRow[colIndex] = blobDecoder.decodeBlob(value, getBlobMode(colId.getColumnName()));
+      }
+      else
+      {
+        this.currentRow[colIndex] = this.converter.convertValue(value, type);
+      }
     }
     catch (Exception e)
     {
@@ -511,8 +515,8 @@ public class GenericXmlFileParser
     {
       String attrName = entry.getKey();
       String colName = entry.getValue();
-			String value = attrs.getValue(attrName);
-			buildColumnData(colName, value);
+      String value = attrs.getValue(attrName);
+      buildColumnData(colName, value);
     }
   }
 

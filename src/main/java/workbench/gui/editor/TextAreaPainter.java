@@ -289,7 +289,7 @@ public class TextAreaPainter
   {
     if (tokenId == Token.NULL || styles == null || tokenId < 0 || tokenId >= styles.length)
     {
-      return getFontMetrics();
+      return this.getFontMetrics();
     }
     else
     {
@@ -405,24 +405,17 @@ public class TextAreaPainter
    */
   public FontMetrics getFontMetrics()
   {
-    return getFontMetrics(getFont());
+    return this.getFontMetrics(getFont());
   }
 
-  public void clearFontCache()
+  @Override
+  public FontMetrics getFontMetrics(Font f)
   {
-//    synchronized (stylesLockMonitor)
-//    {
-//      if (styles != null)
-//      {
-//        for (SyntaxStyle style : styles)
-//        {
-//          if (style != null)
-//          {
-//            style.clearFontCache();
-//          }
-//        }
-//      }
-//    }
+    return getGraphics() == null ? super.getFontMetrics(f) : getGraphics().getFontMetrics(f);
+  }
+
+  private void fontChanged()
+  {
     calculateTabSize();
     calculateGutterWidth(getGraphics());
   }
@@ -438,7 +431,7 @@ public class TextAreaPainter
   public void setFont(Font font)
   {
     super.setFont(font);
-    clearFontCache();
+    fontChanged();
   }
 
   private void calculateGutterWidth(Graphics gfx)
@@ -473,8 +466,6 @@ public class TextAreaPainter
   public void calculateTabSize()
   {
     this.tabSize = -1;
-    if (this.textArea == null) return;
-    if (this.textArea.getDocument() == null) return;
     FontMetrics cfm = getFontMetrics();
     if (cfm == null) return;
 

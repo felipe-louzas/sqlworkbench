@@ -32,28 +32,27 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import workbench.db.ColumnIdentifier;
-import workbench.db.TableIdentifier;
-import workbench.db.exporter.BlobMode;
-import workbench.db.exporter.XmlRowDataConverter;
-
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
+import workbench.db.ColumnIdentifier;
 import workbench.db.DbObjectFinder;
+import workbench.db.TableIdentifier;
+import workbench.db.exporter.BlobMode;
+import workbench.db.exporter.XmlRowDataConverter;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
 import workbench.util.MessageBuffer;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
@@ -451,7 +450,8 @@ public class WbXmlDataFileParser
       return;
     }
 
-    int type = this.columns[this.realColIndex].getDataType();
+    ColumnIdentifier col = this.columns[this.realColIndex];
+    int type = col.getDataType();
 
     String value = this.chars.toString();
     if (trimValues && !SqlUtil.isBlobType(type))
@@ -466,7 +466,11 @@ public class WbXmlDataFileParser
 
     try
     {
-      if (SqlUtil.isCharacterType(type))
+      if (receiver.isColumnExpression(col.getColumnName()))
+      {
+        this.currentRow[this.realColIndex] = value;
+      }
+      else if (SqlUtil.isCharacterType(type))
       {
         // if clobs are exported as external files, than we'll have a filename in the
         // attribute (just like with BLOBS)
@@ -493,7 +497,7 @@ public class WbXmlDataFileParser
       }
       else if (SqlUtil.isDateType(type))
       {
-        // For Date types we don't need the ValueConverter as already we
+        // For Date types we don't need the ValueConverter as we already
         // have a suitable long value that doesn't need parsing
         java.sql.Date d = new java.sql.Date(this.columnLongValue);
         if (type == Types.TIMESTAMP)

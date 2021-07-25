@@ -662,7 +662,11 @@ public class TextFileParser
               value = valueModifier.modifyValue(col, value);
             }
 
-            if (SqlUtil.isCharacterType(colType) || SqlUtil.isXMLType(colType, dbmsType))
+            if (receiver.isColumnExpression(col.getColumnName()))
+            {
+              rowData[targetIndex] = value;
+            }
+            else if (SqlUtil.isCharacterType(colType) || SqlUtil.isXMLType(colType, dbmsType))
             {
               if (clobsAreFilenames && value != null && (SqlUtil.isClobType(colType, dbmsType, connection.getDbSettings()) || SqlUtil.isXMLType(colType, dbmsType) ))
               {

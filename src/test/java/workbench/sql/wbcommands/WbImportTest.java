@@ -72,6 +72,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
 /**
  *
  * @author Thomas Kellerer
@@ -109,6 +110,7 @@ public class WbImportTest
     connection.disconnect();
   }
 
+  @Test
   public void testConstantVariables()
     throws Exception
   {
@@ -136,7 +138,7 @@ public class WbImportTest
         "WbImport -sourceDir='" + basedir + "' -type=text \n" +
         "         -delimiter=',' \n" +
         "         -extension=txt \n" +
-        "         -constantValues=\"source_file=$[_wb_import_file_path]\" \n" +
+        "         -constantValues=\"data=$[_wb_import_file_path]\" \n" +
         "         -header=true");
       String msg = result.getMessages().toString();
       assertTrue(msg, result.isSuccess());
@@ -152,6 +154,73 @@ public class WbImportTest
     }
   }
 
+  @Test
+  public void testColumnExpressionXLS()
+    throws Exception
+  {
+    WbConnection con = getTestUtil().getHSQLConnection("expression");
+    try
+    {
+      TestUtil.executeScript(con,
+        "create table data (id integer, name varchar(100));\n" +
+        "commit;\n");
+
+      File input = util.copyResourceFile(this, "column_expression.xlsx");
+
+      WbImport cmd = new WbImport();
+      cmd.setConnection(con);
+      StatementRunnerResult result = cmd.execute(
+        "WbImport -file='" + input.getAbsolutePath() + "' -type=xlsx \n" +
+        "         -table=data \n" +
+        "         -columnExpression=name:lower(?) \n" +
+        "         -header=true");
+      String msg = result.getMessages().toString();
+      assertTrue(msg, result.isSuccess());
+      String value = (String)TestUtil.getSingleQueryValue(con, "select name from data where id = 1");
+      assertEquals("arthur", value);
+    }
+    finally
+    {
+      con.disconnect();
+    }
+  }
+
+
+  @Test
+  public void testColumnExpressionText()
+    throws Exception
+  {
+    WbConnection con = getTestUtil().getHSQLConnection("expression");
+    try
+    {
+      TestUtil.executeScript(con,
+        "create table data1 (id integer, data varchar(100));\n" +
+        "commit;\n");
+      File data1 = new File(basedir, "data1.txt");
+      FileUtil.writeString(data1,
+        "id,data\n" +
+        "42,HELLO\n");
+
+      WbImport cmd = new WbImport();
+      cmd.setConnection(con);
+      StatementRunnerResult result = cmd.execute(
+        "WbImport -sourceDir='" + basedir + "' -type=text \n" +
+        "         -delimiter=',' \n" +
+        "         -extension=txt \n" +
+        "         -columnExpression=data:lower(?) \n" +
+        "         -header=true");
+      String msg = result.getMessages().toString();
+      assertTrue(msg, result.isSuccess());
+      String value = (String)TestUtil.getSingleQueryValue(con, "select data from data1 where id = 42");
+      assertEquals("hello", value);
+    }
+    finally
+    {
+      con.disconnect();
+    }
+  }
+
+  @Test
   public void testLineNumberVariable()
     throws Exception
   {
@@ -173,6 +242,7 @@ public class WbImportTest
       StatementRunnerResult result = cmd.execute(
         "WbImport -file='" + data1.getAbsolutePath() + "' -type=text \n" +
         "         -delimiter=',' \n" +
+        "         -table=data1 \n" +
         "         -constantValues=\"id=$[_wb_import_line_number]\" \n" +
         "         -header=true");
       String msg = result.getMessages().toString();

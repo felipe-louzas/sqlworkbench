@@ -60,6 +60,7 @@ import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
 import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
+import workbench.db.JdbcUtils;
 import workbench.db.PkDefinition;
 import workbench.db.SequenceAdjuster;
 import workbench.db.TableCreator;
@@ -82,9 +83,6 @@ import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
 import workbench.util.MemoryWatcher;
 import workbench.util.MessageBuffer;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -1060,6 +1058,14 @@ public class DataImporter
 
     return rowNum % commitEvery == 0;
   }
+
+  @Override
+  public boolean isColumnExpression(String colName)
+  {
+    if (StringUtil.isBlank(colName)) return false;
+    return columnExpressions.containsKey(colName);
+  }
+
   /**
    *  Callback function for RowDataProducer. The order in the data array
    *  has to be the same as initially passed in the setTargetTable() method.

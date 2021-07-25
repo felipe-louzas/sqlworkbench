@@ -150,6 +150,12 @@ public class SpreadsheetFileParserTest
       }
 
       @Override
+      public boolean isColumnExpression(String colName)
+      {
+        return false;
+      }
+
+      @Override
       public boolean shouldProcessNextRow()
       {
         return true;

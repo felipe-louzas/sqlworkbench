@@ -76,7 +76,7 @@ public class SpreadsheetFileParser
   private SpreadsheetReader reader;
   protected List<Object> dataRowValues;
   private TableDependencySorter tableSorter;
-	private boolean tableNameSpecified;
+  private boolean tableNameSpecified;
 
   public SpreadsheetFileParser()
   {
@@ -657,7 +657,11 @@ public class SpreadsheetFileParser
             value = valueModifier.modifyValue(col, svalue);
           }
 
-          if (SqlUtil.isCharacterType(colType))
+          if (receiver.isColumnExpression(col.getColumnName()))
+          {
+            rowData[targetIndex] = value;
+          }
+          else if (SqlUtil.isCharacterType(colType))
           {
             if (this.emptyStringIsNull && StringUtil.isEmptyString(svalue))
             {

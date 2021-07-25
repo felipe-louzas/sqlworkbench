@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
-
 /**
  * A simple text style class.
  *
@@ -121,8 +120,6 @@ public class SyntaxStyle
 
   private Color color;
   private final int style;
-  private Font lastFont;
-  private Font lastStyledFont;
 
   /**
    * Creates a new SyntaxStyle.
@@ -141,17 +138,6 @@ public class SyntaxStyle
     {
       this.style = fontStyle;
     }
-  }
-
-  /**
-   * Clear cached font information.
-   *
-   * This has to be called when the font of the TextAreaPainter is changed.
-   */
-  public void clearFontCache()
-  {
-    lastFont = null;
-    lastStyledFont = null;
   }
 
   /**
@@ -174,13 +160,6 @@ public class SyntaxStyle
   public Font getStyledFont(Font font)
   {
     return new Font(font.getFamily(), style, font.getSize());
-//    if (font.equals(lastFont))
-//    {
-//      return lastStyledFont;
-//    }
-//    lastFont = font;
-//    lastStyledFont = new Font(font.getFamily(), style, font.getSize());
-//    return lastStyledFont;
   }
 
   /**

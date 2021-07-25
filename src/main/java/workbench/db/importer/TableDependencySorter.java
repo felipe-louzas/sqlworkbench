@@ -274,7 +274,7 @@ public class TableDependencySorter
 
     final Comparator<TableIdentifier> depComp = new Comparator<TableIdentifier>()
     {
-			// <editor-fold defaultstate="collapsed" desc="Comparator">
+      // <editor-fold defaultstate="collapsed" desc="Comparator">
       final int factor = bottomUp ? -1 : 1;
 
       @Override
@@ -370,7 +370,7 @@ public class TableDependencySorter
         }
         return lvl.intValue();
       }
-			// </editor-fold>
+      // </editor-fold>
     };
 
     try
