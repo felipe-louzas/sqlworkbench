@@ -16,6 +16,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.font.FontRenderContext;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class TextAreaPainter
   protected boolean selectionHighlightIgnoreCase;
 
   private final int cursorWidth = GuiSettings.getCaretWidth();
-  protected int tabSize = -1;
+  protected float tabSize = -1;
   protected boolean showLineNumbers;
   protected int gutterWidth = 0;
 
@@ -466,11 +467,14 @@ public class TextAreaPainter
   public void calculateTabSize()
   {
     this.tabSize = -1;
+    if (textArea == null) return;
     FontMetrics cfm = getFontMetrics();
     if (cfm == null) return;
 
-    int t = Settings.getInstance().getEditorTabWidth();
-    this.tabSize = cfm.charWidth(' ') * t;
+    FontRenderContext frc = cfm.getFontRenderContext();
+    Font font = getFont();
+    float tabWidth = (float) font.getStringBounds("m", frc).getWidth();
+    this.tabSize = tabWidth * textArea.getTabSize();
   }
 
   @Override
@@ -660,8 +664,8 @@ public class TextAreaPainter
       this.calculateTabSize();
     }
     int offset = textArea.getHorizontalOffset();
-    int ntabs = ((int)x - offset) / tabSize;
-    return (ntabs + 1) * tabSize + offset;
+    float ntabs = (x - offset) / tabSize;
+    return ((ntabs + 1) * tabSize) + offset;
   }
 
   protected void paintPlainLine(Graphics2D gfx, Segment lineSegment, int line, Font defaultFont, Color defaultColor, float x, float y)
