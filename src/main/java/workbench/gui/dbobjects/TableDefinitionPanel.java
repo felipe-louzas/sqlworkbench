@@ -93,7 +93,7 @@ import workbench.util.WbThread;
 
 
 /**
- * A panel to display the table definition information inside the DbExplorer.
+ * A panel to display the table definition information (=column list) inside the DbExplorer.
  *
  * @see workbench.db.DbMetadata#getTableDefinition(TableIdentifier)
  *
@@ -608,7 +608,7 @@ public class TableDefinitionPanel
 
     for (int i=0; i < rows.length; i++)
     {
-      String column = this.tableDefinition.getValueAsString(rows[i], TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_COL_NAME);
+      String column = this.tableDefinition.getValueAsString(rows[i], TableColumnsDatastore.COLUMN_NAME_COL_NAME);
 
       // the column name can be empty if a new column has just been inserted in the definition display
       if (StringUtil.isNonBlank(column))
@@ -682,7 +682,7 @@ public class TableDefinitionPanel
     if (!isTable()) return false;
     for (int row = 0; row < this.tableDefinition.getRowCount(); row++)
     {
-      String flag = tableDefinition.getValueAsString(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_PK_FLAG);
+      String flag = tableDefinition.getValueAsString(row, TableColumnsDatastore.PKFLAG_COL_NAME);
       boolean isPk = StringUtil.stringToBool(flag);
       if (isPk) return true;
     }

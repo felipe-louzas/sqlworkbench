@@ -260,7 +260,7 @@ class ObjectCache
     if (dbConnection.isBusy()) return Collections.emptySet();
 
     List<Namespace> searchPath = getSearchPath(dbConnection, requestedNamespace);
-		LogMgr.logDebug(new CallerInfo(){}, "Getting tables using schema: " + requestedNamespace + ", filter: " + types + ", search path: " + searchPath);
+    LogMgr.logDebug(new CallerInfo(){}, "Getting tables using schema: " + requestedNamespace + ", filter: " + types + ", search path: " + searchPath);
 
     DbMetadata meta = dbConnection.getMetadata();
 
@@ -276,11 +276,11 @@ class ObjectCache
             tbl.checkQuotesNeeded(dbConnection);
           }
           this.setTables(tables, dbConnection);
-					LogMgr.logDebug(new CallerInfo(){}, "Namespace \"" + namespace + "\" not found in cache. Retrieved " + tables.size() + " objects");
+          LogMgr.logDebug(new CallerInfo(){}, "Namespace \"" + namespace + "\" not found in cache. Retrieved " + tables.size() + " objects");
         }
         catch (Exception e)
         {
-					LogMgr.logError(new CallerInfo(){}, "Could not retrieve table list for namespace: " + namespace, e);
+          LogMgr.logError(new CallerInfo(){}, "Could not retrieve table list for namespace: " + namespace, e);
         }
       }
     }
@@ -337,11 +337,11 @@ class ObjectCache
     List<DependencyNode> old = referencedTables.put(table, referenced);
     if (old == null)
     {
-			LogMgr.logDebug(new CallerInfo(){}, "Added referenced tables for " + table + "(" + referenced + ")");
+      LogMgr.logDebug(new CallerInfo(){}, "Added referenced tables for " + table + "(" + referenced + ")");
     }
     else
     {
-			LogMgr.logDebug(new CallerInfo(){}, "Replaced existing referenced tables for " + table);
+      LogMgr.logDebug(new CallerInfo(){}, "Replaced existing referenced tables for " + table);
     }
   }
 
@@ -351,7 +351,7 @@ class ObjectCache
     List<DependencyNode> old = referencingTables.put(table, referencing);
     if (old == null)
     {
-			LogMgr.logDebug(new CallerInfo(){}, "Added referencing tables for " + table + "(" + referencing + ")");
+      LogMgr.logDebug(new CallerInfo(){}, "Added referencing tables for " + table + "(" + referencing + ")");
     }
     else
     {
@@ -1069,8 +1069,8 @@ class ObjectCache
     }
 
     LogMgr.logDebug(new CallerInfo(){},
-				"Added " + objects.size() + " objects, " +
-				procedureCache.values().size() + " procedures, " +
-				synonymMap.size() + " synonyms and " + refCount + " foreign key definitions from local storage");
+        "Added " + objects.size() + " objects, " +
+        procedureCache.values().size() + " procedures, " +
+        synonymMap.size() + " synonyms and " + refCount + " foreign key definitions from local storage");
   }
 }

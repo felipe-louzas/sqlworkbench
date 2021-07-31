@@ -746,7 +746,7 @@ public class WbImport
         if (importAllSheets)
         {
           spreadSheetParser.setSheetIndex(-1);
-					multiFileImport = true;
+          multiFileImport = true;
 //          table = null;
         }
         else if (cmdLine.isArgPresent(ARG_SHEET_NAME))
@@ -780,7 +780,7 @@ public class WbImport
       addColumnFilter(colFilter, parser);
     }
 
-		setBlobModes(parser);
+    setBlobModes(parser);
 
     Map<String, String> columnExpressions = cmdLine.getMapValue(ARG_COLUMN_EXPR);
     imp.setColumnExpressions(columnExpressions);

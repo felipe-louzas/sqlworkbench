@@ -46,7 +46,7 @@ public class WbToolbarButton
   public static final Insets SMALL_MARGIN = new Insets(1,1,1,1);
   public static final Insets WIDE_MARGIN = new Insets(5,5,5,5);
 
-	private static final boolean USE_WIDE_MARGIN = LnFHelper.isFlatLaf();
+  private static final boolean USE_WIDE_MARGIN = LnFHelper.isFlatLaf();
 
   public WbToolbarButton()
   {

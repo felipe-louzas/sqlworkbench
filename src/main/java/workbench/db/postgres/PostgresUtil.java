@@ -147,7 +147,7 @@ public class PostgresUtil
 
     final String query = "select unnest(pg_catalog.current_schemas(true))";
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "search path", query);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "search path", query);
 
     try
     {
@@ -175,7 +175,7 @@ public class PostgresUtil
     {
       LogMgr.logWarning(new CallerInfo(){}, "Using public as the default search path");
       // Fallback. Use the Postgres default settings
-			result.add(con.getDisplayUser());
+      result.add(con.getDisplayUser());
       result.add("public");
     }
     return result;

@@ -39,79 +39,74 @@ import workbench.util.StringUtil;
 public class TableColumnsDatastore
   extends DataStore
 {
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the column name
+  /**
+   * The name of the datastore column that contains the table's column name.
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_COL_NAME = 0;
+  public static final String COLUMN_NAME_COL_NAME = "COLUMN_NAME";
 
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the DBMS specific data type string
+  /**
+   * The name of the datastore column that contains the DBMS specific data type.
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_DATA_TYPE = 1;
+  public static final String DATATYPE_NAME_COL_NAME = "DATA_TYPE";
 
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the primary key flag
+  /**
+   * The name of the datastore column that contains the PK flag (YES/NO).
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_PK_FLAG = 2;
+  public static final String PKFLAG_COL_NAME = "PK";
 
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the nullable flag
+  /**
+   * The name of the datastore column that contains the NULLABLE flag (YES/NO).
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_NULLABLE = 3;
-
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the default value for this column
+  public static final String NULLABLE_COL_NAME = "NULLABLE";
+  /**
+   * The name of the datastore column that contains the default value of the table's column.
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_DEFAULT = 4;
-
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the auto increment flag for this column
+  public static final String DEF_VALUE_COL_NAME = "DEFAULT";
+  /**
+   * The name of the datastore column that contains the AUTOINCREMENT flag (YES/NO).
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_AUTO_INC = 5;
-
-  public final static int COLUMN_IDX_TABLE_DEFINITION_COMPUTED = 6;
-
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the remark for this column
+  public static final String AUTO_INC_COL_NAME = "AUTOINCREMENT";
+  /**
+   * The name of the datastore column that contains the computed column flag (YES/NO).
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_REMARKS = 7;
-
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the integer value of the java datatype from {@link java.sql.Types}
+  public static final String COMPUTED_COL_COL_NAME = "COMPUTED";
+  /**
+   * The name of the datastore column that contains table's column remarks (comments).
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_JAVA_SQL_TYPE = 8;
-
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the integer value of siez of the column
+  public static final String REMARKS_COL_NAME = "REMARKS";
+  /**
+   * The name of the datastore column that contains table's column position in the table.
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_SIZE = 9;
-
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the number of digits for the column
+  public static final String COLPOSITION_COL_NAME = "POSITION";
+  /**
+   * The name of the datastore column that contains table column's JDBC type value (int)
+   * as returned by the driver.
    */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_DIGITS = 10;
-
-  /** The column index for a {@link workbench.storage.DataStore} returned
-   *  by {@link DbMetadata#getTableDefinition(TableIdentifier)} that holds
-   *  the ordinal position of the column
-   */
-  public final static int COLUMN_IDX_TABLE_DEFINITION_POSITION = 11;
-
   public static final String JAVA_SQL_TYPE_COL_NAME = "JDBC Type";
-  public static final String SCALE_COL_NAME = "SCALE/SIZE";
-  public static final String PRECISION_COL_NAME = "PRECISION";
+  /**
+   * The name of the datastore column that contains table column's SCALE or SIZE value (int)
+   * as returned by the driver.
+   */
+  public static final String COLSIZE_COL_NAME = "SCALE/SIZE";
+  /**
+   * The name of the datastore column that contains table column's PRECISION value (int)
+   * as returned by the driver.
+   */
+  public static final String NUMERIC_DIGITS_COL_NAME = "PRECISION";
 
-  public static final String[] TABLE_DEFINITION_COLS = {"COLUMN_NAME", "DATA_TYPE", "PK", "NULLABLE", "DEFAULT", "AUTOINCREMENT", "COMPUTED", "REMARKS", JAVA_SQL_TYPE_COL_NAME, SCALE_COL_NAME, PRECISION_COL_NAME, "POSITION"};
+  public static final String[] TABLE_DEFINITION_COLS = {
+    COLUMN_NAME_COL_NAME,
+    DATATYPE_NAME_COL_NAME,
+    PKFLAG_COL_NAME,
+    NULLABLE_COL_NAME,
+    DEF_VALUE_COL_NAME,
+    AUTO_INC_COL_NAME,
+    COMPUTED_COL_COL_NAME,
+    REMARKS_COL_NAME,
+    JAVA_SQL_TYPE_COL_NAME,
+    COLSIZE_COL_NAME,
+    NUMERIC_DIGITS_COL_NAME,
+    COLPOSITION_COL_NAME};
   private static final int[] TYPES = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER};
   private static final int[] SIZES = {20, 18, 5, 8, 10, 10, 25, 18, 2, 2, 2, 2};
 
@@ -127,19 +122,19 @@ public class TableColumnsDatastore
       for (ColumnIdentifier col : columns)
       {
         int row = addRow();
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_COL_NAME, col.getColumnName());
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_JAVA_SQL_TYPE, Integer.valueOf(col.getDataType()));
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_PK_FLAG, col.isPkColumn() ? "YES" : "NO");
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_SIZE, Integer.valueOf(col.getColumnSize()));
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_DIGITS, Integer.valueOf(col.getDecimalDigits()));
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_NULLABLE, col.isNullable() ? "YES" : "NO");
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_AUTO_INC, col.isAutoincrement() ? "YES" : "NO");
+        setValue(row, COLUMN_NAME_COL_NAME, col.getColumnName());
+        setValue(row, JAVA_SQL_TYPE_COL_NAME, Integer.valueOf(col.getDataType()));
+        setValue(row, PKFLAG_COL_NAME, col.isPkColumn() ? "YES" : "NO");
+        setValue(row, COLSIZE_COL_NAME, Integer.valueOf(col.getColumnSize()));
+        setValue(row, NUMERIC_DIGITS_COL_NAME, Integer.valueOf(col.getDecimalDigits()));
+        setValue(row, NULLABLE_COL_NAME, col.isNullable() ? "YES" : "NO");
+        setValue(row, AUTO_INC_COL_NAME, col.isAutoincrement() ? "YES" : "NO");
         boolean isComputed = !col.isAutoGenerated() && StringUtil.isNonEmpty(col.getComputedColumnExpression());
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_COMPUTED, isComputed ? "YES" : "NO");
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_POSITION, Integer.valueOf(col.getPosition()));
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_DATA_TYPE, col.getDbmsType());
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_DEFAULT, col.getDefaultValue());
-        setValue(row, COLUMN_IDX_TABLE_DEFINITION_REMARKS, col.getComment());
+        setValue(row, COMPUTED_COL_COL_NAME, isComputed ? "YES" : "NO");
+        setValue(row, COLPOSITION_COL_NAME, Integer.valueOf(col.getPosition()));
+        setValue(row, DATATYPE_NAME_COL_NAME, col.getDbmsType());
+        setValue(row, DEF_VALUE_COL_NAME, col.getDefaultValue());
+        setValue(row, REMARKS_COL_NAME, col.getComment());
         getRow(row).setUserObject(col);
       }
     }
@@ -167,17 +162,17 @@ public class TableColumnsDatastore
       ColumnIdentifier ci = (ColumnIdentifier)ds.getRow(i).getUserObject();
       if (ci == null)
       {
-        String col = ds.getValueAsString(i, COLUMN_IDX_TABLE_DEFINITION_COL_NAME);
-        int type = ds.getValueAsInt(i, COLUMN_IDX_TABLE_DEFINITION_JAVA_SQL_TYPE, Types.OTHER);
-        String dbmstype = ds.getValueAsString(i, COLUMN_IDX_TABLE_DEFINITION_DATA_TYPE);
-        boolean pk = "YES".equals(ds.getValueAsString(i, COLUMN_IDX_TABLE_DEFINITION_PK_FLAG));
+        String col = ds.getValueAsString(i, COLUMN_NAME_COL_NAME);
+        int type = ds.getValueAsInt(i, JAVA_SQL_TYPE_COL_NAME, Types.OTHER);
+        String dbmstype = ds.getValueAsString(i, DATATYPE_NAME_COL_NAME);
+        boolean pk = "YES".equals(ds.getValueAsString(i, PKFLAG_COL_NAME));
         ci = new ColumnIdentifier(meta.quoteObjectname(col), meta.getDataTypeResolver().fixColumnType(type, dbmstype), pk);
-        int size = ds.getValueAsInt(i, COLUMN_IDX_TABLE_DEFINITION_SIZE, 0);
-        int digits = ds.getValueAsInt(i, COLUMN_IDX_TABLE_DEFINITION_DIGITS, -1);
-        String nullable = ds.getValueAsString(i, COLUMN_IDX_TABLE_DEFINITION_NULLABLE);
-        int position = ds.getValueAsInt(i, COLUMN_IDX_TABLE_DEFINITION_POSITION, 0);
-        String comment = ds.getValueAsString(i, COLUMN_IDX_TABLE_DEFINITION_REMARKS);
-        String def = ds.getValueAsString(i, COLUMN_IDX_TABLE_DEFINITION_DEFAULT);
+        int size = ds.getValueAsInt(i, COLSIZE_COL_NAME, 0);
+        int digits = ds.getValueAsInt(i, NUMERIC_DIGITS_COL_NAME, -1);
+        String nullable = ds.getValueAsString(i, NULLABLE_COL_NAME);
+        int position = ds.getValueAsInt(i, COLPOSITION_COL_NAME, 0);
+        String comment = ds.getValueAsString(i, REMARKS_COL_NAME);
+        String def = ds.getValueAsString(i, DEF_VALUE_COL_NAME);
         ci.setColumnSize(size);
         ci.setDecimalDigits(digits);
         ci.setIsNullable(StringUtil.stringToBool(nullable));

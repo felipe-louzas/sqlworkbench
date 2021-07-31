@@ -2315,57 +2315,57 @@ public class PgEscapingLexer implements SQLLexer {
   private boolean zzEOFDone;
 
   /* user code: */
-	private int lastToken;
-	private int nextState=YYINITIAL;
-	private StringBuilder commentBuffer = new StringBuilder();
+  private int lastToken;
+  private int nextState=YYINITIAL;
+  private StringBuilder commentBuffer = new StringBuilder();
   private int commentStartChar = 0;
 
-	/**
-	 * next Token method that allows you to control if whitespace and comments are
-	 * returned as tokens.
-	 */
-	public SQLToken getNextToken(boolean returnComments, boolean returnWhiteSpace)
-	{
-		try
-		{
-			SQLToken t = getNextToken();
-			if (returnComments && returnWhiteSpace) return t;
+  /**
+   * next Token method that allows you to control if whitespace and comments are
+   * returned as tokens.
+   */
+  public SQLToken getNextToken(boolean returnComments, boolean returnWhiteSpace)
+  {
+    try
+    {
+      SQLToken t = getNextToken();
+      if (returnComments && returnWhiteSpace) return t;
 
-			while (t != null && ((!returnWhiteSpace && t.isWhiteSpace()) || (!returnComments && t.isComment())))
-			{
-				t = getNextToken();
-			}
-			return (t);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
+      while (t != null && ((!returnWhiteSpace && t.isWhiteSpace()) || (!returnComments && t.isComment())))
+      {
+        t = getNextToken();
+      }
+      return (t);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return null;
+    }
+  }
 
-	/**
-	 * Closes the current input stream, and resets the scanner to read from a new input stream.
-	 * All internal variables are reset, the old input stream  cannot be reused
-	 * (content of the internal buffer is discarded and lost).
+  /**
+   * Closes the current input stream, and resets the scanner to read from a new input stream.
+   * All internal variables are reset, the old input stream  cannot be reused
+   * (content of the internal buffer is discarded and lost).
 
-	 * The lexical state is set to the initial state.
-	 * Subsequent tokens read from the lexer will start with the line, char, and column
-	 * values given here.
-	 *
-	 * @param reader The new input.
-	 * @param yyline The line number of the first token.
-	 * @param yychar The position (relative to the start of the stream) of the first token.
-	 * @param yycolumn The position (relative to the line) of the first token.
-	 * @throws IOException if an IOExecption occurs while switching readers.
-	 */
-	public void reset(java.io.Reader reader, int yychar, int yycolumn)
-		throws IOException
-	{
-		yyreset(reader);
-		this.yychar = yychar;
-		this.yycolumn = yycolumn;
-	}
+   * The lexical state is set to the initial state.
+   * Subsequent tokens read from the lexer will start with the line, char, and column
+   * values given here.
+   *
+   * @param reader The new input.
+   * @param yyline The line number of the first token.
+   * @param yychar The position (relative to the start of the stream) of the first token.
+   * @param yycolumn The position (relative to the line) of the first token.
+   * @throws IOException if an IOExecption occurs while switching readers.
+   */
+  public void reset(java.io.Reader reader, int yychar, int yycolumn)
+    throws IOException
+  {
+    yyreset(reader);
+    this.yychar = yychar;
+    this.yycolumn = yycolumn;
+  }
 
   public void setInput(String sql)
   {
@@ -2391,15 +2391,15 @@ public class PgEscapingLexer implements SQLLexer {
     }
   }
 
-	PgEscapingLexer(String source)
-	{
-		this(new StringReader(source));
-	}
+  PgEscapingLexer(String source)
+  {
+    this(new StringReader(source));
+  }
 
-	PgEscapingLexer(CharSequence source)
-	{
-		this(new CharSequenceReader(source));
-	}
+  PgEscapingLexer(CharSequence source)
+  {
+    this(new CharSequenceReader(source));
+  }
 
 
   /**
@@ -2490,7 +2490,7 @@ public class PgEscapingLexer implements SQLLexer {
       }     
     }
 
-	// numRead < 0
+  // numRead < 0
     return true;
   }
 

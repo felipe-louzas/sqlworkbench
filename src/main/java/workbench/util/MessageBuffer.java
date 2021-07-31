@@ -139,7 +139,7 @@ public class MessageBuffer
   public synchronized void append(MessageBuffer buff)
   {
     if (buff == null) return;
- 		int count = buff.messages.size();
+    int count = buff.messages.size();
     if (count == 0) return;
     this.length += buff.length;
     while (this.messages.size() + count > maxSize)

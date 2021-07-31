@@ -93,7 +93,7 @@ public class OpenEdgeSynonymReader
       }
     }
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "synonyms", sql);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonyms", sql);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -117,11 +117,11 @@ public class OpenEdgeSynonymReader
         }
       }
     }
-		catch (SQLException e)
-		{
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "synonyms", sql);
-			throw e;
-		}
+    catch (SQLException e)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "synonyms", sql);
+      throw e;
+    }
     finally
     {
       JdbcUtils.closeAll(rs, stmt);
@@ -141,7 +141,7 @@ public class OpenEdgeSynonymReader
       "WHERE sname = ?\n" +
       "  AND sowner = ?";
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "synonym table", sql, synonym, owner);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "synonym table", sql, synonym, owner);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -166,11 +166,11 @@ public class OpenEdgeSynonymReader
         }
       }
     }
-		catch (SQLException e)
-		{
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "synonym table", sql, synonym, owner);
-			throw e;
-		}
+    catch (SQLException e)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "synonym table", sql, synonym, owner);
+      throw e;
+    }
     finally
     {
       JdbcUtils.closeAll(rs,stmt);

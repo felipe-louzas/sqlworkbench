@@ -1945,14 +1945,14 @@ public class WbConnection
     return ConnectionProfile.makeFilename(getUrl(), getDisplayUser());
   }
 
-	public boolean endReadOnlyTransaction()
+  public boolean endReadOnlyTransaction()
   {
     return endReadOnlyTransaction(null);
   }
 
   public boolean endReadOnlyTransaction(CallerInfo context)
-	{
-		if (this.getAutoCommit()) return true;
+  {
+    if (this.getAutoCommit()) return true;
     if (this.getDbSettings() == null) return false;
 
     EndReadOnlyTrans endTransType = EndReadOnlyTrans.never;
@@ -1994,6 +1994,6 @@ public class WbConnection
       LogMgr.logWarning(new CallerInfo(){}, "Could not end transaction using: " + endTransType, ex);
     }
     return false;
-	}
+  }
 
 }

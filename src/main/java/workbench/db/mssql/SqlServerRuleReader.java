@@ -61,12 +61,12 @@ public class SqlServerRuleReader
 
     Statement stmt = null;
     ResultSet rs = null;
-		String sql = null;
+    String sql = null;
     try
     {
       stmt = connection.createStatementForQuery();
       sql = getSql(connection, schemaPattern, namePattern);
-			LogMgr.logMetadataSql(new CallerInfo(){}, "rules", sql, sql, schemaPattern, namePattern);
+      LogMgr.logMetadataSql(new CallerInfo(){}, "rules", sql, sql, schemaPattern, namePattern);
       rs = stmt.executeQuery(sql);
       while (rs.next())
       {
@@ -79,7 +79,7 @@ public class SqlServerRuleReader
     }
     catch (SQLException e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "rules", sql, schemaPattern, namePattern);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "rules", sql, schemaPattern, namePattern);
     }
     finally
     {
@@ -192,7 +192,7 @@ public class SqlServerRuleReader
     }
     catch (SQLException e)
     {
-			LogMgr.logError(new CallerInfo(){}, "Could not retrieve rule source: ", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve rule source: ", e);
       return null;
     }
     finally

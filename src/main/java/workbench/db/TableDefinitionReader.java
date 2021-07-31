@@ -51,8 +51,8 @@ public interface TableDefinitionReader
   TableDefinition getTableDefinition(TableIdentifier toRead, boolean includePkInformation)
     throws SQLException;
 
-	String getSchemaToUse(TableIdentifier toRead);
+  String getSchemaToUse(TableIdentifier toRead);
 
-	String getCatalogToUse(TableIdentifier toRead);
+  String getCatalogToUse(TableIdentifier toRead);
 
 }

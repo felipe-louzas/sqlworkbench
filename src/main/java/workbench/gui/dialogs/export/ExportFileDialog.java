@@ -70,7 +70,7 @@ public class ExportFileDialog
   private boolean selectDirectory = false;
 
   private String lastDirConfigKey = "workbench.export.lastdir";
-	private final static String SIZE_KEY = "workbench.saveas.dialog";
+  private final static String SIZE_KEY = "workbench.saveas.dialog";
 
   private final DataStore source;
   private boolean sqlChecked = false;

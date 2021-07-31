@@ -51,8 +51,8 @@ public class JdbcDbSwitcher
   public boolean switchDatabase(WbConnection connection, String dbName)
     throws SQLException
   {
-			CatalogChanger changer = new CatalogChanger();
-			return changer.setCurrentCatalog(connection, dbName);
+      CatalogChanger changer = new CatalogChanger();
+      return changer.setCurrentCatalog(connection, dbName);
   }
 
   @Override

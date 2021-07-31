@@ -114,6 +114,6 @@ public interface ImportFileParser
 
   void setCheckTargetWithQuery(boolean flag);
 
-	void setColumnBlobModes(Map<String, BlobMode> modes);
-	void setDefaultBlobMode(BlobMode mode);
+  void setColumnBlobModes(Map<String, BlobMode> modes);
+  void setDefaultBlobMode(BlobMode mode);
 }

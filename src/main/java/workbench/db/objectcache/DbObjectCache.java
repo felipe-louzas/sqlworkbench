@@ -249,7 +249,7 @@ public class DbObjectCache
     WbConnection conn = null;
     try
     {
-			LogMgr.logDebug(new CallerInfo(){}, "Retrieving columns for " + tables.size() + " tables");
+      LogMgr.logDebug(new CallerInfo(){}, "Retrieving columns for " + tables.size() + " tables");
       conn = ConnectionMgr.getInstance().getConnection(dbConnection.getProfile(), "ObjectCache-Retrieval");
       for (TableIdentifier tbl : tables)
       {
@@ -258,7 +258,7 @@ public class DbObjectCache
     }
     catch (Throwable th)
     {
-			LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve table columns", th);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve table columns", th);
     }
     finally
     {

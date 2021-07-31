@@ -2693,13 +2693,13 @@ public class DbSettings
     return getBoolProperty("use.specific.rowdatareader", true);
   }
 
-	public boolean showSuccessMessageForVerb(String verb)
-	{
-		if (verb == null) return false;
+  public boolean showSuccessMessageForVerb(String verb)
+  {
+    if (verb == null) return false;
     String key = "show.success." + verb.toLowerCase();
     boolean global = Settings.getInstance().getBoolProperty("workbench.db." + key, true);
-		return getBoolProperty(key, global);
-	}
+    return getBoolProperty(key, global);
+  }
 
   public Collection<String> getTypesNeedingQuotes()
   {

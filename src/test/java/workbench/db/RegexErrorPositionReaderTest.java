@@ -112,8 +112,8 @@ public class RegexErrorPositionReaderTest
 
     ErrorDescriptor error = reader.getErrorPosition(sql, msg);
     assertNotNull(error);
-//    assertEquals(3, error.getErrorLine());
-//    assertEquals(45, error.getErrorColumn());
-    System.out.println(error.getErrorPosition());
+    assertEquals(3, error.getErrorLine());
+    assertEquals(45, error.getErrorColumn());
+    assertEquals(63, error.getErrorPosition());
   }
 }

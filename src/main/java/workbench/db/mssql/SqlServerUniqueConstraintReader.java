@@ -97,7 +97,7 @@ public class SqlServerUniqueConstraintReader
       return;
     }
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", sql);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", sql);
 
     Statement stmt = null;
     ResultSet rs = null;

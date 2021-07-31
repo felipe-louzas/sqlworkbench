@@ -137,7 +137,7 @@ public class SqlServerObjectListEnhancer
       for (String requestedType : requestedTypes)
       {
         type = requestedType;
-				LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql, schema, type);
+        LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql, schema, type);
         stmt = con.getSqlConnection().prepareStatement(sql);
         if (schema == null)
         {
@@ -163,7 +163,7 @@ public class SqlServerObjectListEnhancer
     }
     catch (Exception e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql, schema, type);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql, schema, type);
     }
     finally
     {

@@ -365,7 +365,7 @@ public class WbWorkspace
 
     try
     {
- 			ZipEntry entry = archive.getEntry(VARIABLES_FILENAME);
+      ZipEntry entry = archive.getEntry(VARIABLES_FILENAME);
       if (entry != null && entry.getSize() > 0)
       {
         InputStream in = this.archive.getInputStream(entry);

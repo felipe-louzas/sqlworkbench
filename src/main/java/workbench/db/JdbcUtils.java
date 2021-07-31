@@ -381,7 +381,7 @@ public class JdbcUtils
   }
 
   /**
-   *	Convenience method to close a ResultSet without a possible
+   *  Convenience method to close a ResultSet without a possible
    *  SQLException
    */
   public static void closeResult(ResultSet rs)
@@ -392,7 +392,7 @@ public class JdbcUtils
   }
 
   /**
-   *	Convenience method to close a Statement without a possible
+   *  Convenience method to close a Statement without a possible
    *  SQLException
    */
   public static void closeStatement(Statement stmt)
@@ -402,7 +402,7 @@ public class JdbcUtils
   }
 
   /**
-   *	Convenience method to close a ResultSet and a Statement without
+   *  Convenience method to close a ResultSet and a Statement without
    *  a possible SQLException
    */
   public static void closeAll(ResultSet rs, Statement stmt)

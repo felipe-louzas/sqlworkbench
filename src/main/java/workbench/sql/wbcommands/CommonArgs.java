@@ -182,20 +182,20 @@ public class CommonArgs
     cmdLine.addArgument(ARG_DELIM, getDelimiterArguments());
   }
 
-	public static Map<String, BlobMode> getColumnBlobModes(ArgumentParser cmdLine)
-	{
-		Map<String, BlobMode> modes = new HashMap<>();
+  public static Map<String, BlobMode> getColumnBlobModes(ArgumentParser cmdLine)
+  {
+    Map<String, BlobMode> modes = new HashMap<>();
     Map<String, String> values = cmdLine.getMapValue(ARG_COLUMN_BLOB_MODE);
-		for (Map.Entry<String, String> entry : values.entrySet())
-		{
-			String colname = entry.getKey();
-			String modeString = entry.getValue();
-			BlobMode mode = BlobMode.getMode(modeString);
-			modes.put(colname, mode);
-		}
+    for (Map.Entry<String, String> entry : values.entrySet())
+    {
+      String colname = entry.getKey();
+      String modeString = entry.getValue();
+      BlobMode mode = BlobMode.getMode(modeString);
+      modes.put(colname, mode);
+    }
 
-		return modes;
-	}
+    return modes;
+  }
 
   public static boolean checkQuoteEscapting(ArgumentParser cmdLine)
   {

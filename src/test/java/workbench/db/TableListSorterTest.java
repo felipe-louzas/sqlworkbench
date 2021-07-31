@@ -22,16 +22,18 @@
 package workbench.db;
 
 import java.sql.Types;
-import org.junit.Test;
 
 import workbench.WbTestCase;
+
 import workbench.db.importer.DataStoreImporter;
+
 import workbench.storage.DataStore;
 import workbench.storage.RowDataListSorter;
 import workbench.storage.SortDefinition;
-import static org.junit.Assert.*;
 
-import workbench.console.DataStorePrinter;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 /**
  *
  * @author Thomas Kellerer
@@ -88,8 +90,8 @@ public class TableListSorterTest
 
     ds.sort(def);
 
-    DataStorePrinter printer = new DataStorePrinter(ds);
-    printer.printTo(System.out);
+//    DataStorePrinter printer = new DataStorePrinter(ds);
+//    printer.printTo(System.out);
 
     String name = ds.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
     assertEquals("006", name);

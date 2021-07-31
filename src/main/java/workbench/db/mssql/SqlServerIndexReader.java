@@ -94,7 +94,7 @@ public class SqlServerIndexReader
       "  and sh.name = ? \n" +
       "order by ic.index_column_id";
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "index information", sql, index.getName(), table.getRawTableName(), table.getRawSchema());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "index information", sql, index.getName(), table.getRawTableName(), table.getRawSchema());
 
     List<String> cols = new ArrayList<>();
     boolean ignoreDups = false;
@@ -128,7 +128,7 @@ public class SqlServerIndexReader
     }
     catch (SQLException ex)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, ex, "index information", sql, index.getName(), table.getRawTableName(), table.getRawSchema());
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "index information", sql, index.getName(), table.getRawTableName(), table.getRawSchema());
     }
     finally
     {

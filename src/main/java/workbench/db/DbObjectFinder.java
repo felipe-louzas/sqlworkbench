@@ -148,7 +148,7 @@ public class DbObjectFinder
     }
     catch (Exception e)
     {
-			LogMgr.logError(new CallerInfo(){}, meta.getConnId() + ": Error checking table existence", e);
+      LogMgr.logError(new CallerInfo(){}, meta.getConnId() + ": Error checking table existence", e);
     }
     return result;
   }
@@ -205,7 +205,7 @@ public class DbObjectFinder
       return findTable(table, types, false);
     }
 
-		LogMgr.logDebug(new CallerInfo(){}, meta.getConnId() + ": Looking for table " + table.getRawTableName() + " in schemas: " + searchPath);
+    LogMgr.logDebug(new CallerInfo(){}, meta.getConnId() + ": Looking for table " + table.getRawTableName() + " in schemas: " + searchPath);
     for (String checkSchema  : searchPath)
     {
       TableIdentifier toSearch = table.createCopy();
@@ -214,7 +214,7 @@ public class DbObjectFinder
       TableIdentifier found = findTable(toSearch, types, false);
       if (found != null)
       {
-				LogMgr.logDebug(new CallerInfo(){}, meta.getConnId() + ": Found table " + found.getTableExpression());
+        LogMgr.logDebug(new CallerInfo(){}, meta.getConnId() + ": Found table " + found.getTableExpression());
         return found;
       }
     }

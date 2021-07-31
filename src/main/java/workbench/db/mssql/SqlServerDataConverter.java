@@ -119,7 +119,7 @@ public class SqlServerDataConverter
     }
     catch (Throwable th)
     {
-			LogMgr.logWarning(new CallerInfo(){}, "Error converting value " + originalValue, th);
+      LogMgr.logWarning(new CallerInfo(){}, "Error converting value " + originalValue, th);
       newValue = originalValue;
     }
     return newValue;

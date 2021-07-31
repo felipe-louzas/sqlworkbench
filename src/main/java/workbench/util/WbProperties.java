@@ -417,9 +417,9 @@ public class WbProperties
   }
 
   /**
-   *	Adds a property definition in the form key=value
-   *	Lines starting with # are ignored
-   *	Lines that do not contain a = character are ignored
+   *  Adds a property definition in the form key=value
+   *  Lines starting with # are ignored
+   *  Lines that do not contain a = character are ignored
    *  Any text after a # sign in the value is ignored
    */
   public void addPropertyDefinition(String line, String comment)

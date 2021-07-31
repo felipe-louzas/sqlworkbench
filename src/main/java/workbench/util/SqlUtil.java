@@ -152,7 +152,7 @@ public class SqlUtil
     return value.replace("'" ,"''");
   }
 
-  public static String 	getPlainTypeName(String input)
+  public static String  getPlainTypeName(String input)
   {
     int pos = input.indexOf('(');
     if (pos < 0) return input;
@@ -1183,7 +1183,7 @@ public class SqlUtil
 
   public static String makeCleanSql(String sql, boolean keepNewlines, boolean keepComments, boolean removeSemicolon, WbConnection connection)
   {
-		boolean isMySQL = (connection != null ? connection.getMetadata().isMySql() : false);
+    boolean isMySQL = (connection != null ? connection.getMetadata().isMySql() : false);
     char quoteChar = (connection != null ? connection.getMetadata().getIdentifierQuoteChar() : '\"');
     return makeCleanSql(sql, keepNewlines, keepComments, isMySQL, removeSemicolon, quoteChar);
   }
@@ -1201,7 +1201,7 @@ public class SqlUtil
    * @param identifierQuote          if the DBMS doesn't care for the SQL standard, an additional non-standard identifier quote character can be specified
    *
    * @return String
- 	 */
+   */
   public static String makeCleanSql(String sql, boolean keepNewlines, boolean keepComments, boolean checkNonStandardComments, boolean removeSemicolon, char identifierQuote)
   {
     if (sql == null) return null;
@@ -1380,7 +1380,7 @@ public class SqlUtil
   }
 
   /**
-   * 	Returns true if the passed datatype (from java.sql.Types)
+   *  Returns true if the passed datatype (from java.sql.Types)
    *  can hold a numeric value (either with or without decimals)
    */
   public static boolean isNumberType(int aSqlType)

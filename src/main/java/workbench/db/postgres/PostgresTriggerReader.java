@@ -344,17 +344,17 @@ public class PostgresTriggerReader
     if (JdbcUtils.hasMinimumServerVersion(dbConnection, "8.3"))
     {
       enabled =
-        "	     case\n" +
+        "      case\n" +
         "        when trg.tgenabled in ('O', 'A') then 'ENABLED'\n" +
-        "	       else 'DISABLED'\n" +
+        "        else 'DISABLED'\n" +
         "      end as status";
     }
     else
     {
       enabled =
-        "	     case\n" +
+        "      case\n" +
         "        when trg.tgenabled then 'ENABLED'\n" +
-        "	       else 'DISABLED'\n" +
+        "        else 'DISABLED'\n" +
         "      end as status";
     }
 

@@ -41,7 +41,7 @@ public class DelimiterDefinitionTest
       "/";
     String clean = DelimiterDefinition.DEFAULT_ORA_DELIMITER.removeFromEnd(sql);
     String expected = "delete from foo";
-    System.out.println(clean);
+//    System.out.println(clean);
     assertEquals(expected, clean);
   }
 

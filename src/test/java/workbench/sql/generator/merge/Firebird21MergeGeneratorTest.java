@@ -82,7 +82,7 @@ public class Firebird21MergeGeneratorTest
     List<ColumnIdentifier> cols = CollectionUtil.arrayList(id, lname, fname);
     generator.setColumns(cols);
     String sql = generator.generateMerge(ds);
-    System.out.println(sql);
+//    System.out.println(sql);
     String expected =
       "MERGE INTO person ut\n" +
       "USING (\n" +

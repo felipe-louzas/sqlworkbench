@@ -129,7 +129,7 @@ public class DbmsMetadata
     {
       initTransforms(conn);
 
-			LogMgr.logMetadataSql(new CallerInfo(){}, "dbms_metadata for " + type, sql, type, name, owner);
+      LogMgr.logMetadataSql(new CallerInfo(){}, "dbms_metadata for " + type, sql, type, name, owner);
       stmt = conn.getSqlConnection().prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       stmt.setString(1, type);
       stmt.setString(2, SqlUtil.removeObjectQuotes(name));
@@ -148,7 +148,7 @@ public class DbmsMetadata
     }
     catch (SQLException ex)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, ex, "dbms_metadata for " + type, sql, type, name, owner);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "dbms_metadata for " + type, sql, type, name, owner);
       throw ex;
     }
     finally
@@ -158,7 +158,7 @@ public class DbmsMetadata
     }
 
     long duration = System.currentTimeMillis() - start;
-		LogMgr.logDebug(new CallerInfo(){}, "Retrieving DDL using dbms_metadata for " + type + " " + owner + "." + name + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving DDL using dbms_metadata for " + type + " " + owner + "." + name + " took: " + duration + "ms");
     return source;
   }
 
@@ -186,7 +186,7 @@ public class DbmsMetadata
     catch (Throwable th)
     {
       JdbcUtils.closeStatement(stmt);
-			LogMgr.logDebug(new CallerInfo(){}, "Could not set transform parameter", th);
+      LogMgr.logDebug(new CallerInfo(){}, "Could not set transform parameter", th);
     }
   }
 
@@ -210,7 +210,7 @@ public class DbmsMetadata
     catch (Throwable th)
     {
       JdbcUtils.closeStatement(stmt);
-			LogMgr.logDebug(new CallerInfo(){}, "Could not reset transform parameters", th);
+      LogMgr.logDebug(new CallerInfo(){}, "Could not reset transform parameters", th);
     }
   }
 
@@ -226,7 +226,7 @@ public class DbmsMetadata
     catch (Throwable th)
     {
       JdbcUtils.closeStatement(stmt);
-			LogMgr.logDebug(new CallerInfo(){}, "Could not disable transform parameter: " + transform, th);
+      LogMgr.logDebug(new CallerInfo(){}, "Could not disable transform parameter: " + transform, th);
     }
   }
 

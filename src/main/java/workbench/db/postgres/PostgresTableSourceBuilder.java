@@ -494,7 +494,7 @@ public class PostgresTableSourceBuilder
   private void appendFKComments(TableIdentifier table, StringBuilder fkSource, List<DependencyNode> fkList)
   {
     if (CollectionUtil.isEmpty(fkList)) return;
-		String tblname = table.getTableExpression(dbConnection);
+    String tblname = table.getTableExpression(dbConnection);
     for (DependencyNode node : fkList)
     {
       String conname = SqlUtil.quoteObjectname(node.getFkName());

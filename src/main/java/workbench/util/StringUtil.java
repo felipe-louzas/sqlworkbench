@@ -120,7 +120,7 @@ public class StringUtil
 
   public static java.util.Date parseISODate(String date)
   {
-    if (isBlank(date))	return null;
+    if (isBlank(date))  return null;
 
     try
     {
@@ -1177,7 +1177,7 @@ public class StringUtil
   public static final String REGEX_SPECIAL_CHARS = "\\[](){}.*+?$^|";
 
   /**
-   * 	Quote the characters in a String that have a special meaning
+   *  Quote the characters in a String that have a special meaning
    *  in regular expression.
    */
   public static String quoteRegexMeta(String str)

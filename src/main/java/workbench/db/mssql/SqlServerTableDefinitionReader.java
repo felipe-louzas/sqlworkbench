@@ -30,34 +30,34 @@ import workbench.db.WbConnection;
  * @author Thomas Kellerer
  */
 public class SqlServerTableDefinitionReader
-	extends JdbcTableDefinitionReader
+  extends JdbcTableDefinitionReader
 {
-	public SqlServerTableDefinitionReader(WbConnection conn)
-	{
-		super(conn);
-	}
+  public SqlServerTableDefinitionReader(WbConnection conn)
+  {
+    super(conn);
+  }
 
-	@Override
-	public String getCatalogToUse(TableIdentifier toRead)
-	{
-		if (toRead == null) return null;
+  @Override
+  public String getCatalogToUse(TableIdentifier toRead)
+  {
+    if (toRead == null) return null;
 
-		if (toRead.getRawTableName().startsWith("#"))
-		{
-			return "tempdb";
-		}
-		return super.getCatalogToUse(toRead);
-	}
+    if (toRead.getRawTableName().startsWith("#"))
+    {
+      return "tempdb";
+    }
+    return super.getCatalogToUse(toRead);
+  }
 
-	@Override
-	public String getSchemaToUse(TableIdentifier toRead)
-	{
-		if (toRead == null) return null;
-		if (toRead.getRawTableName().startsWith("#"))
-		{
-			return null;
-		}
-		return super.getSchemaToUse(toRead);
-	}
+  @Override
+  public String getSchemaToUse(TableIdentifier toRead)
+  {
+    if (toRead == null) return null;
+    if (toRead.getRawTableName().startsWith("#"))
+    {
+      return null;
+    }
+    return super.getSchemaToUse(toRead);
+  }
 
 }

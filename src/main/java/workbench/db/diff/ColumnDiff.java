@@ -227,7 +227,7 @@ public class ColumnDiff
         }
 
         if (this.compareJdbcTypes) {
-        	writer.appendTag(result, attIndent, ReportColumn.TAG_COLUMN_JAVA_TYPE, sId.getDataType());
+          writer.appendTag(result, attIndent, ReportColumn.TAG_COLUMN_JAVA_TYPE, sId.getDataType());
         }
       }
 

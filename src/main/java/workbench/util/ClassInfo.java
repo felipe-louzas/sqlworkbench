@@ -47,10 +47,10 @@ public class ClassInfo
     return jarFile;
   }
 
-	@Override
-	public String toString()
-	{
-		return "ClassInfo{" + "className=" + className + ", jarFile=" + jarFile + '}';
-	}
+  @Override
+  public String toString()
+  {
+    return "ClassInfo{" + "className=" + className + ", jarFile=" + jarFile + '}';
+  }
 
 }

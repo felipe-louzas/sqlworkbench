@@ -70,7 +70,7 @@ import workbench.util.ClassFinder;
  */
 public class LnFDefinitionPanel
   extends JPanel
-	implements ActionListener, PropertyChangeListener
+  implements ActionListener, PropertyChangeListener
 {
   private LnFDefinition currentLnF;
   private PropertyChangeListener changeListener;
@@ -106,10 +106,10 @@ public class LnFDefinitionPanel
     classpathEditor.addActionListener((ActionEvent e) -> { selectClass(); });
   }
 
-	public void setStatusMessage(String message)
-	{
-		this.statusLabel.setText(message);
-	}
+  public void setStatusMessage(String message)
+  {
+    this.statusLabel.setText(message);
+  }
 
   public void setPropertyListener(PropertyChangeListener l)
   {
@@ -136,8 +136,8 @@ public class LnFDefinitionPanel
 
   private boolean testLnF(LnFDefinition lnf)
   {
-		LnFLoader loader = new LnFLoader(lnf);
-		return loader.isAvailable();
+    LnFLoader loader = new LnFLoader(lnf);
+    return loader.isAvailable();
   }
 
   private void selectClass()
@@ -365,22 +365,22 @@ public class LnFDefinitionPanel
     {
       ignoreChange = true;
       this.currentLnF = lnf;
-			if (this.currentLnF != null)
-			{
-				WbSwingUtilities.initPropertyEditors(this.currentLnF, this);
-				classpathEditor.setLibraries(currentLnF.getLibraries());
-				this.setEnabled(!currentLnF.isBuiltIn());
-				if (lnf.isExt())
-				{
-					selectClass.setEnabled(true);
-				}
-			}
-			else
-			{
-				this.classpathEditor.setLibraries(null);
-				this.setEnabled(false);
-				this.selectClass.setEnabled(false);
-			}
+      if (this.currentLnF != null)
+      {
+        WbSwingUtilities.initPropertyEditors(this.currentLnF, this);
+        classpathEditor.setLibraries(currentLnF.getLibraries());
+        this.setEnabled(!currentLnF.isBuiltIn());
+        if (lnf.isExt())
+        {
+          selectClass.setEnabled(true);
+        }
+      }
+      else
+      {
+        this.classpathEditor.setLibraries(null);
+        this.setEnabled(false);
+        this.selectClass.setEnabled(false);
+      }
     }
     finally
     {

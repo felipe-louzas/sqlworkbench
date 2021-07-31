@@ -30,6 +30,6 @@ import java.util.Map;
  */
 public interface FilterExpression
 {
-	boolean evaluate(Map<String, Object> columnValues);
-	boolean isColumnSpecific();
+  boolean evaluate(Map<String, Object> columnValues);
+  boolean isColumnSpecific();
 }

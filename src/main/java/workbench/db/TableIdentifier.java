@@ -464,11 +464,11 @@ public class TableIdentifier
     if (conn == null) return null;
 
     DbMetadata meta = conn.getMetadata();
-		if (meta.needSchemaInDML(this))
-		{
-			return meta.getSchemaToUse(this);
-		}
-		return null;
+    if (meta.needSchemaInDML(this))
+    {
+      return meta.getSchemaToUse(this);
+    }
+    return null;
   }
 
   public String getCatalogToUse(WbConnection conn)
@@ -477,11 +477,11 @@ public class TableIdentifier
     if (conn == null) return null;
 
     DbMetadata meta = conn.getMetadata();
-		if (meta.needCatalogInDML(this))
-		{
-			return meta.getCatalogToUse(this);
-		}
-		return null;
+    if (meta.needCatalogInDML(this))
+    {
+      return meta.getCatalogToUse(this);
+    }
+    return null;
   }
 
   public void adjustCatalogAndSchema(WbConnection conn)

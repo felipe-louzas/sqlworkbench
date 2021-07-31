@@ -229,7 +229,7 @@ public class SqlServerDependencyReader
     }
     catch (Exception ex)
     {
-			LogMgr.logError(new CallerInfo(){}, "Could not change database", ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not change database", ex);
     }
     return currentCatalog;
   }
@@ -243,14 +243,14 @@ public class SqlServerDependencyReader
 
     String fqName = buildFQName(connection, base);
 
-		if (useFQN)
-		{
-			LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, fqName);
-		}
-		else
-		{
-			LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
-		}
+    if (useFQN)
+    {
+      LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, fqName);
+    }
+    else
+    {
+      LogMgr.logMetadataSql(new CallerInfo(){}, "dependent objects", sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
+    }
 
     try
     {
@@ -320,14 +320,14 @@ public class SqlServerDependencyReader
     }
     catch (Exception ex)
     {
-			if (useFQN)
-			{
-				LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, fqName);
-			}
-			else
-			{
-				LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
-			}
+      if (useFQN)
+      {
+        LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, fqName);
+      }
+      else
+      {
+        LogMgr.logMetadataError(new CallerInfo(){}, ex, "dependent objects", sql, base.getCatalog(), base.getSchema(), base.getObjectName(), base.getObjectType());
+      }
     }
     finally
     {

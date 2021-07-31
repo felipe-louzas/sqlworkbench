@@ -53,7 +53,7 @@ public class LnFLoader
   public boolean isAvailable()
   {
     if (this.lnfDef.isBuiltIn()) return true;
-		if (this.lnfDef.isExt()) return true;
+    if (this.lnfDef.isExt()) return true;
 
     try
     {
@@ -71,7 +71,7 @@ public class LnFLoader
   private ClassLoader createLoader()
     throws MalformedURLException
   {
-		List<String> liblist = this.lnfDef.getLibraries();
+    List<String> liblist = this.lnfDef.getLibraries();
     if (liblist != null && !lnfDef.isExt())
     {
       URL[] url = new URL[liblist.size()];
@@ -91,7 +91,7 @@ public class LnFLoader
     }
     else
     {
-			// no libraries, assume it's on the classpath
+      // no libraries, assume it's on the classpath
       return null;
     }
   }

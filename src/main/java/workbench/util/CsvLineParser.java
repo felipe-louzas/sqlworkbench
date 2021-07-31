@@ -250,13 +250,13 @@ public class CsvLineParser
     this.trimValues = trimValues;
   }
 
-	public List<String> getAllElements()
-	{
-		List<String> result = new ArrayList<>();
-		while (hasNext())
-		{
-			result.add(getNext());
-		}
-		return result;
-	}
+  public List<String> getAllElements()
+  {
+    List<String> result = new ArrayList<>();
+    while (hasNext())
+    {
+      result.add(getNext());
+    }
+    return result;
+  }
 }

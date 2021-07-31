@@ -59,7 +59,7 @@ public class DependencyNode
   private String fkName;
   private String deferrable;
   private String remarks;
-	private FKMatchType matchType;
+  private FKMatchType matchType;
 
   private int updateActionValue;
   private int deleteActionValue;
@@ -93,15 +93,15 @@ public class DependencyNode
     }
   }
 
-	public FKMatchType getMatchType()
-	{
-		return matchType;
-	}
+  public FKMatchType getMatchType()
+  {
+    return matchType;
+  }
 
-	public void setMatchType(FKMatchType type)
-	{
-		this.matchType = type;
-	}
+  public void setMatchType(FKMatchType type)
+  {
+    this.matchType = type;
+  }
 
   public String getComment()
   {

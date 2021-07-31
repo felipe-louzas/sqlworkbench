@@ -55,7 +55,7 @@ public class LnFHelper
   public static final String LABEL_FONT_KEY = "Label.font";
   public static final String TREE_FONT_KEY = "Tree.font";
 
-	private LnFManager lnfManager = new LnFManager();
+  private LnFManager lnfManager = new LnFManager();
 
   // Font properties that are automatically scaled by Java
   private final Set<String> noScale = CollectionUtil.treeSet(
@@ -187,7 +187,7 @@ public class LnFHelper
     // on HiDPI displays. So we are adjusting all other fonts
     // to the size of the menu font.
     String prop = Settings.getInstance().getReferenceFontName();
-		Font referenceFont = UIManager.getFont(prop);
+    Font referenceFont = UIManager.getFont(prop);
     if (referenceFont == null)
     {
       referenceFont = UIManager.getFont("Menu.font");

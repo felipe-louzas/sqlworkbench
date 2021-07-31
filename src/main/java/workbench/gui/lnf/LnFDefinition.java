@@ -67,21 +67,21 @@ public class LnFDefinition
     this.setLibraries(libs);
   }
 
-	private boolean isExtLibs(List<String> libs)
-	{
-		ClasspathUtil util = new ClasspathUtil();
-		for (String lib : libs)
-		{
-			String fname = Settings.getInstance().replaceLibDirKey(lib);
+  private boolean isExtLibs(List<String> libs)
+  {
+    ClasspathUtil util = new ClasspathUtil();
+    for (String lib : libs)
+    {
+      String fname = Settings.getInstance().replaceLibDirKey(lib);
       if (ClasspathUtil.EXT_DIR.equalsIgnoreCase(fname))
       {
         return true;
       }
       File f = new File(fname);
-			if (!util.isInExtDir(f)) return false;
-		}
-		return true;
-	}
+      if (!util.isInExtDir(f)) return false;
+    }
+    return true;
+  }
 
   public boolean isExt()
   {
@@ -108,10 +108,10 @@ public class LnFDefinition
     return definitionComplete && StringUtil.isNonBlank(this.name) && CollectionUtil.isNonEmpty(liblist);
   }
 
-	public String debugString()
-	{
-		return name + ", class: " + className + ", type: " + this.type;
-	}
+  public String debugString()
+  {
+    return name + ", class: " + className + ", type: " + this.type;
+  }
 
   @Override
   public String toString()
@@ -163,7 +163,7 @@ public class LnFDefinition
       {
         this.type = LnFType.ext;
       }
-			else
+      else
       {
         this.type = LnFType.dynamic;
       }
@@ -208,11 +208,11 @@ public class LnFDefinition
     return this.className.hashCode();
   }
 
-	public static LnFDefinition newExtLaf(String name, String className)
-	{
-		LnFDefinition lnf = new LnFDefinition(name, className);
-		lnf.type = LnFType.ext;
-		return lnf;
-	}
+  public static LnFDefinition newExtLaf(String name, String className)
+  {
+    LnFDefinition lnf = new LnFDefinition(name, className);
+    lnf.type = LnFType.ext;
+    return lnf;
+  }
 
 }

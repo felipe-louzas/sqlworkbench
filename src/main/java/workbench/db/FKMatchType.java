@@ -28,28 +28,28 @@ package workbench.db;
  */
 public enum FKMatchType
 {
-	SIMPLE,
-	FULL,
-	PARTIAL,
-	UNKNOWN;
+  SIMPLE,
+  FULL,
+  PARTIAL,
+  UNKNOWN;
 
-	@Override
-	public String toString()
-	{
-		if (this == UNKNOWN) return "";
-		return super.toString();
-	}
+  @Override
+  public String toString()
+  {
+    if (this == UNKNOWN) return "";
+    return super.toString();
+  }
 
-	public static FKMatchType fromString(String input)
-	{
-		if (input == null || input.isEmpty()) return UNKNOWN;
-		try
-		{
-			return valueOf(input.toUpperCase());
-		}
-		catch (Throwable th)
-		{
-			return UNKNOWN;
-		}
-	}
+  public static FKMatchType fromString(String input)
+  {
+    if (input == null || input.isEmpty()) return UNKNOWN;
+    try
+    {
+      return valueOf(input.toUpperCase());
+    }
+    catch (Throwable th)
+    {
+      return UNKNOWN;
+    }
+  }
 }

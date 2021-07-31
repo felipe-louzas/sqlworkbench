@@ -50,10 +50,10 @@ public class MySQLColumnCollationReader
     String defaultCollation = null;
     Statement info = null;
     ResultSet rs = null;
-		String defaultCollationSql = "show variables where variable_name in ('collation_database', 'character_set_database')";
+    String defaultCollationSql = "show variables where variable_name in ('collation_database', 'character_set_database')";
     try
     {
-			LogMgr.logMetadataSql(new CallerInfo(){}, "default collation", defaultCollationSql);
+      LogMgr.logMetadataSql(new CallerInfo(){}, "default collation", defaultCollationSql);
       info = conn.createStatement();
       rs = info.executeQuery(defaultCollationSql);
       while (rs.next())
@@ -72,7 +72,7 @@ public class MySQLColumnCollationReader
     }
     catch (SQLException e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "default collation", defaultCollationSql);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "default collation", defaultCollationSql);
     }
     finally
     {
@@ -95,7 +95,7 @@ public class MySQLColumnCollationReader
       "WHERE table_name = ? \n" +
       "AND   table_schema = ? ";
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "column collation", sql);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column collation", sql);
 
     try
     {
@@ -134,7 +134,7 @@ public class MySQLColumnCollationReader
     }
     catch (SQLException ex)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, ex, "column collation", sql);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "column collation", sql);
     }
     finally
     {

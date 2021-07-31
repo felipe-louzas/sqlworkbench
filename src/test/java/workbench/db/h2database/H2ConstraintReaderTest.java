@@ -30,6 +30,7 @@ import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConstraintReader;
+import workbench.db.ConstraintType;
 import workbench.db.ReaderFactory;
 import workbench.db.TableConstraint;
 import workbench.db.TableDefinition;
@@ -40,8 +41,6 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
-import workbench.db.ConstraintType;
 
 /**
  *
@@ -84,7 +83,6 @@ public class H2ConstraintReaderTest
     assertEquals("POSITIVE_ID", constraint.getConstraintName());
     assertEquals("(ID > 42)", constraint.getExpression());
     assertEquals(ConstraintType.Check, constraint.getConstraintType());
-    System.out.println(constraint.getSql());
     assertEquals("CONSTRAINT POSITIVE_ID CHECK (ID > 42)", constraint.getSql());
   }
 

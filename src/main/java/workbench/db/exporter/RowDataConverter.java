@@ -523,7 +523,7 @@ public abstract class RowDataConverter
     File f = null;
     if (name == null)
     {
-   	  int len = baseFilename != null ? baseFilename.length() + 25 : 29;
+      int len = baseFilename != null ? baseFilename.length() + 25 : 29;
       StringBuilder fname = new StringBuilder(len);
 
       if (this.factory == null) initOutputFactory();

@@ -392,7 +392,7 @@ public class DbMetadata
       {
         extenders.add(new SqlServerRuleReader());
       }
-			definitionReader = new SqlServerTableDefinitionReader(dbConnection);
+      definitionReader = new SqlServerTableDefinitionReader(dbConnection);
       objectListEnhancer = new SqlServerObjectListEnhancer();
       dataTypeResolver = new SqlServerDataTypeResolver();
       if (Settings.getInstance().getBoolProperty("workbench.db.microsoft_sql_server.use.schemareader", true)
@@ -647,7 +647,7 @@ public class DbMetadata
 
     if (configuredTypes.size() > 0)
     {
-			LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Using configured table types: " + configuredTypes);
+      LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Using configured table types: " + configuredTypes);
     }
   }
 
@@ -659,11 +659,11 @@ public class DbMetadata
       try
       {
         identifierPattern = Pattern.compile(pattern);
-				LogMgr.logInfo(new CallerInfo(){}, getConnId() + ": Using regular expression for valid identifiers: " + pattern);
+        LogMgr.logInfo(new CallerInfo(){}, getConnId() + ": Using regular expression for valid identifiers: " + pattern);
       }
       catch (Exception ex)
       {
-				LogMgr.logWarning(new CallerInfo(){}, getConnId() + ": Could not compile pattern: " + pattern, ex);
+        LogMgr.logWarning(new CallerInfo(){}, getConnId() + ": Could not compile pattern: " + pattern, ex);
       }
     }
   }
@@ -1246,7 +1246,7 @@ public class DbMetadata
         }
         catch (Throwable sql)
         {
-					LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Could not read SQL keywords from driver", sql);
+          LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Could not read SQL keywords from driver", sql);
         }
       }
       return this.keywords.contains(name);
@@ -2425,38 +2425,38 @@ public class DbMetadata
     return tbl;
   }
 
-	public String getSchemaToUse(TableIdentifier tbl)
-	{
-		if (!getDbSettings().supportsSchemas()) return null;
+  public String getSchemaToUse(TableIdentifier tbl)
+  {
+    if (!getDbSettings().supportsSchemas()) return null;
 
-		String schemaToUse = tbl.getRawSchema();
-		String currentSchema = null;
+    String schemaToUse = tbl.getRawSchema();
+    String currentSchema = null;
 
-		if (schemaToUse == null)
-		{
-			currentSchema = getCurrentSchema();
-			schemaToUse = currentSchema;
-		}
+    if (schemaToUse == null)
+    {
+      currentSchema = getCurrentSchema();
+      schemaToUse = currentSchema;
+    }
 
-		if (ignoreSchema(schemaToUse, currentSchema)) return null;
+    if (ignoreSchema(schemaToUse, currentSchema)) return null;
 
-		return StringUtil.trim(schemaToUse);
-	}
+    return StringUtil.trim(schemaToUse);
+  }
 
-	public String getCatalogToUse(TableIdentifier tbl)
-	{
-		if (!getDbSettings().supportsCatalogs()) return null;
+  public String getCatalogToUse(TableIdentifier tbl)
+  {
+    if (!getDbSettings().supportsCatalogs()) return null;
 
-		String catalogToUse = tbl.getRawCatalog();
-		if (catalogToUse == null)
-		{
-			catalogToUse = definitionReader.getCatalogToUse(tbl);
-		}
+    String catalogToUse = tbl.getRawCatalog();
+    if (catalogToUse == null)
+    {
+      catalogToUse = definitionReader.getCatalogToUse(tbl);
+    }
 
-		if (ignoreCatalog(catalogToUse)) return null;
+    if (ignoreCatalog(catalogToUse)) return null;
 
-		return StringUtil.trim(catalogToUse);
-	}
+    return StringUtil.trim(catalogToUse);
+  }
 
   /**
    * Return the current catalog for this connection.
@@ -2535,7 +2535,7 @@ public class DbMetadata
         }
       }
       long duration = System.currentTimeMillis() - start;
-			LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving " + result.size() +  " catalogs using getCatalogs() took: " + duration + "ms");
+      LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving " + result.size() +  " catalogs using getCatalogs() took: " + duration + "ms");
     }
     catch (Exception e)
     {
@@ -2631,7 +2631,7 @@ public class DbMetadata
           {
             details = new Exception("Backtrace");
           }
-					LogMgr.logWarning(new CallerInfo(){},
+          LogMgr.logWarning(new CallerInfo(){},
             getConnId() + ": getSchemas() called with catalog parameter, but current connection is not configured to support that", details);
         }
         ResultSet rs = this.metaData.getSchemas();
@@ -2640,11 +2640,11 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-			LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving schemas: " + e.getMessage(), e);
+      LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving schemas: " + e.getMessage(), e);
     }
 
     long duration = System.currentTimeMillis() - start;
-		LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving " + result.size() + " schemas using getSchemas() took " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving " + result.size() + " schemas using getSchemas() took " + duration + "ms");
 
     // This is mainly for Oracle because the Oracle driver does not return the "PUBLIC" schema
     // which is - strictly speaking - correct as there is no user PUBLIC in the database.
@@ -2745,7 +2745,7 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-			LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving table types.", e);
+      LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving table types.", e);
     }
     finally
     {
@@ -2760,11 +2760,11 @@ public class DbMetadata
     if (types.isEmpty() && useDefaults)
     {
       types = CollectionUtil.caseInsensitiveSet("TABLE", "VIEW");
-			LogMgr.logWarning(new CallerInfo(){}, getConnId() + ": The driver did not return any table types using getTableTypes(). Using default values: " + types);
+      LogMgr.logWarning(new CallerInfo(){}, getConnId() + ": The driver did not return any table types using getTableTypes(). Using default values: " + types);
     }
     else
     {
-			LogMgr.logInfo(new CallerInfo(){}, getConnId() + ": Table types returned by the JDBC driver: " + types);
+      LogMgr.logInfo(new CallerInfo(){}, getConnId() + ": Table types returned by the JDBC driver: " + types);
     }
 
     objectTypesFromDriver = Collections.unmodifiableSet(types);
@@ -2910,7 +2910,7 @@ public class DbMetadata
     }
     catch (Exception e)
     {
-			LogMgr.logError(new CallerInfo(){}, "Could not retrieve table for synonym", e);
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve table for synonym", e);
     }
     return id;
   }

@@ -76,7 +76,7 @@ public class OpenEdgeColumnEnhancer
     String tablename = SqlUtil.removeObjectQuotes(table.getTable().getTableName());
     String schema = SqlUtil.removeObjectQuotes(table.getTable().getSchema());
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "column remarks", sql, schema, tablename);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column remarks", sql, schema, tablename);
 
 
     Map<String, String> remarks = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
@@ -98,7 +98,7 @@ public class OpenEdgeColumnEnhancer
     }
     catch (Exception e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "column remarks", sql, schema, tablename);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "column remarks", sql, schema, tablename);
     }
     finally
     {

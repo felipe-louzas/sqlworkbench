@@ -53,17 +53,18 @@ public class ColumnChangeValidator
       return changer.canAddColumn();
     }
 
-    switch (col)
+    String columnName = source.getColumnName(col);
+    switch (columnName)
     {
-      case TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DATA_TYPE:
+      case TableColumnsDatastore.DATATYPE_NAME_COL_NAME:
         return changer.canAlterType();
-      case TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_COL_NAME:
+      case TableColumnsDatastore.COLUMN_NAME_COL_NAME:
         return changer.canRenameColumn();
-      case TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_REMARKS:
+      case TableColumnsDatastore.REMARKS_COL_NAME:
         return changer.canChangeComment();
-      case TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DEFAULT:
+      case TableColumnsDatastore.DEF_VALUE_COL_NAME:
         return changer.canChangeDefault();
-      case TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_NULLABLE:
+      case TableColumnsDatastore.NULLABLE_COL_NAME:
         return changer.canChangeNullable();
       default:
         return false;

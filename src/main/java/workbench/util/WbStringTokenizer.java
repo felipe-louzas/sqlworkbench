@@ -69,13 +69,13 @@ public class WbStringTokenizer
   }
 
   /**
-   *	Create a new tokenizer.
-   *	If aDelim contains more then one character, the parameter isSingleDelimter indicates
+   *  Create a new tokenizer.
+   *  If aDelim contains more then one character, the parameter isSingleDelimter indicates
    *  whether the given delimiter string should be considered as one delimiter or a sequence
    *  of possible delimiter characters.
    *
-   *	Once the Tokenizer is created, the string to be tokenized can be set with
-   *	setSourceString()
+   *  Once the Tokenizer is created, the string to be tokenized can be set with
+   *  setSourceString()
    *
    */
   public WbStringTokenizer(String aDelim, boolean isSingleDelimiter, String quotingChars, boolean keep)

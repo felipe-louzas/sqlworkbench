@@ -1211,10 +1211,10 @@ public class OracleTableSourceBuilder
       "where owner = ? \n" +
       "  and table_name = ?";
 
-		if (OracleUtils.showSystemGeneratedExtendedStats() == false)
-		{
-			sql += "\n  and creator <> 'SYSTEM'";
-		}
+    if (OracleUtils.showSystemGeneratedExtendedStats() == false)
+    {
+      sql += "\n  and creator <> 'SYSTEM'";
+    }
 
     StringBuilder result = new StringBuilder(500);
 

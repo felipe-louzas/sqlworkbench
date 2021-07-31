@@ -54,7 +54,7 @@ public class ScriptParserTest
     super("ScriptParserTest");
   }
 
-	@Test
+  @Test
   public void testHiveScript()
   {
     String script =
@@ -80,12 +80,12 @@ public class ScriptParserTest
     assertEquals(5, p.getSize());
   }
 
-	@Test
-	public void testDelimiterAtTheStart()
-	{
-		String script =
-			";select x from table_1 \n" +
-			";select y from table_2";
+  @Test
+  public void testDelimiterAtTheStart()
+  {
+    String script =
+      ";select x from table_1 \n" +
+      ";select y from table_2";
 
     for (ParserType type : ParserType.values())
     {
@@ -97,7 +97,7 @@ public class ScriptParserTest
       assertEquals("select x from table_1", p.getCommand(0));
       assertEquals("select y from table_2", p.getCommand(1));
     }
-	}
+  }
 
   @Test
   public void getDelimiter()

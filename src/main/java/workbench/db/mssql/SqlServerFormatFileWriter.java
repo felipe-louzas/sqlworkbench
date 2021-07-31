@@ -108,7 +108,7 @@ public class SqlServerFormatFileWriter
     }
     catch (IOException io)
     {
-			LogMgr.logError(new CallerInfo(){}, "Error opening outputfile", io);
+      LogMgr.logError(new CallerInfo(){}, "Error opening outputfile", io);
     }
     finally
     {

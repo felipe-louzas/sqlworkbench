@@ -237,7 +237,7 @@ public class ObjectInfo
     if (details != null)
     {
       ColumnRemover remover = new ColumnRemover(details);
-      DataStore cols = remover.removeColumnsByName(TableColumnsDatastore.JAVA_SQL_TYPE_COL_NAME, TableColumnsDatastore.PRECISION_COL_NAME, TableColumnsDatastore.SCALE_COL_NAME);
+      DataStore cols = remover.removeColumnsByName(TableColumnsDatastore.JAVA_SQL_TYPE_COL_NAME, TableColumnsDatastore.NUMERIC_DIGITS_COL_NAME, TableColumnsDatastore.COLSIZE_COL_NAME);
       String fname = showSchema ? toDescribe.getTableExpression() : toDescribe.getTableExpression(connection);
       cols.setResultName(fname + " (" + toDescribe.getObjectType() + ")");
       cols.setGeneratingSql("DESCRIBE " + fname);

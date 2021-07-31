@@ -115,7 +115,7 @@ public class SqlServerColumnEnhancer
       tablename = table.getTable().getRawTableName();
     }
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "column information", sql, tablename);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column information", sql, tablename);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -187,7 +187,7 @@ public class SqlServerColumnEnhancer
     }
     catch (Exception e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "column information", sql, tablename);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "column information", sql, tablename);
     }
     finally
     {
@@ -210,7 +210,7 @@ public class SqlServerColumnEnhancer
     try
     {
 
-			LogMgr.logMetadataSql(new CallerInfo(){}, "database collation", sql);
+      LogMgr.logMetadataSql(new CallerInfo(){}, "database collation", sql);
 
       info = conn.createStatement();
       rs = info.executeQuery(sql);
@@ -221,7 +221,7 @@ public class SqlServerColumnEnhancer
     }
     catch (SQLException e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "database collation", sql);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "database collation", sql);
     }
     finally
     {
@@ -257,7 +257,7 @@ public class SqlServerColumnEnhancer
       sql += "::fn_listextendedproperty ('" + propName + "','user', ?, 'table', ?, 'column', null)";
     }
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "column remarks", sql, schema, tablename);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column remarks", sql, schema, tablename);
 
     List<ColumnIdentifier> columns = table.getColumns();
 
@@ -283,7 +283,7 @@ public class SqlServerColumnEnhancer
     }
     catch (Exception e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "column remarks", sql, schema, tablename);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "column remarks", sql, schema, tablename);
     }
     finally
     {

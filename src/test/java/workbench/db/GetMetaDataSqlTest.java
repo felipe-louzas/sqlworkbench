@@ -82,7 +82,6 @@ public class GetMetaDataSqlTest
 
     meta.setBaseSql("select * from (select foo from bar) t ");
     sql = meta.getSql();
-    System.out.println(sql);
     assertEquals("select * from (select foo from bar) t WHERE owner = 'FOOBAR'", sql);
   }
 }

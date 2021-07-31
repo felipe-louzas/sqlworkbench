@@ -96,15 +96,15 @@ public class LnFOptionsPanel
       @Override
       public void executeAction(ActionEvent e)
       {
-				WbThread th = new WbThread("LnF Searcher")
-				{
-					@Override
-					public void run()
-					{
-						startLnFSearch();
-					}
-				};
-				th.start();
+        WbThread th = new WbThread("LnF Searcher")
+        {
+          @Override
+          public void run()
+          {
+            startLnFSearch();
+          }
+        };
+        th.start();
       }
     };
     search.setIcon("find-lnf");
@@ -129,64 +129,64 @@ public class LnFOptionsPanel
     lnfList.addListSelectionListener(this);
   }
 
-	private void startLnFSearch()
-	{
-		try
-		{
-			WbSwingUtilities.showWaitCursor(this);
-			definitionPanel.setStatusMessage(ResourceMgr.getString("TxtSearchingLnF"));
+  private void startLnFSearch()
+  {
+    try
+    {
+      WbSwingUtilities.showWaitCursor(this);
+      definitionPanel.setStatusMessage(ResourceMgr.getString("TxtSearchingLnF"));
       ClasspathUtil util = new ClasspathUtil();
       ClassFinder finder = new ClassFinder(LookAndFeel.class);
       List<File> classPath = util.getExtLibs();
       List<ClassInfo> available = finder.findImplementingClasses(classPath);
-			if (LogMgr.isDebugEnabled())
-			{
-				String lnfMessage = available.stream().map(ci -> ci.toString()).collect(Collectors.joining(","));
-				LogMgr.logDebug(new CallerInfo(){}, "Found Look and Feel implementations: " + lnfMessage);
-			}
-			WbSwingUtilities.showDefaultCursor(this);
-			definitionPanel.setStatusMessage("");
-			addItemFromClasspath(available);
-		}
-		catch (Exception ex)
-		{
-			LogMgr.logError(new CallerInfo(){}, "Could not read Look and Feel implementations", ex);
-		}
-		finally
-		{
-			definitionPanel.setStatusMessage("");
-			WbSwingUtilities.showDefaultCursor(this);
-		}
-	}
+      if (LogMgr.isDebugEnabled())
+      {
+        String lnfMessage = available.stream().map(ci -> ci.toString()).collect(Collectors.joining(","));
+        LogMgr.logDebug(new CallerInfo(){}, "Found Look and Feel implementations: " + lnfMessage);
+      }
+      WbSwingUtilities.showDefaultCursor(this);
+      definitionPanel.setStatusMessage("");
+      addItemFromClasspath(available);
+    }
+    catch (Exception ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not read Look and Feel implementations", ex);
+    }
+    finally
+    {
+      definitionPanel.setStatusMessage("");
+      WbSwingUtilities.showDefaultCursor(this);
+    }
+  }
 
   private void addItemFromClasspath(List<ClassInfo> available)
   {
-		final List<ClassInfo> newClasses =
-			available.stream().filter(cls -> !manager.isRegistered(cls.getClassName())).collect(Collectors.toList());
+    final List<ClassInfo> newClasses =
+      available.stream().filter(cls -> !manager.isRegistered(cls.getClassName())).collect(Collectors.toList());
 
-		if (LogMgr.isDebugEnabled())
-		{
-			String lnfMessage = newClasses.stream().map(ci -> ci.toString()).collect(Collectors.joining(","));
-			LogMgr.logDebug(new CallerInfo(){}, "Found new Look And Feel implementations: " + lnfMessage);
-		}
+    if (LogMgr.isDebugEnabled())
+    {
+      String lnfMessage = newClasses.stream().map(ci -> ci.toString()).collect(Collectors.joining(","));
+      LogMgr.logDebug(new CallerInfo(){}, "Found new Look And Feel implementations: " + lnfMessage);
+    }
 
-		if (newClasses.isEmpty())
-		{
-			WbSwingUtilities.showMessageKey(this, "MsgNoLaF");
-		}
-		else
-		{
-			final List<String> classNames = newClasses.stream().map(ci -> ci.getClassName()).collect(Collectors.toList());
-			final String newLnFClass = ClassFinderGUI.selectEntry(classNames, null, "TxtSelectLnF", SwingUtilities.getWindowAncestor(this));
-			if (newLnFClass != null)
-			{
-				WbSwingUtilities.invokeLater(() ->
-				{
-					int idx = classNames.indexOf(newLnFClass);
-					createNewItem(newClasses.get(idx));
-				});
-			}
-		}
+    if (newClasses.isEmpty())
+    {
+      WbSwingUtilities.showMessageKey(this, "MsgNoLaF");
+    }
+    else
+    {
+      final List<String> classNames = newClasses.stream().map(ci -> ci.getClassName()).collect(Collectors.toList());
+      final String newLnFClass = ClassFinderGUI.selectEntry(classNames, null, "TxtSelectLnF", SwingUtilities.getWindowAncestor(this));
+      if (newLnFClass != null)
+      {
+        WbSwingUtilities.invokeLater(() ->
+        {
+          int idx = classNames.indexOf(newLnFClass);
+          createNewItem(newClasses.get(idx));
+        });
+      }
+    }
   }
 
   @Override

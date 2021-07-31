@@ -269,7 +269,7 @@ public class FileMappedSequence
     int chunkLength = chunk.length();
     if (index >= chunkCharStart + chunkLength)
     {
-      while (index >= chunkCharStart + chunkLength)	readNextChunk();
+      while (index >= chunkCharStart + chunkLength) readNextChunk();
     }
     else if (index < chunkCharStart)
     {

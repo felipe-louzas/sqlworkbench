@@ -247,7 +247,7 @@ public class ClassFinder
         }
         catch (Throwable cnf)
         {
-        	// ignore
+          // ignore
         }
       }
     }

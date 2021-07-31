@@ -67,7 +67,7 @@ public class SpHelpTextRunner
       }
       stmt = connection.createStatement();
 
-			LogMgr.logMetadataSql(new CallerInfo(){}, "view definition", query);
+      LogMgr.logMetadataSql(new CallerInfo(){}, "view definition", query);
 
       boolean hasResult = stmt.execute(query);
 
@@ -89,7 +89,7 @@ public class SpHelpTextRunner
     }
     catch (Exception ex)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, ex, "view definition", query);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "view definition", query);
       sql = ex.getMessage();
     }
     finally

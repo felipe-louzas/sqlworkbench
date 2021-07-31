@@ -105,7 +105,7 @@ public class SqlServerTriggerReader
       "where is_ms_shipped = 0" +
       "  and tr.parent_class_desc = 'SERVER'";
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "DDL triggers", sql);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "DDL triggers", sql);
 
     Statement stmt = null;
     ResultSet rs = null;

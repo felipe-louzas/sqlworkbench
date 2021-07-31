@@ -235,7 +235,7 @@ public class StatementContextTest
     assertTrue(analyzer instanceof SelectAnalyzer);
     List columns = context.getData();
     assertNotNull(columns);
-    System.out.println("columns: " + columns);
+//    System.out.println("columns: " + columns);
     assertEquals(5, columns.size());
     assertEquals("o.FIRSTNAME", columns.get(0).toString());
     assertEquals("o.ID1", columns.get(1).toString());

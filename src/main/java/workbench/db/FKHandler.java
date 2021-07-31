@@ -143,10 +143,10 @@ public interface FKHandler
     return false;
   }
 
-	default boolean shouldGenerate(FKMatchType type)
-	{
-		return supportsMatchType() && type != null;
-	}
+  default boolean shouldGenerate(FKMatchType type)
+  {
+    return supportsMatchType() && type != null;
+  }
 
   default boolean supportsMatchType()
   {

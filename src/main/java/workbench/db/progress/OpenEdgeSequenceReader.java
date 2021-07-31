@@ -111,7 +111,7 @@ public class OpenEdgeSequenceReader
     PreparedStatement stmt = null;
     List<SequenceDefinition> result = new ArrayList<>();
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "sequences", sql, owner, namePattern);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequences", sql, owner, namePattern);
 
     try
     {
@@ -129,7 +129,7 @@ public class OpenEdgeSequenceReader
     }
     catch (Throwable e)
     {
-		LogMgr.logMetadataError(new CallerInfo(){}, e, "sequences", sql, owner, namePattern);
+    LogMgr.logMetadataError(new CallerInfo(){}, e, "sequences", sql, owner, namePattern);
     }
     finally
     {
@@ -166,7 +166,7 @@ public class OpenEdgeSequenceReader
     DataStore result = null;
     String sql = SELECT_SEQUENCE_DEF + " WHERE \"SEQ-OWNER\" = ? AND \"SEQ-NAME\" = ?";
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql, owner, sequence);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql, owner, sequence);
 
     try
     {
@@ -179,7 +179,7 @@ public class OpenEdgeSequenceReader
     }
     catch (Throwable e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql, owner, sequence);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "sequence definition", sql, owner, sequence);
     }
     finally
     {

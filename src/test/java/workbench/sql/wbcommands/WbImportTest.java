@@ -143,10 +143,10 @@ public class WbImportTest
       String msg = result.getMessages().toString();
       assertTrue(msg, result.isSuccess());
       String fname = (String)TestUtil.getSingleQueryValue(con, "select data from data1 where id = 1");
-      assertEquals(data1.getAbsolutePath(), fname);
+      assertEquals(data1.getCanonicalPath(), fname);
 
       fname = (String)TestUtil.getSingleQueryValue(con, "select data from data2 where id = 2");
-      assertEquals(data2.getAbsolutePath(), fname);
+      assertEquals(data2.getCanonicalPath(), fname);
     }
     finally
     {

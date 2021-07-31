@@ -31,7 +31,7 @@ import workbench.log.LogMgr;
 
 /**
  *
- *	@author  Thomas Kellerer
+ *  @author  Thomas Kellerer
  */
 public class ExceptionUtil
 {

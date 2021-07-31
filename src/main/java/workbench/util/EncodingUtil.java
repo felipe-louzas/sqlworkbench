@@ -55,7 +55,7 @@ public class EncodingUtil
   private static String[] charsets;
 
   /**
-   *	Create a BufferedReader for the given file and encoding
+   *  Create a BufferedReader for the given file and encoding
    *  The buffer size is set to 64K
    */
   public static Reader createReader(File f, String encoding)

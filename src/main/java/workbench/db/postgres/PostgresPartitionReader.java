@@ -188,7 +188,7 @@ public class PostgresPartitionReader
 
     partitions = new ArrayList<>();
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "partitions", sql, table.getSchema(), table.getTableName());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "partitions", sql, table.getSchema(), table.getTableName());
 
     try
     {
@@ -233,7 +233,7 @@ public class PostgresPartitionReader
     catch (Exception ex)
     {
       dbConnection.rollback(sp);
-			LogMgr.logMetadataError(new CallerInfo(){}, ex, "partitions", sql, table.getSchema(), table.getTableName());
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "partitions", sql, table.getSchema(), table.getTableName());
     }
     finally
     {
@@ -274,7 +274,7 @@ public class PostgresPartitionReader
     ResultSet rs = null;
     Savepoint sp = null;
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "partitioning definition", sql, table.getSchema(), table.getTableName());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "partitioning definition", sql, table.getSchema(), table.getTableName());
 
     try
     {
@@ -314,7 +314,7 @@ public class PostgresPartitionReader
     catch (Exception ex)
     {
       dbConnection.rollback(sp);
-			LogMgr.logMetadataError(new CallerInfo(){}, ex, "partitioning definition", sql, table.getSchema(), table.getTableName());
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "partitioning definition", sql, table.getSchema(), table.getTableName());
     }
     finally
     {

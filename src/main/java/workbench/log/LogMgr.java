@@ -49,169 +49,169 @@ import workbench.util.WbFile;
  */
 public class LogMgr
 {
-	public static final String DEFAULT_ENCODING = "UTF-8";
+  public static final String DEFAULT_ENCODING = "UTF-8";
 
-	private static WbLogger logger = null;
-	private static boolean useLog4J;
+  private static WbLogger logger = null;
+  private static boolean useLog4J;
 
-	public synchronized static void init(boolean useLog4j)
-	{
-		useLog4J = useLog4j && Log4JHelper.isLog4JAvailable();
-		if (!useLog4j)
-		{
-			// Initialize the Workbench logging right away
-			getLogger();
-		}
-	}
+  public synchronized static void init(boolean useLog4j)
+  {
+    useLog4J = useLog4j && Log4JHelper.isLog4JAvailable();
+    if (!useLog4j)
+    {
+      // Initialize the Workbench logging right away
+      getLogger();
+    }
+  }
 
-	public static WbFile getLogfile()
-	{
-		File f = getLogger().getCurrentFile();
-		if (f == null)
-		{
-			return null;
-		}
-		return new WbFile(f);
-	}
+  public static WbFile getLogfile()
+  {
+    File f = getLogger().getCurrentFile();
+    if (f == null)
+    {
+      return null;
+    }
+    return new WbFile(f);
+  }
 
-	public static void setMessageFormat(String msgFormat)
-	{
-		getLogger().setMessageFormat(msgFormat);
-	}
+  public static void setMessageFormat(String msgFormat)
+  {
+    getLogger().setMessageFormat(msgFormat);
+  }
 
-	public static void logToSystemError(boolean flag)
-	{
-		getLogger().logToSystemError(flag);
-	}
+  public static void logToSystemError(boolean flag)
+  {
+    getLogger().logToSystemError(flag);
+  }
 
-	public static String getLevel()
-	{
-		return getLogger().getRootLevel().toString();
-	}
+  public static String getLevel()
+  {
+    return getLogger().getRootLevel().toString();
+  }
 
-	public static void setLevel(String aType)
-	{
-		getLogger().setRootLevel(LogLevel.getLevel(aType));
-	}
+  public static void setLevel(String aType)
+  {
+    getLogger().setRootLevel(LogLevel.getLevel(aType));
+  }
 
-	public static void shutdown()
-	{
-		getLogger().shutdownWbLog();
-	}
+  public static void shutdown()
+  {
+    getLogger().shutdownWbLog();
+  }
 
-	public static void setOutputFile(File logfile, int maxFilesize, int maxBackups)
-	{
-		getLogger().setOutputFile(logfile, maxFilesize, maxBackups);
-	}
+  public static void setOutputFile(File logfile, int maxFilesize, int maxBackups)
+  {
+    getLogger().setOutputFile(logfile, maxFilesize, maxBackups);
+  }
 
-	public static boolean isInfoEnabled()
-	{
-		return getLogger().levelEnabled(LogLevel.info);
-	}
+  public static boolean isInfoEnabled()
+  {
+    return getLogger().levelEnabled(LogLevel.info);
+  }
 
-	public static boolean isDebugEnabled()
-	{
-		return getLogger().levelEnabled(LogLevel.debug);
-	}
+  public static boolean isDebugEnabled()
+  {
+    return getLogger().levelEnabled(LogLevel.debug);
+  }
 
-	public static boolean isTraceEnabled()
-	{
-		return getLogger().levelEnabled(LogLevel.trace);
-	}
+  public static boolean isTraceEnabled()
+  {
+    return getLogger().levelEnabled(LogLevel.trace);
+  }
 
-	public static void logDebug(CallerInfo caller, CharSequence message)
-	{
-		getLogger().logMessage(LogLevel.debug, caller, message, null);
-	}
+  public static void logDebug(CallerInfo caller, CharSequence message)
+  {
+    getLogger().logMessage(LogLevel.debug, caller, message, null);
+  }
 
-	public static void logMetadataSql(CallerInfo caller, String type, CharSequence sql, Object... parameters)
-	{
+  public static void logMetadataSql(CallerInfo caller, String type, CharSequence sql, Object... parameters)
+  {
     if (isDebugEnabled() || Settings.getInstance().getDebugMetadataSql())
     {
       String msg = "Retrieving "  + type + " using:\n" + SqlUtil.replaceParameters(sql, parameters);
       getLogger().logMessage(LogLevel.debug, caller, msg, null);
     }
-	}
+  }
 
-	public static void logMetadataError(CallerInfo caller, Throwable error, String type, CharSequence sql, Object... parameters)
-	{
+  public static void logMetadataError(CallerInfo caller, Throwable error, String type, CharSequence sql, Object... parameters)
+  {
     String msg = "Error retrieving "  + type + " using:\n" + SqlUtil.replaceParameters(sql, parameters);
     getLogger().logMessage(LogLevel.error, caller, msg, error);
-	}
+  }
 
-	public static void logTrace(CallerInfo caller, CharSequence message)
-	{
-		getLogger().logMessage(LogLevel.trace, caller, message, null);
-	}
+  public static void logTrace(CallerInfo caller, CharSequence message)
+  {
+    getLogger().logMessage(LogLevel.trace, caller, message, null);
+  }
 
-	public static void logTrace(CallerInfo caller, CharSequence message, Throwable th)
-	{
-		getLogger().logMessage(LogLevel.trace, caller, message, th);
-	}
+  public static void logTrace(CallerInfo caller, CharSequence message, Throwable th)
+  {
+    getLogger().logMessage(LogLevel.trace, caller, message, th);
+  }
 
-	public static void logDebug(CallerInfo caller, CharSequence message, Throwable th)
-	{
-		getLogger().logMessage(LogLevel.debug, caller, message, th);
-		logChainedException(LogLevel.debug, th);
-	}
+  public static void logDebug(CallerInfo caller, CharSequence message, Throwable th)
+  {
+    getLogger().logMessage(LogLevel.debug, caller, message, th);
+    logChainedException(LogLevel.debug, th);
+  }
 
-	public static void logInfo(CallerInfo caller, CharSequence message)
-	{
-		getLogger().logMessage(LogLevel.info, caller, message, null);
-	}
+  public static void logInfo(CallerInfo caller, CharSequence message)
+  {
+    getLogger().logMessage(LogLevel.info, caller, message, null);
+  }
 
-	public static void logInfo(CallerInfo caller, CharSequence message, Throwable th)
-	{
-		getLogger().logMessage(LogLevel.info, caller, message, th);
-	}
+  public static void logInfo(CallerInfo caller, CharSequence message, Throwable th)
+  {
+    getLogger().logMessage(LogLevel.info, caller, message, th);
+  }
 
-	public static void logWarning(CallerInfo caller, CharSequence message)
-	{
-		getLogger().logMessage(LogLevel.warning, caller, message, null);
-	}
+  public static void logWarning(CallerInfo caller, CharSequence message)
+  {
+    getLogger().logMessage(LogLevel.warning, caller, message, null);
+  }
 
-	public static void logWarning(CallerInfo caller, CharSequence message, Throwable th)
-	{
-		getLogger().logMessage(LogLevel.warning, caller, message, th);
-		logChainedException(LogLevel.warning, th);
-	}
+  public static void logWarning(CallerInfo caller, CharSequence message, Throwable th)
+  {
+    getLogger().logMessage(LogLevel.warning, caller, message, th);
+    logChainedException(LogLevel.warning, th);
+  }
 
-	public static void logError(CallerInfo caller, CharSequence message, Throwable th)
-	{
-		getLogger().logMessage(LogLevel.error, caller, message, th);
-		logChainedException(LogLevel.error, th);
-	}
+  public static void logError(CallerInfo caller, CharSequence message, Throwable th)
+  {
+    getLogger().logMessage(LogLevel.error, caller, message, th);
+    logChainedException(LogLevel.error, th);
+  }
 
-	public static void logUserSqlError(CallerInfo caller, String sql, Throwable th)
-	{
-		String logMsg = "Error executing:\n" + sql + "\n  ";
+  public static void logUserSqlError(CallerInfo caller, String sql, Throwable th)
+  {
+    String logMsg = "Error executing:\n" + sql + "\n  ";
     if (th instanceof java.sql.SQLFeatureNotSupportedException)
     {
       logError(caller, logMsg, th);
     }
     else if (th instanceof SQLException && !getLogger().levelEnabled(LogLevel.debug))
-		{
-			logMsg += ExceptionUtil.getDisplay(th);
-			logError(caller, logMsg, null);
-		}
-		else
-		{
-			logError(caller, logMsg, th);
-		}
-	}
+    {
+      logMsg += ExceptionUtil.getDisplay(th);
+      logError(caller, logMsg, null);
+    }
+    else
+    {
+      logError(caller, logMsg, th);
+    }
+  }
 
-	public static void logChainedException(LogLevel level, Throwable se)
-	{
-		if (getLogger().levelEnabled(level) && se instanceof SQLException)
-		{
-			SQLException next = ((SQLException)se).getNextException();
-			while (next != null)
-			{
-				getLogger().logMessage(LogLevel.error, "Chained exception", ExceptionUtil.getDisplay(next), null);
-				next = next.getNextException();
-			}
-		}
-	}
+  public static void logChainedException(LogLevel level, Throwable se)
+  {
+    if (getLogger().levelEnabled(level) && se instanceof SQLException)
+    {
+      SQLException next = ((SQLException)se).getNextException();
+      while (next != null)
+      {
+        getLogger().logMessage(LogLevel.error, "Chained exception", ExceptionUtil.getDisplay(next), null);
+        next = next.getNextException();
+      }
+    }
+  }
 
   public static void addLogListener(LogListener listener)
   {
@@ -223,25 +223,25 @@ public class LogMgr
     getLogger().removeLogListener(listener);
   }
 
-	private synchronized static WbLogger getLogger()
-	{
-		if (useLog4J)
-		{
-			try
-			{
-				return Log4JLogger.getLogger();
-			}
-			catch (Throwable e)
-			{
-				System.err.println("Could not create Log4J getLogger(). Using SimpleLogger!");
-				e.printStackTrace(System.err);
-				useLog4J = false;
-			}
-		}
-		if (logger == null)
-		{
-			logger = new SimpleLogger();
-		}
-		return logger;
-	}
+  private synchronized static WbLogger getLogger()
+  {
+    if (useLog4J)
+    {
+      try
+      {
+        return Log4JLogger.getLogger();
+      }
+      catch (Throwable e)
+      {
+        System.err.println("Could not create Log4J getLogger(). Using SimpleLogger!");
+        e.printStackTrace(System.err);
+        useLog4J = false;
+      }
+    }
+    if (logger == null)
+    {
+      logger = new SimpleLogger();
+    }
+    return logger;
+  }
 }

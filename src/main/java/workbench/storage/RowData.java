@@ -175,9 +175,9 @@ public class RowData
   }
 
   /**
-   *	Returns the value for the given column.
+   *  Returns the value for the given column.
    *
-   *	@throws IndexOutOfBoundsException
+   *  @throws IndexOutOfBoundsException
    */
   public Object getValue(int aColumn)
     throws IndexOutOfBoundsException
@@ -279,8 +279,8 @@ public class RowData
   }
 
   /**
-   *	Resets the internal status. After a call to resetStatus()
-   *	isModified() will return false, and isOriginal() will return true.
+   *  Resets the internal status. After a call to resetStatus()
+   *  isModified() will return false, and isOriginal() will return true.
    */
   public void resetStatus()
   {
@@ -299,7 +299,7 @@ public class RowData
   }
 
   /**
-   *	Sets the status of this row to new.
+   *  Sets the status of this row to new.
    */
   public final void setNew()
   {
@@ -307,9 +307,9 @@ public class RowData
   }
 
   /**
-   *	Returns true if the row is neither modified nor is a new row.
+   *  Returns true if the row is neither modified nor is a new row.
    *
-   *	@return true if the row has not been altered since retrieval
+   *  @return true if the row has not been altered since retrieval
    */
   public boolean isOriginal()
   {

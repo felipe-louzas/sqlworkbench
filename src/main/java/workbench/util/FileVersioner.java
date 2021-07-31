@@ -140,7 +140,7 @@ public class FileVersioner
 
   private int findNextIndex(File target)
   {
-    if (!target.exists())	return 1;
+    if (!target.exists()) return 1;
 
     Path dir = getTargetDir(target).toPath();
     if (!dir.toFile().exists()) return 1;

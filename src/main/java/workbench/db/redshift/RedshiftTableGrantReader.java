@@ -52,96 +52,96 @@ public class RedshiftTableGrantReader
   {
     String sql = "SELECT * FROM (\n" +
       "WITH objprivs AS ( \n" +
-      "	SELECT objowner, \n" +
-      "	schemaname, \n" +
-      "	objname, \n" +
-      "	objtype,\n" +
-      "	CASE WHEN split_part(aclstring,'=',1)='' THEN 'PUBLIC' ELSE translate(trim(split_part(aclstring,'=',1)),'\"','') END::text AS grantee,\n" +
-      "	translate(trim(split_part(aclstring,'/',2)),'\"','')::text AS grantor, \n" +
-      "	trim(split_part(split_part(aclstring,'=',2),'/',1))::text AS privilege, \n" +
-      "	CASE WHEN objtype = 'default acl' THEN objname \n" +
-      "	WHEN objtype = 'function' AND regexp_instr(schemaname,'[^a-z]') > 0 THEN objname\n" +
-      "	WHEN objtype = 'function' THEN QUOTE_IDENT(schemaname)||'.'||objname \n" +
-      "	ELSE nvl(QUOTE_IDENT(schemaname)||'.'||QUOTE_IDENT(objname),QUOTE_IDENT(objname)) END::text as fullobjname,\n" +
-      "	CASE WHEN split_part(aclstring,'=',1)='' THEN 'PUBLIC' \n" +
-      "	ELSE trim(split_part(aclstring,'=',1)) \n" +
-      "	END::text as splitgrantee,\n" +
-      "	grantseq \n" +
-      "	FROM (\n" +
-      "		-- TABLE AND VIEW privileges\n" +
-      "		SELECT pg_get_userbyid(b.relowner)::text AS objowner, \n" +
-      "		trim(c.nspname)::text AS schemaname,  \n" +
-      "		b.relname::text AS objname,\n" +
-      "		CASE WHEN relkind='r' THEN 'table' ELSE 'view' END::text AS objtype, \n" +
-      "		TRIM(SPLIT_PART(array_to_string(b.relacl,','), ',', NS.n))::text AS aclstring, \n" +
-      "		NS.n as grantseq\n" +
-      "		FROM \n" +
-      "		(SELECT oid,generate_series(1,array_upper(relacl,1))  AS n FROM pg_class) NS\n" +
-      "		inner join pg_class B ON b.oid = ns.oid AND  NS.n <= array_upper(b.relacl,1)\n" +
-      "		join pg_namespace c on b.relnamespace = c.oid\n" +
-      "		where relkind in ('r','v')\n" +
-      "		UNION ALL\n" +
-      "		-- SCHEMA privileges\n" +
-      "		SELECT pg_get_userbyid(b.nspowner)::text AS objowner,\n" +
-      "		null::text AS schemaname,\n" +
-      "		b.nspname::text AS objname,\n" +
-      "		'schema'::text AS objtype,\n" +
-      "		TRIM(SPLIT_PART(array_to_string(b.nspacl,','), ',', NS.n))::text AS aclstring,\n" +
-      "		NS.n as grantseq\n" +
-      "		FROM \n" +
-      "		(SELECT oid,generate_series(1,array_upper(nspacl,1)) AS n FROM pg_namespace) NS\n" +
-      "		inner join pg_namespace B ON b.oid = ns.oid AND NS.n <= array_upper(b.nspacl,1)\n" +
-      "		UNION ALL\n" +
-      "		-- DATABASE privileges\n" +
-      "		SELECT pg_get_userbyid(b.datdba)::text AS objowner,\n" +
-      "		null::text AS schemaname,\n" +
-      "		b.datname::text AS objname,\n" +
-      "		'database'::text AS objtype,\n" +
-      "		TRIM(SPLIT_PART(array_to_string(b.datacl,','), ',', NS.n))::text AS aclstring,\n" +
-      "		NS.n as grantseq\n" +
-      "		FROM \n" +
-      "		(SELECT oid,generate_series(1,array_upper(datacl,1)) AS n FROM pg_database) NS\n" +
-      "		inner join pg_database B ON b.oid = ns.oid AND NS.n <= array_upper(b.datacl,1) \n" +
-      "		UNION ALL\n" +
-      "		-- FUNCTION privileges \n" +
-      "		SELECT pg_get_userbyid(b.proowner)::text AS objowner,\n" +
-      "		trim(c.nspname)::text AS schemaname, \n" +
-      "		textin(regprocedureout(b.oid::regprocedure))::text AS objname,\n" +
-      "		'function'::text AS objtype,\n" +
-      "		TRIM(SPLIT_PART(array_to_string(b.proacl,','), ',', NS.n))::text AS aclstring,\n" +
-      "		NS.n as grantseq  \n" +
-      "		FROM \n" +
-      "		(SELECT oid,generate_series(1,array_upper(proacl,1)) AS n FROM pg_proc) NS\n" +
-      "		inner join pg_proc B ON b.oid = ns.oid and NS.n <= array_upper(b.proacl,1)\n" +
-      "		join pg_namespace c on b.pronamespace=c.oid \n" +
-      "		UNION ALL\n" +
-      "		-- LANGUAGE privileges\n" +
-      "		SELECT null::text AS objowner,\n" +
-      "		null::text AS schemaname,\n" +
-      "		lanname::text AS objname,\n" +
-      "		'language'::text AS objtype,\n" +
-      "		TRIM(SPLIT_PART(array_to_string(b.lanacl,','), ',', NS.n))::text AS aclstring,\n" +
-      "		NS.n as grantseq \n" +
-      "		FROM \n" +
-      "		(SELECT oid,generate_series(1,array_upper(lanacl,1)) AS n FROM pg_language) NS\n" +
-      "		inner join pg_language B ON b.oid = ns.oid and NS.n <= array_upper(b.lanacl,1)\n" +
-      "		UNION ALL\n" +
-      "		-- DEFAULT ACL privileges\n" +
-      "		SELECT pg_get_userbyid(b.defacluser)::text AS objowner,\n" +
-      "		trim(c.nspname)::text AS schemaname,\n" +
-      "		decode(b.defaclobjtype,'r','tables','f','functions')::text AS objname,\n" +
-      "		'default acl'::text AS objtype,\n" +
-      "		TRIM(SPLIT_PART(array_to_string(b.defaclacl,','), ',', NS.n))::text AS aclstring,\n" +
-      "		NS.n as grantseq \n" +
-      "		FROM \n" +
-      "		(SELECT oid,generate_series(1,array_upper(defaclacl,1)) AS n FROM pg_default_acl) NS\n" +
-      "		join pg_default_acl b ON b.oid = ns.oid and NS.n <= array_upper(b.defaclacl,1) \n" +
-      "		left join  pg_namespace c on b.defaclnamespace=c.oid\n" +
-      "	) \n" +
-      "	where  (split_part(aclstring,'=',1) <> split_part(aclstring,'/',2) \n" +
-      "	and split_part(aclstring,'=',1) <> 'rdsdb'\n" +
-      "	and NOT (split_part(aclstring,'=',1)='' AND split_part(aclstring,'/',2) = 'rdsdb'))\n" +
-      "	OR (split_part(aclstring,'=',1) = split_part(aclstring,'/',2) AND objtype='default acl')\n" +
+      " SELECT objowner, \n" +
+      " schemaname, \n" +
+      " objname, \n" +
+      " objtype,\n" +
+      " CASE WHEN split_part(aclstring,'=',1)='' THEN 'PUBLIC' ELSE translate(trim(split_part(aclstring,'=',1)),'\"','') END::text AS grantee,\n" +
+      " translate(trim(split_part(aclstring,'/',2)),'\"','')::text AS grantor, \n" +
+      " trim(split_part(split_part(aclstring,'=',2),'/',1))::text AS privilege, \n" +
+      " CASE WHEN objtype = 'default acl' THEN objname \n" +
+      " WHEN objtype = 'function' AND regexp_instr(schemaname,'[^a-z]') > 0 THEN objname\n" +
+      " WHEN objtype = 'function' THEN QUOTE_IDENT(schemaname)||'.'||objname \n" +
+      " ELSE nvl(QUOTE_IDENT(schemaname)||'.'||QUOTE_IDENT(objname),QUOTE_IDENT(objname)) END::text as fullobjname,\n" +
+      " CASE WHEN split_part(aclstring,'=',1)='' THEN 'PUBLIC' \n" +
+      " ELSE trim(split_part(aclstring,'=',1)) \n" +
+      " END::text as splitgrantee,\n" +
+      " grantseq \n" +
+      " FROM (\n" +
+      "   -- TABLE AND VIEW privileges\n" +
+      "   SELECT pg_get_userbyid(b.relowner)::text AS objowner, \n" +
+      "   trim(c.nspname)::text AS schemaname,  \n" +
+      "   b.relname::text AS objname,\n" +
+      "   CASE WHEN relkind='r' THEN 'table' ELSE 'view' END::text AS objtype, \n" +
+      "   TRIM(SPLIT_PART(array_to_string(b.relacl,','), ',', NS.n))::text AS aclstring, \n" +
+      "   NS.n as grantseq\n" +
+      "   FROM \n" +
+      "   (SELECT oid,generate_series(1,array_upper(relacl,1))  AS n FROM pg_class) NS\n" +
+      "   inner join pg_class B ON b.oid = ns.oid AND  NS.n <= array_upper(b.relacl,1)\n" +
+      "   join pg_namespace c on b.relnamespace = c.oid\n" +
+      "   where relkind in ('r','v')\n" +
+      "   UNION ALL\n" +
+      "   -- SCHEMA privileges\n" +
+      "   SELECT pg_get_userbyid(b.nspowner)::text AS objowner,\n" +
+      "   null::text AS schemaname,\n" +
+      "   b.nspname::text AS objname,\n" +
+      "   'schema'::text AS objtype,\n" +
+      "   TRIM(SPLIT_PART(array_to_string(b.nspacl,','), ',', NS.n))::text AS aclstring,\n" +
+      "   NS.n as grantseq\n" +
+      "   FROM \n" +
+      "   (SELECT oid,generate_series(1,array_upper(nspacl,1)) AS n FROM pg_namespace) NS\n" +
+      "   inner join pg_namespace B ON b.oid = ns.oid AND NS.n <= array_upper(b.nspacl,1)\n" +
+      "   UNION ALL\n" +
+      "   -- DATABASE privileges\n" +
+      "   SELECT pg_get_userbyid(b.datdba)::text AS objowner,\n" +
+      "   null::text AS schemaname,\n" +
+      "   b.datname::text AS objname,\n" +
+      "   'database'::text AS objtype,\n" +
+      "   TRIM(SPLIT_PART(array_to_string(b.datacl,','), ',', NS.n))::text AS aclstring,\n" +
+      "   NS.n as grantseq\n" +
+      "   FROM \n" +
+      "   (SELECT oid,generate_series(1,array_upper(datacl,1)) AS n FROM pg_database) NS\n" +
+      "   inner join pg_database B ON b.oid = ns.oid AND NS.n <= array_upper(b.datacl,1) \n" +
+      "   UNION ALL\n" +
+      "   -- FUNCTION privileges \n" +
+      "   SELECT pg_get_userbyid(b.proowner)::text AS objowner,\n" +
+      "   trim(c.nspname)::text AS schemaname, \n" +
+      "   textin(regprocedureout(b.oid::regprocedure))::text AS objname,\n" +
+      "   'function'::text AS objtype,\n" +
+      "   TRIM(SPLIT_PART(array_to_string(b.proacl,','), ',', NS.n))::text AS aclstring,\n" +
+      "   NS.n as grantseq  \n" +
+      "   FROM \n" +
+      "   (SELECT oid,generate_series(1,array_upper(proacl,1)) AS n FROM pg_proc) NS\n" +
+      "   inner join pg_proc B ON b.oid = ns.oid and NS.n <= array_upper(b.proacl,1)\n" +
+      "   join pg_namespace c on b.pronamespace=c.oid \n" +
+      "   UNION ALL\n" +
+      "   -- LANGUAGE privileges\n" +
+      "   SELECT null::text AS objowner,\n" +
+      "   null::text AS schemaname,\n" +
+      "   lanname::text AS objname,\n" +
+      "   'language'::text AS objtype,\n" +
+      "   TRIM(SPLIT_PART(array_to_string(b.lanacl,','), ',', NS.n))::text AS aclstring,\n" +
+      "   NS.n as grantseq \n" +
+      "   FROM \n" +
+      "   (SELECT oid,generate_series(1,array_upper(lanacl,1)) AS n FROM pg_language) NS\n" +
+      "   inner join pg_language B ON b.oid = ns.oid and NS.n <= array_upper(b.lanacl,1)\n" +
+      "   UNION ALL\n" +
+      "   -- DEFAULT ACL privileges\n" +
+      "   SELECT pg_get_userbyid(b.defacluser)::text AS objowner,\n" +
+      "   trim(c.nspname)::text AS schemaname,\n" +
+      "   decode(b.defaclobjtype,'r','tables','f','functions')::text AS objname,\n" +
+      "   'default acl'::text AS objtype,\n" +
+      "   TRIM(SPLIT_PART(array_to_string(b.defaclacl,','), ',', NS.n))::text AS aclstring,\n" +
+      "   NS.n as grantseq \n" +
+      "   FROM \n" +
+      "   (SELECT oid,generate_series(1,array_upper(defaclacl,1)) AS n FROM pg_default_acl) NS\n" +
+      "   join pg_default_acl b ON b.oid = ns.oid and NS.n <= array_upper(b.defaclacl,1) \n" +
+      "   left join  pg_namespace c on b.defaclnamespace=c.oid\n" +
+      " ) \n" +
+      " where  (split_part(aclstring,'=',1) <> split_part(aclstring,'/',2) \n" +
+      " and split_part(aclstring,'=',1) <> 'rdsdb'\n" +
+      " and NOT (split_part(aclstring,'=',1)='' AND split_part(aclstring,'/',2) = 'rdsdb'))\n" +
+      " OR (split_part(aclstring,'=',1) = split_part(aclstring,'/',2) AND objtype='default acl')\n" +
       ")\n" +
       "-- Extract object GRANTS\n" +
       "SELECT objowner, schemaname, objname, objtype, grantor, grantee, 'grant' AS ddltype, grantseq,\n" +
@@ -196,15 +196,15 @@ public class RedshiftTableGrantReader
       "UNION ALL\n" +
       "-- Eliminate empty default ACLs\n" +
       "SELECT null::text AS objowner, trim(c.nspname)::text AS schemaname, decode(b.defaclobjtype,'r','tables','f','functions')::text AS objname,\n" +
-      "		'default acl'::text AS objtype,  pg_get_userbyid(b.defacluser)::text AS grantor, null::text AS grantee, 'revoke'::text AS ddltype, 5 as grantseq, 5 AS objseq,\n" +
+      "   'default acl'::text AS objtype,  pg_get_userbyid(b.defacluser)::text AS grantor, null::text AS grantee, 'revoke'::text AS ddltype, 5 as grantseq, 5 AS objseq,\n" +
       "  'ALTER DEFAULT PRIVILEGES for user '||QUOTE_IDENT(pg_get_userbyid(b.defacluser))||nvl(' in schema '||QUOTE_IDENT(trim(c.nspname))||' ',' ')\n" +
       "||'GRANT ALL on '||decode(b.defaclobjtype,'r','tables','f','functions')||' TO '||QUOTE_IDENT(pg_get_userbyid(b.defacluser))||\n" +
       "CASE WHEN b.defaclobjtype = 'f' then ', PUBLIC;' ELSE ';' END::text AS ddl \n" +
-      "		FROM pg_default_acl b \n" +
-      "		LEFT JOIN  pg_namespace c on b.defaclnamespace = c.oid\n" +
-      "		where EXISTS (select 1 where b.defaclacl='{}'::aclitem[]\n" +
-      "		UNION ALL\n" +
-      "		select 1 WHERE array_to_string(b.defaclacl,'')=('=X/'||QUOTE_IDENT(pg_get_userbyid(b.defacluser))))\n" +
+      "   FROM pg_default_acl b \n" +
+      "   LEFT JOIN  pg_namespace c on b.defaclnamespace = c.oid\n" +
+      "   where EXISTS (select 1 where b.defaclacl='{}'::aclitem[]\n" +
+      "   UNION ALL\n" +
+      "   select 1 WHERE array_to_string(b.defaclacl,'')=('=X/'||QUOTE_IDENT(pg_get_userbyid(b.defacluser))))\n" +
       ") X\n" +
       "WHERE ddltype = 'grant' AND grantee <> 'PUBLIC' AND schemaname = ? AND objname = ? \n" +
       "ORDER BY schemaname, objname, grantseq";

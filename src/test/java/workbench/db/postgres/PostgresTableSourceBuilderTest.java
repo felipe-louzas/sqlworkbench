@@ -276,7 +276,7 @@ public class PostgresTableSourceBuilderTest
       "create table two \n" +
       "(\n" +
       "   id integer primary key, \n" +
-			"   one_id integer, \n" +
+      "   one_id integer, \n" +
       "   constraint fk_two2one foreign key (one_id) references one (id) match full \n " +
       ");\n" +
       "comment on constraint fk_two2one on two is 'The foreign key';\n" +
@@ -288,8 +288,8 @@ public class PostgresTableSourceBuilderTest
 
     String source = builder.getTableSource(tbl, DropType.none, true);
 //    System.out.println(source);
-		assertTrue(source.contains("COMMENT ON CONSTRAINT fk_two2one"));
-		assertTrue(source.contains("REFERENCES one (id) MATCH FULL"));
+    assertTrue(source.contains("COMMENT ON CONSTRAINT fk_two2one"));
+    assertTrue(source.contains("REFERENCES one (id) MATCH FULL"));
   }
 
   @Test

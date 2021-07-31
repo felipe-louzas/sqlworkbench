@@ -63,8 +63,8 @@ public class MySQLEnumReader
     ResultSet rs = null;
     HashMap<String, String> defs = new HashMap<>(17);
 
-		String sql = "SHOW COLUMNS FROM " + tbl.getTable().getTableExpression(connection);
-		LogMgr.logMetadataSql(new CallerInfo(){}, "table enums", sql);
+    String sql = "SHOW COLUMNS FROM " + tbl.getTable().getTableExpression(connection);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "table enums", sql);
 
     try
     {
@@ -99,7 +99,7 @@ public class MySQLEnumReader
     }
     catch (Exception e)
     {
-			LogMgr.logError(new CallerInfo(){}, "table enums", e);
+      LogMgr.logError(new CallerInfo(){}, "table enums", e);
     }
     finally
     {

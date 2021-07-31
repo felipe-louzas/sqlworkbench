@@ -170,7 +170,7 @@ public class TableDependency
   {
     this.cancelled = true;
     this.cancelRetrieve = true;
-		LogMgr.logDebug(new CallerInfo(){}, "Cancelling dependency retrieval");
+    LogMgr.logDebug(new CallerInfo(){}, "Cancelling dependency retrieval");
   }
 
   /**
@@ -279,7 +279,7 @@ public class TableDependency
       }
     }
     long duration = System.currentTimeMillis() - start;
-		LogMgr.logDebug(new CallerInfo(){}, "Retrieving " + (exportedKeys ? "referencing" : "referenced") + " tables for " + tableRoot.getTable().toString() + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving " + (exportedKeys ? "referencing" : "referenced") + " tables for " + tableRoot.getTable().toString() + " took: " + duration + "ms");
   }
 
   /**
@@ -294,13 +294,13 @@ public class TableDependency
 
     if (visitedParents.contains(parent))
     {
-			LogMgr.logTrace(new CallerInfo(){}, "Foreign key " + parent.getFkName()+ " has already been processed.");
+      LogMgr.logTrace(new CallerInfo(){}, "Foreign key " + parent.getFkName()+ " has already been processed.");
       return;
     }
 
     if (excludeTables.contains(parent.getTable()))
     {
-			LogMgr.logDebug(new CallerInfo(){}, "Table dependency for " + parent.getTable()+ " will not be analyzed because it has been excluded.");
+      LogMgr.logDebug(new CallerInfo(){}, "Table dependency for " + parent.getTable()+ " will not be analyzed because it has been excluded.");
       return;
     }
 
@@ -380,7 +380,7 @@ public class TableDependency
           {
             fkname = "WbGenerated_fk_" + parent.getTable().getTableName() + "_references_" + table;
           }
-					LogMgr.logError(new CallerInfo(){}, "JDBC Driver returned a NULL value for the FK name for table " + parent.getTable().getTableExpression() + "  Using: " + fkname + " instead", null);
+          LogMgr.logError(new CallerInfo(){}, "JDBC Driver returned a NULL value for the FK name for table " + parent.getTable().getTableExpression() + "  Using: " + fkname + " instead", null);
         }
 
         TableIdentifier tbl = new TableIdentifier(catalog, schema, table);
@@ -439,7 +439,7 @@ public class TableDependency
           String matchType = ds.getValueAsString(i, matchTypeColumn);
           if (StringUtil.isNonBlank(matchType) && !matchType.equals("s"))
           {
-						child.setMatchType(FKMatchType.fromString(matchType));
+            child.setMatchType(FKMatchType.fromString(matchType));
           }
         }
       }
@@ -451,7 +451,7 @@ public class TableDependency
         // is not detected. Better display the user incorrect data, than
         // ending up in an endless loop.
         // A circular dependency with more than 25 levels is an ugly design anyway :)
-				LogMgr.logError(new CallerInfo(){}, "Endless reference cycle detected for root=" + this.tableRoot + ", parent=" + parent, null);
+        LogMgr.logError(new CallerInfo(){}, "Endless reference cycle detected for root=" + this.tableRoot + ", parent=" + parent, null);
         this.readAborted = true;
         return;
       }
@@ -484,7 +484,7 @@ public class TableDependency
     }
     catch (Exception e)
     {
-			LogMgr.logError(new CallerInfo(){}, "Error when reading FK definition for " + tableRoot, e);
+      LogMgr.logError(new CallerInfo(){}, "Error when reading FK definition for " + tableRoot, e);
     }
   }
 
@@ -716,7 +716,7 @@ public class TableDependency
 
       if (matchTypeIndex > -1)
       {
-				FKMatchType matchType = node.getMatchType();
+        FKMatchType matchType = node.getMatchType();
         result.setValue(row, matchTypeIndex, matchType == null ? null : matchType.toString());
       }
       if (remarksIndex > -1)

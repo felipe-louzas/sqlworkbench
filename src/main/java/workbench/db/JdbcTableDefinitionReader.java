@@ -288,17 +288,17 @@ public class JdbcTableDefinitionReader
     return null;
   }
 
-	@Override
-	public String getSchemaToUse(TableIdentifier toRead)
-	{
-		return dbConnection.getMetadata().getCurrentSchema();
-	}
+  @Override
+  public String getSchemaToUse(TableIdentifier toRead)
+  {
+    return dbConnection.getMetadata().getCurrentSchema();
+  }
 
-	@Override
-	public String getCatalogToUse(TableIdentifier toRead)
-	{
-		return dbConnection.getMetadata().getCurrentCatalog();
-	}
+  @Override
+  public String getCatalogToUse(TableIdentifier toRead)
+  {
+    return dbConnection.getMetadata().getCurrentCatalog();
+  }
 
   /**
    * Return the definition of the given table.
@@ -327,13 +327,13 @@ public class JdbcTableDefinitionReader
 
     if (schema == null)
     {
-			schema = getSchemaToUse(toRead);
+      schema = getSchemaToUse(toRead);
       table.setSchema(schema);
     }
 
     if (catalog == null)
     {
-			catalog = getCatalogToUse(toRead);
+      catalog = getCatalogToUse(toRead);
       table.setCatalog(catalog);
     }
 

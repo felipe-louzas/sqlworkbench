@@ -44,7 +44,6 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionProfile;
 import workbench.db.DeleteScriptGenerator;
 import workbench.db.JdbcUtils;
-import workbench.db.QuoteHandler;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -131,9 +130,9 @@ public class DataStore
   private boolean optimizeRowHeight;
 
   /**
-   *	Create a DataStore which is not based on a result set
-   *	and contains the columns defined in the given array
-   *	The column types need to match the values from from java.sql.Types
+   *  Create a DataStore which is not based on a result set
+   *  and contains the columns defined in the given array
+   *  The column types need to match the values from from java.sql.Types
    *  @param colNames the column names
    *  @param colTypes data types for each column (matching java.sql.Types.XXXX)
    */
@@ -143,9 +142,9 @@ public class DataStore
   }
 
   /**
-   *	Create a DataStore which is not based on a result set
-   *	and contains the columns defined in the given array
-   *	The column types need to match the values from from java.sql.Types
+   *  Create a DataStore which is not based on a result set
+   *  and contains the columns defined in the given array
+   *  The column types need to match the values from from java.sql.Types
    *  @param colNames the column names
    *  @param colTypes data types for each column (matching java.sql.Types.XXXX)
    *  @param colSizes display size for each column
@@ -224,8 +223,8 @@ public class DataStore
   }
 
   /**
-   *	Create a DataStore based on the given ResultSet.
-   *	@param aResult the result set to use
+   *  Create a DataStore based on the given ResultSet.
+   *  @param aResult the result set to use
    *  @param readData if true the data from the ResultSet should be read into memory, otherwise only MetaData information is read
    *  @param maxRows limit number of rows to maxRows if the JDBC driver does not already limit them
    */
@@ -236,8 +235,8 @@ public class DataStore
   }
 
   /**
-   *	Create a DataStore based on the given ResultSet.
-   *	@param aResult the result set to use
+   *  Create a DataStore based on the given ResultSet.
+   *  @param aResult the result set to use
    *  @param readData if true the data from the ResultSet should be read into memory, otherwise only MetaData information is read
    *  @param aMonitor if not null, the loading process is displayed through this monitor
    */
@@ -249,8 +248,8 @@ public class DataStore
 
 
   /**
-   *	Create a DataStore based on the given ResultSet.
-   *	@param aResult the result set to use
+   *  Create a DataStore based on the given ResultSet.
+   *  @param aResult the result set to use
    *  @param readData if true the data from the ResultSet should be read into memory, otherwise only MetaData information is read
    *  @param aMonitor if not null, the loading process is displayed through this monitor
    *  @param maxRows limit number of rows to maxRows if the JDBC driver does not already limit them
@@ -490,7 +489,7 @@ public class DataStore
   }
 
   /**
-   *	Returns the total number of modified, new or deleted rows
+   *  Returns the total number of modified, new or deleted rows
    */
   public int getModifiedCount()
   {
@@ -612,9 +611,9 @@ public class DataStore
   }
 
   /**
-   *	Deletes the given row and saves it in the delete buffer
-   *	in order to be able to generate a DELETE statement if
-   *	this DataStore needs updating
+   *  Deletes the given row and saves it in the delete buffer
+   *  in order to be able to generate a DELETE statement if
+   *  this DataStore needs updating
    */
   public void deleteRow(int aRow)
     throws IndexOutOfBoundsException
@@ -656,9 +655,9 @@ public class DataStore
   }
 
   /**
-   *	Adds a new empty row to the DataStore.
-   *	The new row will be marked as Modified
-   *	@return int - the new row number
+   *  Adds a new empty row to the DataStore.
+   *  The new row will be marked as Modified
+   *  @return int - the new row number
    */
   public int addRow()
   {
@@ -676,11 +675,11 @@ public class DataStore
   }
 
   /**
-   *	Inserts a row after the given row number.
-   *	If the new Index is greater then the current
-   *	row count or the new index is &lt; 0 the new
-   *	row will be added at the end.
-   *	@return int - the new row number
+   *  Inserts a row after the given row number.
+   *  If the new Index is greater then the current
+   *  row count or the new index is &lt; 0 the new
+   *  row will be added at the end.
+   *  @return int - the new row number
    */
   public int insertRowAfter(int anIndex)
   {
@@ -960,6 +959,11 @@ public class DataStore
     return this.resultInfo.getColumn(col).getDisplaySize();
   }
 
+  public Object getOriginalValue(int aRow, String colName)
+  {
+    return getOriginalValue(aRow, findColumn(colName));
+  }
+
   public Object getOriginalValue(int aRow, int aColumn)
   {
     RowData row = this.getRow(aRow);
@@ -1051,6 +1055,12 @@ public class DataStore
     {
       return value.toString();
     }
+  }
+
+  public int getValueAsInt(int aRow, String colName, int aDefault)
+  {
+    int colIndex = findColumn(colName);
+    return getValueAsInt(aRow, colIndex, aDefault);
   }
 
   /**
@@ -1275,7 +1285,7 @@ public class DataStore
   }
 
   /**
-   *	Remove all data from the DataStore
+   *  Remove all data from the DataStore
    */
   public void reset()
   {
@@ -1299,7 +1309,7 @@ public class DataStore
   }
 
   /**
-   *	Returns true if at least one row has been updated.
+   *  Returns true if at least one row has been updated.
    */
   public boolean hasUpdatedRows()
   {
@@ -1314,7 +1324,7 @@ public class DataStore
   }
 
   /**
-   *	Returns true if at least one row has been deleted
+   *  Returns true if at least one row has been deleted
    */
   public boolean hasDeletedRows()
   {
@@ -1633,12 +1643,12 @@ public class DataStore
   }
 
   /**
-   *	Return the table that should be used when generating INSERTs
+   *  Return the table that should be used when generating INSERTs
    *  ("copy as INSERT").
    *
-   *	Normally this is the update table. If no update table
-   *	is defined, the table from the SQL statement will be used
-   *	but no checking for key columns takes place (which might take long)
+   *  Normally this is the update table. If no update table
+   *  is defined, the table from the SQL statement will be used
+   *  but no checking for key columns takes place (which might take long)
    */
   public String getInsertTable()
   {
@@ -1653,9 +1663,9 @@ public class DataStore
   }
 
   /**
-   *	Returns true if the current data can be converted to SQL INSERT statements.
-   *	The data can be saved as SQL INSERTs if an update table is defined.
-   *	If no update table is defined, then this method will call {@link #checkUpdateTable()}
+   *  Returns true if the current data can be converted to SQL INSERT statements.
+   *  The data can be saved as SQL INSERTs if an update table is defined.
+   *  If no update table is defined, then this method will call {@link #checkUpdateTable()}
    *  and try to determine the table from the used SQL statement.
    *
    *  @return true if an update table is defined
@@ -2309,6 +2319,11 @@ public class DataStore
     return deletedRows.size();
   }
 
+  public Object getDeletedValue(int row, String colName)
+  {
+    return getDeletedValue(row, findColumn(colName));
+  }
+
   public Object getDeletedValue(int row, int col)
   {
     if (this.deletedRows == null || this.deletedRows.size() == 0) return null;
@@ -2378,10 +2393,10 @@ public class DataStore
   }
 
   /**
-   *	Check if the currently defined updateTable
-   *	has any Primary keys defined in the database.
+   *  Check if the currently defined updateTable
+   *  has any Primary keys defined in the database.
    *
-   *	If it has, a subsequent call to hasPkColumns() returns true
+   *  If it has, a subsequent call to hasPkColumns() returns true
    */
   public void updatePkInformation()
     throws SQLException

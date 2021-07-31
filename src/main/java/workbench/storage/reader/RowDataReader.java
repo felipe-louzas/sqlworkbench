@@ -90,7 +90,7 @@ public class RowDataReader
   protected DataConverter converter;
   protected boolean ignoreReadErrors;
   protected boolean useStreamsForBlobs;
-  protected	boolean useStreamsForClobs;
+  protected boolean useStreamsForClobs;
   protected boolean longVarcharAsClob;
   protected BlobAccessType blobMethod = BlobAccessType.binaryStream;
   protected ClobAccessType clobMethod = ClobAccessType.string;

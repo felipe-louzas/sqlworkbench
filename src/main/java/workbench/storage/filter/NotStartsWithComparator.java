@@ -29,86 +29,86 @@ import workbench.resource.ResourceMgr;
  * @author Thomas Kellerer
  */
 public class NotStartsWithComparator
-	implements ColumnComparator
+  implements ColumnComparator
 {
 
-	@Override
-	public boolean supportsIgnoreCase()
-	{
-		return true;
-	}
+  @Override
+  public boolean supportsIgnoreCase()
+  {
+    return true;
+  }
 
-	@Override
-	public String getValueExpression(Object value)
-	{
-		return "'" + value + "'";
-	}
+  @Override
+  public String getValueExpression(Object value)
+  {
+    return "'" + value + "'";
+  }
 
-	@Override
-	public String getUserDisplay()
-	{
-		return ResourceMgr.getString("TxtOpNotStartsWith");
-	}
+  @Override
+  public String getUserDisplay()
+  {
+    return ResourceMgr.getString("TxtOpNotStartsWith");
+  }
 
-	@Override
-	public String getOperator()
-	{
-		return "does not start with";
-	}
+  @Override
+  public String getOperator()
+  {
+    return "does not start with";
+  }
 
-	@Override
-	public boolean needsValue()
-	{
-		return true;
-	}
+  @Override
+  public boolean needsValue()
+  {
+    return true;
+  }
 
-	@Override
-	public boolean validateInput(Object value)
-	{
-		return value instanceof String;
-	}
+  @Override
+  public boolean validateInput(Object value)
+  {
+    return value instanceof String;
+  }
 
-	@Override
-	public boolean comparesEquality()
-	{
-		return false;
-	}
+  @Override
+  public boolean comparesEquality()
+  {
+    return false;
+  }
 
-	@Override
-	public boolean evaluate(Object reference, Object value, boolean ignoreCase)
-	{
-		if (reference == null || value == null)
-		{
-			return false;
-		}
-		try
-		{
-			String v = (String) value;
-			String ref = (String) reference;
-			if (ignoreCase)
-			{
-				return !v.toLowerCase().startsWith(ref.toLowerCase());
-			}
-			else
-			{
-				return !v.startsWith(ref);
-			}
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
-	}
+  @Override
+  public boolean evaluate(Object reference, Object value, boolean ignoreCase)
+  {
+    if (reference == null || value == null)
+    {
+      return false;
+    }
+    try
+    {
+      String v = (String) value;
+      String ref = (String) reference;
+      if (ignoreCase)
+      {
+        return !v.toLowerCase().startsWith(ref.toLowerCase());
+      }
+      else
+      {
+        return !v.startsWith(ref);
+      }
+    }
+    catch (Exception e)
+    {
+      return false;
+    }
+  }
 
-	@Override
-	public boolean supportsType(Class valueClass)
-	{
-		return (CharSequence.class.isAssignableFrom(valueClass));
-	}
+  @Override
+  public boolean supportsType(Class valueClass)
+  {
+    return (CharSequence.class.isAssignableFrom(valueClass));
+  }
 
-	@Override
-	public boolean equals(Object other)
-	{
-		return (other.getClass().equals(this.getClass()));
-	}
+  @Override
+  public boolean equals(Object other)
+  {
+    return (other.getClass().equals(this.getClass()));
+  }
 }

@@ -115,7 +115,7 @@ public class SqlServerSequenceReader
     }
     sql.append("\n ORDER BY 1,2");
 
-		LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "sequence definition", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -183,7 +183,7 @@ public class SqlServerSequenceReader
     }
     catch (NumberFormatException nfe)
     {
-			LogMgr.logWarning(new CallerInfo(){}, "Could not convert " + v + " to a number", nfe);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not convert " + v + " to a number", nfe);
     }
     return null;
   }

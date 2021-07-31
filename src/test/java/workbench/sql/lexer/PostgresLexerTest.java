@@ -68,7 +68,7 @@ public class PostgresLexerTest
     lexer.setInput("from \";\" as x");
     token = lexer.getNextToken(false, false); // from
     token = lexer.getNextToken(false, false);
-    System.out.println("token: " + token.getText());
+//    System.out.println("token: " + token.getText());
     assertNotNull(token);
     assertEquals("\";\"", token.getText());
     assertTrue(token.isIdentifier());

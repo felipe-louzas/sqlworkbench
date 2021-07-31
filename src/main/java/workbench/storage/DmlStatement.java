@@ -85,12 +85,12 @@ public class DmlStatement
   private PreparedStatement currentStatement;
 
   /**
-   *	Create a new DmlStatement with the given SQL template string
-   *	and the given values.
+   *  Create a new DmlStatement with the given SQL template string
+   *  and the given values.
    *
-   *	The SQL string is expected to contain a ? for each value
-   *	passed in aValueList. The SQL statement will be executed
-   *	using a prepared statement.
+   *  The SQL string is expected to contain a ? for each value
+   *  passed in aValueList. The SQL statement will be executed
+   *  using a prepared statement.
    *
    * @param aStatement
    * @param aValueList

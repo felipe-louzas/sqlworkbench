@@ -190,11 +190,11 @@ public class ColumnAlterAction
     if (definition == null) return null;
     DataStore ds = definition.getDataStore();
 
-    String name = (String)ds.getDeletedValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_COL_NAME);
-    String type = (String)ds.getDeletedValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DATA_TYPE);
-    String defaultValue = (String)ds.getDeletedValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DEFAULT);
-    String nullable = (String)ds.getDeletedValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_NULLABLE);
-    String comment = (String)ds.getDeletedValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_REMARKS);
+    String name = (String)ds.getDeletedValue(row, TableColumnsDatastore.COLUMN_NAME_COL_NAME);
+    String type = (String)ds.getDeletedValue(row, TableColumnsDatastore.DATATYPE_NAME_COL_NAME);
+    String defaultValue = (String)ds.getDeletedValue(row, TableColumnsDatastore.DEF_VALUE_COL_NAME);
+    String nullable = (String)ds.getDeletedValue(row, TableColumnsDatastore.NULLABLE_COL_NAME);
+    String comment = (String)ds.getDeletedValue(row, TableColumnsDatastore.REMARKS_COL_NAME);
     ColumnIdentifier col = new ColumnIdentifier(name);
     col.setDbmsType(type);
     col.setDefaultValue(defaultValue);
@@ -211,11 +211,11 @@ public class ColumnAlterAction
     if (definition == null) return null;
     DataStore ds = definition.getDataStore();
 
-    String name = ds.getValueAsString(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_COL_NAME);
-    String type = ds.getValueAsString(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DATA_TYPE);
-    String defaultValue = ds.getValueAsString(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DEFAULT);
-    String nullable = ds.getValueAsString(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_NULLABLE);
-    String comment = ds.getValueAsString(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_REMARKS);
+    String name = ds.getValueAsString(row, TableColumnsDatastore.COLUMN_NAME_COL_NAME);
+    String type = ds.getValueAsString(row, TableColumnsDatastore.DATATYPE_NAME_COL_NAME);
+    String defaultValue = ds.getValueAsString(row, TableColumnsDatastore.DEF_VALUE_COL_NAME);
+    String nullable = ds.getValueAsString(row, TableColumnsDatastore.NULLABLE_COL_NAME);
+    String comment = ds.getValueAsString(row, TableColumnsDatastore.REMARKS_COL_NAME);
     ColumnIdentifier col = new ColumnIdentifier(name);
     col.setDbmsType(type);
     col.setDefaultValue(defaultValue);
@@ -231,11 +231,11 @@ public class ColumnAlterAction
   {
     DataStore ds = definition.getDataStore();
     if (ds.getRowStatus(row) == RowData.NEW) return null;
-    String name = (String)ds.getOriginalValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_COL_NAME);
-    String type = (String)ds.getOriginalValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DATA_TYPE);
-    String defaultValue = (String)ds.getOriginalValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_DEFAULT);
-    String nullable = (String)ds.getOriginalValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_NULLABLE);
-    String comment = (String)ds.getOriginalValue(row, TableColumnsDatastore.COLUMN_IDX_TABLE_DEFINITION_REMARKS);
+    String name = (String)ds.getOriginalValue(row, TableColumnsDatastore.COLUMN_NAME_COL_NAME);
+    String type = (String)ds.getOriginalValue(row, TableColumnsDatastore.DATATYPE_NAME_COL_NAME);
+    String defaultValue = (String)ds.getOriginalValue(row, TableColumnsDatastore.DEF_VALUE_COL_NAME);
+    String nullable = (String)ds.getOriginalValue(row, TableColumnsDatastore.NULLABLE_COL_NAME);
+    String comment = (String)ds.getOriginalValue(row, TableColumnsDatastore.REMARKS_COL_NAME);
     ColumnIdentifier col = new ColumnIdentifier(name);
     col.setDbmsType(type);
     col.setDefaultValue(defaultValue);

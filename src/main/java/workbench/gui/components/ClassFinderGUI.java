@@ -68,14 +68,14 @@ public class ClassFinderGUI
 
   public void setClassPath(List<File> libraries)
   {
-		if (libraries != null)
-		{
-			classPath = new ArrayList<>(libraries);
-		}
-		else
-		{
-			classPath = null;
-		}
+    if (libraries != null)
+    {
+      classPath = new ArrayList<>(libraries);
+    }
+    else
+    {
+      classPath = null;
+    }
   }
 
   public void setStatusBarKey(String key)
@@ -153,7 +153,7 @@ public class ClassFinderGUI
         }
         catch (Exception e)
         {
-					LogMgr.logError(new CallerInfo(){}, "Could not find JDBC driver class", e);
+          LogMgr.logError(new CallerInfo(){}, "Could not find JDBC driver class", e);
         }
       }
     };

@@ -138,8 +138,6 @@ public class VerticaSequenceReaderTest
 
     sequences = reader.getSequences(null, null, null);
     assertEquals(1, sequences.size());
-    System.out.println("num: " + sequences.size());
-
   }
 
 

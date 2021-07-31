@@ -30,27 +30,27 @@ import org.apache.log4j.spi.LoggerFactory;
  * @author Peter Franken
  */
 public class Log4JLoggerFactory
-	implements LoggerFactory
+  implements LoggerFactory
 {
-	private static Class loggerFqcn = Log4JLogger.class;
+  private static Class loggerFqcn = Log4JLogger.class;
 
-	public Log4JLoggerFactory()
-	{
-	}
+  public Log4JLoggerFactory()
+  {
+  }
 
-	@Override
-	public Log4JLogger makeNewLoggerInstance(String name)
-	{
-		return new Log4JLogger(name);
-	}
+  @Override
+  public Log4JLogger makeNewLoggerInstance(String name)
+  {
+    return new Log4JLogger(name);
+  }
 
-	public static void setLoggerFqcn(Class loggerFqcn)
-	{
-		Log4JLoggerFactory.loggerFqcn = loggerFqcn;
-	}
+  public static void setLoggerFqcn(Class loggerFqcn)
+  {
+    Log4JLoggerFactory.loggerFqcn = loggerFqcn;
+  }
 
-	public static Class getLoggerFqcn()
-	{
-		return loggerFqcn;
-	}
+  public static Class getLoggerFqcn()
+  {
+    return loggerFqcn;
+  }
 }

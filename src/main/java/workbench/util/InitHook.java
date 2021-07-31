@@ -10,8 +10,8 @@ package workbench.util;
 public interface InitHook {
 
 
-	/**
-	 * Called when SQL Workbench scans for extensions during startup.
-	 */
-	void init();
+  /**
+   * Called when SQL Workbench scans for extensions during startup.
+   */
+  void init();
 }

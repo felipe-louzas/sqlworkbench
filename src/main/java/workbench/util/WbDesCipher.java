@@ -116,11 +116,11 @@ public class WbDesCipher
   }
 
   /**
-   *	Creates a String from the given array
-   *	which can be used to store the array
-   *	in a text file (e.g. XML)
+   *  Creates a String from the given array
+   *  which can be used to store the array
+   *  in a text file (e.g. XML)
    *
-   *	@see #makeArray(String)
+   *  @see #makeArray(String)
    */
   private String makeString(byte[] values)
   {
@@ -134,10 +134,10 @@ public class WbDesCipher
   }
 
   /**
-   *	Internal method which converts an "Array String" into
-   *	a byte array which can be used for decoding
+   *  Internal method which converts an "Array String" into
+   *  a byte array which can be used for decoding
    *
-   *	@see #makeString(byte[])
+   *  @see #makeString(byte[])
    */
   private byte[] makeArray(String values)
   {

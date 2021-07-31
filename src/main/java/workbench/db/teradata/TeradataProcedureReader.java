@@ -55,7 +55,7 @@ public class TeradataProcedureReader
 
     String query = "show procedure " + SqlUtil.buildExpression(connection, def);
 
-		LogMgr.logDebug(new CallerInfo(){}, "Query to retrieve procedure source: " + query);
+    LogMgr.logDebug(new CallerInfo(){}, "Query to retrieve procedure source: " + query);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -73,7 +73,7 @@ public class TeradataProcedureReader
     }
     catch (Exception ex)
     {
-			LogMgr.logDebug(new CallerInfo(){}, "Error retrieving procedure source using: \n" + query, ex);
+      LogMgr.logDebug(new CallerInfo(){}, "Error retrieving procedure source using: \n" + query, ex);
     }
     finally
     {

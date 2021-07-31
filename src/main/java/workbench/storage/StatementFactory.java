@@ -99,12 +99,12 @@ public class StatementFactory
   }
 
   /**
-   *	Create an UPDATE Statement based on the data provided
+   *  Create an UPDATE Statement based on the data provided
    *
-   *	@param aRow						the RowData that should be used for the UPDATE statement
-   *	@param ignoreStatus		if set to true all columns will be included (otherwise only modified columns)
-   *	@param lineEnd				the character sequence to be used as the line ending
-   *	@param columns				a list of columns to be included. If this is null all columns are included
+   *  @param aRow           the RowData that should be used for the UPDATE statement
+   *  @param ignoreStatus   if set to true all columns will be included (otherwise only modified columns)
+   *  @param lineEnd        the character sequence to be used as the line ending
+   *  @param columns        a list of columns to be included. If this is null all columns are included
    */
   public DmlStatement createUpdateStatement(RowData aRow, boolean ignoreStatus, String lineEnd, List<ColumnIdentifier> columns)
   {
@@ -252,15 +252,15 @@ public class StatementFactory
   }
 
   /**
-   *	Generate an insert statement for the given row
-   *	When creating a script for the DataStore the ignoreStatus
-   *	will be passed as true, thus ignoring the row status and
-   *	some basic formatting will be applied to the SQL Statement
+   *  Generate an insert statement for the given row
+   *  When creating a script for the DataStore the ignoreStatus
+   *  will be passed as true, thus ignoring the row status and
+   *  some basic formatting will be applied to the SQL Statement
    *
-   *	@param aRow the RowData that should be used for the insert statement
-   *	@param ignoreStatus if set to true all columns will be included (otherwise only modified columns)
-   *	@param lineEnd the character sequence to be used as the line ending
-   *	@param columns  a list of columns to be included. If this is null all columns are included
+   *  @param aRow the RowData that should be used for the insert statement
+   *  @param ignoreStatus if set to true all columns will be included (otherwise only modified columns)
+   *  @param lineEnd the character sequence to be used as the line ending
+   *  @param columns  a list of columns to be included. If this is null all columns are included
    */
   public DmlStatement createInsertStatement(RowData aRow, boolean ignoreStatus, String lineEnd, List<ColumnIdentifier> columns)
   {

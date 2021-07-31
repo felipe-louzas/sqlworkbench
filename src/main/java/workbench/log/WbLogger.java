@@ -30,23 +30,23 @@ import java.io.File;
 public interface WbLogger
 {
 
-	void setRootLevel(LogLevel level);
+  void setRootLevel(LogLevel level);
 
-	LogLevel getRootLevel();
+  LogLevel getRootLevel();
 
-	void logMessage(LogLevel level, Object caller, CharSequence msg, Throwable th);
+  void logMessage(LogLevel level, Object caller, CharSequence msg, Throwable th);
 
-	void setMessageFormat(String newFormat);
+  void setMessageFormat(String newFormat);
 
-	void logToSystemError(boolean flag);
+  void logToSystemError(boolean flag);
 
-	void setOutputFile(File logfile, int maxFilesize, int maxBackups);
+  void setOutputFile(File logfile, int maxFilesize, int maxBackups);
 
-	File getCurrentFile();
+  File getCurrentFile();
 
-	void shutdownWbLog();
+  void shutdownWbLog();
 
-	boolean levelEnabled(LogLevel tolog);
+  boolean levelEnabled(LogLevel tolog);
 
   void addLogListener(LogListener listener);
   void removeLogListener(LogListener listener);

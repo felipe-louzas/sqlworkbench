@@ -1637,6 +1637,13 @@ public class WbTable
     return this.printDataAction;
   }
 
+  public String getValueAsString(int row, String colName)
+  {
+    Object value = this.getValueAt(row, getColumnIndex(colName));
+    if (value == null) return null;
+    return value.toString();
+  }
+
   /**
    * Return the value of the specified model column as a string.
    * If the columns have been re-arranged this will still work.

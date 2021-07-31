@@ -63,7 +63,7 @@ public class HsqlTableSourceBuilderTest
 
     TableIdentifier tbl = new DbObjectFinder(conn).findObject(new TableIdentifier("TEST_VERSIONING"));
     String source = tbl.getSource(conn).toString();
-    System.out.println(source);
+//    System.out.println(source);
     assertTrue(source.contains("PERIOD FOR SYSTEM_TIME (VALID_FROM, VALID_UNTIL)"));
   }
 

@@ -30,64 +30,64 @@ import workbench.util.CollectionUtil;
  */
 public class ComparatorFactory
 {
-	private final List<ColumnComparator> comparatorList;
+  private final List<ColumnComparator> comparatorList;
 
-	public ComparatorFactory()
-	{
-		comparatorList = CollectionUtil.arrayList(
-			new ContainsComparator(),
-			new StartsWithComparator(),
-			new NotStartsWithComparator(),
-			new ContainsNotComparator(),
-			new StringEqualsComparator(),
-			new StringNotEqualsComparator(),
-			new NumberEqualsComparator(),
-			new DateEqualsComparator(),
-			new NumberNotEqualsComparator(),
-			new LessThanComparator(),
-			new LessOrEqualComparator(),
-			new GreaterThanComparator(),
-			new GreaterOrEqualComparator(),
-			new IsNullComparator(),
-			new IsNotNullComparator(),
-			new RegExComparator(),
-			new BooleanEqualsComparator()
-		);
-	}
+  public ComparatorFactory()
+  {
+    comparatorList = CollectionUtil.arrayList(
+      new ContainsComparator(),
+      new StartsWithComparator(),
+      new NotStartsWithComparator(),
+      new ContainsNotComparator(),
+      new StringEqualsComparator(),
+      new StringNotEqualsComparator(),
+      new NumberEqualsComparator(),
+      new DateEqualsComparator(),
+      new NumberNotEqualsComparator(),
+      new LessThanComparator(),
+      new LessOrEqualComparator(),
+      new GreaterThanComparator(),
+      new GreaterOrEqualComparator(),
+      new IsNullComparator(),
+      new IsNotNullComparator(),
+      new RegExComparator(),
+      new BooleanEqualsComparator()
+    );
+  }
 
-	public List<ColumnComparator> getAvailableComparators()
-	{
-		return comparatorList;
-	}
+  public List<ColumnComparator> getAvailableComparators()
+  {
+    return comparatorList;
+  }
 
-	/**
-	 * Returns the first ColumnComparator that supports an equality comparator for the given class.
-	 *
-	 * @param clz the class to compare
-	 */
-	public ColumnComparator findEqualityComparatorFor(Class clz)
-	{
-		for (ColumnComparator comp : comparatorList)
-		{
-			if (comp.supportsType(clz) && comp.comparesEquality())
-			{
-				return comp;
-			}
-		}
-		return null;
-	}
+  /**
+   * Returns the first ColumnComparator that supports an equality comparator for the given class.
+   *
+   * @param clz the class to compare
+   */
+  public ColumnComparator findEqualityComparatorFor(Class clz)
+  {
+    for (ColumnComparator comp : comparatorList)
+    {
+      if (comp.supportsType(clz) && comp.comparesEquality())
+      {
+        return comp;
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Returns the first ColumnComparator that supports the given class.
-	 *
-	 * @param clz the class to compare
-	 */
-	public ColumnComparator findComparatorFor(Class clz)
-	{
-		for (ColumnComparator comp : comparatorList)
-		{
-			if (comp.supportsType(clz)) return comp;
-		}
-		return null;
-	}
+  /**
+   * Returns the first ColumnComparator that supports the given class.
+   *
+   * @param clz the class to compare
+   */
+  public ColumnComparator findComparatorFor(Class clz)
+  {
+    for (ColumnComparator comp : comparatorList)
+    {
+      if (comp.supportsType(clz)) return comp;
+    }
+    return null;
+  }
 }

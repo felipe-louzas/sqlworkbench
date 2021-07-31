@@ -37,27 +37,27 @@ import java.lang.reflect.Method;
  */
 public class Log4JHelper
 {
-	private static boolean tested;
-	private static boolean available;
+  private static boolean tested;
+  private static boolean available;
 
-	public static boolean isLog4JAvailable()
-	{
-		if (tested) return available;
-		try
-		{
-			tested = true;
-			Class.forName("org.apache.log4j.Logger");
-			Class factory = Class.forName("workbench.log.Log4JLoggerFactory");
-			Method setLoggerFqcn = factory.getDeclaredMethod("setLoggerFqcn", new Class[] { Class.class });
-			setLoggerFqcn.invoke(null, new Object[] { LogMgr.class } );
-			available = true;
-		}
-		catch (Throwable th)
-		{
-			th.printStackTrace(System.err);
-			available = false;
-		}
-		return available;
-	}
+  public static boolean isLog4JAvailable()
+  {
+    if (tested) return available;
+    try
+    {
+      tested = true;
+      Class.forName("org.apache.log4j.Logger");
+      Class factory = Class.forName("workbench.log.Log4JLoggerFactory");
+      Method setLoggerFqcn = factory.getDeclaredMethod("setLoggerFqcn", new Class[] { Class.class });
+      setLoggerFqcn.invoke(null, new Object[] { LogMgr.class } );
+      available = true;
+    }
+    catch (Throwable th)
+    {
+      th.printStackTrace(System.err);
+      available = false;
+    }
+    return available;
+  }
 
 }

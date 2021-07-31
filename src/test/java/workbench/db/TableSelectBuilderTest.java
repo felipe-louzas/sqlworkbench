@@ -68,7 +68,7 @@ public class TableSelectBuilderTest
     String expected = "select NR,\n" +
       "       FIRSTNAME,\n" +
       "       LASTNAME\nfrom PERSON";
-      System.out.println("----\n" + expected + "\n------\n" + sql);
+//      System.out.println("----\n" + expected + "\n------\n" + sql);
     assertEquals(expected, sql);
 
     t1 = tbl.createCopy();

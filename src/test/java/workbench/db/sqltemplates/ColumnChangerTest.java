@@ -24,13 +24,15 @@ package workbench.db.sqltemplates;
 
 import java.util.List;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import workbench.WbTestCase;
+
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbSettings;
 import workbench.db.TableIdentifier;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -72,7 +74,6 @@ public class ColumnChangerTest
     newCol = oldCol.createCopy();
     newCol.setIsNullable(true);
     sqls = changer.getAlterStatements(table, oldCol, newCol);
-    System.out.println(sqls);
     assertEquals(1, sqls.size());
     assertEquals("ALTER TABLE PERSON\n  ALTER COLUMN FIRST_NAME VARCHAR(20) NULL", sqls.get(0));
   }

@@ -122,7 +122,7 @@ public class OpenEdgeObjectListEnhancer
     long start = System.currentTimeMillis();
     try
     {
-			LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql, schema, object);
+      LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql, schema, object);
       stmt = con.getSqlConnection().prepareStatement(sql);
       if (schemaIndex > 0) stmt.setString(schemaIndex, schema);
       if (tableIndex > 0) stmt.setString(tableIndex, object);
@@ -142,14 +142,14 @@ public class OpenEdgeObjectListEnhancer
     }
     catch (Exception e)
     {
-			LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql, schema, object);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql, schema, object);
     }
     finally
     {
       JdbcUtils.closeAll(rs, stmt);
     }
     long duration = System.currentTimeMillis() - start;
-		LogMgr.logDebug(new CallerInfo(){}, "Retrieving table remarks took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Retrieving table remarks took: " + duration + "ms");
     return remarks;
   }
 }
