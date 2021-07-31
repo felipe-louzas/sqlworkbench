@@ -224,7 +224,7 @@
   <xsl:template name="add-fk-action">
     <xsl:param name="event-name"/>
     <xsl:param name="action"/>
-    <xsl:if test="$action = 'DELETE' or $action = 'SET NULL'">
+    <xsl:if test="$action = 'CASCADE' or $action = 'SET NULL'">
       <xsl:value-of select="$newline"/>
       <xsl:text>  </xsl:text>
       <xsl:value-of select="$event-name"/><xsl:text> </xsl:text><xsl:value-of select="$action"/>
