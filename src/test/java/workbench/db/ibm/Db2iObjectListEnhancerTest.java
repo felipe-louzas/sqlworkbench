@@ -20,9 +20,12 @@
  */
 package workbench.db.ibm;
 
+import java.sql.Types;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
 import workbench.db.DbMetadata;
 import workbench.db.IbmDb2Test;
@@ -35,6 +38,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
+import static workbench.db.ibm.Db2iObjectListEnhancer.*;
 
 /**
  *
@@ -64,13 +68,16 @@ public class Db2iObjectListEnhancerTest
     WbConnection con = getTestUtil().getConnection();
     TestUtil.executeScript(con,
       "create schema qsys2;\n" +
-      "create table qsys2.systables (table_name varchar(100), table_schema varchar(100), table_text varchar(100));\n" +
-      "insert into qsys2.systables values ('FOO', 'PUBLIC', 'Foo comment');\n" +
-      "insert into qsys2.systables values ('BAR', 'PUBLIC', 'Bar comment');\n" +
+      "create table qsys2.systables (table_name varchar(100), table_schema varchar(100), table_text varchar(100), system_table_name varchar(100));\n" +
+      "insert into qsys2.systables values ('FOO', 'PUBLIC', 'Foo comment', 'FOO1');\n" +
+      "insert into qsys2.systables values ('BAR', 'PUBLIC', 'Bar comment', 'BAR1');\n" +
       "commit;");
 
     Db2iObjectListEnhancer reader = new Db2iObjectListEnhancer();
     DataStore tables = con.getMetadata().createTableListDataStore();
+    ColumnIdentifier sysName = new ColumnIdentifier(SYSTEM_NAME_DS_COL, Types.VARCHAR, 50);
+    tables.addColumn(sysName);
+
     int fooRow = tables.addRow();
     tables.setValue(fooRow, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, "PUBLIC");
     tables.setValue(fooRow, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, "CAT");
@@ -81,9 +88,11 @@ public class Db2iObjectListEnhancerTest
     tables.setValue(barRow, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, "CAT");
     tables.setValue(barRow, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, "BAR");
 
-    reader.updateObjectRemarks(con, tables, null, "PUBLIC", null, new String[]{"TABLE"});
+    reader.updateResult(con, tables, "PUBLIC", null, true);
     assertEquals("Foo comment", tables.getValueAsString(fooRow, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS));
     assertEquals("Bar comment", tables.getValueAsString(barRow, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS));
+    assertEquals("BAR1", tables.getValueAsString(barRow, "SYSTEM_NAME"));
+    assertEquals("FOO1", tables.getValueAsString(fooRow, "SYSTEM_NAME"));
   }
 
 }

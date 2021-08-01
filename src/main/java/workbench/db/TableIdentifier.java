@@ -44,6 +44,7 @@ public class TableIdentifier
   private static final long serialVersionUID = DbObjectCacheFactory.CACHE_VERSION_UID;
 
   private String tablename;
+  private String systemTablename;
   private String schema;
   private String catalog;
   private String server; // for SQL Server syntax
@@ -154,6 +155,22 @@ public class TableIdentifier
   public void setIsPartitioned(boolean flag)
   {
     this.isPartitioned = flag;
+  }
+
+  /**
+   * Returns the internal system name of the table.
+   * Mainly used for DB2
+   * @return the internal name
+   * @see #setSystemTablename(java.lang.String)
+   */
+  public String getSystemTablename()
+  {
+    return systemTablename;
+  }
+
+  public void setSystemTablename(String systemTablename)
+  {
+    this.systemTablename = systemTablename;
   }
 
   public boolean getUseNameOnly()
@@ -753,6 +770,7 @@ public class TableIdentifier
     return result.toString();
   }
 
+  @Override
   public final void setSchema(String aSchema)
   {
     if (StringUtil.isBlank(aSchema))
@@ -779,6 +797,7 @@ public class TableIdentifier
     return result.toString();
   }
 
+  @Override
   public final void setCatalog(String aCatalog)
   {
     if (this.isNewTable) return;

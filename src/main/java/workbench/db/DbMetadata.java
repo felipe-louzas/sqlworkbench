@@ -1756,6 +1756,8 @@ public class DbMetadata
         result.setValue(row, COLUMN_IDX_TABLE_LIST_SCHEMA, schema);
         result.setValue(row, COLUMN_IDX_TABLE_LIST_REMARKS, remarks);
         if (!sequencesReturned && StringUtil.equalString(sequenceType, ttype)) sequencesReturned = true;
+        TableIdentifier tbl = buildTableIdentifierFromDs(result, row);
+        result.getRow(row).setUserObject(tbl);
       }
 
       duration = System.currentTimeMillis() - start;

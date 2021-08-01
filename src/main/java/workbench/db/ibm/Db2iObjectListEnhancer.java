@@ -23,23 +23,22 @@ package workbench.db.ibm;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.TreeMap;
+import java.sql.Types;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.util.CaseInsensitiveComparator;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 
 /**
  *
@@ -49,62 +48,103 @@ public class Db2iObjectListEnhancer
   implements ObjectListEnhancer
 {
 
+  public static final String SYSTEM_NAME_DS_COL = "SYSTEM_NAME";
+  private static final String REMARKS_PROP = "remarks.tables.use_tabletext";
+  private static final String SYSNAME_PROP = "tablelist.read.system_name";
+
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String schemaPattern, String objectPattern, String[] requestedTypes)
   {
-    if (con.getDbSettings().getBoolProperty("remarks.tables.use_tabletext", false))
+    if (result == null || result.getRowCount() == 0) return;
+
+    boolean readRemarks = con.getDbSettings().getBoolProperty(REMARKS_PROP, false);
+    boolean readSystemNames = con.getDbSettings().getBoolProperty(SYSNAME_PROP, false);
+
+    if (readSystemNames)
     {
-      updateObjectRemarks(con, result, aCatalog, aSchema, objects, requestedTypes);
+      ColumnIdentifier sysName = new ColumnIdentifier(SYSTEM_NAME_DS_COL, Types.VARCHAR, 50);
+      result.addColumn(sysName);
+    }
+
+    if (readRemarks || readSystemNames)
+    {
+      updateResult(con, result, schemaPattern, objectPattern, readRemarks);
     }
   }
 
-  public void updateObjectRemarks(WbConnection con, DataStore result, String catalog, String schema, String objects, String[] requestedTypes)
+  protected void updateResult(WbConnection con, DataStore result, String schemaPattern, String objectPattern, boolean readRemarks)
   {
-    if (result == null) return;
-    if (result.getRowCount() == 0) return;
+    long start = System.currentTimeMillis();
+    String sql = buildQuery(con, schemaPattern, objectPattern);
+    LogMgr.logMetadataSql(new CallerInfo(){}, "object info", sql);
 
-    boolean tablesRequested = DbMetadata.typeIncluded("TABLE", requestedTypes);
-    if (!tablesRequested) return;
+    Statement stmt = null;
+    ResultSet rs = null;
 
-    String object = null;
-    if (result.getRowCount() == 1)
+    int systemNameCol = result.getColumnIndex(SYSTEM_NAME_DS_COL);
+    try
     {
-      object = result.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      // no need to loop through all requested types if only a single object is requested
-      requestedTypes = new String[] { result.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE)};
-    }
-
-    Map<String, String> remarks = readRemarks(con, schema, object, requestedTypes);
-
-    for (int row=0; row < result.getRowCount(); row++)
-    {
-      String name = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      String objectSchema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-
-      String remark = remarks.get(objectSchema + "." + name);
-      if (remark != null)
+      stmt = con.createStatementForQuery();
+      rs = stmt.executeQuery(sql);
+      while (rs.next())
       {
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, remark);
+        String schema = rs.getString(1);
+        String objectname = rs.getString(2);
+        String remark = rs.getString(3);
+        String systemName = rs.getString(4);
+        int row = findRow(result, schema, objectname);
+        if (row > -1)
+        {
+          TableIdentifier tbl = (TableIdentifier)result.getRow(row).getUserObject();
+          if (readRemarks)
+          {
+            result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, remark);
+            if (tbl != null)
+            {
+              tbl.setComment(remark);
+            }
+          }
+
+          if (systemNameCol > -1)
+          {
+            result.setValue(row, systemNameCol, systemName);
+            if (tbl != null)
+            {
+              tbl.setSystemTablename(systemName);
+            }
+          }
+        }
       }
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logDebug(new CallerInfo(){}, "Reading additional object information took " + duration + "ms");
+    }
+    catch (Exception e)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "object info", sql);
+    }
+    finally
+    {
+      JdbcUtils.closeAll(rs, stmt);
     }
   }
 
-  private Map<String, String> readRemarks(WbConnection con, String schema, String object, String[] requestedTypes)
+  private String buildQuery(WbConnection con, String schemaPattern, String objectPattern)
   {
     StringBuilder sql = new StringBuilder(50);
+
     sql.append(
-      "select table_schema, table_name, table_text\n" +
-      "from qsys2" + con.getMetadata().getCatalogSeparator() + "systables t\n");
+      "select table_schema, table_name, table_text, system_table_name \n" +
+      "from qsys2" + con.getMetadata().getCatalogSeparator() + "systables \n");
 
     boolean whereAdded = false;
-    if (schema != null)
+    if (schemaPattern != null)
     {
       whereAdded = true;
       sql.append("where ");
-      SqlUtil.appendExpression(sql, "table_schema", schema, con);
+      SqlUtil.appendExpression(sql, "table_schema", schemaPattern, con);
     }
 
-    if (object != null)
+    if (objectPattern != null)
     {
       if (whereAdded)
       {
@@ -114,48 +154,24 @@ public class Db2iObjectListEnhancer
       {
         sql.append("where ");
       }
-      SqlUtil.appendExpression(sql, "table_name", schema, con);
+      SqlUtil.appendExpression(sql, "table_name", objectPattern, con);
     }
+    return sql.toString();
+  }
 
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    if (schema == null)
+  private int findRow(DataStore result, String schema, String object)
+  {
+    if (result == null) return -1;
+    for (int row=0; row < result.getRowCount(); row ++)
     {
-      schema = con.getMetadata().getCurrentSchema();
-    }
-
-    Map<String, String> remarks = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
-    String type = null;
-    LogMgr.logMetadataSql(new CallerInfo(){}, "table remarks", sql);
-
-    try
-    {
-      for (String requestedType : requestedTypes)
+      String resultName = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      String resultSchema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
+      if (StringUtil.equalStringIgnoreCase(resultName, object) &&
+          StringUtil.equalStringIgnoreCase(resultSchema, schema))
       {
-        type = requestedType;
-        stmt = con.createStatementForQuery();
-        rs = stmt.executeQuery(sql.toString());
-        while (rs.next())
-        {
-          String objectname = rs.getString(2);
-          String remark = rs.getString(3);
-          if (objectname != null && remark != null)
-          {
-            remarks.put(schema + "." + objectname.trim(), remark);
-          }
-        }
-        JdbcUtils.closeResult(rs);
+        return row;
       }
     }
-    catch (Exception e)
-    {
-      LogMgr.logMetadataError(new CallerInfo(){}, e, "table remarks", sql);
-    }
-    finally
-    {
-      JdbcUtils.closeAll(rs, stmt);
-    }
-    return remarks;
+    return -1;
   }
 }

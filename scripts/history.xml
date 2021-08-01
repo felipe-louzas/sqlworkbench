@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2021-05-15">
+    <entry dev-build="6" type="enh">For DB2i it's now possible to enable retrieving of "system names" for tables.</entry>
     <entry dev-build="6" type="enh">Then new "Copy as text" dialog now detects selected columns.</entry>
     <entry dev-build="6" type="enh">For XSLX, XLS and ODS exports it's now possible to specify column names that should be treated as formulas rather than "plain" values.</entry>
     <entry dev-build="6" type="enh">Added support for new features in PostgreSQL 14</entry>
