@@ -190,10 +190,13 @@ public class XlsRowDataConverter
 
   private boolean enableMacros()
   {
+    if (getOutputFile() == null) return false;
+
     if (useXLSX)
     {
       WbFile out = new WbFile(getOutputFile());
-      if (out.getExtension().toLowerCase().equals("xlsm"))
+      String ext = out.getExtension();
+      if (ext != null && ext.toLowerCase().equals("xlsm"))
       {
         return true;
       }

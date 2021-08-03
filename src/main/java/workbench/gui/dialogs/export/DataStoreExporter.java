@@ -65,13 +65,26 @@ public class DataStoreExporter
     boolean selected = dialog.selectOutput();
     if (selected)
     {
-      this.output = new WbFile(dialog.getSelectedFilename());
+      this.output = new WbFile(getSelectedFilename());
       writeFile();
       if (dialog.doOpenFile())
       {
         dialog.openOutputFile();
       }
     }
+  }
+
+  private String getSelectedFilename()
+  {
+    if (dialog == null) return null;
+    String fname = dialog.getSelectedFilename();
+    WbFile f = new WbFile(fname);
+    if (StringUtil.isBlank(f.getExtension()))
+    {
+      ExportType exportType = dialog.getExportType();
+      fname += exportType.getDefaultFileExtension();
+    }
+    return fname;
   }
 
   public WbTable getSource()
