@@ -56,6 +56,7 @@ import workbench.db.ReaderFactory;
 import workbench.db.TableDefinition;
 import workbench.db.TableDependency;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -742,7 +743,7 @@ class ObjectCache
     LogMgr.logDebug(new CallerInfo(){}, "Removed " + tbl.getTableName() + " from the cache");
   }
 
-  synchronized void addTableList(WbConnection dbConnection, DataStore tables, String schema)
+  synchronized void addTableList(WbConnection dbConnection, ObjectListDataStore tables, String schema)
   {
     Set<String> selectable = dbConnection.getMetadata().getObjectsWithData();
 
@@ -750,10 +751,10 @@ class ObjectCache
 
     for (int row = 0; row < tables.getRowCount(); row++)
     {
-      String type = tables.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
+      String type = tables.getType(row);
       if (selectable.contains(type))
       {
-        TableIdentifier tbl = dbConnection.getMetadata().buildTableIdentifierFromDs(tables, row);
+        TableIdentifier tbl = tables.getTableIdentifier(row);
         tbl.checkQuotesNeeded(dbConnection);
         if (objects.get(tbl) == null)
         {

@@ -32,6 +32,7 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -52,7 +53,7 @@ public class DerbyTypeReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded("TYPE", requestedTypes)) return false;
 
@@ -74,14 +75,8 @@ public class DerbyTypeReader
         String name = rs.getString("type_name");
         String classname = rs.getString("javaclassname");
         String info = rs.getString("aliasinfo");
-        int row = result.addRow();
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, schema);
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, name);
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, "TYPE");
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, null);
         DerbyTypeDefinition def = new DerbyTypeDefinition(schema, name, classname, info);
-        result.getRow(row).setUserObject(def);
+        result.addDbObject(def);
       }
     }
     catch (Exception e)

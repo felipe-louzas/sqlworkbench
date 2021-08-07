@@ -33,16 +33,15 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -199,20 +198,11 @@ public class PostgresPublicationReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded(PgPublication.TYPE_NAME, requestedTypes)) return false;
     List<PgPublication> publications = getPublications(con, objects);
-    for (PgPublication pub : publications)
-    {
-      int row = result.addRow();
-      result.getRow(row).setUserObject(pub);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, pub.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, pub.getComment());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, pub.getObjectType());
-    }
+    result.addObjects(publications);
     return publications.size() > 0;
   }
 

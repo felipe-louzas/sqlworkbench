@@ -34,15 +34,14 @@ import workbench.db.BaseObjectType;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -56,7 +55,8 @@ public class HsqlTypeReader
 {
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded("TYPE", requestedTypes)) return false;
 
@@ -65,13 +65,7 @@ public class HsqlTypeReader
 
     for (BaseObjectType type : types)
     {
-      int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, type.getCatalog());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, type.getSchema());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, type.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, type.getObjectType());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, type.getComment());
-      result.getRow(row).setUserObject(type);
+      result.addDbObject(type);
     }
     return true;
   }

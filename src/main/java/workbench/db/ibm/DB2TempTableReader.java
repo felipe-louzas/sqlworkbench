@@ -27,13 +27,11 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListAppender;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
-
-import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 /**
  * An ObjectListAppender for DB2/LUW to read temporary tables.
@@ -49,7 +47,8 @@ public class DB2TempTableReader
   private static final String TABLE_TYPE = "GLOBAL TEMPORARY";
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schema, String objects, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalog, String schema, String objects, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded("TABLE", requestedTypes)) return false;
 
@@ -114,19 +113,13 @@ public class DB2TempTableReader
         String tabSchema = rs.getString(1);
         String tabName = rs.getString(2);
         String remarks = rs.getString(3);
-
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, tabSchema);
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, tabName);
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, remarks);
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, "TABLE");
-
         TableIdentifier tbl = new TableIdentifier(null, tabSchema, tabName, false);
         tbl.setType("TABLE");
         tbl.setNeverAdjustCase(true);
         tbl.setComment(remarks);
         tbl.getSourceOptions().setTypeModifier(TABLE_TYPE);
         tbl.getSourceOptions().setInitialized();
-        result.getRow(row).setUserObject(tbl);
+        result.addDbObject(tbl);
         count ++;
       }
     }

@@ -39,6 +39,7 @@ import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -178,20 +179,11 @@ public class PostgresSubscriptionReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded(PgSubscription.TYPE_NAME, requestedTypes)) return false;
     List<PgSubscription> subs = getSubscriptions(con, objects);
-    for (PgSubscription sub : subs)
-    {
-      int row = result.addRow();
-      result.getRow(row).setUserObject(sub);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, sub.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, sub.getComment());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, sub.getObjectType());
-    }
+    result.addObjects(subs);
     return subs.size() > 0;
   }
 

@@ -120,7 +120,7 @@ public class OracleUniqueConstraintReaderTest
     TableIdentifier parent = new DbObjectFinder(con).findObject(new TableIdentifier("PARENT"));
     reporter.setObjectList(CollectionUtil.arrayList(parent));
     String xml = reporter.getXml();
-    System.out.println(xml);
+//    System.out.println(xml);
 
     String count = TestUtil.getXPathValue(xml, "count(/schema-report/table-def)");
     assertEquals("Incorrect table count", "1", count);

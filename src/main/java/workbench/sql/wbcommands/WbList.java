@@ -28,7 +28,8 @@ import workbench.console.RowDisplay;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
 
-import workbench.storage.DataStore;
+import workbench.db.ObjectListDataStore;
+
 import workbench.storage.SortDefinition;
 
 import workbench.sql.SqlCommand;
@@ -85,7 +86,7 @@ public class WbList
     }
 
     ObjectLister lister = new ObjectLister();
-    DataStore resultList = lister.getObjects(cmdLine, options, currentConnection);
+    ObjectListDataStore resultList = lister.getObjects(cmdLine, options, currentConnection);
 
     if (resultList != null)
     {

@@ -34,15 +34,14 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -128,23 +127,14 @@ public class PostgresExtensionReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schema, String objectNamePattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalog, String schema, String objectNamePattern, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded(PgExtension.TYPE_NAME, requestedTypes)) return false;
 
     List<PgExtension> extensions = getExtensions(con, objectNamePattern, schema);
     if (extensions.isEmpty()) return false;
-
-    for (PgExtension ext : extensions)
-    {
-      int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, ext.getSchema() );
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, ext.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, ext.getComment());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, ext.getObjectType());
-      result.getRow(row).setUserObject(ext);
-    }
+    result.addObjects(extensions);
     return true;
   }
 

@@ -31,9 +31,11 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DefaultTriggerReader;
+import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.RoutineType;
 import workbench.db.TableIdentifier;
 import workbench.db.TriggerDefinition;
 import workbench.db.TriggerReader;
@@ -41,9 +43,6 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 import workbench.storage.SortDefinition;
-
-import workbench.db.JdbcUtils;
-import workbench.db.RoutineType;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;

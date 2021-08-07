@@ -26,10 +26,11 @@ package workbench.storage;
 import java.util.Arrays;
 import java.util.List;
 
+import workbench.db.ObjectListDataStore;
+
 import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
 
-import static workbench.db.DbMetadata.*;
 
 /**
  * A class to store the sort definition of a result set (e.g. DataStore,
@@ -359,10 +360,10 @@ public class SortDefinition
   public static SortDefinition getTableListSort()
   {
     SortDefinition def = new SortDefinition();
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_TYPE, true);
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_CATALOG, true);
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_SCHEMA, true);
-    def.addSortColumn(COLUMN_IDX_TABLE_LIST_NAME, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_TYPE, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_CATALOG, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_SCHEMA, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_NAME, true);
     def.setIgnoreCase(true);
     return def;
   }

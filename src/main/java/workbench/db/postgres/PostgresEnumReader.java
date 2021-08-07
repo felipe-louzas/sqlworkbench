@@ -38,15 +38,14 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.EnumIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -209,24 +208,15 @@ public class PostgresEnumReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schema, String objects, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalog, String schema, String objects, String[] requestedTypes)
   {
     if (!handlesType(requestedTypes)) return false;
     if (!DbMetadata.typeIncluded("ENUM", requestedTypes)) return false;
 
     Collection<EnumIdentifier> enums = getDefinedEnums(con, schema, objects);
     if (CollectionUtil.isEmpty(enums)) return false;
-
-    for (EnumIdentifier enumDef : enums)
-    {
-      int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, enumDef.getSchema());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, enumDef.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, enumDef.getComment());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, enumDef.getObjectType());
-      result.getRow(row).setUserObject(enumDef);
-    }
+    result.addObjects(enums);
     return true;
   }
 

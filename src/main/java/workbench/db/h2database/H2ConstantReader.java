@@ -36,15 +36,14 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -167,7 +166,8 @@ public class H2ConstantReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schema, String objects, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalog, String schema, String objects, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded("CONSTANT", requestedTypes)) return false;
 
@@ -175,13 +175,7 @@ public class H2ConstantReader
     if (constants.isEmpty()) return false;
     for (H2Constant constant : constants)
     {
-      int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, constant.getSchema());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, constant.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, constant.getComment());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, constant.getObjectType());
-      result.getRow(row).setUserObject(constant);
+      result.addDbObject(constant);
     }
     return true;
   }

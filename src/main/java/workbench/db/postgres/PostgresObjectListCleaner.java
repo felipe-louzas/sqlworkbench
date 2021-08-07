@@ -32,16 +32,13 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListCleaner;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
-import workbench.storage.DataStore;
-
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -61,7 +58,8 @@ public class PostgresObjectListCleaner
   }
 
   @Override
-  public void cleanupObjectList(WbConnection con, DataStore result, String catalogPattern, String schemaPattern, String objectNamePattern, String[] requestedTypes)
+  public void cleanupObjectList(WbConnection con, ObjectListDataStore result,
+                                String catalogPattern, String schemaPattern, String objectNamePattern, String[] requestedTypes)
   {
     if (DbMetadata.typeIncluded("TABLE", requestedTypes) && removePartitions())
     {
@@ -73,7 +71,7 @@ public class PostgresObjectListCleaner
     }
   }
 
-  private void removePartitions(WbConnection con, DataStore result)
+  private void removePartitions(WbConnection con, ObjectListDataStore result)
   {
     if (result.getRowCount() == 0) return;
 
@@ -83,8 +81,8 @@ public class PostgresObjectListCleaner
     int rowCount = result.getRowCount();
     for (int row = rowCount - 1; row >= 0; row --)
     {
-      String schema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-      String table = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      String schema = result.getSchema(row);
+      String table = result.getObjectName(row);
       TableIdentifier tbl = new TableIdentifier(schema, table);
       if (TableIdentifier.findTableByNameAndSchema(partitions, tbl) != null)
       {
@@ -162,7 +160,7 @@ public class PostgresObjectListCleaner
    * @param conn the database connection
    * @param result the list of tables to check
    */
-  public void removeInaccessible(WbConnection conn, DataStore result)
+  public void removeInaccessible(WbConnection conn, ObjectListDataStore result)
   {
     if (result.getRowCount() == 0) return;
 
@@ -220,8 +218,8 @@ public class PostgresObjectListCleaner
     List<String> removed = new ArrayList<>();
     for (int row=rowCount - 1; row >= 0; row --)
     {
-      String name = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      String schema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
+      String name = result.getObjectName(row);
+      String schema = result.getSchema(row);
       TableIdentifier tbl = new TableIdentifier(schema, name);
       if (TableIdentifier.findTableByNameAndSchema(noPrivs, tbl) != null)
       {
@@ -234,7 +232,7 @@ public class PostgresObjectListCleaner
     LogMgr.logInfo(ci, "Checking table permissions took: " + duration + "ms");
   }
 
-  private String buildTableList(DataStore result)
+  private String buildTableList(ObjectListDataStore result)
   {
     final Set<String> types = CollectionUtil.caseInsensitiveSet("TABLE", "MATERIALIZED VIEW", "FOREIGN TABLE", "VIEW");
     StringBuilder list = new StringBuilder(result.getRowCount() * 60);
@@ -245,11 +243,11 @@ public class PostgresObjectListCleaner
 
       for (int row=0; row < result.getRowCount(); row ++)
       {
-        String type = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
+        String type = result.getType(row);
         if (types.contains(type))
         {
-          String table = SqlUtil.escapeQuotes(result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME));
-          String schema = SqlUtil.escapeQuotes(result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA));
+          String table = SqlUtil.escapeQuotes(result.getObjectName(row));
+          String schema = SqlUtil.escapeQuotes(result.getSchema(row));
 
           if (numTables > 0) list.append(',');
           if (numTables % 5 == 0) list.append("\n    ");

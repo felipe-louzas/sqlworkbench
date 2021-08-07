@@ -32,11 +32,11 @@ import javax.swing.event.TableModelListener;
 import workbench.interfaces.Reloadable;
 import workbench.resource.ResourceMgr;
 
-import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DbObjectChanger;
 import workbench.db.DbSettings;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
@@ -149,11 +149,11 @@ public class AlterObjectAction
     if (tableList == null) return null;
     DataStore ds = tableList.getDataStore();
 
-    String name = ds.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-    String schema = ds.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-    String catalog = ds.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG);
-    String type = ds.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
-    String comment = ds.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS);
+    String name = ds.getValueAsString(row, ObjectListDataStore.RESULT_COL_OBJECT_NAME);
+    String schema = ds.getValueAsString(row, ObjectListDataStore.RESULT_COL_SCHEMA);
+    String catalog = ds.getValueAsString(row, ObjectListDataStore.RESULT_COL_CATALOG);
+    String type = ds.getValueAsString(row, ObjectListDataStore.RESULT_COL_TYPE);
+    String comment = ds.getValueAsString(row, ObjectListDataStore.RESULT_COL_REMARKS);
     TableIdentifier tbl = new TableIdentifier(catalog, schema, name);
     tbl.setType(type);
     tbl.setNeverAdjustCase(true);
@@ -166,11 +166,11 @@ public class AlterObjectAction
     if (tableList == null) return null;
     DataStore ds = tableList.getDataStore();
 
-    String name = (String)ds.getOriginalValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-    String schema = (String)ds.getOriginalValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-    String catalog = (String)ds.getOriginalValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG);
-    String type = (String)ds.getOriginalValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
-    String comment = (String)ds.getOriginalValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS);
+    String name = (String)ds.getOriginalValue(row, ObjectListDataStore.RESULT_COL_OBJECT_NAME);
+    String schema = (String)ds.getOriginalValue(row, ObjectListDataStore.RESULT_COL_SCHEMA);
+    String catalog = (String)ds.getOriginalValue(row, ObjectListDataStore.RESULT_COL_CATALOG);
+    String type = (String)ds.getOriginalValue(row, ObjectListDataStore.RESULT_COL_TYPE);
+    String comment = (String)ds.getOriginalValue(row, ObjectListDataStore.RESULT_COL_REMARKS);
     TableIdentifier tbl = new TableIdentifier(catalog, schema, name);
     tbl.setType(type);
     tbl.setNeverAdjustCase(true);

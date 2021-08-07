@@ -84,7 +84,7 @@ public class SqlServerSequenceReaderTest
       assertEquals(expected, source);
 
       source = sequences.get(1).getSource(conn).toString().trim();
-      System.out.println(source);
+//      System.out.println(source);
       expected =
         "CREATE SEQUENCE seq_bbb\n" +
         "       AS bigint\n" +

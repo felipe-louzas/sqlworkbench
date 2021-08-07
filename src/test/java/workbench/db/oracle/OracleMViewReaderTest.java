@@ -24,6 +24,7 @@ package workbench.db.oracle;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.DbMetadata;
 import workbench.db.DbObjectFinder;
 import workbench.db.DropType;
 import workbench.db.OracleTest;
@@ -127,6 +128,7 @@ public class OracleMViewReaderTest
     TestUtil.executeScript(con, sql, true);
     DbObjectFinder finder = new DbObjectFinder(con);
     TableIdentifier mview = finder.findObject(new TableIdentifier("V_PERSON"));
+    assertEquals(DbMetadata.MVIEW_NAME, mview.getType());
     TableDefinition def = con.getMetadata().getTableDefinition(mview);
     OracleMViewReader reader = new OracleMViewReader();
     String source = reader.getMViewSource(con, def, null, DropType.none, true).toString();

@@ -32,13 +32,14 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -138,7 +139,7 @@ public class Db2iVariableReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String schemaPattern, String objectNamePattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String schemaPattern, String objectNamePattern, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded(TYPE, requestedTypes)) return false;
 
@@ -147,13 +148,7 @@ public class Db2iVariableReader
 
     for (Db2Variable var : variables)
     {
-      int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, var.getSchema());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, var.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, var.getObjectType());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, var.getComment());
-      result.getRow(row).setUserObject(var);
+      result.addDbObject(var);
     }
     return true;
   }

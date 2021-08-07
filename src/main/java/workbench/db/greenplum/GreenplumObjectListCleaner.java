@@ -31,14 +31,12 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListCleaner;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 import workbench.db.postgres.PostgresObjectListCleaner;
-
-import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -57,7 +55,9 @@ public class GreenplumObjectListCleaner
   }
 
   @Override
-  public void cleanupObjectList(WbConnection con, DataStore result, String catalogPattern, String schemaPattern, String objectNamePattern, String[] requestedTypes)
+  public void cleanupObjectList(WbConnection con, ObjectListDataStore result,
+                                String catalogPattern, String schemaPattern, String objectNamePattern,
+                                String[] requestedTypes)
   {
     if (DbMetadata.typeIncluded("TABLE", requestedTypes) && doRemovePartitions())
     {
@@ -65,7 +65,7 @@ public class GreenplumObjectListCleaner
     }
   }
 
-  private void removePartitions(WbConnection con, DataStore result, String schemaPattern, String objectNamePattern)
+  private void removePartitions(WbConnection con, ObjectListDataStore result, String schemaPattern, String objectNamePattern)
   {
     List<TableIdentifier> partitions = getAllPartitions(con, schemaPattern, objectNamePattern);
     int rowCount = result.getRowCount();
@@ -73,8 +73,8 @@ public class GreenplumObjectListCleaner
     long start = System.currentTimeMillis();
     for (int row = rowCount - 1; row >= 0; row --)
     {
-      String schema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-      String table = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      String schema = result.getSchema(row);
+      String table = result.getObjectName(row);
       TableIdentifier tbl = new TableIdentifier(schema, table);
       if (TableIdentifier.findTableByNameAndSchema(partitions, tbl) != null)
       {

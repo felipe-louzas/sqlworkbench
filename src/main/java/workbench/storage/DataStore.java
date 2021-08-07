@@ -154,6 +154,15 @@ public class DataStore
    */
   public DataStore(String[] colNames, int[] colTypes, int[] colSizes)
   {
+    initializeStructure(colNames, colTypes, colSizes);
+  }
+
+  protected DataStore()
+  {
+  }
+
+  protected void initializeStructure(String[] colNames, int[] colTypes, int[] colSizes)
+  {
     this.data = createData();
     this.resultInfo = new ResultInfo(colNames, colTypes, colSizes);
     checkForGeneratedKeys();

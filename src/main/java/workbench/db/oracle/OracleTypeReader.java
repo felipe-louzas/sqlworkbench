@@ -38,6 +38,7 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -60,7 +61,8 @@ public class OracleTypeReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalogPattern, String schemaPattern, String namePattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalogPattern, String schemaPattern, String namePattern, String[] requestedTypes)
   {
     if (DbMetadata.typeIncluded("TYPE", requestedTypes))
     {
@@ -76,13 +78,7 @@ public class OracleTypeReader
         List<OracleObjectType> types = getTypes(con, schemaPattern, namePattern);
         for (OracleObjectType type : types)
         {
-          int row = result.addRow();
-          result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, type.getSchema());
-          result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-          result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, type.getObjectName());
-          result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, type.getObjectType());
-          result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, type.getComment());
-          result.getRow(row).setUserObject(type);
+          result.addDbObject(type);
         }
         return types.size() > 0;
       }
@@ -91,16 +87,16 @@ public class OracleTypeReader
     return false;
   }
 
-  private int updateTypes(DataStore result)
+  private int updateTypes(ObjectListDataStore result)
   {
     int count = 0;
     for (int row=0; row < result.getRowCount(); row ++)
     {
-      String type = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
+      String type = result.getType(row);
       if ("TYPE".equals(type))
       {
-        String schema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-        String name = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+        String schema = result.getSchema(row);
+        String name = result.getObjectName(row);
         OracleObjectType object = new OracleObjectType(schema, name);
         result.getRow(row).setUserObject(object);
         count ++;

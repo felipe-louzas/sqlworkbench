@@ -41,10 +41,10 @@ import workbench.interfaces.Reloadable;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 
-import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.PackageDefinition;
 import workbench.db.ProcedureDefinition;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
 import workbench.db.dependency.DependencyReaderFactory;
@@ -55,8 +55,6 @@ import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbToolbar;
-
-import workbench.storage.DataStore;
 
 import workbench.util.WbThread;
 
@@ -240,16 +238,8 @@ public class ObjectDependencyPanel
 
   private void showResult(List<DbObject> objects, WbTable display)
   {
-    DataStore ds = dbConnection.getMetadata().createTableListDataStore();
-    for (DbObject dbo : objects)
-    {
-      int row = ds.addRow();
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, dbo.getCatalog());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, dbo.getSchema());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, dbo.getObjectName());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, dbo.getObjectType());
-      ds.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, dbo.getComment());
-    }
+    ObjectListDataStore ds = dbConnection.getMetadata().createObjectListDataStore();
+    ds.addObjects(objects);
     ds.resetStatus();
     DataStoreTableModel model = new DataStoreTableModel(ds);
     display.setModel(model, true);

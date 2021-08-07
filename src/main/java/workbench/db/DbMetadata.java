@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -97,8 +96,6 @@ import workbench.db.vertica.VerticaTableReader;
 
 import workbench.storage.DataStore;
 import workbench.storage.DatastoreTransposer;
-import workbench.storage.RowDataListSorter;
-import workbench.storage.SortDefinition;
 
 import workbench.sql.syntax.SqlKeywordHelper;
 
@@ -106,6 +103,8 @@ import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.VersionNumber;
+
+import static workbench.db.ObjectListDataStore.*;
 
 /**
  * Retrieve meta data information from the database.
@@ -117,43 +116,6 @@ public class DbMetadata
   implements QuoteHandler
 {
   public static final String MVIEW_NAME = "MATERIALIZED VIEW";
-  public static final String RESULT_COL_REMARKS = "REMARKS";
-  public static final String RESULT_COL_OBJECT_NAME = "NAME";
-  public static final String RESULT_COL_TYPE = "TYPE";
-  public static final String RESULT_COL_CATALOG = "CATALOG";
-  public static final String RESULT_COL_SCHEMA = "SCHEMA";
-
-  /**
-   * The column index of the column in the DataStore returned by getObjects()
-   * the stores the table's name
-   */
-  public final static int COLUMN_IDX_TABLE_LIST_NAME = 0;
-
-  /**
-   * The column index of the column in the DataStore returned by getObjects()
-   * that stores the table's type. The available types can be retrieved
-   * using {@link #getObjectTypes()}
-   */
-  public final static int COLUMN_IDX_TABLE_LIST_TYPE = 1;
-
-  /**
-   * The column index of the column in the DataStore returned by getObjects()
-   * the stores the table's catalog
-   */
-  public final static int COLUMN_IDX_TABLE_LIST_CATALOG = 2;
-
-  /**
-   * The column index of the column in the DataStore returned by getObjects()
-   * the stores the table's schema
-   */
-  public final static int COLUMN_IDX_TABLE_LIST_SCHEMA = 3;
-
-  /**
-   * The column index of the column in the DataStore returned by getObjects()
-   * the stores the table's comment
-   */
-  public final static int COLUMN_IDX_TABLE_LIST_REMARKS = 4;
-
 
   private final String[] EMPTY_STRING_ARRAY = new String[]{};
 
@@ -1530,16 +1492,10 @@ public class DbMetadata
     return schema;
   }
 
-  public DataStore getObjects(String aCatalog, String aSchema, String[] types)
+  public ObjectListDataStore getObjects(String aCatalog, String aSchema, String[] types)
     throws SQLException
   {
     return getObjects(aCatalog, aSchema, null, types);
-  }
-
-
-  public String[] getTableListColumns()
-  {
-    return new String[] {RESULT_COL_OBJECT_NAME, RESULT_COL_TYPE, catalogTerm.toUpperCase(), schemaTerm.toUpperCase(), RESULT_COL_REMARKS};
   }
 
   public static String cleanupWildcards(String pattern)
@@ -1592,39 +1548,24 @@ public class DbMetadata
     return cleanTypes;
   }
 
-  public DataStore createTableListDataStore()
+  public ObjectListDataStore createObjectListDataStore()
   {
-    final String[] cols = getTableListColumns();
-    final int coltypes[] = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
-    final int sizes[] = {30, 12, 10, 10, 20};
+    boolean sortMViewAsTable = isOracle && Settings.getInstance().getBoolProperty("workbench.db.oracle.sortmviewsastable", true);
 
-    final boolean sortMViewAsTable = isOracle && Settings.getInstance().getBoolProperty("workbench.db.oracle.sortmviewsastable", true);
-
-    DataStore result = new DataStore(cols, coltypes, sizes)
-    {
-      @Override
-      protected RowDataListSorter createSorter(SortDefinition sort)
-      {
-        TableListSorter sorter = new TableListSorter(sort);
-        sorter.setSortMViewAsTable(sortMViewAsTable);
-        sorter.setUseNaturalSort(useNaturalSort);
-        int typeIndex = getResultInfo().findColumn(cols[COLUMN_IDX_TABLE_LIST_TYPE]);
-        sorter.setTypeColumnIndex(typeIndex);
-        return sorter;
-      }
-    };
+    ObjectListDataStore result = new ObjectListDataStore(catalogTerm.toUpperCase(), schemaTerm.toUpperCase());
+    result.setSortMviewsAsTables(sortMViewAsTable);
 
     return result;
   }
 
-  public DataStore getObjects(String catalogPattern, String schemaPattern, String namePattern, String[] types)
+  public ObjectListDataStore getObjects(String catalogPattern, String schemaPattern, String namePattern, String[] types)
     throws SQLException
   {
     catalogPattern = cleanupWildcards(catalogPattern);
     schemaPattern = cleanupWildcards(schemaPattern);
     namePattern = cleanupWildcards(namePattern);
 
-    DataStore result = createTableListDataStore();
+    ObjectListDataStore result = createObjectListDataStore();
 
     boolean sequencesReturned = false;
     boolean synRetrieved = false;
@@ -1734,7 +1675,7 @@ public class DbMetadata
 
         if (filter.isExcluded(ttype, name)) continue;
 
-        String remarks = useColumnNames ? tableRs.getString(RESULT_COL_REMARKS) : tableRs.getString(5);
+        String remarks = useColumnNames ? tableRs.getString(ObjectListDataStore.RESULT_COL_REMARKS) : tableRs.getString(5);
 
         boolean isSynoym = synRetrieved || synTypeName.equals(ttype);
 
@@ -1750,13 +1691,13 @@ public class DbMetadata
         if (isIndexType(ttype)) continue;
 
         int row = result.addRow();
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_NAME, name);
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_TYPE, ttype);
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_CATALOG, cat);
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_SCHEMA, schema);
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_REMARKS, remarks);
+        result.setObjectName(row, name);
+        result.setType(row, ttype);
+        result.setCatalog(row, cat);
+        result.setSchema(row, schema);
+        result.setRemarks(row, remarks);
         if (!sequencesReturned && StringUtil.equalString(sequenceType, ttype)) sequencesReturned = true;
-        TableIdentifier tbl = buildTableIdentifierFromDs(result, row);
+        TableIdentifier tbl = result.getTableIdentifier(row);
         result.getRow(row).setUserObject(tbl);
       }
 
@@ -1780,11 +1721,11 @@ public class DbMetadata
       {
         int row = result.addRow();
 
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_NAME, sequence.getSequenceName());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_TYPE, sequence.getObjectType());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_CATALOG, sequence.getCatalog());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_SCHEMA, sequence.getSchema());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_REMARKS, sequence.getComment());
+        result.setObjectName(row, sequence.getSequenceName());
+        result.setType(row, sequence.getObjectType());
+        result.setCatalog(row, sequence.getCatalog());
+        result.setSchema(row, sequence.getSchema());
+        result.setRemarks(row, sequence.getComment());
         result.getRow(row).setUserObject(sequence);
       }
     }
@@ -1796,11 +1737,11 @@ public class DbMetadata
       {
         int row = result.addRow();
 
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_NAME, synonym.getTableName());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_TYPE, synonym.getType());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_CATALOG, synonym.getCatalog());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_SCHEMA, synonym.getSchema());
-        result.setValue(row, COLUMN_IDX_TABLE_LIST_REMARKS, synonym.getComment());
+        result.setObjectName(row, synonym.getTableName());
+        result.setType(row, synonym.getType());
+        result.setCatalog(row, synonym.getCatalog());
+        result.setSchema(row, synonym.getSchema());
+        result.setRemarks(row, synonym.getComment());
         result.getRow(row).setUserObject(synonym);
       }
     }
@@ -2399,32 +2340,15 @@ public class DbMetadata
   public List<TableIdentifier> getObjectList(String namePattern, String catalogPattern, String schemaPattern, String[] types)
     throws SQLException
   {
-    DataStore ds = getObjects(catalogPattern, schemaPattern, namePattern, types);
+    ObjectListDataStore ds = getObjects(catalogPattern, schemaPattern, namePattern, types);
     int count = ds.getRowCount();
     List<TableIdentifier> tables = new ArrayList<>(count);
     for (int i=0; i < count; i++)
     {
-      TableIdentifier tbl = buildTableIdentifierFromDs(ds, i);
+      TableIdentifier tbl = ds.getTableIdentifier(i);
       tables.add(tbl);
     }
     return tables;
-  }
-
-  public TableIdentifier buildTableIdentifierFromDs(DataStore ds, int row)
-  {
-    Object uo = ds.getRow(row).getUserObject();
-    if (uo instanceof TableIdentifier)
-    {
-      return (TableIdentifier)uo;
-    }
-    String t = ds.getValueAsString(row, COLUMN_IDX_TABLE_LIST_NAME);
-    String s = ds.getValueAsString(row, COLUMN_IDX_TABLE_LIST_SCHEMA);
-    String c = ds.getValueAsString(row, COLUMN_IDX_TABLE_LIST_CATALOG);
-    TableIdentifier tbl = new TableIdentifier(c, s, t, false);
-    tbl.setNeverAdjustCase(true);
-    tbl.setType(ds.getValueAsString(row, COLUMN_IDX_TABLE_LIST_TYPE));
-    tbl.setComment(ds.getValueAsString(row, COLUMN_IDX_TABLE_LIST_REMARKS));
-    return tbl;
   }
 
   public String getSchemaToUse(TableIdentifier tbl)

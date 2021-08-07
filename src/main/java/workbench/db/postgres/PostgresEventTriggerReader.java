@@ -31,6 +31,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.TriggerDefinition;
 import workbench.db.WbConnection;
 
@@ -56,7 +57,8 @@ public class PostgresEventTriggerReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schema, String objectNamePattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalog, String schema, String objectNamePattern, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded(TYPE, requestedTypes)) return false;
 

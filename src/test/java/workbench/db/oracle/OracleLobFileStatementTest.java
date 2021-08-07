@@ -86,12 +86,14 @@ public class OracleLobFileStatementTest
     FileUtil.writeString(data, "this is a test", false);
 
     String sql = "insert into lob_test (id, some_data) values (1, {$clobfile='" + data.getAbsolutePath() + "'})";
-    LobFileStatement stmt = new LobFileStatement(sql);
-    PreparedStatement pstmt = stmt.prepareStatement(con);
-    int rows = pstmt.executeUpdate();
-    assertEquals(1, rows);
-    String content = (String)TestUtil.getSingleQueryValue(con, "select to_char(some_data) from lob_test where id = 1");
-    assertEquals("this is a test", content);
+    try (LobFileStatement stmt = new LobFileStatement(sql);
+         PreparedStatement pstmt = stmt.prepareStatement(con))
+    {
+      int rows = pstmt.executeUpdate();
+      assertEquals(1, rows);
+      String content = (String)TestUtil.getSingleQueryValue(con, "select to_char(some_data) from lob_test where id = 1");
+      assertEquals("this is a test", content);
+    }
   }
 
 }

@@ -21,13 +21,11 @@
  */
 package workbench.db;
 
-import java.sql.Types;
 
 import workbench.WbTestCase;
 
 import workbench.db.importer.DataStoreImporter;
 
-import workbench.storage.DataStore;
 import workbench.storage.RowDataListSorter;
 import workbench.storage.SortDefinition;
 
@@ -50,18 +48,15 @@ public class TableListSorterTest
   public void testSort()
   {
     SortDefinition def = new SortDefinition();
-    def.addSortColumn(DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, true);
-    def.addSortColumn(DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, true);
-    def.addSortColumn(DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, true);
-    def.addSortColumn(DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_TYPE, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_CATALOG, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_SCHEMA, true);
+    def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_NAME, true);
 
     final TableListSorter sorter = new TableListSorter(def);
     sorter.setSortMViewAsTable(true);
 
-    String[] cols = new String[] { "NAME", "TYPE", "CATALOG", "SCHEMA", "REMARKS" };
-    int[] types = new int[] { Types.VARCHAR, Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR};
-
-    DataStore ds = new DataStore(cols, types)
+    ObjectListDataStore ds = new ObjectListDataStore()
     {
       @Override
       protected RowDataListSorter createSorter(SortDefinition sort)
@@ -93,19 +88,19 @@ public class TableListSorterTest
 //    DataStorePrinter printer = new DataStorePrinter(ds);
 //    printer.printTo(System.out);
 
-    String name = ds.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+    String name = ds.getObjectName(0);
     assertEquals("006", name);
 
-    name = ds.getValueAsString(1, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+    name = ds.getObjectName(1);
     assertEquals("009", name);
 
-    name = ds.getValueAsString(2, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+    name = ds.getObjectName(2);
     assertEquals("001", name);
 
-    name = ds.getValueAsString(3, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+    name = ds.getObjectName(3);
     assertEquals("002", name);
 
-    name = ds.getValueAsString(8, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+    name = ds.getObjectName(8);
     assertEquals("008", name);
   }
 }

@@ -21,8 +21,6 @@
  */
 package workbench.db;
 
-import workbench.storage.DataStore;
-
 /**
  *
  * @author Thomas Kellerer
@@ -40,6 +38,8 @@ public interface ObjectListEnhancer
    * @param requestedTypes the object types as passed to DbMetadata.getObjects()
    *
    */
-  void updateObjectList(WbConnection con, DataStore result, String catalogPattern, String schemaPattern, String objectNamePattern, String[] requestedTypes);
+  void updateObjectList(WbConnection con, ObjectListDataStore result,
+                        String catalogPattern, String schemaPattern, String objectNamePattern,
+                        String[] requestedTypes);
 
 }

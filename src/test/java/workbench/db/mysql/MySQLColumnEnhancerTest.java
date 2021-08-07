@@ -91,7 +91,7 @@ public class MySQLColumnEnhancerTest
     assertEquals("TIMESTAMP", type);
     String defaultValue = cols.get(1).getDefaultValue();
     assertNotNull(defaultValue);
-    System.out.println(defaultValue);
+//    System.out.println(defaultValue);
     assertEquals("current_timestamp on update current_timestamp", defaultValue.toLowerCase());
   }
 

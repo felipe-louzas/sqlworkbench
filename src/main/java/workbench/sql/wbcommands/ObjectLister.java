@@ -25,10 +25,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import workbench.db.ObjectListDataStore;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.storage.DataStore;
 
 import workbench.util.ArgumentParser;
 import workbench.util.StringUtil;
@@ -42,21 +41,21 @@ public class ObjectLister
   private String schemaUsed = null;
   private String catalogUsed = null;
 
-  public DataStore getSelectableObjects(ArgumentParser cmdLine, String userInput, WbConnection connection)
+  public ObjectListDataStore getSelectableObjects(ArgumentParser cmdLine, String userInput, WbConnection connection)
     throws SQLException
   {
     String[] types = connection.getMetadata().getSelectableTypes();
     return getObjects(cmdLine, userInput, connection, types);
   }
 
-  public DataStore getObjects(ArgumentParser cmdLine, String userInput, WbConnection connection)
+  public ObjectListDataStore getObjects(ArgumentParser cmdLine, String userInput, WbConnection connection)
     throws SQLException
   {
     String[] types = types = connection.getMetadata().getSelectableTypes();
     return getObjects(cmdLine, userInput, connection, types);
   }
 
-  private DataStore getObjects(ArgumentParser cmdLine, String userInput, WbConnection connection, String[] types)
+  private ObjectListDataStore getObjects(ArgumentParser cmdLine, String userInput, WbConnection connection, String[] types)
     throws SQLException
   {
     String objects = userInput;
@@ -101,7 +100,7 @@ public class ObjectLister
       catalog = connection.getMetadata().getCurrentCatalog();
     }
 
-    DataStore resultList = null;
+    ObjectListDataStore resultList = null;
 
     if (StringUtil.isBlank(objects))
     {
@@ -142,7 +141,7 @@ public class ObjectLister
 
       String tname = tbl.getTableName();
 
-      DataStore ds = connection.getMetadata().getObjects(tcatalog, tschema, tname, types);
+      ObjectListDataStore ds = connection.getMetadata().getObjects(tcatalog, tschema, tname, types);
       if (resultList == null)
       {
         // first result retrieved

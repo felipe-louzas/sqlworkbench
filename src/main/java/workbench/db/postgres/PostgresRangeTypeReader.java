@@ -36,15 +36,14 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.CommentSqlManager;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -63,7 +62,8 @@ public class PostgresRangeTypeReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
   {
     boolean doRetrieve = DbMetadata.typeIncluded(PgRangeType.RANGE_TYPE_NAME, requestedTypes)
       || DbMetadata.typeIncluded("TYPE", requestedTypes);
@@ -71,16 +71,7 @@ public class PostgresRangeTypeReader
     if (!doRetrieve) return false;
 
     List<PgRangeType> ranges = getRangeTypes(con, schemaPattern, objectPattern);
-    for (PgRangeType type : ranges)
-    {
-      int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, type.getSchema());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, type.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, type.getObjectType());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, type.getComment());
-      result.getRow(row).setUserObject(type);
-    }
+    result.addObjects(ranges);
     return true;
   }
 

@@ -59,10 +59,11 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
-import workbench.db.DbMetadata;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 import workbench.db.search.TableDataSearcher;
 
@@ -86,8 +87,6 @@ import workbench.storage.DataStore;
 import workbench.util.FilteredProperties;
 import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
-
-import workbench.workspace.WbWorkspace;
 
 
 /**
@@ -408,18 +407,10 @@ public class TableSearchPanel
     int[] selectedTables = this.tableNames.getSelectedRows();
 
     List<TableIdentifier> searchTables = new ArrayList<>(this.tableNames.getSelectedRowCount());
-    DataStore tables = ((WbTable)(this.tableNames)).getDataStore();
+    ObjectListDataStore tables = (ObjectListDataStore)((WbTable)(this.tableNames)).getDataStore();
     for (int i=0; i < selectedTables.length; i++)
     {
-      String catalog = tables.getValueAsString(selectedTables[i], DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG);
-      String schema = tables.getValueAsString(selectedTables[i], DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-      String tablename = tables.getValueAsString(selectedTables[i], DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      String type = tables.getValueAsString(selectedTables[i], DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
-
-      TableIdentifier tbl = new TableIdentifier(catalog, schema, tablename);
-      tbl.setNeverAdjustCase(true);
-      tbl.setType(type);
-      searchTables.add(tbl);
+      searchTables.add(tables.getTableIdentifier(selectedTables[i]));
     }
 
     int maxRows = StringUtil.getIntValue(this.rowCount.getText(), 0);

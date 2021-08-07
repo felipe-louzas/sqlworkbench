@@ -38,7 +38,7 @@ public class TableListSorter
 {
   private static final String TABLE_TYPE = "TABLE";
   private boolean mviewAsTable = false;
-  private int typeColumnIndex = DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE;
+  private int typeColumnIndex = 1;
 
   public TableListSorter(SortDefinition sortDef)
   {
@@ -64,7 +64,7 @@ public class TableListSorter
   {
     this.typeColumnIndex = columnIndex;
   }
-  
+
   @Override
   protected int compareColumn(int column, RowData row1, RowData row2)
   {

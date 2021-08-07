@@ -83,6 +83,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DBID;
@@ -99,6 +100,7 @@ import workbench.db.SynonymDDLHandler;
 import workbench.db.TableColumnsDatastore;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.TableSourceBuilder;
 import workbench.db.TableSourceBuilderFactory;
 import workbench.db.TriggerReader;
@@ -148,8 +150,6 @@ import workbench.util.LowMemoryException;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
-
-import workbench.workspace.WbWorkspace;
 
 import static workbench.storage.NamedSortDefinition.*;
 
@@ -1319,7 +1319,7 @@ public class TableListPanel
       {
         levelChanger.changeIsolationLevel(dbConnection);
       }
-      DataStore ds = null;
+      ObjectListDataStore ds = null;
       if (DbExplorerSettings.getUseFilterForRetrieve())
       {
         String filter = findPanel.getText();
@@ -1363,7 +1363,7 @@ public class TableListPanel
       // by editing this list
       model.setValidator(validator);
 
-      final int remarksColumn = model.findColumn(DbMetadata.RESULT_COL_REMARKS);
+      final int remarksColumn = model.findColumn(ObjectListDataStore.RESULT_COL_REMARKS);
 
       WbSwingUtilities.invoke(() ->
       {
@@ -2502,25 +2502,8 @@ public class TableListPanel
    */
   private TableIdentifier createTableIdentifier(int row)
   {
-    DataStore ds = this.tableList.getDataStore();
-    Object uo = ds.getRow(row).getUserObject();
-    if (uo instanceof TableIdentifier)
-    {
-      return (TableIdentifier)uo;
-    }
-
-    String[] names = getConnection().getMetadata().getTableListColumns();
-
-    String name = ds.getValueAsString(row, names[DbMetadata.COLUMN_IDX_TABLE_LIST_NAME]);
-    String schema = ds.getValueAsString(row, names[DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA]);
-    String catalog = ds.getValueAsString(row, names[DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG]);
-    String type = ds.getValueAsString(row, names[DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE]);
-    String comment = ds.getValueAsString(row, names[DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS]);
-    TableIdentifier tbl = new TableIdentifier(catalog, schema, name, false);
-    tbl.setType(type);
-    tbl.setNeverAdjustCase(true);
-    tbl.setComment(comment);
-    return tbl;
+    ObjectListDataStore ds = (ObjectListDataStore)this.tableList.getDataStore();
+    return ds.getTableIdentifier(row);
   }
 
   @Override

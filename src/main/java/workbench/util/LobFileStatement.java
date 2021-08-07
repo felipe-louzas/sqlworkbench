@@ -51,6 +51,7 @@ import workbench.db.WbConnection;
  * @author Thomas Kellerer
  */
 public class LobFileStatement
+  implements AutoCloseable
 {
   private final String MARKER = "\\{\\$[cb]lobfile=[^\\}]*\\}";
   private String sqlToUse;
@@ -199,6 +200,13 @@ public class LobFileStatement
       }
     }
     return pstmt;
+  }
+
+  @Override
+  public void close()
+    throws Exception
+  {
+    done();
   }
 
   public void done()

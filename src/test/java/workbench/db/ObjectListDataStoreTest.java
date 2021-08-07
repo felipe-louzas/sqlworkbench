@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2017 Thomas Kellerer.
+ * Copyright 2002-2021 Thomas Kellerer.
  *
  * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
@@ -20,25 +20,34 @@
  */
 package workbench.db;
 
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  *
  * @author Thomas Kellerer
  */
-public interface ObjectListCleaner
+public class ObjectListDataStoreTest
 {
-  /**
-   * Updates the objects in the passed result DataStore with additional information (e.g. table remarks)
-   *
-   * @param con the database connection to be used
-   * @param result the DataStore containing the objects already returned by the driver
-   * @param catalogPattern the catalog pattern
-   * @param schemaPattern  the schema pattern
-   * @param objectNamePattern the object name pattern
-   * @param requestedTypes the object types as passed to DbMetadata.getObjects()
-   *
-   */
-  void cleanupObjectList(WbConnection con, ObjectListDataStore result,
-                         String catalogPattern, String schemaPattern, String objectNamePattern,
-                         String[] requestedTypes);
+
+  @Test
+  public void testGetTableIdentifier()
+  {
+    ObjectListDataStore ds = new ObjectListDataStore();
+    int row = ds.addRow();
+    ds.setObjectName(row, "PERSON");
+    ds.setType(row, "TABLE");
+    ds.setCatalog(row, "MY_CAT");
+    ds.setSchema(row, "PUBLIC");
+    ds.setRemarks(row, "The heroes");
+    TableIdentifier tbl = ds.getTableIdentifier(row);
+    assertEquals("PERSON", tbl.getTableName());
+    assertEquals("PUBLIC", tbl.getSchema());
+    assertEquals("MY_CAT", tbl.getCatalog());
+    assertEquals("TABLE", tbl.getType());
+    assertEquals("The heroes", tbl.getComment());
+  }
 
 }

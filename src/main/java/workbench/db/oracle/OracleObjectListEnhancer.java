@@ -34,10 +34,9 @@ import workbench.resource.Settings;
 
 import workbench.db.DbMetadata;
 import workbench.db.JdbcUtils;
+import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.WbConnection;
-
-import workbench.storage.DataStore;
 
 import workbench.util.StringUtil;
 
@@ -57,7 +56,8 @@ public class OracleObjectListEnhancer
   private boolean canRetrieveSnapshots = true;
 
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String catalogPattern, String schema, String objectNamePattern, String[] types)
+  public void updateObjectList(WbConnection con, ObjectListDataStore result,
+                               String catalogPattern, String schema, String objectNamePattern, String[] types)
   {
     if (con == null) return;
 
@@ -67,13 +67,13 @@ public class OracleObjectListEnhancer
     Map<String, String> snapshots = getSnapshots(con, schema);
     for (int row=0; row < result.getRowCount(); row++)
     {
-      String owner = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
-      String name =  result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      String owner = result.getSchema(row);
+      String name =  result.getObjectName(row);
       String fqName = owner + "." + name;
       if (snapshots.containsKey(fqName))
       {
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, DbMetadata.MVIEW_NAME);
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, snapshots.get(fqName));
+        result.setType(row, DbMetadata.MVIEW_NAME);
+        result.setRemarks(row, snapshots.get(fqName));
       }
     }
   }

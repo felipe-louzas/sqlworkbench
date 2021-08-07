@@ -39,6 +39,7 @@ import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -200,7 +201,7 @@ public class FirebirdDomainReader
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schema, String objects, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result, String catalog, String schema, String objects, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded("DOMAIN", requestedTypes)) return false;
 
@@ -209,13 +210,7 @@ public class FirebirdDomainReader
 
     for (DomainIdentifier domain : domains)
     {
-      int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, domain.getSchema());
-      result.setValue(row, DbMetadata.RESULT_COL_OBJECT_NAME, domain.getObjectName());
-      result.setValue(row, DbMetadata.RESULT_COL_REMARKS, domain.getComment());
-      result.setValue(row, DbMetadata.RESULT_COL_TYPE, domain.getObjectType());
-      result.getRow(row).setUserObject(domain);
+      result.addDbObject(domain);
     }
     return true;
   }
@@ -246,7 +241,7 @@ public class FirebirdDomainReader
     DomainIdentifier domain = getObjectDefinition(con, object);
     if (domain == null) return null;
 
-    String[] columns = new String[] { "DOMAIN", "DATA_TYPE", "NULLABLE", "CONSTRAINT", DbMetadata.RESULT_COL_REMARKS };
+    String[] columns = new String[] { "DOMAIN", "DATA_TYPE", "NULLABLE", "CONSTRAINT", ObjectListDataStore.RESULT_COL_REMARKS };
     int[] types = new int[] { Types.VARCHAR, Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.VARCHAR };
     int[] sizes = new int[] { 20, 10, 5, 30, 30 };
     DataStore result = new DataStore(columns, types, sizes);

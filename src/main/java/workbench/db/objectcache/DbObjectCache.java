@@ -38,6 +38,7 @@ import workbench.db.PkDefinition;
 import workbench.db.ProcedureDefinition;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -91,7 +92,7 @@ public class DbObjectCache
     objectCache.addTable(table, dbConnection);
   }
 
-  public void addTableList(DataStore tables, String schema)
+  public void addTableList(ObjectListDataStore tables, String schema)
   {
     objectCache.addTableList(dbConnection, tables, schema);
   }

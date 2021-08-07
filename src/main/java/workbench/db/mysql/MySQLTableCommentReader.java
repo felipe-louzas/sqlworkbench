@@ -30,14 +30,14 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
-import workbench.db.DbMetadata;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.WbConnection;
 
-import workbench.storage.DataStore;
-
 import workbench.util.CaseInsensitiveComparator;
+
 import workbench.db.JdbcUtils;
+import workbench.db.ObjectListDataStore;
+
 import workbench.util.StringUtil;
 
 /**
@@ -54,7 +54,7 @@ public class MySQLTableCommentReader
   }
 
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public void updateObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     if (retrieveComments())
     {
@@ -62,7 +62,7 @@ public class MySQLTableCommentReader
     }
   }
 
-  protected void updateObjectRemarks(WbConnection con, DataStore result, String catalog, String schema, String objects, String[] requestedTypes)
+  protected void updateObjectRemarks(WbConnection con, ObjectListDataStore result, String catalog, String schema, String objects, String[] requestedTypes)
   {
     if (result == null) return;
     if (result.getRowCount() == 0) return;
@@ -70,19 +70,19 @@ public class MySQLTableCommentReader
     String object = null;
     if (result.getRowCount() == 1)
     {
-      object = result.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      object = result.getObjectName(0);
     }
 
     Map<String, String> remarks = readRemarks(con, catalog, object, requestedTypes);
 
     for (int row=0; row < result.getRowCount(); row++)
     {
-      String tblName = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      String tblSchema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG);
+      String tblName = result.getObjectName(row);
+      String tblSchema = result.getCatalog(row);
       String remark = remarks.get(getNameKey(tblSchema, tblName));
       if (remark != null && !remark.equals("VIEW"))
       {
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, remark);
+        result.setRemarks(row, remark);
       }
     }
   }

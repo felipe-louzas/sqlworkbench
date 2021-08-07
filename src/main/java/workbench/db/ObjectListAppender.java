@@ -21,9 +21,6 @@
  */
 package workbench.db;
 
-
-import workbench.storage.DataStore;
-
 /**
  * An ObjectListAppender adds standard types to the list of objects retrieved by DbMetadata.getObjects().
  *
@@ -47,6 +44,6 @@ public interface ObjectListAppender
    * @see DbMetadata#getObjects(java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
    *
    */
-  boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes);
+  boolean extendObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes);
 
 }

@@ -26,7 +26,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
-import workbench.db.DbMetadata;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -137,10 +137,10 @@ public class WbListTest
       assertEquals(2, objectList.getRowCount());
 
 
-      String tname = objectList.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      String tname = objectList.getValueAsString(0, ObjectListDataStore.COLUMN_IDX_TABLE_LIST_NAME);
       assertEquals("A2", tname);
 
-      tname = objectList.getValueAsString(1, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      tname = objectList.getValueAsString(1, ObjectListDataStore.COLUMN_IDX_TABLE_LIST_NAME);
       assertEquals("P2", tname);
     }
     finally

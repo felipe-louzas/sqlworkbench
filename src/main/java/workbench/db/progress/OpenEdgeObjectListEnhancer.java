@@ -31,15 +31,14 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DBID;
-import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
-import workbench.storage.DataStore;
-
 import workbench.util.CaseInsensitiveComparator;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
+
 
 /**
  *
@@ -50,7 +49,7 @@ public class OpenEdgeObjectListEnhancer
 {
 
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public void updateObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     if (Settings.getInstance().getBoolProperty("workbench.db." + DBID.OPENEDGE.getId() + ".remarks.object.retrieve", false))
     {
@@ -58,7 +57,7 @@ public class OpenEdgeObjectListEnhancer
     }
   }
 
-  protected void updateObjectRemarks(WbConnection con, DataStore result, String catalog, String schema, String objects)
+  protected void updateObjectRemarks(WbConnection con, ObjectListDataStore result, String catalog, String schema, String objects)
   {
     if (result == null) return;
     if (result.getRowCount() == 0) return;
@@ -66,20 +65,20 @@ public class OpenEdgeObjectListEnhancer
     String object = null;
     if (result.getRowCount() == 1)
     {
-      object = result.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      object = result.getObjectName(0);
     }
 
     Map<String, String> remarks = readRemarks(con, schema, object);
 
     for (int row = 0; row < result.getRowCount(); row++)
     {
-      String name = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      String objectSchema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
+      String name = result.getObjectName(row);
+      String objectSchema = result.getSchema(row);
 
       String remark = remarks.get(objectSchema + "." + name);
       if (remark != null)
       {
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, remark);
+        result.setRemarks(row, remark);
       }
     }
   }

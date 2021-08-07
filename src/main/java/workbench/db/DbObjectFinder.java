@@ -27,13 +27,11 @@ import java.util.Objects;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.storage.DataStore;
 import workbench.storage.filter.AndExpression;
 import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.util.StringUtil;
 
-import static workbench.db.DbMetadata.*;
 
 
 /**
@@ -104,9 +102,7 @@ public class DbObjectFinder
       {
         types = new String[]{table.getType()};
       }
-      DataStore ds = meta.getObjects(catalog, schema, tablename, types);
-
-      String[] cols = meta.getTableListColumns();
+      ObjectListDataStore ds = meta.getObjects(catalog, schema, tablename, types);
 
       if (ds.getRowCount() == 0 && meta.isOracle())
       {
@@ -121,28 +117,28 @@ public class DbObjectFinder
 
       if (ds.getRowCount() == 1)
       {
-        result = meta.buildTableIdentifierFromDs(ds, 0);
+        result = ds.getTableIdentifier(0);
       }
       else if (ds.getRowCount() > 1)
       {
         AndExpression filter = new AndExpression();
         StringEqualsComparator comp = new StringEqualsComparator();
-        filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_NAME], comp, table.getRawTableName(), true);
-        
+        filter.addColumnExpression(ds.getObjectColumnName(), comp, table.getRawTableName(), true);
+
         if (StringUtil.isNonBlank(schema) && !searchAllSchemas)
         {
-          filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_SCHEMA], comp, schema, true);
+          filter.addColumnExpression(ds.getSchemaColumnName(), comp, schema, true);
         }
         if (StringUtil.isNonBlank(catalog) && !searchAllCatalogs)
         {
-          filter.addColumnExpression(cols[COLUMN_IDX_TABLE_LIST_CATALOG], comp, catalog, true);
+          filter.addColumnExpression(ds.getCatalogColumnName(), comp, catalog, true);
         }
 
         if (filter.hasFilter()) ds.applyFilter(filter);
 
         if (ds.getRowCount() >= 1)
         {
-          result = meta.buildTableIdentifierFromDs(ds, 0);
+          result = ds.getTableIdentifier(0);
         }
       }
     }
@@ -273,11 +269,11 @@ public class DbObjectFinder
 
       String tablename = table.getRawTableName();
 
-      DataStore ds = meta.getObjects(catalog, schema, tablename, types);
+      ObjectListDataStore ds = meta.getObjects(catalog, schema, tablename, types);
 
       if (ds.getRowCount() == 1)
       {
-        result = meta.buildTableIdentifierFromDs(ds, 0);
+        result = ds.getTableIdentifier(0);
         return result;
       }
 
@@ -289,7 +285,7 @@ public class DbObjectFinder
       }
       else if (ds.getRowCount() == 1)
       {
-        result = meta.buildTableIdentifierFromDs(ds, 0);
+        result = ds.getTableIdentifier(0);
         return result;
       }
 

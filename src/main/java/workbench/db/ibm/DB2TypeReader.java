@@ -37,6 +37,7 @@ import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -63,12 +64,12 @@ public class DB2TypeReader
   }
 
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public void updateObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
   {
     if (!DbMetadata.typeIncluded("TYPE", requestedTypes)) return false;
 
@@ -78,11 +79,11 @@ public class DB2TypeReader
     for (DB2ObjectType type : types)
     {
       int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, type.getSchema());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, type.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, type.getObjectType());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, type.getComment());
+      result.setCatalog(row, null);
+      result.setSchema(row, type.getSchema());
+      result.setObjectName(row, type.getObjectName());
+      result.setType(row, type.getObjectType());
+      result.setRemarks(row, type.getComment());
       result.getRow(row).setUserObject(type);
     }
     return true;

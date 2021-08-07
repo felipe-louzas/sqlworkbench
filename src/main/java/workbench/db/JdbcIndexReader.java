@@ -687,7 +687,7 @@ public class JdbcIndexReader
 
     if (this.supportsIndexComments())
     {
-      columnList.add(DbMetadata.RESULT_COL_REMARKS);
+      columnList.add(ObjectListDataStore.RESULT_COL_REMARKS);
       typeList.add(Types.VARCHAR);
       sizeList.add(15);
     }
@@ -744,7 +744,7 @@ public class JdbcIndexReader
 
     int statusIndex = idxData.getColumnIndex(COL_NAME_STATUS);
     int tableSpaceIndex = idxData.getColumnIndex(COL_NAME_TABLESPACE);
-    int remarksIndex = idxData.getColumnIndex(DbMetadata.RESULT_COL_REMARKS);
+    int remarksIndex = idxData.getColumnIndex(ObjectListDataStore.RESULT_COL_REMARKS);
 
     for (IndexDefinition idx : indexes)
     {

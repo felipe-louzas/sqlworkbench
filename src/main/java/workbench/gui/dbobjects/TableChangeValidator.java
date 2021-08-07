@@ -21,8 +21,8 @@
  */
 package workbench.gui.dbobjects;
 
-import workbench.db.DbMetadata;
 import workbench.db.DbObjectChanger;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.gui.components.DataStoreTableModel;
@@ -47,20 +47,20 @@ public class TableChangeValidator
   {
     if (changer == null) return false;
 
-    String type = (String)source.getValueAt(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
-    if (col == DbMetadata.COLUMN_IDX_TABLE_LIST_NAME)
+    String type = (String)source.getValueAt(row, source.findColumn(ObjectListDataStore.RESULT_COL_TYPE));
+    if (col == ObjectListDataStore.COLUMN_IDX_TABLE_LIST_NAME)
     {
       return changer.getRenameObjectSql(type) != null;
     }
-    else if (col == DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS)
+    else if (col == ObjectListDataStore.COLUMN_IDX_TABLE_LIST_REMARKS)
     {
       return changer.getCommentSql(type, null) != null;
     }
-    else if (col == DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA)
+    else if (col == ObjectListDataStore.COLUMN_IDX_TABLE_LIST_SCHEMA)
     {
       return changer.getChangeSchemaSql(type) != null;
     }
-    else if (col == DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG)
+    else if (col == ObjectListDataStore.COLUMN_IDX_TABLE_LIST_CATALOG)
     {
       return changer.getChangeCatalogSql(type) != null;
     }

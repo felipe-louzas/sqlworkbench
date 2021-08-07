@@ -28,18 +28,18 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 
 /**
  * A TableSourceBuilder for Vertica.
@@ -61,7 +61,8 @@ public class VerticaTableReader
 
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects,String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result,
+                                  String aCatalog, String aSchema, String objects,String[] requestedTypes)
   {
     if (!handlesType(requestedTypes)) return false;
     if (!DbMetadata.typeIncluded("SYSTEM TABLE", requestedTypes)) return false;
@@ -79,11 +80,11 @@ public class VerticaTableReader
       while (tableRs.next())
       {
         int row = result.addRow();
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, tableRs.getString("catalog"));
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, tableRs.getString("schema"));
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, tableRs.getString("name"));
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, tableRs.getString("remarks"));
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, tableRs.getString("type"));
+        result.setCatalog(row, tableRs.getString("catalog"));
+        result.setSchema(row, tableRs.getString("schema"));
+        result.setObjectName(row, tableRs.getString("name"));
+        result.setRemarks(row, tableRs.getString("remarks"));
+        result.setType(row, tableRs.getString("type"));
       }
       return true;
     }

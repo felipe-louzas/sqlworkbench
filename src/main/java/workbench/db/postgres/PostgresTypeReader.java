@@ -37,20 +37,19 @@ import workbench.db.CommentSqlManager;
 import workbench.db.DataTypeResolver;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableColumnsDatastore;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 import workbench.db.sqltemplates.ColumnChanger;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -70,7 +69,7 @@ public class PostgresTypeReader
   private final PostgresRangeTypeReader rangeReader = new PostgresRangeTypeReader();
 
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public void updateObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     String replacement = null;
 
@@ -90,17 +89,17 @@ public class PostgresTypeReader
       int count = result.getRowCount();
       for (int row=0; row < count; row++)
       {
-        String type = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE);
+        String type = result.getType(row);
         if (type == null)
         {
-          result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, replacement);
+          result.setType(row, replacement);
         }
       }
     }
   }
 
   @Override
-  public boolean extendObjectList(WbConnection con, DataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
+  public boolean extendObjectList(WbConnection con, ObjectListDataStore result, String catalog, String schemaPattern, String objectPattern, String[] requestedTypes)
   {
     boolean retrieveTypes = DbMetadata.typeIncluded("TYPE", requestedTypes);
     boolean retrieveRangeTypes = JdbcUtils.hasMinimumServerVersion(con, "9.2") && PostgresRangeTypeReader.retrieveRangeTypes();
@@ -134,12 +133,7 @@ public class PostgresTypeReader
     for (BaseObjectType type : types)
     {
       int row = result.addRow();
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, null);
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, type.getSchema());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, type.getObjectName());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE, type.getObjectType());
-      result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, type.getComment());
-      result.getRow(row).setUserObject(type);
+      result.setDbObject(row, type);
     }
     return true;
   }

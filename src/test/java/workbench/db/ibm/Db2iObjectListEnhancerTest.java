@@ -27,11 +27,9 @@ import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
-import workbench.db.DbMetadata;
 import workbench.db.IbmDb2Test;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
-
-import workbench.storage.DataStore;
 
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -74,23 +72,23 @@ public class Db2iObjectListEnhancerTest
       "commit;");
 
     Db2iObjectListEnhancer reader = new Db2iObjectListEnhancer();
-    DataStore tables = con.getMetadata().createTableListDataStore();
+    ObjectListDataStore tables = new ObjectListDataStore();
     ColumnIdentifier sysName = new ColumnIdentifier(SYSTEM_NAME_DS_COL, Types.VARCHAR, 50);
     tables.addColumn(sysName);
 
     int fooRow = tables.addRow();
-    tables.setValue(fooRow, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, "PUBLIC");
-    tables.setValue(fooRow, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, "CAT");
-    tables.setValue(fooRow, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, "FOO");
+    tables.setSchema(fooRow, "PUBLIC");
+    tables.setCatalog(fooRow, "CAT");
+    tables.setObjectName(fooRow, "FOO");
 
     int barRow = tables.addRow();
-    tables.setValue(barRow, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA, "PUBLIC");
-    tables.setValue(barRow, DbMetadata.COLUMN_IDX_TABLE_LIST_CATALOG, "CAT");
-    tables.setValue(barRow, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME, "BAR");
+    tables.setSchema(barRow, "PUBLIC");
+    tables.setCatalog(barRow, "CAT");
+    tables.setObjectName(barRow, "BAR");
 
     reader.updateResult(con, tables, "PUBLIC", null, true);
-    assertEquals("Foo comment", tables.getValueAsString(fooRow, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS));
-    assertEquals("Bar comment", tables.getValueAsString(barRow, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS));
+    assertEquals("Foo comment", tables.getRemarks(fooRow));
+    assertEquals("Bar comment", tables.getRemarks(barRow));
     assertEquals("BAR1", tables.getValueAsString(barRow, "SYSTEM_NAME"));
     assertEquals("FOO1", tables.getValueAsString(fooRow, "SYSTEM_NAME"));
   }

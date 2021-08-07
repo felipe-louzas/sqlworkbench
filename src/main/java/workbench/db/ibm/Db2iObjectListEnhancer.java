@@ -29,13 +29,11 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
-import workbench.db.DbMetadata;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.TableIdentifier;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
-
-import workbench.storage.DataStore;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -53,7 +51,7 @@ public class Db2iObjectListEnhancer
   private static final String SYSNAME_PROP = "tablelist.read.system_name";
 
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String schemaPattern, String objectPattern, String[] requestedTypes)
+  public void updateObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String schemaPattern, String objectPattern, String[] requestedTypes)
   {
     if (result == null || result.getRowCount() == 0) return;
 
@@ -72,7 +70,7 @@ public class Db2iObjectListEnhancer
     }
   }
 
-  protected void updateResult(WbConnection con, DataStore result, String schemaPattern, String objectPattern, boolean readRemarks)
+  protected void updateResult(WbConnection con, ObjectListDataStore result, String schemaPattern, String objectPattern, boolean readRemarks)
   {
     long start = System.currentTimeMillis();
     String sql = buildQuery(con, schemaPattern, objectPattern);
@@ -98,7 +96,7 @@ public class Db2iObjectListEnhancer
           TableIdentifier tbl = (TableIdentifier)result.getRow(row).getUserObject();
           if (readRemarks)
           {
-            result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, remark);
+            result.setRemarks(row, remark);
             if (tbl != null)
             {
               tbl.setComment(remark);
@@ -159,13 +157,13 @@ public class Db2iObjectListEnhancer
     return sql.toString();
   }
 
-  private int findRow(DataStore result, String schema, String object)
+  private int findRow(ObjectListDataStore result, String schema, String object)
   {
     if (result == null) return -1;
     for (int row=0; row < result.getRowCount(); row ++)
     {
-      String resultName = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      String resultSchema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
+      String resultName = result.getObjectName(row);
+      String resultSchema = result.getSchema(row);
       if (StringUtil.equalStringIgnoreCase(resultName, object) &&
           StringUtil.equalStringIgnoreCase(resultSchema, schema))
       {

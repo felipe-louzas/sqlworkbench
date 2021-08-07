@@ -30,14 +30,12 @@ import java.util.TreeMap;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListEnhancer;
+import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
-import workbench.storage.DataStore;
-
 import workbench.util.CaseInsensitiveComparator;
-import workbench.db.JdbcUtils;
 
 /**
  *
@@ -51,7 +49,7 @@ public class SqlServerObjectListEnhancer
   static final String REMARKS_PROP_DEFAULT = "MS_DESCRIPTION";
 
   @Override
-  public void updateObjectList(WbConnection con, DataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
+  public void updateObjectList(WbConnection con, ObjectListDataStore result, String aCatalog, String aSchema, String objects, String[] requestedTypes)
   {
     if (con.getDbSettings().getBoolProperty("remarks.object.retrieve", true))
     {
@@ -59,7 +57,7 @@ public class SqlServerObjectListEnhancer
     }
   }
 
-  protected void updateObjectRemarks(WbConnection con, DataStore result, String catalog, String schema, String objects, String[] requestedTypes)
+  protected void updateObjectRemarks(WbConnection con, ObjectListDataStore result, String catalog, String schema, String objects, String[] requestedTypes)
   {
     if (result == null) return;
     if (result.getRowCount() == 0) return;
@@ -67,22 +65,22 @@ public class SqlServerObjectListEnhancer
     String object = null;
     if (result.getRowCount() == 1)
     {
-      object = result.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
+      object = result.getObjectName(0);
       // no need to loop through all requested types if only a single object is requested
-      requestedTypes = new String[] { result.getValueAsString(0, DbMetadata.COLUMN_IDX_TABLE_LIST_TYPE)};
+      requestedTypes = new String[] { result.getType(0)};
     }
 
     Map<String, String> remarks = readRemarks(con, schema, object, requestedTypes);
 
     for (int row=0; row < result.getRowCount(); row++)
     {
-      String name = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_NAME);
-      String objectSchema = result.getValueAsString(row, DbMetadata.COLUMN_IDX_TABLE_LIST_SCHEMA);
+      String name = result.getObjectName(row);
+      String objectSchema = result.getSchema(row);
 
       String remark = remarks.get(objectSchema + "." + name);
       if (remark != null)
       {
-        result.setValue(row, DbMetadata.COLUMN_IDX_TABLE_LIST_REMARKS, remark);
+        result.setRemarks(row, remark);
       }
     }
   }
