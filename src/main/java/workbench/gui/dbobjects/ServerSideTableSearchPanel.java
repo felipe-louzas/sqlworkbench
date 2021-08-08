@@ -38,6 +38,8 @@ import workbench.db.search.TableDataSearcher;
 
 import workbench.gui.components.TextComponentMouseListener;
 
+import workbench.util.StringUtil;
+
 /**
  *
  * @author Thomas Kellerer
@@ -48,16 +50,17 @@ public class ServerSideTableSearchPanel
 {
   private JTextField columnFunction;
   private JTextField searchText;
+  private JLabel likeLabel;
   private ServerSideTableSearcher searcher;
 
-  public ServerSideTableSearchPanel()
+  public ServerSideTableSearchPanel(String likeOperator)
   {
     super(new GridBagLayout());
     searcher = new ServerSideTableSearcher();
-    initComponents();
+    initComponents(likeOperator);
   }
 
-  private void initComponents()
+  private void initComponents(String likeOperator)
   {
     searchText = new JTextField();
     searchText.addMouseListener(new TextComponentMouseListener());
@@ -66,7 +69,7 @@ public class ServerSideTableSearchPanel
 
     columnFunction = new JTextField();
     columnFunction.addMouseListener(new TextComponentMouseListener());
-    JLabel likeLabel = new JLabel();
+    likeLabel = new JLabel();
 
     columnFunction.setColumns(8);
     GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -77,7 +80,7 @@ public class ServerSideTableSearchPanel
     gridBagConstraints.insets = new Insets(0, 0, 0, 2);
     add(columnFunction, gridBagConstraints);
 
-    likeLabel.setText("LIKE");
+    likeLabel.setText(likeOperator);
     likeLabel.setToolTipText(tip);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -92,6 +95,18 @@ public class ServerSideTableSearchPanel
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(0, 2, 0, 5);
     add(searchText, gridBagConstraints);
+  }
+
+  public void setLikeOperator(String operator)
+  {
+    if (StringUtil.isNonBlank(operator))
+    {
+      this.likeLabel.setText(operator.trim().toUpperCase());
+    }
+    else
+    {
+      this.likeLabel.setText("LIKE");
+    }
   }
 
   @Override

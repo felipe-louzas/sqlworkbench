@@ -62,8 +62,8 @@ import workbench.resource.Settings;
 import workbench.workspace.WbWorkspace;
 
 import workbench.db.JdbcUtils;
-import workbench.db.TableIdentifier;
 import workbench.db.ObjectListDataStore;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.search.TableDataSearcher;
 
@@ -186,9 +186,19 @@ public class TableSearchPanel
     return (TableSearchCriteriaGUI)criteriaContainer.getComponent(0);
   }
 
+  private String getLikeOperator()
+  {
+    String operator = null;
+    if (connection != null)
+    {
+      operator = connection.getDbSettings().getTableSearchLIKEOperator();
+    }
+    return StringUtil.coalesce(operator, "LIKE");
+  }
+
   private void initCriteriaPanel()
   {
-    serverSearcherCriteria = new ServerSideTableSearchPanel();
+    serverSearcherCriteria = new ServerSideTableSearchPanel(getLikeOperator());
     serverSearcherCriteria.addKeyListenerForCriteria(this);
     clientSearcherCriteria = new ClientSideTableSearchPanel();
     clientSearcherCriteria.addKeyListenerForCriteria(this);

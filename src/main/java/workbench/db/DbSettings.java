@@ -2712,4 +2712,14 @@ public class DbSettings
     return types;
   }
 
+  public String getTableSearchLIKEOperator()
+  {
+    return getProperty("tablesearch.like.operator", null);
+  }
+
+  public boolean isTableSearchLIKEOperatorCaseSensitive()
+  {
+    return getBoolProperty("tablesearch.like.operator.case.sensitive", true);
+  }
+
 }

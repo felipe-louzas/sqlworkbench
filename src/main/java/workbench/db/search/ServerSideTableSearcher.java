@@ -37,6 +37,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSelectBuilder;
@@ -47,7 +48,6 @@ import workbench.storage.filter.ColumnExpression;
 import workbench.storage.filter.ContainsComparator;
 
 import workbench.util.ExceptionUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
@@ -264,6 +264,7 @@ public class ServerSideTableSearcher
     int colcount = 0;
 
     Pattern aliasPattern = Pattern.compile("\\s+AS\\s+", Pattern.CASE_INSENSITIVE);
+    String operator = StringUtil.coalesce(connection.getDbSettings().getTableSearchLIKEOperator(), "LIKE");
 
     for (int i=0; i < colCount; i++)
     {
@@ -306,7 +307,9 @@ public class ServerSideTableSearcher
         {
           sql.append(expr);
         }
-        sql.append(" LIKE '");
+        sql.append(" ");
+        sql.append(operator);
+        sql.append(" '");
         sql.append(this.criteria);
         sql.append('\'');
         if (i < colCount - 1) sql.append('\n');
@@ -327,12 +330,16 @@ public class ServerSideTableSearcher
 
   public boolean isCaseSensitive()
   {
-    if (this.columnFunction == null) return false;
-    if (this.criteria == null) return false;
+    if (StringUtil.isBlank(this.criteria)) return false;
+
+    String operator = connection.getDbSettings().getTableSearchLIKEOperator();
+    if (StringUtil.isNonBlank(operator))
+    {
+      return connection.getDbSettings().isTableSearchLIKEOperatorCaseSensitive();
+    }
 
     boolean sensitive = this.connection.getDbSettings().isStringComparisonCaseSensitive();
-
-    if (!sensitive) return true;
+    if (this.columnFunction == null) return sensitive;
 
     String func = this.columnFunction.toLowerCase();
 
@@ -428,7 +435,7 @@ public class ServerSideTableSearcher
   {
     String expressionPattern = StringUtil.trimQuotes(criteria.replaceAll("[%_]", ""));
     ColumnExpression searchPattern = new ColumnExpression("*", new ContainsComparator(), expressionPattern);
-    searchPattern.setIgnoreCase(isCaseSensitive());
+    searchPattern.setIgnoreCase(!isCaseSensitive());
 
     return searchPattern;
   }
