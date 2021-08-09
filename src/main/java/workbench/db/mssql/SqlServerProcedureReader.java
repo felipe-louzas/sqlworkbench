@@ -80,7 +80,7 @@ public class SqlServerProcedureReader
   }
 
   @Override
-  protected Integer getProcedureType(ResultSet rs)
+  protected Integer getProcedureType(ResultSet rs, String typeColumn)
     throws SQLException
   {
     String name = rs.getString("PROCEDURE_NAME");

@@ -121,14 +121,14 @@ public class JdbcProcedureReader
 
         try
         {
-          rs = this.connection.getSqlConnection().getMetaData().getFunctions(catalog, schema, name);
+          ResultSet frs = this.connection.getSqlConnection().getMetaData().getFunctions(catalog, schema, name);
           if (Settings.getInstance().getBoolProperty("workbench.db.procreader.debug", false))
           {
-            SqlUtil.dumpResultSetInfo("getFunctions()", rs.getMetaData());
+            SqlUtil.dumpResultSetInfo("getFunctions()", frs.getMetaData());
           }
 
           boolean useSpecificName = JdbcUtils.getColumnIndex(rs, "SPECIFIC_NAME") > -1;
-          fillProcedureListDataStore(rs, ds, useSpecificName);
+          fillProcedureListDataStore(frs, ds, false, useSpecificName);
 
           // sort the complete combined result according to the JDBC API
           ds.sort(getProcedureListSort());
@@ -191,22 +191,28 @@ public class JdbcProcedureReader
     boolean useSpecificName = specIndex > -1;
 
     DataStore ds = buildProcedureListDataStore(this.connection.getMetadata(), useSpecificName);
-    fillProcedureListDataStore(rs, ds, useSpecificName);
+    fillProcedureListDataStore(rs, ds, true, useSpecificName);
     return ds;
   }
 
   public void fillProcedureListDataStore(ResultSet rs, DataStore ds, boolean useSpecificName)
     throws SQLException
   {
+    fillProcedureListDataStore(rs, ds, true, useSpecificName);
+  }
+
+  public void fillProcedureListDataStore(ResultSet rs, DataStore ds, boolean forProcedures, boolean useSpecificName)
+    throws SQLException
+  {
     try
     {
       while (rs.next())
       {
-        String cat = rs.getString("PROCEDURE_CAT");
-        String schema = rs.getString("PROCEDURE_SCHEM");
-        String name = rs.getString("PROCEDURE_NAME");
+        String cat = rs.getString(forProcedures ? "PROCEDURE_CAT" : "FUNCTION_CAT");
+        String schema = rs.getString(forProcedures ? "PROCEDURE_SCHEM" : "FUNCTION_SCHEM");
+        String name = rs.getString(forProcedures ? "PROCEDURE_NAME" : "FUNCTION_NAME");
         String remark = rs.getString("REMARKS");
-        Integer procType = getProcedureType(rs);
+        Integer procType = getProcedureType(rs, forProcedures ? "PROCEDURE_TYPE" : "FUNCTION_TYPE");
         int row = ds.addRow();
 
         String displayName = stripProcGroupInfo(name);
@@ -241,10 +247,10 @@ public class JdbcProcedureReader
     }
   }
 
-  protected Integer getProcedureType(ResultSet rs)
+  protected Integer getProcedureType(ResultSet rs, String typeColumn)
     throws SQLException
   {
-    int type = rs.getInt("PROCEDURE_TYPE");
+    int type = rs.getInt(typeColumn);
     Integer procType;
     if (rs.wasNull() || type == DatabaseMetaData.procedureResultUnknown)
     {
