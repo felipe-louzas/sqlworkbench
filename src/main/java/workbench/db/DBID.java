@@ -54,6 +54,7 @@ public enum DBID
   Ingres("ingres"),
   Redshift("redshift"),
   CockroachDB("cockroachdb"),
+  Yugabyte("yugabyte"),
   UCanAccess("ucanaccess"),
   Unknown("_$unknown$_");
 

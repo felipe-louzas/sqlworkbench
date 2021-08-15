@@ -290,8 +290,15 @@ public class OracleMViewReader
           String compressType = rs.getString("compress_for");
           if (StringUtil.isNonBlank(compressType))
           {
-            options.append("\n  COMPRESS FOR ");
-            options.append(compressType);
+            switch (compressType)
+            {
+              case "BASIC":
+                options.append("\n  ROW STORE COMPRESS BASIC");
+                break;
+              case "ADVANCED":
+                options.append("\n  ROW STORE COMPRESS ADVANCED");
+                break;
+            }
           }
         }
 

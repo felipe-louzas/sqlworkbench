@@ -296,6 +296,21 @@ public class PostgresUtil
     return ds;
   }
 
+  public static boolean isYugabyte(Connection conn)
+  {
+    if (conn == null) return false;
+    try
+    {
+      String version = conn.getMetaData().getDatabaseProductVersion();
+      if (version == null) return false;
+      return version.contains("-YB");
+    }
+    catch (Throwable th)
+    {
+      return false;
+    }
+  }
+
   public static boolean isCockroachDB(Connection conn)
   {
     if (conn == null) return false;

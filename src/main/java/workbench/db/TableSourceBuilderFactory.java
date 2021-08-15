@@ -49,6 +49,7 @@ public class TableSourceBuilderFactory
     switch (DBID.fromConnection(con))
     {
       case Postgres:
+      case Yugabyte:
         return new PostgresTableSourceBuilder(con);
       case Greenplum:
         return new GreenplumTableSourceBuilder(con);

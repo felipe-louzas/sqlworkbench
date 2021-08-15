@@ -26,10 +26,12 @@ import java.util.List;
 
 import workbench.resource.ResourceMgr;
 
+import workbench.db.ReaderFactory;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.TableSourceBuilderFactory;
+import workbench.db.ViewReader;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
@@ -62,7 +64,8 @@ public class WbTableSource
     StatementRunnerResult result = new StatementRunnerResult();
     String args = getCommandLine(sql);
 
-    SourceTableArgument tableArg = new SourceTableArgument(args, currentConnection);
+    String[] types = currentConnection.getMetadata().getTablesAndViewTypes();
+    SourceTableArgument tableArg = new SourceTableArgument(args, null, null, types, currentConnection);
 
     List<TableIdentifier> tableList = tableArg.getTables();
     List<String> missingTables = tableArg.getMissingTables();
@@ -84,10 +87,20 @@ public class WbTableSource
 
     for (TableIdentifier tbl : tableList)
     {
-      TableDefinition tableDef = currentConnection.getMetadata().getTableDefinition(tbl);
-
-      TableSourceBuilder reader = TableSourceBuilderFactory.getBuilder(currentConnection);
-      String source = reader.getTableSource(tableDef.getTable(), tableDef.getColumns());
+      String source = null;
+      if (currentConnection.getMetadata().isViewType(tbl.getType()))
+      {
+        // This can happen for materialized views in Oracle and Postgres
+        ViewReader viewReader = ReaderFactory.createViewReader(currentConnection);
+        source = viewReader.getExtendedViewSource(tbl).toString();
+      }
+      else
+      {
+        TableDefinition tableDef = currentConnection.getMetadata().getTableDefinition(tbl);
+        TableSourceBuilder reader = TableSourceBuilderFactory.getBuilder(currentConnection);
+        source = reader.getTableSource(tableDef.getTable(), tableDef.getColumns());
+      }
+      
       if (source != null)
       {
         result.addMessage(source);

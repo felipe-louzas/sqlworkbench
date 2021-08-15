@@ -119,6 +119,7 @@ public class ReaderFactory
         return new OracleProcedureReader(meta.getWbConnection());
       case Postgres:
       case Greenplum:
+      case Yugabyte:
         return new PostgresProcedureReader(meta.getWbConnection());
       case Redshift:
         return new RedshiftUDFReader(meta.getWbConnection());
@@ -160,6 +161,7 @@ public class ReaderFactory
       case Postgres:
       case Greenplum:
       case Redshift:
+      case Yugabyte:
         return new PostgresSequenceReader(con);
       case Oracle:
         return new OracleSequenceReader(con);
@@ -217,6 +219,7 @@ public class ReaderFactory
       case Postgres:
       case Greenplum:
       case Redshift:
+      case Yugabyte:
         return new PostgresIndexReader(meta);
       case H2:
         return new H2IndexReader(meta);
@@ -250,6 +253,7 @@ public class ReaderFactory
       case Postgres:
       case Greenplum:
       case Redshift:
+      case Yugabyte:
         return new PostgresConstraintReader(meta.getDbId());
       case Oracle:
         return new OracleConstraintReader(meta.getDbId());
@@ -304,6 +308,7 @@ public class ReaderFactory
       case Postgres:
       case Greenplum:
       case Redshift:
+      case Yugabyte:
         return new PostgresUniqueConstraintReader();
       case Oracle:
         return new OracleUniqueConstraintReader();
@@ -328,6 +333,7 @@ public class ReaderFactory
     switch (dbid)
     {
       case Postgres:
+      case Yugabyte:
         return new PostgresViewReader(con);
       case MySQL:
       case MariaDB:

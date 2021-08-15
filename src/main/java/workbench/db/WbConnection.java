@@ -1288,6 +1288,12 @@ public class WbConnection
   {
     if (this.sqlConnection == null) return false;
 
+    String flag = getDbSettings().getProperty("supports.savepoints", null);
+    if (flag != null)
+    {
+      return StringUtil.stringToBool(flag);
+    }
+    
     try
     {
       return sqlConnection.getMetaData().supportsSavepoints();

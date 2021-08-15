@@ -48,6 +48,8 @@ public class PostgresTestUtil
   public static final String TEST_USER = "wbjunit";
   public static final String TEST_PWD = "wbjunit";
   public static final String TEST_DB = "wbjunit";
+  public static final String TEST_HOST = "localhost";
+  public static final String TEST_PORT = "5432";
   public static final String PROFILE_NAME = "WBJUnitPostgres";
 
   /**
@@ -55,7 +57,7 @@ public class PostgresTestUtil
    */
   public static WbConnection getPostgresConnection()
   {
-    return getPostgresConnection(TEST_DB, TEST_USER, TEST_PWD, getPort(), PROFILE_NAME);
+    return getPostgresConnection(getHostname(), TEST_DB, TEST_USER, TEST_PWD, getPort(), PROFILE_NAME);
   }
 
   public static String getPort()
@@ -63,12 +65,22 @@ public class PostgresTestUtil
     String port = System.getProperty("WB_TEST_PORT", System.getenv("WB_TEST_PORT"));
     if (port == null)
     {
-      port = "5432";
+      port = TEST_PORT;
     }
     return port;
   }
 
-  public static WbConnection getPostgresConnection(String dbName, String username, String password, String port, String profileName)
+  public static String getHostname()
+  {
+    String host = System.getProperty("WB_TEST_HOST", System.getenv("WB_TEST_HOST"));
+    if (host == null)
+    {
+      host = TEST_HOST;
+    }
+    return host;
+  }
+
+  public static WbConnection getPostgresConnection(String hostName, String dbName, String username, String password, String port, String profileName)
   {
     try
     {
@@ -76,7 +88,7 @@ public class PostgresTestUtil
       if (con != null) return con;
 
       ArgumentParser parser = new AppArguments();
-      parser.parse("-url='jdbc:postgresql://localhost:" + port + "/" + dbName + "' -username=" + username + " -password=" + password + " -driver=org.postgresql.Driver");
+      parser.parse("-url='jdbc:postgresql://" + hostName + ":" + port + "/" + dbName + "' -username=" + username + " -password=" + password + " -driver=org.postgresql.Driver");
       ConnectionProfile prof = BatchRunner.createCmdLineProfile(parser);
       prof.setName(profileName);
       ConnectionMgr.getInstance().addProfile(prof);

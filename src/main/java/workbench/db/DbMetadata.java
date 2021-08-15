@@ -272,7 +272,14 @@ public class DbMetadata
     else if (productLower.contains("postgres"))
     {
       this.isPostgres = true;
-      this.dbId = DBID.Postgres.getId();
+      if (PostgresUtil.isYugabyte(aConnection.getSqlConnection()))
+      {
+        this.dbId = DBID.Yugabyte.getId();
+      }
+      else
+      {
+        this.dbId = DBID.Postgres.getId();
+      }
 
       PostgresDataTypeResolver resolver = new PostgresDataTypeResolver();
       resolver.setFixTimestampTZ(JdbcUtils.hasMiniumDriverVersion(dbConnection, "42.0"));
