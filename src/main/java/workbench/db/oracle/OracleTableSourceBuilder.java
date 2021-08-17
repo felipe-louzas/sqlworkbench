@@ -336,13 +336,20 @@ public class OracleTableSourceBuilder
         }
 
         String compression = rs.getString("compression");
-        if (StringUtil.equalStringIgnoreCase("enabled", compression))
+        String compressType = rs.getString("compress_for");
+        if (StringUtil.equalStringIgnoreCase("enabled", compression) && StringUtil.isNonBlank(compressType))
         {
-          String compressType = rs.getString("compress_for");
           tbl.getSourceOptions().addConfigSetting("compression", compressType);
           if (options.length() > 0) options.append('\n');
-          options.append("COMPRESS FOR ");
-          options.append(compressType);
+          switch (compressType)
+          {
+            case "BASIC":
+              options.append("ROW STORE COMPRESS BASIC");
+              break;
+            case "ADVANCED":
+              options.append("ROW STORE COMPRESS ADVANCED");
+              break;
+          }
         }
 
         archive = rs.getString("flashback_archive_name");
@@ -932,13 +939,13 @@ public class OracleTableSourceBuilder
         String cols = rs.getString("prefix_length");
         if (StringUtil.isNonBlank(cols))
         {
-          options.append("\n  COMPRESS ");
+          options.append("\nCOMPRESS ");
           options.append(cols);
         }
       }
       if (included != null)
       {
-        options.append("\n  INCLUDING ");
+        options.append("\nINCLUDING ");
         options.append(included);
         if (StringUtil.isEmptyString(overflow))
         {
@@ -950,14 +957,14 @@ public class OracleTableSourceBuilder
       String idxTbs = rs.getString("INDEX_TABLESPACE");
       if (StringUtil.isNonEmpty(idxTbs))
       {
-        options.append("\n  TABLESPACE ").append(idxTbs);
+        options.append("\nTABLESPACE ").append(idxTbs);
         tbl.getSourceOptions().addConfigSetting("index_tablespace", idxTbs);
         tbl.setTablespace(null);
       }
 
       if (StringUtil.isNonBlank(overflow))
       {
-        options.append("\n  OVERFLOW TABLESPACE ");
+        options.append("\nOVERFLOW TABLESPACE ");
         options.append(overflow);
         tbl.getSourceOptions().addConfigSetting("overflow_tablespace", overflow);
       }
