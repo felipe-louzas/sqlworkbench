@@ -228,7 +228,9 @@ public class TextOptionsPanel
   @Override
   public String getTextDelimiter()
   {
-    return this.delimiter.getText();
+    String delim = this.delimiter.getText();
+    if ("\\t".equals(delim)) return "\t";
+    return delim;
   }
 
   @Override
