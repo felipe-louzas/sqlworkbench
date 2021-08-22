@@ -4,6 +4,7 @@
 
   <property name="root" value=".."/>
   <property name="src" value="../src"/>
+  <property name="imgsrc" value="../src/main/resources/workbench/resource/images"/>
   <property name="javasrc" value="../src/main/java"/>
   <property name="scriptsrc" value="."/>
   <property name="build" value="../target/classes"/>
@@ -247,7 +248,7 @@
       <zipfileset dir="${scriptsrc}" prefix="ext">
         <include name="README_EXT"/>
       </zipfileset>
-      <zipfileset dir="../libs/lnf" prefix="ext">
+      <zipfileset dir="${distdir}/libs" prefix="ext">
         <include name="flatlaf.jar"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
@@ -265,7 +266,7 @@
         <include name="sqlwbconsole.sh"/>
         <include name="download_jre.sh"/>
       </zipfileset>
-      <zipfileset dir="${src}/main/resources/workbench/resource/images">
+      <zipfileset dir="${imgsrc}">
         <include name="workbench32.png"/>
       </zipfileset>
       <zipfileset dir="../../manual/dist" prefix="manual">
@@ -307,7 +308,7 @@
         <include name="sqlwbconsole.sh"/>
         <include name="download_jre.sh"/>
       </zipfileset>
-      <zipfileset dir="${javasrc}/workbench/resource/images">
+      <zipfileset dir="${imgsrc}">
         <include name="workbench32.png"/>
       </zipfileset>
       <zipfileset dir="../../manual/dist" prefix="manual">
@@ -391,27 +392,27 @@
   <target name="generate-lexer">
 
     <copy quiet="true" overwrite="true"
-					file="../src/workbench/sql/lexer/BaseLexer.flex"
+          file="../src/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/workbench/sql/lexer/StandardLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-					file="../src/workbench/sql/lexer/BaseLexer.flex"
+          file="../src/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/workbench/sql/lexer/NonStandardLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-					file="../src/workbench/sql/lexer/BaseLexer.flex"
+          file="../src/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/workbench/sql/lexer/MySQLLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-					file="../src/workbench/sql/lexer/BaseLexer.flex"
+          file="../src/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/workbench/sql/lexer/SqlServerLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-					file="../src/workbench/sql/lexer/BaseLexer.flex"
+          file="../src/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/workbench/sql/lexer/PostgresLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-					file="../src/workbench/sql/lexer/BaseLexer.flex"
+          file="../src/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/workbench/sql/lexer/FirebirdLexer.flex"/>
 
     <replace file="../src/workbench/sql/lexer/StandardLexer.flex">
@@ -467,7 +468,7 @@
     </replace>
 
     <copy quiet="true" overwrite="true"
-					file="../src/workbench/sql/lexer/PostgresLexer.flex"
+          file="../src/workbench/sql/lexer/PostgresLexer.flex"
           tofile="../src/workbench/sql/lexer/PgEscapingLexer.flex"/>
 
     <replace file="../src/workbench/sql/lexer/PgEscapingLexer.flex">
