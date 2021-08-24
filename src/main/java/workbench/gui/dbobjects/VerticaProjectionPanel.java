@@ -44,6 +44,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -65,8 +66,6 @@ import workbench.storage.DataStore;
 
 import workbench.util.FilteredProperties;
 import workbench.util.WbThread;
-
-import workbench.workspace.WbWorkspace;
 
 /**
  * A panel with projection information for Vertica
@@ -199,7 +198,9 @@ public class VerticaProjectionPanel
   protected void retrieve(TableIdentifier table)
     throws SQLException
   {
+    if (table == null) return;
     initGui();
+    
     try
     {
       currentTable = table;

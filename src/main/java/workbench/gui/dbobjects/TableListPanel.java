@@ -94,13 +94,13 @@ import workbench.db.DropType;
 import workbench.db.GenericObjectDropper;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
+import workbench.db.ObjectListDataStore;
 import workbench.db.PartitionLister;
 import workbench.db.SequenceReader;
 import workbench.db.SynonymDDLHandler;
 import workbench.db.TableColumnsDatastore;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
-import workbench.db.ObjectListDataStore;
 import workbench.db.TableSourceBuilder;
 import workbench.db.TableSourceBuilderFactory;
 import workbench.db.TriggerReader;
@@ -550,10 +550,10 @@ public class TableListPanel
       {
         int[] rows = indexes.getSelectedRows();
         if (rows == null) return null;
+        TableIdentifier tbl = getObjectTable();
+        if (tbl == null) return null;
 
         ArrayList<DbObject> objects = new ArrayList<>(rows.length);
-
-        TableIdentifier tbl = getObjectTable();
 
         for (int i = 0; i < rows.length; i++)
         {
@@ -2145,6 +2145,8 @@ public class TableListPanel
     throws SQLException
   {
     Component panel = displayTab.getSelectedComponent();
+    if (panel == null) return;
+
     if (panel == this.tableDefinition && shouldRetrieveTable)
     {
       retrieveTableDefinition();
@@ -2224,6 +2226,7 @@ public class TableListPanel
   public TableIdentifier getObjectTable()
   {
     if (this.selectedTable == null) return null;
+    if (this.getSelectionCount() != 1) return null;
     if (!isSynonym(selectedTable)) return selectedTable;
 
     if (selectedTable.getRealTable() == null)
@@ -2260,12 +2263,14 @@ public class TableListPanel
   protected void retrieveIndexes()
     throws SQLException
   {
+    TableIdentifier tbl = getObjectTable();
+    if (tbl == null) return;
     try
     {
       setActivePanelIndex(indexPanel);
       WbSwingUtilities.showWaitCursor(this);
       DbMetadata meta = this.dbConnection.getMetadata();
-      DataStore ds = meta.getIndexReader().getTableIndexInformation(getObjectTable());
+      DataStore ds = meta.getIndexReader().getTableIndexInformation(tbl);
       final DataStoreTableModel model = new DataStoreTableModel(ds);
       WbSwingUtilities.invoke(() ->
       {

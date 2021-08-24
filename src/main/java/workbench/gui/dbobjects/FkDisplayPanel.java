@@ -258,6 +258,8 @@ public class FkDisplayPanel
   protected void retrieve(TableIdentifier table)
     throws SQLException
   {
+    if (table == null) return;
+    
     try
     {
       currentTable = table;
