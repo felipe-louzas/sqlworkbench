@@ -133,8 +133,19 @@ public class ColumnExpression
   @Override
   public boolean evaluate(Map columnValues)
   {
-    Object value = columnValues.get(this.columnName);
-    return evaluate(value);
+    if ("*".equals(this.columnName))
+    {
+      for (Object value : columnValues.values())
+      {
+        if (evaluate(value)) return true;
+      }
+    }
+    else
+    {
+      Object value = columnValues.get(this.columnName);
+      return evaluate(value);
+    }
+    return false;
   }
 
   @Override

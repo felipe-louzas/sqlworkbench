@@ -21,7 +21,6 @@
  */
 package workbench.gui.dbobjects;
 
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -152,7 +151,6 @@ import workbench.util.WbProperties;
 import workbench.util.WbThread;
 
 import static workbench.storage.NamedSortDefinition.*;
-
 
 /**
  * A panel that displays a list of tables, views and other database objects.

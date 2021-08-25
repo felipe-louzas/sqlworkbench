@@ -34,7 +34,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.DefaultComboBoxModel;
@@ -93,7 +95,7 @@ public class QuickFilterPanel
   private WbToolbar toolbar;
   private JComboBox columnDropDown;
   private QuickFilterAction filterAction;
-  private String[] columnList;
+  private final List<String> columnList = new ArrayList<>();
   private final boolean showColumnDropDown;
   private FilterDefinitionManager filterMgr;
   private JCheckBoxMenuItem[] columnItems;
@@ -102,6 +104,7 @@ public class QuickFilterPanel
   private boolean autoFilterEnabled;
   private ReloadAction delegateFilterAction;
   private boolean ignoreEvents;
+  private String historyProperty;
 
   public QuickFilterPanel(WbTable table, boolean showColumnDropDown, String historyProperty)
   {
@@ -115,7 +118,8 @@ public class QuickFilterPanel
     this.searchTable.addPropertyChangeListener("model", this);
     this.showColumnDropDown = showColumnDropDown;
     this.filterMgr = filterManager;
-    this.initGui(historyProperty);
+    this.historyProperty = historyProperty;
+    this.initGui();
   }
 
   public void setReloadAction(ReloadAction action)
@@ -168,13 +172,13 @@ public class QuickFilterPanel
 
   private void initDropDown()
   {
-    if (this.columnList == null)
+    if (this.columnList.isEmpty())
     {
       columnDropDown = new JComboBox(new String[] { "        " });
     }
     else
     {
-      columnDropDown = new JComboBox(columnList);
+      columnDropDown = new JComboBox(columnList.toArray());
     }
     columnDropDown.addActionListener(this);
     columnDropDown.setSelectedIndex(0);
@@ -214,13 +218,10 @@ public class QuickFilterPanel
     this.filterValue.setToolTipText(tip);
   }
 
-  private void initGui(String historyProperty)
+  private void initGui()
   {
-    GridBagConstraints gridBagConstraints;
-
     setLayout(new GridBagLayout());
     setBorder(WbSwingUtilities.EMPTY_BORDER);
-
     filterValue = new HistoryTextField(historyProperty);
     setFilterTooltip();
     filterValue.setColumns(10);
@@ -264,7 +265,7 @@ public class QuickFilterPanel
     toolbar.setMargin(WbSwingUtilities.getEmptyInsets());
     toolbar.setBorderPainted(true);
 
-    gridBagConstraints = new GridBagConstraints();
+    GridBagConstraints gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.gridx = 0;
     add(toolbar, gridBagConstraints);
@@ -306,19 +307,19 @@ public class QuickFilterPanel
 
   private void initPopup()
   {
-    if (columnList == null) return;
+    if (columnList.isEmpty()) return;
 
     Component ed = filterValue.getEditor().getEditorComponent();
     if (this.textListener != null) ed.removeMouseListener(this.textListener);
 
     this.textListener = new TextComponentMouseListener();
     JMenu menu = new WbMenu(ResourceMgr.getString("MnuTextFilterOnColumn"));
-    columnItems = new JCheckBoxMenuItem[columnList.length];
-    for (int i=0; i < this.columnList.length; i++)
+    columnItems = new JCheckBoxMenuItem[columnList.size()];
+    for (int i=0; i < this.columnList.size(); i++)
     {
-      columnItems[i] = new JCheckBoxMenuItem(columnList[i]);
-      columnItems[i].setSelected(i == 0);
-      columnItems[i].putClientProperty("filterColumn", columnList[i]);
+      columnItems[i] = new JCheckBoxMenuItem(columnList.get(i));
+      columnItems[i].setSelected(columnList.get(i).equalsIgnoreCase(searchColumn));
+      columnItems[i].putClientProperty("filterColumn", columnList.get(i));
       columnItems[i].addActionListener(this);
       menu.add(columnItems[i]);
     }
@@ -331,11 +332,18 @@ public class QuickFilterPanel
   public void setColumnList(String[] columns)
   {
     if (columns == null || columns.length == 0) return;
-    if (StringUtil.arraysEqual(columns, columnList)) return;
 
-    columnList = Arrays.copyOf(columns, columns.length);
+    List<String> newColumns = Arrays.asList(columns);
+    if (this.columnList.containsAll(newColumns)) return;
 
-    this.searchColumn = columns[0];
+    columnList.clear();
+    columnList.add("*");
+    columnList.addAll(newColumns);
+
+    if (!columnList.contains(searchColumn))
+    {
+      searchColumn = columnList.get(0);
+    }
     initPopup();
     if (showColumnDropDown)
     {
@@ -345,7 +353,7 @@ public class QuickFilterPanel
       }
       else
       {
-        columnDropDown.setModel(new DefaultComboBoxModel(this.columnList));
+        columnDropDown.setModel(new DefaultComboBoxModel(this.columnList.toArray()));
       }
     }
   }
@@ -354,6 +362,7 @@ public class QuickFilterPanel
   public void saveSettings(PropertyStorage props, String prefix)
   {
     filterValue.saveSettings(props, prefix);
+    props.setProperty(prefix + historyProperty + ".filtercolumn", this.searchColumn);
   }
 
   @Override
@@ -361,6 +370,7 @@ public class QuickFilterPanel
   {
     filterValue.removeActionListener(this);
     filterValue.restoreSettings(props, prefix);
+    searchColumn = props.getProperty(prefix + historyProperty + ".filtercolumn", "*");
     filterValue.addActionListener(this);
   }
 
@@ -368,6 +378,7 @@ public class QuickFilterPanel
   public void saveSettings()
   {
     filterValue.saveSettings();
+    Settings.getInstance().setProperty("workbench.quickfilter." + historyProperty + ".filtercolumn", searchColumn);
   }
 
   @Override
@@ -375,6 +386,7 @@ public class QuickFilterPanel
   {
     filterValue.removeActionListener(this);
     filterValue.restoreSettings();
+    searchColumn = Settings.getInstance().getProperty("workbench.quickfilter." + historyProperty + ".filtercolumn", "*");
     filterValue.addActionListener(this);
   }
 
@@ -603,7 +615,7 @@ public class QuickFilterPanel
     if (ignoreEvents) return;
 
     // ignore key events with Alt or Ctrl Modifiers
-    if (WbAction.isAltPressed(e.getModifiers()) || WbAction.isCtrlPressed(e.getModifiers())) return;
+    if (WbAction.isAltPressed(e.getModifiersEx()) || WbAction.isCtrlPressed(e.getModifiersEx())) return;
 
     EventQueue.invokeLater(() ->
     {
