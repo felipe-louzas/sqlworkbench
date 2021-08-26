@@ -64,7 +64,22 @@ public class TableListParser
 
   public List<Alias> getTables(String sql, boolean includeAlias)
   {
+    if (StringUtil.isBlank(sql)) Collections.emptyList();
     SQLLexer lexer = SQLLexerFactory.createLexer(parserType, "");
+
+    lexer.setInput(sql);
+    SQLToken firstToken = lexer.getNextToken(false, false);
+    if (firstToken != null && "TABLE".equalsIgnoreCase(firstToken.getContents()))
+    {
+      // special case "TABLE foobar;" (currently only supported by Postgres
+      // the next token has to be the table name
+      SQLToken tableToken = lexer.getNextToken(false, false);
+      if (tableToken != null)
+      {
+        return CollectionUtil.arrayList(new TableAlias(tableToken.getContents()));
+      }
+      Collections.emptyList();
+    }
 
     sql = SqlUtil.trimSemicolon(sql);
 

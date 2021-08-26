@@ -342,7 +342,7 @@ public class QuickFilterPanel
 
     if (!columnList.contains(searchColumn))
     {
-      searchColumn = columnList.get(0);
+      searchColumn = columnList.get(1);
     }
     initPopup();
     if (showColumnDropDown)
