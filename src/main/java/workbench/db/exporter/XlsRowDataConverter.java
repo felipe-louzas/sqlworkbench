@@ -221,7 +221,7 @@ public class XlsRowDataConverter
       if (useXLSX)
       {
         XSSFWorkbook wb = new XSSFWorkbook(getTypeToUse());
-        if (Settings.getInstance().useStreamingPOI())
+        if (Settings.getInstance().useStreamingPOI() && formulaColumns.isEmpty())
         {
           LogMgr.logInfo(new CallerInfo(){}, "Using XSSF streaming API to write file: " + getOutputFile());
           this.workbook = new SXSSFWorkbook(wb, -1, true);
