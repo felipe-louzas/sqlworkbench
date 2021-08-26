@@ -221,7 +221,7 @@ public class XlsRowDataConverter
       if (useXLSX)
       {
         XSSFWorkbook wb = new XSSFWorkbook(getTypeToUse());
-        if (Settings.getInstance().useStreamingPOI() && formulaColumns.isEmpty())
+        if (Settings.getInstance().useStreamingPOI() && (formulaColumns.isEmpty() || !optimizeCols))
         {
           LogMgr.logInfo(new CallerInfo(){}, "Using XSSF streaming API to write file: " + getOutputFile());
           this.workbook = new SXSSFWorkbook(wb, -1, true);
@@ -416,11 +416,13 @@ public class XlsRowDataConverter
 
       for (int col = 0; col < this.metaData.getColumnCount(); col++)
       {
+        if (isFormulaColumn(col + columnOffset)) continue;
+
         int width = sheet.getColumnWidth(col + columnOffset);
         int minWidth = metaData.getColumnName(col).length() * charWidth;
         if (getEnableAutoFilter())
         {
-          minWidth += charWidth * 2;
+          minWidth += charWidth * 3;
         }
         if (width < minWidth)
         {
@@ -648,6 +650,7 @@ public class XlsRowDataConverter
       try
       {
         cell.setCellFormula(value.toString());
+        useFormat = false;
       }
       catch (Throwable th)
       {
@@ -758,7 +761,9 @@ public class XlsRowDataConverter
       }
       catch (IllegalArgumentException iae)
       {
-        LogMgr.logWarning(new CallerInfo(){}, "Could not set style for column: " + metaData.getColumnName(column) + ", row: " + cell.getRowIndex() + ", column: " + cell.getColumnIndex());
+        LogMgr.logWarning(new CallerInfo(){},
+          "Could not set style for column: " + metaData.getColumnName(column) +
+            ", row: " + cell.getRowIndex() + ", column: " + cell.getColumnIndex());
       }
     }
   }

@@ -154,6 +154,7 @@ public class Settings
   public static final String PROPERTY_EDITOR_BRACKET_HILITE_REC = PROPERTY_EDITOR_BRACKET_HILITE_BASE + ".rectangle";
   public static final String PROPERTY_EDITOR_BRACKET_HILITE_BOTH = PROPERTY_EDITOR_BRACKET_HILITE_BASE + ".both";
   public static final String PROPERTY_EDITOR_BRACKET_HILITE = PROPERTY_EDITOR_BRACKET_HILITE_BASE + ".enable";
+  public static final String PROPERTY_EDITOR_BRACKET_HILITE_MIN_DIST = PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_BASE + ".mindistance";
   public static final String PROPERTY_EDITOR_ELECTRIC_SCROLL = "workbench.editor.electricscroll";
   public static final String PROPERTY_EDITOR_BG_COLOR = "workbench.editor.color.background";
   public static final String PROPERTY_EDITOR_FG_COLOR = "workbench.editor.color.foreground";
@@ -2014,6 +2015,11 @@ public class Settings
   public int getMinLengthForSelectionHighlight()
   {
     return getIntProperty(PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_MINLEN, 2);
+  }
+
+  public int getMinDistanceForBracketHighlight()
+  {
+    return getIntProperty(PROPERTY_EDITOR_BRACKET_HILITE_MIN_DIST, 2);
   }
 
   public boolean getSelectionHighlightIgnoreCase()

@@ -37,7 +37,6 @@ import workbench.gui.dbobjects.ExplorerUtils;
 
 import workbench.storage.RowActionMonitor;
 
-import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
 
 import workbench.util.CollectionUtil;

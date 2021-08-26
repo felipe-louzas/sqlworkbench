@@ -180,7 +180,7 @@ public class JEditTextArea
 
   protected int bracketPosition;
   protected int bracketLine;
-
+  protected int minBracketHiliteDistance = 2;
   protected int magicCaret;
   protected boolean overwrite;
   protected boolean rectSelect;
@@ -283,6 +283,7 @@ public class JEditTextArea
 
     minHighlightLength = Settings.getInstance().getMinLengthForSelectionHighlight();
     highlightNoWhitespace = Settings.getInstance().getSelectionHighlightNoWhitespace();
+    minBracketHiliteDistance = Settings.getInstance().getMinDistanceForBracketHighlight();
   }
 
   private void initWheelZoom()
@@ -2829,7 +2830,8 @@ public class JEditTextArea
       boolean matchBefore = Settings.getInstance().getBracketHighlightLeft();
       int charOffset = matchBefore ? -1 : 0;
       int offset = TextUtilities.findMatchingBracket(document, newCaretPosition + charOffset);
-      if (offset != -1)
+      int distance = newCaretPosition > offset ? newCaretPosition - offset : offset - newCaretPosition;
+      if (offset != -1 && distance >= minBracketHiliteDistance)
       {
         bracketLine = getLineOfOffset(offset);
         bracketPosition = offset - getLineStartOffset(bracketLine);
