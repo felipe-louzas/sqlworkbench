@@ -2831,7 +2831,7 @@ public class JEditTextArea
       int charOffset = matchBefore ? -1 : 0;
       int offset = TextUtilities.findMatchingBracket(document, newCaretPosition + charOffset);
       int distance = newCaretPosition > offset ? newCaretPosition - offset : offset - newCaretPosition;
-      if (offset != -1 && distance >= minBracketHiliteDistance)
+      if (offset != -1 && distance > minBracketHiliteDistance)
       {
         bracketLine = getLineOfOffset(offset);
         bracketPosition = offset - getLineStartOffset(bracketLine);
