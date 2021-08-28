@@ -262,9 +262,9 @@ public class JEditTextArea
 
     if (extendedCutCopyPaste)
     {
-      this.inputHandler.addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.CTRL_MASK), copy);
-      this.inputHandler.addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.SHIFT_MASK), paste);
-      this.inputHandler.addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_MASK), cut);
+      this.inputHandler.addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.CTRL_DOWN_MASK), copy);
+      this.inputHandler.addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.SHIFT_DOWN_MASK), paste);
+      this.inputHandler.addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK), cut);
     }
 
     this.addKeyBinding(new ScrollDownAction(this));
@@ -279,6 +279,7 @@ public class JEditTextArea
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_NO_WHITESPACE,
       Settings.PROPERTY_EDITOR_CURRENT_STMT_COLOR,
       Settings.PROPERTY_EDITOR_ERROR_STMT_COLOR,
+      Settings.PROPERTY_EDITOR_BRACKET_HILITE_MIN_DIST,
       GuiSettings.PROP_FONT_ZOOM_WHEEL);
 
     minHighlightLength = Settings.getInstance().getMinLengthForSelectionHighlight();
@@ -306,6 +307,15 @@ public class JEditTextArea
       minHighlightLength = Settings.getInstance().getMinLengthForSelectionHighlight();
       highlightNoWhitespace = Settings.getInstance().getSelectionHighlightNoWhitespace();
       updateOccuranceHilite();
+    }
+    else if (evt.getPropertyName().startsWith(Settings.PROPERTY_EDITOR_BRACKET_HILITE_BASE))
+    {
+      int distance = Settings.getInstance().getMinDistanceForBracketHighlight();
+      if (distance != minBracketHiliteDistance)
+      {
+        minBracketHiliteDistance = distance;
+        WbSwingUtilities.repaintLater(this);
+      }
     }
     else if (evt.getPropertyName().startsWith(GuiSettings.PROP_FONT_ZOOM_WHEEL))
     {
@@ -2830,8 +2840,8 @@ public class JEditTextArea
       boolean matchBefore = Settings.getInstance().getBracketHighlightLeft();
       int charOffset = matchBefore ? -1 : 0;
       int offset = TextUtilities.findMatchingBracket(document, newCaretPosition + charOffset);
-      int distance = newCaretPosition > offset ? newCaretPosition - offset : offset - newCaretPosition;
-      if (offset != -1 && distance > minBracketHiliteDistance)
+      int distance = (newCaretPosition > offset ? newCaretPosition - offset : offset - newCaretPosition) - 1;
+      if (offset != -1 && distance >= minBracketHiliteDistance)
       {
         bracketLine = getLineOfOffset(offset);
         bracketPosition = offset - getLineStartOffset(bracketLine);

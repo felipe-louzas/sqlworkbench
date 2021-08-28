@@ -67,6 +67,7 @@ public class HighlightSettingsPanel
     selMinLength.setText(Integer.toString(sett.getMinLengthForSelectionHighlight()));
     selHiliteColor.setSelectedColor(sett.geSelectionHighlightColor());
     ignoreCase.setSelected(sett.getSelectionHighlightIgnoreCase());
+    minDistance.setText(Integer.toString(sett.getMinDistanceForBracketHighlight()));
   }
 
   @Override
@@ -82,10 +83,15 @@ public class HighlightSettingsPanel
     sett.setSelectionHighlightNoWhitespace(noWhitespace.isSelected());
     sett.setHighlightCurrentSelection(enableSelHilite.isSelected());
     sett.setSelectionHighlightIgnoreCase(ignoreCase.isSelected());
-    int minLength = StringUtil.getIntValue(selMinLength.getText(), -1);
-    if (minLength != -1)
+    int minLength = StringUtil.getIntValue(selMinLength.getText(), Integer.MIN_VALUE);
+    if (minLength != Integer.MIN_VALUE)
     {
       sett.setMinLengthForSelectionHighlight(minLength);
+    }
+    int minDist = StringUtil.getIntValue(minDistance.getText(), Integer.MIN_VALUE);
+    if (minDist != Integer.MIN_VALUE)
+    {
+      sett.setMinDistanceForBracketHighlight(minDist);
     }
   }
 
@@ -122,6 +128,9 @@ public class HighlightSettingsPanel
     jLabel2 = new javax.swing.JLabel();
     ignoreCase = new javax.swing.JCheckBox();
     noWhitespace = new javax.swing.JCheckBox();
+    jPanel5 = new javax.swing.JPanel();
+    jLabel3 = new javax.swing.JLabel();
+    minDistance = new javax.swing.JTextField();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -165,7 +174,7 @@ public class HighlightSettingsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 5, 0);
     add(jPanel1, gridBagConstraints);
@@ -197,7 +206,7 @@ public class HighlightSettingsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 10, 5, 0);
@@ -237,14 +246,14 @@ public class HighlightSettingsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
     add(jPanel3, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(11, 0, 0, 0);
@@ -267,7 +276,7 @@ public class HighlightSettingsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     jPanel4.add(jLabel1, gridBagConstraints);
 
     selMinLength.setColumns(5);
@@ -275,7 +284,7 @@ public class HighlightSettingsPanel
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(8, 7, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(4, 7, 0, 0);
     jPanel4.add(selMinLength, gridBagConstraints);
 
     selHiliteColor.setToolTipText(ResourceMgr.getString("d_LblBracketHiliteColor")); // NOI18N
@@ -284,7 +293,7 @@ public class HighlightSettingsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     jPanel4.add(selHiliteColor, gridBagConstraints);
 
     jLabel2.setText(ResourceMgr.getString("LblHiliteSelColor")); // NOI18N
@@ -292,7 +301,7 @@ public class HighlightSettingsPanel
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(10, 9, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(6, 9, 0, 0);
     jPanel4.add(jLabel2, gridBagConstraints);
 
     ignoreCase.setText(ResourceMgr.getString("LblSearchIgnoreCase")); // NOI18N
@@ -316,7 +325,7 @@ public class HighlightSettingsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
@@ -324,6 +333,29 @@ public class HighlightSettingsPanel
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     add(jPanel4, gridBagConstraints);
+
+    jPanel5.setLayout(new java.awt.GridBagLayout());
+
+    jLabel3.setText(ResourceMgr.getString("LblMinDist")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    jPanel5.add(jLabel3, gridBagConstraints);
+
+    minDistance.setColumns(3);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 11, 0, 0);
+    jPanel5.add(minDistance, gridBagConstraints);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    add(jPanel5, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
@@ -339,14 +371,17 @@ public class HighlightSettingsPanel
   private javax.swing.JCheckBox ignoreCase;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
+  private javax.swing.JPanel jPanel5;
   private javax.swing.JSeparator jSeparator1;
   private javax.swing.JRadioButton matchLeft;
   private javax.swing.JRadioButton matchRight;
   private javax.swing.ButtonGroup matchType;
+  private javax.swing.JTextField minDistance;
   private javax.swing.JCheckBox noWhitespace;
   private workbench.gui.components.WbColorPicker selHiliteColor;
   private javax.swing.JTextField selMinLength;
