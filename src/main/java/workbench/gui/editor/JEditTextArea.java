@@ -144,8 +144,8 @@ public class JEditTextArea
 
   protected TextPopup popup;
 
-  protected EventListenerList listeners;
-  private final MutableCaretEvent caretEvent;
+  private final EventListenerList listeners = new EventListenerList();
+  private final MutableCaretEvent caretEvent = new MutableCaretEvent();
 
   protected boolean caretBlinks;
   protected boolean caretVisible;
@@ -208,8 +208,6 @@ public class JEditTextArea
     setDoubleBuffered(true);
 
     documentHandler = new DocumentHandler();
-    listeners = new EventListenerList();
-    caretEvent = new MutableCaretEvent();
     lineSegment = new Segment();
     bracketLine = -1;
     bracketPosition = -1;
@@ -2771,25 +2769,19 @@ public class JEditTextArea
 
   protected void fireTextStatusChanged(boolean isModified)
   {
-    Object[] list = listeners.getListenerList();
-    for (int i = list.length - 2; i >= 0; i--)
+    TextChangeListener[] list = listeners.getListeners(TextChangeListener.class);
+    for (TextChangeListener l : list)
     {
-      if(list[i] == TextChangeListener.class)
-      {
-        ((TextChangeListener)list[i+1]).textStatusChanged(isModified);
-      }
+      l.textStatusChanged(isModified);
     }
   }
 
   protected void fireSelectionEvent()
   {
-    Object[] list = listeners.getListenerList();
-    for (int i = list.length - 2; i >= 0; i--)
+    TextSelectionListener[] list = listeners.getListeners(TextSelectionListener.class);
+    for (TextSelectionListener l : list)
     {
-      if(list[i] == TextSelectionListener.class)
-      {
-        ((TextSelectionListener)list[i+1]).selectionChanged(this.getSelectionStart(), this.getSelectionEnd());
-      }
+      l.selectionChanged(this.getSelectionStart(), this.getSelectionEnd());
     }
   }
 
@@ -2810,13 +2802,10 @@ public class JEditTextArea
 
   protected void fireCaretEvent()
   {
-    Object[] list = listeners.getListenerList();
-    for(int i = list.length - 2; i >= 0; i--)
+    CaretListener[] list = listeners.getListeners(CaretListener.class);
+    for (CaretListener l : list)
     {
-      if (list[i] == CaretListener.class)
-      {
-        ((CaretListener)list[i+1]).caretUpdate(caretEvent);
-      }
+      l.caretUpdate(caretEvent);
     }
     updateStatusBar();
   }
