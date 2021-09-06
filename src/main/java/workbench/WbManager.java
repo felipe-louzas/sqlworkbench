@@ -359,6 +359,8 @@ public final class WbManager
       return;
     }
 
+    inShutdown = true;
+
     if (window == null)
     {
       ConnectionMgr.getInstance().disconnectAll();
@@ -523,6 +525,7 @@ public final class WbManager
     saveConfigSettings();
     LogMgr.logInfo(new CallerInfo(){}, "Stopping " + ResourceMgr.TXT_PRODUCT_NAME + ", Build " + ResourceMgr.getString("TxtBuildNumber"));
     LogMgr.shutdown();
+    inShutdown = false;
     // The property workbench.system.doexit can be used to embedd the sqlworkbench.jar
     // in other applications and still be able to call doShutdown()
     if (shouldDoSystemExit()) System.exit(errorCode);
@@ -571,7 +574,6 @@ public final class WbManager
       // If only one window is present, shut down the application
       if (!this.inShutdown)
       {
-        this.inShutdown = true;
         this.exitWorkbench(win, win.isBusy());
       }
       else

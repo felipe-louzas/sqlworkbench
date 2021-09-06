@@ -91,7 +91,6 @@ import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
-
 /**
  * A panel to display the table definition information (=column list) inside the DbExplorer.
  *
@@ -353,8 +352,17 @@ public class TableDefinitionPanel
   protected void retrieveTableDefinition()
     throws SQLException
   {
-    if (this.isBusy()) return;
-    if (currentTable == null) return;
+    if (this.isBusy())
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "Panel is busy, not retrieving table definition for current table: " + currentTable);
+      return;
+    }
+
+    if (currentTable == null)
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "No current table set!");
+      return;
+    }
 
     if (!connectionLock.tryLock())
     {
@@ -395,8 +403,8 @@ public class TableDefinitionPanel
         dsModel.setValidator(validator);
 
         int typeIndex = dsModel.findColumn(TableColumnsDatastore.JAVA_SQL_TYPE_COL_NAME);
-        int posIndex = dsModel.findColumn("POSITION");
-        int pkIndex = dsModel.findColumn("PK");
+        int posIndex = dsModel.findColumn(TableColumnsDatastore.COLPOSITION_COL_NAME);
+        int pkIndex = dsModel.findColumn(TableColumnsDatastore.PKFLAG_COL_NAME);
         dsModel.setNonEditableColums(typeIndex, posIndex, pkIndex);
 
         if (meta.isTableType(currentTable.getType()) || meta.isViewType(currentTable.getType()))
