@@ -21,7 +21,8 @@
 
     <p>
       Its main focus is on running SQL scripts (either interactively or as a batch) and export/import features.
-      Graphical query building or more advanced DBA tasks are not the focus and are not planned
+      Graphical query building or more advanced DBA tasks are not the focus and are not planned. It's not intended
+      as a full blown "development IDE", but more as a powerful command line.
     </p>
 
     <p>
@@ -654,7 +655,7 @@ WHERE id=42;</p>
 
   <page link="https://codeberg.org/sql-workbench/workbench" title="Git Repository" toc="small" target="_blank"/>
 
-  <!-- 
+  <!--
   <page name="source-repos" title="Git Repository" toc="small">
     <title>SQL Workbench/J</title>
     <subtitle>Access to the source code</subtitle>
@@ -665,7 +666,7 @@ WHERE id=42;</p>
     </content>
   </page>
   -->
-  
+
   <page name="disclaimer" title="Disclaimer" toc="small">
     <title>SQL Workbench/J</title>
     <subtitle>Disclaimer</subtitle>
@@ -749,7 +750,7 @@ WHERE id=42;</p>
     <content>
     <h3>Creating a macOS executable</h3>
     <p>
-      The generic download does not contain a native executable for macOS. Using "Automator", you can create your own executable by 
+      The generic download does not contain a native executable for macOS. Using "Automator", you can create your own executable by
       following these steps:
     </p>
     <ol>
@@ -771,7 +772,7 @@ r=$(java \
 	workbench.WbStarter 2>&1)
 $r]]></p>
       </li>
-      
+
       <li>You have to adjust the installation path on the first line of the script to match your installation location.</li>
       <li>Press Cmd-S (or select File/Save from the menu) and save the app in the Applications folder.</li>
       <li>Close Automator</li>
@@ -821,7 +822,7 @@ $r]]></p>
         <li>Copy the FOP distribution to <tt>etc/fop</tt> on the same level where the <tt>manual</tt> subdirectory is</li>
       </ul>
       <p>
-        Go into the <tt>manual</tt> subdirectory and type <tt>ant pdf</tt> to build the PDF or 
+        Go into the <tt>manual</tt> subdirectory and type <tt>ant pdf</tt> to build the PDF or
         <tt>ant publish-dev</tt> to build the HTML manual.
       </p>
     </content>

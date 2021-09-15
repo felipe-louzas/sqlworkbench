@@ -20,7 +20,6 @@
  */
 package workbench.db;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,7 +49,7 @@ public class XmlProfileStorage
       WbPersistence reader = new WbPersistence(storage.getFullPath());
       result = reader.readObject();
     }
-    catch (Exception e)
+    catch (Throwable e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error when reading connection profiles from " + storage, e);
       result = null;
@@ -110,7 +109,7 @@ public class XmlProfileStorage
     {
       writer.writeObject(profiles);
     }
-    catch (IOException e)
+    catch (Throwable e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error saving profiles to: " + storage, e);
     }

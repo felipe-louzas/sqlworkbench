@@ -2535,9 +2535,11 @@ public class DbMetadata
 
     long start = System.currentTimeMillis();
 
+    final CallerInfo ci = new CallerInfo(){};
+
     try
     {
-      if (filter != null && filter.isRetrievalFilter())
+      if (filter != null && filter.isRetrievalFilter() && CollectionUtil.isNonEmpty(filter.getFilterExpressions()))
       {
         for (String expression : filter.getFilterExpressions())
         {
@@ -2546,38 +2548,43 @@ public class DbMetadata
           ResultSet rs = metaData.getSchemas(catalog, expression);
           int count = addSchemaResult(result, rs);
           long filterDuration = System.currentTimeMillis() - filterStart;
-          LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Using schema filter expression " + expression + " as a retrieval parameter returned " + count + " schemas (" + filterDuration + "ms)");
+          LogMgr.logDebug(ci, getConnId() + ": Using schema filter expression " + expression + " as a retrieval parameter returned " + count + " schemas (" + filterDuration + "ms)");
         }
         applyFilter = false;
       }
-      else if (StringUtil.isNonEmpty(catalog) && supportsCatalogForGetSchemas())
-      {
-        ResultSet rs = this.metaData.getSchemas(catalog, null);
-        addSchemaResult(result, rs);
-      }
       else
       {
-        if (StringUtil.isNonEmpty(catalog) && !StringUtil.equalString(catalog, getCurrentCatalog()))
+        boolean retrieved = false;
+        ResultSet rs = null;
+        if (getDbSettings().supportsCatalogForGetSchemas())
         {
-          Exception details = null;
-          if (LogMgr.isDebugEnabled())
+          try
           {
-            details = new Exception("Backtrace");
+            rs = this.metaData.getSchemas(catalog, null);
+            retrieved = true;
           }
-          LogMgr.logWarning(new CallerInfo(){},
-            getConnId() + ": getSchemas() called with catalog parameter, but current connection is not configured to support that", details);
+          catch (Throwable th)
+          {
+            LogMgr.logError(ci, "Error calling getSchema(String, String) with catalog: " + catalog, th);
+            getDbSettings().setSupportsCatalogForGetSchemas(false);
+            retrieved = false;
+          }
         }
-        ResultSet rs = this.metaData.getSchemas();
+
+        if (!retrieved)
+        {
+          rs = this.metaData.getSchemas();
+        }
         addSchemaResult(result, rs);
       }
     }
     catch (Exception e)
     {
-      LogMgr.logError(new CallerInfo(){}, getConnId() + ": Error retrieving schemas: " + e.getMessage(), e);
+      LogMgr.logError(ci, getConnId() + ": Error retrieving schemas: " + e.getMessage(), e);
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving " + result.size() + " schemas using getSchemas() took " + duration + "ms");
+    LogMgr.logDebug(ci, getConnId() + ": Retrieving " + result.size() + " schemas" + (catalog == null ? "" : " for catalog: " + catalog) + " took " + duration + "ms");
 
     // This is mainly for Oracle because the Oracle driver does not return the "PUBLIC" schema
     // which is - strictly speaking - correct as there is no user PUBLIC in the database.

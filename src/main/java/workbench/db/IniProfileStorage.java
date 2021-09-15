@@ -26,7 +26,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -141,7 +140,7 @@ public class IniProfileStorage
         }
       }
     }
-    catch (Exception ex)
+    catch (Throwable ex)
     {
       LogMgr.logError(new CallerInfo(){}, "Could not read profiles from: " + inifile, ex);
     }
@@ -345,7 +344,7 @@ public class IniProfileStorage
     {
       props.saveToFile(filename);
     }
-    catch (IOException ex)
+    catch (Throwable ex)
     {
       LogMgr.logError(new CallerInfo(){}, "Error saving profiles to: " + filename, ex);
     }

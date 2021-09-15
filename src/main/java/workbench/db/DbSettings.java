@@ -2016,6 +2016,11 @@ public class DbSettings
     return getBoolProperty("getschemas.per.catalog.supported", false);
   }
 
+  public void setSupportsCatalogForGetSchemas(boolean flag)
+  {
+    setProperty("getschemas.per.catalog.supported", false);
+  }
+
   public boolean supportsCatalogs()
   {
     return getBoolProperty("catalogs.supported", true);

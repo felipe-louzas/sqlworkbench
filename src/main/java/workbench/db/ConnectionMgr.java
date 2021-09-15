@@ -810,7 +810,7 @@ public class ConnectionMgr
     {
       writer.writeObject(allDrivers);
     }
-    catch (IOException e)
+    catch (Throwable e)
     {
       LogMgr.logError(new CallerInfo(){}, "Could not save drivers", e);
     }
@@ -841,7 +841,7 @@ public class ConnectionMgr
         LogMgr.logDebug(new CallerInfo(){}, "WbDrivers.xml not found. Using defaults.");
         this.drivers = null;
       }
-      catch (Exception e)
+      catch (Throwable e)
       {
         LogMgr.logDebug(new CallerInfo(){}, "Could not load driver definitions. Creating new one...", e);
         this.drivers = null;

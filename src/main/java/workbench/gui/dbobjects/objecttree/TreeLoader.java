@@ -425,6 +425,7 @@ public class TreeLoader
     }
 
     final CallerInfo ci = new CallerInfo(){};
+    LogMgr.logDebug(ci, "Loading schemas for node type: " + parentNode.getType() + ", name: " + parentNode.getNodeName());
 
     try
     {
@@ -437,10 +438,6 @@ public class TreeLoader
         catalogChanged = true;
       }
 
-      if (catalogToRetrieve != null)
-      {
-        LogMgr.logDebug(ci, "Loading schemas for catalog: " + catalogToRetrieve);
-      }
       List<String> schemas = connection.getMetadata().getSchemas(connection.getSchemaFilter(), catalogToRetrieve);
       LogMgr.logDebug(ci, "Loaded " + schemas.size() + " schemas. Currently selected types: " + typesToShow);
 

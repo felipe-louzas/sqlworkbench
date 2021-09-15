@@ -21,7 +21,6 @@
 package workbench.db;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +41,6 @@ import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.WbFile;
-
 
 /**
  *
@@ -205,7 +203,7 @@ public class ProfileManager
       }
       LogMgr.logDebug(new CallerInfo(){}, "Found " + result.size() + " potential profile files");
     }
-    catch (IOException ex)
+    catch (Throwable ex)
     {
       LogMgr.logError(new CallerInfo(){}, "Error listing files in " + profileDir, ex);
     }

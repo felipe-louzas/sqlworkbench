@@ -35,6 +35,8 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 
@@ -109,8 +111,16 @@ public class ProfileListModel
 
   public TreePath addProfile(ConnectionProfile profile)
   {
+    if (profile == null) return null;
+
     profiles.add(profile);
     DefaultMutableTreeNode group = findGroupNode(profile.getGroup());
+    if (group == null)
+    {
+      LogMgr.logError(new CallerInfo(){}, "addProfile() called, but no group defined. Adding default group.", new Exception("Backtrace"));
+      TreePath grp = addGroup(ResourceMgr.getString("LblDefGroup"));
+      group = (DefaultMutableTreeNode)grp.getLastPathComponent();
+    }
     DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(profile, false);
     insertNodeInto(newNode, group, group.getChildCount());
     TreePath newPath = new TreePath(new Object[] { this.rootNode, group, newNode });
