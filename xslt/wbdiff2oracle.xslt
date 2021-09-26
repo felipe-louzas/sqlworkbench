@@ -34,6 +34,16 @@
 
       <xsl:variable name="table" select="@name"/>
 
+      <xsl:for-each select="table-constraints/drop-constraint/constraint-definition">
+        <xsl:text>ALTER TABLE </xsl:text>
+        <xsl:value-of select="$table"/>
+        <xsl:text> DROP CONSTRAINT </xsl:text>
+        <xsl:value-of select="@name"/>
+        <xsl:text>;</xsl:text>
+        <xsl:value-of select="$newline"/>
+      </xsl:for-each>
+      <xsl:value-of select="$newline"/>
+      
       <xsl:apply-templates select="add-column">
         <xsl:with-param name="table" select="$table"/>
       </xsl:apply-templates>
@@ -60,16 +70,6 @@
 
       <xsl:apply-templates select="drop-index"/>
 
-      <xsl:for-each select="table-constraints/drop-constraint/constraint-definition">
-        <xsl:text>ALTER TABLE </xsl:text>
-        <xsl:value-of select="$table"/>
-        <xsl:text> DROP CONSTRAINT </xsl:text>
-        <xsl:value-of select="@name"/>
-        <xsl:text>;</xsl:text>
-        <xsl:value-of select="$newline"/>
-      </xsl:for-each>
-      <xsl:value-of select="$newline"/>
-
       <xsl:for-each select="table-constraints/modify-constraint/constraint-definition">
         <xsl:text>ALTER TABLE </xsl:text>
         <xsl:value-of select="$table"/>
@@ -85,7 +85,7 @@
           <xsl:text> CONSTRAINT </xsl:text>
           <xsl:value-of select="@name"/>
         </xsl:if>
-        <xsl:text> CHECK </xsl:text>
+        <xsl:text> </xsl:text>
         <xsl:value-of select="normalize-space(.)"/>
         <xsl:text>;</xsl:text>
         <xsl:value-of select="$newline"/>
