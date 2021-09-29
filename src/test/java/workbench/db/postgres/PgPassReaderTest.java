@@ -94,6 +94,7 @@ public class PgPassReaderTest
       "prodserver:5432:stage:peter:5432#\n" +
       "prodserver:5432:qa:peter:none\n" +
       "prodserver:1234:*:peter:1234#\n" +
+      "rdsserver.rds.aws.com:5432:*:rdsuser:rds-instance.eu-west-2.rds.amazonaws.com:5432/?Action=connect&DBUser=someUserxxxx&X-Amz-Security-Token=qqqqqqqqq\n" +
       "", "ISO-8859-1");
 
     PgPassReader reader = new PgPassReader("jdbc:postgresql://localhost/postgres", "arthur");
@@ -111,6 +112,10 @@ public class PgPassReaderTest
     reader = new PgPassReader("jdbc:postgresql://prodserver:5432/stage", "peter");
     pwd = reader.getPasswordFromFile(pgpass);
     assertEquals("5432#", pwd);
+
+    reader = new PgPassReader("jdbc:postgresql://rdsserver.rds.aws.com:5432/stage", "rdsuser");
+    pwd = reader.getPasswordFromFile(pgpass);
+    assertEquals("rds-instance.eu-west-2.rds.amazonaws.com:5432/?Action=connect&DBUser=someUserxxxx&X-Amz-Security-Token=qqqqqqqqq", pwd);
   }
 
 }

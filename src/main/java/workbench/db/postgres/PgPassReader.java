@@ -24,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -124,13 +126,18 @@ public class PgPassReader
   private String getPassword(String line)
   {
     if (StringUtil.isEmptyString(line)) return null;
-    String[] elements = line.split(":");
-    if (elements.length != 5) return null;
-    boolean hostnameEquals = elements[0].equals("*") || elements[0].equals(host);
-    boolean portEquals = elements[1].equals("*") || elements[1].equals(getPort());
-    boolean dbEquals = elements[2].equals("*") || elements[2].equals(database);
-    boolean userEquals = elements[3].equals("*") || elements[3].equals(username);
-    if (hostnameEquals && portEquals && userEquals && dbEquals) return elements[4];
+
+    Pattern pwdPattern = Pattern.compile("([\\w-/.*]*):([\\d]{1,6}|[*]):([\\*\\w-/.]*):([\\*\\w-/.]*):(.*)");
+    Matcher m = pwdPattern.matcher(line);
+    if (!m.matches())
+      return null;
+
+    boolean hostnameEquals = m.group(1).equals("*") || m.group(1).equals(host);
+    boolean portEquals = m.group(2).equals("*") || m.group(2).equals(getPort());
+    boolean dbEquals = m.group(3).equals("*") || m.group(3).equals(database);
+    boolean userEquals = m.group(4).equals("*") || m.group(4).equals(username);
+    if (hostnameEquals && portEquals && userEquals && dbEquals)
+      return m.group(5);
     return null;
   }
 
