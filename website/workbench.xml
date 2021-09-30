@@ -183,14 +183,14 @@ WHERE id=42;</p>
       <h3>Prerequisites</h3>
       <p>
         SQL Workbench/J needs a Java runtime (it also works with a JDK - "Java Development Kit").<br/><br/>
-        Binaries for Windows, Linux or MacOS can be downloaded for free from <a target="_blank" href="https://adoptopenjdk.net/">AdoptOpenJDK</a>,
+        Binaries for Windows, Linux or MacOS can be downloaded for free from <a target="_blank" href="https://adoptium.net/">Adoptium</a>,
         <a target="_blank" href="http://jdk.java.net/">OpenJDK</a> or <a target="_blank" href="https://www.azul.com/downloads/zulu/">Azul Systems</a>.<br/>
-        You have to install Java 8 or higher to run SQL Workbench/J. <br/>
+        You have to install Java 11 or higher to run SQL Workbench/J. <br/>
         Using a 64bit Java runtime is highly recommended.
       </p>
       <p>
         The ZIP archive contains a batch file/shell script ("download_jre.cmd" or "download_jre.sh") that can automatically download the needed Java runtime,
-        so you don't have to download the Java runtime in advance. After unpacking the archive, just run the download_jre script and it will
+        so you don't have to download the Java runtime in advance. After unpacking the archive, run the download_jre script and it will
         download and extract an appropriate Java runtime to the folder where the batch file is located. The Windows launcher and shell scripts
         will automatically use that Java runtime.
       </p>
@@ -225,8 +225,8 @@ WHERE id=42;</p>
 
       <p>
         If you are using Microsoft Windows&reg; start the application by double-clicking the
-        <tt>SQLWorkbench.exe</tt> executable. If you are using a 64bit operating system <b>and</b> a 64bit Java runtime,
-        you have to use <tt>SQLWorkbench64.exe</tt> instead.
+        <tt>SQLWorkbench64.exe</tt> executable. If you are a 32bit Java runtime (which is not recommended),
+        use <tt>SQLWorkbench.exe</tt> instead.
       </p>
 
       <h4>Linux and other Unix-style operating systems</h4>
@@ -404,11 +404,7 @@ WHERE id=42;</p>
         <content>
         <not-mysql/>
         <p style="margin-top:15px;font-weight:bold;margin-bottom:0px">
-            SQL Workbench/J requires <b>Java 8</b> or later
-        </p>
-        <p>
-            Using Java 11 or later is highly recommended, especially with High-DPI screens.<br/>
-            Build 127 is the last build to support Java 8. Starting with the next build, Java 11 will be required.
+            SQL Workbench/J requires <b>Java 11</b> or later. Using Java 17 is recommended.
         </p>
         <h3 style="margin-top:20px">Stable release</h3>
         <p>
@@ -481,9 +477,6 @@ WHERE id=42;</p>
     <content>
       <not-mysql/>
       <h3 id="dev_build" style="margin-top:20px">Development build</h3>
-      <p style="margin-top:1em;font-weight:bold;margin-bottom:1em;font-size:110%">
-          The development build requires <b>Java 11</b> or later!
-      </p>
       <p>
         A development build is generated while testing and implementing new features for the next stable build.
         <br/>

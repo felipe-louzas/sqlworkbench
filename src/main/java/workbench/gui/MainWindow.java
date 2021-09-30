@@ -1727,7 +1727,7 @@ public class MainWindow
   public void windowClosing(WindowEvent windowEvent)
   {
     LogMgr.logDebug(new CallerInfo(){}, "Main window closing");
-    WbSwingUtilities.showWaitCursor(this);
+    WbSwingUtilities.showWaitCursor(this.getRootPane());
     WbSwingUtilities.invokeLater(() -> WbManager.getInstance().closeMainWindow(this));
   }
 

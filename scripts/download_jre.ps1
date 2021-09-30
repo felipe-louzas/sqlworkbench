@@ -1,4 +1,4 @@
-# $url = "https://api.adoptopenjdk.net/v3/binary/latest/16/ga/windows/x64/jre/hotspot/normal/adoptopenjdk?project=jdk"
+# $url = "https://api.adoptium.net/v3/binary/latest/17/ga/windows/x64/jdk/hotspot/normal/adoptium?project=jdk"
 $url = "https://www.sql-workbench.eu/jre/jre_win64.zip"
 
 $filename = "OpenJDK.zip";

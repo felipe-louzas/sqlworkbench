@@ -53,6 +53,13 @@ public class StringSelectionAdapter
     this(text, includeHtml, "\t", "\"");
   }
 
+  public StringSelectionAdapter(String text, String htmlText)
+  {
+    data = text;
+    flavors = new DataFlavor[] { DataFlavor.fragmentHtmlFlavor, DataFlavor.stringFlavor };
+    dataAsHTML = htmlText;
+  }
+  
   public StringSelectionAdapter(String text, boolean includeHtml, String delimiter, String quoteChar)
   {
     this.data = text;

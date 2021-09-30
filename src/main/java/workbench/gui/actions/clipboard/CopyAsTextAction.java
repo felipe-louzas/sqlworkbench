@@ -208,17 +208,24 @@ public class CopyAsTextAction
 
       final Transferable transferable;
       final ClipboardOwner owner ;
+      String text = output.toString();
       if (Settings.getInstance().copyToClipboardAsHtml() && type == ExportType.TEXT)
       {
         String quote = dialog.getTextOptions().getTextQuoteChar();
         String delim = dialog.getTextOptions().getTextDelimiter();
-        StringSelectionAdapter selection = new StringSelectionAdapter(output.toString(), true, delim, quote);
+        StringSelectionAdapter selection = new StringSelectionAdapter(text, true, delim, quote);
+        transferable = selection;
+        owner = selection;
+      }
+      else if (type == ExportType.HTML)
+      {
+        StringSelectionAdapter selection = new StringSelectionAdapter(text, text);
         transferable = selection;
         owner = selection;
       }
       else
       {
-        StringSelection selection = new StringSelection(output.toString());
+        StringSelection selection = new StringSelection(text);
         transferable = selection;
         owner = selection;
       }
