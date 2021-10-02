@@ -26,6 +26,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import workbench.resource.GeneratedIdentifierCase;
+import workbench.resource.Settings;
+
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -74,6 +77,9 @@ public class ValuesListCreator
   private Pattern splitPattern;
   private boolean replaceDoubleQuotes = false;
   private final List<Boolean> quotesNeeded = new ArrayList<>();
+  private boolean ignoreFirstLine = false;
+  private boolean addSemicolon = false;
+  private boolean addValuesClause = false;
 
   public ValuesListCreator(String input)
   {
@@ -93,6 +99,21 @@ public class ValuesListCreator
       this.delimiter = StringUtil.unescape(delimiter);
     }
     initTokenizer();
+  }
+
+  public void setAddValuesClause(boolean addValuesClause)
+  {
+    this.addValuesClause = addValuesClause;
+  }
+
+  public void setIgnoreFirstLine(boolean ignoreFirstLine)
+  {
+    this.ignoreFirstLine = ignoreFirstLine;
+  }
+
+  public void setAddSemicolon(boolean addSemicolon)
+  {
+    this.addSemicolon = addSemicolon;
   }
 
   /**
@@ -138,6 +159,12 @@ public class ValuesListCreator
 
     List<List<String>> lines = parseInput();
 
+    if (addValuesClause)
+    {
+      result.append(getValuesClause());
+      result.append(lineEnding);
+    }
+
     int nr = 0;
     for (List<String> line : lines)
     {
@@ -150,18 +177,36 @@ public class ValuesListCreator
       StringBuilder entry = convertToEntry(line);
       if (entry.length() > 0)
       {
+        if (addValuesClause) result.append("  ");
         result.append(entry);
         nr ++;
       }
     }
+    
+    if (addSemicolon)
+    {
+      result.append(lineEnding);
+      result.append(";");
+      result.append(lineEnding);
+    }
 
     return result.toString();
+  }
+
+  private String getValuesClause()
+  {
+    GeneratedIdentifierCase kwCase = Settings.getInstance().getFormatterKeywordsCase();
+    return (kwCase == GeneratedIdentifierCase.upper ? "VALUES" : "values");
   }
 
   private List<List<String>> parseInput()
   {
     if (StringUtil.isBlank(input)) return Collections.emptyList();
     List<String> lines = StringUtil.getLines(input);
+    if (ignoreFirstLine && lines.size() > 1)
+    {
+      lines.remove(0);
+    }
 
     List<List<String>> result = new ArrayList<>(lines.size());
 

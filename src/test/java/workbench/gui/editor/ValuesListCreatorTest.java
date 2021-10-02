@@ -149,6 +149,19 @@ public class ValuesListCreatorTest
   }
 
   @Test
+  public void testIgnoreFirstLine()
+  {
+    String input = "id,firstname,lastname\n1,Arthur,Dent\n2,Tricia,McMillan";
+    ValuesListCreator creator = new ValuesListCreator(input);
+    creator.setIgnoreFirstLine(true);
+    String result = creator.createValuesList();
+    String expected =
+       "(1, 'Arthur', 'Dent'),\n" +
+       "(2, 'Tricia', 'McMillan')";
+    assertEquals(expected, result.trim());
+  }
+
+  @Test
   public void testNullValues()
   {
     String input = "1,Arthur,Dent\n2,Tricia,   \n3,Marvin,NULL";

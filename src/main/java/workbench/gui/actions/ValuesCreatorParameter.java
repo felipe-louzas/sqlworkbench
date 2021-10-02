@@ -50,6 +50,8 @@ public class ValuesCreatorParameter
   private final String nullStringProp = "workbench.gui.values.creator.nullstring";
   private final String replaceQuotesProp = "workbench.gui.values.creator.replacequotes";
   private final String addValuesKwProp = "workbench.gui.values.creator.addvalueskw";
+  private final String ignoreFirstLineProp = "workbench.gui.values.creator.ignorefirstline";
+  private final String addSemicolonProp = "workbench.gui.values.creator.addsemicolon";
 
   private String input;
   private Thread previewThread;
@@ -81,7 +83,7 @@ public class ValuesCreatorParameter
   {
     return addValuesKw.isSelected();
   }
-  
+
   public String getNullString()
   {
     return StringUtil.trimToNull(nullString.getText());
@@ -112,6 +114,16 @@ public class ValuesCreatorParameter
     return trimDelimiter.isSelected();
   }
 
+  public boolean getIgnoreFirstLine()
+  {
+    return ignoreFirstLine.isSelected();
+  }
+
+  public boolean getAddSemicolon()
+  {
+    return addSemicolon.isSelected();
+  }
+
   public void setFocusToInput()
   {
     this.delimiter.requestFocus();
@@ -128,6 +140,8 @@ public class ValuesCreatorParameter
     replaceQuotes.setSelected(Settings.getInstance().getBoolProperty(replaceQuotesProp, true));
     nullString.setText(Settings.getInstance().getProperty(nullStringProp, null));
     addValuesKw.setSelected(Settings.getInstance().getBoolProperty(addValuesKwProp, false));
+    addSemicolon.setSelected(Settings.getInstance().getBoolProperty(addSemicolonProp, false));
+    ignoreFirstLine.setSelected(Settings.getInstance().getBoolProperty(ignoreFirstLineProp, false));
 
   }
 
@@ -140,6 +154,8 @@ public class ValuesCreatorParameter
     Settings.getInstance().setProperty(nullStringProp, getNullString());
     Settings.getInstance().setProperty(replaceQuotesProp, getReplaceDoubleQuotes());
     Settings.getInstance().setProperty(addValuesKwProp, getAddValuesClause());
+    Settings.getInstance().setProperty(ignoreFirstLineProp, getIgnoreFirstLine());
+    Settings.getInstance().setProperty(addSemicolonProp, getAddSemicolon());
   }
 
   public void startPreview()
@@ -171,6 +187,9 @@ public class ValuesCreatorParameter
       creator.setTrimDelimiter(getTrimDelimiter());
       creator.setLineEnding("\n");
       creator.setNullString(getNullString());
+      creator.setIgnoreFirstLine(getIgnoreFirstLine());
+      creator.setAddSemicolon(getAddSemicolon());
+      creator.setAddValuesClause(getAddValuesClause());
       creator.setReplaceDoubleQuotes(getReplaceDoubleQuotes());
       String result = creator.createValuesList();
       WbSwingUtilities.invokeLater(() -> previewArea.setText(result));
@@ -230,6 +249,8 @@ public class ValuesCreatorParameter
     emptyString = new javax.swing.JCheckBox();
     replaceQuotes = new javax.swing.JCheckBox();
     addValuesKw = new javax.swing.JCheckBox();
+    addSemicolon = new javax.swing.JCheckBox();
+    ignoreFirstLine = new javax.swing.JCheckBox();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -309,8 +330,9 @@ public class ValuesCreatorParameter
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(6, 14, 0, 0);
     jPanel1.add(trimDelimiter, gridBagConstraints);
@@ -327,9 +349,7 @@ public class ValuesCreatorParameter
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     jPanel1.add(isRegex, gridBagConstraints);
 
@@ -345,7 +365,7 @@ public class ValuesCreatorParameter
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     jPanel1.add(emptyString, gridBagConstraints);
@@ -360,21 +380,65 @@ public class ValuesCreatorParameter
       }
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(6, 14, 0, 0);
     jPanel1.add(replaceQuotes, gridBagConstraints);
 
     addValuesKw.setText(ResourceMgr.getString("LblAddValuesKw")); // NOI18N
     addValuesKw.setBorder(null);
+    addValuesKw.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        addValuesKwActionPerformed(evt);
+      }
+    });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     jPanel1.add(addValuesKw, gridBagConstraints);
+
+    addSemicolon.setText(ResourceMgr.getString("LblAddSemi")); // NOI18N
+    addSemicolon.setBorder(null);
+    addSemicolon.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        addSemicolonActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(6, 14, 0, 0);
+    jPanel1.add(addSemicolon, gridBagConstraints);
+
+    ignoreFirstLine.setText(ResourceMgr.getString("LblIgnoreFirstLine")); // NOI18N
+    ignoreFirstLine.setBorder(null);
+    ignoreFirstLine.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        ignoreFirstLineActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
+    jPanel1.add(ignoreFirstLine, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -410,10 +474,27 @@ public class ValuesCreatorParameter
     doPreview();
   }//GEN-LAST:event_replaceQuotesActionPerformed
 
+  private void ignoreFirstLineActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ignoreFirstLineActionPerformed
+  {//GEN-HEADEREND:event_ignoreFirstLineActionPerformed
+    doPreview();
+  }//GEN-LAST:event_ignoreFirstLineActionPerformed
+
+  private void addSemicolonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addSemicolonActionPerformed
+  {//GEN-HEADEREND:event_addSemicolonActionPerformed
+    doPreview();
+  }//GEN-LAST:event_addSemicolonActionPerformed
+
+  private void addValuesKwActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addValuesKwActionPerformed
+  {//GEN-HEADEREND:event_addValuesKwActionPerformed
+    doPreview();
+  }//GEN-LAST:event_addValuesKwActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JCheckBox addSemicolon;
   private javax.swing.JCheckBox addValuesKw;
   private javax.swing.JTextField delimiter;
   private javax.swing.JCheckBox emptyString;
+  private javax.swing.JCheckBox ignoreFirstLine;
   private javax.swing.JCheckBox isRegex;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;

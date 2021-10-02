@@ -25,7 +25,8 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import workbench.interfaces.TextSelectionListener;
-import workbench.resource.GeneratedIdentifierCase;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -73,41 +74,31 @@ public class MakeValuesListAction
     if (!ok) return;
 
     parmInput.saveSettings();
-    ValuesListCreator creator = new ValuesListCreator(input, parmInput.getDelimiter(), parmInput.isRegex());
-    creator.setEmptyStringIsNull(parmInput.getEmptyStringIsNull());
-    creator.setTrimDelimiter(parmInput.getTrimDelimiter());
-    creator.setNullString(parmInput.getNullString());
-    creator.setReplaceDoubleQuotes(parmInput.getReplaceDoubleQuotes());
-    String end = Settings.getInstance().getInternalEditorLineEnding();
-    creator.setLineEnding(end);
-    String list = creator.createValuesList();
-
-
-    if (parmInput.getAddValuesClause())
+    try
     {
-      String valuesClause = getValuesClause();
-      // indent the generated list by two spaces
-      list = list.replaceAll(StringUtil.REGEX_CRLF, end + "  ");
-      list = valuesClause + end + "  " + list;
+      ValuesListCreator creator = new ValuesListCreator(input, parmInput.getDelimiter(), parmInput.isRegex());
+      creator.setEmptyStringIsNull(parmInput.getEmptyStringIsNull());
+      creator.setTrimDelimiter(parmInput.getTrimDelimiter());
+      creator.setNullString(parmInput.getNullString());
+      creator.setReplaceDoubleQuotes(parmInput.getReplaceDoubleQuotes());
+      creator.setIgnoreFirstLine(parmInput.getIgnoreFirstLine());
+      creator.setAddSemicolon(parmInput.getAddSemicolon());
+      creator.setAddValuesClause(parmInput.getAddValuesClause());
+      String end = Settings.getInstance().getInternalEditorLineEnding();
+      creator.setLineEnding(end);
+      String list = creator.createValuesList();
+
+      if (StringUtil.isNonBlank(list))
+      {
+        client.setSelectedText(list);
+      }
     }
-
-    list += end;
-    if (StringUtil.isNonBlank(list))
+    catch (Throwable th)
     {
-      client.setSelectedText(list);
+      LogMgr.logError(new CallerInfo(){}, "Could not create VALUES list", th);
     }
   }
 
-  private String getValuesClause()
-  {
-    GeneratedIdentifierCase kwCase = Settings.getInstance().getFormatterKeywordsCase();
-    if (kwCase != GeneratedIdentifierCase.lower)
-    {
-      return "values";
-    }
-    return "VALUES";
-  }
-  
   @Override
   public void selectionChanged(int newStart, int newEnd)
   {
