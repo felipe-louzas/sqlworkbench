@@ -45,6 +45,7 @@ public class WbDelimiter
   {
     this(VERB);
   }
+  
   public WbDelimiter(String verb)
   {
     this.verb = verb;

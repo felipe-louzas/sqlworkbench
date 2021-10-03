@@ -266,6 +266,48 @@ public class PostgresProcedureReaderTest
       "end;\n" +
       "$body$\n" +
       ";";
+    if (JdbcUtils.hasMinimumServerVersion(con, "14"))
+    {
+      expected = expected.replace("p_one integer", "IN p_one integer");
+    }
+    assertEquals(expected, source.trim());
+  }
+
+  @Test
+  public void testCreateProcedureWithOutParam()
+    throws Exception
+  {
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
+    if (!JdbcUtils.hasMinimumServerVersion(con, "14")) return;
+    
+    String sql =
+      "drop procedure if exists do_something cascade;\n" +
+      "create procedure do_something(IN p_one int, OUT p_result integer)\n" +
+      "as\n" +
+      "$$\n" +
+      "begin\n" +
+      "  p_result := p_one * 2;\n" +
+      "end;\n" +
+      "$$\n" +
+      "language plpgsql;";
+    TestUtil.executeScript(con, sql);
+    PostgresProcedureReader reader = new PostgresProcedureReader(con);
+    List<ProcedureDefinition> procs = reader.getProcedureList(null, TEST_ID, "do_something");
+    assertEquals(1, procs.size());
+    ProcedureDefinition def = procs.get(0);
+    String source = def.getSource(con).toString();
+    String expected =
+      "CREATE OR REPLACE PROCEDURE " + TEST_ID + ".do_something(IN p_one integer, OUT p_result integer)\n" +
+      "  LANGUAGE plpgsql\n" +
+      "AS\n" +
+      "$body$\n" +
+      "begin\n" +
+      "  p_result := p_one * 2;\n" +
+      "end;\n" +
+      "$body$\n" +
+      ";";
+//    System.out.println("--- expected --- \n" + expected + "\n--- actual ---\n"  + source.trim() + "\n-------");
     assertEquals(expected, source.trim());
   }
 

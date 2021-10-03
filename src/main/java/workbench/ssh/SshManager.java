@@ -61,7 +61,7 @@ public class SshManager
 
     if (config == null) return profileUrl;
 
-    if (Settings.getInstance().enableJSchLoggin())
+    if (Settings.getInstance().enableJSchLogging())
     {
       JSch.setLogger(new JschLogger());
     }

@@ -34,9 +34,11 @@ public class PostgresDelimiterTester
   private SQLToken lastToken;
 
   private DelimiterDefinition defaultDelimiter = DelimiterDefinition.STANDARD_DELIMITER;
-  private DelimiterDefinition copyDelimiter = new DelimiterDefinition("\\.");
+  private final DelimiterDefinition copyDelimiter = new DelimiterDefinition("\\.");
+  private final DelimiterDefinition dummyDelimiter = new DelimiterDefinition("_$wb$_end_body#");
   private boolean isCopy = false;
   private boolean isCopyFromStdin = false;
+  private boolean isSQLBody = false;
 
   public PostgresDelimiterTester()
   {
@@ -75,14 +77,29 @@ public class PostgresDelimiterTester
     {
       isCopyFromStdin = true;
     }
-
+    else if (token.getContents().equals("BEGIN ATOMIC"))
+    {
+      isSQLBody = true;
+    }
+    else if (isSQLBody && token.getContents().equals("END") && isDelimiter(lastToken))
+    {
+      isSQLBody = false;
+    }
     lastToken = token;
+  }
+
+  private boolean isDelimiter(SQLToken token)
+  {
+    if (token == null) return false;
+    DelimiterDefinition def = defaultDelimiter == null ? DelimiterDefinition.STANDARD_DELIMITER : defaultDelimiter;
+    return token.getText().equalsIgnoreCase(def.getDelimiter());
   }
 
   @Override
   public DelimiterDefinition getCurrentDelimiter()
   {
     if (isCopyFromStdin) return copyDelimiter;
+    if (isSQLBody) return dummyDelimiter;
     if (defaultDelimiter != null) return defaultDelimiter;
     return DelimiterDefinition.STANDARD_DELIMITER;
   }

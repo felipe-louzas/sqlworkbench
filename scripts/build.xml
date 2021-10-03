@@ -392,34 +392,34 @@
   <target name="generate-lexer">
 
     <copy quiet="true" overwrite="true"
-          file="../src/workbench/sql/lexer/BaseLexer.flex"
-          tofile="../src/workbench/sql/lexer/StandardLexer.flex"/>
+          file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/StandardLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-          file="../src/workbench/sql/lexer/BaseLexer.flex"
-          tofile="../src/workbench/sql/lexer/NonStandardLexer.flex"/>
+          file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/NonStandardLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-          file="../src/workbench/sql/lexer/BaseLexer.flex"
-          tofile="../src/workbench/sql/lexer/MySQLLexer.flex"/>
+          file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/MySQLLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-          file="../src/workbench/sql/lexer/BaseLexer.flex"
-          tofile="../src/workbench/sql/lexer/SqlServerLexer.flex"/>
+          file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/SqlServerLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-          file="../src/workbench/sql/lexer/BaseLexer.flex"
-          tofile="../src/workbench/sql/lexer/PostgresLexer.flex"/>
+          file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/PostgresLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
-          file="../src/workbench/sql/lexer/BaseLexer.flex"
-          tofile="../src/workbench/sql/lexer/FirebirdLexer.flex"/>
+          file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/FirebirdLexer.flex"/>
 
-    <replace file="../src/workbench/sql/lexer/StandardLexer.flex">
+    <replace file="../src/main/java/workbench/sql/lexer/StandardLexer.flex">
       <replacefilter token="XXXX_DBMS_XXXX|"/>
     </replace>
 
-    <replace file="../src/workbench/sql/lexer/FirebirdLexer.flex">
+    <replace file="../src/main/java/workbench/sql/lexer/FirebirdLexer.flex">
       <replacefilter>
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>FirebirdLexer</replacevalue>
@@ -434,7 +434,7 @@
       <replacefilter token="(DISTINCT{wsp}ON)|"/>
     </replace>
 
-    <replace file="../src/workbench/sql/lexer/PostgresLexer.flex">
+    <replace file="../src/main/java/workbench/sql/lexer/PostgresLexer.flex">
       <replacefilter>
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>PostgresLexer</replacevalue>
@@ -468,10 +468,10 @@
     </replace>
 
     <copy quiet="true" overwrite="true"
-          file="../src/workbench/sql/lexer/PostgresLexer.flex"
-          tofile="../src/workbench/sql/lexer/PgEscapingLexer.flex"/>
+          file="../src/main/java/workbench/sql/lexer/PostgresLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/PgEscapingLexer.flex"/>
 
-    <replace file="../src/workbench/sql/lexer/PgEscapingLexer.flex">
+    <replace file="../src/main/java/workbench/sql/lexer/PgEscapingLexer.flex">
       <!-- this generates a Postgres based lexer that can handle the backslash for escaping single quotes inside a string literal -->
       <replacefilter>
         <replacetoken>PostgresLexer</replacetoken>
@@ -483,7 +483,7 @@
       </replacefilter>
     </replace>
 
-    <replace file="../src/workbench/sql/lexer/SqlServerLexer.flex">
+    <replace file="../src/main/java/workbench/sql/lexer/SqlServerLexer.flex">
       <replacefilter>
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>SqlServerLexer</replacevalue>
@@ -532,7 +532,7 @@
       </replacefilter>
     </replace>
 
-    <replace file="../src/workbench/sql/lexer/NonStandardLexer.flex">
+    <replace file="../src/main/java/workbench/sql/lexer/NonStandardLexer.flex">
       <!-- this generates a Lexer that can handle the backslash for escaping single quotes inside a string literal -->
       <replacefilter>
         <replacetoken>StandardLexer</replacetoken>
@@ -549,12 +549,13 @@
       </replacefilter>
     </replace>
 
-    <replace file="../src/workbench/sql/lexer/MySQLLexer.flex">
+    <replace file="../src/main/java/workbench/sql/lexer/MySQLLexer.flex">
       <replacefilter>
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>MySQLLexer</replacevalue>
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|"/>
+      <replacefilter token="(BEGIN{wsp}ATOMIC)|"/>
       <replacefilter token="(MATERIALIZED{wsp}VIEW)|"/>
       <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|"/>
       <replacefilter token="(SNAPSHOT{wsp}LOG)|"/>
@@ -603,49 +604,49 @@
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
       <arg value="-nobak"/>
-      <arg value="../src/workbench/sql/lexer/StandardLexer.flex"/>
+      <arg value="../src/main/java/workbench/sql/lexer/StandardLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
       <arg value="-nobak"/>
-      <arg value="../src/workbench/sql/lexer/PostgresLexer.flex"/>
+      <arg value="../src/main/java/workbench/sql/lexer/PostgresLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
       <arg value="-nobak"/>
-      <arg value="../src/workbench/sql/lexer/FirebirdLexer.flex"/>
+      <arg value="../src/main/java/workbench/sql/lexer/FirebirdLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
       <arg value="-nobak"/>
-      <arg value="../src/workbench/sql/lexer/NonStandardLexer.flex"/>
+      <arg value="../src/main/java/workbench/sql/lexer/NonStandardLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
       <arg value="-nobak"/>
-      <arg value="../src/workbench/sql/lexer/MySQLLexer.flex"/>
+      <arg value="../src/main/java/workbench/sql/lexer/MySQLLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
       <arg value="-nobak"/>
-      <arg value="../src/workbench/sql/lexer/SqlServerLexer.flex"/>
+      <arg value="../src/main/java/workbench/sql/lexer/SqlServerLexer.flex"/>
     </java>
 
     <java classname="JFlex.Main" classpath="JFlex.jar" fork="true">
       <jvmarg value="-Xmx256m"/>
       <arg value="-q"/>
       <arg value="-nobak"/>
-      <arg value="../src/workbench/sql/lexer/PgEscapingLexer.flex"/>
+      <arg value="../src/main/java/workbench/sql/lexer/PgEscapingLexer.flex"/>
     </java>
 
   </target>

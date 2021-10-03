@@ -196,14 +196,14 @@ keyword=(
 (IS{wsp}NULL)|
 (IS{wsp}NOT{wsp}NULL)|
 (CHARACTER{wsp}VARYING)|
-(DISTINCT{wsp}ON)|
+
 (PRIMARY{wsp}KEY)|
 
 (IF{wsp}EXISTS)|
 (IF{wsp}NOT{wsp}EXISTS)|
 (WITHIN{wsp}GROUP)|
 (GROUPING{wsp}SETS)|
-(DATABASE{wsp}LINK)|
+
 (OWNED{wsp}BY)|
 (FETCH{wsp}FIRST)|(FETCH{wsp}NEXT)|
 (NEXT{wsp}VALUE{wsp}FOR)|
@@ -426,6 +426,7 @@ keyword=(
 (START{wsp}TRANSACTION)|
 (BEGIN{wsp}TRANSACTION)|
 (BEGIN{wsp}WORK)|
+(BEGIN{wsp}ATOMIC)|
 "SUBSTRING"|
 "SUM"|
 "SYNONYM"|

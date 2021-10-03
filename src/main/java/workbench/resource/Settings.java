@@ -28,7 +28,6 @@ import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
@@ -1445,16 +1444,8 @@ public class Settings
    */
   public boolean getScaleFonts()
   {
-    // always scale if the user configured a scale factor
     if (getScaleFactor() > 1) return true;
-
-    int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-    // 120 DPI is the "125% scale" setting in Windows
-    // anything bigger than that indicates we should also scale the fonts.
-    // For Linux it seems Java always returns 96dpi regardless of the
-    // the DPI factor defined in the system so this won't do any harm for a Linux system either
-    boolean scaleDefault = (dpi >= 120);
-    return getBoolProperty("workbench.gui.desktop.scalefonts", scaleDefault);
+    return getBoolProperty("workbench.gui.desktop.scalefonts", false);
   }
 
   public void setScaleFonts(boolean flag)
@@ -1838,7 +1829,7 @@ public class Settings
 
   public boolean getScaleMenuIcons()
   {
-    return getBoolProperty("workbench.gui.scale.menuicon", true);
+    return getBoolProperty("workbench.gui.scale.menuicon", false);
   }
 
   public void setScaleMenuIcons(boolean flag)
@@ -2021,7 +2012,7 @@ public class Settings
   {
     return getIntProperty(PROPERTY_EDITOR_BRACKET_HILITE_MIN_DIST, 2);
   }
-  
+
   public void setMinDistanceForBracketHighlight(int distance)
   {
     setProperty(PROPERTY_EDITOR_BRACKET_HILITE_MIN_DIST, distance);
@@ -3928,7 +3919,7 @@ public class Settings
     return wasModified;
   }
 
-  public boolean enableJSchLoggin()
+  public boolean enableJSchLogging()
   {
     return getBoolProperty("workbench.jsch.logging.enabled", true);
   }

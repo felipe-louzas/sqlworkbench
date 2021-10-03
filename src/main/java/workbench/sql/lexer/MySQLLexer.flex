@@ -426,6 +426,7 @@ keyword=(
 
 (BEGIN{wsp}TRANSACTION)|
 (BEGIN{wsp}WORK)|
+
 "SUBSTRING"|
 "SUM"|
 "SYNONYM"|

@@ -55,6 +55,29 @@ public class ScriptParserTest
   }
 
   @Test
+  public void testPgAlternateDelimiter()
+  {
+    ScriptParser p = new ScriptParser(ParserType.Postgres);
+    p.setAlternateDelimiter(DelimiterDefinition.DEFAULT_ORA_DELIMITER);
+    String script =
+      "create table foo (id int, value int); \n" +
+      "create procedure do_stuff(p_id int, p_value int)\n" +
+      " LANGUAGE SQL\n" +
+      " begin atomic\n" +
+      "   delete from foo where id = p_id;\n" +
+      "   insert into foo (id, value) values (p_id, p_value);\n" +
+      " end;\n" +
+      "call do_stuff(1,2);";
+    p.setScript(script);
+    assertEquals(3, p.getSize());
+    String create = p.getCommand(1);
+    assertTrue(create.startsWith("create procedure do_stuff"));
+    assertTrue(create.endsWith("end"));
+    String call = p.getCommand(2);
+    assertTrue(call.startsWith("call"));
+  }
+
+  @Test
   public void testHiveScript()
   {
     String script =
