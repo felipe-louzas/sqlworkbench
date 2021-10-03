@@ -55,4 +55,5 @@ fi
 
 exec "$JAVACMD"  $OPTS \
                 -Dawt.useSystemAAFontSettings=on \
+                -Xverify:none \
                 -Dvisualvm.display.name=SQLWorkbenchJ -cp "$cp" workbench.WbStarter "$@"

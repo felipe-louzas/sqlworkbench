@@ -32,6 +32,7 @@ start "SQL Workbench/J" "%JAVA_BINPATH%javaw.exe"^
       --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
       --add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
       -Xmx%max_mem%m ^
+      -Xverify:none ^
       -Dvisualvm.display.name=SQLWorkbench/J ^
       -Dsun.awt.keepWorkingSetOnMinimize=true ^
       -Dsun.java2d.dpiaware=true ^
@@ -49,7 +50,7 @@ goto :eof
 
 :get_memory
 
-  for /f "skip=1" %%p in ('wmic os get FreePhysicalMemory') do ( 
+  for /f "skip=1" %%p in ('wmic os get FreePhysicalMemory') do (
     set /a free_memory=%%p/1024
     goto :eof
   )
