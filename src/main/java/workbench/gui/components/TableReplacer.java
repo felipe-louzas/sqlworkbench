@@ -30,15 +30,19 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import workbench.interfaces.Replaceable;
+import workbench.interfaces.Searchable;
+import workbench.resource.ResourceMgr;
+
+import workbench.db.ColumnIdentifier;
 import workbench.db.WbConnection;
+
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.FindDataAction;
 import workbench.gui.actions.FindDataAgainAction;
 import workbench.gui.actions.ReplaceDataAction;
 import workbench.gui.editor.SearchResult;
-import workbench.interfaces.Replaceable;
-import workbench.interfaces.Searchable;
-import workbench.resource.ResourceMgr;
+
 import workbench.storage.DataStore;
 import workbench.storage.DataStoreReplacer;
 import workbench.storage.Position;
@@ -46,6 +50,7 @@ import workbench.storage.filter.ColumnComparator;
 import workbench.storage.filter.ColumnExpression;
 import workbench.storage.filter.ContainsComparator;
 import workbench.storage.filter.RegExComparator;
+
 import workbench.util.ConverterException;
 import workbench.util.ExceptionUtil;
 
@@ -91,10 +96,24 @@ public class TableReplacer
     return this.replaceAction;
   }
 
+  public ColumnIdentifier[] getDataStoreColumns()
+  {
+    return this.replacer.getDataStoreColumns();
+  }
+
+  public List<ColumnIdentifier> getSelectedColumns()
+  {
+    return this.replacer.getSelectedColumns();
+  }
+  
+  public void setColumn(List<ColumnIdentifier> columns)
+  {
+    this.replacer.setColumns(columns);
+  }
+
   @Override
   public void setWrapSearch(boolean flag)
   {
-
   }
 
   @Override

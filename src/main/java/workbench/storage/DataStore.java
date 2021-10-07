@@ -914,6 +914,11 @@ public class DataStore
     return this.updateTable.createCopy();
   }
 
+  public ColumnIdentifier getColumn(String columnName)
+  {
+    return getColumn(this.resultInfo.findColumn(columnName));
+  }
+
   public ColumnIdentifier getColumn(int column)
   {
     return this.resultInfo.getColumn(column);

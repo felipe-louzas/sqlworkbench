@@ -30,15 +30,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowListener;
+import java.util.stream.Collectors;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import workbench.interfaces.Replaceable;
+import workbench.resource.IconMgr;
+import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
-import workbench.interfaces.Replaceable;
-import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
+
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 
@@ -112,6 +118,15 @@ public class ReplacePanel
     ((HistoryTextField)replaceValue).setColumns(30);
     ((HistoryTextField)replaceValue).setSettingsProperty(replacementProperty);
 
+    if (client instanceof TableReplacer)
+    {
+      this.selectColumnsButton.setVisible(true);
+      this.selectColumnsButton.addActionListener(this);
+    }
+    else
+    {
+      this.selectColumnsButton.setVisible(false);
+    }
     this.restoreSettings();
 
     if (selectedText != null)
@@ -138,6 +153,33 @@ public class ReplacePanel
     else if (e.getComponent() == searchCriteria.getEditor().getEditorComponent())
     {
       searchCriteria.getEditor().selectAll();
+    }
+  }
+
+  private void selectColumns()
+  {
+    if (!(client instanceof TableReplacer)) return;
+    TableReplacer replacer = (TableReplacer)client;
+    ColumnSelectorPanel columnSelectorPanel = new ColumnSelectorPanel(replacer.getDataStoreColumns());
+    columnSelectorPanel.selectColumns(replacer.getSelectedColumns());
+
+    int choice = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), columnSelectorPanel, ResourceMgr.getString("MsgSelectColumnsWindowTitle"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+    if (choice == JOptionPane.OK_OPTION)
+    {
+      replacer.setColumn(columnSelectorPanel.getSelectedColumns());
+    }
+
+    if (replacer.getSelectedColumns().isEmpty())
+    {
+      this.selectColumnsButton.setIcon(null);
+      this.selectColumnsButton.setToolTipText(null);
+    }
+    else
+    {
+      this.selectColumnsButton.setIcon(IconMgr.getInstance().getLabelIcon("tick"));
+      String columns = columnSelectorPanel.getSelectedColumns().stream().map(c -> c.getColumnName()).collect(Collectors.joining(", "));
+      this.selectColumnsButton.setToolTipText(columns);
     }
   }
 
@@ -168,6 +210,7 @@ public class ReplacePanel
     useRegexCheckBox = new javax.swing.JCheckBox();
     selectedTextCheckBox = new javax.swing.JCheckBox();
     wrapSearchCbx = new javax.swing.JCheckBox();
+    selectColumnsButton = new javax.swing.JButton();
 
     setFocusCycleRoot(true);
     setLayout(new java.awt.GridBagLayout());
@@ -253,6 +296,7 @@ public class ReplacePanel
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 8);
     add(replaceValue, gridBagConstraints);
@@ -262,6 +306,7 @@ public class ReplacePanel
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(5, 6, 0, 8);
     add(searchCriteria, gridBagConstraints);
@@ -312,6 +357,7 @@ public class ReplacePanel
     gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(11, 0, 0, 0);
     jPanel1.add(selectedTextCheckBox, gridBagConstraints);
 
@@ -328,15 +374,27 @@ public class ReplacePanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(0, 28, 0, 0);
     jPanel1.add(wrapSearchCbx, gridBagConstraints);
+
+    selectColumnsButton.setText(ResourceMgr.getString("TxtTitleColumns")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(9, 28, 0, 0);
+    jPanel1.add(selectColumnsButton, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.gridheight = 4;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(12, 7, 0, 0);
     add(jPanel1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
@@ -436,6 +494,10 @@ public class ReplacePanel
     else if (source == this.replaceAllButton)
     {
       this.replaceAll();
+    }
+    else if (source == this.selectColumnsButton)
+    {
+      selectColumns();
     }
     else if (source == this.closeButton || e.getActionCommand().equals(escAction.getActionName()))
     {
@@ -586,6 +648,7 @@ public class ReplacePanel
   protected javax.swing.JButton replaceNextButton;
   protected javax.swing.JComboBox replaceValue;
   protected javax.swing.JComboBox searchCriteria;
+  protected javax.swing.JButton selectColumnsButton;
   protected javax.swing.JCheckBox selectedTextCheckBox;
   protected javax.swing.JPanel spacerPanel;
   protected javax.swing.JCheckBox useRegexCheckBox;

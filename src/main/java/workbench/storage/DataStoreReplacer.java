@@ -21,15 +21,19 @@
  */
 package workbench.storage;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+
+import workbench.db.ColumnIdentifier;
 
 import workbench.gui.editor.SearchAndReplace;
-
-import workbench.log.LogMgr;
 
 import workbench.util.ConverterException;
 import workbench.util.SqlUtil;
@@ -50,6 +54,7 @@ public class DataStoreReplacer
   private int lastSelectedRowIndex;
   private String lastCriteria;
   private boolean isRegexSearch;
+  private final List<ColumnIdentifier> columns = new ArrayList<>();
 
   public DataStoreReplacer()
   {
@@ -77,6 +82,35 @@ public class DataStoreReplacer
     this.client = ds;
     this.reset();
   }
+
+  public ColumnIdentifier[] getDataStoreColumns()
+  {
+    if (this.client == null) return new ColumnIdentifier[]{};
+    return client.getColumns();
+  }
+
+  /**
+   * Limit search and replace actions to the defined columns.
+   *
+   * If null or an empty list is passed, search and replace is done
+   * in all columns.
+   *
+   * @param columns the columns in which to search
+   */
+  public void setColumns(List<ColumnIdentifier> columns)
+  {
+    this.columns.clear();
+    if (columns != null)
+    {
+      this.columns.addAll(columns);
+    }
+  }
+
+  public List<ColumnIdentifier> getSelectedColumns()
+  {
+    return Collections.unmodifiableList(columns);
+  }
+
   /**
    * Limit all search and replace actions to the selected rows.
    *
@@ -202,6 +236,7 @@ public class DataStoreReplacer
 
       for (int col=startCol; col < colCount; col++)
       {
+        if (!replaceInColumn(client.getColumn(col))) continue;
         int type = client.getColumnType(col);
         if (SqlUtil.isBlobType(type)) continue;
         String colValue = client.getValueAsString(row, col);
@@ -217,6 +252,13 @@ public class DataStoreReplacer
     }
 
     return Position.NO_POSITION;
+  }
+
+  private boolean replaceInColumn(ColumnIdentifier col)
+  {
+    if (col == null) return false;
+    if (this.columns.isEmpty()) return true;
+    return this.columns.contains(col);
   }
 
   /**

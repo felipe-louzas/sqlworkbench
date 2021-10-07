@@ -105,7 +105,6 @@ public class ExportOptionsPanel
   private ExportType currentType;
   private List<ColumnIdentifier> selectedColumns;
   private Object columnSelectEventSource;
-  private ColumnSelectorPanel columnSelectorPanel;
   private ResultInfo dataStoreColumns;
   private String query;
   private WbConnection dbConnection;
@@ -976,17 +975,14 @@ public class ExportOptionsPanel
     }
     if (this.dataStoreColumns == null) return;
 
-    if (this.columnSelectorPanel == null)
-    {
-      this.columnSelectorPanel = new ColumnSelectorPanel(this.dataStoreColumns.getColumns());
-    }
-    this.columnSelectorPanel.selectColumns(this.selectedColumns);
+    ColumnSelectorPanel columnSelectorPanel = new ColumnSelectorPanel(this.dataStoreColumns.getColumns());
+    columnSelectorPanel.selectColumns(this.selectedColumns);
 
-    int choice = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), this.columnSelectorPanel, ResourceMgr.getString("MsgSelectColumnsWindowTitle"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    int choice = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), columnSelectorPanel, ResourceMgr.getString("MsgSelectColumnsWindowTitle"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
     if (choice == JOptionPane.OK_OPTION)
     {
-      this.selectedColumns = this.columnSelectorPanel.getSelectedColumns();
+      this.selectedColumns = columnSelectorPanel.getSelectedColumns();
     }
     updateSelectedColumnsInfo();
   }
