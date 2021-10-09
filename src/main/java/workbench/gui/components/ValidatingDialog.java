@@ -68,6 +68,7 @@ public class ValidatingDialog
   private JButton cancelButton;
   private boolean isCancelled = true;
   private int selectedOption = -1;
+  private int cancelOption = -1;
   private EscAction esc;
   private JPanel buttonPanel;
 
@@ -111,6 +112,11 @@ public class ValidatingDialog
     init(editor, options, addCancelButton);
   }
 
+  public void setCancelOption(int index)
+  {
+    this.cancelOption = index;
+  }
+
   public void setDefaultButton(int index)
   {
     JRootPane root = this.getRootPane();
@@ -140,9 +146,10 @@ public class ValidatingDialog
   public void setButtonsEnabled(boolean flag)
   {
     if (this.validator == null) return;
-    for (JButton b : optionButtons)
+    for (int i=0; i < optionButtons.length; i++)
     {
-      b.setEnabled(flag);
+      if (cancelOption > -1 && i == cancelOption) continue;
+      optionButtons[i].setEnabled(flag);
     }
   }
 
@@ -372,10 +379,19 @@ public class ValidatingDialog
     this.close();
   }
 
+  private boolean isCancelButton(Object source)
+  {
+    if (this.cancelOption > -1)
+    {
+      return this.optionButtons[cancelOption] == source;
+    }
+    return source == null || source == this.esc;
+  }
+
   @Override
   public void actionPerformed(ActionEvent e)
   {
-    if (e.getSource() == this.cancelButton || e.getSource() == this.esc)
+    if (isCancelButton(e.getSource()))
     {
       this.selectedOption = -1;
       this.isCancelled = true;

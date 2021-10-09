@@ -29,6 +29,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import workbench.resource.ResourceMgr;
+
 /**
  * A JTable table model for a list of files.
  *
@@ -105,9 +107,9 @@ public class FileListTableModel
     switch (column)
     {
       case 0:
-        return "Filename";
+        return ResourceMgr.getString("TxtFilename");
       case 1:
-        return "Created";
+        return ResourceMgr.getString("TxtCreatedAt");
       default:
         return null;
     }

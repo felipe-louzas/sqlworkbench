@@ -2311,11 +2311,28 @@ public class Settings
     setProperty("workbench.workspace.backup.dir", dir);
   }
 
-  public String getBackupDir()
+  public boolean getWorkspaceBackupsAvailable()
+  {
+    boolean enabled = getCreateWorkspaceBackup();
+    if (enabled)
+    {
+      File backupDir = getBackupDir();
+      return backupDir != null && backupDir.exists();
+    }
+    return false;
+  }
+
+  public WbFile getBackupDir()
   {
     String dir = FileDialogUtil.replaceConfigDir(getProperty("workbench.workspace.backup.dir", null));
     if (StringUtil.isBlank(dir)) return null;
     WbFile f = new WbFile(dir);
+    return f;
+  }
+  
+  public String getBackupDirName()
+  {
+    WbFile f = getBackupDir();
     return f.getAbsolutePath();
   }
 

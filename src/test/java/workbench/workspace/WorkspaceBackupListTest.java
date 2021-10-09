@@ -69,7 +69,7 @@ public class WorkspaceBackupListTest
       wksp1.save();
     }
 
-    FileVersioner version = new FileVersioner(5, backupDir.getAbsolutePath(), '.');
+    FileVersioner version = new FileVersioner(5, backupDir, '.');
     File backup1 = version.createBackup(workspaceFile);
 
     try ( WbWorkspace wksp2 = createWorkspace(3, workspaceFile.getFullPath()))

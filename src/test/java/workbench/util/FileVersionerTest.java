@@ -53,7 +53,7 @@ public class FileVersionerTest
   {
     TestUtil util = new TestUtil("FileVersioner");
     File bckDir = new File(util.getBaseDir(), "backup");
-    FileVersioner v = new FileVersioner(3, bckDir.getAbsolutePath(), ';');
+    FileVersioner v = new FileVersioner(3, bckDir, ';');
     util.emptyBaseDirectory();
     File main = new File(util.getBaseDir(), "mystuff.conf");
     TestUtil.writeFile(main, "this is a test\n");

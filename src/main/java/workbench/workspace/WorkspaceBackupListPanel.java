@@ -36,11 +36,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.sql.PanelType;
@@ -57,7 +60,7 @@ import workbench.util.FileDialogUtil;
  */
 public class WorkspaceBackupListPanel
   extends JPanel
-  implements ListSelectionListener, ActionListener
+  implements ListSelectionListener, ActionListener, ValidatingComponent
 {
 
   private File workspaceFile;
@@ -67,14 +70,19 @@ public class WorkspaceBackupListPanel
   private JList<TabEntry> tabList;
   private JButton selectWorkspaceButton;
 
+  public WorkspaceBackupListPanel()
+  {
+    this(null);
+  }
+
   public WorkspaceBackupListPanel(File workspace)
   {
-    this.workspaceFile = workspace;
     initComponents();
-
-    String fname = workspaceFile.getName();
-    String dir = Settings.getInstance().getBackupDir();
-    workspaceFileName.setText(ResourceMgr.getFormattedString("LblWkspBackups", fname, dir));
+    if (workspace == null)
+    {
+      showSelectButton();
+    }
+    setWorkspacefile(workspace);
 
     filesTable = new WbTable(false, false, false);
     filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -91,17 +99,45 @@ public class WorkspaceBackupListPanel
     splitPane.setRightComponent(editor);
     filesTable.getSelectionModel().addListSelectionListener(this);
     listSplitPane.setDividerLocation(0.5);
-    EventQueue.invokeLater(() -> {loadBackups();});
+    if (workspace != null)
+    {
+      EventQueue.invokeLater(() -> {loadBackups();});
+    }
+  }
+
+  private void setWorkspacefile(File workspace)
+  {
+    this.workspaceFile = workspace;
+    if (this.workspaceFile == null)
+    {
+      workspaceFileName.setText(ResourceMgr.getString("LblSelectWksp"));
+    }
+    else
+    {
+      String fname = workspaceFile.getName();
+      String dir = Settings.getInstance().getBackupDirName();
+      workspaceFileName.setText(ResourceMgr.getFormattedString("LblWkspBackups", fname, dir));
+    }
   }
 
   private void loadBackups()
   {
-    resetTabList();
-    WorkspaceBackupList list = new WorkspaceBackupList(workspaceFile);
-    List<File> files = list.getBackups();
-    backups = new FileListTableModel(files);
-    filesTable.setModel(backups);
+    try
+    {
+      WbSwingUtilities.showWaitCursor(this);
+      firePropertyChange(ValidatingDialog.PROPERTY_VALID_STATE, false, false);
+      resetTabList();
+      WorkspaceBackupList list = new WorkspaceBackupList(workspaceFile);
+      List<File> files = list.getBackups();
+      backups = new FileListTableModel(files);
+      filesTable.setModel(backups);
+    }
+    finally
+    {
+      WbSwingUtilities.showDefaultCursor(this);
+    }
   }
+
   public void showSelectButton()
   {
     if (selectWorkspaceButton != null) return;
@@ -127,8 +163,8 @@ public class WorkspaceBackupListPanel
       String filename = util.getWorkspaceFilename(SwingUtilities.getWindowAncestor(this), false, true);
       if (filename != null)
       {
-        this.workspaceFile = new File(filename);
-        loadBackups();
+        setWorkspacefile(new File(filename));
+        EventQueue.invokeLater(() -> {loadBackups();});
       }
     }
   }
@@ -142,6 +178,7 @@ public class WorkspaceBackupListPanel
       int index = filesTable.getSelectedRow();
       if (index > -1 && index < backups.getRowCount())
       {
+        firePropertyChange(ValidatingDialog.PROPERTY_VALID_STATE, false, true);
         resetTabList();
         loadWorkspace();
       }
@@ -155,8 +192,24 @@ public class WorkspaceBackupListPanel
   public File getSelectedWorkspaceFile()
   {
     int index = filesTable.getSelectedRow();
-    if (index < -1 || index > backups.getRowCount()) return null;
+    if (index < 0 || index > backups.getRowCount()) return null;
     return backups.getFile(index);
+  }
+
+  @Override
+  public boolean validateInput()
+  {
+    return getSelectedWorkspaceFile() != null;
+  }
+
+  @Override
+  public void componentDisplayed()
+  {
+  }
+
+  @Override
+  public void componentWillBeClosed()
+  {
   }
 
   private WbWorkspace getSelectedWorkspace()
@@ -245,7 +298,9 @@ public class WorkspaceBackupListPanel
     splitPane = new WbSplitPane();
     listSplitPane = new javax.swing.JSplitPane();
     filesScrollPane = new javax.swing.JScrollPane();
+    jPanel1 = new javax.swing.JPanel();
     tabsScrollPane = new javax.swing.JScrollPane();
+    jPanel2 = new javax.swing.JPanel();
     headerPanel = new javax.swing.JPanel();
     workspaceFileName = new javax.swing.JLabel();
 
@@ -255,7 +310,18 @@ public class WorkspaceBackupListPanel
     splitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
     listSplitPane.setLeftComponent(filesScrollPane);
-    listSplitPane.setRightComponent(tabsScrollPane);
+
+    jPanel1.setLayout(new java.awt.GridBagLayout());
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    jPanel1.add(tabsScrollPane, gridBagConstraints);
+
+    listSplitPane.setRightComponent(jPanel1);
 
     splitPane.setLeftComponent(listSplitPane);
 
@@ -267,6 +333,8 @@ public class WorkspaceBackupListPanel
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(splitPane, gridBagConstraints);
+
+    jPanel2.setLayout(new java.awt.GridBagLayout());
 
     headerPanel.setMinimumSize(new java.awt.Dimension(488, 50));
     headerPanel.setLayout(new java.awt.GridBagLayout());
@@ -287,13 +355,22 @@ public class WorkspaceBackupListPanel
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 0);
-    add(headerPanel, gridBagConstraints);
+    jPanel2.add(headerPanel, gridBagConstraints);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.weightx = 1.0;
+    add(jPanel2, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane filesScrollPane;
   private javax.swing.JPanel headerPanel;
+  private javax.swing.JPanel jPanel1;
+  private javax.swing.JPanel jPanel2;
   private javax.swing.JSplitPane listSplitPane;
   private javax.swing.JSplitPane splitPane;
   private javax.swing.JScrollPane tabsScrollPane;

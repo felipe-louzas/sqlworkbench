@@ -65,15 +65,15 @@ public class FileVersioner
    * @param separator the character to put before the version number. Only the first character is used
    * @see Settings#getConfigDir()
    */
-  public FileVersioner(int maxCount, String dirName, char separator)
+  public FileVersioner(int maxCount, File dir, char separator)
   {
     this.maxVersions = (maxCount > 0 ? maxCount : 5);
-    if (StringUtil.isNonBlank(dirName))
+    if (dir != null)
     {
-      backupDir = new File(dirName);
+      backupDir = dir;
       if (!backupDir.isAbsolute())
       {
-        backupDir = new File(Settings.getInstance().getConfigDir(), dirName);
+        backupDir = new File(Settings.getInstance().getConfigDir(), dir.getName());
       }
     }
     if (separator != 0)
@@ -177,6 +177,23 @@ public class FileVersioner
 
     slideVersions(target);
     return maxVersions;
+  }
+
+  public static String stripVersion(File f)
+  {
+    if (f == null) return null;
+    return stripVersion(f.getName(), Settings.getInstance().getFileVersionDelimiter());
+  }
+
+  public static String stripVersion(String name, char versionSeparator)
+  {
+    if (name == null) return null;
+    int idx = name.lastIndexOf(versionSeparator);
+    if (idx > 0)
+    {
+      name = name.substring(0, idx);
+    }
+    return name;
   }
 
   public static int getFileVersion(File target, char versionSeparator)

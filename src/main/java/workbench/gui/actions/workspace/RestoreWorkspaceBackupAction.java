@@ -25,37 +25,36 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JFrame;
+
+import workbench.WbManager;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
-import workbench.workspace.WbWorkspace;
 import workbench.workspace.WorkspaceBackupListPanel;
 
-import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ValidatingDialog;
 
-import workbench.util.StringUtil;
+import workbench.util.FileUtil;
+import workbench.util.FileVersioner;
 
 /**
  * @author Thomas Kellerer
  */
-public class LoadWorkspaceFromBackup
+public class RestoreWorkspaceBackupAction
   extends WbAction
 {
   private final String CONFIG_PROP = "workbench.gui.restore.wksp.backup.dialog";
-  private MainWindow client;
 
-  public LoadWorkspaceFromBackup(MainWindow aClient)
+  public RestoreWorkspaceBackupAction()
   {
     super();
-    this.client = aClient;
-    this.initMenuDefinition("MnuTxtLoadWkspFromBck", null);
-    this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
+    this.initMenuDefinition("MnuTxtRestoreWkspBck", null);
+    this.setMenuItemName(ResourceMgr.MNU_TXT_TOOLS);
     this.setIcon(null);
-    super.setEnabled(false);
     if (!Settings.getInstance().getWorkspaceBackupsAvailable())
     {
       setTooltip(ResourceMgr.getString("MsgNoWkspBck"));
@@ -63,63 +62,43 @@ public class LoadWorkspaceFromBackup
   }
 
   @Override
-  public void setEnabled(boolean flag)
-  {
-    boolean wasEnabled = this.isEnabled();
-    super.setEnabled(flag);
-    if (!wasEnabled && flag)
-    {
-      setTooltip(ResourceMgr.getDescription("MnuTxtLoadWkspFromBck"));
-    }
-  }
-
-
-  @Override
   public void executeAction(ActionEvent e)
   {
-    if (this.client == null) return;
-    String file = client.getCurrentWorkspaceFile();
-    if (StringUtil.isBlank(file)) return;
-
-    File workspace = new File(file);
-    WorkspaceBackupListPanel panel = new WorkspaceBackupListPanel(workspace);
+    WorkspaceBackupListPanel panel = new WorkspaceBackupListPanel();
 
     String[] options = new String[2];
-    options[0] = ResourceMgr.getString("TxtLoadWksp");
+    options[0] = ResourceMgr.getString("LblRestoreWkspBackup");
     options[1] = ResourceMgr.getString("LblClose");
 
-    ValidatingDialog dialog = new ValidatingDialog(client, workspace.getName(), panel, options, true);
+    JFrame window = WbManager.getInstance().getCurrentWindow();
+    ValidatingDialog dialog = new ValidatingDialog(window, ResourceMgr.getString("MnuTxtRestoreWkspBck"), panel, options, true);
+    dialog.setCancelOption(1);
+    dialog.setButtonEnabled(0, false);
 
     Settings.getInstance().restoreWindowSize(dialog, CONFIG_PROP);
-    WbSwingUtilities.center(dialog, client);
+    WbSwingUtilities.center(dialog, window);
     dialog.setVisible(true);
 
     int selected = dialog.getSelectedOption();
+    File f = panel.getSelectedWorkspaceFile();
     Settings.getInstance().storeWindowSize(dialog, CONFIG_PROP);
-    if (selected == 0)
+    if (selected == 0 && f != null && f.exists())
     {
-      String originalFile = client.getCurrentWorkspaceFile();
-      File f = panel.getSelectedWorkspaceFile();
-      if (f != null)
+      File configDir = Settings.getInstance().getWorkspaceDir();
+      String name = FileVersioner.stripVersion(f);
+      File target = new File(configDir, name);
+      try
       {
-        WbWorkspace toLoad = new WbWorkspace(f.getAbsolutePath());
-        try
-        {
-          toLoad.openForReading();
-          client.loadWorkspace(toLoad, false);
-        }
-        catch (IOException io)
-        {
-          LogMgr.logError(new CallerInfo(){}, "Could not load backup workspace", io);
-        }
-        finally
-        {
-          toLoad.setFilename(originalFile);
-        }
+        LogMgr.logInfo(new CallerInfo(){}, "Restoring workspace backup \"" + f.getAbsolutePath() + "\" to: " + target.getAbsolutePath());
+        FileUtil.copy(f, target);
+        String msg = ResourceMgr.getFormattedString("MsgWkspBckRestored", f.getAbsolutePath(), target.getAbsolutePath());
+        WbSwingUtilities.showMessage(window, msg);
       }
-      else
+      catch (IOException io)
       {
-        LogMgr.logError(new CallerInfo(){}, "No backup file selected!", null);
+        LogMgr.logError(new CallerInfo(){}, "Could not restore workspace backup \"" + f.getAbsolutePath() + "\" to directory: " + configDir.getAbsolutePath(), io);
+        String errMsg = ResourceMgr.getFormattedString("MsgWkspRestoreErr", f.getAbsolutePath(), target.getAbsolutePath(), io.getLocalizedMessage());
+        WbSwingUtilities.showErrorMessage(window, errMsg);
       }
     }
 

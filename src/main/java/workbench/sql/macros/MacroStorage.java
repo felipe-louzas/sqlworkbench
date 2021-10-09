@@ -157,7 +157,7 @@ public class MacroStorage
     if (Settings.getInstance().getCreateMacroBackup())
     {
       int maxVersions = Settings.getInstance().getMaxBackupFiles();
-      String dir = Settings.getInstance().getBackupDir();
+      File dir = Settings.getInstance().getBackupDir();
       char sep = Settings.getInstance().getFileVersionDelimiter();
       FileVersioner version = new FileVersioner(maxVersions, dir, sep);
       try
@@ -568,7 +568,7 @@ public class MacroStorage
     result.sort(new Sorter());
     return result;
   }
-  
+
   public List<MacroGroup> getGroups()
   {
     synchronized (lock)

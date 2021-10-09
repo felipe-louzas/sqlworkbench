@@ -144,6 +144,7 @@ import workbench.gui.actions.workspace.EditWorkspaceVarsAction;
 import workbench.gui.actions.workspace.LoadWorkspaceAction;
 import workbench.gui.actions.workspace.LoadWorkspaceFromBackup;
 import workbench.gui.actions.workspace.ReloadProfileWkspAction;
+import workbench.gui.actions.workspace.RestoreWorkspaceBackupAction;
 import workbench.gui.actions.workspace.SaveAsNewWorkspaceAction;
 import workbench.gui.actions.workspace.SaveWorkspaceAction;
 import workbench.gui.bookmarks.BookmarkManager;
@@ -642,7 +643,7 @@ public class MainWindow
   {
     final boolean workspaceSet = this.currentWorkspace != null;
     this.saveWorkspaceAction.setEnabled(workspaceSet);
-    this.loadWkspFromBackupAction.setEnabled(workspaceSet);
+    this.loadWkspFromBackupAction.setEnabled(workspaceSet && Settings.getInstance().getWorkspaceBackupsAvailable());
     this.assignWorkspaceAction.setEnabled(workspaceSet && this.currentProfile != null);
     this.closeWorkspaceAction.setEnabled(workspaceSet);
     this.editWorkspaceVariables.setEnabled(workspaceSet);
@@ -3252,6 +3253,7 @@ public class MainWindow
     JMenu history = new WbMenu(ResourceMgr.getString(ResourceMgr.MNU_TXT_TAB_HISTORY));
     history.setName(ResourceMgr.MNU_TXT_TAB_HISTORY);
     result.add(history);
+    new RestoreWorkspaceBackupAction().addToMenu(result);
 
     result.addSeparator();
     new OptionsDialogAction().addToMenu(result);

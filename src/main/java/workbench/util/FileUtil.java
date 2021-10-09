@@ -791,7 +791,7 @@ public class FileUtil
     if (!f.exists()) return null;
 
     int maxVersions = getInstance().getMaxBackupFiles();
-    String dir = getInstance().getBackupDir();
+    File dir = getInstance().getBackupDir();
     char sep = getInstance().getFileVersionDelimiter();
     FileVersioner version = new FileVersioner(maxVersions, dir, sep);
     try

@@ -67,7 +67,7 @@ public class BackupOptions
 
     backupCount.setEnabled(createWkspBackup.isSelected());
     backupCount.setText(Integer.toString(Settings.getInstance().getMaxBackupFiles()));
-    backupDirPicker.setFilename(Settings.getInstance().getBackupDir());
+    backupDirPicker.setFilename(Settings.getInstance().getBackupDirName());
   }
 
   @Override

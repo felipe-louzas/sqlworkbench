@@ -42,7 +42,7 @@ public class WorkspaceBackupList
 
   public WorkspaceBackupList(File workspace)
   {
-    this(workspace, new File(Settings.getInstance().getBackupDir()));
+    this(workspace, new File(Settings.getInstance().getBackupDirName()));
   }
 
   public WorkspaceBackupList(File workspace, File backupDir)
@@ -69,11 +69,7 @@ public class WorkspaceBackupList
 
     String[] files = this.backupDir.list((File dir, String name) ->
     {
-      int idx = name.lastIndexOf(versionDelimiter);
-      if (idx > 0)
-      {
-        name = name.substring(0, idx);
-      }
+      name = FileVersioner.stripVersion(name, versionDelimiter);
       return name.equalsIgnoreCase(baseName);
     });
 
