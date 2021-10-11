@@ -75,6 +75,7 @@ public class WbSwitchDB
     finally
     {
       this.done();
+      currentConnection.setBusy(false);
     }
 
     return result;
