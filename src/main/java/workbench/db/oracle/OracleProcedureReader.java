@@ -426,7 +426,7 @@ public class OracleProcedureReader
       "           decode(ao.object_type, 'TYPE', 'OBJECT TYPE', ao.object_type) as remarks, \n" +
       "           decode(aa.anz, 1, " + DatabaseMetaData.procedureReturnsResult + ", " + DatabaseMetaData.procedureNoResult + " ) as procedure_type, \n" +
       "           ao.status,  \n" +
-      "           ap.pipelined, \n " +
+      "           ap.pipelined, \n" +
       "           row_number() over (partition by ap.owner, ap.object_name, ap.procedure_name, ap.overload order by ao.object_type desc) as rn \n" +
       "    from all_procedures ap \n" +
       "      join all_objects ao on ap.object_name = ao.object_name and ap.owner = ao.owner \n" +
@@ -439,7 +439,7 @@ public class OracleProcedureReader
       "      ) aa on aa.owner = ap.owner \n" +
       "          and aa.package_name = ap.object_name \n" +
       "          and aa.object_name = ap.procedure_name \n" +
-      "          and ((aa.overload = ap.overload) or (ap.overload is null and aa.overload is null)) \n" +
+      "          and coalesce(aa.overload,'none') = coalesce(ap.overload, 'none')  \n" +
       "    where ao.object_type IN ('PACKAGE BODY', 'PACKAGE', 'TYPE', 'OBJECT TYPE') \n" +
       "      and ap.procedure_name is not null \n" +
       "      and ap.object_name    is not null \n" +
