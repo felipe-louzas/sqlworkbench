@@ -101,14 +101,28 @@ public class OracleProcedureReader
 
   public boolean packageExists(String owner, String packageName)
   {
-    final String sql =
-      "-- SQL Workbench \n" +
-      "SELECT count(*) \n" +
-      "FROM all_objects \n" +
-      "WHERE object_name = ? \n" +
-      "  AND owner = ? \n" +
-      "  AND object_type = 'PACKAGE'";
+    boolean useUserSpecificCatalogs = useUserSpecificSQL(connection, owner);
+    String sql;
 
+    if (useUserSpecificCatalogs)
+    {
+      sql =
+        "-- SQL Workbench \n" +
+        "SELECT count(*) \n" +
+        "FROM user_objects \n" +
+        "WHERE object_name = ? \n" +
+        "  AND object_type = 'PACKAGE'";
+    }
+    else
+    {
+      sql =
+        "-- SQL Workbench \n" +
+        "SELECT count(*) \n" +
+        "FROM all_objects \n" +
+        "WHERE object_name = ? \n" +
+        "  AND object_type = 'PACKAGE' \n" +
+        "  AND owner = ?";
+    }
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -121,7 +135,7 @@ public class OracleProcedureReader
       {
         stmt = this.connection.getSqlConnection().prepareStatement(sql);
         stmt.setString(1, packageName);
-        stmt.setString(2, owner);
+        if (!useUserSpecificCatalogs) stmt.setString(2, owner);
         rs = stmt.executeQuery();
         if (rs.next())
         {
@@ -156,14 +170,30 @@ public class OracleProcedureReader
       }
     }
 
-    final String sql =
-      "-- SQL Workbench \n" +
-      "SELECT text \n" +
-      "FROM all_source \n" +
-      "WHERE name = ? \n" +
-      "  AND owner = ? \n" +
-      "  AND type = ? \n" +
-      "ORDER BY line";
+    boolean useUserSpecificCatalogs = useUserSpecificSQL(connection, owner);
+    String sql;
+
+    if (useUserSpecificCatalogs)
+    {
+      sql =
+        "-- SQL Workbench \n" +
+        "SELECT text \n" +
+        "FROM user_source \n" +
+        "WHERE name = ? \n" +
+        "  AND type = ? \n" +
+        "ORDER BY line";
+    }
+    else
+    {
+      sql =
+        "-- SQL Workbench \n" +
+        "SELECT text \n" +
+        "FROM all_source \n" +
+        "WHERE name = ? \n" +
+        "  AND type = ? \n" +
+        "  AND owner = ? \n" +
+        "ORDER BY line";
+    }
 
     StringBuilder result = new StringBuilder(1000);
     PreparedStatement stmt = null;
@@ -186,8 +216,8 @@ public class OracleProcedureReader
       {
         stmt = OracleUtils.prepareQuery(connection, sql);
         stmt.setString(1, packageName);
-        stmt.setString(2, owner);
-        stmt.setString(3, "PACKAGE");
+        stmt.setString(2, "PACKAGE");
+        if (!useUserSpecificCatalogs) stmt.setString(3, owner);
         rs = stmt.executeQuery();
         while (rs.next())
         {
@@ -213,8 +243,8 @@ public class OracleProcedureReader
 
         stmt.clearParameters();
         stmt.setString(1, packageName);
-        stmt.setString(2, owner);
-        stmt.setString(3, "PACKAGE BODY");
+        stmt.setString(2, "PACKAGE BODY");
+        if (!useUserSpecificCatalogs) stmt.setString(3, owner);
         rs = stmt.executeQuery();
         while (rs.next())
         {
@@ -384,6 +414,27 @@ public class OracleProcedureReader
     return "= '" + name + "'";
   }
 
+  private boolean useUserSpecificSQL(WbConnection conn, String schema)
+  {
+    String currentUser = connection.getCurrentUser();
+    return useUserSpecificSQL(currentUser, schema);
+  }
+
+  private boolean useUserSpecificSQL(String currentUser, String schema)
+  {
+    boolean userSpecificCatalogs = OracleUtils.optimizeCatalogQueries() && (StringUtil.isEmptyString(schema) || schema.equalsIgnoreCase(currentUser));
+    return userSpecificCatalogs;
+  }
+
+  private String getUserSpecificProcSQL()
+  {
+    String sql = standardProcSQL.replace("all_objects ao", "user_objects ao");
+      sql = sql.replace("ao.owner as procedure_owner", "user as procedure_owner");
+      sql = sql.replace(
+        "join all_procedures ap on ao.object_name = ap.object_name and ao.owner = ap.owner",
+        "join user_procedures ap on ao.object_name = ap.object_name");
+    return sql;
+  }
 
 
   @Override
@@ -406,7 +457,12 @@ public class OracleProcedureReader
     // so an outer join against ALL_OBJECTS is necessary
     String standardProcs = standardProcSQL;
 
-    if (StringUtil.isNonBlank(schema))
+    boolean userSpecificCatalogs = useUserSpecificSQL(connection, schema);
+    if (userSpecificCatalogs)
+    {
+      standardProcs = getUserSpecificProcSQL();
+    }
+    else if (StringUtil.isNonBlank(schema))
     {
       standardProcs += "\n    and ao.owner = '" + schema + "' ";
     }
@@ -420,33 +476,42 @@ public class OracleProcedureReader
       "  select package_name, procedure_owner, procedure_name, overload_index, remarks, procedure_type, status, pipelined \n" +
       "  from ( \n" +
       "    select ap.object_name as package_name, \n" +
-      "           ap.owner as procedure_owner, \n" +
+      (userSpecificCatalogs ?
+      "           user as procedure_owner, \n" :
+      "           ap.owner as procedure_owner, \n") +
       "           ap.procedure_name, \n" +
       "           ap.overload as overload_index, \n" +
       "           decode(ao.object_type, 'TYPE', 'OBJECT TYPE', ao.object_type) as remarks, \n" +
       "           decode(aa.anz, 1, " + DatabaseMetaData.procedureReturnsResult + ", " + DatabaseMetaData.procedureNoResult + " ) as procedure_type, \n" +
       "           ao.status,  \n" +
       "           ap.pipelined, \n" +
-      "           row_number() over (partition by ap.owner, ap.object_name, ap.procedure_name, ap.overload order by ao.object_type desc) as rn \n" +
-      "    from all_procedures ap \n" +
-      "      join all_objects ao on ap.object_name = ao.object_name and ap.owner = ao.owner \n" +
+      (userSpecificCatalogs ?
+      "           row_number() over (partition by ap.object_name, ap.procedure_name, ap.overload order by ao.object_type desc) as rn \n" :
+      "           row_number() over (partition by ap.owner, ap.object_name, ap.procedure_name, ap.overload order by ao.object_type desc) as rn \n") +
+      (userSpecificCatalogs ?
+      "    from user_procedures ap \n" :
+      "    from all_procedures ap \n") +
+      (userSpecificCatalogs ?
+      "      join user_objects ao on ap.object_name = ao.object_name \n" :
+      "      join all_objects ao on ap.object_name = ao.object_name and ap.owner = ao.owner \n") +
       "      left join (\n" +
       "        select owner, package_name, object_name, overload, count(*) as anz \n" +
       "        from all_arguments \n" +
       "        where in_out = 'OUT' \n" +
       "          and argument_name is null \n" +
       "        group by owner, package_name, object_name, overload \n" +
-      "      ) aa on aa.owner = ap.owner \n" +
-      "          and aa.package_name = ap.object_name \n" +
+      "      ) aa on aa.package_name = ap.object_name \n" +
       "          and aa.object_name = ap.procedure_name \n" +
       "          and coalesce(aa.overload,'none') = coalesce(ap.overload, 'none')  \n" +
+      (userSpecificCatalogs ? "" :
+      "          and aa.owner = ap.owner \n") +
       "    where ao.object_type IN ('PACKAGE BODY', 'PACKAGE', 'TYPE', 'OBJECT TYPE') \n" +
       "      and ap.procedure_name is not null \n" +
       "      and ap.object_name    is not null \n" +
       "  )\n" +
       "  where rn = 1";
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNonBlank(schema) && !userSpecificCatalogs)
     {
       pkgProcs += "\n    and procedure_owner = '" + schema + "' ";
     }
@@ -543,6 +608,15 @@ public class OracleProcedureReader
     return ds;
   }
 
+  /**
+   * Returns table functions defined in the database.
+   *
+   * @param catalog   the catalog (not used)
+   * @param schema    the schema (user)
+   * @param name      the name pattern to look for
+   * @return
+   * @throws SQLException
+   */
   @Override
   public List<ProcedureDefinition> getTableFunctions(String catalog, String schema, String name)
     throws SQLException
@@ -553,11 +627,28 @@ public class OracleProcedureReader
     schema = connection.getMetadata().adjustObjectnameCase(schema);
     name = connection.getMetadata().adjustObjectnameCase(name);
 
-    String query = standardProcSQL + "\n    and ap.pipelined = 'YES' ";
+    boolean useUserSpecificCatalogs = useUserSpecificSQL(connection, schema);
+    String query = useUserSpecificCatalogs ? getUserSpecificProcSQL() : standardProcSQL;
 
-    if (StringUtil.isNonBlank(schema))
+    query +=
+      "\n    and (ap.pipelined = 'YES' \n" +
+      "           OR ap.object_name IN (SELECT arg.object_name \n" +
+      (useUserSpecificCatalogs ?
+      "                                 FROM user_arguments arg\n" :
+      "                                 FROM all_arguments arg\n") +
+      "                                 WHERE arg.position = 0 \n" +
+      "                                   AND arg.data_type = 'TABLE' \n" +
+      "                                   $schema_condition$))";
+
+
+    if (!useUserSpecificCatalogs && StringUtil.isNonBlank(schema))
     {
       query += "\n    and ao.owner = '" + schema + "' ";
+      query = query.replace("$schema_condition$", "AND arg.owner = '" + schema + "' ");
+    }
+    else
+    {
+      query = query.replace("$schema_condition$", "");
     }
 
     if (StringUtil.isNonBlank(name))

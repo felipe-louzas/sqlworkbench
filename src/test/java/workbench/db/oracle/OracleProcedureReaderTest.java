@@ -153,6 +153,59 @@ public class OracleProcedureReaderTest
   }
 
   @Test
+  public void testGetTableFunctions()
+    throws Exception
+  {
+    String sql =
+      "create type number_row as object  \n" +
+      "( \n" +
+      "  id number \n" +
+      ");\n" +
+      "/\n" +
+      "CREATE TYPE number_tab IS TABLE OF number_row;\n" +
+      "/\n" +
+      "CREATE OR REPLACE FUNCTION generate_p(p_rows IN NUMBER) \n" +
+      "   RETURN number_tab \n" +
+      "   PIPELINED \n" +
+      "AS\n" +
+      "BEGIN\n" +
+      "  FOR i IN 1 .. p_rows LOOP\n" +
+      "    pipe row (number_row(i));\n" +
+      "  END LOOP;\n" +
+      "END;\n" +
+      "/\n" +
+      "CREATE OR REPLACE FUNCTION generate_t(p_rows IN NUMBER) \n" +
+      "   RETURN number_tab \n" +
+      "AS\n" +
+      "  l_tab  number_tab := number_tab(); \n" +
+      "BEGIN\n" +
+      "  FOR i IN 1 .. p_rows LOOP\n" +
+      "    l_tab.extend; \n" +
+      "    l_tab(l_tab.last) := number_row(i);\n" +
+      "  END LOOP;\n" +
+      "  RETURN l_tab;\n" +
+      "END;\n" +
+      "/";
+
+    WbConnection con = OracleTestUtil.getOracleConnection();
+    if (con == null) return;
+    TestUtil.executeScript(con, sql, DelimiterDefinition.DEFAULT_ORA_DELIMITER, true);
+
+    try
+    {
+      List<ProcedureDefinition> functions = con.getMetadata().getProcedureReader().getTableFunctions(null, OracleTestUtil.SCHEMA_NAME, "GEN%");
+      assertEquals(2, functions.size());
+      System.setProperty("workbench.db.oracle.prefer_user_catalog_tables", "false");
+      functions = con.getMetadata().getProcedureReader().getTableFunctions(null, OracleTestUtil.SCHEMA_NAME, "GEN%");
+      assertEquals(2, functions.size());
+    }
+    finally
+    {
+      System.setProperty("workbench.db.oracle.prefer_user_catalog_tables", "true");
+    }
+  }
+
+  @Test
   public void testPackagedFunctions()
     throws Exception
   {
