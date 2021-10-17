@@ -24,7 +24,6 @@ package workbench.gui.renderer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -162,20 +161,9 @@ public class ButtonDisplayPanel
   }
 
   @Override
-  public int calculateDisplaySize(Object value)
+  public int addToDisplayWidth()
   {
-    int button = (int)(BUTTON_WIDTH * 1.1);
-    if (value == null)
-    {
-      return button;
-    }
-    Font f = getFont();
-    if (f == null) return -1;
-    FontMetrics fm = getFontMetrics(getFont());
-    if (fm == null) return -1;
-
-    int width = fm.stringWidth(getLabel()) + button + insets.left + insets.right;
-    return width;
+    return (int)(BUTTON_WIDTH * 1.1);
   }
 
 }

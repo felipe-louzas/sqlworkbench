@@ -26,12 +26,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.geom.Rectangle2D;
+
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-import workbench.gui.renderer.ToolTipRenderer;
+
 import workbench.resource.GuiSettings;
+
+import workbench.gui.renderer.ToolTipRenderer;
+
 import workbench.util.NumberStringCache;
 
 /**
@@ -88,7 +92,10 @@ public class RowHeaderRenderer
   public void setFont(Font f)
   {
     super.setFont(f);
-    calculateWidth();
+    if (table != null)
+    {
+      calculateWidth();
+    }
   }
 
   public final void calculateWidth()

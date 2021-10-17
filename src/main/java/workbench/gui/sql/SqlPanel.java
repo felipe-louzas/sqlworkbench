@@ -4058,8 +4058,12 @@ public class SqlPanel
       try
       {
         DwPanel p = createDwPanel(false);
-        p.showData(result, result.getGeneratingSql(), -1);
+        // make sure the table is added to the Swing component tree
+        // before retrieving the data, so that the font metrics
+        // are initialized correctly. this is necessary
+        // for a correct calculation of the optimal column width
         int newIndex = addResultTab(p);
+        p.showData(result, result.getGeneratingSql(), -1);
         if (newIndex > 0 || resultTab.getTabCount() == 2)
         {
           WbSwingUtilities.invokeLater(() ->
@@ -4245,8 +4249,13 @@ public class SqlPanel
               else
               {
                 p = createDwPanel(true);
-                p.showData(ds, genSql, time);
+                // Make sure the panel is added to the component tree
+                // before displaying the data. Otherwise the graphics
+                // context of the table won't be initialized correctly
+                // leading to incorrect Font information, which in turn
+                // leads to incorrect "optimize all columns" calculations
                 lastIndex = addResultTab(p);
+                p.showData(ds, genSql, time);
                 panels.add(p);
               }
             }
@@ -4262,7 +4271,7 @@ public class SqlPanel
         }
       });
 
-      // The retrieval of column comments should not be done on the AWT Thread
+      // The retrieval of column comments should not be done on the AWT Thread!
       if (GuiSettings.getRetrieveQueryComments())
       {
         for (DwPanel p : panels)
@@ -4291,8 +4300,8 @@ public class SqlPanel
             else
             {
               DwPanel p = createDwPanel(true);
-              p.showData(rs, sql, time);
               lastIndex = addResultTab(p);
+              p.showData(rs, sql, time);
             }
           }
         }

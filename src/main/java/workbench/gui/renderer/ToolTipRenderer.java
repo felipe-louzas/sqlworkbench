@@ -117,7 +117,7 @@ public class ToolTipRenderer
   private boolean isModifiedColumn;
 
   protected boolean showTooltip = true;
-  protected Map renderingHints;
+  private Map renderingHints;
 
   public ToolTipRenderer()
   {
@@ -170,7 +170,7 @@ public class ToolTipRenderer
     }
     if (result == null)
     {
-      result = new Insets(1,1,1,1);
+      result = new Insets(1,0,0,0);
     }
     return result;
   }
@@ -338,7 +338,7 @@ public class ToolTipRenderer
       }
     }
 
-    if (checkHighlightExpression(row, currentValue))
+    if (shouldHighlight(row, currentValue))
     {
       return filterHighlightColor;
     }
@@ -361,7 +361,7 @@ public class ToolTipRenderer
     int h = this.getHeight();
 
     Font f = getFont();
-    FontMetrics fm = getFontMetrics(f);
+    FontMetrics fm = g.getFontMetrics(f);
 
     Insets insets;
 
@@ -382,23 +382,26 @@ public class ToolTipRenderer
     paintIconR.x = paintIconR.y = paintIconR.width = paintIconR.height = 0;
     paintTextR.x = paintTextR.y = paintTextR.width = paintTextR.height = 0;
 
-    String clippedText = StringUtil.EMPTY_STRING;
-    if (displayValue != null)
+    String clippedText;
+    if (displayValue == null)
+    {
+      clippedText = StringUtil.EMPTY_STRING;
+    }
+    else
     {
       clippedText = SwingUtilities.layoutCompoundLabel(this, fm,
         this.displayValue, (Icon)null, this.valign, this.halign,
-        SwingConstants.TOP, SwingConstants.RIGHT, paintViewR, paintIconR, paintTextR, 0);
+        SwingConstants.TOP, SwingConstants.LEFT, paintViewR, paintIconR, paintTextR, 0);
     }
 
-    int textX = paintTextR.x;
-    textX -= rightMargin;
+    int textX = paintTextR.x - rightMargin;
     if (textX < 0) textX = 0;
     int textY = paintTextR.y + fm.getAscent();
     if (textY < 0) textY = 0;
 
-    Graphics2D g2d = (Graphics2D) g;
     if (renderingHints != null)
     {
+      Graphics2D g2d = (Graphics2D)g;
       g2d.addRenderingHints(renderingHints);
     }
 
@@ -439,7 +442,7 @@ public class ToolTipRenderer
     setTooltip(displayValue);
   }
 
-  protected boolean checkHighlightExpression(int row, Object value)
+  protected boolean shouldHighlight(int row, Object value)
   {
     if (this.filter == null)
     {

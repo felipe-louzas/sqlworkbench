@@ -21,19 +21,22 @@
  */
 package workbench.gui.components;
 
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Insets;
 
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import workbench.WbManager;
 import workbench.resource.GuiSettings;
 
 import workbench.db.ColumnIdentifier;
@@ -46,6 +49,9 @@ import workbench.util.StringUtil;
 
 /**
  * A class to adjust the column width of a WbTable to the displayed values.
+ *
+ * In order for this to calculate string width's correctly, the table must have been added
+ * to the Swing component tree.
  *
  * @author Thomas Kellerer
  */
@@ -119,17 +125,27 @@ public class ColumnWidthOptimizer
 
     for (int row = 0; row < rowCount; row++)
     {
-      String s = null;
-      int stringWidth = -1;
+      String displayValue = null;
+      int stringWidth = 0;
 
       TableCellRenderer rend = this.table.getCellRenderer(row, col);
       Object value = table.getValueAt(row, col);
-      Component c = rend.getTableCellRendererComponent(this.table, value, false, false, row, col);
+      JComponent c = (JComponent)rend.getTableCellRendererComponent(this.table, value, false, false, row, col);
       FontMetrics fm = fontInfo;
+
+      // Don't use table.getFont() as the renderer might have changed the font for this cell
+      Font f = c.getFont();
       if (fm == null)
       {
-        Font f = c.getFont();
-        fm = c.getFontMetrics(f);
+        // The component's font metrics aren't really accurate
+        // because the component isn't part of the Swing component tree.
+        // In that case the font information is not accurate enough
+        // (especially on HiDPI screens)
+        fm = getFontMetrics(f);
+        if (fm == null)
+        {
+          fm = c.getFontMetrics(f);
+        }
       }
 
       // The value that is displayed in the table through the renderer
@@ -138,39 +154,34 @@ public class ColumnWidthOptimizer
       if (c instanceof WbRenderer)
       {
         WbRenderer wb = (WbRenderer)c;
-        int width = wb.calculateDisplaySize(value);
-        if (width > -1)
-        {
-          stringWidth = width;
-        }
-        else
-        {
-          s = wb.getDisplayValue();
-        }
+        addWidth += wb.addToDisplayWidth();
+        displayValue = wb.getDisplayValue();
       }
       else if (c instanceof JTextArea)
       {
         JTextArea text = (JTextArea)c;
         String t = text.getText();
-        s = StringUtil.getLongestLine(t, maxLines);
+        displayValue = StringUtil.getLongestLine(t, maxLines);
       }
       else if (c instanceof JLabel)
       {
         // DefaultCellRenderer is a JLabel
-        s = ((JLabel)c).getText();
+        displayValue = ((JLabel)c).getText();
       }
       else
       {
-        s = this.table.getValueAsString(row, col);
+        displayValue = this.table.getValueAsString(row, col);
       }
 
-      if (stringWidth == -1 && s != null)
+      if (displayValue != null)
       {
-        String visible = StringUtil.rtrim(s);
-        stringWidth = fm.stringWidth(visible);
-        if (visible.length() < s.length())
+        String visible = StringUtil.rtrim(displayValue);
+        stringWidth = (int)Math.ceil(f.getStringBounds(visible, fm.getFontRenderContext()).getWidth());
+        stringWidth += (int)(fm.getMaxAdvance() / 4);
+        if (visible.length() < displayValue.length())
         {
-          stringWidth += fm.stringWidth("www");
+          // accommodate for the "..." display if the string is truncated
+          stringWidth += fm.getMaxAdvance() * 3;
         }
       }
 
@@ -182,6 +193,26 @@ public class ColumnWidthOptimizer
       optWidth = Math.min(optWidth, maxWidth);
     }
     return optWidth;
+  }
+
+  private FontMetrics getFontMetrics(Font f)
+  {
+    FontMetrics fm = table == null ? null : table.getFontMetrics(f);
+    if (fm != null) return fm;
+
+    JWindow win = (JWindow)SwingUtilities.getWindowAncestor(table);
+    if (win != null)
+    {
+      fm = win.getFontMetrics(f);
+    }
+    if (fm != null) return fm;
+
+    JFrame main = WbManager.getInstance().getCurrentWindow();
+    if (main != null)
+    {
+      fm = main.getFontMetrics(f);
+    }
+    return fm;
   }
 
   /**

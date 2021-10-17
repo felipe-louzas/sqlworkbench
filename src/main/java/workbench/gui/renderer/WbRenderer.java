@@ -30,8 +30,8 @@ public interface WbRenderer
   String getDisplayValue();
   int getHorizontalAlignment();
   void prepareDisplay(Object value);
-  default int calculateDisplaySize(Object value)
+  default int addToDisplayWidth()
   {
-    return -1;
+    return 0;
   }
 }
