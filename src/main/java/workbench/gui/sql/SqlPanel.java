@@ -4062,7 +4062,7 @@ public class SqlPanel
         // before retrieving the data, so that the font metrics
         // are initialized correctly. this is necessary
         // for a correct calculation of the optimal column width
-        int newIndex = addResultTab(p);
+        int newIndex = addResultTab(p, getResultName(result));
         p.showData(result, result.getGeneratingSql(), -1);
         if (newIndex > 0 || resultTab.getTabCount() == 2)
         {
@@ -4102,17 +4102,21 @@ public class SqlPanel
     return maxNr + 1;
   }
 
-  private int addResultTab(DwPanel data)
+  private String getResultName(DataStore ds)
   {
-    int newIndex = this.resultTab.getTabCount() - 1;
-    WbTable tbl = data.getTable();
-    DataStore ds = (tbl != null ? tbl.getDataStore() : null);
     String resultName = (ds != null ? ds.getResultName() : null);
     if (StringUtil.isBlank(resultName))
     {
       resultName = ResourceMgr.getString("LblTabResult") + " " + NumberStringCache.getNumberString(getNextResultNumber());
     }
-    else if (tbl != null)
+    return resultName;
+  }
+
+  private int addResultTab(DwPanel data, String resultName)
+  {
+    int newIndex = this.resultTab.getTabCount() - 1;
+    WbTable tbl = data.getTable();
+    if (tbl != null)
     {
       tbl.setPrintHeader(resultName);
     }
@@ -4254,7 +4258,7 @@ public class SqlPanel
                 // context of the table won't be initialized correctly
                 // leading to incorrect Font information, which in turn
                 // leads to incorrect "optimize all columns" calculations
-                lastIndex = addResultTab(p);
+                lastIndex = addResultTab(p, getResultName(ds));
                 p.showData(ds, genSql, time);
                 panels.add(p);
               }
@@ -4300,7 +4304,7 @@ public class SqlPanel
             else
             {
               DwPanel p = createDwPanel(true);
-              lastIndex = addResultTab(p);
+              lastIndex = addResultTab(p, null);
               p.showData(rs, sql, time);
             }
           }
