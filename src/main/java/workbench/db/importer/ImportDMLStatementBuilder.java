@@ -533,6 +533,19 @@ public class ImportDMLStatementBuilder
       colCount ++;
     }
 
+    if (columnConstants != null)
+    {
+      for (int i=0; i < columnConstants.getColumnCount(); i++)
+      {
+        ColumnIdentifier col = columnConstants.getColumn(i);
+        if (keys.contains(col)) continue;
+        if (colCount > 0) insert += ",\n      ";
+        String colname = quoter.quoteObjectname(col.getDisplayName());
+        insert += colname + " = EXCLUDED." + colname;
+        colCount++;
+      }
+    }
+
     return insert;
   }
 
@@ -635,11 +648,11 @@ public class ImportDMLStatementBuilder
       text.append(colname);
       colIndex ++;
     }
-    appendMergeMatchSection(text, insertOnly);
+    appendMergeMatchSection(text, insertOnly, columnConstants);
     return text.toString();
   }
 
-  private void appendMergeMatchSection(StringBuilder text, boolean insertOnly)
+  private void appendMergeMatchSection(StringBuilder text, boolean insertOnly, ConstantColumnValues columnConstants)
   {
     QuoteHandler quoter = getQuoteHandler();
     int colIndex = 0;
@@ -662,6 +675,26 @@ public class ImportDMLStatementBuilder
         text.append(colname);
         colIndex ++;
       }
+
+      if (columnConstants != null)
+      {
+        int colCount = columnConstants.getColumnCount();
+        for (int i=0; i < colCount; i++)
+        {
+          ColumnIdentifier col = columnConstants.getColumn(i);
+        if (isKeyColumn(col)) continue;
+
+        String colname = col.getColumnName();
+        colname = quoter.quoteObjectname(colname);
+
+        if (colIndex > 0) text.append(",\n      ");
+        text.append("tg.");
+        text.append(colname);
+        text.append(" = vals.");
+        text.append(colname);
+        colIndex ++;
+        }
+      }
     }
 
     StringBuilder insertCols = new StringBuilder(targetColumns.size() * 20);
@@ -683,6 +716,29 @@ public class ImportDMLStatementBuilder
       valueCols.append(colname);
       colIndex ++;
     }
+
+    if (columnConstants != null)
+    {
+      int colCount = columnConstants.getColumnCount();
+      for (int i = 0; i < colCount; i++)
+      {
+        ColumnIdentifier col = columnConstants.getColumn(i);
+
+        String colname = col.getColumnName();
+        colname = quoter.quoteObjectname(colname);
+
+        if (colIndex > 0)
+        {
+          insertCols.append(", ");
+          valueCols.append(", ");
+        }
+        insertCols.append(colname);
+        valueCols.append("vals.");
+        valueCols.append(colname);
+        colIndex++;
+      }
+    }
+
     text.append("\nWHEN NOT MATCHED THEN INSERT\n  (");
     text.append(insertCols);
     text.append(")\nVALUES\n  (");
@@ -700,27 +756,38 @@ public class ImportDMLStatementBuilder
 
     QuoteHandler quoter = getQuoteHandler();
 
-    int colIndex = 0;
-    for (int i=0; i < getColCount(); i++)
+    for (int i=0; i < targetColumns.size(); i++)
     {
-      if (colIndex > 0) text.append(',');
-
-      if (columnConstants != null && columnConstants.isFunctionCall(i))
-      {
-        text.append(columnConstants.getFunctionLiteral(i));
-      }
-      else
-      {
-        text.append('?');
-      }
+      if (i > 0) text.append(',');
+      text.append('?');
       String colname = targetColumns.get(i).getDisplayName();
       text.append(" AS ");
       text.append(quoter.quoteObjectname(colname));
-      colIndex ++;
+    }
+
+    if (columnConstants != null)
+    {
+      int colCount = columnConstants.getColumnCount();
+      for (int i=0; i < colCount; i++)
+      {
+        ColumnIdentifier col = columnConstants.getColumn(i);
+        text.append(',');
+        if (columnConstants.isFunctionCall(i))
+        {
+          text.append(columnConstants.getFunctionLiteral(i));
+        }
+        else
+        {
+          text.append('?');
+        }
+        String colname = col.getColumnName();
+        text.append(" AS ");
+        text.append(quoter.quoteObjectname(colname));
+      }
     }
     text.append(" FROM DUAL\n) vals ON (");
 
-    colIndex = 0;
+    int colIndex = 0;
     List<ColumnIdentifier> keyCols = getKeyColumns();
     for (int i=0; i < keyCols.size(); i++)
     {
@@ -734,7 +801,7 @@ public class ImportDMLStatementBuilder
       colIndex ++;
     }
     text.append(')');
-    appendMergeMatchSection(text, false);
+    appendMergeMatchSection(text, false, columnConstants);
     return text.toString();
   }
 

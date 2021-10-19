@@ -35,13 +35,13 @@ import java.util.regex.Pattern;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
 import workbench.sql.lexer.SQLToken;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -206,4 +206,11 @@ public class ValueStatement
   {
     return Collections.unmodifiableSet(columnIndexMap.keySet());
   }
+
+  @Override
+  public String toString()
+  {
+    return selectSql;
+  }
+
 }

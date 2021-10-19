@@ -300,4 +300,62 @@ public class WbImportPostgresTest
     assertEquals("Tricia", name);
   }
 
+  @Test
+  public void testUpsertWithConstantQuery()
+    throws Exception
+  {
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
+
+    String ddl =
+      "drop table if exists lookup, data cascade;\n" +
+      "create table lookup (id integer primary key, data varchar(100));\n" +
+      "create table data(\n" +
+      "  id integer primary key, \n" +
+      "  code integer references lookup, \n" +
+      "  value varchar(50)\n" +
+      ");\n" +
+      "insert into lookup (id, data) values (100, 'one');\n" +
+      "insert into lookup (id, data) values (200, 'two');\n" +
+      "insert into lookup (id, data) values (300, 'three');\n" +
+      "--insert into data (id, code, value) values (1, 1, null);\n" +
+      "--insert into data (id, code, value) values (2, null, 'bla');\n" +
+      "commit;";
+    TestUtil.executeScript(con, ddl);
+
+    TestUtil util = getTestUtil();
+    WbImport cmd = new WbImport();
+    cmd.setConnection(con);
+
+    String data =
+      "id,code_name,value\n"+
+      "1,two,first value\n" +
+      "2,one,second value\n" +
+      "3,three,third value";
+
+    File importFile = new File(util.getBaseDir(), "lookup_test.txt");
+    TestUtil.writeFile(importFile, data, "ISO-8859-1");
+
+    String sql =
+      "WbImport -file=\"" + importFile.getAbsolutePath() + "\" -type=text \n" +
+      "-table=data \n" +
+      "-delimiter=, -mode=upsert \n" +
+      "-importColumns=id,value \n" +
+      "-constantValues='code=$@{select id from lookup where data = $2}'";
+
+    StatementRunnerResult result = cmd.execute(sql);
+    if (!result.isSuccess())
+    {
+      System.out.println(result.getMessages());
+    }
+    assertTrue(result.isSuccess());
+    Number code = (Number)TestUtil.getSingleQueryValue(con, "select code from data where id=1");
+    assertEquals(200, code);
+    code = (Number)TestUtil.getSingleQueryValue(con, "select code from data where id=2");
+    assertEquals(100, code);
+    code = (Number)TestUtil.getSingleQueryValue(con, "select code from data where id=3");
+    assertEquals(300, code);
+  }
+
+
 }

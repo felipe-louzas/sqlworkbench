@@ -25,6 +25,11 @@
     <entry dev-build="1" type="enh">For WbExport, it's now possible to specify the literals to be used for boolean values</entry>
     <entry dev-build="1" type="enh">When using "Save data as..." it's now possible to include column comments the way -enableComments is working for WbExport</entry>
     <entry dev-build="1" type="enh">It's now possible to use an external pager when running in console mode</entry>
+    <entry dev-build="7" type="fix">For Oracle, when using WbImport with -mode=upsert and -columnConstantValues, a wrong SQL statement was generated</entry>
+    <entry dev-build="7" type="fix">For Postgres, when using WbImport with -mode=upsert and -columnConstantValues, the columns for the constant values were not included in the UPDATE part of the INSERT statement</entry>
+    <entry dev-build="7" type="fix">When Using an Oracle connection without a username, displaying the table definition or the table's source resulted in an error</entry>
+    <entry dev-build="7" type="fix">For some fonts, "Optimize column widths" did calculate the width correctly</entry>
+    <entry dev-build="7" type="fix">Improved the performance for retrieving the list of procedures and functions in Oracle</entry>
     <entry dev-build="7" type="fix">For SQL Server, the DROP statements for multiple sequences wasn't generated correctly.</entry>
     <entry dev-build="6" type="fix">For Oracle, the COMPRESS attribute wasn't generated properly for tables and materialized views</entry>
     <entry dev-build="6" type="fix">Using WbImport with -columnExpression (to call functions on column values) wasn't working any more</entry>
