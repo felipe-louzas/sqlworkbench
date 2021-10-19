@@ -101,7 +101,7 @@ public class OracleProcedureReader
 
   public boolean packageExists(String owner, String packageName)
   {
-    boolean useUserSpecificCatalogs = useUserSpecificSQL(connection, owner);
+    boolean useUserSpecificCatalogs = OracleUtils.useUserSpecificCatalogs(connection, owner);
     String sql;
 
     if (useUserSpecificCatalogs)
@@ -170,7 +170,7 @@ public class OracleProcedureReader
       }
     }
 
-    boolean useUserSpecificCatalogs = useUserSpecificSQL(connection, owner);
+    boolean useUserSpecificCatalogs = OracleUtils.useUserSpecificCatalogs(connection, owner);
     String sql;
 
     if (useUserSpecificCatalogs)
@@ -414,18 +414,6 @@ public class OracleProcedureReader
     return "= '" + name + "'";
   }
 
-  private boolean useUserSpecificSQL(WbConnection conn, String schema)
-  {
-    String currentUser = connection.getCurrentUser();
-    return useUserSpecificSQL(currentUser, schema);
-  }
-
-  private boolean useUserSpecificSQL(String currentUser, String schema)
-  {
-    boolean userSpecificCatalogs = OracleUtils.optimizeCatalogQueries() && (StringUtil.isEmptyString(schema) || schema.equalsIgnoreCase(currentUser));
-    return userSpecificCatalogs;
-  }
-
   private String getUserSpecificProcSQL()
   {
     String sql = standardProcSQL.replace("all_objects ao", "user_objects ao");
@@ -457,7 +445,7 @@ public class OracleProcedureReader
     // so an outer join against ALL_OBJECTS is necessary
     String standardProcs = standardProcSQL;
 
-    boolean userSpecificCatalogs = useUserSpecificSQL(connection, schema);
+    boolean userSpecificCatalogs = OracleUtils.useUserSpecificCatalogs(connection, schema);
     if (userSpecificCatalogs)
     {
       standardProcs = getUserSpecificProcSQL();
@@ -627,7 +615,7 @@ public class OracleProcedureReader
     schema = connection.getMetadata().adjustObjectnameCase(schema);
     name = connection.getMetadata().adjustObjectnameCase(name);
 
-    boolean useUserSpecificCatalogs = useUserSpecificSQL(connection, schema);
+    boolean useUserSpecificCatalogs = OracleUtils.useUserSpecificCatalogs(connection, schema);
     String query = useUserSpecificCatalogs ? getUserSpecificProcSQL() : standardProcSQL;
 
     query +=

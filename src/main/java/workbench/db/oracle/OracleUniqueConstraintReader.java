@@ -117,14 +117,10 @@ public class OracleUniqueConstraintReader
     String consView = "all_constraints";
     if (!hasMultipleSchemas)
     {
-      if (OracleUtils.optimizeCatalogQueries())
+      if (OracleUtils.useUserSpecificCatalogs(con, indexList.get(0).getSchema()));
       {
-        String schema = indexList.get(0).getSchema();
-        if (StringUtil.isEmptyString(schema) || schema.equalsIgnoreCase(con.getCurrentUser()))
-        {
-          consView = "user_constraints";
-          includeOwner = false;
-        }
+        consView = "user_constraints";
+        includeOwner = false;
       }
     }
 

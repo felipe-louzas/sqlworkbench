@@ -238,7 +238,7 @@ public class OracleTableDefinitionReader
 
   private void retrieveIdentityColumns(List<ColumnIdentifier> columns, String owner, String table)
   {
-    boolean useUserTables = OracleUtils.optimizeCatalogQueries() && currentUser.equalsIgnoreCase(owner);
+    boolean useUserTables = OracleUtils.useUserSpecificCatalogs(currentUser, owner);
 
     String sql =
       "-- SQL Workbench \n" +
@@ -339,8 +339,7 @@ public class OracleTableDefinitionReader
   private PreparedStatement prepareColumnsStatement(String schema, String table)
     throws SQLException
   {
-
-    boolean useUserTables = OracleUtils.optimizeCatalogQueries() && currentUser.equalsIgnoreCase(schema);
+    boolean useUserTables = OracleUtils.useUserSpecificCatalogs(currentUser, schema);
 
     // Oracle 9 and above reports a wrong length if NLS_LENGTH_SEMANTICS is set to char
     // this statement fixes this problem and also removes the usage of LIKE

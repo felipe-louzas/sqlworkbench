@@ -346,6 +346,18 @@ public class OracleUtils
     return false;
   }
 
+  public static boolean useUserSpecificCatalogs(WbConnection conn, String requestedSchema)
+  {
+    if (conn == null) return false;
+    return useUserSpecificCatalogs(conn.getCurrentUser(), requestedSchema);
+  }
+
+  public static boolean useUserSpecificCatalogs(String currentUser, String requestedSchema)
+  {
+    return optimizeCatalogQueries() &&
+           (StringUtil.isEmptyString(requestedSchema) || StringUtil.equalStringIgnoreCase(requestedSchema, currentUser));
+  }
+
   public static boolean optimizeCatalogQueries()
   {
     return Settings.getInstance().getBoolProperty("workbench.db.oracle.prefer_user_catalog_tables", true);
@@ -475,7 +487,7 @@ public class OracleUtils
     throws SQLException
   {
     if (stmt == null) return;
-    
+
     int fetchSize = getInternalFetchSize();
     if (fetchSize > 0)
     {

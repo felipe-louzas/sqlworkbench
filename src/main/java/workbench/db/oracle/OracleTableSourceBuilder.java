@@ -109,15 +109,7 @@ public class OracleTableSourceBuilder
     PreparedStatement pstmt = null;
     ResultSet rs = null;
 
-    boolean useUserTables = false;
-    if (OracleUtils.optimizeCatalogQueries())
-    {
-      String schema = tbl.getRawSchema();
-      if (StringUtil.isEmptyString(schema) || schema.equalsIgnoreCase(currentUser))
-      {
-        useUserTables = true;
-      }
-    }
+    boolean useUserTables = OracleUtils.useUserSpecificCatalogs(currentUser, tbl.getRawSchema());
 
     String archiveJoin = "";
     if (supportsArchives)

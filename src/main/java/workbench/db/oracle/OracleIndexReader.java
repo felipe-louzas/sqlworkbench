@@ -150,15 +150,7 @@ public class OracleIndexReader
     TableIdentifier tbl = table.createCopy();
     tbl.adjustCase(this.metaData.getWbConnection());
 
-    boolean useUserTables = false;
-    if (OracleUtils.optimizeCatalogQueries())
-    {
-      String schema = tbl.getRawSchema();
-      if (StringUtil.isEmptyString(schema) || schema.equalsIgnoreCase(currentUser))
-      {
-        useUserTables = true;
-      }
-    }
+    boolean useUserTables = OracleUtils.useUserSpecificCatalogs(currentUser, tbl.getRawSchema());
 
     String sql =
       "-- SQL Workbench \n" +
@@ -562,12 +554,9 @@ public class OracleIndexReader
       " and cons.owner = ? \n" +
       " and cons.table_name = ? ";
 
-    if (OracleUtils.optimizeCatalogQueries())
+    if (OracleUtils.useUserSpecificCatalogs(currentUser, schema))
     {
-      if (StringUtil.isEmptyString(schema) || schema.equalsIgnoreCase(currentUser))
-      {
-        sql = sql.replace(" all_co", " user_co");
-      }
+      sql = sql.replace(" all_co", " user_co");
     }
 
     if (pkStament != null)

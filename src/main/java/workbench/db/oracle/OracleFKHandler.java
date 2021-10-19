@@ -43,7 +43,6 @@ import workbench.storage.filter.AndExpression;
 import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.util.CaseInsensitiveComparator;
-import workbench.util.StringUtil;
 
 /**
  * A class to fix the bug in Oracle's JDBC that causes foreign keys that reference unique constraints
@@ -160,13 +159,9 @@ public class OracleFKHandler
    */
   private String getQuery(TableIdentifier tbl)
   {
-    if (OracleUtils.optimizeCatalogQueries())
+    if (OracleUtils.useUserSpecificCatalogs(currentUser, tbl.getRawSchema()))
     {
-      String schema = tbl.getRawSchema();
-      if (StringUtil.isEmptyString(schema) || schema.equalsIgnoreCase(currentUser))
-      {
-        return baseSql.replace(" all_c", " user_c");
-      }
+      return baseSql.replace(" all_c", " user_c");
     }
     return baseSql;
   }
