@@ -50,6 +50,7 @@ public class ResultProcessor
     originalConnection = conn;
     currentStatement = statement;
     currentResult = firstResult;
+    supportsGetMoreResults = conn == null ? false : conn.getDbSettings().supportsGetMoreResults();
   }
 
   public ResultSet getResult()
@@ -81,6 +82,7 @@ public class ResultProcessor
     catch (SQLFeatureNotSupportedException | AbstractMethodError ex)
     {
       LogMgr.logWarning(new CallerInfo(){}, "Error when calling getMoreResults()", ex);
+      originalConnection.getDbSettings().setSupportsGetMoreResults(false);
       supportsGetMoreResults = false;
     }
     catch (SQLException sql)

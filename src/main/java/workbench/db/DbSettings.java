@@ -2655,6 +2655,16 @@ public class DbSettings
     return getBoolProperty("sql.supports.usedb", false);
   }
 
+  public void setSupportsGetMoreResults(boolean flag)
+  {
+    setProperty("supports.getmoreresults", true);
+  }
+  
+  public boolean supportsGetMoreResults()
+  {
+    return getBoolProperty("supports.getmoreresults", true);
+  }
+
   public boolean ignoreSQLErrorsForGetMoreResults()
   {
     return getBoolProperty("getmoreresults.ignore.sqlerrors", false);
