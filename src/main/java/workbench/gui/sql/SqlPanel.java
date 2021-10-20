@@ -4063,7 +4063,7 @@ public class SqlPanel
         // are initialized correctly. this is necessary
         // for a correct calculation of the optimal column width
         int newIndex = addResultTab(p, getResultName(result));
-        p.showData(result, result.getGeneratingSql(), -1);
+        showDataStoreInPanel(p, result, -1);
         if (newIndex > 0 || resultTab.getTabCount() == 2)
         {
           WbSwingUtilities.invokeLater(() ->
@@ -4112,6 +4112,36 @@ public class SqlPanel
     return resultName;
   }
 
+  private void showDataStoreInPanel(DwPanel p, DataStore result, long duration)
+    throws SQLException
+  {
+    if (p == null) return;
+    if (result == null) return;
+    p.showData(result, result.getGeneratingSql(), duration);
+    initializePanel(p);
+  }
+
+  private void showResultSetInPanel(DwPanel p, ResultSet result, String sql, long duration)
+    throws SQLException
+  {
+    if (p == null) return;
+    if (result == null) return;
+    p.showData(result, sql, duration);
+    initializePanel(p);
+  }
+
+  private void initializePanel(DwPanel p)
+  {
+    if (p == null) return;
+    p.showGeneratingSQLAsTooltip();
+    p.checkLimitReachedDisplay();
+
+    TableAnnotationProcessor processor = new TableAnnotationProcessor();
+    processor.handleAnnotations(this, p, this.getRefreshMgr());
+    checkAutoRefreshIndicator(p);
+    updateLockedTitle(p);
+  }
+
   private int addResultTab(DwPanel data, String resultName)
   {
     int newIndex = this.resultTab.getTabCount() - 1;
@@ -4121,13 +4151,6 @@ public class SqlPanel
       tbl.setPrintHeader(resultName);
     }
     resultTab.insertTab(resultName, null, data, null, newIndex);
-    data.showGeneratingSQLAsTooltip();
-    data.checkLimitReachedDisplay();
-
-    TableAnnotationProcessor processor = new TableAnnotationProcessor();
-    processor.handleAnnotations(this, data, this.getRefreshMgr());
-    checkAutoRefreshIndicator(data);
-    updateLockedTitle(data);
     return newIndex;
   }
 
@@ -4259,7 +4282,7 @@ public class SqlPanel
                 // leading to incorrect Font information, which in turn
                 // leads to incorrect "optimize all columns" calculations
                 lastIndex = addResultTab(p, getResultName(ds));
-                p.showData(ds, genSql, time);
+                showDataStoreInPanel(p, ds, time);
                 panels.add(p);
               }
             }
@@ -4305,7 +4328,7 @@ public class SqlPanel
             {
               DwPanel p = createDwPanel(true);
               lastIndex = addResultTab(p, null);
-              p.showData(rs, sql, time);
+              showResultSetInPanel(p, rs, sql, time);
             }
           }
         }
