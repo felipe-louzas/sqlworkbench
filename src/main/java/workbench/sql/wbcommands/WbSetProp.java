@@ -41,7 +41,6 @@ import workbench.sql.StatementRunnerResult;
 import workbench.util.ArgumentParser;
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
-import workbench.util.StringUtil;
 
 /**
  *
@@ -151,12 +150,21 @@ public class WbSetProp
     }
     else if (args.indexOf('=') > -1)
     {
-      String[] pair = args.split("=");
-      if (pair.length == 2)
-      {
-        String prop = getPropertyName(pair[0]);
-        String value = StringUtil.trimQuotes(pair[1]);
+      int pos = args.indexOf('=');
+      String prop = args.substring(0, pos);
+      String value;
 
+      if (pos < args.length() - 1)
+      {
+        value = args.substring(pos + 1);
+      }
+      else
+      {
+        value = null;
+      }
+
+      if (value != null)
+      {
         if (isDbConfig && !prop.startsWith("workbench") && currentConnection != null)
         {
           prop = "workbench.db." + currentConnection.getDbId() + "." + prop;
@@ -175,9 +183,8 @@ public class WbSetProp
           result.addMessage(prop  + " set to \""  + value + "\"");
         }
       }
-      else if (pair.length == 1)
+      else
       {
-        String prop = getPropertyName(pair[0]);
         // no value specified, remove property
         Settings.getInstance().removeProperty(prop);
         result.addMessage(prop  + " removed");

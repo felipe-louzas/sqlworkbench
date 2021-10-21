@@ -31,6 +31,32 @@ where trigger_name not like '#_SYS#_TRIGGER%' escape '#'
   </void>
 
   <void method="put">
+   <string>SQLite</string>
+   <object class="workbench.db.GetMetaDataSql">
+    <void property="baseSql">
+     <string>
+select name as trigger_name,
+       null as trigger_type,
+       null as trigger_event,
+       tbl_name as trigger_table,
+       null as remarks
+from main.sqlite_schema where type = 'trigger'
+</string>
+    </void>
+    <void property="objectNameField">
+     <string>tbl_name</string>
+    </void>
+    <void property="orderBy">
+      <!-- this is a hack to make string comparison case insensitive -->
+      <!-- it is not really an order by statement by may be added at the same -->
+      <!-- place as the order by keyword -->
+      <string>collate nocase</string>
+    </void>
+
+   </object>
+  </void>
+
+  <void method="put">
    <string>SQLBase</string>
    <object class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
