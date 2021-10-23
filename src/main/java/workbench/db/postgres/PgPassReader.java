@@ -46,6 +46,7 @@ public class PgPassReader
   private String database;
   private String pwd;
   private String username;
+  private final Pattern linePattern = Pattern.compile("([\\w-/.*]*):([\\d]{1,6}|[*]):([\\*\\w-/.]*):([\\*\\w-/.]*):(.*)");
 
   public PgPassReader(String url, String user)
   {
@@ -126,19 +127,30 @@ public class PgPassReader
   private String getPassword(String line)
   {
     if (StringUtil.isEmptyString(line)) return null;
+    Matcher m = linePattern.matcher(line);
+    if (!m.matches()) return null;
 
-    Pattern pwdPattern = Pattern.compile("([\\w-/.*]*):([\\d]{1,6}|[*]):([\\*\\w-/.]*):([\\*\\w-/.]*):(.*)");
-    Matcher m = pwdPattern.matcher(line);
-    if (!m.matches())
-      return null;
+    String fileHost = m.group(1);
+    String filePort = m.group(2);
+    String fileDb = m.group(3);
+    String fileUser = m.group(4);
 
-    boolean hostnameEquals = m.group(1).equals("*") || m.group(1).equals(host);
-    boolean portEquals = m.group(2).equals("*") || m.group(2).equals(getPort());
-    boolean dbEquals = m.group(3).equals("*") || m.group(3).equals(database);
-    boolean userEquals = m.group(4).equals("*") || m.group(4).equals(username);
+    boolean hostnameEquals = entryEquals(fileHost, host);
+    boolean portEquals = entryEquals(filePort, getPort());
+    boolean dbEquals = entryEquals(fileDb, database);
+    boolean userEquals = entryEquals(fileUser, username);
+
     if (hostnameEquals && portEquals && userEquals && dbEquals)
+    {
       return m.group(5);
+    }
     return null;
+  }
+
+  private boolean entryEquals(String entry, String compareTo)
+  {
+    if (entry == null || compareTo == null) return false;
+    return entry.equals("*") || entry.equals(compareTo);
   }
 
   public static File getPgPassFile()

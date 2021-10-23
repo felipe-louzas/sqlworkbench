@@ -309,11 +309,13 @@ public class WbImportPostgresTest
 
     String ddl =
       "drop table if exists lookup, data cascade;\n" +
+      "create sequence seq_import_test start with 141; \n" +
       "create table lookup (id integer primary key, data varchar(100));\n" +
       "create table data(\n" +
       "  id integer primary key, \n" +
       "  code integer references lookup, \n" +
-      "  value varchar(50)\n" +
+      "  value varchar(50), \n" +
+      "  counter int\n" +
       ");\n" +
       "insert into lookup (id, data) values (100, 'one');\n" +
       "insert into lookup (id, data) values (200, 'two');\n" +
@@ -328,7 +330,7 @@ public class WbImportPostgresTest
     cmd.setConnection(con);
 
     String data =
-      "id,code_name,value\n"+
+      "id,code_name,value_plain\n"+
       "1,two,first value\n" +
       "2,one,second value\n" +
       "3,three,third value";
@@ -341,7 +343,9 @@ public class WbImportPostgresTest
       "-table=data \n" +
       "-delimiter=, -mode=upsert \n" +
       "-importColumns=id,value \n" +
-      "-constantValues='code=$@{select id from lookup where data = $2}'";
+      "-constantValues='code=$@{select id from lookup where data = $2}' \n" +
+      "-constantValues='value=$@{select upper($3)}' \n" +
+      "-constantValues=\"counter=${nextval('seq_import_test')}\"";
 
     StatementRunnerResult result = cmd.execute(sql);
     if (!result.isSuccess())
@@ -351,6 +355,11 @@ public class WbImportPostgresTest
     assertTrue(result.isSuccess());
     Number code = (Number)TestUtil.getSingleQueryValue(con, "select code from data where id=1");
     assertEquals(200, code);
+    String value = (String)TestUtil.getSingleQueryValue(con, "select value from data where id=1");
+    assertEquals("FIRST VALUE", value);
+    Number counter = (Number)TestUtil.getSingleQueryValue(con, "select counter from data where id=2");
+    assertEquals(142, counter);
+
     code = (Number)TestUtil.getSingleQueryValue(con, "select code from data where id=2");
     assertEquals(100, code);
     code = (Number)TestUtil.getSingleQueryValue(con, "select code from data where id=3");
