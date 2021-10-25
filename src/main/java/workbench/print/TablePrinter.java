@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
-import javax.swing.RepaintManager;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
@@ -180,9 +179,7 @@ public class TablePrinter
         {
           if (pj.printDialog())
           {
-            RepaintManager.currentManager(table).setDoubleBufferingEnabled(false);
             pj.print();
-            RepaintManager.currentManager(table).setDoubleBufferingEnabled(true);
           }
         }
         catch (Exception e)

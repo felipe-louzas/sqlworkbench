@@ -42,6 +42,7 @@ import workbench.resource.Settings;
 import workbench.gui.components.WbTable;
 import workbench.gui.renderer.WbRenderer;
 
+import workbench.util.StringUtil;
 
 /**
  *  This class is responsible for keeping a page definition while printing a JTable.
@@ -209,7 +210,6 @@ public class TablePrintPage
       for (int col= this.startCol; col <= this.endCol; col++)
       {
         Object value = this.table.getValueAt(row, col);
-        if (value == null) continue;
         TableCellRenderer rend = table.getCellRenderer(row, col);
         Component c = rend.getTableCellRendererComponent(table, value, false, false, row, col);
         if (rend instanceof WbRenderer)
@@ -218,7 +218,7 @@ public class TablePrintPage
 
           // Clip the value returned by the renderer
           // according to the current column's width
-          String data = wb.getDisplayValue();
+          String data = StringUtil.coalesce(wb.getDisplayValue(), StringUtil.EMPTY_STRING);
 
           paintViewR.x = 0;
           paintViewR.y = 0;
