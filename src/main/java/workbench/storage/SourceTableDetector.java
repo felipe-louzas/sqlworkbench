@@ -58,7 +58,7 @@ public class SourceTableDetector
       if (colTable != null)
       {
         String table = findTableFromAlias(colTable, tables);
-        if (TableIdentifier.compareNames(selectedTable, new TableIdentifier(table), true))
+        if (StringUtil.isNonBlank(table) && TableIdentifier.compareNames(selectedTable, new TableIdentifier(table), true))
         {
           result.add(col.getObjectName());
         }
@@ -116,7 +116,8 @@ public class SourceTableDetector
   {
     for (Alias tbl : tables)
     {
-      if (tbl.getNameToUse().equalsIgnoreCase(alias)) return tbl.getObjectName();
+      if (tbl.getObjectName() == null) continue;
+      if (StringUtil.equalStringIgnoreCase(tbl.getNameToUse(), alias)) return tbl.getObjectName();
 
       // take fully qualified names without an alias into account
       // e.g. select foo.id from public.foo join ...
