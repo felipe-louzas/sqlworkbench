@@ -286,7 +286,7 @@
       <zipfileset dir="${distdir}/libs" prefix="ext">
         <include name="*.jar"/>
       </zipfileset>
-      <zipfileset dir="../../launcher/bin">
+      <zipfileset dir="../../launcher/release">
         <include name="SQLWorkbench.exe"/>
         <include name="SQLWorkbench64.exe"/>
       </zipfileset>
