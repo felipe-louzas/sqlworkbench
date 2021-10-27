@@ -22,6 +22,8 @@
 package workbench.db.oracle;
 
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
@@ -74,6 +76,7 @@ public class WbImportOracleTest
       "insert into lookup (id, data) values (3, 'three');\n" +
       "insert into data (id, code, value) values (1, 1, null);\n" +
       "insert into data (id, code, value) values (2, null, 'bla');\n" +
+      "create table clob_test (id integer primary key, content clob);\n" +
       "commit;";
     TestUtil.executeScript(con, sql);
 
@@ -127,4 +130,45 @@ public class WbImportOracleTest
     assertEquals(3, code.intValue());
   }
 
+  @Test
+  public void testTextClobImport()
+    throws Exception
+  {
+    WbConnection con = OracleTestUtil.getOracleConnection();
+    assertNotNull(con);
+    TestUtil util = getTestUtil();
+    File importFile = new File(util.getBaseDir(), "import_text_clob.txt");
+
+    TestUtil.writeFile(importFile,
+      "id\tcontent\n" +
+      "1\ttext_data_r1_c2.data\n" +
+      "2\ttext_data_r2_c2.data\n", "UTF-8");
+
+    String[] data = {"This is a CLOB string to be put into row 1",
+                     "This is a CLOB string to be put into row 2"};
+
+    File datafile = new File(util.getBaseDir(), "text_data_r1_c2.data");
+    TestUtil.writeFile(datafile, data[0]);
+
+    datafile = new File(util.getBaseDir(), "text_data_r2_c2.data");
+    TestUtil.writeFile(datafile, data[1]);
+
+    WbImport importCmd = new WbImport();
+    importCmd.setConnection(con);
+    StatementRunnerResult result = importCmd.execute(
+      "wbimport -encoding=utf8 -file='" + importFile.getAbsolutePath() + "' -clobIsFilename=true " +
+      "         -type=text -header=true -continueonerror=false -table=clob_test"
+    );
+
+    assertEquals("Import failed: " + result.getMessages().toString(), result.isSuccess(), true);
+
+    Statement stmt = con.createStatement();
+    ResultSet rs = stmt.executeQuery("select id, content from clob_test order by id");
+    while (rs.next())
+    {
+      int id = rs.getInt(1);
+      String content = rs.getString(2);
+      assertEquals(data[id - 1], content);
+    }
+  }
 }

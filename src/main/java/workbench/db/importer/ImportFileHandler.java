@@ -267,7 +267,7 @@ public class ImportFileHandler
     {
       return getLength(f);
     }
-    else if (this.zipType == ZipType.None)
+    else if (this.zipType == ZipType.GZIP)
     {
       return 0;
     }
@@ -291,7 +291,7 @@ public class ImportFileHandler
       ZipEntry entry = findEntry(toTest);
       return entry.getSize();
     }
-    else if (this.zipType == ZipType.None)
+    else if (this.zipType == ZipType.GZIP)
     {
       return 0;
     }

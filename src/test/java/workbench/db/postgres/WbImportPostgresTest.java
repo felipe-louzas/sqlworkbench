@@ -71,6 +71,7 @@ public class WbImportPostgresTest
     TestUtil.executeScript(con,
       "create table foo (id integer, firstname text, lastname text);\n" +
       "create table xml_test (id integer, test_data xml);\n" +
+      "create table clob_test (id integer, content text);\n" +
       "commit;\n");
   }
 
@@ -366,5 +367,45 @@ public class WbImportPostgresTest
     assertEquals(300, code);
   }
 
+  @Test
+  public void testTextClobImport()
+    throws Exception
+  {
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
 
+    TestUtil util = getTestUtil();
+    File importFile = new File(util.getBaseDir(), "import_text_clob.txt");
+
+    TestUtil.writeFile(importFile,
+      "id\tcontent\n" +
+      "1\ttext_data_r1_c2.data\n" +
+      "2\ttext_data_r2_c2.data\n", "UTF-8");
+
+    String[] data = {"This is the string for row 1",
+                     "This is the string for row 2"};
+
+    File datafile = new File(util.getBaseDir(), "text_data_r1_c2.data");
+    TestUtil.writeFile(datafile, data[0]);
+
+    datafile = new File(util.getBaseDir(), "text_data_r2_c2.data");
+    TestUtil.writeFile(datafile, data[1]);
+
+    WbImport importCmd = new WbImport();
+    importCmd.setConnection(con);
+    StatementRunnerResult result = importCmd.execute(
+      "wbimport -encoding=utf8 -file='" + importFile.getAbsolutePath() + "' -clobIsFilename=true " +
+      "         -type=text -header=true -continueonerror=false -table=clob_test");
+
+    assertEquals("Import failed: " + result.getMessages().toString(), result.isSuccess(), true);
+
+    Statement stmt = con.createStatement();
+    ResultSet rs = stmt.executeQuery("select id, content from clob_test order by id");
+    while (rs.next())
+    {
+      int id = rs.getInt(1);
+      String content = rs.getString(2);
+      assertEquals(data[id - 1], content);
+    }
+  }
 }
