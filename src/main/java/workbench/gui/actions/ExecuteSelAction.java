@@ -55,10 +55,13 @@ public class ExecuteSelAction
   {
     super();
     this.target = aPanel;
-    this.initMenuDefinition("MnuTxtExecuteSel", KeyStroke.getKeyStroke(KeyEvent.VK_E, PlatformShortcuts.getDefaultModifier()));
+    this.initMenuDefinition("MnuTxtExecuteSel",
+      KeyStroke.getKeyStroke(KeyEvent.VK_E, PlatformShortcuts.getDefaultModifier()),
+      KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
+    
     this.setIcon("execute_sel");
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
-    this.setAlternateAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
+
     if (GuiSettings.getExecuteOnlySelected())
     {
       super.setEnabled(false);

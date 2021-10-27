@@ -1681,4 +1681,9 @@ public class GuiSettings
   {
     return Settings.getInstance().getIntProperty("workbench.gui.copy.data.rowcount.threshold", 500);
   }
+
+  public static boolean showAlternateAcceleratorTooltip()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.menuitem.alternate.accelerator", false);
+  }
 }

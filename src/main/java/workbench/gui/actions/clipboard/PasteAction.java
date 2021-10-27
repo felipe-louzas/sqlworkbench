@@ -28,11 +28,11 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import workbench.gui.actions.WbAction;
-
 import workbench.interfaces.ClipboardSupport;
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
+
+import workbench.gui.actions.WbAction;
 
 import workbench.util.MacOSHelper;
 
@@ -50,11 +50,12 @@ public class PasteAction
   {
     super();
     this.client = aClient;
-    initMenuDefinition("MnuTxtPaste", PlatformShortcuts.getDefaultPasteShortcut());
+    KeyStroke alternateKey = null;
     if (!MacOSHelper.isMacOS())
     {
-      setAlternateAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.SHIFT_MASK));
+      alternateKey = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK);
     }
+    initMenuDefinition("MnuTxtPaste", PlatformShortcuts.getDefaultPasteShortcut(), alternateKey);
     this.setIcon("paste");
     this.setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
   }

@@ -195,9 +195,14 @@ public class WbAction
     else
     {
       String shortCut = this.getAcceleratorDisplay();
-      if (baseTooltip.startsWith("<html>") || shortCut == null)
+      if (StringUtil.isBlank(shortCut))
       {
         putValue(Action.SHORT_DESCRIPTION, baseTooltip);
+      }
+      else if (baseTooltip.startsWith("<html>"))
+      {
+        String tip = baseTooltip.replace("</html>", " (" + shortCut + ")</html>");
+        putValue(Action.SHORT_DESCRIPTION, tip);
       }
       else
       {
@@ -268,8 +273,14 @@ public class WbAction
    */
   public void initMenuDefinition(String aKey, KeyStroke defaultKey)
   {
+    initMenuDefinition(aKey, defaultKey, null);
+  }
+
+  public void initMenuDefinition(String aKey, KeyStroke defaultKey, KeyStroke alternateKey)
+  {
     setMenuTextByKey(aKey);
     setDefaultAccelerator(defaultKey);
+    if (alternateKey != null) setAlternateAccelerator(alternateKey);
     initializeShortcut();
   }
 
@@ -354,6 +365,7 @@ public class WbAction
   public void setAlternateAccelerator(KeyStroke key)
   {
     putValue(ALTERNATE_ACCELERATOR, key);
+    initTooltip();
   }
 
   public KeyStroke getAlternateAccelerator()
@@ -426,7 +438,7 @@ public class WbAction
   public JMenuItem getMenuItem()
   {
     // one menu item can only be put into a single menu
-    // so if the same action is used more than one menu
+    // so if the same action is used in more than one menu
     // multiple menu items need to be created.
     JMenuItem item = new WbMenuItem();
     item.setAction(this);
@@ -507,7 +519,7 @@ public class WbAction
 
     if (this.hasShiftModifier())
     {
-      im.put(KeyStroke.getKeyStroke(key, modifiers | InputEvent.SHIFT_MASK), this.getActionName());
+      im.put(KeyStroke.getKeyStroke(key, modifiers | InputEvent.SHIFT_DOWN_MASK), this.getActionName());
     }
 
     if (this.hasCtrlModifier())
@@ -684,19 +696,39 @@ public class WbAction
 
   private String getAcceleratorDisplay()
   {
-    KeyStroke key = getDefaultAccelerator();
+    KeyStroke key = getAccelerator();
     if (key == null) return null;
+
+    String display = getKeyDisplay(key);
+
+
+    if (GuiSettings.showAlternateAcceleratorTooltip())
+    {
+      KeyStroke alternateKey = getAlternateAccelerator();
+      if (alternateKey != null)
+      {
+        display += " / " + getKeyDisplay(alternateKey);
+      }
+    }
+    return display;
+  }
+
+  private String getKeyDisplay(KeyStroke key)
+  {
+    int mod = key.getModifiers();
+    int keycode = key.getKeyCode();
 
     String acceleratorDelimiter = UIManager.getString("MenuItem.acceleratorDelimiter");
     if (acceleratorDelimiter == null)
     {
       acceleratorDelimiter = "-";
     }
-    int mod = key.getModifiers();
-    int keycode = key.getKeyCode();
 
-    String display = KeyEvent.getKeyModifiersText(mod) + acceleratorDelimiter + KeyEvent.getKeyText(keycode);
-    return display;
+    if (InputEvent.getModifiersExText(mod).equals(""))
+    {
+      return KeyEvent.getKeyText(keycode);
+    }
+    return InputEvent.getModifiersExText(mod) + acceleratorDelimiter + KeyEvent.getKeyText(keycode);
   }
 
   @Override

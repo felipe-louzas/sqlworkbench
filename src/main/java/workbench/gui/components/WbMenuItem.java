@@ -23,8 +23,6 @@ package workbench.gui.components;
 
 import javax.swing.JMenuItem;
 
-import workbench.resource.ResourceMgr;
-
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
 
@@ -43,12 +41,6 @@ public class WbMenuItem
   public WbMenuItem(String aText)
   {
     super(aText);
-  }
-
-  public void setMenuTextByKey(String key)
-  {
-    this.setText(ResourceMgr.getString(key));
-    this.setToolTipText(ResourceMgr.getDescription(key));
   }
 
   @Override
