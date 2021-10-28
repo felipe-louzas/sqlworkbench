@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2021-10-23">
+    <entry dev-build="8" type="enh">It's now possible to filter the list of shortcuts in the "Configure shortcuts" dialog.</entry>
     <entry dev-build="6" type="enh">For DB2i it's now possible to enable retrieving of "system names" for tables.</entry>
     <entry dev-build="6" type="enh">Then new "Copy as text" dialog now detects selected columns.</entry>
     <entry dev-build="6" type="enh">For XSLX, XLS and ODS exports it's now possible to specify column names that should be treated as formulas rather than "plain" values.</entry>
@@ -25,6 +26,7 @@
     <entry dev-build="1" type="enh">For WbExport, it's now possible to specify the literals to be used for boolean values</entry>
     <entry dev-build="1" type="enh">When using "Save data as..." it's now possible to include column comments the way -enableComments is working for WbExport</entry>
     <entry dev-build="1" type="enh">It's now possible to use an external pager when running in console mode</entry>
+    <entry dev-build="8" type="fix">Fixed a regression introduced in 127.5 that made -clobAsFile=true no longer work for some DBMS.</entry>
     <entry dev-build="8" type="fix">When printing results with NULL values, the layout of the printed table was not correct.</entry>
     <entry dev-build="7" type="fix">For Oracle, when using WbImport with -mode=upsert and -columnConstantValues, a wrong SQL statement was generated</entry>
     <entry dev-build="7" type="fix">For Postgres, when using WbImport with -mode=upsert and -columnConstantValues, the columns for the constant values were not included in the UPDATE part of the INSERT statement</entry>

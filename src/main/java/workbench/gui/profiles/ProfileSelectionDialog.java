@@ -242,7 +242,7 @@ public class ProfileSelectionDialog
     {
       this.pack();
       // for some reason pack() doesn't calculate the width correctly
-      this.setSize((int)(getWidth() * 1.1), (int)(getHeight() * 1.05));
+      this.setSize((int)(getWidth() * 1.25), (int)(getHeight() * 1.2));
       this.profiles.initDivider();
     }
   }
