@@ -1,6 +1,4 @@
 /*
- * ContainsComparator.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -60,11 +58,11 @@ public class ContainsComparator
       String ref = reference.toString();
       if (ignoreCase)
       {
-        return (v.toLowerCase().indexOf(ref.toLowerCase()) > -1);
+        return (v.toLowerCase().contains(ref.toLowerCase()));
       }
       else
       {
-        return (v.indexOf(ref) > -1);
+        return (v.contains(ref));
       }
     }
     catch (Exception e)

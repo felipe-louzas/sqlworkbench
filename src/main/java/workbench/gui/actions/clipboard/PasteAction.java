@@ -1,6 +1,4 @@
 /*
- * PasteAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2021, Thomas Kellerer
@@ -53,7 +51,7 @@ public class PasteAction
     KeyStroke alternateKey = null;
     if (!MacOSHelper.isMacOS())
     {
-      alternateKey = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK);
+      alternateKey = KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, KeyEvent.SHIFT_DOWN_MASK);
     }
     initMenuDefinition("MnuTxtPaste", PlatformShortcuts.getDefaultPasteShortcut(), alternateKey);
     this.setIcon("paste");

@@ -39,12 +39,16 @@ import java.util.Collection;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
@@ -62,9 +66,13 @@ import workbench.gui.components.WbButton;
 import workbench.gui.components.WbTable;
 
 import workbench.storage.DataStore;
+import workbench.storage.filter.ContainsComparator;
+import workbench.storage.filter.DataRowExpression;
 
 import workbench.sql.macros.MacroDefinition;
 import workbench.sql.macros.MacroManager;
+
+import workbench.util.StringUtil;
 
 /**
  * @author Thomas Kellerer
@@ -87,6 +95,7 @@ public class ShortcutEditor
   private JButton resetButton;
   private JButton resetAllButton;
   private JButton clearButton;
+  private JTextField searchField;
 
   private String escActionCommand;
 
@@ -173,12 +182,46 @@ public class ShortcutEditor
 
     c.gridy ++;
     c.insets = new Insets(2,10,5,10);
-    c.weighty = 1.0;
     c.anchor = GridBagConstraints.NORTHWEST;
     this.resetAllButton = new WbButton(ResourceMgr.getString("LblResetAllShortcuts"));
     this.resetAllButton.setToolTipText(ResourceMgr.getDescription("LblResetAllShortcuts"));
     this.resetAllButton.addActionListener(this);
     editPanel.add(resetAllButton, c);
+
+    c.gridy ++;
+    c.insets = new Insets(15,10,5,10);
+    JLabel label = new JLabel();
+    label.setText(ResourceMgr.getString("LblSearchShortcut"));
+    editPanel.add(label, c);
+
+    c.gridy ++;
+    c.insets = new Insets(2,10,5,10);
+    c.weighty = 1.0;
+    this.searchField = new JTextField();
+    this.searchField.getDocument().addDocumentListener(new DocumentListener()
+    {
+
+      @Override
+      public void insertUpdate(DocumentEvent e)
+      {
+        search();
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e)
+      {
+        search();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e)
+      {
+        search();
+      }
+
+    });
+    this.searchField.setEnabled(true);
+    editPanel.add(searchField, c);
 
     contentPanel.add(editPanel, BorderLayout.EAST);
 
@@ -211,6 +254,7 @@ public class ShortcutEditor
     WbSwingUtilities.center(window, parent);
     WbSwingUtilities.showDefaultCursor(parent);
     window.setVisible(true);
+    WbSwingUtilities.invokeLater(() ->  {keysTable.requestFocusInWindow();});
   }
 
   private void createModel()
@@ -318,6 +362,29 @@ public class ShortcutEditor
       mgr.updateActions();
       mgr.fireShortcutsChanged();
     }
+  }
+
+  private void applyFilter()
+  {
+    String search = StringUtil.trimToNull(searchField.getText());
+    if (search == null)
+    {
+      this.model.resetFilter();
+    }
+    else
+    {
+      DataRowExpression filter = new DataRowExpression();
+      filter.setIgnoreCase(true);
+      filter.setFilterValue(search);
+      ContainsComparator comp = new ContainsComparator();
+      filter.setComparator(comp);
+      this.model.applyFilter(filter);
+    }
+  }
+
+  private void search()
+  {
+    this.applyFilter();
   }
 
   private void closeWindow()
