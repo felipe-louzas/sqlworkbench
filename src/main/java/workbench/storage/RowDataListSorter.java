@@ -160,7 +160,14 @@ public class RowDataListSorter
       // Fallback in case of error
       String v1 = o1.toString();
       String v2 = o2.toString();
-      result = v1.compareTo(v2);
+      if (naturalSort)
+      {
+        result = StringUtil.naturalCompare(v1, v2, ignoreCase);
+      }
+      else
+      {
+        result = StringUtil.compareStrings(v1, v2, ignoreCase);
+      }
     }
     return result;
   }

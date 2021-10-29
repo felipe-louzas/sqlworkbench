@@ -385,7 +385,7 @@ public class ValidatingDialog
     {
       return this.optionButtons[cancelOption] == source;
     }
-    return source == null || source == this.esc;
+    return source == null || source == this.esc || source == cancelButton;
   }
 
   @Override

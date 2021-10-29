@@ -53,6 +53,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.*;
 
 import workbench.gui.WbSwingUtilities;
@@ -274,6 +276,12 @@ public class ShortcutEditor
       int row = this.definitions.addRow();
       String cls = key.getActionClass();
       String title = mgr.getActionNameForClass(cls);
+      if (title == null || !classIsAvailable(cls))
+      {
+        // If action classes for which customized keystrokes exist are renamed this can happen
+        LogMgr.logWarning(new CallerInfo(){}, "Ignoring invalid action class: " + cls);
+        continue;
+      }
       String tooltip = mgr.getTooltip(cls);
       ActionDisplay disp = new ActionDisplay(title, tooltip);
       this.definitions.setValue(row, 0, disp);
@@ -288,6 +296,19 @@ public class ShortcutEditor
     TableColumn col = this.keysTable.getColumnModel().getColumn(0);
     col.setCellRenderer(new ActionDisplayRenderer());
     this.keysTable.getSelectionModel().addListSelectionListener(this);
+  }
+
+  private boolean classIsAvailable(String clazz)
+  {
+    try
+    {
+      Class.forName(clazz);
+      return true;
+    }
+    catch (Throwable th)
+    {
+      return false;
+    }
   }
 
   @Override
@@ -568,5 +589,3 @@ public class ShortcutEditor
   {
   }
 }
-
-
