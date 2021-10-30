@@ -48,33 +48,33 @@ public class RowDataListSorterTest
     RowData row = null;
 
     row = new RowData(2);
-    row.setValue(0, new Integer(2));
-    row.setValue(1, new Integer(2));
+    row.setValue(0, Integer.valueOf(2));
+    row.setValue(1, Integer.valueOf(2));
     data.add(row);
 
     row = new RowData(2);
-    row.setValue(0, new Integer(2));
-    row.setValue(1, new Integer(3));
+    row.setValue(0, Integer.valueOf(2));
+    row.setValue(1, Integer.valueOf(3));
     data.add(row);
 
     row = new RowData(2);
-    row.setValue(0, new Integer(2));
-    row.setValue(1, new Integer(1));
+    row.setValue(0, Integer.valueOf(2));
+    row.setValue(1, Integer.valueOf(1));
     data.add(row);
 
     row = new RowData(2);
-    row.setValue(0, new Integer(1));
-    row.setValue(1, new Integer(3));
+    row.setValue(0, Integer.valueOf(1));
+    row.setValue(1, Integer.valueOf(3));
     data.add(row);
 
     row = new RowData(2);
-    row.setValue(0, new Integer(1));
-    row.setValue(1, new Integer(1));
+    row.setValue(0, Integer.valueOf(1));
+    row.setValue(1, Integer.valueOf(1));
     data.add(row);
 
     row = new RowData(2);
-    row.setValue(0, new Integer(1));
-    row.setValue(1, new Integer(2));
+    row.setValue(0, Integer.valueOf(1));
+    row.setValue(1, Integer.valueOf(2));
     data.add(row);
 
     assertEquals(data.size(), 6);
@@ -132,6 +132,34 @@ public class RowDataListSorterTest
   }
 
   @Test
+  public void testToStringNull()
+  {
+    RowDataList data = new RowDataList(3);
+    RowData row = null;
+
+    row = new RowData(1);
+    row.setValue(0, new Holder(1, "ZZZ"));
+    data.add(row);
+
+    row = new RowData(1);
+    row.setValue(0, new Holder(2, null));
+    data.add(row);
+
+    row = new RowData(1);
+    row.setValue(0, new Holder(3, "AAA"));
+    data.add(row);
+
+    RowDataListSorter sorter = new RowDataListSorter(0, true);
+    sorter.sort(data);
+    Holder h = (Holder)data.get(0).getValue(0);
+    assertNull(h.value);
+    assertEquals(2, h.id);
+    h = (Holder)data.get(1).getValue(0);
+    assertEquals("AAA", h.value);
+    assertEquals(3, h.id);
+  }
+
+  @Test
   public void testSortLastColumn()
     throws Exception
   {
@@ -151,6 +179,23 @@ public class RowDataListSorterTest
     {
       int value = (Integer) data.get(i).getValue(2);
       assertEquals(i + 1, value);
+    }
+  }
+
+  private static class Holder
+  {
+    private final String value;
+    private final int id;
+    public Holder(int id, String value)
+    {
+      this.id = id;
+      this.value = value;
+    }
+
+    @Override
+    public String toString()
+    {
+      return value;
     }
   }
 }

@@ -97,7 +97,6 @@ public class RowDataListSorter
   /**
    * Compares the defined sort column
    */
-  @SuppressWarnings("unchecked")
   protected int compareColumn(int column, RowData row1, RowData row2)
   {
     Object o1 = row1.getValue(column);
@@ -107,6 +106,7 @@ public class RowDataListSorter
 
   protected int compareValues(Object o1, Object o2)
   {
+    // this sorts null values at the beginning
     if  (o1 == null && o2 == null)
     {
       return 0;
@@ -127,14 +127,7 @@ public class RowDataListSorter
       {
         return defaultCollator.compare(o1, o2);
       }
-      if (naturalSort)
-      {
-        return StringUtil.naturalCompare((String)o1, (String)o2, ignoreCase);
-      }
-      else
-      {
-        return StringUtil.compareStrings((String)o1, (String)o2, ignoreCase);
-      }
+      return compareStrings((String)o1, (String)o2);
     }
 
     int result = 0;
@@ -150,26 +143,39 @@ public class RowDataListSorter
       }
       else
       {
-        String v1 = o1.toString();
-        String v2 = o2.toString();
-        result = v1.compareTo(v2);
+        result = compareObjectsAsString(o1, o2);
       }
     }
     catch (Throwable e)
     {
       // Fallback in case of error
-      String v1 = o1.toString();
-      String v2 = o2.toString();
-      if (naturalSort)
-      {
-        result = StringUtil.naturalCompare(v1, v2, ignoreCase);
-      }
-      else
-      {
-        result = StringUtil.compareStrings(v1, v2, ignoreCase);
-      }
+      result = compareObjectsAsString(o1, o2);
     }
     return result;
+  }
+
+  private int compareObjectsAsString(Object o1, Object o2)
+  {
+    try
+    {
+      String v1 = o1.toString();
+      String v2 = o2.toString();
+      return compareStrings(v1, v2);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Error when comparing objects", th);
+      return 0;
+    }
+  }
+
+  private int compareStrings(String v1, String v2)
+  {
+    if (naturalSort)
+    {
+      return StringUtil.naturalCompare(v1, v2, ignoreCase);
+    }
+    return StringUtil.compareStrings(v1, v2, ignoreCase);
   }
 
   private int compareArrays(Array a1, Array a2)
