@@ -39,8 +39,8 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -133,8 +133,17 @@ public class PostgresDomainReader
         String cat = rs.getString("domain_catalog");
         String schema = rs.getString("domain_schema");
         String name = rs.getString("domain_name");
+        String constraintName = rs.getString("constraint_name");
+        String constraintDef = rs.getString("constraint_definition");
         DomainIdentifier domain = new DomainIdentifier(cat, schema, name);
-        domain.setCheckConstraint(rs.getString("constraint_definition"));
+        if (StringUtil.isBlank(constraintName))
+        {
+          domain.setCheckConstraint(constraintDef);
+        }
+        else
+        {
+          domain.setCheckConstraint("CONSTRAINT " + constraintName + " " + constraintDef);
+        }
         domain.setDataType(rs.getString("data_type"));
         domain.setNullable(rs.getBoolean("nullable"));
         domain.setDefaultValue(rs.getString("default_value"));
@@ -177,19 +186,11 @@ public class PostgresDomainReader
       result.append("\n   DEFAULT ");
       result.append(domain.getDefaultValue());
     }
-    if (StringUtil.isNonBlank(domain.getCheckConstraint()) || !domain.isNullable())
+    if (!domain.isNullable()) result.append("\n  NOT NULL");
+    if (StringUtil.isNonBlank(domain.getCheckConstraint()))
     {
-      result.append("\n   CONSTRAINT ");
-      if (StringUtil.isNonBlank(domain.getConstraintName()))
-      {
-        result.append(domain.getConstraintName()).append(" ");
-      }
-      if (!domain.isNullable()) result.append("NOT NULL");
-      if (StringUtil.isNonBlank(domain.getCheckConstraint()))
-      {
-        if (!domain.isNullable()) result.append(' ');
-        result.append(domain.getCheckConstraint());
-      }
+      result.append("\n  ");
+      result.append(domain.getCheckConstraint());
     }
     result.append(";\n");
     if (StringUtil.isNonBlank(domain.getComment()))

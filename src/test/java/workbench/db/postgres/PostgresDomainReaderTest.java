@@ -71,7 +71,7 @@ public class PostgresDomainReaderTest
     }
     TestUtil.executeScript(con,
       "CREATE SCHEMA other; \n" +
-      "CREATE DOMAIN " + TEST_SCHEMA + ".salary AS numeric(12,2) NOT NULL CHECK (value > 0);\n" +
+      "CREATE DOMAIN " + TEST_SCHEMA + ".salary AS numeric(12,2) NOT NULL constraint positive_value CHECK (value > 0);\n" +
       "CREATE DOMAIN " + TEST_SCHEMA + ".zz_int AS integer NOT NULL;\n" +
       "CREATE DOMAIN other.positive_int AS integer CHECK (value > 0);\n" +
       "COMMIT; \n");
@@ -114,13 +114,14 @@ public class PostgresDomainReaderTest
 
     String sql = salary.getSource(con).toString().trim();
     String expected = "CREATE DOMAIN " + TEST_SCHEMA.toLowerCase() + ".salary AS numeric(12,2)\n" +
-                      "   CONSTRAINT NOT NULL CHECK (VALUE > 0::numeric);";
+                      "  NOT NULL\n" +
+                      "  CONSTRAINT positive_value CHECK (VALUE > 0::numeric);";
     assertEquals(expected, sql);
 
 
     sql = zz_int.getSource(con).toString().trim();
     expected = "CREATE DOMAIN " + TEST_SCHEMA.toLowerCase() + ".zz_int AS integer\n" +
-                      "   CONSTRAINT NOT NULL;";
+                      "  NOT NULL;";
     assertEquals(expected, sql);
 
 
@@ -140,9 +141,6 @@ public class PostgresDomainReaderTest
     assertEquals(1, details.getRowCount());
     assertEquals("salary", details.getValueAsString(0, 0));
     assertEquals("numeric(12,2)", details.getValueAsString(0, 1));
-
-
   }
-
 
 }

@@ -144,6 +144,48 @@ public class PostgresDependencyReaderTest
   }
 
   @Test
+  public void testEnumDependencies()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+
+    TestUtil.executeScript(conn,
+          "CREATE TYPE e_status AS ENUM ('open','waiting','pending','closed');\n" +
+          "create table t1 (id int primary key, status e_status); \n" +
+          "commit;\n");
+
+
+    DbObject e1 = new DbObjectFinder(conn).findObject(new TableIdentifier("e_status"));
+    PostgresDependencyReader depReader = new PostgresDependencyReader(conn);
+
+    List<DbObject> objects = depReader.getUsedBy(conn, e1);
+    assertEquals(1, objects.size());
+    assertEquals("t1", objects.get(0).getObjectName());
+  }
+
+  @Test
+  public void testDomainDependencies()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+
+    TestUtil.executeScript(conn,
+          "CREATE DOMAIN positive_number AS numeric(12,2) NOT NULL CHECK (VALUE > 0);\n" +
+          "create table t1 (id int primary key, salary positive_number); \n" +
+          "commit;\n");
+
+    DbObject domain = new DbObjectFinder(conn).findObject(new TableIdentifier("positive_number"));
+    assertNotNull(domain);
+    PostgresDependencyReader depReader = new PostgresDependencyReader(conn);
+
+    List<DbObject> objects = depReader.getUsedBy(conn, domain);
+    assertEquals(1, objects.size());
+    assertEquals("t1", objects.get(0).getObjectName());
+  }
+
+  @Test
   public void testSupportsDependencies()
   {
     PostgresDependencyReader reader = new PostgresDependencyReader(null);
