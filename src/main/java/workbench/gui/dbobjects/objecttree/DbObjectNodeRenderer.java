@@ -85,6 +85,8 @@ public class DbObjectNodeRenderer
     iconMap.put("trigger", "bullet_black");
     iconMap.put("index", "index");
     iconMap.put("type", "type");
+    iconMap.put("enum", "bullet_black");
+    iconMap.put("domain", "bullet_black");
     iconMap.put("foreign server", "server");
     iconMap.put(TreeLoader.TYPE_PACKAGE_NODE, "package");
     iconMap.put(PgSubscription.TYPE_NAME, "subscription");

@@ -1183,11 +1183,11 @@ public class TreeLoader
       fkEntry.setChildrenLoaded(true);
       fkEntry.setTooltip(fk.getComment());
       tblNode.add(fkEntry);
+      addTableSubNodes(tblNode);
     }
     model.nodeStructureChanged(fkNode);
     fkNode.setChildrenLoaded(true);
   }
-
 
   private boolean isTable(DbObject dbo)
   {

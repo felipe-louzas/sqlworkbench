@@ -20,7 +20,6 @@
  */
 package workbench.db.postgres;
 
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Savepoint;
@@ -34,6 +33,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
 import workbench.db.SequenceDefinition;
 import workbench.db.TableIdentifier;
@@ -43,9 +43,6 @@ import workbench.db.dependency.DependencyReader;
 import workbench.gui.dbobjects.objecttree.DbObjectSorter;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-import workbench.db.RoutineType;
 
 /**
  *
@@ -198,6 +195,28 @@ public class PostgresDependencyReader
     "WHERE tblsch.nspname = ? \n" +
     "  and proc.proname = ? ";
 
+  private final String tablesUsingSpecificType =
+    "select nsp.nspname as table_schema, \n" +
+    "       cl.relname as table_name, \n" +
+    typeCase +
+    "       obj_description(cl.oid) as remarks\n" +
+    "from pg_class cl \n" +
+    "  join pg_namespace nsp on nsp.oid = cl.relnamespace \n" +
+    "where cl.relkind in ('r', 'm')\n" +
+    "  and exists (select col.* \n" +
+    "              from pg_attribute col  \n" +
+    "                join pg_type typ on typ.oid = col.atttypid \n" +
+    "                join pg_namespace nsp on nsp.oid = typ.typnamespace \n" +
+    "              where not col.attisdropped \n" +
+    "                and col.attnum > 0 \n" +
+    "                and col.attrelid = cl.oid \n" +
+    "                and typ.typtype = '$typ$' \n" +
+    "                and nsp.nspname = ? \n"+
+    "                and typ.typname = ?)";
+
+  private final String tablesUsingEnum = tablesUsingSpecificType.replace("$typ$", "e");
+  private final String tablesUsingDomain = tablesUsingSpecificType.replace("$typ$", "d");
+
   private final PostgresProcedureReader procReader;
 
   public PostgresDependencyReader(WbConnection conn)
@@ -273,6 +292,14 @@ public class PostgresDependencyReader
     if (objectType.equals("function"))
     {
       return retrieveObjects(connection, base, triggersUsingFunction);
+    }
+    if (objectType.equals("enum"))
+    {
+      return retrieveObjects(connection, base, tablesUsingEnum);
+    }
+    if (objectType.equals("domain"))
+    {
+      return retrieveObjects(connection, base, tablesUsingDomain);
     }
 
     List<DbObject> objects = retrieveObjects(connection, base, viewsUsingTable);
@@ -399,6 +426,8 @@ public class PostgresDependencyReader
   @Override
   public boolean supportsUsedByDependency(String objectType)
   {
+    if ("enum".equalsIgnoreCase(objectType)) return true;
+    if ("domain".equalsIgnoreCase(objectType)) return true;
     return supportedTypes.contains(objectType);
   }
 
