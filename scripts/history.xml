@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2021-10-23">
+    <entry dev-build="8" type="enh">SQL Workbench/J now requires Java 11 or later.</entry>
     <entry dev-build="8" type="enh">It's now possible to filter the list of shortcuts in the "Configure shortcuts" dialog.</entry>
     <entry dev-build="6" type="enh">For DB2i it's now possible to enable retrieving of "system names" for tables.</entry>
     <entry dev-build="6" type="enh">Then new "Copy as text" dialog now detects selected columns.</entry>
