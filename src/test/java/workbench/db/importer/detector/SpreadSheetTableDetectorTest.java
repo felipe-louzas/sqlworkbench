@@ -82,7 +82,7 @@ public class SpreadSheetTableDetectorTest
     throws Exception
   {
     TestUtil util = getTestUtil();
-    File input = util.copyResourceFile(ExcelReaderTest.class, "data.xls");
+    File input = util.getResourceFile(ExcelReaderTest.class, "data.xls");
 
     SpreadSheetTableDetector detector = new SpreadSheetTableDetector(input, true, -1);
     detector.setSampleSize(100);

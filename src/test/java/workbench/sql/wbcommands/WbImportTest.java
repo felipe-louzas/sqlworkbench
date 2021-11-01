@@ -165,7 +165,7 @@ public class WbImportTest
         "create table data (id integer, name varchar(100));\n" +
         "commit;\n");
 
-      File input = util.copyResourceFile(this, "column_expression.xlsx");
+      File input = util.getResourceFile(this.getClass(), "column_expression.xlsx");
 
       WbImport cmd = new WbImport();
       cmd.setConnection(con);
@@ -308,12 +308,11 @@ public class WbImportTest
     util.dropAll(connection);
     InputStream in = TableDependencySorterTest.class.getResourceAsStream("hr_schema.sql");
     TestUtil.executeScript(connection, in);
-    File input = util.copyResourceFile(this, "hr.xlsx");
+    File input = util.getResourceFile(this, "hr.xlsx");
 
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' -type=xlsx -sheetNumber=* -header=true -continueonerror=false -checkDependencies=true");
 
-    assertTrue(input.delete());
     String msg = result.getMessages().toString();
     assertTrue(msg, result.isSuccess());
 
@@ -331,12 +330,11 @@ public class WbImportTest
   public void testMultiSheetImport()
     throws Exception
   {
-    File input = util.copyResourceFile(this, "person_orders.ods");
+    File input = util.getResourceFile(this, "person_orders.ods");
 
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' -type=ods -sheetNumber=* -header=true -continueonerror=false ");
 
-    assertTrue(input.delete());
     String msg = result.getMessages().toString();
     assertTrue(msg, result.isSuccess());
 
@@ -520,7 +518,7 @@ public class WbImportTest
       "drop table person;\n" +
       "commit;");
 
-    File input = util.copyResourceFile(this, "person_orders.ods");
+    File input = util.getResourceFile(this, "person_orders.ods");
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' " +
       "-type=ods " +
@@ -529,7 +527,6 @@ public class WbImportTest
       "-continueonerror=false ");
 
     assertTrue(result.getMessages().toString(), result.isSuccess());
-    assertTrue(input.delete());
 
     Number salary = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from orders");
     assertNotNull(salary);
@@ -541,7 +538,7 @@ public class WbImportTest
   public void testSpreadSheetIgnoreColumn()
     throws Exception
   {
-    File input = util.copyResourceFile(this, "data-2.ods");
+    File input = util.getResourceFile(this, "data-2.ods");
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' " +
       "-type=ods " +
@@ -550,8 +547,6 @@ public class WbImportTest
       "-ignoreMissingColumns=true " +
       "-continueonerror=false " +
       "-table=person");
-
-    assertTrue(input.delete());
 
     assertTrue(result.getMessages().toString(), result.isSuccess());
     Number id = (Number)TestUtil.getSingleQueryValue(connection, "select id from person where lastname = 'Dent'");
@@ -568,7 +563,7 @@ public class WbImportTest
   public void testOdsImport()
     throws Exception
   {
-    File input = util.copyResourceFile(this, "data.ods");
+    File input = util.getResourceFile(this, "data.ods");
 
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' " +
@@ -577,13 +572,9 @@ public class WbImportTest
       "-continueonerror=false " +
       "-table=junit_test");
 
-    assertTrue(input.delete());
-
     assertTrue(result.getMessages().toString(), result.isSuccess());
     Number count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
     assertEquals(2, count.intValue());
-
-    input = util.copyResourceFile(this, "data.ods");
 
     result = importCmd.execute(
       "WbImport -file='" + input.getAbsolutePath() + "' " +
@@ -1994,6 +1985,18 @@ public class WbImportTest
 
     value = (String)TestUtil.getSingleQueryValue(connection, "select firstname from junit_test where nr = 4");
     assertEquals("first4", value);
+  }
+
+  @Test
+  public void testGZIPImport()
+    throws Exception
+  {
+    File inputFile = util.getResourceFile(getClass(), "gzip_input.txt.gz");
+    StatementRunnerResult result = importCmd.execute(
+      "wbimport -file='" + inputFile.getAbsolutePath() + "' -type=text -header=true -continueonerror=false -delimiter=',' -table=junit_test");
+    assertTrue(result.getMessages().toString(), result.isSuccess());
+    int count = TestUtil.getNumberValue(connection, "select count(*) from junit_test");
+    assertEquals(3, count);
   }
 
   @Test
@@ -3975,7 +3978,7 @@ public class WbImportTest
     int rows = TestUtil.getNumberValue(connection, "select count(*) from junit_test");
     assertEquals(3, rows);
 
-    File ods = util.copyResourceFile(this, "col_filter_test.ods");
+    File ods = util.getResourceFile(this, "col_filter_test.ods");
 
     result = importCmd.execute(
       "wbimport -file='" + ods.getAbsolutePath() + "' " +
@@ -3995,7 +3998,7 @@ public class WbImportTest
     rows = TestUtil.getNumberValue(connection, "select count(*) from junit_test where nr = 3");
     assertEquals(0, rows);
 
-    File xls = util.copyResourceFile(this, "col_filter_test.xlsx");
+    File xls = util.getResourceFile(this, "col_filter_test.xlsx");
 
     result = importCmd.execute(
       "wbimport -file='" + xls.getAbsolutePath() + "' " +

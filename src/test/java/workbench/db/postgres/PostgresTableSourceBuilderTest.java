@@ -194,7 +194,7 @@ public class PostgresTableSourceBuilderTest
     TableIdentifier tbl = new TableIdentifier(TEST_SCHEMA, "more_data");
     String sql = tbl.getSource(con).toString();
     assertTrue(sql.contains(" enum 'order_status_type':"));
-    assertTrue(sql.contains(" domain 'product_price': integer CHECK (VALUE > 0)"));
+    assertTrue(sql.contains(" domain 'product_price': integer CONSTRAINT product_price_check CHECK (VALUE > 0)"));
     assertTrue(sql.contains("sequence sourcebuilder.data_seq"));
   }
 

@@ -85,7 +85,7 @@ public class SpreadsheetFileParserTest
     throws Exception
   {
     TestUtil util = getTestUtil();
-    File input = util.copyResourceFile(this, filename);
+    File input = util.getResourceFile(this, filename);
 
     SpreadsheetFileParser parser = new SpreadsheetFileParser();
     parser.setContainsHeader(true);
@@ -105,7 +105,6 @@ public class SpreadsheetFileParserTest
     {
       parser.done();
     }
-    assertTrue(input.delete());
   }
 
   @Test
@@ -113,7 +112,7 @@ public class SpreadsheetFileParserTest
     throws Exception
   {
     TestUtil util = getTestUtil();
-    File input = util.copyResourceFile(this, filename);
+    File input = util.getResourceFile(this, filename);
 
     SpreadsheetFileParser parser = new SpreadsheetFileParser();
     parser.setContainsHeader(true);
@@ -132,10 +131,6 @@ public class SpreadsheetFileParserTest
     finally
     {
       parser.done();
-    }
-    if (input.exists())
-    {
-      assertTrue(input.delete());
     }
   }
 

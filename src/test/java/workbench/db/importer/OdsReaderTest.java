@@ -50,7 +50,7 @@ public class OdsReaderTest
     throws Exception
   {
     TestUtil util = getTestUtil();
-    File input = util.copyResourceFile(this, "data.ods");
+    File input = util.getResourceFile(this, "data.ods");
     OdsReader reader = new OdsReader(input, 1, null);
     try
     {
@@ -65,7 +65,6 @@ public class OdsReaderTest
     {
       reader.done();
     }
-    assertTrue(input.delete());
   }
 
   @Test

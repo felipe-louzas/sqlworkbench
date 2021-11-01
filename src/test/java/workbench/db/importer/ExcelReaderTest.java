@@ -73,7 +73,7 @@ public class ExcelReaderTest
     throws Exception
   {
     TestUtil util = new TestUtil("ExcelReader");
-    File input = util.copyResourceFile(this, "data.xls");
+    File input = util.getResourceFile(this, "data.xls");
     ExcelReader reader = new ExcelReader(input, 1, null);
     try
     {
@@ -88,7 +88,6 @@ public class ExcelReaderTest
     {
       reader.done();
     }
-    assertTrue(input.delete());
   }
 
   @Test

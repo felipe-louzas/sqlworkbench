@@ -34,6 +34,8 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.sql.ResultSet;
@@ -56,6 +58,7 @@ import workbench.ssh.SshException;
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.ErrorInformationReader;
+import workbench.db.JdbcUtils;
 import workbench.db.ReaderFactory;
 import workbench.db.WbConnection;
 
@@ -76,9 +79,6 @@ import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
 import workbench.util.EncodingUtil;
 import workbench.util.FileUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -387,6 +387,26 @@ public class TestUtil
   public String getBaseDir()
   {
     return this.basedir;
+  }
+
+  public File getResourceFile(Object obj, String filename)
+    throws IOException
+  {
+    return getResourceFile(obj.getClass(), filename);
+  }
+  
+  public File getResourceFile(Class clz, String filename)
+    throws IOException
+  {
+    try
+    {
+      URL resource = clz.getResource(filename);
+      return new File(resource.toURI());
+    }
+    catch (URISyntaxException ex)
+    {
+      throw new IOException("Resource file "  + filename + " not found!", ex);
+    }
   }
 
   public File copyResourceFile(Object test, String filename)
