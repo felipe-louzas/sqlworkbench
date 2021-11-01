@@ -512,6 +512,12 @@ WHERE id=42;</p>
     <content>
       <p>Download archive for SQL Workbench/J</p>
       <ul class="archive-list">
+        <li>Build 127 (requires Java 8)<br/>
+          <ul>
+            <li><a href="archive/Workbench-Build127.zip">All Platforms</a></li>
+            <li><a href="archive/WorkbenchSrc-Build127.zip">Source Code</a></li>
+          </ul>
+        </li>
         <li>Build 125 (requires Java 8)<br/>
           <ul>
             <li><a href="archive/Workbench-Build125.zip">All Platforms</a></li>
