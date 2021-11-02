@@ -2329,10 +2329,14 @@ public class Settings
     WbFile f = new WbFile(dir);
     return f;
   }
-  
+
   public String getBackupDirName()
   {
     WbFile f = getBackupDir();
+    if (f == null)
+    {
+      return null;
+    }
     return f.getAbsolutePath();
   }
 
