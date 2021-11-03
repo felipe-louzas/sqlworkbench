@@ -451,6 +451,11 @@ public class ExportOptionsPanel
     this.generalOptions.setSelectedRowsEnabled(flag);
   }
 
+  public void setCopySelectedRowsOnly(boolean flag)
+  {
+    this.generalOptions.setCopySelectedRowsOnly(flag);
+  }
+
   public void updateSqlOptions(DataStore source)
   {
     WbConnection conn = source == null ? null : source.getOriginalConnection();

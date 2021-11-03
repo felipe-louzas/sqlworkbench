@@ -71,10 +71,6 @@ public class GeneralExportOptionsPanel
     s.setProperty("workbench." + type + ".general.dateformat", this.getDateFormat());
     s.setProperty("workbench." + type + ".general.timestampformat", this.getTimestampFormat());
     s.setProperty("workbench." + type + ".general.encoding", this.getEncoding());
-    if (selectedRows.isEnabled())
-    {
-      s.setProperty("workbench." + type + ".general.selectedrows", this.selectedRowsOnly());
-    }
     s.setProperty("workbench." + type + ".nullstring", this.getNullString());
   }
 
@@ -85,7 +81,11 @@ public class GeneralExportOptionsPanel
     this.setTimestampFormat(s.getProperty("workbench." + type + ".general.timestampformat", ""));
     this.setEncoding(s.getProperty("workbench." + type + ".general.encoding", s.getDefaultDataEncoding()));
     this.setNullString(s.getProperty("workbench." + type + ".nullstring", null));
-    this.selectedRows.setSelected(s.getBoolProperty("workbench." + type + ".general.selectedrows"));
+  }
+
+  public void setCopySelectedRowsOnly(boolean flag)
+  {
+    this.selectedRows.setSelected(flag);
   }
 
   public void setSelectedRowsEnabled(boolean flag)

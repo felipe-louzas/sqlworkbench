@@ -117,6 +117,11 @@ public class ExportFileDialog
     this.exportOptions.setSelectedColumns(info, columns);
   }
 
+  public void setCopySelectedRowsOnly(boolean flag)
+  {
+    exportOptions.setCopySelectedRowsOnly(flag);
+  }
+
   public void setSelectedRowsEnabled(boolean flag)
   {
     this.exportOptions.setSelectedRowsEnabled(flag);
