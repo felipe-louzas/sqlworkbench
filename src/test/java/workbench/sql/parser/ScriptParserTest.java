@@ -304,6 +304,39 @@ public class ScriptParserTest
   }
 
   @Test
+  public void testOraMixedAlternate()
+  {
+    String sql =
+      "create table foo (id int);\n" +
+      "create or replace function get_id(p_table_name varchar2, p_id varchar2)\n" +
+      "return number\n" +
+      "is\n" +
+      "  result number;\n" +
+      "begin\n" +
+      "  execute immediate 'select id from ' || p_table_name || ' t where t.id = ' || p_id into result;\n" +
+      "  return result;\n" +
+      "end;\n" +
+      "/\n" +
+      "\n" +
+      "select get_id('foo', 42) from dual;\n" +
+      "declare\n" +
+      "  l_id int;\n" +
+      "begin" +
+      "  l_id := 1;\n" +
+      "end;\n" +
+      "/";
+    ScriptParser p = new ScriptParser(ParserType.Oracle);
+    p.setAlternateDelimiter(DelimiterDefinition.DEFAULT_ORA_DELIMITER);
+    p.setScript(sql);
+    int count = p.getSize();
+    assertEquals(4, count);
+    assertTrue(p.getCommand(0).startsWith("create table"));
+    assertTrue(p.getCommand(1).startsWith("create or replace"));
+    assertTrue(p.getCommand(2).startsWith("select"));
+    assertTrue(p.getCommand(3).startsWith("declare"));
+  }
+
+  @Test
   public void testOra()
   {
     String sql =
