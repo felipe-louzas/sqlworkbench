@@ -64,7 +64,6 @@ import workbench.gui.dialogs.export.ExportFileDialog;
 import workbench.storage.DataStore;
 import workbench.storage.RowActionMonitor;
 
-import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbStringWriter;
@@ -115,17 +114,13 @@ public class CopyAsTextAction
   public void executeAction(ActionEvent evt)
   {
     final ExportFileDialog dialog = new ExportFileDialog(this.client, client.getDataStore(), true);
-    dialog.setSelectedRowsEnabled(client.getSelectedRowCount() > 0);
+    dialog.setSelectedRowCount(client.getSelectedRowCount());
 
     if (client.getColumnSelectionAllowed())
     {
       List<ColumnIdentifier> columns = client.getColumnsFromSelection();
       DataStore ds = client.getDataStore();
       dialog.setSelectedColumn(ds.getResultInfo(), columns);
-      if (CollectionUtil.isNonEmpty(columns))
-      {
-        dialog.setCopySelectedRowsOnly(client.getSelectedRowCount() > 0);
-      }
     }
 
     boolean ok = dialog.selectOutput(ResourceMgr.getString("LblCopyToClp"));

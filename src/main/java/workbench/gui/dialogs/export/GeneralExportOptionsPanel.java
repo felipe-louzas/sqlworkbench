@@ -83,18 +83,10 @@ public class GeneralExportOptionsPanel
     this.setNullString(s.getProperty("workbench." + type + ".nullstring", null));
   }
 
-  public void setCopySelectedRowsOnly(boolean flag)
+  public void setSelectedRowCount(int count)
   {
-    this.selectedRows.setSelected(flag);
-  }
-
-  public void setSelectedRowsEnabled(boolean flag)
-  {
-    this.selectedRows.setEnabled(flag);
-    if (!flag)
-    {
-      this.selectedRows.setSelected(false);
-    }
+    this.selectedRows.setEnabled(count > 0);
+    this.selectedRows.setSelected(count > 0);
   }
 
   @Override

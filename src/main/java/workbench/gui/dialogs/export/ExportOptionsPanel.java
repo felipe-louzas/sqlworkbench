@@ -446,14 +446,9 @@ public class ExportOptionsPanel
     }
   }
 
-  public void setSelectedRowsEnabled(boolean flag)
+  public void setSelectedRowCount(int count)
   {
-    this.generalOptions.setSelectedRowsEnabled(flag);
-  }
-
-  public void setCopySelectedRowsOnly(boolean flag)
-  {
-    this.generalOptions.setCopySelectedRowsOnly(flag);
+    this.generalOptions.setSelectedRowCount(count);
   }
 
   public void updateSqlOptions(DataStore source)

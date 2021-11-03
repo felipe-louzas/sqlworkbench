@@ -117,14 +117,9 @@ public class ExportFileDialog
     this.exportOptions.setSelectedColumns(info, columns);
   }
 
-  public void setCopySelectedRowsOnly(boolean flag)
+  public void setSelectedRowCount(int count)
   {
-    exportOptions.setCopySelectedRowsOnly(flag);
-  }
-
-  public void setSelectedRowsEnabled(boolean flag)
-  {
-    this.exportOptions.setSelectedRowsEnabled(flag);
+    exportOptions.setSelectedRowCount(count);
   }
 
   public void setQuerySql(String sql, WbConnection con)
