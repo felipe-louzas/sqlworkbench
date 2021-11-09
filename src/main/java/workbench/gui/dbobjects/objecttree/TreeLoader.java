@@ -1029,6 +1029,7 @@ public class TreeLoader
     {
       ObjectTreeNode node = new ObjectTreeNode(obj);
       node.setAllowsChildren(node.canHaveChildren());
+      addDependencyNodes(node);
       depNode.add(node);
     }
     model.nodeStructureChanged(depNode);
