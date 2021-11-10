@@ -75,7 +75,7 @@ public class SqlServerDependencyReader
       "          else type_desc \n" +
       "        end as type";
 
-  private final String searchUsedByInfSchema =
+  private final String searchUsesInfSchema =
       "SELECT vtu.TABLE_CATALOG, vtu.TABLE_SCHEMA, vtu.TABLE_NAME,\n" + typeDesc + "\n" +
       "FROM INFORMATION_SCHEMA.VIEW_TABLE_USAGE vtu \n" +
       "  JOIN sys.all_objects ao ON ao.name = vtu.TABLE_NAME and schema_name(ao.schema_id) = vtu.TABLE_SCHEMA\n" +
@@ -83,7 +83,7 @@ public class SqlServerDependencyReader
       "  AND VIEW_SCHEMA = ? \n" +
       "  AND VIEW_NAME = ?";
 
-  private final String searchUsedSqlInfSchema =
+  private final String searchUsedBySqlInfSchema =
       "SELECT vtu.VIEW_CATALOG, vtu.VIEW_SCHEMA, vtu.VIEW_NAME,\n" + typeDesc  + "\n" +
       "FROM INFORMATION_SCHEMA.VIEW_TABLE_USAGE vtu \n" +
       "  JOIN sys.all_objects ao ON ao.name = vtu.VIEW_NAME and schema_name(ao.schema_id) = vtu.VIEW_SCHEMA\n" +
@@ -91,7 +91,7 @@ public class SqlServerDependencyReader
       "  AND TABLE_SCHEMA = ? \n" +
       "  AND TABLE_NAME = ?";
 
-  private final String searchUsedByDMView =
+  private final String searchUsesDMView =
       "SELECT distinct db_name() as catalog_name,  \n" +
       "       coalesce(re.referenced_schema_name, schema_name()) as schema_name,  \n" +
       "       re.referenced_entity_name,  \n" + typeDesc  + "\n" +
@@ -119,7 +119,7 @@ public class SqlServerDependencyReader
       "where c.object_id = object_id(?)\n" +
       "and t.is_user_defined = 1";
 
-  private final String searchUsedSqlDMView =
+  private final String searchUsedBySqlDMView =
       "SELECT db_name() as catalog,  \n" +
       "       coalesce(re.referencing_schema_name,schema_name()) as schema_name,  \n" +
       "       re.referencing_entity_name, \n" + typeDesc + ", \n" +
@@ -161,11 +161,11 @@ public class SqlServerDependencyReader
     {
       if (connection.getDbSettings().getBoolProperty("dependency.use.infoschema", false))
       {
-        result = retrieveObjects(connection, base, searchUsedByInfSchema, false);
+        result = retrieveObjects(connection, base, searchUsesInfSchema, false);
       }
       else
       {
-        result = retrieveObjects(connection, base, searchUsedByDMView, true);
+        result = retrieveObjects(connection, base, searchUsesDMView, true);
       }
 
       if (connection.getMetadata().isTableType(base.getObjectType()))
@@ -205,9 +205,9 @@ public class SqlServerDependencyReader
     {
       if (connection.getDbSettings().getBoolProperty("dependency.use.infoschema", false))
       {
-        return retrieveObjects(connection, base, searchUsedSqlInfSchema, false);
+        return retrieveObjects(connection, base, searchUsedBySqlInfSchema, false);
       }
-      return retrieveObjects(connection, base, searchUsedSqlDMView, true);
+      return retrieveObjects(connection, base, searchUsedBySqlDMView, true);
     }
     finally
     {

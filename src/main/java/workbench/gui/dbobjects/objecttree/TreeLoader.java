@@ -1184,6 +1184,7 @@ public class TreeLoader
       fkEntry.setChildrenLoaded(true);
       fkEntry.setTooltip(fk.getComment());
       tblNode.add(fkEntry);
+      addColumnsNode(tblNode);
       addTableSubNodes(tblNode);
     }
     model.nodeStructureChanged(fkNode);
