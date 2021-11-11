@@ -156,12 +156,19 @@ public class PostgresDependencyReaderTest
           "commit;\n");
 
 
-    DbObject e1 = new DbObjectFinder(conn).findObject(new TableIdentifier("e_status"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    DbObject e1 = finder.findObject(new TableIdentifier("e_status"));
     PostgresDependencyReader depReader = new PostgresDependencyReader(conn);
 
     List<DbObject> objects = depReader.getUsedBy(conn, e1);
     assertEquals(1, objects.size());
     assertEquals("t1", objects.get(0).getObjectName());
+
+    TableIdentifier t1 = finder.findObject(new TableIdentifier("t1"));
+    List<DbObject> usedObjects = depReader.getUsedObjects(conn, t1);
+    assertEquals(1, usedObjects.size());
+    assertEquals("e_status", usedObjects.get(0).getObjectName());
+    assertEquals("ENUM", usedObjects.get(0).getObjectType());
   }
 
   @Test
@@ -176,13 +183,20 @@ public class PostgresDependencyReaderTest
           "create table t1 (id int primary key, salary positive_number); \n" +
           "commit;\n");
 
-    DbObject domain = new DbObjectFinder(conn).findObject(new TableIdentifier("positive_number"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    DbObject domain = finder.findObject(new TableIdentifier("positive_number"));
     assertNotNull(domain);
     PostgresDependencyReader depReader = new PostgresDependencyReader(conn);
 
     List<DbObject> objects = depReader.getUsedBy(conn, domain);
     assertEquals(1, objects.size());
     assertEquals("t1", objects.get(0).getObjectName());
+
+    TableIdentifier t1 = finder.findObject(new TableIdentifier("t1"));
+    List<DbObject> usedObjects = depReader.getUsedObjects(conn, t1);
+    assertEquals(1, usedObjects.size());
+    assertEquals("positive_number", usedObjects.get(0).getObjectName());
+    assertEquals("DOMAIN", usedObjects.get(0).getObjectType());
   }
 
   @Test

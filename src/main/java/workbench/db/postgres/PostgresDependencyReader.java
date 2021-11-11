@@ -125,7 +125,13 @@ public class PostgresDependencyReader
     "  and t.typname = ? \n";
 
   private final String typesUsedByTable =
-    "select distinct tn.nspname as type_schema, t.typname as type_name, 'TYPE' as object_type, obj_description(t.oid) as remarks \n" +
+    "select distinct tn.nspname as type_schema, t.typname as type_name, \n" +
+    "       case t.typtype \n" +
+    "          when 'e' then 'ENUM' \n" +
+    "          when 'd' then 'DOMAIN' \n " +
+    "          else 'TYPE' \n" +
+    "       end as object_type, \n" +
+    "       obj_description(t.oid) as remarks \n" +
     "from pg_catalog.pg_class c \n" +
     "  join pg_catalog.pg_namespace n on n.oid = c.relnamespace \n" +
     "  join pg_depend d on d.objid = c.oid and d.classid = 'pg_class'::regclass \n" +
