@@ -48,12 +48,15 @@ import workbench.db.WbConnection;
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.ReloadAction;
+import workbench.gui.actions.SearchDbExplorerProcedure;
+import workbench.gui.actions.SearchDbExplorerTable;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.DropDownButton;
 import workbench.gui.components.FocusIndicator;
 import workbench.gui.components.PlainEditor;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbToolbar;
+import workbench.gui.dbobjects.objecttree.ObjectFinder;
 import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.Highlighter;
 import workbench.gui.sql.PanelContentSender;
@@ -89,6 +92,10 @@ public class DbObjectSourcePanel
   private WbAction runScript;
   private final String runScriptCommand = "run-script";
   private String objectType;
+  private ObjectFinder tableFinder;
+  private ObjectFinder procFinder;
+  private SearchDbExplorerProcedure searchProc;
+  private SearchDbExplorerTable searchTable;
 
   public DbObjectSourcePanel(MainWindow window, Reloadable reloader)
   {
@@ -101,7 +108,17 @@ public class DbObjectSourcePanel
     }
   }
 
-  public Replaceable getEditor()
+  public void setProcedureFinder(ObjectFinder finder)
+  {
+    this.procFinder = finder;
+  }
+
+  public void setTableFinder(ObjectFinder finder)
+  {
+    this.tableFinder = finder;
+  }
+
+  public Replaceable getReplacer()
   {
     return sourceEditor.getReplacer();
   }
@@ -221,6 +238,17 @@ public class DbObjectSourcePanel
       new FocusIndicator(sourceEditor, sourceEditor);
     }
 
+    if (this.procFinder != null)
+    {
+      this.searchProc = new SearchDbExplorerProcedure(procFinder, sourceEditor);
+      this.sourceEditor.addPopupMenuItem(searchProc, true);
+    }
+
+    if (tableFinder != null)
+    {
+      this.searchTable = new SearchDbExplorerTable(tableFinder, sourceEditor);
+      this.sourceEditor.addPopupMenuItem(searchTable, this.searchProc == null);
+    }
     initialized = true;
   }
 

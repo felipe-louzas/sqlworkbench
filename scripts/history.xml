@@ -3,6 +3,10 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
+  <release build="-1" date="2021-11-01">
+    <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
+    <entry dev-build="1" type="fix">In the "Copy data to clipboard" dialog, the "Selected rows" option wasn't always enabled correctly.</entry>
+  </release>
 
   <release build="128" date="2021-11-01">
     <entry dev-build="8" type="enh">SQL Workbench/J now requires Java 11 or later.</entry>

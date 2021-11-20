@@ -62,6 +62,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.KeyStroke;
@@ -1702,5 +1703,16 @@ public class WbSwingUtilities
       }
     }
     return null;
+  }
+
+  public static void selectComponentTab(JComponent toSelect)
+  {
+    if (toSelect == null) return;
+    Container parent = toSelect.getParent();
+    if (parent instanceof JTabbedPane)
+    {
+      JTabbedPane tabPane = (JTabbedPane)parent;
+      tabPane.setSelectedComponent(toSelect);
+    }
   }
 }

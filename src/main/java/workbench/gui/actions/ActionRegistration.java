@@ -45,5 +45,7 @@ public class ActionRegistration
     new SetNullAction(null);
     new SelectFkValueAction(null);
     new FindObjectAction(null);
+    new SearchDbExplorerProcedure(null, null);
+    new SearchDbExplorerTable(null, null);
   }
 }

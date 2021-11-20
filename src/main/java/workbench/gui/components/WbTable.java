@@ -2357,6 +2357,17 @@ public class WbTable
 
 
   /**
+   * Select the given row and make it visible.
+   * @param row
+   */
+  public void selectRow(int row)
+  {
+    if (row < 0 || row > getRowCount()) return;
+    scrollToRow(row);
+    getSelectionModel().setSelectionInterval(row, row);
+  }
+
+  /**
    * Scroll the given row into view.
    */
   public void scrollToRow(int row)

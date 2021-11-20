@@ -60,6 +60,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.CatalogChanger;
 import workbench.db.ConnectionMgr;
@@ -87,8 +88,6 @@ import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
-
-import workbench.workspace.WbWorkspace;
 
 /**
  * The main container panel for the DbExplorer.
@@ -156,6 +155,7 @@ public class DbExplorerPanel
       tables = new TableListPanel(aParent);
       tables.setName("tablelistpanel");
       procs = new ProcedureListPanel(aParent);
+      procs.setTableFinder(tables);
       this.searchPanel = new TableSearchPanel(tables);
       tabPane = new WbTabbedPane(JTabbedPane.TOP);
       tabPane.add(ResourceMgr.getString("TxtDbExplorerTables"), tables);

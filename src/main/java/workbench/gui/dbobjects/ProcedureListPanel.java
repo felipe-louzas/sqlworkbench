@@ -48,10 +48,20 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import workbench.WbManager;
+import workbench.interfaces.PropertyStorage;
+import workbench.interfaces.Reloadable;
+import workbench.interfaces.WbSelectionModel;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.DbExplorerSettings;
+import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.DbObjectComparator;
 import workbench.db.DropType;
 import workbench.db.GenericObjectDropper;
 import workbench.db.JdbcProcedureReader;
@@ -59,6 +69,7 @@ import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
 import workbench.db.ReaderFactory;
+import workbench.db.RoutineType;
 import workbench.db.SourceStatementsHelp;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -72,12 +83,12 @@ import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.AlterProcedureAction;
 import workbench.gui.actions.CompileDbObjectAction;
-import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.actions.DropDbObjectAction;
 import workbench.gui.actions.ReloadAction;
 import workbench.gui.actions.ScriptDbObjectAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.actions.WbPluginProcedurePanelAction;
+import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.QuickFilterPanel;
@@ -86,6 +97,7 @@ import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTabbedPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbTraversalPolicy;
+import workbench.gui.dbobjects.objecttree.ObjectFinder;
 import workbench.gui.filter.FilterDefinitionManager;
 import workbench.gui.renderer.ProcStatusRenderer;
 import workbench.gui.renderer.SqlTypeRenderer;
@@ -93,20 +105,9 @@ import workbench.gui.settings.PlacementChooser;
 import workbench.gui.sql.PanelContentSender;
 import workbench.gui.sql.PasteType;
 
-import workbench.interfaces.PropertyStorage;
-import workbench.interfaces.Reloadable;
-import workbench.interfaces.WbSelectionModel;
-import workbench.log.CallerInfo;
-import workbench.log.LogMgr;
-import workbench.resource.DbExplorerSettings;
-import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
-
-import workbench.db.RoutineType;
+import workbench.storage.DataStore;
 
 import workbench.sql.DelimiterDefinition;
-
-import workbench.storage.DataStore;
 
 import workbench.util.FilteredProperties;
 import workbench.util.LowMemoryException;
@@ -114,8 +115,6 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbPluginUtil;
 import workbench.util.WbThread;
-
-import workbench.workspace.WbWorkspace;
 
 /**
  * A panel that display the list of procedures/functions available in the database.
@@ -126,7 +125,8 @@ import workbench.workspace.WbWorkspace;
  */
 public class ProcedureListPanel
   extends JPanel
-  implements ListSelectionListener, Reloadable, DbObjectList, PropertyChangeListener, TableModelListener
+  implements Reloadable, DbObjectList, ObjectFinder,
+             ListSelectionListener, PropertyChangeListener, TableModelListener
 {
   private WbConnection dbConnection;
   private JPanel listPanel;
@@ -160,6 +160,8 @@ public class ProcedureListPanel
   private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
   private ProcedureChangeValidator validator = new ProcedureChangeValidator();
   private AlterProcedureAction renameAction;
+  private DbObject objectToSelect;
+  private ObjectFinder tableFinder;
 
   public ProcedureListPanel(MainWindow window)
   {
@@ -199,6 +201,8 @@ public class ProcedureListPanel
     };
 
     source = new DbObjectSourcePanel(parentWindow, sourceReload);
+    source.setProcedureFinder(this);
+    source.setTableFinder(tableFinder);
     if (DbExplorerSettings.allowSourceEditing())
     {
       source.allowEditing(true);
@@ -295,6 +299,11 @@ public class ProcedureListPanel
     addDependencyPanelIfSupported();
 
     Settings.getInstance().addPropertyChangeListener(this, DbExplorerSettings.PROP_ALLOW_SOURCE_EDITING);
+  }
+
+  public void setTableFinder(ObjectFinder finder)
+  {
+    this.tableFinder = finder;
   }
 
   public void dispose()
@@ -467,6 +476,51 @@ public class ProcedureListPanel
     });
   }
 
+  @Override
+  public void selectObject(DbObject object)
+  {
+    if (this.isRetrieving) return;
+    if (this.shouldRetrieve)
+    {
+      this.objectToSelect = object;
+      startRetrieve();
+      return;
+    }
+    findAndSelect(object);
+  }
+
+  private void findAndSelect(DbObject object)
+  {
+    if (object == null) return;
+
+    for (int row=0; row < this.procList.getRowCount(); row++)
+    {
+      ProcedureDefinition def = getDefinition(row);
+      if (DbObjectComparator.namesAreEqual(object, def, false))
+      {
+        final int toSelect = row;
+        WbSwingUtilities.invokeLater(() ->
+        {
+          WbSwingUtilities.selectComponentTab(this);
+          procList.selectRow(toSelect);
+        });
+        return;
+      }
+    }
+    String name = object.getFullyQualifiedName(dbConnection);
+    WbSwingUtilities.showMessage(this, ResourceMgr.getFormattedString("ErrProcNotFound", name));
+  }
+
+  private void retrieveFinished()
+  {
+    if (objectToSelect != null)
+    {
+      DbObject dbo = objectToSelect;
+      objectToSelect = null;
+      findAndSelect(dbo);
+    }
+  }
+
   public void setConnection(WbConnection aConnection)
   {
     this.dbConnection = aConnection;
@@ -582,6 +636,7 @@ public class ProcedureListPanel
         dependencyPanel.doLoad();
       }
       shouldRetrieve = false;
+      retrieveFinished();
     }
     catch (LowMemoryException mem)
     {

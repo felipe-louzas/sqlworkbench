@@ -408,7 +408,7 @@ public class QuickFilterPanel
     applyFilter(null, false);
   }
 
-  private void applyFilter(String filterExpression, boolean storeInHistory)
+  public void applyFilter(String filterExpression, boolean storeInHistory)
   {
     JTextField editor = (JTextField)filterValue.getEditor().getEditorComponent();
     int currentPos = editor.getCaretPosition();

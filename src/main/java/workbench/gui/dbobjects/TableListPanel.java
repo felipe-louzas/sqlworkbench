@@ -88,6 +88,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.DbObjectComparator;
 import workbench.db.DbSettings;
 import workbench.db.DropType;
 import workbench.db.GenericObjectDropper;
@@ -133,6 +134,7 @@ import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTabbedPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbTraversalPolicy;
+import workbench.gui.dbobjects.objecttree.ObjectFinder;
 import workbench.gui.dbobjects.objecttree.RowCountDisplay;
 import workbench.gui.dbobjects.objecttree.ShowRowCountAction;
 import workbench.gui.filter.FilterDefinitionManager;
@@ -162,7 +164,7 @@ import static workbench.storage.NamedSortDefinition.*;
 public class TableListPanel
   extends JPanel
   implements ActionListener, ChangeListener, ListSelectionListener, MouseListener,
-             ShareableDisplay, PropertyChangeListener,
+             ShareableDisplay, PropertyChangeListener, ObjectFinder,
              TableModelListener, DbObjectList, ListSelectionControl, TableLister,
              ObjectDropListener, RowCountDisplay
 {
@@ -249,6 +251,7 @@ public class TableListPanel
   private final int maxTypeItems = 25;
   private int currentRetrievalPanel = -1;
 
+  private DbObject objectToSelect;
   // </editor-fold>
 
   public TableListPanel(MainWindow aParent)
@@ -299,6 +302,7 @@ public class TableListPanel
     };
 
     this.tableSource = new DbObjectSourcePanel(aParent, sourceReload);
+    this.tableSource.setTableFinder(this);
     this.tableSource.allowReformat();
     if (DbExplorerSettings.allowSourceEditing())
     {
@@ -1253,7 +1257,7 @@ public class TableListPanel
     {
       MultiSelectComboBox<String> cb = (MultiSelectComboBox<String>)tableTypes;
       List<String> items = cb.getSelectedItems();
-      types = items.toArray(new String[]{});
+      types = items.toArray(String[]::new);
     }
     else
     {
@@ -1376,6 +1380,7 @@ public class TableListPanel
       });
 
       setDirty(false);
+      retrieveFinished();
     }
     catch (OutOfMemoryError mem)
     {
@@ -2507,6 +2512,49 @@ public class TableListPanel
   {
     ObjectListDataStore ds = (ObjectListDataStore)this.tableList.getDataStore();
     return ds.getTableIdentifier(row);
+  }
+
+  private void retrieveFinished()
+  {
+    if (objectToSelect != null)
+    {
+      DbObject dbo = objectToSelect;
+      objectToSelect = null;
+      findAndSelect(dbo);
+    }
+  }
+
+  @Override
+  public void selectObject(DbObject object)
+  {
+    if (shouldRetrieve)
+    {
+      this.objectToSelect = object;
+      this.startRetrieve(false);
+      return;
+    }
+    findAndSelect(object);
+  }
+
+  private void findAndSelect(DbObject object)
+  {
+    if (object == null) return;
+    for (int row=0; row < this.tableList.getRowCount(); row++)
+    {
+      TableIdentifier tbl = createTableIdentifier(row);
+      if (DbObjectComparator.namesAreEqual(object, tbl, false))
+      {
+        final int toSelect = row;
+        WbSwingUtilities.invokeLater(() ->
+        {
+          WbSwingUtilities.selectComponentTab(this);
+          tableList.selectRow(toSelect);
+        });
+        return;
+      }
+    }
+    String name = object.getFullyQualifiedName(dbConnection);
+    WbSwingUtilities.showMessage(this, ResourceMgr.getFormattedString("ErrTableOrViewNotFound", name));
   }
 
   @Override
