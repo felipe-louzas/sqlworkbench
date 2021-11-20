@@ -184,6 +184,8 @@ public class DbExplorerPanel
       if (DbExplorerSettings.getShowTriggerPanel())
       {
         triggers = new TriggerListPanel(aParent);
+        triggers.setTableFinder(tables);
+        triggers.setProcedureFinder(procs);
         tabPane.add(ResourceMgr.getString("TxtDbExplorerTriggers"), triggers);
         tabPane.setToolTipTextAt(tabPane.getTabCount() - 1, ResourceMgr.getDescription("TxtDbExplorerTriggers"));
       }

@@ -25,6 +25,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.DbObject;
 import workbench.db.DropType;
@@ -72,6 +74,7 @@ import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbTraversalPolicy;
+import workbench.gui.dbobjects.objecttree.ObjectFinder;
 import workbench.gui.renderer.RendererSetup;
 
 import workbench.storage.DataStore;
@@ -84,8 +87,6 @@ import workbench.util.FilteredProperties;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
-
-import workbench.workspace.WbWorkspace;
 
 /**
  * A Panel that display a list of triggers defined in the database
@@ -118,7 +119,9 @@ public class TriggerListPanel
   private boolean initialized;
   private FilteredProperties workspaceProperties;
   private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
-
+  private ObjectFinder tableFinder;
+  private ObjectFinder procFinder;
+  private WbAction selectTableAction;
   public TriggerListPanel(MainWindow window)
   {
     super();
@@ -144,6 +147,8 @@ public class TriggerListPanel
     };
 
     this.source = new DbObjectSourcePanel(parentWindow, sourceReload);
+    this.source.setTableFinder(tableFinder);
+    this.source.setProcedureFinder(procFinder);
     if (DbExplorerSettings.allowSourceEditing())
     {
       source.allowEditing(true);
@@ -160,6 +165,12 @@ public class TriggerListPanel
     this.triggerList.getSelectionModel().addListSelectionListener(this);
     this.triggerList.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     this.triggerList.addTableModelListener(this);
+
+    if (tableFinder != null)
+    {
+      selectTableAction = createSelectTableAction();
+      triggerList.addPopupAction(selectTableAction, false);
+    }
     triggerList.setReadOnly(true);
 
     findPanel = new QuickFilterPanel(this.triggerList, false, "triggerlist");
@@ -222,6 +233,37 @@ public class TriggerListPanel
       workspaceProperties = null;
     }
     Settings.getInstance().addPropertyChangeListener(this, DbExplorerSettings.PROP_ALLOW_SOURCE_EDITING);
+  }
+
+  private WbAction createSelectTableAction()
+  {
+    WbAction action = new WbAction()
+    {
+      @Override
+      public void executeAction(ActionEvent e)
+      {
+        if (tableFinder == null) return;
+        if (triggerList.getSelectedRowCount() == 1)
+        {
+          int row = triggerList.getSelectedRow();
+          String tableName = triggerList.getValueAsString(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE);
+          TableIdentifier tbl = new TableIdentifier(tableName);
+          tableFinder.selectObject(tbl);
+        }
+      }
+    };
+    action.setMenuTextByKey("MnuTxtSearchTable");
+    return action;
+  }
+
+  public void setTableFinder(ObjectFinder finder)
+  {
+    this.tableFinder = finder;
+  }
+
+  public void setProcedureFinder(ObjectFinder finder)
+  {
+    this.procFinder = finder;
   }
 
   @Override
