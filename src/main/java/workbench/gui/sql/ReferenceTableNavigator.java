@@ -67,6 +67,7 @@ import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
+
 /**
  * A class to manage the popup menu for the reference table navigation.
  * This class populates the popup menu according to the passed in base table
@@ -95,12 +96,14 @@ public class ReferenceTableNavigator
   private final Object parentLock = new Object();
   private final Object childLock = new Object();
   private final Object connectionLock = new Object();
+  private ResultReceiver receiver;
 
-  public ReferenceTableNavigator(DwPanel data, MainWindow win)
+  public ReferenceTableNavigator(DwPanel data, MainWindow win, ResultReceiver receiver)
   {
     this.setSourceTable(data.getTable());
     data.addPropertyChangeListener(DwPanel.PROP_UPDATE_TABLE, this);
     this.container = win;
+    this.receiver = receiver;
     rebuildMenu();
   }
 
@@ -346,20 +349,22 @@ public class ReferenceTableNavigator
             index++;
           }
           display.append(')');
-          EditorTabSelectMenu item = new EditorTabSelectMenu(display.toString(), "LblShowDataInNewTab", "MsgRelatedTabHint", container);
-          item.setActionListener(this);
-          item.setDependencyNode(node);
-          item.setVisible(true);
-          item.setToolTipText(tooltip.toString());
-          boolean hasColumns = hasColumns(node);
-          item.setEnabled(hasColumns);
-          if (!hasColumns)
+          if (container != null)
           {
-            item.setToolTipText(ResourceMgr.getString("MsgRelatedNoColumns"));
+            EditorTabSelectMenu item = new EditorTabSelectMenu(display.toString(), "LblShowDataInNewTab", "MsgRelatedTabHint", container, receiver);
+            item.setActionListener(this);
+            item.setDependencyNode(node);
+            item.setVisible(true);
+            item.setToolTipText(tooltip.toString());
+            boolean hasColumns = hasColumns(node);
+            item.setEnabled(hasColumns);
+            if (!hasColumns)
+            {
+              item.setToolTipText(ResourceMgr.getString("MsgRelatedNoColumns"));
+            }
+            item.setActionCommand(cmd);
+            itemsToAdd.add(item);
           }
-          item.setActionCommand(cmd);
-
-          itemsToAdd.add(item);
         }
       }
     }
@@ -454,8 +459,15 @@ public class ReferenceTableNavigator
     int containerIndex = -42;
 
     ResultReceiver.ShowType showType = GuiSettings.getDefaultShowType();
-
-    if (cmd.startsWith(EditorTabSelectMenu.PANEL_CMD_PREFIX))
+    boolean sendToReceiver = false;
+    if (cmd.startsWith(EditorTabSelectMenu.SEND_TO_RECEIVER))
+    {
+      sendToReceiver = true;
+      JPopupMenu popup = (JPopupMenu)item.getParent();
+      item = (JMenuItem)popup.getInvoker();
+      cmd = item.getActionCommand();
+    }
+    else if (cmd.startsWith(EditorTabSelectMenu.PANEL_CMD_PREFIX))
     {
       containerIndex = StringUtil.getIntValue(cmd.substring(EditorTabSelectMenu.PANEL_CMD_PREFIX.length()), -1);
       JPopupMenu popup = (JPopupMenu)item.getParent();
@@ -530,10 +542,13 @@ public class ReferenceTableNavigator
       return;
     }
 
-    String comment = ResourceMgr.getFormattedString("MsgLoadRelatedComment", tbl.getTableName(), getUpdateTable().getTableName(), fkName);
-
-    if (this.container != null)
+    if (sendToReceiver && this.receiver != null)
     {
+      receiver.showResult(sql, tbl.getTableName() + " - " + fkName, showType);
+    }
+    else if (this.container != null)
+    {
+      String comment = ResourceMgr.getFormattedString("MsgLoadRelatedComment", tbl.getTableName(), getUpdateTable().getTableName(), fkName);
       PanelContentSender sender = new PanelContentSender(container, null);
       sender.showResult(sql, comment, containerIndex, showType);
     }

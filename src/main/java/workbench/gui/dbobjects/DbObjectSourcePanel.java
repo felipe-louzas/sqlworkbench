@@ -219,7 +219,7 @@ public class DbObjectSourcePanel
     if (parentWindow != null)
     {
       editButton = new DropDownButton(ResourceMgr.getString("LblEditScriptSource"));
-      selectTabMenu = new EditorTabSelectMenu(ResourceMgr.getString("LblEditScriptSource"), "LblEditInNewTab", "LblEditInTab", parentWindow);
+      selectTabMenu = new EditorTabSelectMenu(ResourceMgr.getString("LblEditScriptSource"), "LblEditInNewTab", "LblEditInTab", parentWindow, false);
       selectTabMenu.setActionListener(this);
       editButton.setDropDownMenu(selectTabMenu.getPopupMenu());
       toolbar.add(editButton);

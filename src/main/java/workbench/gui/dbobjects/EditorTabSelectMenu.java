@@ -35,6 +35,12 @@ import javax.swing.JMenuItem;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import workbench.interfaces.FilenameChangeListener;
+import workbench.interfaces.ResultReceiver;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
+
 import workbench.db.ColumnIdentifier;
 import workbench.db.DependencyNode;
 import workbench.db.TableDefinition;
@@ -43,17 +49,12 @@ import workbench.db.TableSelectBuilder;
 import workbench.db.WbConnection;
 
 import workbench.gui.MainWindow;
-import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.actions.WbAction;
+import workbench.gui.actions.clipboard.CreateSnippetAction;
 import workbench.gui.components.WbMenu;
 import workbench.gui.components.WbMenuItem;
 import workbench.gui.sql.PanelContentSender;
 import workbench.gui.sql.PasteType;
-
-import workbench.interfaces.FilenameChangeListener;
-import workbench.log.CallerInfo;
-import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
 
 import workbench.util.CollectionUtil;
 import workbench.util.NumberStringCache;
@@ -66,27 +67,35 @@ public class EditorTabSelectMenu
   implements FilenameChangeListener, ChangeListener, ActionListener
 {
   public static final String CMD_CLIPBOARD = "clipboard";
+  public static final String SEND_TO_RECEIVER = "receiver";
+  public static final String PANEL_CMD_PREFIX = "panel_";
 
   private MainWindow parentWindow;
   private ActionListener target;
   private String regularTooltip;
   private String newTabTooltip;
-  public static final String PANEL_CMD_PREFIX = "panel_";
   private DependencyNode node;
   private boolean withClipboard;
   private DbObjectList objectList;
   private PasteType pasteType = PasteType.overwrite;
   private boolean useColumnListForTableSelect = true;
+  private ResultReceiver receiver;
 
-  public EditorTabSelectMenu(String label, String tooltipKeyNewTab, String tooltipKeyTab, MainWindow parent)
+  public EditorTabSelectMenu(String label, String tooltipKeyNewTab, String tooltipKeyTab, MainWindow parent, ResultReceiver receiver)
   {
-    this(label, tooltipKeyNewTab, tooltipKeyTab, parent, false);
+    this(label, tooltipKeyNewTab, tooltipKeyTab, parent, receiver, false);
   }
 
   public EditorTabSelectMenu(String label, String tooltipKeyNewTab, String tooltipKeyTab, MainWindow parent, boolean includeClipboard)
   {
+    this(label, tooltipKeyNewTab, tooltipKeyTab, parent, null, includeClipboard);
+  }
+  
+  public EditorTabSelectMenu(String label, String tooltipKeyNewTab, String tooltipKeyTab, MainWindow parent, ResultReceiver receiver, boolean includeClipboard)
+  {
     super(label);
     parentWindow = parent;
+    this.receiver = receiver;
     newTabTooltip = ResourceMgr.getDescription(tooltipKeyNewTab, true);
     regularTooltip = ResourceMgr.getDescription(tooltipKeyTab, true);
     withClipboard = includeClipboard;
@@ -151,6 +160,19 @@ public class EditorTabSelectMenu
 
     int current = this.parentWindow.getCurrentPanelIndex();
 
+    Font boldFont = this.getFont();
+    if (boldFont != null) boldFont = boldFont.deriveFont(Font.BOLD);
+
+    if (receiver != null)
+    {
+      JMenuItem send = new WbMenuItem(ResourceMgr.getString("LblHere"));
+      send.setActionCommand(SEND_TO_RECEIVER);
+      send.addActionListener(target == null ? this : target);
+      send.setFont(boldFont);
+      this.add(send);
+      addSeparator();
+    }
+
     JMenuItem show = new WbMenuItem(ResourceMgr.getString("LblShowDataInNewTab"));
     show.setActionCommand(PANEL_CMD_PREFIX + "-1");
     show.setToolTipText(newTabTooltip);
@@ -166,10 +188,7 @@ public class EditorTabSelectMenu
       this.add(clipboard);
     }
 
-    Font boldFont = show.getFont();
-    if (boldFont != null) boldFont = boldFont.deriveFont(Font.BOLD);
-
-    addSeparator();
+    if (receiver == null) addSeparator();
 
     for (int i=0; i < panels.size(); i++)
     {

@@ -61,6 +61,7 @@ import workbench.interfaces.DbData;
 import workbench.interfaces.DbUpdater;
 import workbench.interfaces.Interruptable;
 import workbench.interfaces.JobErrorHandler;
+import workbench.interfaces.ResultReceiver;
 import workbench.interfaces.StatusBar;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -282,11 +283,16 @@ public class DwPanel
 
   public void initTableNavigation(MainWindow container)
   {
+    initTableNavigation(container, null);
+  }
+  
+  public void initTableNavigation(MainWindow container, ResultReceiver receiver)
+  {
     if (this.referenceNavigator != null)
     {
       this.referenceNavigator.dispose();
     }
-    this.referenceNavigator = new ReferenceTableNavigator(this, container);
+    this.referenceNavigator = new ReferenceTableNavigator(this, container, receiver);
   }
 
   public SelectKeyColumnsAction getSelectKeysAction()

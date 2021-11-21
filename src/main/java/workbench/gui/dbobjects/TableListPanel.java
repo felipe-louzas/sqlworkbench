@@ -611,7 +611,7 @@ public class TableListPanel
 
     if (this.parentWindow != null)
     {
-      this.showDataMenu = new EditorTabSelectMenu(ResourceMgr.getString("MnuTxtShowTableData"), "LblShowDataInNewTab", "LblShowDataInTab", parentWindow, true);
+      this.showDataMenu = new EditorTabSelectMenu(ResourceMgr.getString("MnuTxtShowTableData"), "LblShowDataInNewTab", "LblShowDataInTab", parentWindow, null, true);
       this.showDataMenu.setObjectList(this);
       this.showDataMenu.setEnabled(false);
       this.tableList.addPopupMenu(this.showDataMenu, false);

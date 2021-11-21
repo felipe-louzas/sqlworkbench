@@ -44,6 +44,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -55,6 +57,7 @@ import workbench.interfaces.JobErrorHandler;
 import workbench.interfaces.PropertyStorage;
 import workbench.interfaces.Reloadable;
 import workbench.interfaces.Resettable;
+import workbench.interfaces.ResultReceiver;
 import workbench.interfaces.TableDeleteListener;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -63,9 +66,11 @@ import workbench.resource.GuiSettings;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbSettings;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSelectBuilder;
@@ -81,8 +86,11 @@ import workbench.gui.actions.StopAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ColumnOrderMgr;
 import workbench.gui.components.FlatButton;
+import workbench.gui.components.TabCloser;
 import workbench.gui.components.WbButton;
 import workbench.gui.components.WbLabelField;
+import workbench.gui.components.WbSplitPane;
+import workbench.gui.components.WbTabbedPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.components.WbTraversalPolicy;
@@ -99,12 +107,7 @@ import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.FilteredProperties;
 import workbench.util.LowMemoryException;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.WbThread;
-
-import workbench.workspace.WbWorkspace;
 
 /**
  *
@@ -113,7 +116,8 @@ import workbench.workspace.WbWorkspace;
 public class TableDataPanel
   extends JPanel
   implements ActionListener, Reloadable, Interruptable,
-             TableDeleteListener, Resettable, DbExecutionNotifier, PanelReloader
+             TableDeleteListener, Resettable, DbExecutionNotifier, PanelReloader,
+             ResultReceiver, TabCloser
 {
   private WbConnection dbConnection;
   protected DwPanel dataDisplay;
@@ -148,6 +152,9 @@ public class TableDataPanel
 
   private AutomaticRefreshMgr refreshMgr = new AutomaticRefreshMgr();
   private List<JButton> additionalButtons;
+  private WbTabbedPane tabPane;
+  private WbSplitPane splitPane;
+  private DwPanel currentRetrievalPanel;
 
   public TableDataPanel()
   {
@@ -376,7 +383,7 @@ public class TableDataPanel
     try
     {
       MainWindow w = (MainWindow)SwingUtilities.getWindowAncestor(this);
-      this.dataDisplay.initTableNavigation(w);
+      this.dataDisplay.initTableNavigation(w, this);
     }
     catch (Exception e)
     {
@@ -450,6 +457,7 @@ public class TableDataPanel
 
     WbSwingUtilities.invoke(() ->
     {
+      removeAdditionalData();
       if (dataDisplay != null) dataDisplay.clearContent();
       if (rowCountLabel != null) rowCountLabel.setText(ResourceMgr.getString("LblNotAvailable"));
       clearLoadingImage();
@@ -730,9 +738,9 @@ public class TableDataPanel
    */
   public void cancelRetrieve()
   {
-    if (dataDisplay != null)
+    if (currentRetrievalPanel != null)
     {
-      dataDisplay.cancelExecution();
+      currentRetrievalPanel.cancelExecution();
     }
   }
 
@@ -744,6 +752,7 @@ public class TableDataPanel
   public void cancelExecution()
   {
     if (!initialized) return;
+    if (currentRetrievalPanel == null) return;
 
     Thread t = new WbThread("Cancel thread")
     {
@@ -752,7 +761,7 @@ public class TableDataPanel
       {
         try
         {
-          dataDisplay.cancelExecution();
+          currentRetrievalPanel.cancelExecution();
         }
         finally
         {
@@ -773,7 +782,14 @@ public class TableDataPanel
   private void retrieveEnd()
   {
     this.retrieveRunning = false;
-    this.dataDisplay.updateStatusBar();
+    if (currentRetrievalPanel == null)
+    {
+      this.dataDisplay.updateStatusBar();
+    }
+    else
+    {
+      this.currentRetrievalPanel.updateStatusBar();
+    }
     fireDbExecEnd();
   }
 
@@ -875,7 +891,11 @@ public class TableDataPanel
         return;
       }
     }
+    doRetrieve(dataDisplay, sql, respectMaxRows);
+  }
 
+  protected void doRetrieve(DwPanel dataPanel, String sql, boolean respectMaxRows)
+  {
     this.retrieveStart();
 
     this.cancelRetrieve.setEnabled(true);
@@ -887,46 +907,49 @@ public class TableDataPanel
       WbSwingUtilities.showWaitCursor(this);
       WbSwingUtilities.invoke(() ->
       {
-        dataDisplay.setStatusMessage(ResourceMgr.getString("LblLoadingProgress"));
+        dataPanel.setStatusMessage(ResourceMgr.getString("LblLoadingProgress"));
       });
 
       setSavepoint();
-
-      if (useDataStoreSource)
+      this.currentRetrievalPanel = dataPanel;
+      if (useDataStoreSource && dataPanel == dataDisplay)
       {
-        dataDisplay.runCurrentSql(respectMaxRows);
+        dataPanel.runCurrentSql(respectMaxRows);
       }
       else
       {
         LogMgr.logDebug(new CallerInfo(){}, "Retrieving table data using:\n" + sql);
 
-        error = !dataDisplay.runQuery(sql, respectMaxRows);
+        error = !dataPanel.runQuery(sql, respectMaxRows);
         if (!error && GuiSettings.getRetrieveQueryComments())
         {
           ResultColumnMetaData meta = new ResultColumnMetaData(dbConnection);
-          meta.updateCommentsFromDefinition(dataDisplay.getDataStore(), tableDefinition);
+          meta.updateCommentsFromDefinition(dataPanel.getDataStore(), tableDefinition);
         }
 
         // By directly setting the update table, we avoid
         // another round-trip to the database to check the table from the
         // passed SQL statement.
-        WbSwingUtilities.invoke(() ->
+        if (!error && dataPanel == dataDisplay)
         {
-          dataDisplay.defineUpdateTable(tableDefinition);
-          dataDisplay.getSelectKeysAction().setEnabled(true);
-          String header = ResourceMgr.getString("TxtTableDataPrintHeader") + " " + table;
-          dataDisplay.setPrintHeader(header);
-          dataDisplay.showLastExecutionDuration();
-
-          if (lastSort != null)
+          WbSwingUtilities.invoke(() ->
           {
-            dataDisplay.setSortDefinition(lastSort);
-          }
+            dataPanel.defineUpdateTable(tableDefinition);
+            dataPanel.getSelectKeysAction().setEnabled(true);
+            String header = ResourceMgr.getString("TxtTableDataPrintHeader") + " " + table;
+            dataPanel.setPrintHeader(header);
+            dataPanel.showLastExecutionDuration();
 
-          ColumnOrderMgr.getInstance().restoreColumnOrder(dataDisplay.getTable());
-          dataDisplay.checkLimitReachedDisplay();
-          dataDisplay.showGeneratingSQLAsTooltip();
-        });
+            if (lastSort != null)
+            {
+              dataPanel.setSortDefinition(lastSort);
+            }
+
+            ColumnOrderMgr.getInstance().restoreColumnOrder(dataPanel.getTable());
+            dataPanel.checkLimitReachedDisplay();
+            dataPanel.showGeneratingSQLAsTooltip();
+          });
+        }
       }
     }
     catch (LowMemoryException mem)
@@ -942,7 +965,7 @@ public class TableDataPanel
 
       if (e instanceof OutOfMemoryError)
       {
-        try { dataDisplay.getTable().reset(); } catch (Throwable th) {}
+        try { dataPanel.getTable().reset(); } catch (Throwable th) {}
         WbManager.getInstance().showOutOfMemoryError();
       }
       else
@@ -958,7 +981,7 @@ public class TableDataPanel
 
       WbSwingUtilities.invoke(() ->
       {
-        dataDisplay.clearStatusMessage();
+        dataPanel.clearStatusMessage();
         cancelRetrieve.setEnabled(false);
         reloadAction.setEnabled(true);
       });
@@ -972,9 +995,10 @@ public class TableDataPanel
       {
         commitRetrieveIfNeeded();
       }
+      this.currentRetrievalPanel = null;
     }
 
-    if (!error && DbExplorerSettings.getSelectDataPanelAfterRetrieve())
+    if (!error && DbExplorerSettings.getSelectDataPanelAfterRetrieve() && dataPanel == dataDisplay)
     {
       WbSwingUtilities.requestFocus(dataDisplay.getTable());
     }
@@ -1260,6 +1284,7 @@ public class TableDataPanel
       // An error occurred --> no need to continue
       if (rows == -1) return;
     }
+    this.removeAdditionalData();
     this.retrieve(!ctrlPressed);
   }
 
@@ -1344,6 +1369,92 @@ public class TableDataPanel
     for (DbExecutionListener l : execListener)
     {
       if (l != null) l.executionEnd(this.dbConnection, this);
+    }
+  }
+
+  @Override
+  public void showResult(String sql, String comment, ShowType how)
+  {
+    if (tabPane == null)
+    {
+      addTabPane();
+    }
+    DwPanel newPanel = new DwPanel();
+    newPanel.setMaxRows(dataDisplay.getMaxRows());
+    newPanel.setConnection(this.dbConnection);
+    this.tabPane.add(newPanel, comment);
+    this.tabPane.showCloseButton(this);
+    newPanel.setReadOnly(true);
+    Thread t = new WbThread("TableDataPanel retrieve thread")
+    {
+      @Override
+      public void run()
+      {
+        doRetrieve(newPanel, sql, true);
+      }
+    };
+    t.start();
+  }
+
+  @Override
+  public String getTitle()
+  {
+    return tableNameLabel.getText();
+  }
+
+  private void removeAdditionalData()
+  {
+    if (this.tabPane != null)
+    {
+      this.tabPane.removeAll();
+    }
+
+    if (this.splitPane != null)
+    {
+      splitPane.removeAll();
+      this.remove(splitPane);
+      this.add(dataDisplay, BorderLayout.CENTER);
+    }
+    this.tabPane = null;
+    this.splitPane = null;
+    this.validate();
+  }
+
+  private void addTabPane()
+  {
+    this.remove(dataDisplay);
+    this.tabPane = new WbTabbedPane(JTabbedPane.TOP);
+    this.splitPane = new WbSplitPane(JSplitPane.VERTICAL_SPLIT);
+    this.splitPane.setLeftComponent(dataDisplay);
+    this.splitPane.setRightComponent(tabPane);
+    this.add(splitPane, BorderLayout.CENTER);
+    this.validate();
+    this.splitPane.setDividerLocation(0.65);
+  }
+
+  @Override
+  public boolean canCloseTab(int index)
+  {
+    return true;
+  }
+
+  @Override
+  public void tabCloseButtonClicked(int index)
+  {
+    if (this.tabPane == null) return;
+    try
+    {
+      DwPanel data = (DwPanel)tabPane.getComponentAt(index);
+      data.clearContent();
+      tabPane.remove(index);
+      if (tabPane.getTabCount() == 0)
+      {
+       removeAdditionalData();
+      }
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not remove tab index: " + index, th);
     }
   }
 
