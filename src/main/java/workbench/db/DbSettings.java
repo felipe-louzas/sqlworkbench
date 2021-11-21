@@ -2659,7 +2659,7 @@ public class DbSettings
   {
     setProperty("supports.getmoreresults", true);
   }
-  
+
   public boolean supportsGetMoreResults()
   {
     return getBoolProperty("supports.getmoreresults", true);
@@ -2737,4 +2737,8 @@ public class DbSettings
     return getBoolProperty("tablesearch.like.operator.case.sensitive", true);
   }
 
+  public boolean validateSetSchema()
+  {
+    return getBoolProperty("setschema.validate", false);
+  }
 }

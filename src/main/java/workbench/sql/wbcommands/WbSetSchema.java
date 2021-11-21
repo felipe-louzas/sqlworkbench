@@ -27,6 +27,7 @@ import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
 
 import workbench.util.ExceptionUtil;
+import workbench.util.StringUtil;
 
 /**
  * A workbench SQL command to change the current schema through JDBC.
@@ -46,16 +47,30 @@ public class WbSetSchema
     StatementRunnerResult result = createResult(sql);
     try
     {
-      // everything after the WbSetSchema command is the catalog name
+      // everything after the WbSetSchema command is the schema name
       String newSchema = getCommandLine(sql);
       String oldSchema = currentConnection.getCurrentSchema();
 
       currentConnection.getSqlConnection().setSchema(newSchema);
+      appendWarnings(result, true);
 
-      notifySchemaChange(oldSchema, newSchema);
+      String effectiveSchema = newSchema;
+      if (currentConnection.getDbSettings().validateSetSchema())
+      {
+        effectiveSchema = currentConnection.getCurrentSchema();
+      }
 
-      result.addMessageByKey("MsgSchemaChanged", newSchema);
-      result.setSuccess();
+      if (StringUtil.equalStringIgnoreCase(oldSchema, effectiveSchema))
+      {
+        result.addMessageByKey("MsgSchemaNotChanged");
+        result.setWarning();
+      }
+      else
+      {
+        notifySchemaChange(oldSchema, newSchema);
+        result.addMessageByKey("MsgSchemaChanged", newSchema);
+        result.setSuccess();
+      }
     }
     catch (Exception e)
     {
@@ -77,8 +92,10 @@ public class WbSetSchema
     return result;
   }
 
-  private String notifySchemaChange(String oldSchema, String newSchema)
+  private void notifySchemaChange(String oldSchema, String newSchema)
   {
+    if (StringUtil.equalStringIgnoreCase(oldSchema, newSchema)) return;
+
     // schemaChanged will trigger an update of the ConnectionInfo
     // but that only retrieves the current schema if the connection isn't busy,
     // so we need to reset the flag before sending the notification
@@ -92,7 +109,6 @@ public class WbSetSchema
     {
       currentConnection.setBusy(busy);
     }
-    return newSchema;
   }
 
   @Override
