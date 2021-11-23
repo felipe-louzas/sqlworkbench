@@ -90,6 +90,9 @@ public class RegexErrorPositionReader
     if (ex == null) return null;
     String msg = ex.getMessage();
     ErrorDescriptor result = getErrorPosition(sql, msg);
+    if (result == null) return null;
+
+    result.setErrorCode(ex);
     if (result.getErrorPosition() > -1 && !con.getDbSettings().getErrorPosIncludesLeadingComments())
     {
       int startOffset = SqlUtil.getRealStart(sql);

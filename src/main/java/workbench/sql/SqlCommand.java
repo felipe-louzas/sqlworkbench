@@ -43,6 +43,7 @@ import workbench.resource.Settings;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbSettings;
 import workbench.db.ErrorPositionReader;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 import workbench.db.oracle.OracleUtils;
 
@@ -65,9 +66,6 @@ import workbench.util.DdlObjectInfo;
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
 import workbench.util.SqlParsingUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -1221,8 +1219,7 @@ public class SqlCommand
       ErrorDescriptor error = reader.getErrorPosition(currentConnection, sql, e);
       if (error != null && error.getErrorMessage() != null)
       {
-        error.setErrorCode(e);
-        String fullMsg = reader.enhanceErrorMessage(sql, e.getMessage(), error);
+        String fullMsg = reader.enhanceErrorMessage(sql, error.getErrorMessage(), error);
         result.addErrorMessage(error, fullMsg);
       }
       else
