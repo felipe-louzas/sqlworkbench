@@ -49,6 +49,19 @@ public class WbSqlFormatterTest
   }
 
   @Test
+  public void testSET()
+  {
+    String sql = "set search_path = one,two;";
+    WbSqlFormatter f = new WbSqlFormatter(sql, 150, DBID.Postgres.getId());
+    f.setKeywordCase(GeneratedIdentifierCase.upper);
+    String formatted = f.getFormattedSql();
+    System.out.println(formatted);
+    String expected = "SET search_path = one,two;";
+//    System.out.println("***** formatted ***** \n" + formatted + "\n----------- expected --------- \n" + expected + "\n*****************");
+    assertEquals(expected, formatted);
+  }
+
+  @Test
   public void testKeyWordCase()
   {
     String sql = "create table t (year int, years int, month int, months int, day int, days int, hour int, hours int, minUte int, minUtes int, second int, first int)";

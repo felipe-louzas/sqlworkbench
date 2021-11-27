@@ -1763,7 +1763,7 @@ public class WbSqlFormatter
       {
         if (lastToken.isComment() && !isStartOfLine()) this.appendNewline();
 
-        if (LINE_BREAK_BEFORE.contains(word) && !lastToken.getContents().equals("("))
+        if (!firstToken && LINE_BREAK_BEFORE.contains(word) && !lastToken.getContents().equals("("))
         {
           if (!isStartOfLine()) this.appendNewline();
 
@@ -1829,7 +1829,7 @@ public class WbSqlFormatter
           continue;
         }
 
-        if (word.equals("SET"))
+        if (word.equals("SET") && !firstToken)
         {
           lastToken = t;
           t = this.processList(t,"SET".length() + 4, SET_TERMINAL);
