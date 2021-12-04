@@ -106,14 +106,6 @@ public class KeyboardMapper
   public static KeyStroke getKeyStroke(JComponent parent)
   {
     final KeyboardMapper mapper = new KeyboardMapper();
-    EventQueue.invokeLater(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        mapper.grabFocus();
-      }
-    });
 
     String[] options = new String[] {
       ResourceMgr.getPlainString("LblOK"),
@@ -124,6 +116,8 @@ public class KeyboardMapper
     JDialog dialog = overwritePane.createDialog(parent, ResourceMgr.getString("LblEnterKeyWindowTitle"));
 
     dialog.setResizable(true);
+    EventQueue.invokeLater(mapper::grabFocus);
+    
     dialog.setVisible(true);
     Object result = overwritePane.getValue();
     dialog.dispose();

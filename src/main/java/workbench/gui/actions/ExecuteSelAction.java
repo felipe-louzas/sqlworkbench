@@ -56,9 +56,8 @@ public class ExecuteSelAction
     super();
     this.target = aPanel;
     this.initMenuDefinition("MnuTxtExecuteSel",
-      KeyStroke.getKeyStroke(KeyEvent.VK_E, PlatformShortcuts.getDefaultModifier()),
-      KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
-    
+      KeyStroke.getKeyStroke(KeyEvent.VK_E, PlatformShortcuts.getDefaultModifier()));
+
     this.setIcon("execute_sel");
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
 

@@ -514,7 +514,7 @@ public class ShortcutEditor
     for (int row = 0; row < count; row++)
     {
       ShortcutDisplay d = (ShortcutDisplay)this.definitions.getValue(row, 1);
-      if (!d.isCleared() && d.isMappedTo(key))
+      if (d != null && !d.isCleared() && d.isMappedTo(key))
       {
         return row;
       }
