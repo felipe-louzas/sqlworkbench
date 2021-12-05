@@ -538,10 +538,10 @@ public class LexerBasedParser
 
   protected boolean isDollarQuote(String text)
   {
-    if (text == null || text.isEmpty()) return false;
+    if (text == null || text.length() < 2) return false;
     if (text.charAt(0) != '$') return false;
     if (text.equals(RowDataProducer.SKIP_INDICATOR)) return false;
-    return text.endsWith("$");
+    return text.charAt(text.length() - 1) == '$';
   }
 
 }
