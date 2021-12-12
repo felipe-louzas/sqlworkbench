@@ -146,17 +146,8 @@ public class ShortcutManager
 
     if (def == null)
     {
-      def = new ShortcutDefinition(clazz);
+      def = new ShortcutDefinition(anAction);
       this.keyMap.put(clazz, def);
-    }
-
-    if (!def.hasDefault())
-    {
-      KeyStroke defaultkey = anAction.getDefaultAccelerator();
-      if (defaultkey != null)
-      {
-        def.assignDefaultKey(defaultkey);
-      }
     }
 
     if (LogMgr.isDebugEnabled())
@@ -275,9 +266,17 @@ public class ShortcutManager
       if (action == null) continue;
       String actionClass = action.getClass().getName();
       ShortcutDefinition def = this.getDefinition(actionClass);
-      KeyStroke key = def.getActiveKeyStroke();
-      action.setAccelerator(key);
+      updateActionFromDefinition(action, def);
     }
+  }
+
+  private void updateActionFromDefinition(WbAction action, ShortcutDefinition def)
+  {
+    if (action == null || def == null) return;
+    KeyStroke key = def.getActiveKeyStroke();
+    action.setAccelerator(key);
+    action.setAlternateAccelerator(def.getAlternateKeyStroke());
+    this.modified = true;
   }
 
   /**
@@ -308,7 +307,7 @@ public class ShortcutManager
       return;
     }
 
-    // we only want to saveAs those definitions where a different mapping is defined
+    // we only want to save those definitions where a different mapping is defined
     // so we first create a copy of the current keymap, and then remove any
     // definition that is not customized.
     HashMap<String, ShortcutDefinition> toSave = new HashMap<>(this.keyMap);
@@ -350,18 +349,21 @@ public class ShortcutManager
     return def.getActiveKeyStroke();
   }
 
-  public void setCustomizedKeyStroke(String aClassName, KeyStroke aKey)
+  public void updateShortcut(ShortcutDefinition shortcut)
   {
-    String oldclass = this.getActionClassForKey(aKey);
-    if (oldclass != null)
-    {
-      ShortcutDefinition old = this.keyMap.get(oldclass);
-      if (old != null) old.clearKeyStroke();
-    }
-    ShortcutDefinition def = this.keyMap.get(aClassName);
-    if (def == null) return;
-    def.assignKey(aKey);
-    modified = true;
+    if (shortcut == null) return;
+    String cls = shortcut.getActionClass();
+    this.keyMap.put(cls, shortcut.createCopy());
+    WbAction action = getActionForClass(cls);
+    updateActionFromDefinition(action, shortcut);
+    this.modified = true;
+  }
+
+  public KeyStroke getCustomizedAlternateKeyStroke(Action anAction)
+  {
+    ShortcutDefinition def = this.getDefinition(anAction.getClass().getName());
+    if (def == null) return null;
+    return def.getAlternateKeyStroke();
   }
 
   private ShortcutDefinition getDefinition(String aClassname)

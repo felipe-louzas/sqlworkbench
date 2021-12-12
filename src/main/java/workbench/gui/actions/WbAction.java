@@ -292,6 +292,7 @@ public class WbAction
       mgr.registerAction(this);
       KeyStroke key = mgr.getCustomizedKeyStroke(this);
       setAccelerator(key);
+      setAlternateAccelerator(mgr.getCustomizedAlternateKeyStroke(this));
     }
   }
 

@@ -484,8 +484,10 @@ public class MacroDefinitionPanel
   {//GEN-HEADEREND:event_assignShortcutButtonActionPerformed
     if (this.currentMacro != null)
     {
-      KeyStroke key = KeyboardMapper.getKeyStroke(this);
-      if (key != null)
+      KeyboardMapper mapper = new KeyboardMapper(false);
+      boolean ok = mapper.show(this);
+      KeyStroke key = mapper.getKeyStroke();
+      if (ok && key != null)
       {
         String clazz = ShortcutManager.getInstance().getActionClassForKey(key);
         String name = ShortcutManager.getInstance().getActionNameForClass(clazz);

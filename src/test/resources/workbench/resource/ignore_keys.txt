@@ -15,6 +15,7 @@ LblFetchSize
 LblFileEncoding
 LblGSTabName
 LblKeyDefDefaultCol
+LblKeyDefAlternate
 LblLnFName
 LblLnFOptions
 LblLogLevel

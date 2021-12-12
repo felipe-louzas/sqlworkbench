@@ -224,7 +224,7 @@ public class CollectionUtil
       if (s.equalsIgnoreCase(remove)) continue;
       elements.add(s);
     }
-    return elements.toArray(new String[0]);
+    return elements.toArray(String[]::new);
   }
 
   public static void replaceElement(String[] array, String oldName, String newName)

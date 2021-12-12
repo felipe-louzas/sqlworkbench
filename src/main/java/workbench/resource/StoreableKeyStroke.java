@@ -23,6 +23,7 @@
  */
 package workbench.resource;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
@@ -131,20 +132,31 @@ public class StoreableKeyStroke
   @Override
   public String toString()
   {
-    KeyStroke thisKey = getKeyStroke();
-    if (thisKey == null) return "";
+    return displayString(getKeyStroke());
+  }
 
-    int mod = thisKey.getModifiers();
-    int code = thisKey.getKeyCode();
+  public static String displayString(KeyStroke key)
+  {
+    if (key == null) return "";
 
-    String modText = KeyEvent.getKeyModifiersText(mod);
-    if (modText.length() == 0)
+    int modifier = key.getModifiers();
+    int code = key.getKeyCode();
+
+    String text = KeyEvent.getKeyText(code);
+    if (modifier != 0)
     {
-      return KeyEvent.getKeyText(code);
+      text = InputEvent.getModifiersExText(modifier) + "-" + text;
     }
-    else
-    {
-      return modText + "-" + KeyEvent.getKeyText(code);
-    }
+    return text;
+  }
+
+  public StoreableKeyStroke createCopy()
+  {
+    StoreableKeyStroke copy = new StoreableKeyStroke();
+    copy.keyCode = this.keyCode;
+    copy.modifier = this.modifier;
+    copy.modifierSet = this.modifierSet;
+    copy.keyCodeSet = this.keyCodeSet;
+    return copy;
   }
 }

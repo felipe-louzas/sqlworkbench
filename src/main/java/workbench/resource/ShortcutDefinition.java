@@ -25,6 +25,8 @@ package workbench.resource;
 
 import javax.swing.KeyStroke;
 
+import workbench.gui.actions.WbAction;
+
 /**
  * A class to store the assigned KeyStrokes for an Action in order to be serializable
  * using the XMLEncode and XMLDecoder.
@@ -46,6 +48,14 @@ public class ShortcutDefinition
   public ShortcutDefinition(String aClass)
   {
     this.setActionClass(aClass);
+  }
+
+  public ShortcutDefinition(WbAction action)
+  {
+    this.setActionClass(action.getClass().getName());
+    this.assignDefaultKey(action.getDefaultAccelerator());
+    // this.assignKey(action.getAccelerator());
+    this.assignAlternateKey(action.getAlternateAccelerator());
   }
 
   public void setShortcutRemoved(boolean aFlag)
@@ -162,8 +172,10 @@ public class ShortcutDefinition
    */
   public void assignDefaultKey(KeyStroke aKey)
   {
-    this.defaultKey = new StoreableKeyStroke(aKey);
-    //if (this.currentKey == null) this.currentKey = this.defaultKey;
+    if (aKey != null)
+    {
+      this.defaultKey = new StoreableKeyStroke(aKey);
+    }
   }
 
   /**
@@ -176,7 +188,6 @@ public class ShortcutDefinition
     return this.defaultKey;
   }
 
-
   /**
    * Assign an alternate key for this action class.
    * This method is called assign so that the XMLEncoder does not consider
@@ -186,7 +197,14 @@ public class ShortcutDefinition
    */
   public void assignAlternateKey(KeyStroke aKey)
   {
-    this.alternateKey = new StoreableKeyStroke(aKey);
+    if (aKey == null)
+    {
+      this.alternateKey = null;
+    }
+    else
+    {
+      this.alternateKey = new StoreableKeyStroke(aKey);
+    }
   }
 
   /**
@@ -208,6 +226,7 @@ public class ShortcutDefinition
    * Return if the this shortcut definition is customized.
    * It's customized if a default exists, and currently no shortcut is defined.
    * Or if a shortcut is defined, that is different to the default.
+   *
    * @return true if this shortcut definition differs from the default.
    */
   public boolean isCustomized()
@@ -215,6 +234,7 @@ public class ShortcutDefinition
     if (this.defaultKey == null && this.currentKey == null) return false;
     if (this.defaultKey == null && this.currentKey != null) return true;
     if (this.defaultKey != null && this.currentKey == null) return this.shortcutRemoved;
+    if (this.alternateKey != null) return true;
 
     return ( !this.currentKey.equals(this.defaultKey) );
   }
@@ -227,6 +247,7 @@ public class ShortcutDefinition
   {
     shortcutRemoved = false;
     currentKey = null;
+    alternateKey = null;
   }
 
   /**
@@ -281,5 +302,16 @@ public class ShortcutDefinition
       result.append(" (customized)");
 
     return result.toString();
+  }
+
+  public ShortcutDefinition createCopy()
+  {
+    ShortcutDefinition copy = new ShortcutDefinition(this.actionClass);
+    copy.actionClass = this.actionClass;
+    copy.currentKey = this.currentKey == null ? null : currentKey.createCopy();
+    copy.defaultKey = this.defaultKey == null ? null : defaultKey.createCopy();
+    copy.shortcutRemoved = this.shortcutRemoved;
+    copy.alternateKey = this.alternateKey == null ? null : alternateKey.createCopy();
+    return copy;
   }
 }

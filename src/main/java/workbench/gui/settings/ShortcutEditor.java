@@ -66,6 +66,7 @@ import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbButton;
 import workbench.gui.components.WbTable;
+import workbench.gui.settings.ShortcutDisplay.DisplayType;
 
 import workbench.storage.DataStore;
 import workbench.storage.filter.ContainsComparator;
@@ -266,27 +267,31 @@ public class ShortcutEditor
 
     String[] cols = new String[] { ResourceMgr.getString("LblKeyDefCommandCol"),
                                    ResourceMgr.getString("LblKeyDefKeyCol"),
+                                   ResourceMgr.getString("LblKeyDefAlternate"),
                                    ResourceMgr.getString("LblKeyDefDefaultCol") };
-    int[] types = new int[] { Types.VARCHAR, Types.OTHER, Types.OTHER };
+    int[] types = new int[] { Types.VARCHAR, Types.OTHER, Types.OTHER, Types.OTHER };
 
     this.definitions = new DataStore(cols, types);
 
     for (ShortcutDefinition key : keys)
     {
+      ShortcutDefinition def = key.createCopy();
       int row = this.definitions.addRow();
-      String cls = key.getActionClass();
+      String cls = def.getActionClass();
       String title = mgr.getActionNameForClass(cls);
       if (title == null || !classIsAvailable(cls))
       {
-        // If action classes for which customized keystrokes exist are renamed this can happen
+        // If action classes for which customized keystrokes exist are renamed, this can happen
         LogMgr.logWarning(new CallerInfo(){}, "Ignoring invalid action class: " + cls);
         continue;
       }
       String tooltip = mgr.getTooltip(cls);
       ActionDisplay disp = new ActionDisplay(title, tooltip);
       this.definitions.setValue(row, 0, disp);
-      this.definitions.setValue(row, 1, new ShortcutDisplay(key, ShortcutDisplay.TYPE_PRIMARY_KEY));
-      this.definitions.setValue(row, 2, new ShortcutDisplay(key, ShortcutDisplay.TYPE_DEFAULT_KEY));
+      this.definitions.setValue(row, 1, new ShortcutDisplay(def, DisplayType.PRIMARY));
+      this.definitions.setValue(row, 2, new ShortcutDisplay(def, DisplayType.ALTERNATE));
+      this.definitions.setValue(row, 3, new ShortcutDisplay(def, DisplayType.DEFAULT));
+      this.definitions.getRow(row).setUserObject(def);
     }
     this.definitions.sortByColumn(0, true);
     this.definitions.resetStatus();
@@ -339,7 +344,7 @@ public class ShortcutEditor
     }
     else if (source == this.clearButton)
     {
-      this.clearKey();
+      this.clearPrimaryShortcut();
     }
     else if (e.getActionCommand().equals(escActionCommand))
     {
@@ -356,33 +361,14 @@ public class ShortcutEditor
   {
     ShortcutManager mgr = ShortcutManager.getInstance();
     int count = this.definitions.getRowCount();
-    boolean modified = false;
     for (int row = 0; row < count; row++)
     {
-      ShortcutDisplay d = (ShortcutDisplay)this.definitions.getValue(row, 1);
-      ShortcutDefinition def = d.getShortcut();
-      if (d.isModified())
-      {
-        modified = true;
-        if (d.isCleared())
-        {
-          mgr.removeShortcut(def.getActionClass());
-        }
-        else if (d.doReset())
-        {
-          mgr.resetToDefault(def.getActionClass());
-        }
-        else
-        {
-          mgr.assignKey(def.getActionClass(), d.getNewKey().getKeyStroke());
-        }
-      }
+      ShortcutDefinition def = getDefinition(row);
+      mgr.updateShortcut(def);
     }
-    if (modified)
-    {
-      mgr.updateActions();
-      mgr.fireShortcutsChanged();
-    }
+
+    mgr.updateActions();
+    mgr.fireShortcutsChanged();
   }
 
   private void applyFilter()
@@ -429,56 +415,111 @@ public class ShortcutEditor
     int row = this.keysTable.getSelectedRow();
     if (row < 0) return;
 
-    KeyStroke key = KeyboardMapper.getKeyStroke(this);
-    if (key != null)
-    {
-      ShortcutDisplay d = (ShortcutDisplay)this.definitions.getValue(row, 1);
-      String currentClass = d.getShortcut().getActionClass();
-      WbAction currentAction = ShortcutManager.getInstance().getActionForClass(currentClass);
-      int oldrow = this.findKey(key);
-      if (!currentAction.allowDuplicate() && oldrow > -1)
-      {
-        ShortcutDisplay old = (ShortcutDisplay)this.definitions.getValue(oldrow, 1);
-        String actionClass = old.getShortcut().getActionClass();
-        WbAction action = ShortcutManager.getInstance().getActionForClass(actionClass);
-        if (!action.allowDuplicate())
-        {
-          String name = this.definitions.getValueAsString(oldrow, 0);
-          String msg = ResourceMgr.getFormattedString("MsgShortcutAlreadyAssigned", name);
-          boolean choice = WbSwingUtilities.getYesNo(this, msg);
-          if (!choice) return;
+    KeyboardMapper mapper = new KeyboardMapper();
+    ShortcutDefinition def = getDefinition(row);
+    mapper.setCurrentPrimaryKey(def.getActiveKeyStroke());
+    mapper.setCurrentAlternateKey(def.getAlternateKeyStroke());
+    boolean ok = mapper.show(this);
 
-          old.clearKey();
-          this.model.fireTableRowsUpdated(oldrow, oldrow);
+    if (ok)
+    {
+      WbAction currentAction = getAction(row);
+      KeyStroke key = mapper.getKeyStroke();
+
+      if (canAssign(key, currentAction, row))
+      {
+        if (key == null)
+        {
+          def.clearKeyStroke();
+        }
+        else
+        {
+          def.setCurrentKey(new StoreableKeyStroke(key));
         }
       }
 
-      MacroDefinition def = MacroManager.getInstance().getMacroForKeyStroke(key);
-      if (!currentAction.allowDuplicate() && def != null)
+      KeyStroke alternateKey = mapper.getAltenateKeyStroke();
+      if (canAssign(alternateKey, currentAction, row))
       {
-        String msg = ResourceMgr.getFormattedString("MsgShortcutMacroAlreadyAssigned", def.getName());
-        boolean choice = WbSwingUtilities.getYesNo(this, msg);
-        if (!choice) return;
-        def.setShortcut(null);
+        if (alternateKey == null)
+        {
+          def.setAlternateKey(null);
+        }
+        else
+        {
+          def.setAlternateKey(new StoreableKeyStroke(alternateKey));
+        }
       }
-
-      if (key.equals(GuiSettings.getExpansionKey()))
-      {
-        WbSwingUtilities.showErrorMessageKey(this, "MsgShortcutExpansion");
-        return;
-      }
-
-      d.setNewKey(key);
       this.model.fireTableRowsUpdated(row, row);
     }
   }
 
-  private void clearKey()
+  private WbAction getAction(int row)
+  {
+    ShortcutDefinition def = getDefinition(row);
+    String currentClass = def.getActionClass();
+    return ShortcutManager.getInstance().getActionForClass(currentClass);
+  }
+
+  private ShortcutDefinition getDefinition(int row)
+  {
+    return this.definitions.getUserObject(row, ShortcutDefinition.class);
+  }
+
+  private boolean canAssign(KeyStroke key, WbAction currentAction, int currentRow)
+  {
+    if (key == null) return true;
+    String display = StoreableKeyStroke.displayString(key);
+
+    int oldrow = this.findKey(key, currentRow);
+    if (!currentAction.allowDuplicate() && oldrow > -1)
+    {
+      WbAction action = getAction(oldrow);
+      if (!action.allowDuplicate())
+      {
+        String name = this.definitions.getValueAsString(oldrow, 0);
+        String msg = ResourceMgr.getFormattedString("MsgShortcutAlreadyAssigned", display, name);
+        boolean choice = WbSwingUtilities.getYesNo(this, msg);
+        if (!choice) return false;
+
+        ShortcutDefinition oldDef = getDefinition(oldrow);
+        if (oldDef.getCurrentKeyStroke() == key)
+        {
+          oldDef.clearKeyStroke();
+        }
+
+        if (oldDef.getAlternateKeyStroke() == key)
+        {
+          oldDef.setAlternateKey(null);
+        }
+        this.model.fireTableRowsUpdated(oldrow, oldrow);
+      }
+    }
+
+    MacroDefinition def = MacroManager.getInstance().getMacroForKeyStroke(key);
+    if (!currentAction.allowDuplicate() && def != null)
+    {
+      String msg = ResourceMgr.getFormattedString("MsgShortcutMacroAlreadyAssigned", display, def.getName());
+      boolean choice = WbSwingUtilities.getYesNo(this, msg);
+      if (!choice) return false;
+
+      def.setShortcut(null);
+    }
+
+    if (key.equals(GuiSettings.getExpansionKey()))
+    {
+      WbSwingUtilities.showErrorMessageKey(this, "MsgShortcutExpansion");
+      return false;
+    }
+    return true;
+  }
+
+  private void clearPrimaryShortcut()
   {
     int row = this.keysTable.getSelectedRow();
     if (row < 0) return;
-    ShortcutDisplay old = (ShortcutDisplay)this.definitions.getValue(row, 1);
-    old.clearKey();
+    ShortcutDefinition shortcut = getDefinition(row);
+    shortcut.clearKeyStroke();
     this.model.fireTableRowsUpdated(row, row);
   }
 
@@ -486,10 +527,10 @@ public class ShortcutEditor
   {
     int row = this.keysTable.getSelectedRow();
     if (row < 0) return;
-    ShortcutDisplay d = (ShortcutDisplay)this.definitions.getValue(row, 1);
-    d.resetToDefault();
+
+    ShortcutDefinition shortcut = getDefinition(row);
+    shortcut.resetToDefault();
     this.model.fireTableRowsUpdated(row, row);
-    WbSwingUtilities.repaintNow(this);
   }
 
   private void resetAllKeys()
@@ -498,8 +539,8 @@ public class ShortcutEditor
     int count = this.keysTable.getRowCount();
     for (int row=0; row < count; row++)
     {
-      ShortcutDisplay d = (ShortcutDisplay)this.definitions.getValue(row, 1);
-      d.resetToDefault();
+      ShortcutDefinition shortcut = getDefinition(row);
+      shortcut.resetToDefault();
     }
     this.model.fireTableDataChanged();
     if (selected > -1)
@@ -508,13 +549,14 @@ public class ShortcutEditor
     }
   }
 
-  private int findKey(KeyStroke key)
+  private int findKey(KeyStroke key, int ignoreRow)
   {
     int count = this.definitions.getRowCount();
     for (int row = 0; row < count; row++)
     {
-      ShortcutDisplay d = (ShortcutDisplay)this.definitions.getValue(row, 1);
-      if (d != null && !d.isCleared() && d.isMappedTo(key))
+      if (row == ignoreRow) continue;
+      ShortcutDefinition shortcut = getDefinition(row);
+      if (shortcut.getActiveKeyStroke() == key || shortcut.getAlternateKeyStroke() == key)
       {
         return row;
       }

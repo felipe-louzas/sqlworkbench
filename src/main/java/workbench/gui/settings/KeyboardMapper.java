@@ -21,19 +21,30 @@
  */
 package workbench.gui.settings;
 
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
 
 import workbench.resource.ResourceMgr;
+import workbench.resource.StoreableKeyStroke;
 
 /**
  *
@@ -41,20 +52,93 @@ import workbench.resource.ResourceMgr;
  */
 public class KeyboardMapper
   extends JPanel
-  implements KeyListener
+  implements KeyListener, FocusListener
 {
   private JTextField display;
-  private KeyStroke newkey;
+  private JTextField alternateKey;
+  private KeyStroke newPrimaryKey;
+  private KeyStroke newAlternateKey;
+  private boolean cancelled;
+  private Border focusBorder;
+  private Border originalBorder = null;
 
   public KeyboardMapper()
   {
-    super();
-    this.display = new JTextField(20);
-    this.display.addKeyListener(this);
-    this.display.setEditable(false);
-    this.display.setDisabledTextColor(display.getForeground());
-    this.display.setBackground(UIManager.getColor("TextArea.background"));
-    this.add(display);
+    this(true);
+  }
+
+  public KeyboardMapper(boolean includeAlternate)
+  {
+    super(new GridBagLayout());
+    JLabel primary = new JLabel(ResourceMgr.getString("LblKeyDefKeyCol"));
+    GridBagConstraints gc = new GridBagConstraints();
+    gc.gridx = 0;
+    gc.gridy = 0;
+    gc.anchor = GridBagConstraints.LINE_START;
+    gc.fill = GridBagConstraints.NONE;
+    gc.insets = new Insets(0,0,8,8);
+    this.add(primary, gc);
+    gc.gridx = 1;
+    gc.fill = GridBagConstraints.HORIZONTAL;
+    gc.weightx = 1.0;
+    this.display = createField();
+    this.originalBorder = this.display.getBorder();
+    this.add(display, gc);
+
+    if (includeAlternate)
+    {
+      this.alternateKey = createField();
+      JLabel alternate = new JLabel(ResourceMgr.getString("LblKeyDefAlternate"));
+      gc.gridx = 0;
+      gc.gridy = 1;
+      gc.anchor = GridBagConstraints.LINE_START;
+      gc.fill = GridBagConstraints.NONE;
+      this.add(alternate, gc);
+      gc.gridx = 1;
+      gc.fill = GridBagConstraints.HORIZONTAL;
+      gc.weightx = 1.0;
+      this.add(alternateKey, gc);
+
+      display.addFocusListener(this);
+      alternateKey.addFocusListener(this);
+    }
+    focusBorder = new CompoundBorder(new LineBorder(Color.YELLOW, 1), originalBorder);
+  }
+
+  public void setCurrentPrimaryKey(KeyStroke key)
+  {
+    this.newPrimaryKey = key;
+    updateDisplay();
+  }
+
+  public void setCurrentAlternateKey(KeyStroke key)
+  {
+    this.newAlternateKey = key;
+    updateDisplay();
+  }
+
+  private JTextField createField()
+  {
+    JTextField field = new JTextField(20);
+    field.addKeyListener(this);
+    field.setEditable(false);
+    field.setDisabledTextColor(field.getForeground());
+    field.setBackground(UIManager.getColor("TextArea.background"));
+    field.setFocusable(true);
+    return field;
+  }
+
+  @Override
+  public void focusGained(FocusEvent e)
+  {
+    if (e.isTemporary()) return;
+    ((JComponent)e.getComponent()).setBorder(focusBorder);
+  }
+
+  @Override
+  public void focusLost(FocusEvent e)
+  {
+    ((JComponent)e.getComponent()).setBorder(originalBorder);
   }
 
   @Override
@@ -72,30 +156,65 @@ public class KeyboardMapper
   @Override
   public void keyReleased(KeyEvent e)
   {
-    int modifier = e.getModifiers();
+    int modifier = e.getModifiersEx();
     int code = e.getKeyCode();
 
-    // only allow action keys without modifier!
+    if (modifier == 0 && code == KeyEvent.VK_BACK_SPACE)
+    {
+      if (e.getSource() == display)
+      {
+        this.newPrimaryKey = null;
+      }
+      else if (e.getSource() == alternateKey)
+      {
+        this.newAlternateKey = null;
+      }
+      updateDisplay();
+      return;
+    }
+
+    // only allow regular keys with modifier
     if (modifier == 0 && !e.isActionKey()) return;
 
     // keyReleased is also called when the Ctrl or Shift keys are release
     // in that case the keycode is 0 --> ignore it
     if (code >= 32
       || code == KeyEvent.VK_ENTER
-      || code == KeyEvent.VK_BACK_SPACE
       || code == KeyEvent.VK_TAB
       || code == KeyEvent.VK_ESCAPE)
     {
-      String key = KeyEvent.getKeyText(code);
-      if (modifier > 0) key = KeyEvent.getKeyModifiersText(modifier) + "-" + key;
-      this.newkey = KeyStroke.getKeyStroke(code, modifier);
-      this.display.setText(key);
+
+      if (e.getSource() == display)
+      {
+        this.newPrimaryKey = KeyStroke.getKeyStroke(code, modifier);
+      }
+      else if (e.getSource() == alternateKey)
+      {
+        this.newAlternateKey= KeyStroke.getKeyStroke(code, modifier);
+      }
+      updateDisplay();
     }
+  }
+
+  private void updateDisplay()
+  {
+    showKey(display, newPrimaryKey);
+    showKey(alternateKey, newAlternateKey);
+  }
+
+  private void showKey(JTextField keyDisplay, KeyStroke keyStroke)
+  {
+    keyDisplay.setText(StoreableKeyStroke.displayString(keyStroke));
+  }
+
+  public KeyStroke getAltenateKeyStroke()
+  {
+    return this.newAlternateKey;
   }
 
   public KeyStroke getKeyStroke()
   {
-    return this.newkey;
+    return this.newPrimaryKey;
   }
 
   @Override
@@ -103,31 +222,35 @@ public class KeyboardMapper
   {
   }
 
-  public static KeyStroke getKeyStroke(JComponent parent)
+  public boolean isCancelled()
   {
-    final KeyboardMapper mapper = new KeyboardMapper();
+    return this.cancelled;
+  }
 
+  public boolean show(JComponent parent)
+  {
     String[] options = new String[] {
       ResourceMgr.getPlainString("LblOK"),
       ResourceMgr.getPlainString("LblCancel")
     };
 
-    JOptionPane overwritePane = new JOptionPane(mapper, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, options);
-    JDialog dialog = overwritePane.createDialog(parent, ResourceMgr.getString("LblEnterKeyWindowTitle"));
+    JOptionPane mapperPanel = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, options);
+    JDialog dialog = mapperPanel.createDialog(parent, ResourceMgr.getString("LblEnterKeyWindowTitle"));
 
+    this.cancelled = true;
     dialog.setResizable(true);
-    EventQueue.invokeLater(mapper::grabFocus);
-    
+    EventQueue.invokeLater(this::grabFocus);
+
     dialog.setVisible(true);
-    Object result = overwritePane.getValue();
+    Object result = mapperPanel.getValue();
     dialog.dispose();
 
-    KeyStroke key = null;
     if (options[0].equals(result))
     {
-      key = mapper.getKeyStroke();
+      this.cancelled = false;
+      return true;
     }
-    return key;
+    return false;
   }
 
 }

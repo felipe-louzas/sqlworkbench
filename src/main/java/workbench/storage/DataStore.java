@@ -1387,6 +1387,17 @@ public class DataStore
     return result;
   }
 
+  public <T extends Object> T getUserObject(int row, Class<T> type)
+  {
+    return (T)getUserObject(row);
+  }
+
+  public Object getUserObject(int row)
+  {
+    RowData rowData = getRow(row);
+    return rowData.getUserObject();
+  }
+
   @Override
   public RowData getRow(int aRow)
     throws IndexOutOfBoundsException

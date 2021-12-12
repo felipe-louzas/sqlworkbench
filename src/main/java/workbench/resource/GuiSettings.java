@@ -1684,6 +1684,6 @@ public class GuiSettings
 
   public static boolean showAlternateAcceleratorTooltip()
   {
-    return Settings.getInstance().getBoolProperty("workbench.gui.menuitem.alternate.accelerator", false);
+    return Settings.getInstance().getBoolProperty("workbench.gui.menuitem.alternate.accelerator", true);
   }
 }
