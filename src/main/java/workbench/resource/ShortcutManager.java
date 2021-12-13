@@ -150,6 +150,15 @@ public class ShortcutManager
       this.keyMap.put(clazz, def);
     }
 
+    if (!def.hasDefault())
+    {
+      KeyStroke defaultkey = anAction.getDefaultAccelerator();
+      if (defaultkey != null)
+      {
+        def.assignDefaultKey(defaultkey);
+      }
+    }
+
     if (LogMgr.isDebugEnabled())
     {
       KeyStroke key = anAction.getDefaultAccelerator();

@@ -54,7 +54,6 @@ public class ShortcutDefinition
   {
     this.setActionClass(action.getClass().getName());
     this.assignDefaultKey(action.getDefaultAccelerator());
-    // this.assignKey(action.getAccelerator());
     this.assignAlternateKey(action.getAlternateAccelerator());
   }
 
