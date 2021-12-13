@@ -40,7 +40,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -116,6 +115,10 @@ public class ProfileSelectionPanel
     super();
     initComponents(); // will initialize the model!
 
+    WbSplitPane split = (WbSplitPane)jSplitPane;
+    split.setDividerBorder(new DividerBorder(DividerBorder.LEFT_RIGHT));
+    split.setDividerSize(GuiSettings.getSplitPaneDividerWidth());
+    this.setBorder(DividerBorder.BOTTOM_DIVIDER);
     this.connectionEditor = new ConnectionEditorPanel();
     JPanel dummy = new JPanel(new BorderLayout());
     dummy.add(connectionEditor, BorderLayout.CENTER);
@@ -202,7 +205,7 @@ public class ProfileSelectionPanel
       gc.fill = GridBagConstraints.NONE;
       gc.weightx = 0.0;
       filterPanel.add(filterBar, gc);
-      
+
       p.add(filterPanel, BorderLayout.PAGE_END);
       filterValue.setToolTipText(ResourceMgr.getDescription("LblConnTagFilter", true));
     }
@@ -541,7 +544,7 @@ public class ProfileSelectionPanel
     JPanel p = new JPanel(new GridBagLayout());
 
 
-    JComboBox<WbFile> files = new JComboBox<>(sources.toArray(new WbFile[0]));
+    JComboBox<WbFile> files = new JComboBox<>(sources.toArray(WbFile[]::new));
 
     GridBagConstraints gc = new GridBagConstraints();
     gc.fill = GridBagConstraints.NONE;
@@ -701,7 +704,7 @@ public class ProfileSelectionPanel
 
     setLayout(new BorderLayout());
 
-    jSplitPane.setBorder(BorderFactory.createEtchedBorder());
+    jSplitPane.setBorder(null);
     jSplitPane.setDividerLocation(110);
     jSplitPane.setMinimumSize(new Dimension(400, 400));
 

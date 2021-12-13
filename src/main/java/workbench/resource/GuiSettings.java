@@ -1686,4 +1686,9 @@ public class GuiSettings
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.menuitem.alternate.accelerator", true);
   }
+
+  public static int getSplitPaneDividerWidth()
+  {
+    return Settings.getInstance().getIntProperty("workbench.gui.splitpane.divider.width", 12);
+  }
 }

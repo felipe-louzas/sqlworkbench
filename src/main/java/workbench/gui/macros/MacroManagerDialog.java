@@ -32,13 +32,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -162,7 +160,7 @@ public class MacroManagerDialog
       }
     });
 
-    macroPanel.setBorder(new CompoundBorder(new EmptyBorder(1,1,1,1), BorderFactory.createEtchedBorder()));
+    macroPanel.setBorder(new EmptyBorder(1,1,1,1));
     getContentPane().add(macroPanel, BorderLayout.CENTER);
 
     this.replaceEditorText = new WbCheckBox(ResourceMgr.getString("LblReplaceCurrentSql"));

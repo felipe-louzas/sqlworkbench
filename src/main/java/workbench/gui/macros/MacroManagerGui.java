@@ -29,7 +29,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeModelEvent;
@@ -39,6 +38,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import workbench.interfaces.FileActions;
+import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.db.WbConnection;
@@ -70,7 +70,7 @@ public class MacroManagerGui
   implements FileActions, TreeSelectionListener, PropertyChangeListener, TreeModelListener
 {
   private JToolBar toolbar;
-  private JSplitPane splitPane;
+  private WbSplitPane splitPane;
   private MacroDefinitionPanel macroPanel;
   private MacroGroupPanel groupPanel;
   private MacroTree macroTree;
@@ -107,6 +107,8 @@ public class MacroManagerGui
     treePanel.add(toolbarPanel, BorderLayout.NORTH);
 
     splitPane = new WbSplitPane();
+    splitPane.setDividerBorder(new DividerBorder(DividerBorder.LEFT_RIGHT));
+    splitPane.setDividerSize(GuiSettings.getSplitPaneDividerWidth());
     splitPane.setDividerLocation(140);
 
     JScrollPane scroll = new JScrollPane(this.macroTree);
