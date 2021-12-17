@@ -7,6 +7,7 @@
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
     <entry dev-build="1" type="enh">It's now possible to jump to the corresponding table from within the trigger list.</entry>
     <entry dev-build="1" type="enh">In the DbTree, table nodes for "Uses", Used by", "References" and "Referenced by" can now be expanded to show the table details.</entry>
+    <entry dev-build="1" type="fix">For DB2i, improved the performance when loading system names or remarks in the DbExplorer.</entry>
     <entry dev-build="1" type="fix">Removed the hard-coded alternate shortcut F9 for "Execute selected".</entry>
     <entry dev-build="1" type="fix">In the "Copy data to clipboard" dialog, the "Selected rows" option wasn't always enabled correctly.</entry>
     <entry dev-build="1" type="fix">If no backup directory was defined, opening of the "Backup" options wasn't possible.</entry>

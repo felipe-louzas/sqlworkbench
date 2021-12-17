@@ -32,12 +32,14 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import workbench.interfaces.TextContainer;
 import workbench.log.CallerInfo;
@@ -1931,6 +1933,11 @@ public class SqlUtil
       default:
         return "unknown";
     }
+  }
+
+  public static String makeList(Collection<String> values)
+  {
+    return values.stream().map(s -> quoteLiteral(s)).collect(Collectors.joining(","));
   }
 
   public static String quoteLiteral(String value)

@@ -22,6 +22,7 @@
 package workbench.util;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import workbench.TestUtil;
@@ -52,6 +53,18 @@ public class SqlUtilTest
   public SqlUtilTest()
   {
     super("SqlUtilTest");
+  }
+
+  @Test
+  public void testMakeList()
+  {
+    List<String> values = new ArrayList<>();
+    values.add("foo");
+    values.add("foo'bar");
+    values.add("'bla'");
+
+    String s = SqlUtil.makeList(values);
+    assertEquals("'foo','foo''bar','bla'", s);
   }
 
   @Test

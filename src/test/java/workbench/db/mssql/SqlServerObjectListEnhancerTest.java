@@ -62,7 +62,7 @@ public class SqlServerObjectListEnhancerTest
   public static void setUpClass()
     throws Exception
   {
-    SQLServerTestUtil.initTestcase("SqlServerProcedureReaderTest");
+    SQLServerTestUtil.initTestcase("SqlServerObjectListEnhancerTest");
     WbConnection conn = SQLServerTestUtil.getSQLServerConnection();
     Assume.assumeNotNull("No connection available", conn);
     SQLServerTestUtil.dropAllObjects(conn);

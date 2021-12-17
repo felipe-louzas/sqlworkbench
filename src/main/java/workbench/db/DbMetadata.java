@@ -1621,6 +1621,7 @@ public class DbMetadata
       escapedNamePattern = "%";
     }
 
+    final CallerInfo ci = new CallerInfo(){};
     ResultSet tableRs = null;
     try
     {
@@ -1634,7 +1635,7 @@ public class DbMetadata
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Calling getTables() using: catalog="+ escapedCatalog +
+        LogMgr.logDebug(ci, getConnId() + ": Calling getTables() using: catalog="+ escapedCatalog +
           ", schema=" + escapedSchema +
           ", name=" + escapedNamePattern +
           ", types=" + (typesToUse == null ? "null" : Arrays.asList(typesToUse).toString()));
@@ -1649,12 +1650,12 @@ public class DbMetadata
         tableRs = metaData.getTables(escapedCatalog, escapedSchema, escapedNamePattern, typesToUse);
         if (tableRs == null)
         {
-          LogMgr.logError(new CallerInfo(){}, getConnId() + ": Driver returned a NULL ResultSet from getTables()",null);
+          LogMgr.logError(ci, getConnId() + ": Driver returned a NULL ResultSet from getTables()",null);
         }
       }
 
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Retrieving table list took: " + duration + "ms");
+      LogMgr.logDebug(ci, getConnId() + ": Retrieving table list took: " + duration + "ms");
 
       if (tableRs != null && Settings.getInstance().getDebugMetadataSql())
       {
@@ -1706,6 +1707,14 @@ public class DbMetadata
         if (!sequencesReturned && StringUtil.equalString(sequenceType, ttype)) sequencesReturned = true;
         TableIdentifier tbl = result.getTableIdentifier(row);
         result.getRow(row).setUserObject(tbl);
+
+        // if retrieval takes longer than 2 seconds
+        // then write a trace message every 1000 rows
+        long sofar = System.currentTimeMillis() - start;
+        if (sofar >= 2000 && row % 1000 == 0)
+        {
+          LogMgr.logTrace(ci, getConnId() + ": Processed " + row + " objects");
+        }
       }
 
       duration = System.currentTimeMillis() - start;
@@ -1718,7 +1727,7 @@ public class DbMetadata
 
 
     // Synonym and Sequence retrieval is handled differently to "regular" ObjectListExtenders
-    // because some JDBC driver versions do retrieve this information automatically some don't
+    // because some JDBC driver versions do retrieve this information automatically and some don't
     if (seqReader != null && typeIncluded(seqReader.getSequenceTypeName(), types) &&
         dbSettings.getBoolProperty("retrieve_sequences", true)
         && !sequencesReturned)

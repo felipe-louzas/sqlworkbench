@@ -22,12 +22,13 @@ package workbench.db;
 
 import java.sql.Types;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowDataListSorter;
 import workbench.storage.SortDefinition;
-
 
 /**
  *
@@ -238,5 +239,25 @@ public class ObjectListDataStore
     }
   }
 
+  public Collection<String> getAllSchemas()
+  {
+    return getDistinctValues(getSchemaColumnName());
+  }
+
+  public Collection<String> getAllCatalogs()
+  {
+    return getDistinctValues(getCatalogColumnName());
+  }
+
+  public Collection<String> getDistinctValues(String columnName)
+  {
+    Set<String> result = new HashSet<>(20);
+
+    for (int row=0; row < this.getRowCount(); row ++)
+    {
+      result.add(getCatalog(row));
+    }
+    return result;
+  }
 
 }

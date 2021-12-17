@@ -24,19 +24,20 @@ package workbench.db.ibm;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.Collection;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListEnhancer;
-import workbench.db.TableIdentifier;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListEnhancer;
+import workbench.db.ObjectListLookup;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.SqlUtil;
-import workbench.util.StringUtil;
 
 /**
  *
@@ -72,14 +73,15 @@ public class Db2iObjectListEnhancer
 
   protected void updateResult(WbConnection con, ObjectListDataStore result, String schemaPattern, String objectPattern, boolean readRemarks)
   {
-    long start = System.currentTimeMillis();
-    String sql = buildQuery(con, schemaPattern, objectPattern);
+    String sql = buildQuery(con, schemaPattern, objectPattern, result.getAllSchemas());
     LogMgr.logMetadataSql(new CallerInfo(){}, "object info", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
-
+    ObjectListLookup finder = new ObjectListLookup(result);
     int systemNameCol = result.getColumnIndex(SYSTEM_NAME_DS_COL);
+
+    long start = System.currentTimeMillis();
     try
     {
       stmt = con.createStatementForQuery();
@@ -90,7 +92,7 @@ public class Db2iObjectListEnhancer
         String objectname = rs.getString(2);
         String remark = rs.getString(3);
         String systemName = rs.getString(4);
-        int row = findRow(result, schema, objectname);
+        int row = finder.findObject(schema, objectname);
         if (row > -1)
         {
           TableIdentifier tbl = (TableIdentifier)result.getRow(row).getUserObject();
@@ -126,7 +128,7 @@ public class Db2iObjectListEnhancer
     }
   }
 
-  private String buildQuery(WbConnection con, String schemaPattern, String objectPattern)
+  private String buildQuery(WbConnection con, String schemaPattern, String objectPattern, Collection<String> schemas)
   {
     StringBuilder sql = new StringBuilder(50);
 
@@ -135,11 +137,17 @@ public class Db2iObjectListEnhancer
       "from qsys2" + con.getMetadata().getCatalogSeparator() + "systables \n");
 
     boolean whereAdded = false;
-    if (schemaPattern != null)
+    if (schemaPattern != null && !"%".equals(schemaPattern))
     {
       whereAdded = true;
       sql.append("where ");
       SqlUtil.appendExpression(sql, "table_schema", schemaPattern, con);
+    }
+    else
+    {
+      String values = SqlUtil.makeList(schemas);
+      sql.append("where table_schema in (" + values + ")");
+      whereAdded = true;
     }
 
     if (objectPattern != null)
@@ -155,21 +163,5 @@ public class Db2iObjectListEnhancer
       SqlUtil.appendExpression(sql, "table_name", objectPattern, con);
     }
     return sql.toString();
-  }
-
-  private int findRow(ObjectListDataStore result, String schema, String object)
-  {
-    if (result == null) return -1;
-    for (int row=0; row < result.getRowCount(); row ++)
-    {
-      String resultName = result.getObjectName(row);
-      String resultSchema = result.getSchema(row);
-      if (StringUtil.equalStringIgnoreCase(resultName, object) &&
-          StringUtil.equalStringIgnoreCase(resultSchema, schema))
-      {
-        return row;
-      }
-    }
-    return -1;
   }
 }
