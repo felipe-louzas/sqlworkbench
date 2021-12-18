@@ -68,13 +68,11 @@ public class TableAlias
    */
   public boolean isTableOrAlias(String name, char catalogSeparator, char schemaSeparator)
   {
-    if (StringUtil.isEmptyString(name))
-    {
-      return false;
-    }
+    if (StringUtil.isEmptyString(name)) return false;
+    if (name.trim().equalsIgnoreCase(getAlias())) return true;
 
     TableIdentifier tbl = new TableIdentifier(name, catalogSeparator, schemaSeparator);
-    return (table.getTableName().equalsIgnoreCase(tbl.getTableName()) || name.equalsIgnoreCase(getAlias()));
+    return table.getTableExpression().equalsIgnoreCase(tbl.getTableExpression());
   }
 
   public static TableAlias createFrom(Alias a)

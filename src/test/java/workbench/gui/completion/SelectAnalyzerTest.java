@@ -48,6 +48,57 @@ public class SelectAnalyzerTest
 
 
   @Test
+  public void testSelfJoin()
+  {
+    String sql =
+      "select c1, c2 \n" +
+      "from table_a a \n" +
+      "  join schema_pj.table_a on schema_pj.table_a. ";
+
+    int pos = sql.indexOf("_a.") + 3;
+    StatementContext context = new StatementContext(null, sql, pos, false);
+    BaseAnalyzer analyzer = context.getAnalyzer();
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, analyzer.getContext());
+    TableIdentifier tbl = analyzer.getTableForColumnList();
+    assertEquals("schema_pj.table_a", tbl.getTableExpression());
+  }
+
+  @Test
+  public void testSelfJoin2()
+  {
+    String sql =
+      "select c1, c2 \n" +
+      "from table_a a \n" +
+      "  join schema_pj.table_a b on b. ";
+
+    int pos = sql.indexOf("on b.") + 5;
+    StatementContext context = new StatementContext(null, sql, pos, false);
+    BaseAnalyzer analyzer = context.getAnalyzer();
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, analyzer.getContext());
+    TableIdentifier tbl = analyzer.getTableForColumnList();
+    assertEquals("schema_pj.table_a", tbl.getTableExpression());
+  }
+
+  @Test
+  public void testSelfJoinCte()
+  {
+    String sql =
+      "with cte as (\n" +
+      " select c1, c2 from table_a a inner join schema_pj.table_a on schema_pj.table_a. )\n" +
+      "select *\n" +
+      "from cte;";
+    int pos = sql.indexOf("_a.") + 3;
+    StatementContext context = new StatementContext(null, sql, pos, false);
+    BaseAnalyzer analyzer = context.getAnalyzer();
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, analyzer.getContext());
+    TableIdentifier tbl = analyzer.getTableForColumnList();
+    assertEquals("schema_pj.table_a", tbl.getTableExpression());
+  }
+
+  @Test
   public void testDerivedTable()
   {
     String sql =

@@ -239,20 +239,7 @@ public class SelectAnalyzer
       // tables in the table list or one of the aliases used
       // in the table list.
       TableAlias currentAlias = null;
-      String table = null;
-      if (currentWord != null)
-      {
-        int pos = currentWord.indexOf(catalogSeparator);
-        if (pos == -1)
-        {
-          pos = currentWord.indexOf(schemaSeparator);
-        }
-
-        if (pos > -1)
-        {
-          table = currentWord.substring(0, pos);
-        }
-      }
+      String table = getQualifierLeftOfCursor();
 
       if (table != null)
       {

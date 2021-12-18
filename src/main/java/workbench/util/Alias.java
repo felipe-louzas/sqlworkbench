@@ -44,7 +44,7 @@ public class Alias
   public Alias(String name, String alias)
   {
     this.objectName = name;
-    this.alias = alias;
+    this.alias = StringUtil.trimToNull(alias);
   }
 
   public void setStartPositionInQuery(int pos)
@@ -132,7 +132,7 @@ public class Alias
 
   public void setAlias(String alias)
   {
-    this.alias = alias;
+    this.alias = StringUtil.trimToNull(alias);
   }
 
   /**
