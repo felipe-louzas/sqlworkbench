@@ -25,7 +25,10 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -41,6 +44,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import workbench.interfaces.Validator;
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.ssh.PortForwarder;
 import workbench.ssh.SshHostConfig;
@@ -59,7 +63,7 @@ import workbench.util.WbThread;
  */
 public class SshHostConfigPanel
   extends JPanel
-  implements DocumentListener
+  implements DocumentListener, ActionListener
 {
   private boolean canUseAgent;
   private boolean showConfigName;
@@ -68,6 +72,7 @@ public class SshHostConfigPanel
   private Validator nameValidator;
   private GridBagConstraints defaultErrorConstraints;
   private JLabel errorLabel;
+  private char echoChar;
 
   public SshHostConfigPanel()
   {
@@ -77,6 +82,14 @@ public class SshHostConfigPanel
   public SshHostConfigPanel(boolean showGlobalName)
   {
     initComponents();
+
+    WbSwingUtilities.adjustButtonWidth(showPasswordButton,22,22);
+
+    showPasswordButton.setText(null);
+    showPasswordButton.setIcon(IconMgr.getInstance().getLabelIcon("eye"));
+    showPasswordButton.setMargin(this.password.getMargin());
+    showPasswordButton.addActionListener(this);
+    echoChar = password.getEchoChar();
 
     defaultErrorConstraints = new GridBagConstraints();
     defaultErrorConstraints.gridx = 0;
@@ -113,6 +126,24 @@ public class SshHostConfigPanel
     {
       // On Linux and MacOS keypass files are often stored in a hidden directory .ssh
       keyPassFile.setShowHiddenFiles(true);
+    }
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e)
+  {
+    if (e.getSource() == this.showPasswordButton)
+    {
+      if (password.getEchoChar() == (char)0)
+      {
+        password.setEchoChar(echoChar);
+        password.putClientProperty("JPasswordField.cutCopyAllowed", false);
+      }
+      else
+      {
+        password.setEchoChar((char)0);
+        password.putClientProperty("JPasswordField.cutCopyAllowed", true);
+      }
     }
   }
 
@@ -337,7 +368,6 @@ public class SshHostConfigPanel
     labelUsername = new JLabel();
     username = new JTextField();
     labelPassword = new JLabel();
-    password = new JPasswordField();
     labelSshPort = new JLabel();
     sshPort = new JTextField();
     keyPassFile = new WbFilePicker();
@@ -345,6 +375,9 @@ public class SshHostConfigPanel
     useAgent = new JCheckBox();
     labelConfigName = new JLabel();
     configName = new JTextField();
+    jPanel1 = new JPanel();
+    password = new JPasswordField();
+    showPasswordButton = new JButton();
 
     setLayout(new GridBagLayout());
 
@@ -395,15 +428,6 @@ public class SshHostConfigPanel
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 0);
     add(labelPassword, gridBagConstraints);
-
-    password.setToolTipText(ResourceMgr.getString("d_LblSshPwd")); // NOI18N
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(5, 5, 0, 11);
-    add(password, gridBagConstraints);
 
     labelSshPort.setLabelFor(sshPort);
     labelSshPort.setText(ResourceMgr.getString("LblSshPort")); // NOI18N
@@ -466,12 +490,43 @@ public class SshHostConfigPanel
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 11);
     add(configName, gridBagConstraints);
+
+    jPanel1.setLayout(new GridBagLayout());
+
+    password.setToolTipText(ResourceMgr.getString("d_LblSshPwd")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    jPanel1.add(password, gridBagConstraints);
+
+    showPasswordButton.setText("...");
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(0, 2, 0, 0);
+    jPanel1.add(showPasswordButton, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(5, 5, 0, 11);
+    add(jPanel1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JTextField configName;
   private JTextField hostname;
+  private JPanel jPanel1;
   private WbFilePicker keyPassFile;
   private JLabel labelConfigName;
   private JLabel labelHost;
@@ -480,6 +535,7 @@ public class SshHostConfigPanel
   private JLabel labelSshPort;
   private JLabel labelUsername;
   private JPasswordField password;
+  private JButton showPasswordButton;
   private JTextField sshPort;
   private JCheckBox useAgent;
   private JTextField username;
