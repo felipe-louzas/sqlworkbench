@@ -60,7 +60,7 @@ public class SshConfigPanel
     List<SshHostConfig> configs = new ArrayList<>();
     configs.add(null);
     configs.addAll(SshConfigMgr.getDefaultInstance().getGlobalConfigs());
-    SshHostConfig[] cfgs = configs.toArray(new SshHostConfig[0]);
+    SshHostConfig[] cfgs = configs.toArray(SshHostConfig[]::new);
 
     DefaultComboBoxModel<SshHostConfig> model = new DefaultComboBoxModel<>(cfgs);
     globalConfigDD.setModel(model);

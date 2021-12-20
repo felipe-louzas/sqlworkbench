@@ -21,6 +21,7 @@
 package workbench.ssh;
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -28,6 +29,7 @@ import workbench.WbManager;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 
@@ -114,6 +116,7 @@ public class PortForwarder
   {
     Properties props = new Properties();
     props.put("StrictHostKeyChecking", "no");
+    initJschConfig(props);
     JSch jsch = new JSch();
 
     final CallerInfo ci = new CallerInfo(){};
@@ -148,6 +151,40 @@ public class PortForwarder
     LogMgr.logInfo(ci, "Port forwarding established: localhost:"  + localPort + " -> " + remoteDbServer + ":" + remoteDbPort + " through host " + sshHost);
 
     return localPort;
+  }
+
+  private void initJschConfig(Properties props)
+  {
+    String defaultKeys = "CheckCiphers,CheckSignatures,CheckKexes,server_host_key,kex";
+    List<String> keys = Settings.getInstance().getListProperty("workbench.jsch.config.keys", false, defaultKeys);
+    for (String key : keys)
+    {
+      overrideConfig(key, props);
+      addConfig(key, props);
+    }
+  }
+
+  private void addConfig(String key, Properties props)
+  {
+    String add = Settings.getInstance().getProperty("workbench.jsch.add." + key, null);
+    if (StringUtil.isNonBlank(add))
+    {
+      String value = JSch.getConfig(key);
+      LogMgr.logInfo(new CallerInfo(){}, "Adding \"" + add + "\" to built-in: " + key);
+      if (!value.endsWith(",")) value += ",";
+      value += add;
+      props.put(key, value);
+    }
+  }
+
+  private void overrideConfig(String key, Properties props)
+  {
+    String override = Settings.getInstance().getProperty("workbench.jsch.override." + key, null);
+    if (StringUtil.isNonBlank(override))
+    {
+      LogMgr.logInfo(new CallerInfo(){}, "Overriding built-in " + key + " for JSch with: " + override);
+      props.put(key, override);
+    }
   }
 
   private boolean tryAgent(JSch jsh)
