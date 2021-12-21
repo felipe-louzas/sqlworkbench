@@ -1,61 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration debug="false" xmlns:log4j='http://jakarta.apache.org/log4j/' >
+<!-- Log4J 2.x sample configuration file for SQL Workbench/J -->
+<Configuration name="SQL Workbench/J logging">
 
-    <!-- 
-      Enable this appender if you want to see log messages in the console window 
-      You need to un-comment the line <appender-ref ref="console"/>
-      in the <root> tag as well
+  <Appenders>
+    <!--
+      Enable this appender if you want to see log messages in the console window
     -->
-    <appender name="console" class="org.apache.log4j.ConsoleAppender">
-        <layout class="org.apache.log4j.PatternLayout">
-            <!-- if you want to include the class that issued the log message
-                 include %C{1} in the pattern -->
-            <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n" />
-        </layout>
-    </appender>
-    
-    <!-- 
-        Define an appender that writes to a file.
+    <!--
+    <Console name="console">
+      <PatternLayout pattern="%d{ISO8601} %-5p %m%n"/>
+    </Console>
     -->
-    <appender name="file" class="org.apache.log4j.RollingFileAppender">
-
-        <!--
-            workbench.config.dir will be set by SQL Workbench/J before the
-            Log4J system is initialized.
-            It also sets workbench.install.dir which points to the directory where
-            sqlworkbench.jar is located
-        -->
-        <param name="File" value="${workbench.config.dir}/log4j.log" />
-        <param name="maxFileSize" value="100KB" />
-        <param name="maxBackupIndex" value="5" />
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n" />
-        </layout>
-
-    </appender>
 
     <!--
-       An example to turn on different logging levels for different packages.
-    <logger name="workbench.db">
-        <level value="debug"/>
-    </logger>
+        Define an appender that writes to a file.
+        workbench.config.dir will be set by SQL Workbench/J before the
+        Log4J system is initialized.
 
-    <logger name="workbench.gui">
-        <level value="error"/>
-    </logger>
+        It also sets workbench.install.dir which points to the directory where
+        sqlworkbench.jar is located
     -->
+    <RollingFile name="file"
+                 fileName="${sys:workbench.config.dir}/log4j.log"
+                 filePattern="${sys:workbench.config.dir}/log4j.%i.log.gz">
+      <PatternLayout pattern="%d{ISO8601} %-5p %c{2} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB" />
+      </Policies>
+      <DefaultRolloverStrategy max="5" />
+    </RollingFile>
 
-    <root>
-        <priority value="info"/>
-        <appender-ref ref="file"/>
-        <appender-ref ref="console"/>
-    </root>
-    
-    <!-- <loggerFactory class="workbench.log.Log4JLoggerFactory" />-->
+  </Appenders>
 
-</log4j:configuration>
+  <Loggers>
+    <!--
+       An example to turn on different logging levels for different packages.
+     -->
+    <!--<Logger name="workbench.db" level="debug" additivity="false"/>-->
+    <!--<Logger name="workbench.gui" level="error" additivity="false"/>-->
 
+    <Root level="info">
+      <AppenderRef ref="file"/>
+      <AppenderRef ref="console"/>
+    </Root>
+  </Loggers>
 
-
-
+</Configuration>

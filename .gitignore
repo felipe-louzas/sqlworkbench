@@ -10,3 +10,4 @@
 **/nb-configuration.xml
 **/nbactions*.xml
 /nbproject/
+**/RunMe.java

@@ -39,6 +39,11 @@ public abstract class CallerInfo
   {
     this.info = info;
   }
+
+  public Class getCallingClass()
+  {
+    return getClass().getEnclosingClass();
+  }
   
   @Override
   public String toString()

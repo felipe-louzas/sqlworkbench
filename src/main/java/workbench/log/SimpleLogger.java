@@ -162,7 +162,7 @@ public class SimpleLogger
    * @param th        the exception (may be null)
    */
   @Override
-  public synchronized void logMessage(LogLevel logLevel, Object aCaller, CharSequence message, Throwable th)
+  public synchronized void logMessage(LogLevel logLevel, CallerInfo aCaller, CharSequence message, Throwable th)
   {
     if (!levelEnabled(logLevel))
     {

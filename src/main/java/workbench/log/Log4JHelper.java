@@ -21,8 +21,6 @@
  */
 package workbench.log;
 
-import java.lang.reflect.Method;
-
 /**
  * Test if Log4J classes are available on the classpath.
  * <br>
@@ -46,10 +44,7 @@ public class Log4JHelper
     try
     {
       tested = true;
-      Class.forName("org.apache.log4j.Logger");
-      Class factory = Class.forName("workbench.log.Log4JLoggerFactory");
-      Method setLoggerFqcn = factory.getDeclaredMethod("setLoggerFqcn", new Class[] { Class.class });
-      setLoggerFqcn.invoke(null, new Object[] { LogMgr.class } );
+      Class.forName("org.apache.logging.log4j.Logger");
       available = true;
     }
     catch (Throwable th)

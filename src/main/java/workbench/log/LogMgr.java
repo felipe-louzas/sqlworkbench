@@ -152,7 +152,7 @@ public class LogMgr
   public static void logDebug(CallerInfo caller, CharSequence message, Throwable th)
   {
     getLogger().logMessage(LogLevel.debug, caller, message, th);
-    logChainedException(LogLevel.debug, th);
+    logChainedException(LogLevel.debug, caller, th);
   }
 
   public static void logInfo(CallerInfo caller, CharSequence message)
@@ -173,13 +173,13 @@ public class LogMgr
   public static void logWarning(CallerInfo caller, CharSequence message, Throwable th)
   {
     getLogger().logMessage(LogLevel.warning, caller, message, th);
-    logChainedException(LogLevel.warning, th);
+    logChainedException(LogLevel.warning, caller, th);
   }
 
   public static void logError(CallerInfo caller, CharSequence message, Throwable th)
   {
     getLogger().logMessage(LogLevel.error, caller, message, th);
-    logChainedException(LogLevel.error, th);
+    logChainedException(LogLevel.error, caller, th);
   }
 
   public static void logUserSqlError(CallerInfo caller, String sql, Throwable th)
@@ -200,14 +200,14 @@ public class LogMgr
     }
   }
 
-  public static void logChainedException(LogLevel level, Throwable se)
+  public static void logChainedException(LogLevel level, CallerInfo caller, Throwable se)
   {
     if (getLogger().levelEnabled(level) && se instanceof SQLException)
     {
       SQLException next = ((SQLException)se).getNextException();
       while (next != null)
       {
-        getLogger().logMessage(LogLevel.error, "Chained exception", ExceptionUtil.getDisplay(next), null);
+        getLogger().logMessage(LogLevel.error, caller, "Chained exception: " + ExceptionUtil.getDisplay(next), null);
         next = next.getNextException();
       }
     }
@@ -229,7 +229,7 @@ public class LogMgr
     {
       try
       {
-        return Log4JLogger.getLogger();
+        return new Log4JLogger();
       }
       catch (Throwable e)
       {

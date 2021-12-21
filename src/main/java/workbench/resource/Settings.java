@@ -390,7 +390,7 @@ public class Settings
         if (f.exists())
         {
           String fileUrl = f.toURI().toString();
-          System.setProperty("log4j.configuration", fileUrl);
+          System.setProperty("log4j.configurationFile", fileUrl);
         }
       }
       catch (Throwable th)
