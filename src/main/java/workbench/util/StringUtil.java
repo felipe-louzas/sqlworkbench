@@ -282,6 +282,23 @@ public class StringUtil
     return s.substring(0, pos);
   }
 
+  public static String removeLeading(String s, char toRemove)
+  {
+    if (s == null || s.length() < 1) return s;
+    int pos = 0;
+    while (pos < s.length() && s.charAt(pos) == toRemove)
+    {
+      pos ++;
+    }
+    if (pos >= s.length()) return EMPTY_STRING;
+
+    if (pos > 0)
+    {
+      return s.substring(pos);
+    }
+    return s;
+  }
+
   public static String rtrim(String s)
   {
     if (s == null) return s;

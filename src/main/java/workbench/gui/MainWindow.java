@@ -129,6 +129,7 @@ import workbench.gui.actions.SelectTabAction;
 import workbench.gui.actions.ShowDbExplorerAction;
 import workbench.gui.actions.ShowDbTreeAction;
 import workbench.gui.actions.ShowDbmsManualAction;
+import workbench.gui.actions.ShowFileTreeAction;
 import workbench.gui.actions.ShowHelpAction;
 import workbench.gui.actions.ShowMacroPopupAction;
 import workbench.gui.actions.ShowManualAction;
@@ -165,6 +166,7 @@ import workbench.gui.dbobjects.DbExplorerWindow;
 import workbench.gui.dbobjects.objecttree.DbTreePanel;
 import workbench.gui.dbobjects.objecttree.DbTreeSettings;
 import workbench.gui.dbobjects.objecttree.TreePosition;
+import workbench.gui.filetree.FileTreePanel;
 import workbench.gui.fontzoom.DecreaseFontSize;
 import workbench.gui.fontzoom.FontZoomer;
 import workbench.gui.fontzoom.IncreaseFontSize;
@@ -215,6 +217,7 @@ public class MainWindow
   private static final String DEFAULT_WORKSPACE = "Default.wksp";
   private static final String RECENTMACROS_NAME = "recent-macros";
   private static final String DB_TREE_PROPS = "dbtree";
+  private static final String FILE_TREE_PROPS = "filetree";
 
   private static int instanceCount;
   private final int windowId;
@@ -249,6 +252,7 @@ public class MainWindow
   private FileCloseAction fileCloseAction;
   private OpenFileAction fileOpenAction;
   private FileExitAction fileExitAction;
+  private ShowFileTreeAction showFileTree;
 
   private final WbTabbedPane sqlTab;
   private final TabbedPaneHistory tabHistory;
@@ -288,6 +292,7 @@ public class MainWindow
   protected WbThread connectThread;
   private DropHandler dropHandler;
   private DbTreePanel treePanel;
+  private FileTreePanel fileTreePanel;
   private boolean shouldShowTree;
 
   private final ClosedTabManager closedTabHistory;
@@ -552,6 +557,80 @@ public class MainWindow
     }
   }
 
+  public boolean isFileTreeVisible()
+  {
+    return (fileTreePanel != null && fileTreePanel.isVisible());
+  }
+
+  public void showFileTree(boolean requestFocus)
+  {
+    if (fileTreePanel == null)
+    {
+      fileTreePanel = new FileTreePanel(this);
+
+      getContentPane().remove(sqlTab);
+
+      WbSplitPane split = new WbSplitPane();
+      split.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
+      split.setOneTouchExpandable(true);
+
+      TreePosition position = DbTreeSettings.getDbTreePosition();
+      if (position == TreePosition.left)
+      {
+        fileTreePanel.setBorder(new DividerBorder(DividerBorder.RIGHT));
+        sqlTab.setBorder(new DividerBorder(DividerBorder.LEFT));
+        split.setLeftComponent(fileTreePanel);
+        split.setRightComponent(sqlTab);
+      }
+      else
+      {
+        fileTreePanel.setBorder(new DividerBorder(DividerBorder.LEFT));
+        sqlTab.setBorder(new DividerBorder(DividerBorder.RIGHT));
+        split.setLeftComponent(sqlTab);
+        split.setRightComponent(fileTreePanel);
+      }
+
+      getContentPane().add(split, BorderLayout.CENTER);
+
+      invalidate();
+      EventQueue.invokeLater(this::validate);
+
+      fileTreePanel.restoreSettings(getToolProperties(FILE_TREE_PROPS));
+      fileTreePanel.loadInBackground();
+    }
+
+    if (requestFocus)
+    {
+      fileTreePanel.requestFocusInWindow();
+    }
+  }
+
+  public FileTreePanel getFileTree()
+  {
+    return fileTreePanel;
+  }
+
+  public void closeFileTree()
+  {
+    if (isFileTreeVisible())
+    {
+      fileTreePanel.saveSettings(getToolProperties(FILE_TREE_PROPS));
+    }
+
+    if (fileTreePanel != null)
+    {
+      JSplitPane split = (JSplitPane)fileTreePanel.getParent();
+      split.remove(sqlTab);
+      getContentPane().remove(split);
+      getContentPane().add(sqlTab, BorderLayout.CENTER);
+      sqlTab.invalidate();
+      sqlTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
+      invalidate();
+      fileTreePanel = null;
+      EventQueue.invokeLater(this::validate);
+    }
+  }
+
   @Override
   public void fileNameChanged(Object sender, String newFilename)
   {
@@ -677,6 +756,7 @@ public class MainWindow
     this.newDbExplorerPanel = new NewDbExplorerPanelAction(this);
     this.newDbExplorerWindow = new NewDbExplorerWindowAction(this);
     this.showDbTree = new ShowDbTreeAction(this);
+    this.showFileTree = new ShowFileTreeAction(this);
 
     this.showDbmsManual = new ShowDbmsManualAction();
     this.connectionInfoAction = new HelpConnectionInfoAction(this);
@@ -960,6 +1040,7 @@ public class MainWindow
     actions.add(newDbExplorerPanel);
     actions.add(newDbExplorerWindow);
     actions.add(showDbTree);
+    actions.add(showFileTree);
     actions.add(fileCloseAction);
     actions.add(fileOpenAction);
     actions.add(newWindowAction);
@@ -2439,7 +2520,7 @@ public class MainWindow
     WbAction.dispose(
       this.assignWorkspaceAction, this.closeWorkspaceAction, this.reloadWorkspace, this.loadWorkspaceAction, this.saveAsWorkspaceAction, this.saveWorkspaceAction,
       this.dbExplorerAction, this.disconnectAction, this.reconnectAction, this.disconnectTab, this.createNewConnection,
-      this.newDbExplorerPanel, this.newDbExplorerWindow, this.showDbTree, this.nextTab, this.prevTab, this.showDbmsManual,
+      this.newDbExplorerPanel, this.newDbExplorerWindow, this.showDbTree, this.showFileTree, this.nextTab, this.prevTab, this.showDbmsManual,
       this.manageMacros, this.showMacroPopup, this.createMacro, this.loadMacros, this.saveMacros
     );
     for (JMenuBar bar : panelMenus)
@@ -3103,6 +3184,7 @@ public class MainWindow
     try
     {
       setIgnoreTabChange(true);
+      closeFileTree();
       closeDbTree();
       int keep = (keepOne ? 1 : 0);
       while (sqlTab.getTabCount() > keep)
@@ -3241,6 +3323,10 @@ public class MainWindow
     if (showDbTree != null)
     {
       result.add(this.showDbTree);
+    }
+    if (showFileTree != null)
+    {
+      result.add(this.showFileTree);
     }
     result.addSeparator();
 
@@ -3568,6 +3654,11 @@ public class MainWindow
     {
       treePanel.saveSettings(getToolProperties(DB_TREE_PROPS));
     }
+    
+    if (fileTreePanel != null)
+    {
+      fileTreePanel.saveSettings(getToolProperties(FILE_TREE_PROPS));
+    }
 
     try
     {
@@ -3741,7 +3832,7 @@ public class MainWindow
     return sql;
   }
 
-  private void addTabAtIndex(SqlPanel sql, boolean selectNew, boolean checkConnection, boolean renumber, int index)
+  public void addTabAtIndex(SqlPanel sql, boolean selectNew, boolean checkConnection, boolean renumber, int index)
   {
     if (index == -1) index = sqlTab.getTabCount();
 

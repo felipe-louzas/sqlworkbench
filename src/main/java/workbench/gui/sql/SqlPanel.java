@@ -662,12 +662,16 @@ public class SqlPanel
   public boolean readFile(String aFilename, String encoding)
   {
     if (aFilename == null) return false;
-
-    boolean result = false;
-
     File f = new File(aFilename);
+    return readFile(f, encoding);
+  }
 
-    if (this.editor.readFile(f, encoding))
+  public boolean readFile(File aFile, String encoding)
+  {
+    if (aFile == null) return false;
+    
+    boolean result = false;
+    if (this.editor.readFile(aFile, encoding))
     {
       this.historyStatements.clear();
       this.selectEditor();

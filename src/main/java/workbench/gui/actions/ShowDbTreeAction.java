@@ -46,6 +46,11 @@ public class ShowDbTreeAction
   @Override
   public void executeAction(ActionEvent e)
   {
+    if (mainWin.isFileTreeVisible())
+    {
+      mainWin.closeFileTree();
+    }
+    
     if (mainWin.isDbTreeVisible())
     {
       DbTreePanel dbTree = mainWin.getDbTree();

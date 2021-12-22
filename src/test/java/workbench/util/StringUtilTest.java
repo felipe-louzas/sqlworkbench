@@ -37,6 +37,15 @@ public class StringUtilTest
 {
 
   @Test
+  public void testRemoveLeading()
+  {
+    assertEquals("bla", StringUtil.removeLeading("..bla", '.'));
+    assertEquals("", StringUtil.removeLeading("..", '.'));
+    assertEquals("bla.", StringUtil.removeLeading("bla.", '.'));
+    assertEquals("bla", StringUtil.removeLeading("bla", '.'));
+  }
+
+  @Test
   public void removeTrailing()
   {
     assertEquals("bla", StringUtil.removeTrailing("bla.", '.'));

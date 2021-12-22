@@ -247,7 +247,7 @@ public class ResourceMgr
     }
     catch (MissingResourceException e)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "String with key=" + aKey + " not found in resource file!", e);
+      LogMgr.logWarning(new CallerInfo(){}, "String with key=" + aKey + " not found in resource file!");
       return aKey;
     }
   }

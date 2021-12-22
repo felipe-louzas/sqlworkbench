@@ -37,7 +37,7 @@ import javax.swing.tree.TreePath;
  * @author Thomas Kellerer
  */
 public class ObjectTreeDragSource
-implements DragSourceListener, DragGestureListener, Serializable
+  implements DragSourceListener, DragGestureListener, Serializable
 {
   private DragSource source;
   private ObjectTreeTransferable transferable;
