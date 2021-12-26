@@ -110,7 +110,6 @@ public class DbTreePanel
              ObjectDropListener, KeyListener, QuickFilter, RowCountDisplay,
              ObjectFinder, TreeSelectionListener, PropertyChangeListener
 {
-  public static final String PROP_DIVIDER = "divider.location";
   public static final String PROP_VISIBLE = "tree.visible";
   public static final String PROP_TYPES = "tree.selectedtypes";
 
@@ -138,6 +137,7 @@ public class DbTreePanel
     super(new BorderLayout());
     id = ++instanceCount;
 
+    setName("dbtree");
     currentSchemaLabel = new WbLabelField();
     currentSchemaLabel.setBorder(new EmptyBorder(0,0,0,0));
     statusBar = new WbStatusLabel(new CompoundBorder(new DividerBorder(DividerBorder.TOP), new EmptyBorder(2,2,2,0)));
@@ -536,25 +536,12 @@ public class DbTreePanel
 
   public void saveSettings(WbProperties props)
   {
-    if (this.isVisible())
-    {
-      props.setProperty(PROP_DIVIDER + "." + getCurrentPosition().name(), getDividerLocation());
-    }
     List<String> types = typeFilter.getSelectedItems();
     props.setProperty(PROP_TYPES, StringUtil.listToString(types, ','));
   }
 
-  private TreePosition getCurrentPosition()
-  {
-    WbSplitPane split = (WbSplitPane)getParent();
-    if (split == null) return DbTreeSettings.getDbTreePosition();
-    if (split.getLeftComponent() == this) return TreePosition.left;
-    return TreePosition.right;
-  }
-
   public void restoreSettings(WbProperties props)
   {
-    int location = props.getIntProperty(PROP_DIVIDER + "." + getCurrentPosition().name(), -1);
     String typeString = props.getProperty(PROP_TYPES);
     if (StringUtil.isBlank(typeString))
     {
@@ -568,15 +555,6 @@ public class DbTreePanel
       selectedTypes.add("VIEW");
     }
     tree.setTypesToShow(selectedTypes);
-
-    if (location > -1)
-    {
-      WbSplitPane split = (WbSplitPane)getParent();
-      if (split != null)
-      {
-        split.setDividerLocation(location);
-      }
-    }
   }
 
   /**

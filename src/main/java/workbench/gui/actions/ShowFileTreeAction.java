@@ -3,7 +3,6 @@ package workbench.gui.actions;
 import java.awt.event.ActionEvent;
 
 import workbench.gui.MainWindow;
-import workbench.gui.filetree.FileTreePanel;
 
 public class ShowFileTreeAction
   extends WbAction
@@ -21,19 +20,6 @@ public class ShowFileTreeAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    if (mainWin.isDbTreeVisible())
-    {
-      mainWin.closeDbTree();
-    }
-
-    if (mainWin.isFileTreeVisible())
-    {
-      FileTreePanel fileTree = mainWin.getFileTree();
-      fileTree.requestFocusInWindow();
-    }
-    else
-    {
-      mainWin.showFileTree(true);
-    }
+    mainWin.showFileTree(true);
   }
 }

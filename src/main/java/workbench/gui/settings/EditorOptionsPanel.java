@@ -142,7 +142,7 @@ public class EditorOptionsPanel
       wheelScrollLines.setText(Integer.toString(lines));
     }
     WbSwingUtilities.makeEqualWidth(externalLineEnding, internalLineEnding);
-    
+
     String[] charsets = EncodingUtil.getEncodings();
 
     DefaultComboBoxModel model = new DefaultComboBoxModel(charsets);
@@ -443,7 +443,7 @@ public class EditorOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(6, 0, 0, 11);
+    gridBagConstraints.insets = new Insets(2, 0, 0, 11);
     jPanel1.add(jLabel1, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -452,7 +452,7 @@ public class EditorOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(3, 0, 0, 0);
+    gridBagConstraints.insets = new Insets(5, 0, 0, 0);
     jPanel1.add(defaultDir, gridBagConstraints);
 
     storeDirInWksp.setText(ResourceMgr.getString("LblStoreScriptDirInWksp")); // NOI18N

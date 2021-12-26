@@ -21,6 +21,9 @@
  */
 package workbench.gui.settings;
 
+import java.awt.EventQueue;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 
 import workbench.interfaces.Restoreable;
@@ -28,6 +31,7 @@ import workbench.resource.ResourceMgr;
 
 import workbench.gui.components.StringPropertyEditor;
 import workbench.gui.components.TextComponentMouseListener;
+import workbench.gui.dbobjects.objecttree.TreePosition;
 import workbench.gui.filetree.FileTreeSettings;
 
 /**
@@ -42,14 +46,34 @@ public class FileTreeOptionsPanel
   {
     super();
     initComponents();
+    String[] locations = new String[] {
+      ResourceMgr.getString("TxtTabLeft"),
+      ResourceMgr.getString("TxtTabRight"),
+    };
+    treePosition.setModel(new DefaultComboBoxModel(locations));
+    this.defaultDir.setAllowMultiple(false);
+    this.defaultDir.setSelectDirectoryOnly(true);
+    treePosition.invalidate();
+    invalidate();
+    EventQueue.invokeLater(this::validate);
   }
-
 
   @Override
   public void restoreSettings()
   {
     this.excludedExtensions.setText(FileTreeSettings.getExcludedExtensions());
     this.excludedFiles.setText(FileTreeSettings.getExcludedFiles());
+    this.defaultDir.setFilename(FileTreeSettings.getDefaultDirectory());
+    TreePosition position = FileTreeSettings.getTreePosition();
+    switch (position)
+    {
+      case left:
+        treePosition.setSelectedIndex(0);
+        break;
+      case right:
+        treePosition.setSelectedIndex(1);
+        break;
+    }
   }
 
   @Override
@@ -57,6 +81,17 @@ public class FileTreeOptionsPanel
   {
     FileTreeSettings.setExcludedExtensions(excludedExtensions.getText());
     FileTreeSettings.setExcludedFiles(excludedFiles.getText());
+    FileTreeSettings.setDefaultDirectory(defaultDir.getFilename());
+    int selected = treePosition.getSelectedIndex();
+    switch (selected)
+    {
+      case 0:
+        FileTreeSettings.setTreePosition(TreePosition.left);
+        break;
+      case 1:
+        FileTreeSettings.setTreePosition(TreePosition.right);
+        break;
+    }
   }
 
   /** This method is called from within the constructor to
@@ -73,6 +108,10 @@ public class FileTreeOptionsPanel
     excludedFiles = new StringPropertyEditor();
     excludedExtensions = new StringPropertyEditor();
     extensionsLabel = new javax.swing.JLabel();
+    jLabel1 = new javax.swing.JLabel();
+    treePosition = new javax.swing.JComboBox<>();
+    jLabel2 = new javax.swing.JLabel();
+    defaultDir = new workbench.gui.components.WbFilePicker();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -82,7 +121,7 @@ public class FileTreeOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     add(namesLabel, gridBagConstraints);
 
     excludedFiles.setHorizontalAlignment(javax.swing.JTextField.LEFT);
@@ -92,9 +131,8 @@ public class FileTreeOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(1, 8, 0, 3);
     add(excludedFiles, gridBagConstraints);
@@ -106,11 +144,9 @@ public class FileTreeOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(5, 8, 6, 3);
     add(excludedExtensions, gridBagConstraints);
 
@@ -121,16 +157,52 @@ public class FileTreeOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
     add(extensionsLabel, gridBagConstraints);
+
+    jLabel1.setText(ResourceMgr.getString("LblTreePosition")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+    add(jLabel1, gridBagConstraints);
+
+    treePosition.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Left", "Right" }));
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(8, 8, 6, 0);
+    add(treePosition, gridBagConstraints);
+
+    jLabel2.setText(ResourceMgr.getString("LblEditorDefaultDir")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+    add(jLabel2, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 3);
+    add(defaultDir, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  public workbench.gui.components.WbFilePicker defaultDir;
   public javax.swing.JTextField excludedExtensions;
   public javax.swing.JTextField excludedFiles;
   public javax.swing.JLabel extensionsLabel;
+  public javax.swing.JLabel jLabel1;
+  public javax.swing.JLabel jLabel2;
   public javax.swing.JLabel namesLabel;
+  public javax.swing.JComboBox<String> treePosition;
   // End of variables declaration//GEN-END:variables
 
 

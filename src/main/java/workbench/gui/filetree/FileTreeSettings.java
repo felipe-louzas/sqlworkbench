@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
+
+import workbench.gui.dbobjects.objecttree.TreePosition;
 
 import workbench.util.StringUtil;
 
@@ -15,19 +16,28 @@ public class FileTreeSettings
   public static final String EXCLUDED_FILES_PROPERTY = SETTINGS_PREFIX + ".exclude.files";
   public static final String EXCLUDED_EXT_PROPERTY = SETTINGS_PREFIX + ".exclude.extensions";
 
-
-  public static File getDefaultDirectory()
+  public static void setDefaultDirectory(String dir)
   {
-    String lastPath = Settings.getInstance().getLastSqlDir();
-    if (lastPath == null)
+    Settings.getInstance().setProperty(SETTINGS_PREFIX + ".default.dir", dir);
+  }
+
+  public static String getDefaultDirectory()
+  {
+    return Settings.getInstance().getProperty(SETTINGS_PREFIX + ".default.dir", null);
+  }
+
+  public static File getDirectoryToUse()
+  {
+    String dir = getDefaultDirectory();
+    if (dir == null)
     {
-      lastPath = GuiSettings.getDefaultFileDir().getAbsolutePath();
+      dir = Settings.getInstance().getLastSqlDir();
     }
-    if (lastPath == null)
+    if (dir == null)
     {
-      lastPath = ".";
+      dir = ".";
     }
-    return new File(lastPath);
+    return new File(dir);
   }
 
   public static String getExcludedFiles()
@@ -44,6 +54,7 @@ public class FileTreeSettings
   {
     return Settings.getInstance().getProperty(EXCLUDED_EXT_PROPERTY, null);
   }
+
   public static void setExcludedExtensions(String list)
   {
     Settings.getInstance().setProperty(EXCLUDED_EXT_PROPERTY, StringUtil.trimToNull(list));
@@ -69,9 +80,28 @@ public class FileTreeSettings
            collect(Collectors.toList());
   }
 
-  public boolean getUseSystemIcons()
+  public static boolean getUseSystemIcons()
   {
     // Using system icons in the file tree is much slower than fixed ones.
     return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + ".use.system.icons", false);
+  }
+
+  public static void setTreePosition(TreePosition position)
+  {
+    if (position == null) return;
+    Settings.getInstance().setProperty(SETTINGS_PREFIX + "position", position.name());
+  }
+
+  public static TreePosition getTreePosition()
+  {
+    String pos = Settings.getInstance().getProperty(SETTINGS_PREFIX + "position", TreePosition.left.name());
+    try
+    {
+      return TreePosition.valueOf(pos);
+    }
+    catch (Throwable th)
+    {
+      return TreePosition.left;
+    }
   }
 }

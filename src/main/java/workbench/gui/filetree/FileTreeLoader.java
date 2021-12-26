@@ -54,7 +54,7 @@ public class FileTreeLoader
 
   public FileTreeLoader()
   {
-    this(FileTreeSettings.getDefaultDirectory());
+    this(FileTreeSettings.getDirectoryToUse());
   }
 
   public FileTreeLoader(File dir)
@@ -141,7 +141,7 @@ public class FileTreeLoader
 
     String fileExt = wb.getExtension();
     if (StringUtil.isBlank(fileExt)) return false;
-    
+
     if (excludedExtensions.contains(fileExt)) return true;
     return false;
   }

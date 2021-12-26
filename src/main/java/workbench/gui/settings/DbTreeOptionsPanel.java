@@ -57,6 +57,7 @@ public class DbTreeOptionsPanel
       ResourceMgr.getString("TxtTabRight"),
     };
     treePosition.setModel(new DefaultComboBoxModel(locations));
+    invalidate();
   }
 
   @Override
@@ -143,7 +144,7 @@ public class DbTreeOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(0, 0, 0, 8);
+    gridBagConstraints.insets = new Insets(0, 0, 0, 10);
     add(jLabel1, gridBagConstraints);
 
     treePosition.setModel(new DefaultComboBoxModel<>(new String[] { "Left", "Right" }));

@@ -62,12 +62,9 @@ import workbench.gui.actions.WbAction;
 import workbench.gui.components.CloseIcon;
 import workbench.gui.components.WbFileChooser;
 import workbench.gui.components.WbPopupMenu;
-import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.components.WbToolbarButton;
 import workbench.gui.dbobjects.DbObjectSourcePanel;
-import workbench.gui.dbobjects.objecttree.DbTreeSettings;
-import workbench.gui.dbobjects.objecttree.TreePosition;
 import workbench.gui.sql.SqlPanel;
 
 import workbench.util.FileUtil;
@@ -101,6 +98,7 @@ public class FileTreePanel
     super(new BorderLayout());
     this.window = window;
     tree = new FileTree();
+    this.setName("filetree");
 
     ConnectionProfile profile = window.getCurrentProfile();
     if (profile != null)
@@ -276,19 +274,8 @@ public class FileTreePanel
     }
   }
 
-  private int getDividerLocation()
-  {
-    WbSplitPane split = (WbSplitPane)getParent();
-    if (split == null)
-    {
-      return -1;
-    }
-    return split.getDividerLocation();
-  }
-
   public void saveSettings(WbProperties props)
   {
-    props.setProperty(PROP_DIVIDER + "." + getCurrentPosition().name(), getDividerLocation());
     File currentDir = tree.getRootDir();
     if (currentDir != null)
     {
@@ -296,30 +283,13 @@ public class FileTreePanel
     }
   }
 
-  private TreePosition getCurrentPosition()
-  {
-    WbSplitPane split = (WbSplitPane)getParent();
-    if (split == null) return DbTreeSettings.getDbTreePosition();
-    if (split.getLeftComponent() == this) return TreePosition.left;
-    return TreePosition.right;
-  }
-
   public void restoreSettings(WbProperties props)
   {
-    int location = props.getIntProperty(PROP_DIVIDER + "." + getCurrentPosition().name(), -1);
-    if (location > -1)
-    {
-      WbSplitPane split = (WbSplitPane)getParent();
-      if (split != null)
-      {
-        split.setDividerLocation(location);
-      }
-    }
     File dir = null;
     String path = props.getProperty(PROP_ROOT_DIR, workspaceDefaultDir);
     if (path == null)
     {
-      dir = FileTreeSettings.getDefaultDirectory();
+      dir = FileTreeSettings.getDirectoryToUse();
     }
     else
     {

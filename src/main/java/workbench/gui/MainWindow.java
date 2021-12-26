@@ -59,7 +59,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -151,14 +150,12 @@ import workbench.gui.actions.workspace.SaveWorkspaceAction;
 import workbench.gui.bookmarks.BookmarkManager;
 import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.components.ConnectionSelector;
-import workbench.gui.components.DividerBorder;
 import workbench.gui.components.GuiPosition;
 import workbench.gui.components.MenuScroller;
 import workbench.gui.components.RunningJobIndicator;
 import workbench.gui.components.TabCloser;
 import workbench.gui.components.TabbedPaneHistory;
 import workbench.gui.components.WbMenu;
-import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTabbedPane;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.dbobjects.DbExplorerPanel;
@@ -167,6 +164,7 @@ import workbench.gui.dbobjects.objecttree.DbTreePanel;
 import workbench.gui.dbobjects.objecttree.DbTreeSettings;
 import workbench.gui.dbobjects.objecttree.TreePosition;
 import workbench.gui.filetree.FileTreePanel;
+import workbench.gui.filetree.FileTreeSettings;
 import workbench.gui.fontzoom.DecreaseFontSize;
 import workbench.gui.fontzoom.FontZoomer;
 import workbench.gui.fontzoom.IncreaseFontSize;
@@ -218,6 +216,7 @@ public class MainWindow
   private static final String RECENTMACROS_NAME = "recent-macros";
   private static final String DB_TREE_PROPS = "dbtree";
   private static final String FILE_TREE_PROPS = "filetree";
+  private static final String MAIN_PROPS = "mainwindow";
 
   private static int instanceCount;
   private final int windowId;
@@ -296,6 +295,7 @@ public class MainWindow
   private boolean shouldShowTree;
 
   private final ClosedTabManager closedTabHistory;
+  private final ColumnLayoutPanel panelLayout;
 
   public MainWindow(GraphicsConfiguration graphics)
   {
@@ -325,7 +325,9 @@ public class MainWindow
 
     ResourceMgr.setWindowIcons(this, "workbench");
 
-    getContentPane().add(this.sqlTab, BorderLayout.CENTER);
+    panelLayout = new ColumnLayoutPanel(this.sqlTab);
+    getContentPane().add(panelLayout, BorderLayout.CENTER);
+
     restoreSize(graphics);
     if (!WbSwingUtilities.hasMultipleDisplays())
     {
@@ -447,44 +449,35 @@ public class MainWindow
     showDbTree(true);
   }
 
+  private void restoreLayoutSettings()
+  {
+    if (panelLayout.getNumberOfComponents() == 0)
+    {
+      panelLayout.restoreSettings(getToolProperties(MAIN_PROPS), "layout");
+    }
+  }
+
   public void showDbTree(boolean requestFocus)
   {
     if (treePanel == null)
     {
       treePanel = new DbTreePanel();
-
-      getContentPane().remove(sqlTab);
-
-      WbSplitPane split = new WbSplitPane();
-      split.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
-      split.setOneTouchExpandable(true);
-
-      TreePosition position = DbTreeSettings.getDbTreePosition();
-      if (position == TreePosition.left)
-      {
-        treePanel.setBorder(new DividerBorder(DividerBorder.RIGHT));
-        sqlTab.setBorder(new DividerBorder(DividerBorder.LEFT));
-        split.setLeftComponent(treePanel);
-        split.setRightComponent(sqlTab);
-      }
-      else
-      {
-        treePanel.setBorder(new DividerBorder(DividerBorder.LEFT));
-        sqlTab.setBorder(new DividerBorder(DividerBorder.RIGHT));
-        split.setLeftComponent(sqlTab);
-        split.setRightComponent(treePanel);
-      }
-
-      treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
-
-      getContentPane().add(split, BorderLayout.CENTER);
-
-      invalidate();
-      sqlTab.invalidate();
-
-      EventQueue.invokeLater(this::validate);
     }
 
+    restoreLayoutSettings();
+
+    if (panelLayout.findByName(treePanel.getName()) == null)
+    {
+      TreePosition position = DbTreeSettings.getDbTreePosition();
+      panelLayout.addComponentAt(position, treePanel, "DbTree", 0);
+      treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
+    }
+    else
+    {
+      requestFocus = true;
+    }
+
+    EventQueue.invokeLater(this::validate);
     treePanel.setMacroClient(getCurrentSqlPanel());
 
     if (DbTreeSettings.useTabConnection())
@@ -508,43 +501,33 @@ public class MainWindow
     }
   }
 
-  public void hideDbTree()
+  public void hideSecondaryComponents()
   {
-    if (treePanel == null) return;
-    if (!treePanel.isVisible()) return;
-
-    treePanel.saveSettings(getToolProperties(DB_TREE_PROPS));
-    treePanel.setVisible(false);
+    if (isDbTreeVisible())
+    {
+      treePanel.saveSettings(getToolProperties(DB_TREE_PROPS));
+    }
+    panelLayout.hideAdditionalComponents();
   }
 
-  public void restoreDbTree()
+  public void restoreSecondaryComponents()
   {
-    if (treePanel == null) return;
-    if (treePanel.isVisible()) return;
-    treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
-    treePanel.setVisible(true);
-    treePanel.setMacroClient(getCurrentSqlPanel());
-  }
-
-  public DbTreePanel getDbTree()
-  {
-    return treePanel;
+    panelLayout.showAdditionalComponents();
+    if (treePanel != null)
+    {
+      treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
+      treePanel.setMacroClient(getCurrentSqlPanel());
+    }
   }
 
   public void closeDbTree()
   {
+    panelLayout.saveSettings(getToolProperties(MAIN_PROPS), "layout");
     if (treePanel != null)
     {
       treePanel.saveSettings(getToolProperties(DB_TREE_PROPS));
 
-      JSplitPane split = (JSplitPane)treePanel.getParent();
-      split.remove(sqlTab);
-      getContentPane().remove(split);
-      getContentPane().add(sqlTab, BorderLayout.CENTER);
-      sqlTab.invalidate();
-      sqlTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
-      invalidate();
-
+      panelLayout.removeComponent(treePanel);
       treePanel.disconnectInBackground();
       treePanel = null;
 
@@ -553,7 +536,6 @@ public class MainWindow
       {
         getPanel(i).ifPresent(p -> p.registerObjectFinder(null));
       }
-      EventQueue.invokeLater(this::validate);
     }
   }
 
@@ -567,47 +549,25 @@ public class MainWindow
     if (fileTreePanel == null)
     {
       fileTreePanel = new FileTreePanel(this);
+    }
 
-      getContentPane().remove(sqlTab);
-
-      WbSplitPane split = new WbSplitPane();
-      split.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
-      split.setOneTouchExpandable(true);
-
-      TreePosition position = DbTreeSettings.getDbTreePosition();
-      if (position == TreePosition.left)
-      {
-        fileTreePanel.setBorder(new DividerBorder(DividerBorder.RIGHT));
-        sqlTab.setBorder(new DividerBorder(DividerBorder.LEFT));
-        split.setLeftComponent(fileTreePanel);
-        split.setRightComponent(sqlTab);
-      }
-      else
-      {
-        fileTreePanel.setBorder(new DividerBorder(DividerBorder.LEFT));
-        sqlTab.setBorder(new DividerBorder(DividerBorder.RIGHT));
-        split.setLeftComponent(sqlTab);
-        split.setRightComponent(fileTreePanel);
-      }
-
-      getContentPane().add(split, BorderLayout.CENTER);
-
-      invalidate();
-      EventQueue.invokeLater(this::validate);
-
+    restoreLayoutSettings();
+    TreePosition position = FileTreeSettings.getTreePosition();
+    if (panelLayout.findByName(fileTreePanel.getName()) == null)
+    {
+      panelLayout.addComponentAt(position, fileTreePanel, "File system", 1);
       fileTreePanel.restoreSettings(getToolProperties(FILE_TREE_PROPS));
       fileTreePanel.loadInBackground();
+    }
+    else
+    {
+      requestFocus = true;
     }
 
     if (requestFocus)
     {
       fileTreePanel.requestFocusInWindow();
     }
-  }
-
-  public FileTreePanel getFileTree()
-  {
-    return fileTreePanel;
   }
 
   public void closeFileTree()
@@ -617,17 +577,12 @@ public class MainWindow
       fileTreePanel.saveSettings(getToolProperties(FILE_TREE_PROPS));
     }
 
+    panelLayout.saveSettings(getToolProperties(MAIN_PROPS), "layout");
+
     if (fileTreePanel != null)
     {
-      JSplitPane split = (JSplitPane)fileTreePanel.getParent();
-      split.remove(sqlTab);
-      getContentPane().remove(split);
-      getContentPane().add(sqlTab, BorderLayout.CENTER);
-      sqlTab.invalidate();
-      sqlTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
-      invalidate();
+      panelLayout.removeComponent(fileTreePanel);
       fileTreePanel = null;
-      EventQueue.invokeLater(this::validate);
     }
   }
 
@@ -1659,7 +1614,7 @@ public class MainWindow
     Predicate<? super MainPanel> isDBExplorerPanel = p -> p instanceof DbExplorerPanel;
     if (getCurrentPanel().filter(isDBExplorerPanel).isPresent())
     {
-      hideDbTree();
+      hideSecondaryComponents();
     }
     else
     {
@@ -1672,7 +1627,7 @@ public class MainWindow
         }
         else
         {
-          restoreDbTree();
+          restoreSecondaryComponents();
         }
       });
     }
@@ -3649,12 +3604,14 @@ public class MainWindow
     this.showMacroPopup.saveWorkspaceSettings();
 
     getToolProperties(DB_TREE_PROPS).setProperty(DbTreePanel.PROP_VISIBLE, isDbTreeVisible());
+    getToolProperties(FILE_TREE_PROPS).setProperty("tree.visible", isFileTreeVisible());
+    panelLayout.saveSettings(getToolProperties(MAIN_PROPS), "layout");
 
     if (treePanel != null)
     {
       treePanel.saveSettings(getToolProperties(DB_TREE_PROPS));
     }
-    
+
     if (fileTreePanel != null)
     {
       fileTreePanel.saveSettings(getToolProperties(FILE_TREE_PROPS));
@@ -4208,7 +4165,7 @@ public class MainWindow
           newTab = this.sqlTab.getSelectedIndex();
           if (panel instanceof DbExplorerPanel)
           {
-            restoreDbTree();
+            restoreSecondaryComponents();
           }
         }
       }
