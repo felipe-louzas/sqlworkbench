@@ -37,8 +37,8 @@ import javax.swing.SwingConstants;
 import workbench.interfaces.Restoreable;
 import workbench.resource.ResourceMgr;
 
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
 import workbench.gui.dbobjects.objecttree.DbTreeSettings;
-import workbench.gui.dbobjects.objecttree.TreePosition;
 
 /**
  *
@@ -65,7 +65,7 @@ public class DbTreeOptionsPanel
   {
     useTabConnection.setSelected(DbTreeSettings.useTabConnection());
     searchAsYouType.setSelected(DbTreeSettings.getFilterWhileTyping());
-    TreePosition position = DbTreeSettings.getDbTreePosition();
+    ComponentPosition position = DbTreeSettings.getDbComponentPosition();
     switch (position)
     {
       case left:
@@ -86,10 +86,10 @@ public class DbTreeOptionsPanel
     switch (selected)
     {
       case 0:
-        DbTreeSettings.setDbTreePosition(TreePosition.left);
+        DbTreeSettings.setDbComponentPosition(ComponentPosition.left);
         break;
       case 1:
-        DbTreeSettings.setDbTreePosition(TreePosition.right);
+        DbTreeSettings.setDbComponentPosition(ComponentPosition.right);
         break;
     }
   }

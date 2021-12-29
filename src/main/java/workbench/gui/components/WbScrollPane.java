@@ -37,7 +37,7 @@ import javax.swing.border.LineBorder;
 public class WbScrollPane
   extends JScrollPane
 {
-  private static boolean useCustomizedBorder = true;
+  private boolean useCustomizedBorder = true;
 
   public WbScrollPane()
   {
@@ -63,6 +63,13 @@ public class WbScrollPane
     this.initDefaults();
   }
 
+  @Override
+  public void setBorder(Border newBorder)
+  {
+    super.setBorder(newBorder);
+    useCustomizedBorder = false;
+  }
+
   private void initDefaults()
   {
     setDoubleBuffered(true);
@@ -75,7 +82,7 @@ public class WbScrollPane
         // we simply skip this for the future
         Color cl = UIManager.getColor("Label.background").darker();
         Border myBorder = new LineBorder(cl, 1);
-        this.setBorder(myBorder);
+        super.setBorder(myBorder);
       }
       catch (Throwable e)
       {

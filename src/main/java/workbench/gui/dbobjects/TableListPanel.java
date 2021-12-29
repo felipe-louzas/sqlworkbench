@@ -53,7 +53,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -190,7 +189,7 @@ public class TableListPanel
   private TableIndexPanel indexPanel;
   private final TriggerDisplayPanel triggers;
   protected DbObjectSourcePanel tableSource;
-  private JTabbedPane displayTab;
+  private WbTabbedPane displayTab;
   private final WbSplitPane splitPane;
 
   private JComboBox tableTypes;
@@ -403,7 +402,6 @@ public class TableListPanel
     this.listPanel.setBorder(WbSwingUtilities.EMPTY_BORDER);
     this.splitPane.setLeftComponent(this.listPanel);
     this.splitPane.setRightComponent(displayTab);
-    this.splitPane.setDividerSize(6);
     this.splitPane.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
     this.splitPane.setOneTouchExpandable(true);
     this.splitPane.setContinuousLayout(true);

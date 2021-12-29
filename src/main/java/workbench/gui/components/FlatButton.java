@@ -37,7 +37,7 @@ import workbench.gui.WbSwingUtilities;
 public class FlatButton
   extends WbButton
 {
-  public static final Insets SMALL_MARGIN = new Insets(3,5,3,5);
+  private static final Insets SMALL_MARGIN = new Insets(3,5,3,5);
   private boolean useDefaultMargin;
   private Insets customInsets;
   private String enableMsgKey;
@@ -65,11 +65,6 @@ public class FlatButton
   public void showMessageOnEnable(String resourceKey)
   {
     this.enableMsgKey = resourceKey;
-  }
-
-  public void setFlatLook()
-  {
-    this.setBorder(WbSwingUtilities.FLAT_BUTTON_BORDER);
   }
 
   public void setUseDefaultMargin(boolean useDefaultMargin)

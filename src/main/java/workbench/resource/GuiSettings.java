@@ -36,6 +36,7 @@ import workbench.log.LogMgr;
 import workbench.db.objectcache.ObjectCacheStorage;
 
 import workbench.gui.components.GuiPosition;
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
 import workbench.gui.sql.FileReloadType;
 
 import workbench.util.CollectionUtil;
@@ -1690,5 +1691,15 @@ public class GuiSettings
   public static int getSplitPaneDividerWidth()
   {
     return Settings.getInstance().getIntProperty("workbench.gui.splitpane.divider.width", 12);
+  }
+
+  public static ComponentPosition getMacroListPosition()
+  {
+    return Settings.getInstance().getEnumProperty("workbench.gui.macropopup.position", ComponentPosition.floating);
+  }
+
+  public static void setMacroListPosition(ComponentPosition position)
+  {
+    Settings.getInstance().setProperty("workbench.gui.macropopup.position", position.name());
   }
 }

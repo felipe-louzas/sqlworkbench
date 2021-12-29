@@ -23,7 +23,6 @@ package workbench.gui.dbobjects.objecttree;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -177,23 +176,11 @@ public class DbTreePanel
     gc.anchor = GridBagConstraints.LINE_END;
     toolPanel.add(bar, gc);
 
-    CloseIcon icon = new CloseIcon(IconMgr.getInstance().getToolbarIconSize());
-    icon.setUseLargeSize(true);
-    closeButton = new WbToolbarButton(icon);
+    closeButton = new WbToolbarButton(new CloseIcon());
     closeButton.setActionCommand("close-panel");
     closeButton.addActionListener(this);
     closeButton.setRolloverEnabled(true);
 
-    // calculate the regular size of the buttons
-    // as the toolbar also display a dropdown, I'm using the label size here
-    WbToolbarButton button = new WbToolbarButton(IconMgr.getInstance().getLabelIcon("save"));
-    Dimension bs = button.getPreferredSize();
-
-    int iconWidth = icon.getIconWidth()/2;
-    int iconHeight = icon.getIconHeight()/2;
-    int wmargin = (int)(bs.width/2) - iconWidth - 2;
-    int hmargin = (int)(bs.height/2) - iconHeight - 2;
-    closeButton.setMargin(new Insets(hmargin, wmargin, hmargin, wmargin));
     bar.add(closeButton);
     typeFilter.addActionListener(this);
 

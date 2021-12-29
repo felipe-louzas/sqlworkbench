@@ -115,7 +115,6 @@ public class MapEditor
     JScrollPane scroll = new JScrollPane(this.propTable);
 
     WbToolbar toolbar = new WbToolbar();
-    toolbar.addDefaultBorder();
     newItem = new NewListEntryAction(this);
     deleteItem = new DeleteListEntryAction(this);
 

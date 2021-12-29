@@ -28,12 +28,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.MainWindow;
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
+import workbench.gui.macros.MacroPanel;
 import workbench.gui.macros.MacroPopup;
 
 /**
@@ -41,10 +46,11 @@ import workbench.gui.macros.MacroPopup;
  */
 public class ShowMacroPopupAction
   extends WbAction
-  implements WindowFocusListener, WindowListener
+  implements WindowFocusListener, WindowListener, PropertyChangeListener
 {
   private MainWindow client;
   private MacroPopup macroWindow;
+  private MacroPanel macroPanel;
 
   public ShowMacroPopupAction(MainWindow aClient)
   {
@@ -80,6 +86,10 @@ public class ShowMacroPopupAction
     {
       macroWindow.saveWorkspaceSettings();
     }
+    else if (this.macroPanel != null)
+    {
+      macroPanel.saveWorkspaceSettings();
+    }
   }
 
   public void workspaceChanged()
@@ -100,10 +110,26 @@ public class ShowMacroPopupAction
     }
   }
 
+  public void showMacros()
+  {
+    ComponentPosition position = GuiSettings.getMacroListPosition();
+    if (position == ComponentPosition.floating)
+    {
+      showPopup();
+    }
+    else
+    {
+      this.macroPanel = new MacroPanel(client, false, true);
+      this.macroPanel.restoreExpandedGroups();
+      this.macroPanel.addPropertyChangeListener(this);
+      client.addAdditionalComponent(macroPanel, position, ResourceMgr.getString("TxtMacroManagerWindowTitle"));
+    }
+  }
+
   @Override
   public void executeAction(ActionEvent e)
   {
-    showPopup();
+    showMacros();
   }
 
   @Override
@@ -177,4 +203,14 @@ public class ShowMacroPopupAction
       macroWindow.setVisible(false);
     }
   }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    if (evt.getSource() == macroPanel && "display".equals(evt.getPropertyName()) && "closed".equals(evt.getNewValue()))
+    {
+      this.macroPanel = null;
+    }
+  }
+
 }

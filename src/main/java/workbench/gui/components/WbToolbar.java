@@ -25,13 +25,9 @@ import java.awt.Component;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JToolBar;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 
 import workbench.gui.actions.WbAction;
 import workbench.gui.lnf.LnFHelper;
@@ -47,8 +43,6 @@ public class WbToolbar
   {
     super();
     this.setFloatable(false);
-//    this.setBorder(WbSwingUtilities.EMPTY_BORDER);
-//    this.setBorderPainted(true);
     this.setRollover(true);
     putClientProperty("Synthetica.opaque", Boolean.FALSE);
   }
@@ -102,7 +96,7 @@ public class WbToolbar
       try
       {
         Class cls = Class.forName("com.alee.laf.toolbar.WebToolBarSeparator");
-        return (JComponent)cls.newInstance();
+        return (JComponent)cls.getDeclaredConstructor().newInstance();
       }
       catch (Throwable th)
       {
@@ -110,21 +104,6 @@ public class WbToolbar
       }
     }
     return new WbToolbarSeparator();
-  }
-
-  public void addDefaultBorder()
-  {
-    Border b = new CompoundBorder(new EmptyBorder(1,0,1,0), BorderFactory.createEtchedBorder());
-    this.setBorder(b);
-    this.setBorderPainted(true);
-    this.setRollover(true);
-  }
-
-  public void addSimpleBorder()
-  {
-    this.setBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, true));
-    this.setBorderPainted(true);
-    this.setRollover(true);
   }
 
   public void removeAction(WbAction action)

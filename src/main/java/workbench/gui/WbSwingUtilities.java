@@ -73,9 +73,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -114,7 +112,6 @@ public class WbSwingUtilities
   public static final String PROP_ERROR_MSG_WRAP = "workbench.sql.error.wordwrap";
   public static final LineBorder FOCUSED_CELL_BORDER = new LineBorder(Color.YELLOW);
   public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
-  public static final Border FLAT_BUTTON_BORDER = new CompoundBorder(BorderFactory.createEtchedBorder(), new EmptyBorder(1, 6, 1, 6));
   public static final KeyStroke CTRL_TAB = KeyStroke.getKeyStroke("control TAB");
   public static final KeyStroke TAB = KeyStroke.getKeyStroke("TAB");
   public static final KeyStroke SHIFT_TAB = KeyStroke.getKeyStroke("shift TAB");
@@ -130,17 +127,6 @@ public class WbSwingUtilities
   public static Insets getEmptyInsets()
   {
     return new Insets(0, 0, 0, 0);
-  }
-
-  public static Border getBevelBorder()
-  {
-    return createBevelBorder(BevelBorder.LOWERED);
-  }
-
-  private static Border createBevelBorder(int type)
-  {
-    BevelBorder b = new BevelBorder(type);
-    return new BevelBorder(type, b.getHighlightOuterColor(), Color.LIGHT_GRAY, b.getHighlightInnerColor(), b.getShadowInnerColor());
   }
 
   public static boolean containsComponent(JComponent container, JComponent toCheck)

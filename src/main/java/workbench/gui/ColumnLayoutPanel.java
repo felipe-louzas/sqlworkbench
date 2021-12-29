@@ -22,19 +22,28 @@ package workbench.gui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.border.Border;
 
+import workbench.gui.components.DefaultTabMover;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTabbedPane;
-import workbench.gui.dbobjects.objecttree.TreePosition;
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
 
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
+
 
 
 /**
@@ -51,22 +60,25 @@ import workbench.util.WbProperties;
  */
 public class ColumnLayoutPanel
   extends JPanel
+  implements PropertyChangeListener
 {
   private static final String TITLE_PROP = "_wbLayoutTitle";
   private static final String INDEX_PROP = "_wbTargetIndex";
   private JComponent mainComponent;
   private final List<JComponent> leftComponents = new ArrayList<>();
   private final List<JComponent> rightComponents = new ArrayList<>();
+  private final Map<String, Integer> positions = new HashMap<>();
   private WbSplitPane leftSplit;
   private WbSplitPane rightSplit;
   private WbTabbedPane leftTab;
   private WbTabbedPane rightTab;
   private int lastLeftDividerPosition = -1;
   private int lastRightDividerPosition = -1;
+  private boolean ignoreResize = false;
 
   public ColumnLayoutPanel(JComponent main)
   {
-    super(new BorderLayout());
+    super(new BorderLayout(0,0));
     this.mainComponent = main;
     this.add(mainComponent, BorderLayout.CENTER);
   }
@@ -123,9 +135,15 @@ public class ColumnLayoutPanel
     refreshUI();
   }
 
-  public void addComponentAt(TreePosition position, JComponent comp, String title, int index)
+  public void addComponentAt(ComponentPosition position, JComponent comp, String title, int index)
   {
-    if (position == TreePosition.left)
+    Integer idx = this.positions.get(comp.getClass().getName());
+    if (idx != null)
+    {
+      index = idx.intValue();
+    }
+
+    if (position == ComponentPosition.left)
     {
       addLeftComponent(comp, title, index);
     }
@@ -134,10 +152,18 @@ public class ColumnLayoutPanel
       addRightComponent(comp, title, index);
     }
   }
+
   public void addRightComponent(JComponent comp, String title, int index)
   {
     comp.putClientProperty(TITLE_PROP, title);
-    comp.putClientProperty(INDEX_PROP, index);
+    if (index > -1)
+    {
+      comp.putClientProperty(INDEX_PROP, index);
+    }
+    else
+    {
+      comp.putClientProperty(INDEX_PROP, rightComponents.size());
+    }
     rightComponents.add(comp);
     storeDividerLocations();
 
@@ -173,6 +199,14 @@ public class ColumnLayoutPanel
   public void addLeftComponent(JComponent comp, String title, int index)
   {
     comp.putClientProperty(TITLE_PROP, title);
+    if (index > -1)
+    {
+      comp.putClientProperty(INDEX_PROP, index);
+    }
+    else
+    {
+      comp.putClientProperty(INDEX_PROP, leftComponents.size());
+    }
     comp.putClientProperty(INDEX_PROP, index);
     int width = mainComponent.getWidth();
     storeDividerLocations();
@@ -181,7 +215,7 @@ public class ColumnLayoutPanel
 
     setupColumns();
     showLeftComponents();
-    if (leftComponents.size() == 1)
+    if (leftComponents.size() == 1 && lastLeftDividerPosition < 0)
     {
       leftSplit.setDividerLocation((int)(width * 0.25));
     }
@@ -254,15 +288,15 @@ public class ColumnLayoutPanel
     }
     else if (leftComponents.size() > 0 && rightComponents.size() > 0)
     {
-      if (leftSplit == null) leftSplit = createSplitPane();
-      if (rightSplit == null) rightSplit = createSplitPane();
+      createLeftSplit();
+      createRightSplit();
       leftSplit.setRightComponent(rightSplit);
       rightSplit.setLeftComponent(mainComponent);
       add(leftSplit, BorderLayout.CENTER);
     }
     else if (leftComponents.size() > 0 && rightComponents.size() == 0)
     {
-      if (leftSplit == null) leftSplit = createSplitPane();
+      createLeftSplit();
       if (rightSplit != null)
       {
         remove(rightSplit);
@@ -274,10 +308,7 @@ public class ColumnLayoutPanel
     }
     else if (leftComponents.size() == 0 && rightComponents.size() > 0)
     {
-      if (rightSplit == null)
-      {
-        rightSplit = createSplitPane();
-      }
+      createRightSplit();
       if (leftSplit != null)
       {
         remove(leftSplit);
@@ -286,6 +317,42 @@ public class ColumnLayoutPanel
       }
       rightSplit.setLeftComponent(mainComponent);
       add(rightSplit, BorderLayout.CENTER);
+    }
+    if (leftSplit != null)
+    {
+      if (rightSplit == null)
+      {
+        leftSplit.removePropertyChangeListener(this);
+      }
+      else
+      {
+        leftSplit.addPropertyChangeListener(this);
+      }
+    }
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    if (rightSplit == null) return;
+    if (ignoreResize) return;
+
+    if (evt.getSource() == leftSplit)
+    {
+      String propertyName = evt.getPropertyName();
+      if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY))
+      {
+        Integer newValue = (Integer)evt.getNewValue();
+        Integer oldValue = (Integer)evt.getOldValue();
+        if (newValue == null || oldValue == null) return;
+
+        int diff = newValue - oldValue;
+        int loc = rightSplit.getDividerLocation();
+        int newLoc = loc - diff;
+        rightSplit.setDividerLocation(newLoc);
+        rightSplit.invalidate();
+        rightSplit.validate();
+      }
     }
   }
 
@@ -305,6 +372,20 @@ public class ColumnLayoutPanel
       if (c == comp) return true;
     }
     return false;
+  }
+
+  public int getComponentIndex(String name)
+  {
+    if (StringUtil.isBlank(name)) return -1;
+    for (int i=0; i < leftComponents.size(); i++)
+    {
+      if (name.equals(leftComponents.get(i).getName())) return i;
+    }
+    for (int i=0; i < rightComponents.size(); i++)
+    {
+      if (name.equals(rightComponents.get(i).getName())) return i;
+    }
+    return -1;
   }
 
   public JComponent findByName(String name)
@@ -330,23 +411,25 @@ public class ColumnLayoutPanel
   public void removeComponent(JComponent toRemove)
   {
     if (toRemove == null) return;
+
     storeDividerLocations();
+
     if (isLeftComponent(toRemove))
     {
       removeLeftComponent(toRemove);
     }
-    if (isRightComponent(toRemove))
+    else if (isRightComponent(toRemove))
     {
       removeRightComponent(toRemove);
     }
+
     restoreDividerLocation();
     refreshUI();
   }
 
   private void removeRightComponent(JComponent toRemove)
   {
-    int oldSize = rightComponents.size();
-    if (oldSize == 0) return;
+    if (rightComponents.size() == 0) return;
 
     if (rightTab != null)
     {
@@ -380,17 +463,10 @@ public class ColumnLayoutPanel
         rightTab.removeAll();
         rightTab = null;
       }
-      rightSplit.setRightComponent(leftComponents.get(0));
-      if (leftSplit != null)
-      {
-        rightSplit.setLeftComponent(leftSplit);
-      }
-      else
-      {
-        rightSplit.setLeftComponent(mainComponent);
-      }
+      rightSplit.setRightComponent(rightComponents.get(0));
     }
   }
+
   private void removeLeftComponent(JComponent toRemove)
   {
     int oldSize = leftComponents.size();
@@ -409,9 +485,12 @@ public class ColumnLayoutPanel
 
     if (leftComponents.size() == 0)
     {
-      remove(leftSplit);
-      leftSplit.removeAll();
-      leftSplit = null;
+      if (leftSplit != null)
+      {
+        remove(leftSplit);
+        leftSplit.removeAll();
+        leftSplit = null;
+      }
       if (rightSplit == null)
       {
         add(mainComponent, BorderLayout.CENTER);
@@ -461,9 +540,17 @@ public class ColumnLayoutPanel
 
   public void setLeftDividerLocation(int location)
   {
-    if (leftSplit != null && location > -1)
+    try
     {
-      leftSplit.setDividerLocation(location);
+      ignoreResize = true;
+      if (leftSplit != null && location > -1)
+      {
+        leftSplit.setDividerLocation(location);
+      }
+    }
+    finally
+    {
+      ignoreResize = false;
     }
   }
 
@@ -473,6 +560,22 @@ public class ColumnLayoutPanel
     {
       rightSplit.setDividerLocation(location);
     }
+  }
+
+  public double getLeftDividerRatio()
+  {
+    if (leftSplit == null) return -1;
+    double width = leftSplit.getSize().getWidth();
+    int location = leftSplit.getDividerLocation();
+    return location / width;
+  }
+
+  public double getRightDividerRatio()
+  {
+    if (rightSplit == null) return -1;
+    double width = rightSplit.getSize().getWidth();
+    int location = rightSplit.getDividerLocation();
+    return location / width;
   }
 
   public int getLeftDividerLocation()
@@ -492,12 +595,28 @@ public class ColumnLayoutPanel
     int left = getLeftDividerLocation();
     if (left > -1)
     {
-      props.setProperty(prefix + ".divider.left", -1);
+      props.setProperty(prefix + ".divider.left", left);
+      props.setProperty(prefix + ".divider.left.ratio", Double.toString(getLeftDividerRatio()));
     }
     int right = getRightDividerLocation();
     if (right > -1)
     {
       props.setProperty(prefix + ".divider.right", right);
+      props.setProperty(prefix + ".divider.right.ratio", Double.toString(getRightDividerRatio()));
+    }
+    writeComponentIndexes(leftTab, props, prefix);
+    writeComponentIndexes(rightTab, props, prefix);
+  }
+
+  private void writeComponentIndexes(JTabbedPane tab, WbProperties props, String prefix)
+  {
+    if (tab == null) return;
+    int tabCount = tab.getTabCount();
+    for (int i=0; i < tabCount; i++)
+    {
+      JComponent comp = (JComponent)tab.getComponentAt(i);
+      String key = prefix + ".tab.index." + comp.getClass().getName();
+      props.setProperty(key, i);
     }
   }
 
@@ -505,19 +624,53 @@ public class ColumnLayoutPanel
   {
     this.lastLeftDividerPosition = props.getIntProperty(prefix + ".divider.left", -1);
     this.lastRightDividerPosition = props.getIntProperty(prefix + ".divider.right", -1);
+    this.positions.clear();
+    String keyPrefix = prefix + ".tab.index.";
+    for (String key : props.getKeys())
+    {
+      if (key.startsWith(keyPrefix))
+      {
+        String cls = key.replace(keyPrefix, "");
+        int index = props.getIntProperty(key, -1);
+        if (index > -1)
+        {
+          this.positions.put(cls, index);
+        }
+      }
+    }
   }
 
-  private WbSplitPane createSplitPane()
+  private void createLeftSplit()
+  {
+    if (leftSplit == null)
+    {
+      leftSplit = createSplitPane(DividerBorder.LEFT_DIVIDER);
+    }
+  }
+
+  private void createRightSplit()
+  {
+    if (rightSplit == null)
+    {
+      rightSplit = createSplitPane(DividerBorder.RIGHT_DIVIDER);
+    }
+  }
+
+  private WbSplitPane createSplitPane(Border border)
   {
     WbSplitPane split = new WbSplitPane();
-    split.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
-    split.setOneTouchExpandable(true);
+    split.setBorder(WbSwingUtilities.EMPTY_BORDER);
+    split.setDividerBorder(border);
+    split.setOneTouchExpandable(false);
+    split.setContinuousLayout(true);
     return split;
   }
 
   private WbTabbedPane createTabPane()
   {
     WbTabbedPane tab = new WbTabbedPane();
+    DefaultTabMover mover = new DefaultTabMover(tab);
+    tab.enableDragDropReordering(mover);
     return tab;
   }
 
@@ -535,9 +688,16 @@ public class ColumnLayoutPanel
 
   private void restoreDividerLocation()
   {
-    setLeftDividerLocation(lastLeftDividerPosition);
-    setRightDividerLocation(lastRightDividerPosition);
-    lastRightDividerPosition = -1;
-    lastLeftDividerPosition = -1;
+    if (leftSplit != null)
+    {
+      setLeftDividerLocation(lastLeftDividerPosition);
+      lastLeftDividerPosition = -1;
+    }
+
+    if (rightSplit != null)
+    {
+      setRightDividerLocation(lastRightDividerPosition);
+      lastRightDividerPosition = -1;
+    }
   }
 }

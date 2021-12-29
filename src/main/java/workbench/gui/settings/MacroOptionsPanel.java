@@ -26,7 +26,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -41,6 +40,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.StoreableKeyStroke;
 
 import workbench.gui.components.TextFieldWidthAdjuster;
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
 
 /**
  *
@@ -59,22 +59,42 @@ public class MacroOptionsPanel
     TextFieldWidthAdjuster adjuster = new TextFieldWidthAdjuster();
     adjuster.adjustAllFields(this);
     StoreableKeyStroke space = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
-    StoreableKeyStroke shiftSpace = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.SHIFT_MASK));
+    StoreableKeyStroke shiftSpace = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.SHIFT_DOWN_MASK));
     StoreableKeyStroke tab = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
     ComboBoxModel model = new DefaultComboBoxModel(new Object[] { space, shiftSpace, tab});
     cbExpansionKey.setModel(model);
+
+    String[] locations = new String[] {
+      ResourceMgr.getString("TxtFloating"),
+      ResourceMgr.getString("TxtTabLeft"),
+      ResourceMgr.getString("TxtTabRight"),
+    };
+    treePosition.setModel(new DefaultComboBoxModel(locations));
+    invalidate();
   }
 
   @Override
   public void restoreSettings()
   {
-
     StoreableKeyStroke key = new StoreableKeyStroke(GuiSettings.getExpansionKey());
     cbExpansionKey.setSelectedItem(key);
     closeEsc.setSelected(GuiSettings.getCloseMacroPopupWithEsc());
     saveWksp.setSelected(GuiSettings.getStoreMacroPopupInWorkspace());
     enterRuns.setSelected(GuiSettings.getRunMacroWithEnter());
     showToolbar.setSelected(GuiSettings.getShowToolbarInMacroPopup());
+    ComponentPosition position = GuiSettings.getMacroListPosition();
+    switch (position)
+    {
+      case floating:
+        treePosition.setSelectedIndex(0);
+        break;
+      case left:
+        treePosition.setSelectedIndex(1);
+        break;
+      case right:
+        treePosition.setSelectedIndex(2);
+        break;
+    }
   }
 
   @Override
@@ -86,6 +106,19 @@ public class MacroOptionsPanel
     GuiSettings.setStoreMacroPopupInWorkspace(saveWksp.isSelected());
     GuiSettings.setRunMacroWithEnter(enterRuns.isSelected());
     GuiSettings.setShowToolbarInMacroPopup(showToolbar.isSelected());
+    int index = treePosition.getSelectedIndex();
+    switch (index)
+    {
+      case 0:
+        GuiSettings.setMacroListPosition(ComponentPosition.floating);
+        break;
+      case 1:
+        GuiSettings.setMacroListPosition(ComponentPosition.left);
+        break;
+      case 2:
+        GuiSettings.setMacroListPosition(ComponentPosition.right);
+        break;
+    }
   }
 
 
@@ -106,6 +139,8 @@ public class MacroOptionsPanel
     saveWksp = new JCheckBox();
     showToolbar = new JCheckBox();
     enterRuns = new JCheckBox();
+    jLabel1 = new JLabel();
+    treePosition = new JComboBox<>();
 
     setLayout(new GridBagLayout());
 
@@ -127,19 +162,21 @@ public class MacroOptionsPanel
     gridBagConstraints.insets = new Insets(0, 11, 0, 15);
     add(cbExpansionKey, gridBagConstraints);
 
-    jPanel1.setBorder(BorderFactory.createTitledBorder(ResourceMgr.getString("LblMacroPopup"))); // NOI18N
     jPanel1.setLayout(new GridBagLayout());
 
     closeEsc.setText(ResourceMgr.getString("LblMacroPopCloseEsc")); // NOI18N
+    closeEsc.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
     jPanel1.add(closeEsc, gridBagConstraints);
 
     saveWksp.setText(ResourceMgr.getString("LblMacroPopStoreWksp")); // NOI18N
+    saveWksp.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
@@ -149,22 +186,42 @@ public class MacroOptionsPanel
     jPanel1.add(saveWksp, gridBagConstraints);
 
     showToolbar.setText(ResourceMgr.getString("LblMacroPopToolbar")); // NOI18N
+    showToolbar.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
     jPanel1.add(showToolbar, gridBagConstraints);
 
     enterRuns.setText(ResourceMgr.getString("LblMacroPopEnterRun")); // NOI18N
+    enterRuns.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
     jPanel1.add(enterRuns, gridBagConstraints);
+
+    jLabel1.setText(ResourceMgr.getString("LblMacroListType")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(7, 0, 0, 10);
+    jPanel1.add(jLabel1, gridBagConstraints);
+
+    treePosition.setModel(new DefaultComboBoxModel<>(new String[] { "Left", "Right" }));
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(8, 0, 0, 0);
+    jPanel1.add(treePosition, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -183,10 +240,12 @@ public class MacroOptionsPanel
   private JComboBox cbExpansionKey;
   private JCheckBox closeEsc;
   private JCheckBox enterRuns;
+  private JLabel jLabel1;
   private JLabel jLabel3;
   private JPanel jPanel1;
   private JCheckBox saveWksp;
   private JCheckBox showToolbar;
+  private JComboBox<String> treePosition;
   // End of variables declaration//GEN-END:variables
 
 }

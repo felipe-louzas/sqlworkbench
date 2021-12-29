@@ -189,7 +189,6 @@ import workbench.gui.components.ConnectionInfo;
 import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.DbUnitHelper;
 import workbench.gui.components.DividerBorder;
-import workbench.gui.components.EtchedBorderTop;
 import workbench.gui.components.GenericRowMonitor;
 import workbench.gui.components.TabCloser;
 import workbench.gui.components.WbMenu;
@@ -392,6 +391,7 @@ public class SqlPanel
     setBorder(WbSwingUtilities.EMPTY_BORDER);
 
     editor = EditorPanel.createSqlEditor();
+    editor.setBorder(WbSwingUtilities.EMPTY_BORDER);
     highlighter = new Highlighter(editor);
 
     statusBar = new DwStatusBar(true, true);
@@ -402,21 +402,16 @@ public class SqlPanel
       statusBar.setMaxRows(defRows);
     }
     editor.setStatusBar(statusBar);
-    editor.setBorder(new EtchedBorderTop());
 
     if (GuiSettings.getShowTextSelectionSummary())
     {
       statusBar.addTextSelectionDisplay(editor);
     }
 
-    // The name of the component is used for the Jemmy GUI Tests
-    editor.setName("sqleditor" + internalId);
-
     log = new LogArea(this);
-    // The name of the component is used for the Jemmy GUI Tests
-    log.setName("msg" + internalId);
 
     resultTab = new WbTabbedPane();
+    resultTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
     resultTab.setTabPlacement(JTabbedPane.TOP);
     resultTab.setFocusable(false);
     resultTab.enableDragDropReordering(this);
@@ -426,11 +421,13 @@ public class SqlPanel
     resultTab.setName("resultspane");
 
     JScrollPane scroll = new WbScrollPane(log);
+    scroll.setBorder(WbSwingUtilities.EMPTY_BORDER);
     resultTab.addTab(ResourceMgr.getString("LblTabMessages"), scroll);
 
     contentPanel = new WbSplitPane(JSplitPane.VERTICAL_SPLIT, editor, resultTab);
     contentPanel.setOneTouchExpandable(true);
     contentPanel.setBorder(WbSwingUtilities.EMPTY_BORDER);
+    contentPanel.setDividerSize(10);
     contentPanel.setDividerBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, false));
 
     appendResults = GuiSettings.getDefaultAppendResults();
@@ -669,7 +666,7 @@ public class SqlPanel
   public boolean readFile(File aFile, String encoding)
   {
     if (aFile == null) return false;
-    
+
     boolean result = false;
     if (this.editor.readFile(aFile, encoding))
     {

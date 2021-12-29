@@ -106,7 +106,7 @@ public class DbExplorerPanel
   extends JPanel
   implements ActionListener, MainPanel, DbExecutionListener, PropertyChangeListener, Reloadable
 {
-  private JTabbedPane tabPane;
+  private WbTabbedPane tabPane;
   protected TableListPanel tables;
   protected TableSearchPanel searchPanel;
   protected ProcedureListPanel procs;
@@ -228,7 +228,6 @@ public class DbExplorerPanel
       this.add(tabPane, BorderLayout.CENTER);
 
       this.toolbar = new WbToolbar();
-      this.toolbar.addSimpleBorder();
       this.toolbar.setLayout(new BorderLayout());
       this.connectionInfo = new ConnectionInfo(this.toolbar.getBackground());
       this.toolbar.add(this.connectionInfo, BorderLayout.CENTER);

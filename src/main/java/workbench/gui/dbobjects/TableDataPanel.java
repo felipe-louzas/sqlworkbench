@@ -322,7 +322,6 @@ public class TableDataPanel
   private void createToolbar()
   {
     toolbar = new WbToolbar();
-    toolbar.addDefaultBorder();
     reloadAction = new ReloadAction(this);
     reloadAction.setTooltip(ResourceMgr.getDescription("TxtLoadTableData", true));
     reloadAction.addToInputMap(this.dataDisplay.getTable());

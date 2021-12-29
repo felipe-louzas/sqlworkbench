@@ -22,7 +22,6 @@
 package workbench.gui.filetree;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -146,19 +145,10 @@ public class FileTreePanel
     bar.add(reload);
     bar.addSeparator();
 
-    CloseIcon icon = new CloseIcon(IconMgr.getInstance().getToolbarIconSize());
-    icon.setUseLargeSize(true);
-    closeButton = new WbToolbarButton(icon);
+    closeButton = new WbToolbarButton(new CloseIcon());
     closeButton.setActionCommand("close-panel");
     closeButton.addActionListener(this);
     closeButton.setRolloverEnabled(true);
-
-    Dimension bs = selectDirectoryButton.getPreferredSize();
-    int iconWidth = icon.getIconWidth()/2;
-    int iconHeight = icon.getIconHeight()/2;
-    int wmargin = (int)(bs.width/2) - iconWidth - 2;
-    int hmargin = (int)(bs.height/2) - iconHeight - 2;
-    closeButton.setMargin(new Insets(hmargin, wmargin, hmargin, wmargin));
     bar.add(closeButton);
 
     gc.gridx ++;

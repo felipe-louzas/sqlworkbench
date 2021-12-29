@@ -31,7 +31,7 @@ import workbench.resource.ResourceMgr;
 
 import workbench.gui.components.StringPropertyEditor;
 import workbench.gui.components.TextComponentMouseListener;
-import workbench.gui.dbobjects.objecttree.TreePosition;
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
 import workbench.gui.filetree.FileTreeSettings;
 
 /**
@@ -64,7 +64,7 @@ public class FileTreeOptionsPanel
     this.excludedExtensions.setText(FileTreeSettings.getExcludedExtensions());
     this.excludedFiles.setText(FileTreeSettings.getExcludedFiles());
     this.defaultDir.setFilename(FileTreeSettings.getDefaultDirectory());
-    TreePosition position = FileTreeSettings.getTreePosition();
+    ComponentPosition position = FileTreeSettings.getComponentPosition();
     switch (position)
     {
       case left:
@@ -86,10 +86,10 @@ public class FileTreeOptionsPanel
     switch (selected)
     {
       case 0:
-        FileTreeSettings.setTreePosition(TreePosition.left);
+        FileTreeSettings.setComponentPosition(ComponentPosition.left);
         break;
       case 1:
-        FileTreeSettings.setTreePosition(TreePosition.right);
+        FileTreeSettings.setComponentPosition(ComponentPosition.right);
         break;
     }
   }

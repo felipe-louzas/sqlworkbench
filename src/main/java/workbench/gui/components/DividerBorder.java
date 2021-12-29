@@ -47,6 +47,8 @@ public class DividerBorder
   private final int borderType;
   private final boolean shadow;
   public static final DividerBorder BOTTOM_DIVIDER = new DividerBorder(BOTTOM);
+  public static final DividerBorder LEFT_DIVIDER = new DividerBorder(LEFT, false);
+  public static final DividerBorder RIGHT_DIVIDER = new DividerBorder(RIGHT, false);
 
   /**
    * Creates a divider border with the specified type

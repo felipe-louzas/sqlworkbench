@@ -160,9 +160,9 @@ import workbench.gui.components.WbTabbedPane;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.dbobjects.DbExplorerPanel;
 import workbench.gui.dbobjects.DbExplorerWindow;
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
 import workbench.gui.dbobjects.objecttree.DbTreePanel;
 import workbench.gui.dbobjects.objecttree.DbTreeSettings;
-import workbench.gui.dbobjects.objecttree.TreePosition;
 import workbench.gui.filetree.FileTreePanel;
 import workbench.gui.filetree.FileTreeSettings;
 import workbench.gui.fontzoom.DecreaseFontSize;
@@ -171,6 +171,7 @@ import workbench.gui.fontzoom.IncreaseFontSize;
 import workbench.gui.fontzoom.ResetFontSize;
 import workbench.gui.lnf.LnFHelper;
 import workbench.gui.macros.MacroMenuBuilder;
+import workbench.gui.macros.MacroPanel;
 import workbench.gui.menu.RecentFileManager;
 import workbench.gui.menu.SqlTabPopup;
 import workbench.gui.profiles.ConnectionGuiHelper;
@@ -293,6 +294,8 @@ public class MainWindow
   private DbTreePanel treePanel;
   private FileTreePanel fileTreePanel;
   private boolean shouldShowTree;
+  private boolean shouldShowMacroList;
+  private boolean shouldShowFileList;
 
   private final ClosedTabManager closedTabHistory;
   private final ColumnLayoutPanel panelLayout;
@@ -435,7 +438,7 @@ public class MainWindow
     boolean macroVisible = Settings.getInstance().getBoolProperty(this.getClass().getName() + ".macropopup.visible", false);
     if (macroVisible)
     {
-      EventQueue.invokeLater(showMacroPopup::showPopup);
+      EventQueue.invokeLater(showMacroPopup::showMacros);
     }
   }
 
@@ -468,7 +471,7 @@ public class MainWindow
 
     if (panelLayout.findByName(treePanel.getName()) == null)
     {
-      TreePosition position = DbTreeSettings.getDbTreePosition();
+      ComponentPosition position = DbTreeSettings.getDbComponentPosition();
       panelLayout.addComponentAt(position, treePanel, "DbTree", 0);
       treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
     }
@@ -503,20 +506,51 @@ public class MainWindow
 
   public void hideSecondaryComponents()
   {
-    if (isDbTreeVisible())
+    if (treePanel != null)
     {
       treePanel.saveSettings(getToolProperties(DB_TREE_PROPS));
     }
     panelLayout.hideAdditionalComponents();
   }
 
+  private boolean shouldShowSidePanels()
+  {
+    return shouldShowTree || shouldShowMacroList || shouldShowFileList;
+  }
+
+  private void showSidePanelsIfNeeded()
+  {
+    if (shouldShowTree)
+    {
+      showDbTree(false);
+      shouldShowTree = false;
+    }
+    if (shouldShowMacroList)
+    {
+      showMacros();
+      shouldShowMacroList = false;
+    }
+    if (shouldShowFileList)
+    {
+      showFileTree(false);
+      shouldShowFileList = false;
+    }
+  }
+
   public void restoreSecondaryComponents()
   {
-    panelLayout.showAdditionalComponents();
-    if (treePanel != null)
+    if (shouldShowSidePanels())
     {
-      treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
-      treePanel.setMacroClient(getCurrentSqlPanel());
+      showSidePanelsIfNeeded();
+    }
+    else
+    {
+      panelLayout.showAdditionalComponents();
+      if (treePanel != null)
+      {
+        treePanel.restoreSettings(getToolProperties(DB_TREE_PROPS));
+        treePanel.setMacroClient(getCurrentSqlPanel());
+      }
     }
   }
 
@@ -539,9 +573,18 @@ public class MainWindow
     }
   }
 
-  public boolean isFileTreeVisible()
+  public void removeAdditionalComponent(JComponent panel)
   {
-    return (fileTreePanel != null && fileTreePanel.isVisible());
+    panelLayout.removeComponent(panel);
+  }
+
+  public void addAdditionalComponent(JComponent panel, ComponentPosition position, String title)
+  {
+    if (panel == null) return;
+    if (position == null || position == ComponentPosition.floating) return;
+
+    restoreLayoutSettings();
+    panelLayout.addComponentAt(position, panel, title, -1);
   }
 
   public void showFileTree(boolean requestFocus)
@@ -552,10 +595,10 @@ public class MainWindow
     }
 
     restoreLayoutSettings();
-    TreePosition position = FileTreeSettings.getTreePosition();
+    ComponentPosition position = FileTreeSettings.getComponentPosition();
     if (panelLayout.findByName(fileTreePanel.getName()) == null)
     {
-      panelLayout.addComponentAt(position, fileTreePanel, "File system", 1);
+      panelLayout.addComponentAt(position, fileTreePanel, "File system", -1);
       fileTreePanel.restoreSettings(getToolProperties(FILE_TREE_PROPS));
       fileTreePanel.loadInBackground();
     }
@@ -572,15 +615,11 @@ public class MainWindow
 
   public void closeFileTree()
   {
-    if (isFileTreeVisible())
-    {
-      fileTreePanel.saveSettings(getToolProperties(FILE_TREE_PROPS));
-    }
-
     panelLayout.saveSettings(getToolProperties(MAIN_PROPS), "layout");
 
     if (fileTreePanel != null)
     {
+      fileTreePanel.saveSettings(getToolProperties(FILE_TREE_PROPS));
       panelLayout.removeComponent(fileTreePanel);
       fileTreePanel = null;
     }
@@ -1620,15 +1659,7 @@ public class MainWindow
     {
       getPanel(lastIndex).filter(isDBExplorerPanel).map(DbExplorerPanel.class::cast).ifPresent(lastPanel ->
       {
-        if (shouldShowTree)
-        {
-          showDbTree(false);
-          shouldShowTree = false;
-        }
-        else
-        {
-          restoreSecondaryComponents();
-        }
+        restoreSecondaryComponents();
       });
     }
   }
@@ -1696,6 +1727,9 @@ public class MainWindow
     }
     boolean macroVisible = (showMacroPopup != null && showMacroPopup.isPopupVisible());
     sett.setProperty(this.getClass().getName() + ".macropopup.visible", macroVisible);
+    int index = panelLayout.getComponentIndex(MacroPanel.LAYOUT_NAME);
+    sett.setProperty(this.getClass().getName() + ".macrolist.index", index);
+    sett.setProperty(this.getClass().getName() + ".macrolist.visible", index > -1);
   }
 
   @Override
@@ -2265,14 +2299,15 @@ public class MainWindow
       EventQueue.invokeLater(this::updateRecentWorkspaces);
     }
 
+    shouldShowMacroList = getToolProperties(MacroPanel.TOOLKEY).getBoolProperty(MacroPanel.PROP_VISIBLE, false);
     shouldShowTree = getToolProperties(DB_TREE_PROPS).getBoolProperty(DbTreePanel.PROP_VISIBLE, false);
+    shouldShowFileList = getToolProperties(FILE_TREE_PROPS).getBoolProperty(FileTreeSettings.PROP_VISIBLE, false);
 
-    if (shouldShowTree && getCurrentSqlPanel() != null)
+    if (getCurrentSqlPanel() != null && shouldShowSidePanels())
     {
       EventQueue.invokeLater(() ->
       {
-        showDbTree(false);
-        shouldShowTree = false;
+        showSidePanelsIfNeeded();
       });
     }
 
@@ -2280,6 +2315,11 @@ public class MainWindow
     LogMgr.logDebug(new CallerInfo(){}, "Loading workspace " + currentWorkspace + " took " + duration + "ms");
 
     BookmarkManager.getInstance().updateInBackground(this);
+  }
+
+  private void showMacros()
+  {
+    EventQueue.invokeLater(showMacroPopup::showMacros);
   }
 
   private void applyWorkspaceVariables()
@@ -3603,8 +3643,10 @@ public class MainWindow
 
     this.showMacroPopup.saveWorkspaceSettings();
 
-    getToolProperties(DB_TREE_PROPS).setProperty(DbTreePanel.PROP_VISIBLE, isDbTreeVisible());
-    getToolProperties(FILE_TREE_PROPS).setProperty("tree.visible", isFileTreeVisible());
+    getToolProperties(DB_TREE_PROPS).setProperty(DbTreePanel.PROP_VISIBLE, treePanel != null);
+    getToolProperties(FILE_TREE_PROPS).setProperty(FileTreeSettings.PROP_VISIBLE, fileTreePanel != null);
+    MacroPanel macros = panelLayout.getComponent(MacroPanel.class);
+    getToolProperties(MacroPanel.TOOLKEY).setProperty(MacroPanel.PROP_VISIBLE, macros != null);
     panelLayout.saveSettings(getToolProperties(MAIN_PROPS), "layout");
 
     if (treePanel != null)

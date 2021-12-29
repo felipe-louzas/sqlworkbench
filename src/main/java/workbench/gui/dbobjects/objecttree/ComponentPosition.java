@@ -24,8 +24,9 @@ package workbench.gui.dbobjects.objecttree;
  *
  * @author Thomas Kellerer
  */
-public enum TreePosition
+public enum ComponentPosition
 {
   left,
-  right;
+  right,
+  floating;
 }

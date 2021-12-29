@@ -116,8 +116,6 @@ public class PrintPreview
     this.printTarget = target;
 
     WbToolbar tb = new WbToolbar();
-    tb.addDefaultBorder();
-
     this.printButton = new WbToolbarButton(ResourceMgr.getString("LblPrintButton"));
     this.printButton.addActionListener(this);
     tb.add(printButton);

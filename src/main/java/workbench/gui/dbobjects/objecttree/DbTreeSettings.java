@@ -50,16 +50,16 @@ public class DbTreeSettings
     return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "rowcount.global.integer.format", false);
   }
 
-  public static TreePosition getDbTreePosition()
+  public static ComponentPosition getDbComponentPosition()
   {
-    String pos = Settings.getInstance().getProperty(SETTINGS_PREFIX + "position", TreePosition.left.name());
+    String pos = Settings.getInstance().getProperty(SETTINGS_PREFIX + "position", ComponentPosition.left.name());
     try
     {
-      return TreePosition.valueOf(pos);
+      return ComponentPosition.valueOf(pos);
     }
     catch (Throwable th)
     {
-      return TreePosition.left;
+      return ComponentPosition.left;
     }
   }
 
@@ -73,7 +73,7 @@ public class DbTreeSettings
     Settings.getInstance().setProperty(SETTINGS_PREFIX + "use.tab.connection", flag);
   }
 
-  public static void setDbTreePosition(TreePosition pos)
+  public static void setDbComponentPosition(ComponentPosition pos)
   {
     Settings.getInstance().setProperty(SETTINGS_PREFIX + "position", pos.name());
   }

@@ -31,6 +31,8 @@ import java.awt.RenderingHints;
 import javax.swing.Icon;
 import javax.swing.UIManager;
 
+import workbench.resource.IconMgr;
+
 /**
  *
  * @author Thomas Kellerer
@@ -47,6 +49,11 @@ public class CloseIcon
   private final Color backgroundColor;
   private int offset;
   private final int size;
+
+  public CloseIcon()
+  {
+    this((int)(IconMgr.getInstance().getToolbarIconSize() * 0.95));
+  }
 
   public CloseIcon(int iconSize)
   {

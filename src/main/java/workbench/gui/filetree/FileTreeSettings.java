@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import workbench.resource.Settings;
 
-import workbench.gui.dbobjects.objecttree.TreePosition;
+import workbench.gui.dbobjects.objecttree.ComponentPosition;
 
 import workbench.util.StringUtil;
 
@@ -15,6 +15,7 @@ public class FileTreeSettings
   public static final String SETTINGS_PREFIX = "workbench.gui.filetree.";
   public static final String EXCLUDED_FILES_PROPERTY = SETTINGS_PREFIX + ".exclude.files";
   public static final String EXCLUDED_EXT_PROPERTY = SETTINGS_PREFIX + ".exclude.extensions";
+  public static final String PROP_VISIBLE = "tree.visible";
 
   public static void setDefaultDirectory(String dir)
   {
@@ -86,22 +87,22 @@ public class FileTreeSettings
     return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + ".use.system.icons", false);
   }
 
-  public static void setTreePosition(TreePosition position)
+  public static void setComponentPosition(ComponentPosition position)
   {
     if (position == null) return;
     Settings.getInstance().setProperty(SETTINGS_PREFIX + "position", position.name());
   }
 
-  public static TreePosition getTreePosition()
+  public static ComponentPosition getComponentPosition()
   {
-    String pos = Settings.getInstance().getProperty(SETTINGS_PREFIX + "position", TreePosition.left.name());
+    String pos = Settings.getInstance().getProperty(SETTINGS_PREFIX + "position", ComponentPosition.left.name());
     try
     {
-      return TreePosition.valueOf(pos);
+      return ComponentPosition.valueOf(pos);
     }
     catch (Throwable th)
     {
-      return TreePosition.left;
+      return ComponentPosition.left;
     }
   }
 }

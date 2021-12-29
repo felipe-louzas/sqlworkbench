@@ -23,6 +23,7 @@ package workbench.gui.toolbar;
 import workbench.db.WbConnection;
 
 import workbench.gui.components.ConnectionInfo;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.lnf.LnFHelper;
 
@@ -42,12 +43,13 @@ public class MainToolbar
     addDefaultBorder();
   }
 
-  @Override
   public void addDefaultBorder()
   {
     if (LnFHelper.isWindowsLookAndFeel())
     {
-      super.addSimpleBorder();
+      this.setBorder(new DividerBorder(DividerBorder.TOP, false));
+      this.setBorderPainted(true);
+      this.setRollover(true);
     }
   }
 
