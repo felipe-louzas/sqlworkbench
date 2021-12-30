@@ -48,7 +48,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.swing.Action;
 import javax.swing.InputMap;
@@ -185,7 +184,6 @@ import workbench.gui.toolbar.ToolbarBuilder;
 import workbench.sql.VariablePool;
 import workbench.sql.macros.MacroManager;
 
-import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.FileDialogUtil;
@@ -444,7 +442,7 @@ public class MainWindow
 
   public boolean isDbTreeVisible()
   {
-    return (treePanel != null && treePanel.isVisible());
+    return (treePanel != null && panelLayout.findByName(treePanel.getName()) != null);
   }
 
   public void showDbTree()
@@ -1728,8 +1726,8 @@ public class MainWindow
     boolean macroVisible = (showMacroPopup != null && showMacroPopup.isPopupVisible());
     sett.setProperty(this.getClass().getName() + ".macropopup.visible", macroVisible);
     int index = panelLayout.getComponentIndex(MacroPanel.LAYOUT_NAME);
-    sett.setProperty(this.getClass().getName() + ".macrolist.index", index);
     sett.setProperty(this.getClass().getName() + ".macrolist.visible", index > -1);
+    sett.setProperty(this.getClass().getName() + ".filetree.visible", fileTreePanel != null);
   }
 
   @Override
@@ -2781,27 +2779,11 @@ public class MainWindow
 
   public void selectConnection()
   {
-    selectConnection(false, false);
+    selectConnection(false);
   }
 
-  public void selectConnection(boolean exit, boolean checkExtDir)
+  public void selectConnection(boolean exit)
   {
-    if (checkExtDir)
-    {
-      ClasspathUtil cp = new ClasspathUtil();
-      List<File> libs = cp.checkLibsToMove();
-      if (libs.size() > 1)
-      {
-        String names = libs.stream().map(f -> "<li>" + f.getName() + "</li>").collect(Collectors.joining(""));
-        WbFile extDir = new ClasspathUtil().getExtDir();
-        String msg = ResourceMgr.getFormattedString("MsgExtDirWarning", cp.getJarPath(), names, extDir.getFullPath());
-        WbSwingUtilities.showMessage(this, msg, JOptionPane.WARNING_MESSAGE);
-
-        String logMsg = "Please move the following files to " + extDir.getFullPath() + "\n" +
-          libs.stream().map(f -> f.getAbsolutePath()).collect(Collectors.joining("\n"));
-        LogMgr.logWarning(new CallerInfo(){}, logMsg);
-      }
-    }
     exitOnCancel = exit;
     getSelector().selectConnection();
   }

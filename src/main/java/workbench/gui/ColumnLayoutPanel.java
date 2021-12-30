@@ -35,6 +35,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 
+import workbench.resource.GuiSettings;
+
 import workbench.gui.components.DefaultTabMover;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbSplitPane;
@@ -44,10 +46,8 @@ import workbench.gui.dbobjects.objecttree.ComponentPosition;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 
-
-
 /**
- * A panel that displays components in thre columns.
+ * A panel that displays components in three columns.
  *
  * The center column is always occupied by the main component.
  *
@@ -402,12 +402,6 @@ public class ColumnLayoutPanel
     return null;
   }
 
-  public void removeByName(String name)
-  {
-    JComponent toRemove = findByName(name);
-    removeComponent(toRemove);
-  }
-
   public void removeComponent(JComponent toRemove)
   {
     if (toRemove == null) return;
@@ -630,10 +624,10 @@ public class ColumnLayoutPanel
     {
       if (key.startsWith(keyPrefix))
       {
-        String cls = key.replace(keyPrefix, "");
         int index = props.getIntProperty(key, -1);
         if (index > -1)
         {
+          String cls = key.substring(keyPrefix.length());
           this.positions.put(cls, index);
         }
       }
@@ -661,7 +655,7 @@ public class ColumnLayoutPanel
     WbSplitPane split = new WbSplitPane();
     split.setBorder(WbSwingUtilities.EMPTY_BORDER);
     split.setDividerBorder(border);
-    split.setOneTouchExpandable(false);
+    split.setOneTouchExpandable(GuiSettings.getUseOneTouchExpand());
     split.setContinuousLayout(true);
     return split;
   }

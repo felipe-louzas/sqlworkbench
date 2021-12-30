@@ -63,12 +63,9 @@ public class ClasspathUtil
     }
     LogMgr.logDebug(new CallerInfo(){}, "Checking directory: " + jarDir + " for additional libraries");
 
-    long start = System.currentTimeMillis();
     final List<File> cp = getClassPath();
     FileFilter ff = (File pathname) -> !pathname.equals(jarFile) && isExtJar(pathname, cp);
     File[] files = jarDir.listFiles(ff);
-    long duration = System.currentTimeMillis() - start;
-    LogMgr.logInfo(new CallerInfo(){}, "Checking for ext libs took: " + duration + "ms");
 
     if (files == null) return Collections.emptyList();
 
@@ -152,7 +149,7 @@ public class ClasspathUtil
         return f;
       }
     }
-    
+
     File jarFile = getJarFile();
     if (jarFile == null || jarFile.isDirectory())
     {

@@ -51,11 +51,7 @@ public class PoiHelper
     try
     {
       tested = true;
-      Class c = Class.forName("org.apache.poi.ss.usermodel.Workbook");
-      c.getPackage();
-
-      Package poi = c.getPackage();
-      String v = poi.getImplementationVersion();
+      String v = getPOIVersionString();
       int pos = v.indexOf('-');
       if (pos > -1)
       {
@@ -81,6 +77,37 @@ public class PoiHelper
       available = false;
     }
     return available;
+  }
+
+  public static String getPOIVersionString() throws ClassNotFoundException
+  {
+    Class c = Class.forName("org.apache.poi.ss.usermodel.Workbook");
+    c.getPackage();
+
+    Package poi = c.getPackage();
+    return poi.getImplementationVersion();
+  }
+
+  public static VersionNumber getPOIVersion()
+  {
+    try
+    {
+      return getPOIVersion(getPOIVersionString());
+    }
+    catch (Throwable th)
+    {
+      return new VersionNumber(0,0);
+    }
+  }
+  
+  public static VersionNumber getPOIVersion(String poiVersion)
+  {
+    int pos = poiVersion.indexOf('-');
+    if (pos > -1)
+    {
+      poiVersion = poiVersion.substring(0, pos);
+    }
+    return new VersionNumber(poiVersion);
   }
 
   public static boolean isXLSXAvailable()

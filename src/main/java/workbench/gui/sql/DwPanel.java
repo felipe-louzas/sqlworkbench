@@ -285,7 +285,7 @@ public class DwPanel
   {
     initTableNavigation(container, null);
   }
-  
+
   public void initTableNavigation(MainWindow container, ResultReceiver receiver)
   {
     if (this.referenceNavigator != null)
@@ -1398,7 +1398,7 @@ public class DwPanel
   {
     DataStore ds = this.dataTable.getDataStore();
     if (ds == null) return false;
-    else return ds.isModified();
+    return ds.isModified();
   }
 
   private void initLayout(DwStatusBar status)

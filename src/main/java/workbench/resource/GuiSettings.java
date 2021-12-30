@@ -1635,7 +1635,12 @@ public class GuiSettings
 
   public static boolean checkExtDir()
   {
-    return Settings.getInstance().getBoolProperty("workbench.gui.extdir.check.libs", true);
+    return Settings.getInstance().getBoolProperty("workbench.gui.check.extdir.libs", true);
+  }
+
+  public static boolean checkObsoleteJars()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.check.obsolete.libs", true);
   }
 
   public static int getFontZoomPercentage()
@@ -1701,5 +1706,9 @@ public class GuiSettings
   public static void setMacroListPosition(ComponentPosition position)
   {
     Settings.getInstance().setProperty("workbench.gui.macropopup.position", position.name());
+  }
+  public static boolean getUseOneTouchExpand()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.mainwindow.split.onetouch", false);
   }
 }

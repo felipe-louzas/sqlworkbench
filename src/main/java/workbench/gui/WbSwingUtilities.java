@@ -541,6 +541,11 @@ public class WbSwingUtilities
 
   public static void showMultiLineError(final Component caller, final String title, final String message)
   {
+    showMultiLineMessage(caller, title, message, JOptionPane.ERROR_MESSAGE);
+  }
+  
+  public static void showMultiLineMessage(final Component caller, final String title, final String message, final int messageType)
+  {
     if (WbManager.getInstance().isBatchMode())
     {
       LogMgr.logError(new CallerInfo(){}, message, null);
@@ -561,7 +566,7 @@ public class WbSwingUtilities
     invoke(() ->
     {
       JComponent pane = createErrorMessagePanel(message, GuiSettings.PROP_PLAIN_EDITOR_WRAP, true);
-      JOptionPane errorPane = new WbOptionPane(pane, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION);
+      JOptionPane errorPane = new WbOptionPane(pane, messageType, JOptionPane.DEFAULT_OPTION);
       JDialog dialog = errorPane.createDialog(getWindowAncestor(realCaller), title);
       dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
       dialog.setResizable(true);
@@ -1310,6 +1315,7 @@ public class WbSwingUtilities
    */
   public static boolean isConnectionIdle(Component parent, WbConnection dbConnection)
   {
+    if (dbConnection == null) return false;
     if (dbConnection.isBusy())
     {
       showMessageKey(SwingUtilities.getWindowAncestor(parent), "ErrConnectionBusy");

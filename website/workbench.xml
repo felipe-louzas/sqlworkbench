@@ -456,8 +456,8 @@ WHERE id=42;</p>
 
         <p style="font-weight:bold">Please note:</p>
         <p style="margin-left:15px;margin-right:25px">
-           If you have copied the jar files for the Excel and OpenOffice support before, please delete all existing files from the <tt>ext</tt>
-           subdirectory before extracting the new archive as some of the library names have changed.
+           Please delete all existing files from the <tt>ext</tt> sub-directory before
+           extracting the new archive, to make sure that only correct and up-to-date libraries are used.
         </p>
 
         <p style="margin-top:25px">
@@ -482,6 +482,11 @@ WHERE id=42;</p>
         <br/>
         Bugfixes will show up in these builds first.
         <br/>
+      </p>
+      <p style="font-weight:bold">Please note:</p>
+      <p style="margin-left:15px;margin-right:25px">
+         Please delete all existing files from the <tt>ext</tt> sub-directory before
+         extracting the new archive, to make sure that only correct and up-to-date libraries are used.
       </p>
       <dev-build/>
     </content>

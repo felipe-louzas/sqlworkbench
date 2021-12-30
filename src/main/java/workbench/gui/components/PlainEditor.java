@@ -273,7 +273,7 @@ public class PlainEditor
   {
     this.editor.read(in, null);
   }
-  
+
   @Override
   public void setText(String aText)
   {
@@ -321,6 +321,7 @@ public class PlainEditor
     return null;
   }
 
+  @Override
   public int getLineCount()
   {
     return editor.getLineCount();

@@ -72,6 +72,7 @@ import workbench.sql.VariablePool;
 import workbench.sql.macros.MacroManager;
 import workbench.sql.wbcommands.InvalidConnectionDescriptor;
 
+import workbench.util.ClasspathCheck;
 import workbench.util.CollectionUtil;
 import workbench.util.DeadlockMonitor;
 import workbench.util.FileUtil;
@@ -660,6 +661,12 @@ public final class WbManager
     final MainWindow main = new MainWindow(screenToUse);
     mainWindows.add(main);
     main.display(screenToUse);
+
+    ClasspathCheck check = new ClasspathCheck();
+    check.checAll();
+
+    StartupMessages.getInstance().showMessages();
+
     boolean connected = false;
 
     if (checkCmdLine)
@@ -710,7 +717,7 @@ public final class WbManager
       // has enough time to initialize
       EventQueue.invokeLater(() ->
       {
-        main.selectConnection(exitOnCancel, GuiSettings.checkExtDir());
+        main.selectConnection(exitOnCancel);
       });
     }
   }

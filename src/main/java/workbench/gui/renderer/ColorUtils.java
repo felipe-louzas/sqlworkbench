@@ -58,6 +58,28 @@ public class ColorUtils
     return new Color(blended);
   }
 
+  /**
+   * Replacement for Color.darker() with a custom factor.
+   *
+   * The built-in <tt>Color.darker()</tt> uses a hard-coded
+   * factor of 0.7 to make a color darker.
+   *
+   * This method allows to specify this factor.
+   * Higher factors mean a lighter color, lower factors a darker color.
+   *
+   * @param color   the color
+   * @parm factor   the factor to apply
+   */
+  public static Color darker(Color color, double factor)
+  {
+    if (color == null) return color;
+    return new Color(Math.max((int)(color.getRed()  *factor), 0),
+                     Math.max((int)(color.getGreen()*factor), 0),
+                     Math.max((int)(color.getBlue() *factor), 0),
+                     color.getAlpha());
+
+  }
+  
   public static double distance(Color c1, Color c2)
   {
     double a = (c2.getRed() / 255.0) - (c1.getRed() / 255.0);

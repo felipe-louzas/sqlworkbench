@@ -28,6 +28,8 @@ import java.awt.Insets;
 
 import javax.swing.border.AbstractBorder;
 
+import workbench.gui.renderer.ColorUtils;
+
 /**
  *
  * @author Thomas Kellerer
@@ -73,7 +75,7 @@ public class DividerBorder
 
     Color bg = c.getBackground();
     Color light = bg.brighter();
-    Color shade = bg.darker();
+    Color shade = ColorUtils.darker(bg, 0.85);
 
     if ((this.borderType & TOP) == TOP)
     {
