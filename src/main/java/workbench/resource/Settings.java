@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2021, Thomas Kellerer
+ * Copyright 2002-2022, Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -98,7 +98,7 @@ import workbench.util.WbProperties;
  *
  * Configuration properties are read from the file workbench.settings
  *
- * Defaults are applied by first read default.properties and then reading the user configuration
+ * Defaults are applied by first reading default.properties and then reading the user configuration
  * stored in workbench.settings
  *
  * @author Thomas Kellerer
