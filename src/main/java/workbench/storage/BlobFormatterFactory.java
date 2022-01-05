@@ -23,8 +23,12 @@
  */
 package workbench.storage;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+
 import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
+
 import workbench.util.StringUtil;
 
 /**
@@ -55,9 +59,21 @@ public class BlobFormatterFactory
 
   public static BlobLiteralFormatter createInstance(DbMetadata meta)
   {
+    if (meta == null)
+    {
+      LogMgr.logError(new CallerInfo(){}, "No DbMetadata available", new Exception("Backtrace"));
+      return createAnsiFormatter();
+    }
+
+    DbSettings s = meta.getDbSettings();
+    if (s == null)
+    {
+      LogMgr.logError(new CallerInfo(){}, "No DbSettings available", new Exception("Backtrace"));
+      return createAnsiFormatter();
+    }
+
     // Check for a user-defined formatter definition
     // for the current DBMS
-    DbSettings s = meta.getDbSettings();
     String prefix = s.getBlobLiteralPrefix();
     String suffix = s.getBlobLiteralSuffix();
 
