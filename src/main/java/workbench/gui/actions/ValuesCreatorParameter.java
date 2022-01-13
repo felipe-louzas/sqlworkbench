@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -63,7 +64,7 @@ public class ValuesCreatorParameter
     this.input = text;
     this.previewArea.setFont(Settings.getInstance().getEditorFont());
     this.previewArea.setText(input);
-    Color bg = Settings.getInstance().getEditorBackgroundColor();
+    Color bg = GuiSettings.getEditorBackground();
     if (bg == null)
     {
       bg = this.previewArea.getBackground();
@@ -72,7 +73,7 @@ public class ValuesCreatorParameter
     // Setting the background must be done after turning off the editable flag,
     // otherwise the edit area will be shown "disabled" with a gray background
     this.previewArea.setBackground(bg);
-    this.previewArea.setForeground(Settings.getInstance().getEditorTextColor());
+    this.previewArea.setForeground(GuiSettings.getEditorForeground());
     this.previewArea.setTabSize(Settings.getInstance().getEditorTabWidth());
     this.delimiter.getDocument().addDocumentListener(this);
     this.nullString.getDocument().addDocumentListener(this);

@@ -1808,8 +1808,8 @@ public class ConnectionEditorPanel
     Color color = infoColor.getSelectedColor();
     if (color == null)
     {
-      this.groupNameLabel.setBackground(Color.WHITE);
-      this.groupNameLabel.setForeground(Color.BLACK);
+      this.groupNameLabel.setBackground(GuiSettings.getEditorBackground());
+      this.groupNameLabel.setForeground(GuiSettings.getEditorForeground());
     }
     else
     {

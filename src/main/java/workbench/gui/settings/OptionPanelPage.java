@@ -22,7 +22,6 @@
 package workbench.gui.settings;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.util.Set;
 
@@ -38,6 +37,7 @@ import workbench.interfaces.Restoreable;
 import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.components.DividerBorder;
@@ -84,17 +84,17 @@ public class OptionPanelPage
       try
       {
         Class clz = Class.forName(this.pageClass);
-        JPanel optionPanel = (JPanel)clz.newInstance();
+        JPanel optionPanel = (JPanel)clz.getDeclaredConstructor().newInstance();
         this.options = (Restoreable)optionPanel;
         this.options.restoreSettings();
 
         JLabel title = new JLabel(this.label);
         title.setName("pagetitle");
         title.setOpaque(true);
-        title.setBackground(Color.WHITE);
+        title.setBackground(GuiSettings.getEditorBackground());
+        title.setForeground(GuiSettings.getEditorForeground());
         Font f = title.getFont();
         Font f2 = f.deriveFont(Font.BOLD, 12.0f);
-        //title.setBorder();
         title.setBorder(new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(4,6,4,6)));
         title.setFont(f2);
         panel = new JPanel(new BorderLayout());

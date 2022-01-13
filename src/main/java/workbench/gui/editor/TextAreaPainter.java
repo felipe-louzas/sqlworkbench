@@ -232,12 +232,9 @@ public class TextAreaPainter
 
   private void setColors()
   {
-    Color textColor = Settings.getInstance().getEditorTextColor();
-    if (textColor == null) textColor = getDefaultColor("TextArea.foreground", Color.BLACK);
+    Color textColor = GuiSettings.getEditorForeground();
     setForeground(textColor);
-
-    Color bg = Settings.getInstance().getEditorBackgroundColor();
-    if (bg == null) bg = getDefaultColor("TextArea.background", Color.WHITE);
+    Color bg = GuiSettings.getEditorBackground();
     setBackground(bg);
 
     Color defaultGutterBg;

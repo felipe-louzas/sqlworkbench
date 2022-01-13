@@ -46,6 +46,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
@@ -204,7 +205,8 @@ public class JEditTextArea
     enableEvents(AWTEvent.KEY_EVENT_MASK);
 
     painter = new TextAreaPainter(this);
-    setBackground(Color.WHITE);
+    setBackground(UIManager.getColor("TextArea.background"));
+    setForeground(UIManager.getColor("TextArea.foreground"));
     setDoubleBuffered(true);
 
     documentHandler = new DocumentHandler();

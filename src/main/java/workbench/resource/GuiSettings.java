@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 import workbench.interfaces.ResultReceiver;
 import workbench.log.CallerInfo;
@@ -1707,8 +1708,23 @@ public class GuiSettings
   {
     Settings.getInstance().setProperty("workbench.gui.macropopup.position", position.name());
   }
+
   public static boolean getUseOneTouchExpand()
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.mainwindow.split.onetouch", false);
+  }
+
+  public static Color getEditorBackground()
+  {
+    Color bg = Settings.getInstance().getEditorBackgroundColor();
+    if (bg == null) bg = UIManager.getColor("TextArea.background");
+    return bg;
+  }
+
+  public static Color getEditorForeground()
+  {
+    Color fg = Settings.getInstance().getEditorTextColor();
+    if (fg == null) fg = UIManager.getColor("TextArea.foreground");
+    return fg;
   }
 }

@@ -34,6 +34,7 @@ import workbench.console.TextPrinter;
 import workbench.interfaces.FontChangedListener;
 import workbench.interfaces.ResultLogger;
 import workbench.interfaces.TextContainer;
+import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
@@ -177,10 +178,10 @@ public class LogArea
 
   private void initColors()
   {
-    Color bg = Settings.getInstance().getEditorBackgroundColor();
+    Color bg = GuiSettings.getEditorBackground();
     if (bg != null) setBackground(bg);
 
-    Color fg = Settings.getInstance().getEditorTextColor();
+    Color fg = GuiSettings.getEditorForeground();
     if (fg != null) setForeground(fg);
   }
 
