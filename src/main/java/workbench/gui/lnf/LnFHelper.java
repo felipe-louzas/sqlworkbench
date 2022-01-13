@@ -27,6 +27,9 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -43,6 +46,7 @@ import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
+import workbench.util.WbFile;
 
 /**
  * Initialize some GUI elements during startup.
@@ -273,6 +277,8 @@ public class LnFHelper
   protected void initializeLookAndFeel()
   {
     String className = GuiSettings.getLookAndFeelClass();
+    File flatLafTheme = null;
+
     try
     {
       if (StringUtil.isEmptyString(className))
@@ -317,7 +323,11 @@ public class LnFHelper
         if (className.startsWith("com.formdev.flatlaf"))
         {
           isFlatLaf = true;
-          configureFlatLaf(loader);
+          flatLafTheme = getFlatLafTheme();
+          if (flatLafTheme == null)
+          {
+            configureFlatLaf(loader);
+          }
         }
         else if (className.contains("plaf.windows"))
         {
@@ -328,9 +338,19 @@ public class LnFHelper
           isJGoodies = true;
         }
 
-        LookAndFeel lnf = loader.getLookAndFeel();
+        LookAndFeel lnf = null;
+        if (flatLafTheme != null)
+        {
+          lnf = loadFlatLafTheme(loader, flatLafTheme);
+        }
+
+        if (lnf == null)
+        {
+          lnf = loader.getLookAndFeel();
+        }
 
         UIManager.setLookAndFeel(lnf);
+
         if (className.startsWith("com.alee.laf"))
         {
           isWebLaf = true;
@@ -343,6 +363,43 @@ public class LnFHelper
     {
       LogMgr.logError(new CallerInfo(){}, "Could not set look and feel to [" + className + "]. Look and feel will be ignored", e);
       setSystemLnF();
+    }
+  }
+
+  private File getFlatLafTheme()
+  {
+    ClasspathUtil cp = new ClasspathUtil();
+    WbFile dir = cp.getExtDir();
+    if (dir == null || !dir.exists()) return null;
+    FilenameFilter themeFilter = (File dir1, String name) -> name != null && name.toLowerCase().endsWith(".theme.json");
+
+    File[] themes = dir.listFiles(themeFilter);
+    if (themes != null && themes.length > 0)
+    {
+      if (themes.length > 1)
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Found multiple FlatLaf themes in: \"" + dir + "\". Using: " + themes[0].getName());
+      }
+      return themes[0];
+    }
+    return null;
+  }
+
+  private LookAndFeel loadFlatLafTheme(LnFLoader loader, File themeFile)
+  {
+    if (!themeFile.exists()) return null;
+    try (InputStream in = new FileInputStream(themeFile))
+    {
+      Class theme = loader.loadClass("com.formdev.flatlaf.IntelliJTheme", false);
+      Method createLaf = theme.getMethod("createLaf", InputStream.class);
+      LookAndFeel lnf = (LookAndFeel)createLaf.invoke(theme, in);
+      LogMgr.logInfo(new CallerInfo(){}, "Loaded FlatLaf theme from " + themeFile);
+      return lnf;
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not load FlatLaf theme " + themeFile.getAbsolutePath());
+      return null;
     }
   }
 
