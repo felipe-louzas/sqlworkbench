@@ -26,9 +26,11 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -36,6 +38,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRootPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
@@ -62,56 +65,74 @@ public class FeedbackWindow
   private JLabel connectLabel;
   private ActionListener cancelAction;
   private JButton cancelButton;
+  private JProgressBar progressBar;
 
   public FeedbackWindow(Frame owner, String msg)
   {
     super(owner, false);
-    initComponents(msg, null, null);
+    initComponents(msg, null, null, false);
   }
 
   public FeedbackWindow(Frame owner, String message, ActionListener action, String buttonTextKey)
   {
     this(owner, message, action, buttonTextKey, false);
   }
-  
+
   public FeedbackWindow(Frame owner, String message, ActionListener action, String buttonTextKey, boolean modal)
   {
     super(owner, modal);
-    initComponents(message, action, buttonTextKey);
+    initComponents(message, action, buttonTextKey, false);
   }
 
   public FeedbackWindow(Dialog owner, String message)
   {
     super(owner, true);
-    initComponents(message, null, null);
+    initComponents(message, null, null, false);
   }
 
   public FeedbackWindow(Dialog owner, String message, ActionListener action, String buttonTextKey)
   {
-    super(owner, true);
-    initComponents(message, action, buttonTextKey);
+    this(owner, message, action, buttonTextKey, false);
   }
 
-  private void initComponents(String msg, ActionListener action, String buttonTextKey)
+  public FeedbackWindow(Dialog owner, String message, ActionListener action, String buttonTextKey, boolean showProgress)
+  {
+    super(owner, true);
+    initComponents(message, action, buttonTextKey, showProgress);
+  }
+
+  private void initComponents(String msg, ActionListener action, String buttonTextKey, boolean showProgress)
   {
     cancelAction = action;
-    JPanel p = new JPanel();
+    JPanel p = new JPanel(new GridBagLayout());
     Color background = p.getBackground();
     Color borderColor;
     if (ColorUtils.isDark(background))
     {
-      borderColor = background.brighter();
+      borderColor = ColorUtils.brighter(background, 0.85);
     }
     else
     {
-      borderColor = background.darker();
+      borderColor = ColorUtils.darker(background, 0.85);
     }
 
     int hgap = (int)(IconMgr.getInstance().getToolbarIconSize() * 1.25);
     int vgap = (int)(IconMgr.getInstance().getToolbarIconSize());
     p.setBorder(new CompoundBorder(new LineBorder(borderColor, 1), new EmptyBorder(vgap, hgap, vgap, hgap)));
-    p.setLayout(new BorderLayout(0, 0));
 
+    boolean showCancel = cancelAction != null && buttonTextKey != null;
+
+    GridBagConstraints gc = new GridBagConstraints();
+    gc.gridx = 0;
+    gc.gridy = 0;
+    gc.fill = GridBagConstraints.HORIZONTAL;
+    gc.weightx = 1.0;
+    gc.anchor = GridBagConstraints.PAGE_START;
+    gc.insets = new Insets(vgap/4,0,vgap/2,0);
+    if (!showCancel && !showProgress)
+    {
+      gc.weighty = 1.0;
+    }
     connectLabel = new JLabel(msg);
     FontMetrics fm = connectLabel.getFontMetrics(connectLabel.getFont());
 
@@ -120,17 +141,30 @@ public class FeedbackWindow
     Dimension labelSize = new Dimension((int)(width * 1.5), (int)(height * 1.2));
     connectLabel.setMinimumSize(labelSize);
     connectLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    p.add(connectLabel, BorderLayout.CENTER);
+    p.add(connectLabel, gc);
 
-    if (cancelAction != null && buttonTextKey != null)
+    if (showProgress)
+    {
+      this.progressBar = new JProgressBar(JProgressBar.HORIZONTAL);
+      this.progressBar.setMinimumSize(labelSize);
+      gc.gridy ++;
+      gc.anchor = GridBagConstraints.PAGE_START;
+      gc.fill = GridBagConstraints.HORIZONTAL;
+      gc.weighty = 1.0;
+      p.add(progressBar, gc);
+    }
+
+    if (showCancel)
     {
       cancelButton = new JButton(ResourceMgr.getString(buttonTextKey));
       cancelButton.addActionListener(this);
-      JPanel p2 = new JPanel();
-      p2.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-      p2.setBorder(new EmptyBorder((int)(vgap * 1.25), hgap, vgap / 4, hgap));
-      p2.add(cancelButton);
-      p.add(p2, BorderLayout.SOUTH);
+      gc.gridy ++;
+      gc.weightx = 0;
+      gc.weighty = 1.0;
+      gc.fill = GridBagConstraints.NONE;
+      gc.anchor = GridBagConstraints.PAGE_START;
+      gc.insets = new Insets(vgap,0,vgap/2,0);
+      p.add(cancelButton, gc);
     }
 
     setUndecorated(true);
@@ -141,6 +175,10 @@ public class FeedbackWindow
     pack();
   }
 
+  public JProgressBar getProgressBar()
+  {
+    return this.progressBar;
+  }
   public void showAndStart(final Runnable task)
   {
     EventQueue.invokeLater(() ->

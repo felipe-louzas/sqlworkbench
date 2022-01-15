@@ -36,11 +36,14 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JProgressBar;
+
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
-import workbench.util.FileUtil;
+import workbench.gui.WbSwingUtilities;
+
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -54,7 +57,11 @@ public class MavenDownloader
   private static final String BASE_SEARCH_URL = "https://search.maven.org/solrsearch/select?";
   private String lastHttpMsg = null;
   private int lastHttpCode = -1;
+  private int contentLength = -1;
   private final List<MavenArtefact> knownArtefacts;
+  private HttpURLConnection connection;
+  private boolean cancelled = false;
+  private JProgressBar progressBar;
 
   public MavenDownloader()
   {
@@ -69,6 +76,16 @@ public class MavenDownloader
   public int getLastHttpCode()
   {
     return lastHttpCode;
+  }
+
+  public int getContentLength()
+  {
+    return contentLength;
+  }
+
+  public void setProgressBar(JProgressBar bar)
+  {
+    this.progressBar = bar;
   }
 
   public String searchForLatestVersion(String groupId, String artefactId)
@@ -97,6 +114,8 @@ public class MavenDownloader
         build();
 
       HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      lastHttpCode = response.statusCode();
+      lastHttpMsg = "";
       Object body = response.body();
       if (body != null)
       {
@@ -105,9 +124,48 @@ public class MavenDownloader
     }
     catch (Throwable th)
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not search Maven", th);
+      LogMgr.logError(new CallerInfo(){}, "Could not search Maven using URL=" + searchUrl, th);
+      lastHttpMsg = th.getMessage();
     }
     return null;
+  }
+
+  public void cancelDownload()
+  {
+    this.cancelled = true;
+    if (this.connection == null) return;
+    try
+    {
+      this.connection.disconnect();
+      LogMgr.logDebug(new CallerInfo(){}, "Download cancelled");
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logDebug(new CallerInfo(){}, "Error when closing connection");
+    }
+  }
+
+  private void initProgressBar()
+  {
+    if (progressBar == null) return;
+    if (contentLength > 0)
+    {
+      progressBar.setIndeterminate(false);
+      progressBar.setMaximum(contentLength);
+    }
+    else
+    {
+      progressBar.setIndeterminate(true);
+      progressBar.setValue(1);
+    }
+  }
+
+  public void updateProgressBar(int length)
+  {
+    if (progressBar == null) return;
+    if (contentLength < 0) return;
+    if (length < 0) return;
+    progressBar.setValue(length);
   }
 
   public long download(MavenArtefact artefact, File targetDir)
@@ -115,28 +173,57 @@ public class MavenDownloader
     if (artefact == null) return -1;
     if (!artefact.isComplete()) return -1;
 
+    this.cancelled = false;
     String downloadUrl = artefact.buildDownloadUrl();
     String fileName = artefact.buildFilename();
     WbFile target = new WbFile(targetDir, fileName);
+
     long bytes = -1;
-    HttpURLConnection connection = null;
     try
     {
+      WbSwingUtilities.invoke(this::initProgressBar);
+      long start = System.currentTimeMillis();
+
       connection = (HttpURLConnection)new URL(downloadUrl).openConnection();
       lastHttpCode = connection.getResponseCode();
       lastHttpMsg = connection.getResponseMessage();
-      LogMgr.logDebug(new CallerInfo(){}, "Opening URL \"" + downloadUrl + "\", result code: " + lastHttpCode + ", message: " + lastHttpMsg);
+      contentLength = connection.getContentLength();
+      WbSwingUtilities.invoke(this::initProgressBar);
 
-      long start = System.currentTimeMillis();
-      InputStream in = connection.getInputStream();
-      OutputStream out = new BufferedOutputStream(new FileOutputStream(target));
-      bytes = FileUtil.copy(in, out);
+      LogMgr.logDebug(new CallerInfo(){},
+        "URL: " + downloadUrl +
+        ", HTTP status: " + lastHttpCode +
+        ", message: " + lastHttpMsg +
+        ", contentLength: " + contentLength);
+
+      int filesize = 0;
+      try (InputStream in = connection.getInputStream();
+           OutputStream out = new BufferedOutputStream(new FileOutputStream(target));)
+      {
+        byte[] buffer = new byte[8192];
+        int bytesRead = in.read(buffer);
+        while (bytesRead != -1)
+        {
+          filesize += bytesRead;
+          out.write(buffer, 0, bytesRead);
+          bytesRead = in.read(buffer);
+          if (cancelled) break;
+          final int len = filesize;
+          WbSwingUtilities.invokeLater(() -> {updateProgressBar(len);});
+        }
+      }
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug(new CallerInfo(){}, "Downloading " + bytes + " from \"" + downloadUrl + "\" took: "+ duration + "ms");
+
+      if (!cancelled) bytes = filesize;
+      LogMgr.logInfo(new CallerInfo(){}, "Downloaded " + bytes + " bytes from \"" + downloadUrl + "\" in "+ duration + "ms");
     }
     catch (Throwable th)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error saving JAR file to " + target.getFullPath(), th);
+      if (!cancelled)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Error saving JAR file to " + target.getFullPath(), th);
+      }
+      bytes = -1;
     }
     finally
     {

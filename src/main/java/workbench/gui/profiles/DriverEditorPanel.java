@@ -62,6 +62,7 @@ import workbench.gui.components.WbStatusLabel;
 import workbench.util.ClassFinder;
 import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
+import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.download.MavenArtefact;
 import workbench.util.download.MavenDownloader;
@@ -270,7 +271,20 @@ public class DriverEditorPanel
   {
     final MavenArtefact artefact = mavenDownloader.searchByClassName(currentDriver.getDriverClass());
     String version = mavenDownloader.searchForLatestVersion(artefact.getGroupId(), artefact.getArtefactId());
-    WbSwingUtilities.showDefaultCursor(this);
+    WbSwingUtilities.showDefaultCursor(downloadWindow);
+
+    if (StringUtil.isBlank(version))
+    {
+      String error = mavenDownloader.getLastHttpMsg();
+      String msg = ResourceMgr.getString("MsgMavenNoDriver");
+      if (StringUtil.isNonBlank(error))
+      {
+        msg = "<html>" + msg + "<br>(" + error + ")</html>";
+      }
+      WbSwingUtilities.showErrorMessage(msg);
+      return;
+    }
+
     artefact.setVersion(version);
     if (downloadWindow != null)
     {
@@ -279,7 +293,7 @@ public class DriverEditorPanel
       downloadWindow = null;
     }
     JDialog dialog = (JDialog)SwingUtilities.getWindowAncestor(this);
-    String msg =ResourceMgr.getFormattedString("MsgDownloadDriver", artefact.buildFilename());
+    String msg = ResourceMgr.getFormattedString("MsgDownloadDriver", artefact.buildFilename());
     boolean ok = WbSwingUtilities.getYesNo(dialog, msg);
     if (ok)
     {
@@ -294,9 +308,13 @@ public class DriverEditorPanel
       {
         final File dir = fc.getSelectedFile();
         msg = ResourceMgr.getFormattedString("MsgDownloadingFile", artefact.buildFilename(), dir);
-        downloadWindow = new FeedbackWindow(dialog, msg);
+        ActionListener l = (ActionEvent e) ->
+        {
+          mavenDownloader.cancelDownload();
+        };
+        downloadWindow = new FeedbackWindow(dialog, msg, l, "LblCancelPlain", true);
+        mavenDownloader.setProgressBar(downloadWindow.getProgressBar());
         WbSwingUtilities.center(downloadWindow, dialog);
-        WbSwingUtilities.showWaitCursor(downloadWindow);
         downloadWindow.showAndStart(() ->
         {
           downloadFile(artefact, dir);
@@ -318,14 +336,14 @@ public class DriverEditorPanel
     if (bytes > 0)
     {
       WbSwingUtilities.showMessage(SwingUtilities.getWindowAncestor(this), "Suchessfully downloaded " + artefact.buildFilename());
+      WbFile file = new WbFile(downloadDir, artefact.buildFilename());
+      List<String> liblist = CollectionUtil.arrayList(file.getFullPath());
+      classpathEditor.setLibraries(liblist);
     }
     else
     {
       WbSwingUtilities.showMessage(SwingUtilities.getWindowAncestor(this), "Error: " + mavenDownloader.getLastHttpMsg());
     }
-    WbFile file = new WbFile(downloadDir, artefact.buildFilename());
-    List<String> liblist = CollectionUtil.arrayList(file.getFullPath());
-    classpathEditor.setLibraries(liblist);
   }
 
   /** This method is called from within the constructor to

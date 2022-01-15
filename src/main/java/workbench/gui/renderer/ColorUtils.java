@@ -79,7 +79,46 @@ public class ColorUtils
                      color.getAlpha());
 
   }
-  
+
+  /**
+   * Replacement for Color.brighter() with a custom factor.
+   *
+   * The built-in <tt>Color.darker()</tt> uses a hard-coded
+   * factor of 0.7 to make a color brighter.
+   *
+   * This method allows to specify this factor.
+   *
+   * @param color   the color
+   * @parm factor   the factor to apply
+   */
+  public static Color brighter(Color color, double factor)
+  {
+    if (color == null) return color;
+    int r = color.getRed();
+    int g = color.getGreen();
+    int b = color.getBlue();
+    int alpha = color.getAlpha();
+
+    /* From 2D group:
+     * 1. black.brighter() should return grey
+     * 2. applying brighter to blue will always return blue, brighter
+     * 3. non pure color (non zero rgb) will eventually return white
+     */
+    int i = (int)(1.0/(1.0-factor));
+    if ( r == 0 && g == 0 && b == 0) {
+        return new Color(i, i, i, alpha);
+    }
+    if ( r > 0 && r < i ) r = i;
+    if ( g > 0 && g < i ) g = i;
+    if ( b > 0 && b < i ) b = i;
+
+    return new Color(Math.min((int)(r/factor), 255),
+                     Math.min((int)(g/factor), 255),
+                     Math.min((int)(b/factor), 255),
+                     alpha);
+
+  }
+
   public static double distance(Color c1, Color c2)
   {
     double a = (c2.getRed() / 255.0) - (c1.getRed() / 255.0);
