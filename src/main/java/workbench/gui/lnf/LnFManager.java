@@ -39,6 +39,8 @@ import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
 
+import static workbench.gui.lnf.LnFDefinition.*;
+
 /**
  * Retrieve and store LnF definitions in the the Settings object.
  *
@@ -47,8 +49,6 @@ import workbench.util.StringUtil;
 public class LnFManager
 {
   private List<LnFDefinition> lnfList;
-  public static final String FLATLAF_LIGHT_CLASS = "com.formdev.flatlaf.FlatLightLaf";
-  public static final String FLATLAF_DARK_CLASS = "com.formdev.flatlaf.FlatDarkLaf";
 
   public LnFManager()
   {
@@ -67,6 +67,10 @@ public class LnFManager
   {
     LookAndFeel lnf = UIManager.getLookAndFeel();
     String lnfClass = lnf.getClass().getName();
+    if (lnfClass.startsWith(FLATLAF_THEMED_CLASS))
+    {
+      lnfClass = LnFDefinition.FLATLAF_THEMED_CLASS;
+    }
     return findLookAndFeel(lnfClass);
   }
 
@@ -97,6 +101,7 @@ public class LnFManager
         set.setProperty("workbench.lnf." + lnfCount + ".class", lnf.getClassName());
         set.setProperty("workbench.lnf." + lnfCount + ".name", lnf.getName());
         set.setProperty("workbench.lnf." + lnfCount + ".classpath", ClasspathUtil.EXT_DIR);
+        set.setProperty("workbench.lnf." + lnfCount + ".theme", lnf.getThemeFileName());
         lnfCount++;
       }
     }
@@ -139,6 +144,7 @@ public class LnFManager
 
     boolean lightConfigure = false;
     boolean darkConfigured = false;
+    boolean themedConfigure = false;
 
     int count = set.getIntProperty("workbench.lnf.count", 0);
     for (int i = 0; i < count; i++)
@@ -154,12 +160,18 @@ public class LnFManager
       {
         darkConfigured = true;
       }
+      if (!themedConfigure && clz.equals(FLATLAF_THEMED_CLASS))
+      {
+        themedConfigure = true;
+      }
       String name = set.getProperty("workbench.lnf." + i + ".name", clz);
       String libs = set.getProperty("workbench.lnf." + i + ".classpath", "");
+      String theme = set.getProperty("workbench.lnf." + i + ".theme", null);
 
       if (libs.equals(ClasspathUtil.EXT_DIR))
       {
         LnFDefinition lnf = LnFDefinition.newExtLaf(name, clz);
+        lnf.setThemeFileName(theme);
         LogMgr.logDebug(new CallerInfo(){}, "Found Look & Feel: " + lnf.debugString());
         lnfList.add(lnf);
       }
@@ -184,7 +196,7 @@ public class LnFManager
       }
     }
 
-    if ((!lightConfigure || !darkConfigured) && isFlatLafLibPresent())
+    if (isFlatLafLibPresent())
     {
       if (!lightConfigure)
       {
@@ -198,6 +210,13 @@ public class LnFManager
         LnFDefinition dark = LnFDefinition.newExtLaf("FlatLaf Dark", FLATLAF_DARK_CLASS);
         lnfList.add(dark);
         LogMgr.logDebug(new CallerInfo(){}, "Added " + dark.debugString());
+      }
+
+      if (!themedConfigure)
+      {
+        LnFDefinition themed = LnFDefinition.newExtLaf("FlatLaf Themed", FLATLAF_THEMED_CLASS);
+        lnfList.add(themed);
+        LogMgr.logDebug(new CallerInfo(){}, "Added " + themed.debugString());
       }
     }
 

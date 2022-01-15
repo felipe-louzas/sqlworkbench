@@ -28,7 +28,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -46,7 +45,6 @@ import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
-import workbench.util.WbFile;
 
 /**
  * Initialize some GUI elements during startup.
@@ -263,13 +261,9 @@ public class LnFHelper
 
   private String getDefaultLookAndFeel()
   {
-    if (PlatformHelper.isWindows())
-    {
-      return UIManager.getSystemLookAndFeelClassName();
-    }
     if (PlatformHelper.isLinux() && lnfManager.isFlatLafLibPresent())
     {
-      return LnFManager.FLATLAF_LIGHT_CLASS;
+      return LnFDefinition.FLATLAF_LIGHT_CLASS;
     }
     return UIManager.getSystemLookAndFeelClassName();
   }
@@ -277,7 +271,6 @@ public class LnFHelper
   protected void initializeLookAndFeel()
   {
     String className = GuiSettings.getLookAndFeelClass();
-    File flatLafTheme = null;
 
     try
     {
@@ -323,11 +316,7 @@ public class LnFHelper
         if (className.startsWith("com.formdev.flatlaf"))
         {
           isFlatLaf = true;
-          flatLafTheme = getFlatLafTheme();
-          if (flatLafTheme == null)
-          {
-            configureFlatLaf(loader);
-          }
+          configureFlatLaf(loader);
         }
         else if (className.contains("plaf.windows"))
         {
@@ -339,9 +328,9 @@ public class LnFHelper
         }
 
         LookAndFeel lnf = null;
-        if (flatLafTheme != null)
+        if (def.getThemeFile() != null)
         {
-          lnf = loadFlatLafTheme(loader, flatLafTheme);
+          lnf = loadFlatLafTheme(loader, def.getThemeFile());
         }
 
         if (lnf == null)
@@ -366,25 +355,6 @@ public class LnFHelper
     }
   }
 
-  private File getFlatLafTheme()
-  {
-    ClasspathUtil cp = new ClasspathUtil();
-    WbFile dir = cp.getExtDir();
-    if (dir == null || !dir.exists()) return null;
-    FilenameFilter themeFilter = (File dir1, String name) -> name != null && name.toLowerCase().endsWith(".theme.json");
-
-    File[] themes = dir.listFiles(themeFilter);
-    if (themes != null && themes.length > 0)
-    {
-      if (themes.length > 1)
-      {
-        LogMgr.logWarning(new CallerInfo(){}, "Found multiple FlatLaf themes in: \"" + dir + "\". Using: " + themes[0].getName());
-      }
-      return themes[0];
-    }
-    return null;
-  }
-
   private LookAndFeel loadFlatLafTheme(LnFLoader loader, File themeFile)
   {
     if (!themeFile.exists()) return null;
@@ -399,6 +369,19 @@ public class LnFHelper
     catch (Throwable th)
     {
       LogMgr.logWarning(new CallerInfo(){}, "Could not load FlatLaf theme " + themeFile.getAbsolutePath());
+      return loadDefaultFlatLaf(loader);
+    }
+  }
+
+  private LookAndFeel loadDefaultFlatLaf(LnFLoader loader)
+  {
+    try
+    {
+      return loader.getLookAndFeel(LnFDefinition.FLATLAF_LIGHT_CLASS);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not load " + LnFDefinition.FLATLAF_LIGHT_CLASS);
       return null;
     }
   }
@@ -447,6 +430,8 @@ public class LnFHelper
     try
     {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      isWindowsLnF = PlatformHelper.isWindows();
+      isFlatLaf = false;
     }
     catch (Exception ex)
     {

@@ -34,6 +34,8 @@ import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -63,7 +65,7 @@ import workbench.util.WbThread;
  */
 public class DbObjectsTree
   extends JTree
-  implements TreeExpansionListener, Serializable
+  implements TreeExpansionListener, Serializable, TreeSelectionListener
 {
   private TreeLoader loader;
   private ObjectTreeDragSource dragSource;
@@ -79,6 +81,7 @@ public class DbObjectsTree
     setBorder(WbSwingUtilities.EMPTY_BORDER);
     setShowsRootHandles(true);
     addTreeExpansionListener(this);
+    addTreeSelectionListener(this);
     renderer = new DbObjectNodeRenderer();
     setCellRenderer(renderer);
     setAutoscrolls(true);
@@ -601,7 +604,38 @@ public class DbObjectsTree
     load.start();
   }
 
-  private void doLoad(final ObjectTreeNode node, boolean loadNextLevel)
+  @Override
+  public void valueChanged(TreeSelectionEvent tse)
+  {
+    showSummaryStatus();
+  }
+
+  protected ObjectTreeNode getSelectedNode()
+  {
+    TreePath p = getSelectionPath();
+    if (p == null) return null;
+
+    ObjectTreeNode node = (ObjectTreeNode)p.getLastPathComponent();
+    return node;
+  }
+
+  public void showSummaryStatus()
+  {
+    int count = getSelectionCount();
+    String msg = "";
+    if (count == 1)
+    {
+      ObjectTreeNode node = getSelectedNode();
+      String type = node.getType();
+      if (TreeLoader.TYPE_DBO_TYPE_NODE.equals(type) && node.isLoaded())
+      {
+        msg = ResourceMgr.getFormattedString("TxtTableListObjects", node.getChildCount());
+      }
+    }
+    statusBar.setStatusMessage(msg);
+  }
+
+  private void doLoad(ObjectTreeNode node, boolean loadNextLevel)
   {
     try
     {
@@ -632,6 +666,7 @@ public class DbObjectsTree
       WbSwingUtilities.showDefaultCursor(this);
       statusBar.clearStatusMessage();
     }
+    EventQueue.invokeLater(this::showSummaryStatus);
   }
 
   @Override

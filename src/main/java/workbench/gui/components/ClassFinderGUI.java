@@ -117,19 +117,19 @@ public class ClassFinderGUI
     return selectEntry(entries, className.getText(), selectWindowKey, SwingUtilities.getWindowAncestor(className));
   }
 
-  protected void checkFinished(final List<String> drivers)
+  protected void checkFinished(final List<String> classes)
   {
-    if (drivers == null) return;
+    if (classes == null) return;
     EventQueue.invokeLater(() ->
     {
       statusBar.setText("");
-      if (drivers.size() == 1)
+      if (classes.size() == 1)
       {
-        className.setText(drivers.get(0));
+        className.setText(classes.get(0));
       }
-      else if (drivers.size() > 0)
+      else if (classes.size() > 0)
       {
-        String cls = selectEntry(drivers);
+        String cls = selectEntry(classes);
         if (cls != null)
         {
           className.setText(cls);

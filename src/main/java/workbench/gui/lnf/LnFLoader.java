@@ -150,6 +150,20 @@ public class LnFLoader
     return lnfClass;
   }
 
+  public LookAndFeel getLookAndFeel(String className)
+    throws ClassNotFoundException
+  {
+    try
+    {
+      Class lnf = loadClass(className, false);
+      return (LookAndFeel)lnf.getDeclaredConstructor().newInstance();
+    }
+    catch (Exception e)
+    {
+      throw new ClassNotFoundException("Could not load class " + this.lnfDef.getClassName(),e);
+    }
+  }
+  
   public LookAndFeel getLookAndFeel()
     throws ClassNotFoundException
   {

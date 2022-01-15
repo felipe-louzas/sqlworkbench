@@ -47,6 +47,8 @@ import javax.swing.JTextField;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -58,6 +60,7 @@ import workbench.gui.components.FlatButton;
 import workbench.gui.components.StringPropertyEditor;
 import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.components.WbButton;
+import workbench.gui.components.WbFilePicker;
 import workbench.gui.components.WbStatusLabel;
 import workbench.gui.lnf.LnFDefinition;
 import workbench.gui.lnf.LnFLoader;
@@ -70,7 +73,7 @@ import workbench.util.ClassFinder;
  */
 public class LnFDefinitionPanel
   extends JPanel
-  implements ActionListener, PropertyChangeListener
+  implements ActionListener, PropertyChangeListener, DocumentListener
 {
   private LnFDefinition currentLnF;
   private PropertyChangeListener changeListener;
@@ -82,6 +85,10 @@ public class LnFDefinitionPanel
     initComponents();
     lblLibrary.setToolTipText(ResourceMgr.getDescription("LblLnFLib"));
     classpathEditor.setLastDirProperty("workbench.lnf.lastdir");
+    themeFileSelector.setLastDirProperty("workbench.lnf.themes.lastdir");
+    themeFileSelector.setPropertyName("themeFileName");
+    tfClassName.getDocument().addDocumentListener(this);
+    tfName.addPropertyChangeListener(this);
     tfName.addFocusListener(new FocusAdapter()
     {
       @Override
@@ -131,7 +138,8 @@ public class LnFDefinitionPanel
     this.tfClassName.setEnabled(flag);
     this.classpathEditor.setFileSelectionEnabled(flag);
     this.tfName.setEnabled(flag);
-    selectClass.setEnabled(flag);
+    this.themeFileSelector.setEnabled(flag);
+    this.selectClass.setEnabled(flag);
   }
 
   private boolean testLnF(LnFDefinition lnf)
@@ -157,10 +165,51 @@ public class LnFDefinitionPanel
   }
 
   @Override
+  public void insertUpdate(DocumentEvent e)
+  {
+    setThemeSelectionVisible(currentLnF.getSupportsThemes());
+  }
+
+  @Override
+  public void removeUpdate(DocumentEvent e)
+  {
+    setThemeSelectionVisible(currentLnF.getSupportsThemes());
+  }
+
+  @Override
+  public void changedUpdate(DocumentEvent e)
+  {
+    setThemeSelectionVisible(currentLnF.getSupportsThemes());
+  }
+
+  @Override
   public void propertyChange(PropertyChangeEvent evt)
   {
     if (ignoreChange) return;
-    selectClass();
+    if (evt.getSource() == this.themeFileSelector && currentLnF != null)
+    {
+      currentLnF.setThemeFileName(themeFileSelector.getFilename());
+    }
+    else
+    {
+      selectClass();
+    }
+  }
+
+  private void setThemeSelectionVisible(boolean flag)
+  {
+    if (themeLabel.isVisible() == flag) return;
+
+    this.themeLabel.setVisible(flag);
+    this.themeFileSelector.setVisible(flag);
+    if (flag)
+    {
+      themeFileSelector.addPropertyChangeListener(this);
+    }
+    else
+    {
+      themeFileSelector.removePropertyChangeListener(this);
+    }
   }
 
   /** This method is called from within the constructor to
@@ -185,6 +234,8 @@ public class LnFDefinitionPanel
     statusLabel = new WbStatusLabel();
     selectClass = new FlatButton();
     classpathEditor = new ClasspathEditor();
+    themeLabel = new JLabel();
+    themeFileSelector = new WbFilePicker();
 
     setLayout(new GridBagLayout());
 
@@ -229,7 +280,7 @@ public class LnFDefinitionPanel
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(5, 3, 0, 3);
+    gridBagConstraints.insets = new Insets(5, 3, 0, 2);
     add(tfClassName, gridBagConstraints);
 
     lblLibrary.setLabelFor(lblLibrary);
@@ -250,7 +301,7 @@ public class LnFDefinitionPanel
     infoText.setOpaque(false);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
@@ -258,7 +309,7 @@ public class LnFDefinitionPanel
     add(infoText, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new Insets(10, 0, 0, 0);
@@ -272,7 +323,7 @@ public class LnFDefinitionPanel
     changeLnfButton.addActionListener(this);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(10, 8, 0, 0);
@@ -283,7 +334,7 @@ public class LnFDefinitionPanel
     currentLabel.setOpaque(true);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 8;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTH;
@@ -292,7 +343,7 @@ public class LnFDefinitionPanel
     add(currentLabel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
@@ -317,6 +368,22 @@ public class LnFDefinitionPanel
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new Insets(6, 3, 0, 3);
     add(classpathEditor, gridBagConstraints);
+
+    themeLabel.setText("Theme");
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(5, 10, 0, 7);
+    add(themeLabel, gridBagConstraints);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(5, 3, 0, 3);
+    add(themeFileSelector, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -335,6 +402,8 @@ public class LnFDefinitionPanel
 
   private void changeLnfButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_changeLnfButtonActionPerformed
   {//GEN-HEADEREND:event_changeLnfButtonActionPerformed
+    if (!checkThemeFile()) return;
+
     LnFDefinition lnf = getDefinition();
     if (testLnF(lnf))
     {
@@ -359,6 +428,18 @@ public class LnFDefinitionPanel
     if (lnf != null) currentLabel.setText(lnf.getName());
   }
 
+  private boolean checkThemeFile()
+  {
+    if (!this.currentLnF.getSupportsThemes()) return true;
+    currentLnF.setThemeFileName(themeFileSelector.getFilename());
+    if (currentLnF.getThemeFile() == null)
+    {
+      WbSwingUtilities.showErrorMessage(this, "A theme is required");
+      return false;
+    }
+    return true;
+  }
+
   public void setDefinition(LnFDefinition lnf)
   {
     try
@@ -374,9 +455,12 @@ public class LnFDefinitionPanel
         {
           selectClass.setEnabled(true);
         }
+        setThemeSelectionVisible(currentLnF.getSupportsThemes());
+        themeFileSelector.setFilename(currentLnF.getThemeFileName());
       }
       else
       {
+        setThemeSelectionVisible(false);
         this.classpathEditor.setLibraries(null);
         this.setEnabled(false);
         this.selectClass.setEnabled(false);
@@ -406,6 +490,8 @@ public class LnFDefinitionPanel
   public JLabel statusLabel;
   public JTextField tfClassName;
   public JTextField tfName;
+  public WbFilePicker themeFileSelector;
+  public JLabel themeLabel;
   // End of variables declaration//GEN-END:variables
 
   private static class HtmlLabel

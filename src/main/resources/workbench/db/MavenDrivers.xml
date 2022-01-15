@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="11.0.7" class="java.beans.XMLDecoder">
+  <object class="java.util.ArrayList">
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.postgresql</string>
+        </void>
+        <void property="artefactId">
+          <string>postgresql</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.postgresql.Driver</string>
+        </void>
+        <void property="productName">
+          <string>PostgreSQL</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.oracle.ojdbc</string>
+        </void>
+        <void property="artefactId">
+          <string>ojdbc10</string>
+        </void>
+        <void property="driverClassName">
+          <string>oracle.jdbc.OracleDriver</string>
+        </void>
+        <void property="productName">
+          <string>Oracle</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.microsoft.sqlserver</string>
+        </void>
+        <void property="artefactId">
+          <string>mssql-jdbc</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.microsoft.sqlserver.jdbc.SQLServerDriver</string>
+        </void>
+        <void property="productName">
+          <string>Microsoft SQL Server</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.firebirdsql.jdbc</string>
+        </void>
+        <void property="artefactId">
+          <string>jaybird-jdk18</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.firebirdsql.jdbc.FBDriver</string>
+        </void>
+        <void property="productName">
+          <string>Firebird</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.h2database</string>
+        </void>
+        <void property="artefactId">
+          <string>h2</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.h2.Driver</string>
+        </void>
+        <void property="productName">
+          <string>H2 Database</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.hsqldb</string>
+        </void>
+        <void property="artefactId">
+          <string>hsqldb</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.hsqldb.jdbc.JDBCDriver</string>
+        </void>
+        <void property="productName">
+          <string>HSQLDB</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.ibm.db2.jcc</string>
+        </void>
+        <void property="artefactId">
+          <string>db2jcc</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.ibm.db2.jcc.DB2Driver</string>
+        </void>
+        <void property="productName">
+          <string>IBM DB2 (LUW)</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.teradata.jdbc</string>
+        </void>
+        <void property="artefactId">
+          <string>teradatajdbc4</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.teradata.jdbc.TeraDriver</string>
+        </void>
+        <void property="productName">
+          <string>Teradata</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.vertica.jdbc</string>
+        </void>
+        <void property="artefactId">
+          <string>vertica-jdbc</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.vertica.Driver</string>
+        </void>
+        <void property="productName">
+          <string>MySQL</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>mysql</string>
+        </void>
+        <void property="artefactId">
+          <string>mysql-connector-java</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.mysql.cj.jdbc.Driver</string>
+        </void>
+        <void property="productName">
+          <string>MySQL</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.mariadb.jdbc</string>
+        </void>
+        <void property="artefactId">
+          <string>mariadb-java-client</string>
+        </void>
+        <void property="productName">
+          <string>MariaDB</string>
+        </void>
+      </object>
+    </void>
+
+  </object>
+</java>

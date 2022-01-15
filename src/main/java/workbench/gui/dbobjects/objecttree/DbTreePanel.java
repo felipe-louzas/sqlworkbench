@@ -84,7 +84,6 @@ import workbench.gui.components.CloseIcon;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.MultiSelectComboBox;
 import workbench.gui.components.WbLabelField;
-import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbStatusLabel;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.components.WbToolbarButton;
@@ -603,11 +602,7 @@ public class DbTreePanel
 
   protected ObjectTreeNode getSelectedNode()
   {
-    TreePath p = tree.getSelectionPath();
-    if (p == null) return null;
-
-    ObjectTreeNode node = (ObjectTreeNode)p.getLastPathComponent();
-    return node;
+    return tree.getSelectedNode();
   }
 
   public WbSelectionModel getSelectionModel()
@@ -1085,16 +1080,6 @@ public class DbTreePanel
       expandedNodes.clear();
       expandedNodes = null;
     }
-  }
-
-  private int getDividerLocation()
-  {
-    WbSplitPane split = (WbSplitPane)getParent();
-    if (split == null)
-    {
-      return -1;
-    }
-    return split.getDividerLocation();
   }
 
 }

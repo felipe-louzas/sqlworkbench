@@ -32,8 +32,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -50,12 +53,18 @@ import workbench.db.DbDriver;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ClassFinderGUI;
+import workbench.gui.components.FeedbackWindow;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.TextComponentMouseListener;
+import workbench.gui.components.WbFileChooser;
 import workbench.gui.components.WbStatusLabel;
 
 import workbench.util.ClassFinder;
+import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
+import workbench.util.WbFile;
+import workbench.util.download.MavenArtefact;
+import workbench.util.download.MavenDownloader;
 
 /**
  *
@@ -65,10 +74,13 @@ public class DriverEditorPanel
   extends JPanel
   implements DocumentListener, ActionListener
 {
+  private static final String LAST_DIR_PROP = "workbench.driver.download.last.dir";
   private DbDriver currentDriver;
   private Validator validator;
   private GridBagConstraints defaultErrorConstraints;
   private JLabel errorLabel;
+  private final MavenDownloader mavenDownloader = new MavenDownloader();
+  private FeedbackWindow downloadWindow;
 
   public DriverEditorPanel()
   {
@@ -184,7 +196,7 @@ public class DriverEditorPanel
     classpathEditor.setFileSelectionEnabled(!getCurrentName().equals("sun.jdbc.odbc.JdbcOdbcDriver"));
     this.tfSampleUrl.setText(driver.getSampleUrl());
     this.detectDriverButton.setEnabled(classpathEditor.hasLibraries());
-
+    checkDownload();
   }
 
   public void updateDriver()
@@ -193,6 +205,7 @@ public class DriverEditorPanel
     this.currentDriver.setDriverClass(tfClassName.getText().trim());
     this.currentDriver.setLibraryList(classpathEditor.getLibraries());
     this.currentDriver.setSampleUrl(tfSampleUrl.getText());
+    checkDownload();
   }
 
   public DbDriver getDriver()
@@ -208,6 +221,111 @@ public class DriverEditorPanel
     this.tfClassName.setText("");
     this.classpathEditor.reset();
     this.tfSampleUrl.setText("");
+    checkDownload();
+  }
+
+  private void setDownloadEnabled(boolean flag)
+  {
+    //this.downloadButton.setVisible(flag);
+    this.downloadButton.setEnabled(flag);
+  }
+
+  private void checkDownload()
+  {
+    if (this.currentDriver == null)
+    {
+      setDownloadEnabled(false);
+      return;
+    }
+
+    MavenArtefact artefact = mavenDownloader.searchByClassName(currentDriver.getDriverClass());
+    setDownloadEnabled(artefact != null);
+  }
+
+  private void downloadDriver()
+  {
+    JDialog dialog = (JDialog)SwingUtilities.getWindowAncestor(this);
+    downloadWindow = new FeedbackWindow(dialog, ResourceMgr.getString("MsgSearchMaven"));
+
+    WbSwingUtilities.center(downloadWindow, dialog);
+    WbSwingUtilities.showWaitCursor(downloadWindow);
+    downloadWindow.showAndStart(this::searchArtefact);
+  }
+
+  private File getDefaultDownloadDir()
+  {
+    String libDir = Settings.getInstance().getProperty(Settings.PROP_LIBDIR, null);
+    String dir = Settings.getInstance().getProperty(LAST_DIR_PROP, libDir);
+    if (dir != null)
+    {
+      File d = new File(dir);
+      if (d.exists()) return d;
+    }
+
+    ClasspathUtil cp = new ClasspathUtil();
+    return cp.getExtDir();
+  }
+
+  private void searchArtefact()
+  {
+    final MavenArtefact artefact = mavenDownloader.searchByClassName(currentDriver.getDriverClass());
+    String version = mavenDownloader.searchForLatestVersion(artefact.getGroupId(), artefact.getArtefactId());
+    WbSwingUtilities.showDefaultCursor(this);
+    artefact.setVersion(version);
+    if (downloadWindow != null)
+    {
+      downloadWindow.setVisible(false);
+      downloadWindow.dispose();
+      downloadWindow = null;
+    }
+    JDialog dialog = (JDialog)SwingUtilities.getWindowAncestor(this);
+    String msg =ResourceMgr.getFormattedString("MsgDownloadDriver", artefact.buildFilename());
+    boolean ok = WbSwingUtilities.getYesNo(dialog, msg);
+    if (ok)
+    {
+      WbFileChooser fc = new WbFileChooser();
+      fc.setCurrentDirectory(getDefaultDownloadDir());
+      fc.setDialogTitle("Select download directory");
+      fc.setDialogType(JFileChooser.SAVE_DIALOG);
+      fc.setMultiSelectionEnabled(false);
+      fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      int choice = fc.showOpenDialog(dialog);
+      if (choice == JFileChooser.APPROVE_OPTION)
+      {
+        final File dir = fc.getSelectedFile();
+        msg = ResourceMgr.getFormattedString("MsgDownloadingFile", artefact.buildFilename(), dir);
+        downloadWindow = new FeedbackWindow(dialog, msg);
+        WbSwingUtilities.center(downloadWindow, dialog);
+        WbSwingUtilities.showWaitCursor(downloadWindow);
+        downloadWindow.showAndStart(() ->
+        {
+          downloadFile(artefact, dir);
+        });
+      }
+    }
+  }
+
+  private void downloadFile(MavenArtefact artefact, File downloadDir)
+  {
+    long bytes = mavenDownloader.download(artefact, downloadDir);
+    WbSwingUtilities.showDefaultCursor(this);
+    if (downloadWindow != null)
+    {
+      downloadWindow.setVisible(false);
+      downloadWindow.dispose();
+      downloadWindow = null;
+    }
+    if (bytes > 0)
+    {
+      WbSwingUtilities.showMessage(SwingUtilities.getWindowAncestor(this), "Suchessfully downloaded " + artefact.buildFilename());
+    }
+    else
+    {
+      WbSwingUtilities.showMessage(SwingUtilities.getWindowAncestor(this), "Error: " + mavenDownloader.getLastHttpMsg());
+    }
+    WbFile file = new WbFile(downloadDir, artefact.buildFilename());
+    List<String> liblist = CollectionUtil.arrayList(file.getFullPath());
+    classpathEditor.setLibraries(liblist);
   }
 
   /** This method is called from within the constructor to
@@ -230,6 +348,7 @@ public class DriverEditorPanel
     statusLabel = new WbStatusLabel();
     detectDriverButton = new FlatButton();
     classpathEditor = new workbench.gui.components.ClasspathEditor();
+    downloadButton = new javax.swing.JButton();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -317,7 +436,7 @@ public class DriverEditorPanel
     add(tfSampleUrl, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -348,6 +467,22 @@ public class DriverEditorPanel
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(7, 3, 0, 3);
     add(classpathEditor, gridBagConstraints);
+
+    downloadButton.setText("Download Driver");
+    downloadButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        downloadButtonActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(12, 10, 0, 0);
+    add(downloadButton, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void focusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_focusLost
@@ -363,9 +498,15 @@ public class DriverEditorPanel
     selectClass();
   }//GEN-LAST:event_detectDriverButtonActionPerformed
 
+  private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_downloadButtonActionPerformed
+  {//GEN-HEADEREND:event_downloadButtonActionPerformed
+    downloadDriver();
+  }//GEN-LAST:event_downloadButtonActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private workbench.gui.components.ClasspathEditor classpathEditor;
   private javax.swing.JButton detectDriverButton;
+  private javax.swing.JButton downloadButton;
   private javax.swing.JLabel lblClassName;
   private javax.swing.JLabel lblLibrary;
   private javax.swing.JLabel lblName;

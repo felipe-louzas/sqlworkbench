@@ -35,7 +35,7 @@ public class LibraryElement
 {
   private final String fullPath;
   private String displayString;
-
+  private boolean fileExists = false;
   public LibraryElement(String filename)
   {
     this(new WbFile(filename));
@@ -63,6 +63,7 @@ public class LibraryElement
         // for JAR files that are part of the ext dir, we only show the "ext" directory name
         fullPath = cpUtil.getExtDir().getFullPath();
         displayString = extDirName;
+        fileExists = true;
       }
       else if (realFile == file)
       {
@@ -80,10 +81,12 @@ public class LibraryElement
 
         if (file.exists())
         {
+          fileExists = true;
           displayString = fullPath;
         }
         else
         {
+          fileExists = false;
           displayString = "<html><span style='color:red'><i>" + fullPath + "</i></span></html>";
         }
       }
@@ -92,14 +95,24 @@ public class LibraryElement
         // we can't use WbFile.getFullPath() or File.getAbsolutePath() due to the placeholder
         fullPath = file.getParent() + System.getProperty("file.separator") + file.getName();
         displayString = fullPath;
-        if (!realFile.exists())
+        if (realFile.exists())
         {
+          fileExists = true;
+        }
+        else
+        {
+          fileExists = false;
           displayString = "<html><span style='color:red'><i>" + displayString + "</i></span></html>";
         }
       }
     }
   }
 
+  public boolean fileExists()
+  {
+    return fileExists;
+  }
+  
   public String getRealPath()
   {
     if (fullPath.endsWith(ClasspathUtil.EXT_DIR))

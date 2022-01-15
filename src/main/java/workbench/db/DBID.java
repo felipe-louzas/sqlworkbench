@@ -81,6 +81,11 @@ public enum DBID
     return this.dbid.equalsIgnoreCase(conn.getDbId());
   }
 
+  public String getProductName()
+  {
+    return this.toString().replace('_', ' ');
+  }
+
   public static DBID fromConnection(WbConnection conn)
   {
     if (conn == null) return Unknown;
@@ -133,6 +138,5 @@ public enum DBID
     }
     return id;
   }
-
 
 }

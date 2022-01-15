@@ -42,11 +42,17 @@ import workbench.util.StringUtil;
 public class LnFDefinition
   implements Comparable<LnFDefinition>
 {
+  public static final String FLATLAF_LIGHT_CLASS = "com.formdev.flatlaf.FlatLightLaf";
+  public static final String FLATLAF_DARK_CLASS = "com.formdev.flatlaf.FlatDarkLaf";
+  public static final String FLATLAF_THEMED_CLASS = "com.formdev.flatlaf.IntelliJTheme";
+  
   private String name;
   private String className;
   private List<String> liblist;
   private LnFType type;
   public static final String LNF_PATH_SEPARATOR = "$|$";
+  private boolean supportsThemes = false;
+  private String themeFile;
 
   public LnFDefinition(String desc)
   {
@@ -83,6 +89,30 @@ public class LnFDefinition
     return true;
   }
 
+  public File getThemeFile()
+  {
+    if (!supportsThemes) return null;
+    if (StringUtil.isBlank(themeFile)) return null;
+    File f = new File(themeFile);
+    if (f.exists()) return f;
+    return null;
+  }
+
+  public String getThemeFileName()
+  {
+    return themeFile;
+  }
+
+  public void setThemeFileName(String themeFile)
+  {
+    this.themeFile = StringUtil.trimToNull(themeFile);
+  }
+
+  public boolean getSupportsThemes()
+  {
+    return FLATLAF_THEMED_CLASS.equals(className);
+  }
+
   public boolean isExt()
   {
     return this.type == LnFType.ext;
@@ -96,16 +126,6 @@ public class LnFDefinition
   public boolean isBuiltIn()
   {
     return this.type == LnFType.builtIn;
-  }
-
-  public boolean isComplete()
-  {
-    boolean definitionComplete = StringUtil.isNonBlank(this.className);
-    if (this.type != LnFType.dynamic)
-    {
-      return definitionComplete;
-    }
-    return definitionComplete && StringUtil.isNonBlank(this.name) && CollectionUtil.isNonEmpty(liblist);
   }
 
   public String debugString()

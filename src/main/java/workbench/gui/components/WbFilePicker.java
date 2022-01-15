@@ -73,6 +73,11 @@ public class WbFilePicker
     WbSwingUtilities.adjustButtonWidth(selectFileButton,22,22);
   }
 
+  public void setPropertyName(String propName)
+  {
+    this.tfFilename.setName(propName);
+  }
+  
   public void setShowHiddenFiles(boolean flag)
   {
     this.showHiddenFiles = flag;
