@@ -730,6 +730,16 @@ public class StringUtil
     return value.length() == 0;
   }
 
+  public static boolean allNonEmpty(CharSequence ... values)
+  {
+    if (values == null) return false;
+    for (CharSequence value : values)
+    {
+      if (isEmptyString(value)) return false;
+    }
+    return true;
+  }
+
   public static boolean allEmpty(CharSequence ... values)
   {
     if (values == null) return true;

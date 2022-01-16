@@ -23,7 +23,9 @@ package workbench.util.download;
 import java.beans.XMLDecoder;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -34,6 +36,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JProgressBar;
@@ -44,6 +48,8 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 
+import workbench.util.CollectionUtil;
+import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -65,7 +71,7 @@ public class MavenDownloader
 
   public MavenDownloader()
   {
-    this.knownArtefacts = getKnownArtefacts();
+    this.knownArtefacts = retrieveKnownArtefacts();
   }
 
   public String getLastHttpMsg()
@@ -88,27 +94,47 @@ public class MavenDownloader
     this.progressBar = bar;
   }
 
-  public String searchForLatestVersion(String groupId, String artefactId)
+  private int getMaxResults(String groupId)
   {
-    String url = buildSearchUrl(groupId, artefactId);
-    String searchResult = retrieveSearchResult(url);
-    String version = getLatestVersion(searchResult);
-    return version;
+    int defaultMax = Settings.getInstance().getIntProperty("workbench.maven.download.max", 15);
+    return Settings.getInstance().getIntProperty("workbench.maven.download.max." + groupId, defaultMax);
+  }
+  
+  public List<MavenArtefact> getAvailableVersions(String groupId, String artefactId)
+  {
+    return getAvailableVersions(groupId, artefactId, getMaxResults(groupId));
   }
 
-  private String buildSearchUrl(String groupId, String artefactId)
+  public List<MavenArtefact> getAvailableVersions(String groupId, String artefactId, int maxRows)
   {
-    return BASE_SEARCH_URL + "q=g:" + groupId + "+AND+a:" + artefactId + "&rows=2&wt=xml";
+    String url = buildSearchUrl(groupId, artefactId, maxRows);
+    String searchResult = retrieveSearchResult(url);
+    MavenResultParser parser = new MavenResultParser(searchResult);
+    return parser.getResult();
+  }
+
+  private String buildSearchUrl(String groupId, String artefactId, int maxRows)
+  {
+    return BASE_SEARCH_URL + "q=g:" + groupId + "+AND+a:" + artefactId + "&wt=xml&core=gav&rows=" + maxRows;
+  }
+
+  public boolean isCancelled()
+  {
+    return this.cancelled;
   }
 
   private String retrieveSearchResult(String searchUrl)
   {
+    LogMgr.logDebug(new CallerInfo(){}, "Searching for drivers on Maven Central using: " + searchUrl);
     try
     {
-      Duration timeout = Duration.ofMillis(Settings.getInstance().getIntProperty("workbench.maven.search.timeout", 2500));
+      if (progressBar != null)
+      {
+        progressBar.setIndeterminate(true);
+      }
+      Duration timeout = Duration.ofMillis(Settings.getInstance().getIntProperty("workbench.maven.search.timeout", 5000));
       HttpClient client = HttpClient.newHttpClient();
-      HttpRequest request = HttpRequest.
-        newBuilder().
+      HttpRequest request = HttpRequest.newBuilder().
         uri(URI.create(searchUrl)).
         timeout(timeout).
         build();
@@ -126,6 +152,15 @@ public class MavenDownloader
     {
       LogMgr.logError(new CallerInfo(){}, "Could not search Maven using URL=" + searchUrl, th);
       lastHttpMsg = th.getMessage();
+    }
+    finally
+    {
+      if (progressBar != null)
+      {
+        progressBar.setIndeterminate(false);
+        progressBar.setValue(0);
+        progressBar.setMaximum(0);
+      }
     }
     return null;
   }
@@ -232,32 +267,81 @@ public class MavenDownloader
     return bytes;
   }
 
+  public List<MavenArtefact> getKnownArtefacts()
+  {
+    return Collections.unmodifiableList(knownArtefacts);
+  }
+
   private String getLatestVersion(String xml)
   {
-    if (StringUtil.isBlank(xml)) return null;
-    String tag = "<str name=\"latestVersion\">";
-    int start = xml.indexOf(tag);
-    if (start < 0) return null;
-    start += tag.length();
-    int end = xml.indexOf("</str>", start);
-    if (end < 0) return null;
-    return xml.substring(start, end);
+    MavenResultParser parser = new MavenResultParser(xml);
+    List<MavenArtefact> result = parser.getResult();
+    if (result.isEmpty()) return null;
+
+    // the result is sorted newest to oldest
+    // so the first entry is the most recent one
+    MavenArtefact ma = result.get(0);
+    return ma.getVersion();
   }
 
   public MavenArtefact searchByClassName(String className)
   {
+    return searchByClassName(knownArtefacts, className);
+  }
+
+  public MavenArtefact searchByClassName(List<MavenArtefact> artefacts, String className)
+  {
     if (StringUtil.isBlank(className)) return null;
 
-    return knownArtefacts.
+    return artefacts.
              stream().
              filter(a -> className.equals(a.getDriverClassName())).
              findFirst().orElse(null);
   }
 
-  private List<MavenArtefact> getKnownArtefacts()
+  private List<MavenArtefact> retrieveKnownArtefacts()
   {
     List<MavenArtefact> result = new ArrayList<>();
     try (InputStream in = this.getClass().getResourceAsStream("/workbench/db/MavenDrivers.xml");)
+    {
+      result.addAll(loadXmlFile(in));
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not load built-in Maven definitions", th);
+    }
+    List<MavenArtefact> external = loadExternalFile();
+    mergeArtefacts(result, external);
+    return result;
+  }
+
+  public void mergeArtefacts(List<MavenArtefact> builtIn, List<MavenArtefact> external)
+  {
+    if (CollectionUtil.isEmpty(external)) return;
+
+    Iterator<MavenArtefact> itr = builtIn.iterator();
+    final CallerInfo ci = new CallerInfo(){};
+    while (itr.hasNext())
+    {
+      MavenArtefact a = itr.next();
+      MavenArtefact custom = searchByClassName(external, a.getDriverClassName());
+      if (custom != null)
+      {
+        itr.remove();
+        LogMgr.logDebug(ci,
+          "Replaced built-in Maven artefact for driver class: " + a.getDriverClassName() +
+          " and artefact: " + a.buildQualifier() +
+          " with artefact: " + custom.buildQualifier());
+      }
+    }
+    builtIn.addAll(external);
+  }
+
+  private List<MavenArtefact> loadXmlFile(InputStream in)
+    throws IOException
+  {
+    List<MavenArtefact> result = new ArrayList<>();
+    try
     {
       XMLDecoder d = new XMLDecoder(in);
       Object o = d.readObject();
@@ -266,10 +350,32 @@ public class MavenDownloader
         result.addAll((List)o);
       }
     }
-    catch (Throwable ex)
+    finally
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not load Maven definitions", ex);
+      FileUtil.closeQuietely(in);
     }
     return result;
+  }
+
+  private List<MavenArtefact> loadExternalFile()
+  {
+    File configDir = Settings.getInstance().getConfigDir();
+    File xml = new File(configDir, "MavenDrivers.xml");
+    return loadExternalFile(xml);
+  }
+
+  public List<MavenArtefact> loadExternalFile(File xmlFile)
+  {
+    if (xmlFile == null || !xmlFile.exists()) return Collections.emptyList();
+
+    try (FileInputStream in = new FileInputStream(xmlFile);)
+    {
+      return loadXmlFile(in);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not load external Maven definitions: " + xmlFile.getAbsolutePath(), th);
+    }
+    return Collections.emptyList();
   }
 }

@@ -22,10 +22,10 @@
     <void method="add">
       <object class="workbench.db.DbDriver">
         <void property="driverClass">
-          <string>com.vertica.Driver</string>
+          <string>com.vertica.jdbc.Driver</string>
         </void>
         <void property="library">
-          <string>vertica_5.1.1_jdk_5.jar</string>
+          <string>vertica_jdbc.jar</string>
         </void>
         <void property="name">
           <string>Vertica</string>

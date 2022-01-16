@@ -35,8 +35,6 @@ import workbench.WbManager;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-
-
 /**
  *
  * @author Thomas Kellerer

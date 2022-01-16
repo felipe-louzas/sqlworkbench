@@ -21,6 +21,7 @@
 package workbench.util.download;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import workbench.util.StringUtil;
 
@@ -31,7 +32,7 @@ import workbench.util.StringUtil;
 public class MavenArtefact
   implements Serializable
 {
-  private final String BASE_URL = "https://search.maven.org/remotecontent?filepath=";
+  private static final String BASE_URL = "https://search.maven.org/remotecontent?filepath=";
   private String groupId;
   private String artefactId;
   private String version;
@@ -111,6 +112,11 @@ public class MavenArtefact
     return version;
   }
 
+  public String buildQualifier()
+  {
+    return groupId + ":" + artefactId;
+  }
+
   public String buildFilename()
   {
     return artefactId + "-" + version + ".jar";
@@ -127,6 +133,26 @@ public class MavenArtefact
   public String toString()
   {
     return groupId + ":" + artefactId + (version == null ? "" : ":" + version);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 3;
+    hash = 89 * hash + Objects.hashCode(this.groupId);
+    hash = 89 * hash + Objects.hashCode(this.artefactId);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    final MavenArtefact other = (MavenArtefact)obj;
+    if (!Objects.equals(this.groupId, other.groupId)) return false;
+    return Objects.equals(this.artefactId, other.artefactId);
   }
 
 }

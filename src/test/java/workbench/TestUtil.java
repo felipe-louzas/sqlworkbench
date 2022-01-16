@@ -389,13 +389,13 @@ public class TestUtil
     return this.basedir;
   }
 
-  public File getResourceFile(Object obj, String filename)
+  public static File getResourceFile(Object obj, String filename)
     throws IOException
   {
     return getResourceFile(obj.getClass(), filename);
   }
-  
-  public File getResourceFile(Class clz, String filename)
+
+  public static File getResourceFile(Class clz, String filename)
     throws IOException
   {
     try

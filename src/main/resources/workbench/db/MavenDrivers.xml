@@ -22,6 +22,23 @@
     <void method="add">
       <object class="workbench.util.download.MavenArtefact">
         <void property="groupId">
+          <string>com.impossibl.pgjdbc-ng</string>
+        </void>
+        <void property="artefactId">
+          <string>pgjdbc-ng</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.impossibl.postgres.jdbc.PGDriver</string>
+        </void>
+        <void property="productName">
+          <string>PostgreSQL NG</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
           <string>com.oracle.ojdbc</string>
         </void>
         <void property="artefactId">
@@ -124,6 +141,74 @@
     <void method="add">
       <object class="workbench.util.download.MavenArtefact">
         <void property="groupId">
+          <string>com.pivotal</string>
+        </void>
+        <void property="artefactId">
+          <string>greenplum-jdbc</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.pivotal.jdbc.GreenplumDriver</string>
+        </void>
+        <void property="productName">
+          <string>Pivotal Greenplum</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.ibm.informix</string>
+        </void>
+        <void property="artefactId">
+          <string>informix-jdbc-complete</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.informix.jdbc.IfxDriver</string>
+        </void>
+        <void property="productName">
+          <string>Informix</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>com.sap.cloud.db.jdbc</string>
+        </void>
+        <void property="artefactId">
+          <string>ngdbc</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.sap.db.jdbc.Driver</string>
+        </void>
+        <void property="productName">
+          <string>SAP HANA</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.voltdb</string>
+        </void>
+        <void property="artefactId">
+          <string>voltdbclient</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.voltdb.jdbc.Driver</string>
+        </void>
+        <void property="productName">
+          <string>VoltDB</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
           <string>com.teradata.jdbc</string>
         </void>
         <void property="artefactId">
@@ -147,10 +232,44 @@
           <string>vertica-jdbc</string>
         </void>
         <void property="driverClassName">
-          <string>com.vertica.Driver</string>
+          <string>com.vertica.jdbc.Driver</string>
         </void>
         <void property="productName">
-          <string>MySQL</string>
+          <string>Vertica</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.apache.derby</string>
+        </void>
+        <void property="artefactId">
+          <string>derby</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.apache.derby.jdbc.AutoloadedDriver</string>
+        </void>
+        <void property="productName">
+          <string>Apache Derby Embedded</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.apache.derby</string>
+        </void>
+        <void property="artefactId">
+          <string>derbyclient</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.apache.derby.jdbc.ClientDriver</string>
+        </void>
+        <void property="productName">
+          <string>Apache Derby Client</string>
         </void>
       </object>
     </void>
