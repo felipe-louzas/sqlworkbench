@@ -222,7 +222,7 @@ public class MavenDownloadPanel
 
   public boolean showDialog(JDialog parent)
   {
-    dialog = new ValidatingDialog(parent, "Download JDBC driver", this, true);
+    dialog = new ValidatingDialog(parent, ResourceMgr.getString("LblDownloadDriver"), this, true);
     dialog.setDefaultButton(0);
     dialog.setButtonEnabled(0, false);
     dialog.pack();
@@ -264,7 +264,7 @@ public class MavenDownloadPanel
     gridBagConstraints.insets = new java.awt.Insets(1, 0, 0, 0);
     add(downloadDir, gridBagConstraints);
 
-    jLabel1.setText("Target directory");
+    jLabel1.setText(ResourceMgr.getString("LblDownloadDir")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
@@ -297,7 +297,7 @@ public class MavenDownloadPanel
 
     jPanel1.setLayout(new java.awt.BorderLayout());
 
-    downloadSelected.setText("Download selected");
+    downloadSelected.setText(ResourceMgr.getString("LblDownloadSel")); // NOI18N
     downloadSelected.setEnabled(false);
     downloadSelected.addActionListener(new java.awt.event.ActionListener()
     {
@@ -328,7 +328,7 @@ public class MavenDownloadPanel
     gridBagConstraints.insets = new java.awt.Insets(12, 0, 8, 0);
     add(jPanel1, gridBagConstraints);
 
-    jLabel2.setText("Available versions");
+    jLabel2.setText(ResourceMgr.getString("LblDriverVersions")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
