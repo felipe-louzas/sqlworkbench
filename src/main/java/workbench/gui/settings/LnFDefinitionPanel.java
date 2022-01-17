@@ -190,7 +190,7 @@ public class LnFDefinitionPanel
     {
       currentLnF.setThemeFileName(themeFileSelector.getFilename());
     }
-    else
+    else if (evt.getSource() == tfClassName && tfClassName.getName().equals(evt.getPropertyName()))
     {
       selectClass();
     }
