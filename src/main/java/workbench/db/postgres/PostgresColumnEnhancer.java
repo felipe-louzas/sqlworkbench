@@ -251,6 +251,11 @@ public class PostgresColumnEnhancer
           String type = col.getDbmsType() + "(" + typMod + ")";
           col.setDbmsType(type);
         }
+        else if (formattedType.contains(".") || formattedType.contains("\""))
+        {
+          // make sure quoted or fully qualified identifiers are preserved
+          col.setDbmsType(formattedType);
+        }
         else
         {
           // columns that use a default value where a sequence is part of the expression

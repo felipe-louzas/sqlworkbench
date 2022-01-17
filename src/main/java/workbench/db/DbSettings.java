@@ -151,12 +151,17 @@ public class DbSettings
 
   public List<String> getListProperty(String prop, String defaultValue, boolean makeLowerCase)
   {
+    return getListProperty(prop, defaultValue, makeLowerCase, false);
+  }
+
+  public List<String> getListProperty(String prop, String defaultValue, boolean makeLowerCase, boolean keepQuotes)
+  {
     String value = getProperty(prop, defaultValue);
     if (makeLowerCase && value != null)
     {
       value = value.toLowerCase();
     }
-    return StringUtil.stringToList(value, ",", true, true, false);
+    return StringUtil.stringToList(value, ",", true, true, false, keepQuotes);
   }
 
   public String getProperty(String prop, String defaultValue)
@@ -2719,12 +2724,17 @@ public class DbSettings
   public Collection<String> getTypesNeedingQuotes()
   {
     // built in types
-    List<String> types = getListProperty("literals.quoted.types.default");
+    List<String> types = getListProperty("literals.quoted.types.default", null, false, true);
 
     // User provided types
-    types.addAll(getListProperty("literals.quoted.types"));
+    types.addAll(getListProperty("literals.quoted.types", null, false, true));
 
     return types;
+  }
+
+  public boolean structLiteralNeedsQuotes()
+  {
+    return getBoolProperty("literals.struct.quotes", false);
   }
 
   public String getTableSearchLIKEOperator()

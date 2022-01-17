@@ -92,7 +92,7 @@ public class SqlLiteralFormatter
   private DbSettings dbSettings;
   private boolean checkDBMSTypes;
   private final Set<String> quotedTypes = CollectionUtil.caseInsensitiveSet();
-
+  boolean structLiteralNeedsQuotes = false;
   private final Map<String, WbDateFormatter> dbmsFormatters = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
 
   /**
@@ -125,6 +125,7 @@ public class SqlLiteralFormatter
       dbSettings = con.getDbSettings();
       isOracle = con.getMetadata().isOracle();
       quotedTypes.addAll(dbSettings.getTypesNeedingQuotes());
+      structLiteralNeedsQuotes = dbSettings.structLiteralNeedsQuotes();
     }
     setDateLiteralType(dbid);
     checkDBMSTypes = true;
@@ -148,12 +149,14 @@ public class SqlLiteralFormatter
    */
   public void setProduct(WbConnection con)
   {
-    if (con != null)
+    if (con != null && con.getMetadata() != null)
     {
       String dbid = con.getMetadata().getDbId();
       isDbId = true;
       isOracle = con.getMetadata().isOracle();
       dbSettings = con.getDbSettings();
+      quotedTypes.addAll(dbSettings.getTypesNeedingQuotes());
+      structLiteralNeedsQuotes = dbSettings.structLiteralNeedsQuotes();
       setDateLiteralType(dbid);
     }
     checkDBMSTypes = true;
@@ -268,6 +271,7 @@ public class SqlLiteralFormatter
   {
     setTreatClobAsFile(writer, encoding, -1);
   }
+
   public void setTreatClobAsFile(DataFileWriter writer, String encoding, int threshold)
   {
     this.treatClobAsFile = true;
@@ -357,6 +361,10 @@ public class SqlLiteralFormatter
 
     if (type == Types.STRUCT)
     {
+      if (structLiteralNeedsQuotes || quotedTypes.contains(dbmsType))
+      {
+        return quoteString(Types.VARCHAR, value.toString());
+      }
       return value.toString();
     }
     else if (value instanceof String)
