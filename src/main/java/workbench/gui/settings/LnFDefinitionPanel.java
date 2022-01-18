@@ -21,7 +21,6 @@
  */
 package workbench.gui.settings;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -37,7 +36,6 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -110,6 +108,9 @@ public class LnFDefinitionPanel
     infoText.setWrapStyleWord(true);
     infoText.setLineWrap(true);
     infoText.setBackground(this.getBackground());
+    Font font = currentLabel.getFont();
+    Font bigger = font.deriveFont((float)(font.getSize() * 1.10));
+    currentLabel.setFont(bigger);
     classpathEditor.addActionListener((ActionEvent e) -> { selectClass(); });
   }
 
@@ -236,6 +237,7 @@ public class LnFDefinitionPanel
     classpathEditor = new ClasspathEditor();
     themeLabel = new JLabel();
     themeFileSelector = new WbFilePicker();
+    jSeparator2 = new JSeparator();
 
     setLayout(new GridBagLayout());
 
@@ -329,17 +331,14 @@ public class LnFDefinitionPanel
     gridBagConstraints.insets = new Insets(10, 8, 0, 0);
     add(changeLnfButton, gridBagConstraints);
 
-    currentLabel.setBackground(new Color(255, 255, 255));
-    currentLabel.setBorder(BorderFactory.createEmptyBorder(3, 2, 3, 2));
-    currentLabel.setOpaque(true);
+    currentLabel.setText("Current Theme: What you see"); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 9;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTH;
-    gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(13, 8, 5, 8);
+    gridBagConstraints.insets = new Insets(7, 8, 5, 8);
     add(currentLabel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -384,6 +383,15 @@ public class LnFDefinitionPanel
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 3, 0, 3);
     add(themeFileSelector, gridBagConstraints);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridwidth = 3;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.SOUTH;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
+    add(jSeparator2, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -483,6 +491,7 @@ public class LnFDefinitionPanel
   public JLabel currentLabel;
   public JTextArea infoText;
   public JSeparator jSeparator1;
+  public JSeparator jSeparator2;
   public JLabel lblClassName;
   public JLabel lblLibrary;
   public JLabel lblName;
@@ -500,8 +509,6 @@ public class LnFDefinitionPanel
     @Override
     public void setText(String name)
     {
-      setBackground(Color.WHITE);
-      setForeground(Color.BLACK);
       super.setText("<html>" + ResourceMgr.getString("LblCurrLnf") + " <b>" + name + "</b></html>");
     }
   }

@@ -22,7 +22,6 @@
 package workbench.gui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -41,15 +40,14 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRootPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.renderer.ColorUtils;
 
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
@@ -105,20 +103,10 @@ public class FeedbackWindow
   {
     cancelAction = action;
     JPanel p = new JPanel(new GridBagLayout());
-    Color background = p.getBackground();
-    Color borderColor;
-    if (ColorUtils.isDark(background))
-    {
-      borderColor = ColorUtils.brighter(background, 0.85);
-    }
-    else
-    {
-      borderColor = ColorUtils.darker(background, 0.85);
-    }
-
+    Border line = WbSwingUtilities.createLineBorder(p);
     int hgap = (int)(IconMgr.getInstance().getToolbarIconSize() * 1.25);
     int vgap = (int)(IconMgr.getInstance().getToolbarIconSize());
-    p.setBorder(new CompoundBorder(new LineBorder(borderColor, 1), new EmptyBorder(vgap, hgap, vgap, hgap)));
+    p.setBorder(new CompoundBorder(line, new EmptyBorder(vgap, hgap, vgap, hgap)));
 
     boolean showCancel = cancelAction != null && buttonTextKey != null;
 

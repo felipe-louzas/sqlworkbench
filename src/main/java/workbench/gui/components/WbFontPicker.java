@@ -32,13 +32,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
@@ -93,7 +95,8 @@ public class WbFontPicker
     setLayout(new GridBagLayout());
 
     fontName.setText("Sample Font");
-    fontName.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(1, 5, 1, 5)));
+    Border line = WbSwingUtilities.createLineBorder(fontName);
+    fontName.setBorder(new CompoundBorder(line, new EmptyBorder(0,4,0,4)));
     gc = new GridBagConstraints();
     gc.gridx = 0;
     gc.gridy = 0;

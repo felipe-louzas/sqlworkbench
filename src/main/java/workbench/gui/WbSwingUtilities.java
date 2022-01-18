@@ -97,6 +97,7 @@ import workbench.gui.components.PlainEditor;
 import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbOptionPane;
+import workbench.gui.renderer.ColorUtils;
 
 import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
@@ -543,7 +544,7 @@ public class WbSwingUtilities
   {
     showMultiLineMessage(caller, title, message, JOptionPane.ERROR_MESSAGE);
   }
-  
+
   public static void showMultiLineMessage(final Component caller, final String title, final String message, final int messageType)
   {
     if (WbManager.getInstance().isBatchMode())
@@ -1706,5 +1707,20 @@ public class WbSwingUtilities
       JTabbedPane tabPane = (JTabbedPane)parent;
       tabPane.setSelectedComponent(toSelect);
     }
+  }
+
+  public static Border createLineBorder(JComponent reference)
+  {
+    Color background = reference == null ? Color.LIGHT_GRAY : reference.getBackground();
+    Color borderColor;
+    if (ColorUtils.isDark(background))
+    {
+      borderColor = ColorUtils.brighter(background, 0.85);
+    }
+    else
+    {
+      borderColor = ColorUtils.darker(background, 0.85);
+    }
+    return new LineBorder(borderColor, 1);
   }
 }
