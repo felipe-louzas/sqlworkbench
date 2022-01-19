@@ -44,10 +44,11 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ValidatingDialog;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
+import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.PanelType;
-import workbench.gui.sql.SqlEditor;
 import workbench.gui.sql.SqlHistory;
 import workbench.gui.sql.SqlHistoryEntry;
 
@@ -62,10 +63,9 @@ public class WorkspaceBackupListPanel
   extends JPanel
   implements ListSelectionListener, ActionListener, ValidatingComponent
 {
-
   private File workspaceFile;
   private FileListTableModel backups;
-  private SqlEditor editor;
+  private EditorPanel editor;
   private WbTable filesTable;
   private JList<TabEntry> tabList;
   private JButton selectWorkspaceButton;
@@ -85,16 +85,21 @@ public class WorkspaceBackupListPanel
     setWorkspacefile(workspace);
 
     filesTable = new WbTable(false, false, false);
+    ((WbSplitPane)splitPane).setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
+    ((WbSplitPane)listSplitPane).setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
+    filesTable.setBorder(WbSwingUtilities.EMPTY_BORDER);
     filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     filesScrollPane.setViewportView(filesTable);
     tabList = new JList();
+    tabList.setBorder(WbSwingUtilities.EMPTY_BORDER);
     tabsScrollPane.setViewportView(tabList);
 
     int height = filesTable.getRowHeight();
     splitPane.setDividerLocation(height * 15);
 
-    editor = new SqlEditor();
+    editor = EditorPanel.createSqlEditor();
+    editor.setBorder(WbSwingUtilities.createLineBorder(this));
     editor.setEditable(false);
     splitPane.setRightComponent(editor);
     filesTable.getSelectionModel().addListSelectionListener(this);
@@ -270,7 +275,7 @@ public class WorkspaceBackupListPanel
       SqlHistory history = new SqlHistory(editor, 10);
       wksp.readHistoryData(entry.getWorkspaceIndex(), history);
       SqlHistoryEntry content = history.getTopEntry();
-      editor.setText(content.getText());
+      editor.setText(content == null ? "" : content.getText());
       editor.setCaretPosition(0);
       editor.invalidate();
     }
@@ -296,10 +301,10 @@ public class WorkspaceBackupListPanel
     java.awt.GridBagConstraints gridBagConstraints;
 
     splitPane = new WbSplitPane();
-    listSplitPane = new javax.swing.JSplitPane();
-    filesScrollPane = new javax.swing.JScrollPane();
+    listSplitPane = new WbSplitPane();
+    filesScrollPane = new WbScrollPane();
     jPanel1 = new javax.swing.JPanel();
-    tabsScrollPane = new javax.swing.JScrollPane();
+    tabsScrollPane = new WbScrollPane();
     jPanel2 = new javax.swing.JPanel();
     headerPanel = new javax.swing.JPanel();
     workspaceFileName = new javax.swing.JLabel();
@@ -309,6 +314,7 @@ public class WorkspaceBackupListPanel
     splitPane.setDividerLocation(200);
     splitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
+    listSplitPane.setDividerLocation(200);
     listSplitPane.setLeftComponent(filesScrollPane);
 
     jPanel1.setLayout(new java.awt.GridBagLayout());
