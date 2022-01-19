@@ -113,7 +113,6 @@ import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.AlterObjectAction;
 import workbench.gui.actions.CompileDbObjectAction;
-import workbench.gui.actions.CountTableRowsAction;
 import workbench.gui.actions.CreateDropScriptAction;
 import workbench.gui.actions.CreateDummySqlAction;
 import workbench.gui.actions.DeleteTablesAction;
@@ -198,7 +197,6 @@ public class TableListPanel
   private final SpoolDataAction spoolData;
 
   private CompileDbObjectAction compileAction;
-  private CountTableRowsAction rowCountWindowAction;
   private ShowRowCountAction rowCountAction;
   private final AlterObjectAction renameAction;
 
@@ -589,23 +587,15 @@ public class TableListPanel
     if (indexPanel != null) indexPanel.dispose();
     if (projections != null) projections.dispose();
     if (partitionsPanel != null) partitionsPanel.dispose();
-    WbAction.dispose(compileAction,rowCountAction,rowCountWindowAction,reloadAction,renameAction,spoolData,toggleTableSource);
+    WbAction.dispose(compileAction,rowCountAction,reloadAction,renameAction,spoolData,toggleTableSource);
     Settings.getInstance().removePropertyChangeListener(this);
   }
 
 
   private void extendPopupMenu()
   {
-    if (DbExplorerSettings.showRowCountsInline())
-    {
-      rowCountAction = new ShowRowCountAction(this, this, summaryStatusBarLabel);
-      tableList.addPopupAction(rowCountAction, false);
-    }
-    else
-    {
-      rowCountWindowAction = new CountTableRowsAction(this, WbSelectionModel.Factory.createFacade(tableList.getSelectionModel()));
-      tableList.addPopupAction(rowCountWindowAction, false);
-    }
+    rowCountAction = new ShowRowCountAction(this, this, summaryStatusBarLabel);
+    tableList.addPopupAction(rowCountAction, false);
 
     if (this.parentWindow != null)
     {
@@ -1670,10 +1660,6 @@ public class TableListPanel
         this.showDataMenu.setEnabled(this.tableList.getSelectedRowCount() == 1);
       }
       if (rowCountAction != null)
-      {
-        this.rowCountAction.setEnabled(this.tableList.getSelectedRowCount() > 0);
-      }
-      else if (rowCountWindowAction != null)
       {
         this.rowCountAction.setEnabled(this.tableList.getSelectedRowCount() > 0);
       }

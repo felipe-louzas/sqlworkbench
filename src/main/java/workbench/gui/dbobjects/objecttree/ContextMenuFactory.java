@@ -41,7 +41,6 @@ import workbench.db.TableIdentifier;
 
 import workbench.gui.MainWindow;
 import workbench.gui.actions.CompileDbObjectAction;
-import workbench.gui.actions.CountTableRowsAction;
 import workbench.gui.actions.CreateDropScriptAction;
 import workbench.gui.actions.CreateDummySqlAction;
 import workbench.gui.actions.CreateIndexAction;
@@ -128,17 +127,6 @@ class ContextMenuFactory
 
     SpoolDataAction export = new SpoolDataAction(dbTree);
     menu.add(export);
-
-    if (DbTreeSettings.showCountRowsAction())
-    {
-      // this is the action that displays the row counts in a new window as the DbExplorer does
-      CountTableRowsAction countAction = new CountTableRowsAction(dbTree, selection);
-      countAction.setConnection(dbTree.getConnection());
-      if (countAction.isEnabled())
-      {
-        menu.add(countAction);
-      }
-    }
 
     ShowRowCountAction showCount = new ShowRowCountAction(dbTree, dbTree, dbTree.getStatusBar());
     menu.add(showCount);

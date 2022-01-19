@@ -31,10 +31,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 import workbench.WbManager;
 import workbench.resource.ResourceMgr;
@@ -81,11 +78,13 @@ public class ShowSourceQueryAction
   public void showQuery()
   {
     EditorPanel editor = EditorPanel.createSqlEditor();
+    editor.setBorder(WbSwingUtilities.EMPTY_BORDER);
     WbTabbedPane tab = new WbTabbedPane();
 
     String sql = panel.getSourceQuery();
 
     JPanel display = new JPanel(new BorderLayout(0, 5));
+    display.setBorder(WbSwingUtilities.createLineBorder(display));
 
     editor.setText(sql);
     editor.setCaretPosition(0);
@@ -110,8 +109,7 @@ public class ShowSourceQueryAction
 
     String msg = ResourceMgr.getFormattedString("TxtLastExec", loadedAt) + " (" + duration + ")";
     JLabel lbl = new JLabel(msg);
-    Border etched = new EtchedBorder(EtchedBorder.LOWERED);
-    lbl.setBorder(new CompoundBorder(etched, new EmptyBorder(3, 2, 2, 0)));
+    lbl.setBorder(new EmptyBorder(3, 2, 2, 0));
 
     display.add(editor, BorderLayout.CENTER);
     display.add(lbl, BorderLayout.NORTH);

@@ -430,9 +430,4 @@ public class DbExplorerSettings
   {
     return Settings.getInstance().getBoolProperty("workbench.dbexplorer.extended.objectfilter.enabled", true);
   }
-
-  public static boolean showRowCountsInline()
-  {
-    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.tablelist.rowcount.inline", true);
-  }
 }
