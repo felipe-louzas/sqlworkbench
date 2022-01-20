@@ -35,7 +35,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -421,7 +420,7 @@ public class SqlPanel
     resultTab.setName("resultspane");
 
     JScrollPane scroll = new WbScrollPane(log);
-    scroll.setBorder(WbSwingUtilities.EMPTY_BORDER);
+    scroll.setBorder(WbSwingUtilities.createLineBorder(this));
     resultTab.addTab(ResourceMgr.getString("LblTabMessages"), scroll);
 
     contentPanel = new WbSplitPane(JSplitPane.VERTICAL_SPLIT, editor, resultTab);
@@ -1143,10 +1142,8 @@ public class SqlPanel
     this.setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, im);
     this.setActionMap(am);
 
-    Iterator<Object> itr = this.actions.iterator();
-    while (itr.hasNext())
+    for (Object entry : this.actions)
     {
-      Object entry = itr.next();
       if (entry instanceof WbAction)
       {
         WbAction wb = (WbAction)entry;
