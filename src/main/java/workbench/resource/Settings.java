@@ -54,6 +54,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.text.StyleContext;
 
 import workbench.WbManager;
 import workbench.interfaces.FontChangedListener;
@@ -1368,7 +1369,7 @@ public class Settings
       UIDefaults def = UIManager.getDefaults();
       Font textFont = def.getFont("TextArea.font");
       int size = textFont == null ? 12 : textFont.getSize();
-      f = new Font("Monospaced", Font.PLAIN, size);
+      f = StyleContext.getDefaultStyleContext().getFont("Monospaced", Font.PLAIN, size);
       isDefault = true;
     }
     if (getScaleFonts() && isDefault)
@@ -1486,7 +1487,7 @@ public class Settings
     {
       // ignore
     }
-    result = new Font(name, style, size);
+    result = StyleContext.getDefaultStyleContext().getFont(name, style, size);
     return result;
   }
   // </editor-fold>

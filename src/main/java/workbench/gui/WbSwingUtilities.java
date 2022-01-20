@@ -1709,7 +1709,7 @@ public class WbSwingUtilities
     }
   }
 
-  public static Border createLineBorder(JComponent reference)
+  public static Color getLineBorderColor(JComponent reference)
   {
     Color background = reference == null ? Color.LIGHT_GRAY : reference.getBackground();
     Color borderColor;
@@ -1721,6 +1721,11 @@ public class WbSwingUtilities
     {
       borderColor = ColorUtils.darker(background, 0.85);
     }
-    return new LineBorder(borderColor, 1);
+    return borderColor;
+  }
+  
+  public static Border createLineBorder(JComponent reference)
+  {
+    return new LineBorder(getLineBorderColor(reference), 1);
   }
 }

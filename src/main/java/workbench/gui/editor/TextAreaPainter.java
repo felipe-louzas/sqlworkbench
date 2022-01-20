@@ -19,6 +19,7 @@ import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -82,7 +83,12 @@ public class TextAreaPainter
 
   private Map renderingHints;
 
+//  private static final RenderingHints FRACTIONAL_HINT_OFF = new RenderingHints(KEY_FRACTIONALMETRICS, VALUE_FRACTIONALMETRICS_OFF);
+//  private static final RenderingHints FRACTIONAL_HINT_ON = new RenderingHints(KEY_FRACTIONALMETRICS, VALUE_FRACTIONALMETRICS_ON);
+
   private static final Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+  private final Map<String, Boolean> devicesReported = new HashMap<>(2);
+  private boolean logFractional = false;
 
   public TextAreaPainter(JEditTextArea textArea)
   {
@@ -144,6 +150,7 @@ public class TextAreaPainter
       Toolkit tk = Toolkit.getDefaultToolkit();
       renderingHints = (Map) tk.getDesktopProperty("awt.font.desktophints");
     }
+    this.logFractional = Settings.getInstance().getBoolProperty("workbench.gui.editor.log.fractional.use", false);
   }
 
   @Override
@@ -474,16 +481,35 @@ public class TextAreaPainter
     this.tabSize = tabWidth * textArea.getTabSize();
   }
 
+  private void logFractional(Graphics2D g)
+  {
+    String id = g.getDeviceConfiguration().getDevice().getIDstring();
+    boolean isLogged = devicesReported.getOrDefault(id, Boolean.FALSE);
+    devicesReported.put(id, Boolean.TRUE);
+    if (!isLogged)
+    {
+      boolean flag = g.getFontRenderContext().usesFractionalMetrics();
+      LogMgr.logDebug(new CallerInfo(){}, "DeviceID: \"" + id + "\" usesFractionalMetrics: " + flag);
+    }
+  }
+
   @Override
   public void paint(Graphics g)
   {
-    Graphics2D gfx = (Graphics2D)g;
+    final Graphics2D gfx = (Graphics2D)g;
+
+    if (renderingHints != null)
+    {
+      gfx.addRenderingHints(renderingHints);
+    }
 
     gfx.setFont(getFont());
     calculateGutterWidth(gfx);
 
-    final FontMetrics fm = getFontMetrics();
-    Rectangle clipRect = gfx.getClipBounds();
+    if (logFractional) logFractional(gfx);
+
+    final FontMetrics fm = gfx.getFontMetrics(getFont());
+    final Rectangle clipRect = gfx.getClipBounds();
 
     int editorWidth = getWidth() - gutterWidth;
     int editorHeight = getHeight();
@@ -510,11 +536,6 @@ public class TextAreaPainter
       firstInvalid += (clipRect.y / fheight);
       if (firstInvalid > 1) firstInvalid --;
       lastInvalid = firstVisible + ((clipRect.y + clipRect.height) / fheight);
-    }
-
-    if (renderingHints != null)
-    {
-      gfx.addRenderingHints(renderingHints);
     }
 
     if (lastInvalid > lastLine)

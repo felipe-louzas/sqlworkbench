@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import javax.swing.text.StyleContext;
+
 /**
  * A simple text style class.
  *
@@ -159,7 +161,7 @@ public class SyntaxStyle
    */
   public Font getStyledFont(Font font)
   {
-    return new Font(font.getFamily(), style, font.getSize());
+    return StyleContext.getDefaultStyleContext().getFont(font.getFamily(), style, font.getSize());
   }
 
   /**
@@ -170,8 +172,7 @@ public class SyntaxStyle
    */
   public void setGraphicsFlags(Graphics gfx, Font font)
   {
-    Font _font = getStyledFont(font);
-    gfx.setFont(_font);
+    gfx.setFont(getStyledFont(font));
     gfx.setColor(color);
   }
 

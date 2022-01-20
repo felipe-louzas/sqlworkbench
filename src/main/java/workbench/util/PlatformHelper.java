@@ -48,28 +48,6 @@ public class PlatformHelper
     return OS_NAME.contains("linux");
   }
 
-  public static boolean isWindowsXP()
-  {
-    if (isWindows())
-    {
-      VersionNumber current = new VersionNumber(System.getProperty("os.version"));
-      VersionNumber xp = new VersionNumber(5, 1);
-      return current.isNewerOrEqual(xp);
-    }
-    return false;
-  }
-
-  public static boolean isWindows8()
-  {
-    if (isWindows())
-    {
-      VersionNumber current = new VersionNumber(System.getProperty("os.version"));
-      VersionNumber win8 = new VersionNumber(8, 1);
-      return current.isNewerOrEqual(win8);
-    }
-    return false;
-  }
-
   public static boolean isMacOS()
   {
     return MacOSHelper.isMacOS();

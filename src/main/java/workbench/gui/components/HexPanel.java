@@ -35,6 +35,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.text.StyleContext;
 
 import workbench.gui.WbSwingUtilities;
 
@@ -58,7 +59,7 @@ public class HexPanel
     dataTable.setCellSelectionEnabled(false);
     dataTable.setShowGrid(false);
     dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-    Font dataFont = new Font("Monospaced", 0, 12);
+    Font dataFont = StyleContext.getDefaultStyleContext().getFont("Monospaced", 0, 12);
     dataTable.setFont(dataFont);
     setLayout(new BorderLayout());
     lines = new LineNumberTable(dataTable);

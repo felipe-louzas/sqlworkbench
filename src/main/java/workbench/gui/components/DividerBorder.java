@@ -47,10 +47,11 @@ public class DividerBorder
   public static final int HORIZONTAL_MIDDLE = 32;
 
   private final int borderType;
-  private final boolean shadow;
+  private final boolean useShadow;
   public static final DividerBorder BOTTOM_DIVIDER = new DividerBorder(BOTTOM);
   public static final DividerBorder LEFT_DIVIDER = new DividerBorder(LEFT, false);
   public static final DividerBorder RIGHT_DIVIDER = new DividerBorder(RIGHT, false);
+  private Color lineColor;
 
   /**
    * Creates a divider border with the specified type
@@ -65,7 +66,15 @@ public class DividerBorder
   {
     super();
     this.borderType = type;
-    this.shadow = useShadow;
+    this.useShadow = useShadow;
+  }
+
+  public DividerBorder(int type, Color lineColor)
+  {
+    super();
+    this.borderType = type;
+    this.useShadow = false;
+    this.lineColor= lineColor;
   }
 
   @Override
@@ -74,16 +83,16 @@ public class DividerBorder
     Color oldColor = g.getColor();
 
     Color bg = c.getBackground();
-    Color light = bg.brighter();
+    Color lColor = this.lineColor != null ? this.lineColor : bg.brighter();
     Color shade = ColorUtils.darker(bg, 0.85);
 
     if ((this.borderType & TOP) == TOP)
     {
       g.setColor(shade);
       g.drawLine(x, y, x + width, y);
-      if (shadow)
+      if (useShadow)
       {
-        g.setColor(light);
+        g.setColor(lColor);
         g.drawLine(x, y + 1, x + width, y + 1);
       }
     }
@@ -92,9 +101,9 @@ public class DividerBorder
     {
       g.setColor(shade);
       g.drawLine(x, y + height - 2, x + width, y + height - 2);
-      if (shadow)
+      if (useShadow)
       {
-        g.setColor(light);
+        g.setColor(lColor);
         g.drawLine(x, y + height - 1, x + width, y + height - 1);
       }
     }
@@ -103,9 +112,9 @@ public class DividerBorder
     {
       g.setColor(shade);
       g.drawLine(x, y, x, y + height);
-      if (shadow)
+      if (useShadow)
       {
-        g.setColor(light);
+        g.setColor(lColor);
         g.drawLine(x + 1, y, x + 1, y + height);
       }
     }
@@ -113,9 +122,9 @@ public class DividerBorder
     {
       g.setColor(shade);
       g.drawLine(x + width - 2, y, x + width - 2, y + height);
-      if (shadow)
+      if (useShadow)
       {
-        g.setColor(light);
+        g.setColor(lColor);
         g.drawLine(x + width - 1, y, x + width - 1, y + height);
       }
     }
@@ -125,9 +134,9 @@ public class DividerBorder
       int w2 = (int)width / 2;
       g.setColor(shade);
       g.drawLine(x + w2, y, x + w2, y + height);
-      if (shadow)
+      if (useShadow)
       {
-        g.setColor(light);
+        g.setColor(lColor);
         g.drawLine(x + w2 + 1, y, x + w2 + 1, y + height);
       }
     }
@@ -136,9 +145,9 @@ public class DividerBorder
       int h2 = (int)height / 2;
       g.setColor(shade);
       g.drawLine(0, y + h2, width, y + h2);
-      if (shadow)
+      if (useShadow)
       {
-        g.setColor(light);
+        g.setColor(lColor);
         g.drawLine(0, y + h2 + 1, width, y + h2 + 1);
       }
     }

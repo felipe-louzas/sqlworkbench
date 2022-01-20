@@ -35,6 +35,7 @@ import java.util.Set;
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.text.StyleContext;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -153,6 +154,18 @@ public class LnFHelper
     UIDefaults def = UIManager.getDefaults();
 
     Font stdFont = settings.getStandardFont();
+
+    if (stdFont == null && PlatformHelper.isWindows())
+    {
+      // The default Windows Look & Feel uses "Tahoma", but Windows uses Segoe UI
+      Font f = def.getFont("Menu.font");
+
+      // new Font("Segoe UI") creates a font with the family "Dialog"
+      // that looks very different to a "Segoe UI" with the family "Segoe UI"
+      // which StyleContext.getFont() creates
+      stdFont = StyleContext.getDefaultStyleContext().getFont("Segoe UI", Font.PLAIN, f.getSize());
+    }
+
     if (stdFont != null)
     {
       for (String property : fontProperties)

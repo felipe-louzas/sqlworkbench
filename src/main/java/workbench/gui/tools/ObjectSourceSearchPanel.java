@@ -65,7 +65,6 @@ import workbench.db.search.ObjectSourceSearcher;
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.DataStoreTableModel;
-import workbench.gui.components.DividerBorder;
 import workbench.gui.components.EditWindow;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.RunningJobIndicator;
@@ -112,6 +111,9 @@ public class ObjectSourceSearchPanel
   {
     this.instanceId = ++instanceCount;
     initComponents();
+
+    Border sb = new CompoundBorder(WbSwingUtilities.createLineBorder(this), new EmptyBorder(2, 5, 2, 5));
+    statusbar.setBorder(sb);
     WbSwingUtilities.makeEqualWidth(closeButton, showScriptButton, startButton);
     checkButtons();
 
@@ -128,8 +130,7 @@ public class ObjectSourceSearchPanel
     splitPane.setRightComponent(objectSource);
     splitPane.setLeftComponent(scroll);
 
-    Border b = new CompoundBorder(new DividerBorder(DividerBorder.BOTTOM), new EmptyBorder(5,5,5,5));
-    topPanel.setBorder(b);
+    topPanel.setBorder(new EmptyBorder(5,5,5,5));
     clearSearch();
 
     TextComponentMouseListener.addListener(this.objectNames, this.searchValues, this.objectTypes, this.schemaNames);
@@ -802,7 +803,6 @@ public class ObjectSourceSearchPanel
     gridBagConstraints.insets = new java.awt.Insets(5, 0, 7, 0);
     topPanel.add(catalogLabel, gridBagConstraints);
 
-    catalogDD.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
@@ -986,7 +986,6 @@ public class ObjectSourceSearchPanel
 
     footerPanel.setLayout(new java.awt.GridBagLayout());
 
-    statusbar.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createEtchedBorder(), javax.swing.BorderFactory.createEmptyBorder(2, 5, 2, 5)));
     statusbar.setMaximumSize(new java.awt.Dimension(73, 32));
     statusbar.setPreferredSize(new java.awt.Dimension(100, 22));
     gridBagConstraints = new java.awt.GridBagConstraints();

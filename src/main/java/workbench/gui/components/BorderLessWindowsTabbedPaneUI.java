@@ -32,6 +32,8 @@ import workbench.gui.WbSwingUtilities;
 
 import com.sun.java.swing.plaf.windows.WindowsTabbedPaneUI;
 
+import static javax.swing.SwingConstants.*;
+
 /**
  *
  * @author Thomas Kellerer
@@ -40,11 +42,6 @@ public class BorderLessWindowsTabbedPaneUI
   extends WindowsTabbedPaneUI
   implements TabHighlightSupport
 {
-  private static final Insets TOP_INSETS = new Insets(3,1,1,1);
-  private static final Insets BOTTOM_INSETS = new Insets(1,1,3,1);
-  private static final Insets RIGHT_INSETS = new Insets(0,0,0,5);
-  private static final Insets LEFT_INSETS = new Insets(1,3,1,1);
-
   private TabHighlighter highlighter;
   private Color selColor;
 
@@ -67,20 +64,20 @@ public class BorderLessWindowsTabbedPaneUI
     switch (tabPlacement)
     {
       case JTabbedPane.TOP:
-        return TOP_INSETS;
+        return new Insets(1, 0, 0, 0);
       case JTabbedPane.BOTTOM:
-        return BOTTOM_INSETS;
+        return new Insets(0, 0, 0, 1);
       case JTabbedPane.LEFT:
-        return LEFT_INSETS;
+        return new Insets(0, 0, 0, 1);
       case JTabbedPane.RIGHT:
-        return RIGHT_INSETS;
+        return new Insets(0, 1, 0, 0);
       default:
         return WbSwingUtilities.getEmptyInsets();
     }
   }
 
   @Override
-  protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected )
+  protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected)
   {
     super.paintTabBorder(g, tabPlacement, tabIndex, x, y, w, h, isSelected);
     if (highlighter != null)
@@ -101,7 +98,7 @@ public class BorderLessWindowsTabbedPaneUI
     int w = width - insets.right - insets.left;
     int h = height - insets.top - insets.bottom;
 
-    switch(tabPlacement)
+    switch (tabPlacement)
     {
       case LEFT:
         x += calculateTabAreaWidth(tabPlacement, runCount, maxTabWidth);
@@ -125,9 +122,9 @@ public class BorderLessWindowsTabbedPaneUI
     }
     else
     {
-      g.setColor(selColor);
+      g.setColor(Color.RED);
     }
-    g.fillRect(x,y,w,h);
+    g.fillRect(x, y, w, h);
 
     switch (tabPlacement)
     {

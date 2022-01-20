@@ -38,12 +38,7 @@
         <Component class="javax.swing.JComboBox" name="catalogDD">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <AuxValues>
@@ -313,18 +308,6 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="statusbar">
           <Properties>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
-                <CompoundBorder>
-                  <Border PropertyName="outside" info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                    <EtchetBorder/>
-                  </Border>
-                  <Border PropertyName="inside" info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
-                    <EmptyBorder bottom="2" left="5" right="5" top="2"/>
-                  </Border>
-                </CompoundBorder>
-              </Border>
-            </Property>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[73, 32]"/>
             </Property>

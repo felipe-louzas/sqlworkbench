@@ -50,6 +50,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.StyleContext;
 
 import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
@@ -183,8 +184,7 @@ public class WbFontChooser
     {
       style = style | Font.BOLD;
     }
-
-    Font f = new Font(fontName, style, size);
+    Font f = StyleContext.getDefaultStyleContext().getFont(fontName, style, size);
     return f;
   }
 
@@ -267,7 +267,7 @@ public class WbFontChooser
     {
       if (checkMonospace)
       {
-        Font f = new Font(font, Font.PLAIN, 12);
+        Font f = StyleContext.getDefaultStyleContext().getFont(font, Font.PLAIN, 12);
 
         long st = System.currentTimeMillis();
         boolean canDisplay = f.canDisplay('A');
