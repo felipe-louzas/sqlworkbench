@@ -124,7 +124,7 @@ public class ConditionCheck
    */
   public static Result checkConditions(ArgumentParser cmdLine, WbConnection conn)
   {
-    return checkConditions(cmdLine, conn, (fname -> new WbFile(fname)));
+    return checkConditions(cmdLine, conn, (fname -> new WbFile(fname)), null);
   }
 
   /**
@@ -137,12 +137,12 @@ public class ConditionCheck
    * @return {@link #OK} if the condition is met,
    *         the parameter where the check failed otherwise
    */
-  public static Result checkConditions(ArgumentParser cmdLine, WbConnection conn, Function<String, WbFile> fileEvaluator)
+  public static Result checkConditions(ArgumentParser cmdLine, WbConnection conn, Function<String, WbFile> fileEvaluator, String variablePool)
   {
     if (cmdLine.isArgPresent(PARAM_IF_DEF))
     {
       String var = cmdLine.getValue(PARAM_IF_DEF);
-      if (!VariablePool.getInstance().isDefined(var))
+      if (!VariablePool.getInstance(variablePool).isDefined(var))
       {
         return new Result(PARAM_IF_DEF, var);
       }
@@ -151,7 +151,7 @@ public class ConditionCheck
     if (cmdLine.isArgPresent(PARAM_IF_NOTDEF))
     {
       String var = cmdLine.getValue(PARAM_IF_NOTDEF);
-      if (VariablePool.getInstance().isDefined(var))
+      if (VariablePool.getInstance(variablePool).isDefined(var))
       {
         return new Result(PARAM_IF_NOTDEF, var);
       }
@@ -160,7 +160,7 @@ public class ConditionCheck
     if (cmdLine.isArgPresent(PARAM_IF_EMPTY))
     {
       String var = cmdLine.getValue(PARAM_IF_EMPTY);
-      String value = VariablePool.getInstance().getParameterValue(var);
+      String value = VariablePool.getInstance(variablePool).getParameterValue(var);
       if (StringUtil.isNonEmpty(value))
       {
         return new Result(PARAM_IF_EMPTY, var);
@@ -170,7 +170,7 @@ public class ConditionCheck
     if (cmdLine.isArgPresent(PARAM_IF_NOTEMPTY))
     {
       String var = cmdLine.getValue(PARAM_IF_NOTEMPTY);
-      String value = VariablePool.getInstance().getParameterValue(var);
+      String value = VariablePool.getInstance(variablePool).getParameterValue(var);
       if (StringUtil.isEmptyString(value))
       {
         return new Result(PARAM_IF_NOTEMPTY, var);
@@ -183,7 +183,7 @@ public class ConditionCheck
       String[] elements = var.split("=");
       if (elements.length == 2)
       {
-        String value = VariablePool.getInstance().getParameterValue(elements[0]);
+        String value = VariablePool.getInstance(variablePool).getParameterValue(elements[0]);
         if (value != null && value.equals(elements[1]))
         {
           return OK;
@@ -198,7 +198,7 @@ public class ConditionCheck
       String[] elements = var.split("=");
       if (elements.length == 2)
       {
-        String value = VariablePool.getInstance().getParameterValue(elements[0]);
+        String value = VariablePool.getInstance(variablePool).getParameterValue(elements[0]);
         if (value == null || !value.equals(elements[1]))
         {
           return OK;

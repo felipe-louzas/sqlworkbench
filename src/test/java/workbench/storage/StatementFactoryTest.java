@@ -119,7 +119,7 @@ public class StatementFactoryTest
     info.setUpdateTable(table);
     StatementFactory factory = new StatementFactory(info, null);
     RowData data = new RowData(info.getColumnCount());
-    data.setValue(0, new Integer(42));
+    data.setValue(0, 42);
     data.setValue(1, "start");
     data.setValue(2, "Zaphod");
     data.setValue(3, "Bla");
@@ -133,8 +133,8 @@ public class StatementFactoryTest
 
     SqlLiteralFormatter formatter = new SqlLiteralFormatter();
     sql = stmt.getExecutableStatement(formatter).toString();
-    assertEquals(true, sql.indexOf("key = 42") > -1);
-    assertEquals(true, sql.indexOf("section = 'start'") > -1);
+    assertEquals(true, sql.contains("key = 42"));
+    assertEquals(true, sql.contains("section = 'start'"));
   }
 
   @Test
@@ -150,7 +150,7 @@ public class StatementFactoryTest
     info.setUpdateTable(table);
     StatementFactory factory = new StatementFactory(info, null);
     RowData data = new RowData(3);
-    data.setValue(0, new Integer(42));
+    data.setValue(0, 42);
     data.setValue(1, "Zaphod");
     data.setValue(2, "Beeblebrox");
 
@@ -160,7 +160,7 @@ public class StatementFactoryTest
 
     SqlLiteralFormatter formatter = new SqlLiteralFormatter();
     sql = stmt.getExecutableStatement(formatter).toString();
-    assertEquals("Wrong values inserted", true, sql.indexOf("VALUES (42,'Zaphod','Beeblebrox')") > -1);
+    assertEquals("Wrong values inserted", true, sql.contains("VALUES (42,'Zaphod','Beeblebrox')"));
   }
 
   @Test
@@ -177,7 +177,7 @@ public class StatementFactoryTest
     info.setUpdateTable(table);
     StatementFactory factory = new StatementFactory(info, null);
     RowData data = new RowData(3);
-    data.setValue(0, new Integer(42));
+    data.setValue(0, 42);
     data.setValue(1, "Zaphod");
     data.setValue(2, "Beeblebrox");
 
@@ -188,12 +188,12 @@ public class StatementFactoryTest
 
     SqlLiteralFormatter formatter = new SqlLiteralFormatter();
     sql = stmt.getExecutableStatement(formatter).toString();
-    assertEquals("Wrong values inserted", true, sql.indexOf("VALUES ('Zaphod','Beeblebrox')") > -1);
+    assertEquals("Wrong values inserted", true, sql.contains("VALUES ('Zaphod','Beeblebrox')"));
 
     factory.setIncludeIdentiyColumns(true);
     stmt = factory.createInsertStatement(data, false, "\n");
     sql = stmt.getExecutableStatement(formatter).toString();
-    assertEquals("Wrong values inserted", true, sql.indexOf("VALUES (42,'Zaphod','Beeblebrox')") > -1);
+    assertEquals("Wrong values inserted", true, sql.contains("VALUES (42,'Zaphod','Beeblebrox')"));
   }
 
   @Test
@@ -210,7 +210,7 @@ public class StatementFactoryTest
     info.setUpdateTable(table);
     StatementFactory factory = new StatementFactory(info, null);
     RowData data = new RowData(info.getColumnCount());
-    data.setValue(0, new Integer(42));
+    data.setValue(0, 42);
     data.setValue(1, "otherkey");
     data.setValue(2, "Zaphod");
     data.setValue(3, "Beeblebrox");
@@ -222,7 +222,7 @@ public class StatementFactoryTest
 
     SqlLiteralFormatter formatter = new SqlLiteralFormatter();
     sql = stmt.getExecutableStatement(formatter).toString();
-    assertEquals("Wrong WHERE clause created", true, sql.indexOf("keycol = 42") > -1);
-    assertEquals("Wrong WHERE clause created", true, sql.indexOf("value = 'otherkey'") > -1);
+    assertEquals("Wrong WHERE clause created", true, sql.contains("keycol = 42"));
+    assertEquals("Wrong WHERE clause created", true, sql.contains("value = 'otherkey'"));
   }
 }

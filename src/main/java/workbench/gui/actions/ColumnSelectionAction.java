@@ -46,7 +46,7 @@ public class ColumnSelectionAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtColumnSelection", KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.ALT_MASK));
+    this.initMenuDefinition("MnuTxtColumnSelection", KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.ALT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
     this.setEnabled(true);
   }

@@ -37,13 +37,16 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import workbench.gui.actions.DeleteListEntryAction;
-import workbench.gui.actions.NewListEntryAction;
-import workbench.gui.components.DividerBorder;
-import workbench.gui.components.WbToolbar;
 import workbench.interfaces.FileActions;
 import workbench.interfaces.Restoreable;
 import workbench.resource.Settings;
+
+import workbench.gui.actions.DeleteListEntryAction;
+import workbench.gui.actions.NewListEntryAction;
+import workbench.gui.components.DividerBorder;
+import workbench.gui.components.WbScrollPane;
+import workbench.gui.components.WbToolbar;
+
 import workbench.util.ToolDefinition;
 
 /**
@@ -69,7 +72,7 @@ public class ExternalToolsPanel
     toolList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     toolList.setBorder(new EmptyBorder(2,1,2,1));
 
-    JScrollPane scroll = new JScrollPane(toolList);
+    JScrollPane scroll = new WbScrollPane(toolList);
 
     this.toolbar = new WbToolbar();
     this.toolbar.add(new NewListEntryAction(this));

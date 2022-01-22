@@ -46,10 +46,17 @@ public class VariablesDataStore
   private static final int[] types =   {Types.VARCHAR, Types.VARCHAR};
   private static final int[] sizes =   {20, 50};
   private static final TableIdentifier TABLE_ID = new TableIdentifier("WB$VARIABLE_DEFINITION");
+  private final String variablePoolID;
 
   public VariablesDataStore()
   {
+    this(null);
+  }
+  
+  public VariablesDataStore(String variablePool)
+  {
     super(cols, types, sizes);
+    this.variablePoolID = variablePool;
     this.setUpdateTable(TABLE_ID);
   }
 
@@ -96,7 +103,7 @@ public class VariablesDataStore
     int rowcount = this.getRowCount();
     this.resetUpdateRowCounters();
 
-    VariablePool pool = VariablePool.getInstance();
+    VariablePool pool = VariablePool.getInstance(variablePoolID);
     for (int i=0; i < rowcount; i++)
     {
       String key = this.getValueAsString(i, 0);

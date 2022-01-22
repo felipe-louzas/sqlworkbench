@@ -121,7 +121,7 @@ public class DeleteScriptGeneratorTest
     TableIdentifier table = new TableIdentifier("PERSON");
     generator.setTable(table);
     List<ColumnData> pk = new ArrayList<>();
-    ColumnData id = new ColumnData(new Integer(1), new ColumnIdentifier("ID"));
+    ColumnData id = new ColumnData(Integer.valueOf(1), new ColumnIdentifier("ID"));
     pk.add(id);
     CharSequence sql = generator.getScriptForValues(pk, CommitType.never);
     ScriptParser parser = new ScriptParser(sql.toString());
@@ -146,8 +146,8 @@ public class DeleteScriptGeneratorTest
     TableIdentifier table = new TableIdentifier("BASE");
     generator.setTable(table);
     List<ColumnData> pk = new ArrayList<>();
-    pk.add(new ColumnData(new Integer(1), new ColumnIdentifier("BASE_ID1")));
-    pk.add(new ColumnData(new Integer(1), new ColumnIdentifier("BASE_ID2")));
+    pk.add(new ColumnData(Integer.valueOf(1), new ColumnIdentifier("BASE_ID1")));
+    pk.add(new ColumnData(Integer.valueOf(1), new ColumnIdentifier("BASE_ID2")));
 
     List<String> statements = generator.getStatementsForValues(pk, true);
 

@@ -47,7 +47,7 @@ public class ReplaceDataAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtReplaceInTableData", KeyStroke.getKeyStroke(KeyEvent.VK_H, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtReplaceInTableData", KeyStroke.getKeyStroke(KeyEvent.VK_H, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_DATA);
   }
 

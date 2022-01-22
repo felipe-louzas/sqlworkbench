@@ -23,7 +23,9 @@ package workbench.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -36,13 +38,13 @@ public class NumberUtilTest
   @Test
   public void testValuesAreEquals()
   {
-    assertTrue(NumberUtil.valuesAreEqual(new Integer(42), new Long(42)));
-    assertTrue(NumberUtil.valuesAreEqual(new Short((short)5), new BigDecimal(5)));
-    assertTrue(NumberUtil.valuesAreEqual(new Long(5), new Double(5)));
+    assertTrue(NumberUtil.valuesAreEqual(Integer.valueOf(42), Long.valueOf(42)));
+    assertTrue(NumberUtil.valuesAreEqual(Short.valueOf((short)5), new BigDecimal(5)));
+    assertTrue(NumberUtil.valuesAreEqual(Long.valueOf(5), Double.valueOf(5)));
     assertTrue(NumberUtil.valuesAreEqual(BigInteger.valueOf(42), new BigDecimal(42)));
-    assertTrue(NumberUtil.valuesAreEqual(new Integer(42), BigInteger.valueOf(42)));
+    assertTrue(NumberUtil.valuesAreEqual(Integer.valueOf(42), BigInteger.valueOf(42)));
     assertFalse(NumberUtil.valuesAreEqual(BigInteger.valueOf(43), new BigDecimal(42)));
-    assertFalse(NumberUtil.valuesAreEqual(new Integer(42), BigInteger.valueOf(2)));
+    assertFalse(NumberUtil.valuesAreEqual(Integer.valueOf(42), BigInteger.valueOf(2)));
   }
 
 }

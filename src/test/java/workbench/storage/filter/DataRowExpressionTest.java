@@ -23,8 +23,10 @@ package workbench.storage.filter;
 
 import java.util.HashMap;
 import java.util.Map;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -44,7 +46,7 @@ public class DataRowExpressionTest
     Map<String, Object> values = new HashMap<String, Object>();
     values.put("firstname", "zaphod");
     values.put("lastname", "Beeblebrox");
-    values.put("age", new Integer(43));
+    values.put("age", Integer.valueOf(43));
     values.put("spaceship", null);
 
     assertTrue(expr.evaluate(values));

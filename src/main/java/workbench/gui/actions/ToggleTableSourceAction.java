@@ -50,7 +50,7 @@ public class ToggleTableSourceAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition(resourceKey, KeyStroke.getKeyStroke(KeyEvent.VK_T, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition(resourceKey, KeyStroke.getKeyStroke(KeyEvent.VK_T, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setIcon(null);
   }
 

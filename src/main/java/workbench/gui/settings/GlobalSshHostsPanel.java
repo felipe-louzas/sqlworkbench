@@ -40,11 +40,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import workbench.gui.actions.DeleteListEntryAction;
-import workbench.gui.actions.NewListEntryAction;
-import workbench.gui.components.DividerBorder;
-import workbench.gui.components.WbToolbar;
-
 import workbench.interfaces.FileActions;
 import workbench.interfaces.Restoreable;
 import workbench.interfaces.Validator;
@@ -54,6 +49,11 @@ import workbench.ssh.SshConfigMgr;
 import workbench.ssh.SshHostConfig;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.actions.DeleteListEntryAction;
+import workbench.gui.actions.NewListEntryAction;
+import workbench.gui.components.DividerBorder;
+import workbench.gui.components.WbScrollPane;
+import workbench.gui.components.WbToolbar;
 import workbench.gui.profiles.SshHostConfigPanel;
 
 import workbench.util.StringUtil;
@@ -86,8 +86,7 @@ public class GlobalSshHostsPanel
     int width = WbSwingUtilities.calculateCharWidth(hostList, 16);
     Dimension ps = hostList.getPreferredSize();
 
-
-    JScrollPane scroll = new JScrollPane(hostList);
+    JScrollPane scroll = new WbScrollPane(hostList);
     scroll.setPreferredSize(new Dimension(width, ps.height));
 
     this.toolbar = new WbToolbar();

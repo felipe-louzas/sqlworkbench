@@ -181,6 +181,7 @@ public class GeneralOptionsPanel
     enableQuickFilter.setSelected(GuiSettings.enableProfileQuickFilter());
     focusToQuickFilter.setSelected(GuiSettings.focusToProfileQuickFilter());
     showMenuIcons.setSelected(GuiSettings.showMenuIcons());
+    varsPerWindow.setSelected(Settings.getInstance().useWindowSpecificVariables());
     String iconName = Settings.getInstance().getProperty(IconHandler.PROP_LOADING_IMAGE, IconHandler.DEFAULT_BUSY_IMAGE);
     LoadingImage img = new LoadingImage();
     img.setName(iconName);
@@ -273,6 +274,7 @@ public class GeneralOptionsPanel
 
     LoadingImage cancelImg = (LoadingImage)cancelIconCombo.getSelectedItem();
     set.setProperty(IconHandler.PROP_CANCEL_IMAGE, cancelImg.getName());
+    set.setUseWindowSpecificVariables(varsPerWindow.isSelected());
     applyMasterPassword();
   }
 
@@ -332,6 +334,7 @@ public class GeneralOptionsPanel
     showMenuIcons = new JCheckBox();
     focusToQuickFilter = new JCheckBox();
     masterPwdButton = new JButton();
+    varsPerWindow = new JCheckBox();
     settingsfilename = new WbLabelField();
     jPanel1 = new JPanel();
     showTabIndex = new JCheckBox();
@@ -432,7 +435,7 @@ public class GeneralOptionsPanel
     brushedMetal.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(brushedMetal, gridBagConstraints);
@@ -502,8 +505,18 @@ public class GeneralOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(0, 15, 0, 0);
+    gridBagConstraints.insets = new Insets(0, 21, 0, 0);
     jPanel2.add(masterPwdButton, gridBagConstraints);
+
+    varsPerWindow.setText(ResourceMgr.getString("LblVarsPerWindow")); // NOI18N
+    varsPerWindow.setBorder(null);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new Insets(0, 10, 4, 0);
+    jPanel2.add(varsPerWindow, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -878,6 +891,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridy = 9;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(4, 0, 2, 0);
     add(obfuscateDbInfo, gridBagConstraints);
   }
 
@@ -979,6 +993,7 @@ public class GeneralOptionsPanel
   private JCheckBox singlePageHelp;
   private JCheckBox tabLRUclose;
   private JCheckBox useSystemTray;
+  private JCheckBox varsPerWindow;
   // End of variables declaration//GEN-END:variables
 
 }

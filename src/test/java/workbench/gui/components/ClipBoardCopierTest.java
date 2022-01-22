@@ -104,7 +104,7 @@ public class ClipBoardCopierTest
       GuiSettings.setDisplayNullString("<[NULL]>");
       DataStore ds = createDataStore();
       int row = ds.addRow();
-      ds.setValue(row, 0, new Integer(1));
+      ds.setValue(row, 0, Integer.valueOf(1));
       ds.setValue(row, 1, "Marvin");
       ds.setValue(row, 2, null);
 

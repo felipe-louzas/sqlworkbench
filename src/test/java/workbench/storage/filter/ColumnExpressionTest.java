@@ -42,7 +42,7 @@ public class ColumnExpressionTest
     Map<String, Object> values = new HashMap<String, Object>();
     values.put("firstname", "zaphod");
     values.put("lastname", "Beeblebrox");
-    values.put("age", new Integer(43));
+    values.put("age", Integer.valueOf(43));
     values.put("spaceship", null);
 
     ColumnExpression col = new ColumnExpression("firstname", new IsNotNullComparator(), null);
@@ -58,24 +58,24 @@ public class ColumnExpressionTest
     col = new ColumnExpression("firstname", new IsNotNullComparator(), null);
     assertTrue(col.evaluate(values));
 
-    col = new ColumnExpression("age", new LessOrEqualComparator(), new Integer(43));
+    col = new ColumnExpression("age", new LessOrEqualComparator(), Integer.valueOf(43));
     assertTrue(col.evaluate(values));
-    col = new ColumnExpression("age", new LessOrEqualComparator(), new Integer(10));
+    col = new ColumnExpression("age", new LessOrEqualComparator(), Integer.valueOf(10));
 
     assertFalse(col.evaluate(values));
-    col = new ColumnExpression("age", new LessThanComparator(), new Integer(100));
+    col = new ColumnExpression("age", new LessThanComparator(), Integer.valueOf(100));
     assertTrue(col.evaluate(values));
-    col = new ColumnExpression("age", new LessThanComparator(), new Integer(43));
+    col = new ColumnExpression("age", new LessThanComparator(), Integer.valueOf(43));
     assertFalse(col.evaluate(values));
 
-    col = new ColumnExpression("age", new NumberNotEqualsComparator(), new Integer(100));
+    col = new ColumnExpression("age", new NumberNotEqualsComparator(), Integer.valueOf(100));
     assertTrue(col.evaluate(values));
-    col = new ColumnExpression("age", new NumberNotEqualsComparator(), new Integer(43));
+    col = new ColumnExpression("age", new NumberNotEqualsComparator(), Integer.valueOf(43));
     assertFalse(col.evaluate(values));
 
-    col = new ColumnExpression("age", new NumberEqualsComparator(), new Integer(43));
+    col = new ColumnExpression("age", new NumberEqualsComparator(), Integer.valueOf(43));
     assertTrue(col.evaluate(values));
-    col = new ColumnExpression("age", new NumberEqualsComparator(), new Integer(44));
+    col = new ColumnExpression("age", new NumberEqualsComparator(), Integer.valueOf(44));
     assertFalse(col.evaluate(values));
 
     col = new ColumnExpression("firstname", new NotStartsWithComparator(), "Tricia");
@@ -126,7 +126,7 @@ public class ColumnExpressionTest
     throws Exception
   {
     SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
-    Map<String, Object> values = new HashMap<String, Object>();
+    Map<String, Object> values = new HashMap<>();
     values.put("changed_on", f.parse("2006-11-01"));
 
     ColumnExpression expr = new ColumnExpression("changed_on", new GreaterThanComparator(), f.parse("2006-10-01"));

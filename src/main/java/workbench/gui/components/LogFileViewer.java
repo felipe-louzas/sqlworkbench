@@ -73,7 +73,7 @@ public class LogFileViewer
     display.setBackground(Color.WHITE);
     display.setWrapStyleWord(false);
     display.setLineWrap(false);
-    scroll = new JScrollPane(display);
+    scroll = new WbScrollPane(display);
 
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(scroll, BorderLayout.CENTER);
@@ -111,14 +111,10 @@ public class LogFileViewer
   {
     if (msg == null) return;
 
-    EventQueue.invokeLater(new Runnable()
+    EventQueue.invokeLater(() ->
     {
-      @Override
-      public void run()
-      {
-        display.addLine(msg.toString());
-        scrollToEnd();
-      }
+      display.addLine(msg.toString());
+      scrollToEnd();
     });
   }
 
@@ -129,19 +125,15 @@ public class LogFileViewer
     final FixedSizeList<String> lines = readLines();
     if (lines == null) return;
 
-    EventQueue.invokeLater(new Runnable()
+    EventQueue.invokeLater(() ->
     {
-      @Override
-      public void run()
+      display.setText("");
+      while (lines.size() > 0)
       {
-        display.setText("");
-        while (lines.size() > 0)
-        {
-          display.addLine(lines.removeFirst());
-        }
-        scrollToEnd();
-        LogMgr.addLogListener(LogFileViewer.this);
+        display.addLine(lines.removeFirst());
       }
+      scrollToEnd();
+      LogMgr.addLogListener(LogFileViewer.this);
     });
   }
 

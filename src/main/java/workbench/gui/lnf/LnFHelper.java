@@ -23,8 +23,6 @@ package workbench.gui.lnf;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,12 +33,18 @@ import java.util.Set;
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.text.StyleContext;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
+
+import workbench.gui.renderer.ColorUtils;
 
 import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
@@ -155,7 +159,7 @@ public class LnFHelper
 
     Font stdFont = settings.getStandardFont();
 
-    if (stdFont == null && PlatformHelper.isWindows())
+    if (stdFont == null && isWindowsLookAndFeel())
     {
       // The default Windows Look & Feel uses "Tahoma", but Windows uses Segoe UI
       Font f = def.getFont("Menu.font");
@@ -177,6 +181,7 @@ public class LnFHelper
     {
       // The default Windows look and feel does not scale the fonts properly
       scaleDefaultFonts();
+      adjustWindowsLnF();
     }
 
     Font dataFont = settings.getDataFont();
@@ -192,66 +197,29 @@ public class LnFHelper
       def.put("Table.gridColor", c);
     }
 
+
     def.put("Button.showMnemonics", Boolean.valueOf(GuiSettings.getShowMnemonics()));
     UIManager.put("Synthetica.extendedFileChooser.rememberLastDirectory", false);
   }
 
-  private void setDefaultFonts()
+  private void adjustWindowsLnF()
   {
-    // for some reason the default menu font is properly scaled
-    // on HiDPI displays. So we are adjusting all other fonts
-    // to the size of the menu font.
-    String prop = Settings.getInstance().getReferenceFontName();
-    Font referenceFont = UIManager.getFont(prop);
-    if (referenceFont == null)
-    {
-      referenceFont = UIManager.getFont("Menu.font");
-      prop = "Menu.font";
-    }
-
     UIDefaults def = UIManager.getDefaults();
-    for (String property : fontProperties)
-    {
-      if (prop.equals(property)) continue;
-
-      Font base = def.getFont(property);
-      if (base != null)
-      {
-        Font scaled = base.deriveFont(base.getStyle(), referenceFont.getSize());
-        def.put(property, scaled);
-      }
-    }
-  }
-
-  private boolean isSystemScaled()
-  {
-    try
-    {
-      GraphicsConfiguration config = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-      return config.getDefaultTransform().getScaleX() > 1.0;
-    }
-    catch (Throwable th)
-    {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not get graphics configuration", th);
-    }
-    return false;
+    if (!Settings.getInstance().getBoolProperty("workbench.gui.adjusttheme", true)) return;
+    Border b = new CompoundBorder(new LineBorder(ColorUtils.brighter(Color.LIGHT_GRAY, 0.90), 1), new EmptyBorder(2, 1, 1, 1));
+    def.put("TextField.border", b);
+    def.put("TextArea.border", b);
+    def.put("PasswordField.border", b);
   }
 
   private void scaleDefaultFonts()
   {
-    FontScaler scaler = new FontScaler();
-    scaler.logSettings();
-
-    if (!Settings.getInstance().getScaleFonts() || !scaler.doScaleFonts())
+    if (!Settings.getInstance().getScaleFonts())
     {
-      if (Settings.getInstance().getUseReferenceFont() && (scaler.isHiDPI() || isSystemScaled()))
-      {
-        // It seems that Java scales the Menu font properly, but not the rest.
-        // so we use the menu font as the default font for everything
-        setDefaultFonts();
-      }
       return;
     }
+    FontScaler scaler = new FontScaler();
+    scaler.logSettings();
 
     LogMgr.logInfo(new CallerInfo(){}, "Scaling default fonts by: " + scaler.getScaleFactor());
 
@@ -442,9 +410,12 @@ public class LnFHelper
   {
     try
     {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      isWindowsLnF = PlatformHelper.isWindows();
+      String cls = UIManager.getSystemLookAndFeelClassName();
+      UIManager.setLookAndFeel(cls);
+      isWindowsLnF = cls.contains("plaf.windows");
       isFlatLaf = false;
+      isJGoodies = false;
+      isWebLaf = false;
     }
     catch (Exception ex)
     {

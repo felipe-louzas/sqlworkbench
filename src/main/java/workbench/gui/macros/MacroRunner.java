@@ -146,7 +146,7 @@ public class MacroRunner
     return sql;
   }
 
-  public void runDataMacro(MacroDefinition macro, ResultInfo info, RowData row, MacroClient client, Map<String, String> columnMap)
+  public void runDataMacro(MacroDefinition macro, ResultInfo info, RowData row, MacroClient client, String variablePool, Map<String, String> columnMap)
   {
     if (macro == null) return;
     if (info == null) return;
@@ -161,10 +161,10 @@ public class MacroRunner
       String col = info.getColumnName(i);
       String varName = columnMap.get(col);
       if (varName == null) varName = col;
-      if (VariablePool.getInstance().isValidVariableName(varName))
+      if (VariablePool.getInstance(variablePool).isValidVariableName(varName))
       {
         String data = converter.getValueAsFormattedString(row, i);
-        VariablePool.getInstance().setParameterValue(varName, data);
+        VariablePool.getInstance(variablePool).setParameterValue(varName, data);
       }
       else
       {

@@ -1440,6 +1440,7 @@ public class DwPanel
     }
     return 0;
   }
+  
   public void hideSQLInfo()
   {
     if (sqlInfo != null)

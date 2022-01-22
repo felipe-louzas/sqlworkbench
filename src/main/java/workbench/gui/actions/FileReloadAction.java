@@ -46,7 +46,7 @@ public class FileReloadAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtFileReload", KeyStroke.getKeyStroke(KeyEvent.VK_F5, KeyEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtFileReload", KeyStroke.getKeyStroke(KeyEvent.VK_F5, KeyEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_FILE);
     this.setEnabled(aClient.hasFileLoaded());
   }

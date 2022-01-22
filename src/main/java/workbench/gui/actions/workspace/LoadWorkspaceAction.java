@@ -45,7 +45,7 @@ public class LoadWorkspaceAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtLoadWorkspace", KeyStroke.getKeyStroke(KeyEvent.VK_O, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtLoadWorkspace", KeyStroke.getKeyStroke(KeyEvent.VK_O, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
     this.setIcon(null);
   }

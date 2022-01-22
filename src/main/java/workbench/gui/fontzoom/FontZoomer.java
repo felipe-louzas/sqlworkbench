@@ -86,7 +86,7 @@ public class FontZoomer
   @Override
   public void mouseWheelMoved(MouseWheelEvent e)
   {
-    if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL && WbAction.isCtrlPressed(e.getModifiers()))
+    if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL && WbAction.isCtrlPressed(e.getModifiersEx()))
     {
       if (e.getWheelRotation() > 0)
       {

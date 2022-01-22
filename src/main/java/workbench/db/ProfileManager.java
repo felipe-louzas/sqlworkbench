@@ -92,7 +92,7 @@ public class ProfileManager
    */
   public List<String> getProfileKeys()
   {
-    List<String> result = new ArrayList(profiles.size());
+    List<String> result = new ArrayList<>(profiles.size());
     for (ConnectionProfile profile : profiles)
     {
       result.add(profile.getKey().toString());

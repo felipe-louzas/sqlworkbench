@@ -29,7 +29,8 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-import workbench.gui.renderer.ColorUtils;
+import workbench.gui.WbSwingUtilities;
+import workbench.gui.lnf.LnFHelper;
 
 /**
  *
@@ -38,7 +39,7 @@ import workbench.gui.renderer.ColorUtils;
 public class WbScrollPane
   extends JScrollPane
 {
-  private boolean useCustomizedBorder = true;
+  private boolean useCustomizedBorder = !LnFHelper.isFlatLaf();
 
   public WbScrollPane()
   {
@@ -81,7 +82,7 @@ public class WbScrollPane
         // With some Linux distributions (Debian) creating this border during
         // initialization fails. So if we can't create our own border
         // we simply skip this for the future
-        Color cl = ColorUtils.darker(UIManager.getColor("Label.background"), 0.85);
+        Color cl = WbSwingUtilities.getLineBorderColor(UIManager.getColor("Label.background"));
         Border myBorder = new LineBorder(cl, 1);
         super.setBorder(myBorder);
       }

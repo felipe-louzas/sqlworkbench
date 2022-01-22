@@ -47,7 +47,7 @@ public class FindDataAgainAction
     super();
     this.client = aClient;
 
-    this.initMenuDefinition("MnuTxtFindInTableDataAgain", KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.CTRL_MASK));
+    this.initMenuDefinition("MnuTxtFindInTableDataAgain", KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.CTRL_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_DATA);
   }
 

@@ -77,7 +77,7 @@ public class JsonRowDataConverterTest
     Date login = StringUtil.getIsoTimestampFormatter().parse("2013-01-12 14:56:12.000");
 
     RowData data = new RowData(info);
-    data.setValue(0, new Integer(1));
+    data.setValue(0, 1);
     data.setValue(1, "Arthur");
     data.setValue(2, "Dent");
     data.setValue(3, new java.sql.Timestamp(login.getTime()));
@@ -86,7 +86,7 @@ public class JsonRowDataConverterTest
     String result = converter.getStart().toString();
     result += converter.convertRowData(data, 0).toString();
 
-    data.setValue(0, new Integer(2));
+    data.setValue(0, 2);
     data.setValue(1, "Ford");
     data.setValue(2, "\"Prefect\"");
     data.setValue(3, null);

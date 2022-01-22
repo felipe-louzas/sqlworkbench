@@ -1603,7 +1603,7 @@ public class GuiSettings
 
   public static Color getEditorTabHighlightColor()
   {
-    return Settings.getInstance().getColor("workbench.editor.tab.highlight.color");
+    return Settings.getInstance().getColor("workbench.editor.tab.highlight.color", new Color(0,80,220));
   }
 
   public static int getEditorTabHighlightWidth()
@@ -1613,14 +1613,14 @@ public class GuiSettings
 
   public static GuiPosition getEditorTabHighlightLocation()
   {
-    String location = Settings.getInstance().getProperty("workbench.editor.tab.highlight.location", "bottom");
+    String location = Settings.getInstance().getProperty("workbench.editor.tab.highlight.location", "top");
     try
     {
       return GuiPosition.valueOf(location);
     }
     catch (Throwable th)
     {
-      return GuiPosition.bottom;
+      return GuiPosition.top;
     }
   }
 
@@ -1707,6 +1707,11 @@ public class GuiSettings
   public static void setMacroListPosition(ComponentPosition position)
   {
     Settings.getInstance().setProperty("workbench.gui.macropopup.position", position.name());
+  }
+
+  public static boolean useTabHighlightForResult()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.tabs.highlight.result", false);
   }
 
   public static boolean getUseOneTouchExpand()

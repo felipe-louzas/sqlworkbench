@@ -21,8 +21,6 @@
  */
 package workbench.storage;
 
-import workbench.storage.reader.RowDataReader;
-
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -31,9 +29,10 @@ import java.util.Random;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
+import workbench.storage.reader.RowDataReader;
 
 import workbench.util.SqlUtil;
 
@@ -171,7 +170,7 @@ public class RowDataTest
   public void testBlobs()
   {
     RowData row = new RowData(2);
-    row.setValue(0, new Integer(1));
+    row.setValue(0, 1);
     row.setValue(1, new byte[] {1,2,3});
     row.resetStatus();
 
@@ -220,7 +219,7 @@ public class RowDataTest
     assertFalse(row.isModified());
 
     row = new RowData(2);
-    row.setValue(0, new Integer(42));
+    row.setValue(0, 42);
     row.setValue(1, "Test");
     row.resetStatus();
 
@@ -243,14 +242,14 @@ public class RowDataTest
     assertTrue(row.isNew());
 
     row.setValue(0, "123");
-    row.setValue(1, new Integer(42));
+    row.setValue(1, 42);
     assertTrue(row.isNew());
     assertTrue(row.isModified());
     assertEquals("123", row.getValue(0));
-    assertEquals(new Integer(42), row.getValue(1));
+    assertEquals(42, row.getValue(1));
 
     assertEquals("123", row.getOriginalValue(0));
-    assertEquals(new Integer(42), row.getOriginalValue(1));
+    assertEquals(42, row.getOriginalValue(1));
 
     row.resetStatus();
     assertFalse(row.isModified());
@@ -258,7 +257,7 @@ public class RowDataTest
     Object value = row.getValue(0);
     assertEquals(value, "123");
     value = row.getValue(1);
-    assertEquals(value, new Integer(42));
+    assertEquals(value, 42);
 
     row.setValue(0, null);
     value = row.getValue(0);

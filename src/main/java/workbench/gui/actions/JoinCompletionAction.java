@@ -62,7 +62,7 @@ public class JoinCompletionAction
   {
     super();
     this.client = panel;
-    this.initMenuDefinition("MnuTxtAutoCompleteJoin", KeyStroke.getKeyStroke(KeyEvent.VK_J, KeyEvent.ALT_MASK));
+    this.initMenuDefinition("MnuTxtAutoCompleteJoin", KeyStroke.getKeyStroke(KeyEvent.VK_J, KeyEvent.ALT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
     setEnabled(false);
   }

@@ -63,7 +63,7 @@ public class MacroStorageTest
     macros.addMacro("Default", "clean", "delete from $[table]");
 
     MacroDefinition macro = macros.getMacro("sessions");
-    StoreableKeyStroke key = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+    StoreableKeyStroke key = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK));
     macro.setShortcut(key);
 
     TestUtil util = new TestUtil("SaveMacros");

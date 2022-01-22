@@ -252,14 +252,14 @@ public class ProfileSelectionPanel
   @Override
   public void keyPressed(KeyEvent e)
   {
-    if (e.getKeyCode() == KeyEvent.VK_SPACE && WbAction.isCtrlPressed(e.getModifiers()))
+    if (e.getKeyCode() == KeyEvent.VK_SPACE && WbAction.isCtrlPressed(e.getModifiersEx()))
     {
       e.consume();
       EventQueue.invokeLater(this::showTagPopup);
       return;
     }
 
-    if (e.getModifiers() != 0) return;
+    if (e.getModifiersEx() != 0) return;
 
     switch (e.getKeyCode())
     {

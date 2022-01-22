@@ -44,7 +44,7 @@ public class NextTabAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtNextTab", KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.CTRL_MASK));
+    this.initMenuDefinition("MnuTxtNextTab", KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.CTRL_DOWN_MASK));
     this.removeIcon();
     setEnabled(true);
   }

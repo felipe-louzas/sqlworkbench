@@ -47,7 +47,7 @@ public class UnCommentAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtUnCommentSelection", KeyStroke.getKeyStroke(KeyEvent.VK_U, PlatformShortcuts.getDefaultModifier() + InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtUnCommentSelection", KeyStroke.getKeyStroke(KeyEvent.VK_U, PlatformShortcuts.getDefaultModifier() + InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
   }
 

@@ -125,7 +125,9 @@ public class DwStatusBar
     {
       this.editorStatus = new JLabel();
       this.editorStatus.setHorizontalAlignment(SwingConstants.CENTER);
-      this.editorStatus.setBorder(new CompoundBorder(new DividerBorder(DividerBorder.LEFT), new EmptyBorder(0, 3, 0, 3)));
+      Border d = new DividerBorder(DividerBorder.LEFT_RIGHT, WbSwingUtilities.getLineBorderColor(this));
+      Border db = new CompoundBorder(d, new EmptyBorder(0, 6, 0, 6));
+      this.editorStatus.setBorder(db);
       this.editorStatus.setToolTipText(ResourceMgr.getDescription("LblEditorStatus"));
       infoPanel.add(editorStatus);
       this.editorColPrefix = ResourceMgr.getString("LblEditorPosCol");

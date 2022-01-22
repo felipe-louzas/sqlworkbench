@@ -50,7 +50,7 @@ public class CleanJavaCodeAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtCleanJavaCode", KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.ALT_MASK));
+    this.initMenuDefinition("MnuTxtCleanJavaCode", KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.ALT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
   }
 

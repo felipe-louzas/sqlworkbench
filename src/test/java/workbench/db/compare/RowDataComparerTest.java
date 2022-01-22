@@ -77,15 +77,15 @@ public class RowDataComparerTest
     factory.setIncludeNullInInsert(true);
 
     RowData reference = new RowData(info);
-    reference.setValue(0, new Integer(1));
+    reference.setValue(0, 1);
     reference.setValue(1, null);
-    reference.setValue(2, new Integer(42));
+    reference.setValue(2, 42);
     reference.resetStatus();
 
     RowData target = new RowData(info);
-    target.setValue(0, new Integer(1));
+    target.setValue(0, 1);
     target.setValue(1, null);
-    target.setValue(2, new Integer(2));
+    target.setValue(2, 2);
     target.resetStatus();
 
     RowDataComparer instance = new RowDataComparer();
@@ -117,12 +117,12 @@ public class RowDataComparerTest
     info.setUpdateTable(new TableIdentifier("SOME_TABLE"));
 
     RowData reference = new RowData(info);
-    reference.setValue(0, new Integer(42));
+    reference.setValue(0, 42);
     reference.setValue(1, "Foo \u00bb d\u00e9faul : 50 m\u00b2/emploi");
     reference.resetStatus();
 
     RowData target = new RowData(info);
-    target.setValue(0, new Integer(42));
+    target.setValue(0, 42);
     target.setValue(1, "Foo \u00bb d\u00e9faul : 50 m\u00b2/emploi");
     target.resetStatus();
 
@@ -157,13 +157,13 @@ public class RowDataComparerTest
     info.setUpdateTable(new TableIdentifier("PERSON"));
 
     RowData reference = new RowData(info);
-    reference.setValue(0, new Integer(42));
+    reference.setValue(0, 42);
     reference.setValue(1, "Zaphod");
     reference.setValue(2, "Beeblebrox");
     reference.resetStatus();
 
     RowData target = new RowData(info);
-    target.setValue(0, new Integer(42));
+    target.setValue(0, 42);
     target.setValue(1, "Arthur");
     target.setValue(2, "Beeblebrox");
     target.resetStatus();
@@ -188,13 +188,13 @@ public class RowDataComparerTest
     assertTrue(sql.contains("(42,'Zaphod','Beeblebrox')"));
 
     reference = new RowData(info);
-    reference.setValue(0, new Integer(42));
+    reference.setValue(0, 42);
     reference.setValue(1, "Zaphod");
     reference.setValue(2, null);
     reference.resetStatus();
 
     target = new RowData(info);
-    target.setValue(0, new Integer(42));
+    target.setValue(0, 42);
     target.setValue(1, "Zaphod");
     target.setValue(2, null);
     target.resetStatus();
@@ -228,13 +228,13 @@ public class RowDataComparerTest
     factory.setIncludeNullInInsert(true);
 
     RowData reference = new RowData(info);
-    reference.setValue(0, new Integer(42));
+    reference.setValue(0, 42);
     reference.setValue(1, "Zaphod");
     reference.setValue(2, "Beeblebrox");
     reference.resetStatus();
 
     RowData target = new RowData(info);
-    target.setValue(0, new Integer(42));
+    target.setValue(0, 42);
     target.setValue(1, "Arthur");
     target.setValue(2, "Beeblebrox");
     target.resetStatus();
@@ -255,13 +255,13 @@ public class RowDataComparerTest
     assertTrue(xml.startsWith("<insert>"));
 
     reference = new RowData(info);
-    reference.setValue(0, new Integer(42));
+    reference.setValue(0, 42);
     reference.setValue(1, "Zaphod");
     reference.setValue(2, null);
     reference.resetStatus();
 
     target = new RowData(info);
-    target.setValue(0, new Integer(42));
+    target.setValue(0, 42);
     target.setValue(1, "Zaphod");
     target.setValue(2, null);
     target.resetStatus();
@@ -300,13 +300,13 @@ public class RowDataComparerTest
     info2.setUpdateTable(new TableIdentifier("FOO2"));
 
     RowData reference = new RowData(info1);
-    reference.setValue(0, new Integer(1));
+    reference.setValue(0, 1);
     reference.setValue(1, "one");
     reference.setValue(2, "more");
     reference.resetStatus();
 
     RowData target = new RowData(info2);
-    target.setValue(0, new Integer(1));
+    target.setValue(0, 1);
     target.setValue(1, "one-");
     target.setValue(2, "more");
     target.resetStatus();

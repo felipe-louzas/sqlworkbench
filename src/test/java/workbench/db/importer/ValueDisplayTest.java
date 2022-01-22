@@ -22,6 +22,7 @@
 package workbench.db.importer;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -34,7 +35,7 @@ public class ValueDisplayTest
   @Test
   public void testToString()
   {
-    ValueDisplay value = new ValueDisplay((new Object[] { "one", "two", new Integer(42)} ));
+    ValueDisplay value = new ValueDisplay((new Object[] { "one", "two", Integer.valueOf(42)} ));
     assertEquals("{[one],[two],[42]}", value.toString());
   }
 }

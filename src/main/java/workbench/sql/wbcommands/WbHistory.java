@@ -32,9 +32,9 @@ import workbench.resource.GuiSettings;
 
 import workbench.storage.DataStore;
 
-import workbench.sql.annotations.ScrollAnnotation;
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ScrollAnnotation;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -112,7 +112,10 @@ public class WbHistory
 
   private String getDisplayString(String sql)
   {
-    if (WbManager.getInstance().isGUIMode()) return sql;
+    if (WbManager.getInstance().isGUIMode())
+    {
+      return StringUtil.trim(sql);
+    }
 
     String display = SqlUtil.makeCleanSql(sql, false, false, true, currentConnection);
     if (maxLength > -1)

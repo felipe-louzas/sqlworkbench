@@ -22,6 +22,7 @@
 package workbench.gui.sql;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Window;
@@ -372,7 +373,7 @@ public class SqlPanel
   private final Highlighter highlighter;
   private ResultTabDropHandler tabDropHandler;
   private boolean macroExecution = false;
-
+  private String variablePoolID = null;
   private final Object toolbarLock = new Object();
 
 //</editor-fold>
@@ -410,6 +411,11 @@ public class SqlPanel
     log = new LogArea(this);
 
     resultTab = new WbTabbedPane();
+    if (GuiSettings.useTabHighlightForResult())
+    {
+      resultTab.initializeTabHighlight();
+    }
+
     resultTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
     resultTab.setTabPlacement(JTabbedPane.TOP);
     resultTab.setFocusable(false);
@@ -427,7 +433,8 @@ public class SqlPanel
     contentPanel.setOneTouchExpandable(true);
     contentPanel.setBorder(WbSwingUtilities.EMPTY_BORDER);
     contentPanel.setDividerSize(10);
-    contentPanel.setDividerBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, false));
+    Color c = WbSwingUtilities.getLineBorderColor(contentPanel);
+    contentPanel.setDividerBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, c));
 
     appendResults = GuiSettings.getDefaultAppendResults();
 
@@ -476,6 +483,12 @@ public class SqlPanel
 
     tabDropHandler = new ResultTabDropHandler(this, resultTab, log);
     contentPanel.setDividerLocation(0.5);
+  }
+
+  public void setVariablePoolID(String variablePoolID)
+  {
+    this.variablePoolID = variablePoolID;
+    this.stmtRunner.setVariablePoolID(variablePoolID);
   }
 
   public boolean isCmdModeEnabled()
@@ -3171,14 +3184,14 @@ public class SqlPanel
   {
     boolean goOn = true;
 
-    VariablePool varPool = VariablePool.getInstance();
+    VariablePool varPool = VariablePool.getInstance(variablePoolID);
 
     DataStore ds = varPool.getParametersToBePrompted(sql);
 
     if (ds != null && ds.getRowCount() > 0)
     {
       iconHandler.showBusyIcon(false);
-      goOn = VariablesEditor.showVariablesDialog(ds);
+      goOn = VariablesEditor.showVariablesDialog(ds, variablePoolID);
       iconHandler.showBusyIcon(true);
     }
 

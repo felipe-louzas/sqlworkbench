@@ -68,7 +68,7 @@ public class WbRemoveVar
     }
     else
     {
-      int removed = VariablePool.getInstance().removeVariable(var);
+      int removed = VariablePool.getInstance(variablePoolID).removeVariable(var);
       if (var.indexOf('*') > -1 || var.indexOf('%') > -1)
       {
         msg = ResourceMgr.getFormattedString("MsgVarPatternRemoved", removed);

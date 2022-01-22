@@ -72,7 +72,7 @@ public class HtmlRowDataConverterTest
 
     RowData data = new RowData(info);
     data.setValue(0, "char_column_data");
-    data.setValue(1, new Integer(42));
+    data.setValue(1, Integer.valueOf(42));
     ValueConverter valueConverter = new ValueConverter("yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss");
     data.setValue(2, valueConverter.convertValue("2008-07-23", Types.DATE));
     data.setValue(3, valueConverter.convertValue("2008-07-23 13:42:01", Types.TIMESTAMP));

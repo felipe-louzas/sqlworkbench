@@ -45,7 +45,7 @@ public class SaveWorkspaceAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtSaveWorkspace", KeyStroke.getKeyStroke(KeyEvent.VK_S, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtSaveWorkspace", KeyStroke.getKeyStroke(KeyEvent.VK_S, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
     this.setIcon(null);
   }

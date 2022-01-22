@@ -24,8 +24,10 @@ package workbench.storage;
 import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.Map;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -54,7 +56,7 @@ public class StructConverterTest
       public Object[] getAttributes()
         throws SQLException
       {
-        return new Object[] {new Integer(42), "Test", java.sql.Date.valueOf(dateValue) };
+        return new Object[] {Integer.valueOf(42), "Test", java.sql.Date.valueOf(dateValue) };
       }
 
       @Override

@@ -44,7 +44,7 @@ public class PrevTabAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtPrevTab", KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
+    this.initMenuDefinition("MnuTxtPrevTab", KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK));
     this.removeIcon();
     this.setEnabled(true);
   }

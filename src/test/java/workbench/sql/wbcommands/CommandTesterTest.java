@@ -65,12 +65,12 @@ public class CommandTesterTest
     List<Class> commands = ClassFinder.getClasses("workbench.sql.wbcommands");
     CommandTester tester = new CommandTester();
 
-    for (Class cls : commands)
+    for (Class<? extends SqlCommand> cls : commands)
     {
       String clsName = cls.getName().replace("workbench.sql.wbcommands.", "");
       if (clsName.startsWith("Wb") && !cls.isInterface() && !clsName.endsWith("Test"))
       {
-        SqlCommand cmd = (SqlCommand)cls.newInstance();
+        SqlCommand cmd = cls.getDeclaredConstructor().newInstance();
         if (!(cmd instanceof WbOraShow))
         {
           assertTrue(clsName + " is not registered!", tester.isWbCommand(cmd.getVerb()));

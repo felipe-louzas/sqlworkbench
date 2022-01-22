@@ -33,7 +33,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -115,7 +114,7 @@ public class DriverEditorDialog
       }
     });
 
-    driverListPanel.setBorder(BorderFactory.createEtchedBorder());
+    driverListPanel.setBorder(null);
     getContentPane().add(driverListPanel, BorderLayout.CENTER);
 
     okButton.addActionListener(this);

@@ -35,7 +35,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
+
 
 /**
  *

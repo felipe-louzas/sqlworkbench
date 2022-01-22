@@ -34,6 +34,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.sql.SqlCommand;
@@ -46,9 +47,6 @@ import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.FileUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -186,7 +184,7 @@ public class WbDefineVar
       if (CollectionUtil.isNonEmpty(lookupValues) && StringUtil.isNonEmpty(varName))
       {
         LogMgr.logDebug(new CallerInfo(){}, "Lookup values for variable " + varName + ": " + lookupValues);
-        VariablePool.getInstance().setLookupValues(varName, lookupValues);
+        VariablePool.getInstance(this.variablePoolID).setLookupValues(varName, lookupValues);
       }
       lookupDefined = true;
     }
@@ -243,7 +241,7 @@ public class WbDefineVar
     {
       for (String name : varNames)
       {
-        VariablePool.getInstance().removeVariable(name);
+        VariablePool.getInstance(this.variablePoolID).removeVariable(name);
         String removed = ResourceMgr.getFormattedString("MsgVarRemoved", name);
         result.addMessage(removed);
       }
@@ -264,7 +262,7 @@ public class WbDefineVar
       {
         // as the SQL that was passed to this command already has all variables replaced,
         // we can simply remove anything that looks like a variable in the value.
-        valueParameter = VariablePool.getInstance().removeVariables(valueParameter);
+        valueParameter = VariablePool.getInstance(this.variablePoolID).removeVariables(valueParameter);
       }
 
       if (varNames.size() > 1)
@@ -280,7 +278,7 @@ public class WbDefineVar
         String msg = ResourceMgr.getString("MsgVarDefVariableDefined");
         msg = StringUtil.replace(msg, "%var%", varName);
         msg = StringUtil.replace(msg, "%value%", valueParameter);
-        msg = StringUtil.replace(msg, "%varname%", VariablePool.getInstance().buildVarName(varName, false));
+        msg = StringUtil.replace(msg, "%varname%", VariablePool.getInstance(this.variablePoolID).buildVarName(varName, false));
         result.addMessage(msg);
       }
     }
@@ -323,7 +321,7 @@ public class WbDefineVar
           String msg = ResourceMgr.getString("MsgVarDefVariableDefined");
           msg = StringUtil.replace(msg, "%var%", varNames.get(i));
           msg = StringUtil.replace(msg, "%value%", values.get(i));
-          msg = StringUtil.replace(msg, "%varname%", VariablePool.getInstance().buildVarName(varNames.get(i), false));
+          msg = StringUtil.replace(msg, "%varname%", VariablePool.getInstance(this.variablePoolID).buildVarName(varNames.get(i), false));
           result.addMessage(msg);
         }
 
@@ -348,7 +346,7 @@ public class WbDefineVar
     {
       if (file.exists())
       {
-        VariablePool.getInstance().readFromFile(file.getFullPath(), encoding, false);
+        VariablePool.getInstance(this.variablePoolID).readFromFile(file.getFullPath(), encoding, false);
         String msg = ResourceMgr.getFormattedString("MsgVarDefFileLoaded", file.getFullPath());
         result.addMessage(msg);
         result.setSuccess();
@@ -378,16 +376,16 @@ public class WbDefineVar
         switch (nullAction)
         {
           case empty:
-            VariablePool.getInstance().setParameterValue(var, "");
+            VariablePool.getInstance(this.variablePoolID).setParameterValue(var, "");
             break;
           case remove:
-            VariablePool.getInstance().removeVariable(var);
+            VariablePool.getInstance(this.variablePoolID).removeVariable(var);
             if (!silent) result.addMessage(ResourceMgr.getFormattedString("MsgVarRemoved", var));
         }
       }
       else
       {
-        VariablePool.getInstance().setParameterValue(var, value);
+        VariablePool.getInstance(this.variablePoolID).setParameterValue(var, value);
       }
     }
     catch (IllegalArgumentException e)
@@ -472,7 +470,7 @@ public class WbDefineVar
       String value = FileUtil.readFile(contentFile, encoding);
       if (replace)
       {
-        value = VariablePool.getInstance().replaceAllParameters(value);
+        value = VariablePool.getInstance(this.variablePoolID).replaceAllParameters(value);
       }
 
       setVariable(result, varname, value, silent, getNullVarHandling());

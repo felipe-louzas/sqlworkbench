@@ -377,6 +377,19 @@ public class WbTabbedPane
     setOpaque(true);
   }
 
+  public void initializeTabHighlight()
+  {
+    if (LnFHelper.isFlatLaf()) return;
+    
+    Color color = GuiSettings.getEditorTabHighlightColor();
+    if (color != null)
+    {
+      int hwidth = GuiSettings.getEditorTabHighlightWidth();
+      GuiPosition location = GuiSettings.getEditorTabHighlightLocation();
+      setTabHighlight(color, hwidth, location);
+    }
+  }
+
   public void setTabHighlight(Color highlight, int height, GuiPosition pos)
   {
     TabbedPaneUI tui = getUI();

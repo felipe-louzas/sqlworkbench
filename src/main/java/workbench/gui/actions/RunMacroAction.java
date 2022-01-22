@@ -187,7 +187,7 @@ public class RunMacroAction
     if (rowData == null) return;
 
     MacroRunner runner = new MacroRunner();
-    runner.runDataMacro(macro, ds.getResultInfo(), rowData, sql, columnMap);
+    runner.runDataMacro(macro, ds.getResultInfo(), rowData, sql, this.client.getVariablePoolID(), columnMap);
   }
 
   @Override

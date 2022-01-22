@@ -77,6 +77,7 @@ public class ConstantColumnValues
   private final Map<Integer, ValueStatement> selectStatements = new HashMap<>();
   private final Map<String, String> variables = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
   private boolean usesVariables;
+  private String variablePool;
 
   /**
    * Parses a parameter value for column value definitions.
@@ -113,6 +114,11 @@ public class ConstantColumnValues
     originalDefinition = new ArrayList<>(entries);
     originalConverter = new ValueConverter();
     init(entries, targetColumns, originalConverter);
+  }
+
+  public void setVariablePool(String variablePool)
+  {
+    this.variablePool = variablePool;
   }
 
   protected final void init(List<String> entries, List<ColumnIdentifier> tableColumns, ValueConverter converter)
@@ -161,7 +167,7 @@ public class ConstantColumnValues
 
         if (SqlUtil.isCharacterType(col.getDataType()) && StringUtil.isNonBlank(value) && !usesVariables)
         {
-          usesVariables = VariablePool.getInstance().containsVariable(value, varNames);
+          usesVariables = VariablePool.getInstance(variablePool).containsVariable(value, varNames);
         }
 
         this.columnValues.add(new ColumnData(data, col));
@@ -276,7 +282,7 @@ public class ConstantColumnValues
 
   private boolean isLineNumber(String value)
   {
-    String var = VariablePool.getInstance().buildVarName(VAR_NAME_CURRENT_LINE, false);
+    String var = VariablePool.getInstance(variablePool).buildVarName(VAR_NAME_CURRENT_LINE, false);
     String f = (String)value;
     return f.toLowerCase().equals(var);
   }
@@ -338,7 +344,7 @@ public class ConstantColumnValues
     if (usesVariables && variables.size() > 0 && SqlUtil.isCharacterType(data.getIdentifier().getDataType()))
     {
       String value = (String)data.getValue();
-      String realValue = VariablePool.getInstance().replaceAllParameters(value, variables);
+      String realValue = VariablePool.getInstance(variablePool).replaceAllParameters(value, variables);
       return data.createCopy(realValue);
     }
     return data;

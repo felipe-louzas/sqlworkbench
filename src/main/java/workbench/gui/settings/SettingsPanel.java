@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -43,8 +42,6 @@ import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -55,6 +52,7 @@ import workbench.resource.Settings;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
 import workbench.gui.components.WbButton;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.help.HelpManager;
 
 /**
@@ -126,7 +124,7 @@ public class SettingsPanel
       }
       content.add(panel, BorderLayout.CENTER);
       content.validate();
-      content.repaint();
+      WbSwingUtilities.repaintLater(content);
       this.currentPanel = panel;
     }
     finally
@@ -155,11 +153,8 @@ public class SettingsPanel
     pageList = new JList(model);
     pageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     pageList.addListSelectionListener(this);
-    JScrollPane scroll = new JScrollPane(pageList);
-    scroll.setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(), new EmptyBorder(2, 2, 2, 2)));
-
+    JScrollPane scroll = new WbScrollPane(pageList);
     content = new JPanel(new BorderLayout());
-    content.setBorder(new EmptyBorder(2,2,2,2));
     content.add(scroll, BorderLayout.WEST);
 
     okButton = new WbButton(ResourceMgr.getString("LblOK"));

@@ -45,7 +45,7 @@ public class FileConnectAction
   {
     super();
     this.window = aWindow;
-    this.initMenuDefinition("MnuTxtConnect", KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK));
+    this.initMenuDefinition("MnuTxtConnect", KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK));
   }
 
   @Override

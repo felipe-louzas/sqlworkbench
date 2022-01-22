@@ -34,6 +34,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbObjectFinder;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -48,9 +49,6 @@ import workbench.sql.parser.ScriptParser;
 
 import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 
 import org.junit.Test;
@@ -405,7 +403,7 @@ public class SqlRowDataConverterTest
       assertEquals("No UPDATE generated", "UPDATE", verb);
       assertEquals("Wrong WHERE statement", true, line.endsWith("WHERE char_col = 'data1';"));
 
-      List columns = new ArrayList();
+      List<ColumnIdentifier> columns = new ArrayList<>();
       columns.add(info.getColumn(0));
       columns.add(info.getColumn(1));
       converter.setColumnsToExport(columns);

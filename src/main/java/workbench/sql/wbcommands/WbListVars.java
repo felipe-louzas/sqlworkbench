@@ -93,7 +93,7 @@ public class WbListVars extends SqlCommand
       return result;
     }
 
-    DataStore ds = VariablePool.getInstance().getVariablesDataStore();
+    DataStore ds = VariablePool.getInstance(variablePoolID).getVariablesDataStore();
     ds.setResultName(ResourceMgr.getString("TxtVariables"));
 
     ColumnExpression filter = null;

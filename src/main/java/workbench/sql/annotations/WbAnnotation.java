@@ -129,7 +129,7 @@ public class WbAnnotation
   {
     try
     {
-      return getClass().newInstance();
+      return getClass().getDeclaredConstructor().newInstance();
     }
     catch (Throwable th)
     {

@@ -2776,7 +2776,7 @@ public class TableListPanel
   @Override
   public void mouseClicked(MouseEvent e)
   {
-    this.shiftDown = ((e.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK);
+    this.shiftDown = ((e.getModifiersEx() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK);
   }
 
   @Override

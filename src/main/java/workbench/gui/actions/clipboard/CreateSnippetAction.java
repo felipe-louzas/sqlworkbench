@@ -60,7 +60,7 @@ public class CreateSnippetAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtCreateSnippet", KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_MASK));
+    this.initMenuDefinition("MnuTxtCreateSnippet", KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
   }
 

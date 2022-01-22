@@ -44,22 +44,22 @@ public class WbNumberFormatterTest
     assertEquals("1.124", f.format(new BigDecimal("1.1237")));
     assertEquals("1.123", f.format(new BigDecimal("1.1231")));
     assertEquals("0", f.format(new BigDecimal("0")));
-    assertEquals("42", f.format(new Integer(42)));
-    assertEquals("1.5", f.format(new Double(1.5)));
+    assertEquals("42", f.format(Integer.valueOf(42)));
+    assertEquals("1.5", f.format(Double.valueOf(1.5)));
     assertEquals("1.5", f.format(new BigDecimal("1.5")));
     assertEquals("42", f.format(new BigDecimal("42")));
-    assertEquals("1", f.format(new Double(1)));
-    assertEquals("1.123", f.format(new Double(1.123)));
-    assertEquals("1.123", f.format(new Double(1.1234)));
-    assertEquals("1.124", f.format(new Double(1.1236)));
+    assertEquals("1", f.format(Double.valueOf(1)));
+    assertEquals("1.123", f.format(Double.valueOf(1.123)));
+    assertEquals("1.123", f.format(Double.valueOf(1.1234)));
+    assertEquals("1.124", f.format(Double.valueOf(1.1236)));
     assertEquals("", f.format(null));
 
     f = new WbNumberFormatter('.');
     assertEquals("1.1", f.format(new BigDecimal("1.1")));
     assertEquals("1.1234", f.format(new BigDecimal("1.1234")));
     assertEquals("1.1234567890", f.format(new BigDecimal("1.1234567890")));
-    assertEquals("1", f.format(new Double(1)));
-    assertEquals("1.123456", f.format(new Double(1.123456)));
+    assertEquals("1", f.format(Double.valueOf(1)));
+    assertEquals("1.123456", f.format(Double.valueOf(1.123456)));
 
     f = new WbNumberFormatter(',');
     assertEquals("3,14", f.format(new BigDecimal("3.14")));
@@ -67,12 +67,12 @@ public class WbNumberFormatterTest
 
     f = new WbNumberFormatter(2, ',');
     assertEquals("3,14", f.format(new BigDecimal("3.14152")));
-    assertEquals("3,14", f.format(new Double(3.14)));
+    assertEquals("3,14", f.format(Double.valueOf(3.14)));
 
     f = new WbNumberFormatter(4, ',');
     assertEquals("3,1415", f.format(new BigDecimal("3.14152")));
-    assertEquals("3,1415", f.format(new Double(3.14152)));
-    assertEquals("0,1", f.format(new Double(0.1)));
+    assertEquals("3,1415", f.format(Double.valueOf(3.14152)));
+    assertEquals("0,1", f.format(Double.valueOf(0.1)));
   }
 
   @Test
@@ -81,11 +81,11 @@ public class WbNumberFormatterTest
     WbNumberFormatter f = new WbNumberFormatter(6, '.', true);
     assertEquals("1.123700", f.format(new BigDecimal("1.1237")));
     assertEquals("0.000000", f.format(new BigDecimal("0")));
-    assertEquals("1.500000", f.format(new Double(1.5)));
-    assertEquals("0.000000", f.format(new Double(0)));
-    assertEquals("42", f.format(new Integer(42)));
+    assertEquals("1.500000", f.format(Double.valueOf(1.5)));
+    assertEquals("0.000000", f.format(Double.valueOf(0)));
+    assertEquals("42", f.format(Integer.valueOf(42)));
 
     f = new WbNumberFormatter(4, ',', true);
-    assertEquals("1,5000", f.format(new Double(1.5)));
+    assertEquals("1,5000", f.format(Double.valueOf(1.5)));
   }
 }

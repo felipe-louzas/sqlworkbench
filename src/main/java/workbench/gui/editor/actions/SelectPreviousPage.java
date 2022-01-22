@@ -32,7 +32,7 @@ public class SelectPreviousPage
 {
   public SelectPreviousPage()
   {
-    super("TxtEdPrvPageSel", KeyEvent.VK_PAGE_UP, KeyEvent.SHIFT_MASK);
+    super("TxtEdPrvPageSel", KeyEvent.VK_PAGE_UP, KeyEvent.SHIFT_DOWN_MASK);
     select = true;
   }
 }

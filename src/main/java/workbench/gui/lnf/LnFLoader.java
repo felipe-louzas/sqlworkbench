@@ -96,13 +96,13 @@ public class LnFLoader
     }
   }
 
-  public Class loadClass()
+  public Class<? extends LookAndFeel> loadClass()
     throws ClassNotFoundException
   {
     return loadClass(this.lnfDef.getClassName(), true);
   }
 
-  public Class loadClass(String lnfClassName, boolean logVersion)
+  public Class<? extends LookAndFeel> loadClass(String lnfClassName, boolean logVersion)
     throws ClassNotFoundException
   {
     Class lnfClass = null;
@@ -155,22 +155,22 @@ public class LnFLoader
   {
     try
     {
-      Class lnf = loadClass(className, false);
-      return (LookAndFeel)lnf.getDeclaredConstructor().newInstance();
+      Class<? extends LookAndFeel> lnf = loadClass(className, false);
+      return lnf.getDeclaredConstructor().newInstance();
     }
     catch (Exception e)
     {
       throw new ClassNotFoundException("Could not load class " + this.lnfDef.getClassName(),e);
     }
   }
-  
+
   public LookAndFeel getLookAndFeel()
     throws ClassNotFoundException
   {
     try
     {
-      Class lnf = loadClass();
-      return (LookAndFeel)lnf.getDeclaredConstructor().newInstance();
+      Class<? extends LookAndFeel> lnf = loadClass();
+      return lnf.getDeclaredConstructor().newInstance();
     }
     catch (Exception e)
     {

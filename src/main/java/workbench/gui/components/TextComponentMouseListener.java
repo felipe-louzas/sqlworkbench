@@ -105,12 +105,12 @@ public class TextComponentMouseListener
     Object cmd = im.get(popup.getCopyAction().getAccelerator());
     im.put(ksnew, cmd);
 
-    ksnew = KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, InputEvent.SHIFT_MASK);
+    ksnew = KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, InputEvent.SHIFT_DOWN_MASK);
 
     cmd = im.get(popup.getPasteAction().getAccelerator());
     im.put(ksnew, cmd);
 
-    ksnew = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.SHIFT_MASK);
+    ksnew = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.SHIFT_DOWN_MASK);
 
     cmd = im.get(popup.getCutAction().getAccelerator());
     im.put(ksnew, cmd);

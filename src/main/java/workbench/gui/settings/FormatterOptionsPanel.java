@@ -43,9 +43,9 @@ public class FormatterOptionsPanel
   {
     initComponents();
     wbOptions = new WbFormatterOptionsPanel();
-    wbOptions.setBorder(OptionPanelPage.PAGE_BORDER);
+    wbOptions.setBorder(OptionPanelPage.PAGE_PADDING);
     extOptions = new ExternalFormatterOptions();
-    extOptions.setBorder(OptionPanelPage.PAGE_BORDER);
+    extOptions.setBorder(OptionPanelPage.PAGE_PADDING);
     tabbedPane.add("Built-in", wbOptions);
     tabbedPane.add("External", extOptions);
   }

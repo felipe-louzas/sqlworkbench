@@ -190,7 +190,6 @@ public class ExternalFormatterOptions
     dbList = new javax.swing.JComboBox();
     exePath = new workbench.gui.components.WbFilePicker();
     jLabel1 = new javax.swing.JLabel();
-    jSeparator1 = new javax.swing.JSeparator();
     jLabel2 = new javax.swing.JLabel();
     cmdLine = new javax.swing.JTextField();
     cbxEnabled = new javax.swing.JCheckBox();
@@ -217,7 +216,7 @@ public class ExternalFormatterOptions
     add(dbList, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(2, 5, 0, 5);
@@ -226,28 +225,21 @@ public class ExternalFormatterOptions
     jLabel1.setText(ResourceMgr.getString("LblExePath")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
     add(jLabel1, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(8, 0, 6, 0);
-    add(jSeparator1, gridBagConstraints);
 
     jLabel2.setText(ResourceMgr.getString("LblExtFmtArg")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
     add(jLabel2, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
@@ -265,17 +257,17 @@ public class ExternalFormatterOptions
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(5, 0, 7, 0);
+    gridBagConstraints.insets = new java.awt.Insets(12, 0, 7, 0);
     add(cbxEnabled, gridBagConstraints);
 
     supportsScripts.setText(ResourceMgr.getString("LblExtFmtScript")); // NOI18N
     supportsScripts.setBorder(null);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
@@ -284,7 +276,7 @@ public class ExternalFormatterOptions
     lblHelp.setText("jLabel3");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LAST_LINE_START;
@@ -313,7 +305,6 @@ public class ExternalFormatterOptions
   private workbench.gui.components.WbFilePicker exePath;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
-  private javax.swing.JSeparator jSeparator1;
   private javax.swing.JLabel lblHelp;
   private javax.swing.JCheckBox supportsScripts;
   // End of variables declaration//GEN-END:variables

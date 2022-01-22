@@ -55,7 +55,7 @@ public class AutoCompletionAction
     super();
     this.editor = edit;
     this.status = bar;
-    this.initMenuDefinition("MnuTxtAutoComplete", KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK));
+    this.initMenuDefinition("MnuTxtAutoComplete", KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
     this.setEnabled(false);
 

@@ -45,7 +45,7 @@ public class CloseResultTabAction
   {
     super();
     panel = sqlPanel;
-    this.initMenuDefinition("MnuTxtCloseResultTab", KeyStroke.getKeyStroke(KeyEvent.VK_K, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtCloseResultTab", KeyStroke.getKeyStroke(KeyEvent.VK_K, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_DATA);
     this.setIcon(null);
     this.setEnabled(panel.getCurrentResult() != null);

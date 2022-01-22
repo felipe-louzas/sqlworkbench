@@ -1696,9 +1696,9 @@ public class Settings
     String mod = getProperty("workbench.editor.rectselection.modifier", "alt");
     if (mod.equalsIgnoreCase("ctrl"))
     {
-      return InputEvent.CTRL_MASK;
+      return InputEvent.CTRL_DOWN_MASK;
     }
-    return InputEvent.ALT_MASK;
+    return InputEvent.ALT_DOWN_MASK;
   }
 
   /**
@@ -1707,7 +1707,7 @@ public class Settings
   public int getRectSelectionKey()
   {
     int modifier = getRectSelectionModifier();
-    if (modifier == InputEvent.CTRL_MASK)
+    if (modifier == InputEvent.CTRL_DOWN_MASK)
     {
       return KeyEvent.VK_CONTROL;
     }
@@ -4115,4 +4115,13 @@ public class Settings
     return getBoolProperty("workbench.profile.default.store.explorer.schema", false);
   }
 
+  public boolean useWindowSpecificVariables()
+  {
+    return getBoolProperty("workbench.sql.variable.window.specific", false);
+  }
+
+  public void setUseWindowSpecificVariables(boolean flag)
+  {
+    setProperty("workbench.sql.variable.window.specific", flag);
+  }
 }

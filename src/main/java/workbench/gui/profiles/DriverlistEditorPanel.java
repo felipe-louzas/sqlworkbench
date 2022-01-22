@@ -44,6 +44,7 @@ import workbench.db.DbDriver;
 import workbench.gui.actions.DeleteListEntryAction;
 import workbench.gui.actions.NewListEntryAction;
 import workbench.gui.components.DividerBorder;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.components.WbTraversalPolicy;
 
@@ -93,7 +94,7 @@ public class DriverlistEditorPanel
 
     driverList.addListSelectionListener(this);
 
-    JScrollPane scroll = new JScrollPane(driverList);
+    JScrollPane scroll = new WbScrollPane(driverList);
 
     this.toolbar = new WbToolbar();
     toolbar.setBorder(DividerBorder.BOTTOM_DIVIDER);

@@ -2962,7 +2962,7 @@ public class JEditTextArea
 
     // Do not scroll if the Ctrl-Key is pressed
     // because that combination is handled by the font zoomer
-    if (WbAction.isCtrlPressed(e.getModifiers())) return;
+    if (WbAction.isCtrlPressed(e.getModifiersEx())) return;
 
     int units = GuiSettings.getWheelScrollLines();
 
@@ -3123,7 +3123,7 @@ public class JEditTextArea
     {
       if (popup != null && popup.isVisible()) return;
 
-      setSelectionRectangular((evt.getModifiers() & Settings.getInstance().getRectSelectionModifier()) != 0);
+      setSelectionRectangular((evt.getModifiersEx() & Settings.getInstance().getRectSelectionModifier()) != 0);
 
       int x = evt.getX() - painter.getGutterWidth();
       int y = evt.getY();
@@ -3150,7 +3150,7 @@ public class JEditTextArea
       int dot = getLineStartOffset(line) + offset;
 
 
-      if ((evt.getModifiers() & InputEvent.BUTTON3_MASK) != 0 && popup != null)
+      if ((evt.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0 && popup != null)
       {
         if (rightClickMovesCursor && !isTextSelected())
         {
@@ -3185,9 +3185,9 @@ public class JEditTextArea
 
     protected void doSingleClick(MouseEvent evt, int line,int offset, int dot)
     {
-      if ((evt.getModifiers() & InputEvent.SHIFT_MASK) != 0)
+      if ((evt.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0)
       {
-        rectSelect = (evt.getModifiers() & Settings.getInstance().getRectSelectionModifier()) != 0;
+        rectSelect = (evt.getModifiersEx() & Settings.getInstance().getRectSelectionModifier()) != 0;
         select(getMarkPosition(),dot);
       }
       else

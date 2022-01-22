@@ -50,6 +50,7 @@ import workbench.util.WbFile;
 
 /**
  *  Represents a JDBC Driver definition.
+ * 
  *  The definition includes a (logical) name, a driver class
  *  and (optional) a library from which the driver is to
  *  be loaded.
@@ -321,25 +322,25 @@ public class DbDriver
         classLoader = createClassLoader(url);
       }
 
-      Class drvClass = null;
+      Class<? extends Driver> drvClass = null;
       if (classLoader != null)
       {
         // New Firebird 2.0 driver needs this, and it does not seem to do any harm
         // for other drivers
         Thread.currentThread().setContextClassLoader(classLoader);
-        drvClass = this.classLoader.loadClass(driverClass);
+        drvClass = (Class<? extends Driver>)this.classLoader.loadClass(driverClass);
       }
       else
       {
         // Assume the driver class is available on the classpath
         LogMgr.logInfo(ci, "Loading driver " + this.driverClass + " through default classloader");
-        drvClass = Class.forName(this.driverClass);
+        drvClass = (Class<? extends Driver>)Class.forName(this.driverClass);
       }
 
-      driverClassInstance = (Driver)drvClass.newInstance();
+      driverClassInstance = drvClass.getDeclaredConstructor().newInstance();
       if (Settings.getInstance().getBoolProperty("workbench.db.registerdriver", false))
       {
-        // Some drivers expect to be registered with the DriverManager...
+        // Some drivers expect to be registered with the DriverManager
         try
         {
           LogMgr.logDebug(ci, "Registering new driver instance for " + this.driverClass + " with DriverManager");

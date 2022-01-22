@@ -37,6 +37,7 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ValidatingDialog;
+import workbench.gui.components.WbScrollPane;
 
 import workbench.util.ClasspathUtil;
 import workbench.util.WbFile;
@@ -247,7 +248,7 @@ public class MavenDownloadPanel
 
     downloadDir = new workbench.gui.components.WbFilePicker();
     jLabel1 = new javax.swing.JLabel();
-    jScrollPane1 = new javax.swing.JScrollPane();
+    jScrollPane1 = new WbScrollPane();
     versionList = new javax.swing.JList<>();
     downloadProgress = new javax.swing.JProgressBar();
     jPanel1 = new javax.swing.JPanel();

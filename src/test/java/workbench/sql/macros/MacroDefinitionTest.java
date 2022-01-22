@@ -49,7 +49,7 @@ public class MacroDefinitionTest
     macro.setExpandWhileTyping(true);
     macro.setSortOrder(5);
     macro.setAppendResult(true);
-    StoreableKeyStroke key = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+    StoreableKeyStroke key = new StoreableKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK));
     macro.setShortcut(key);
     macro.setTooltip("This is a tooltip");
 

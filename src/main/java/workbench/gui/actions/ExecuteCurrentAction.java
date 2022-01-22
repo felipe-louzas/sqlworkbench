@@ -48,7 +48,7 @@ public class ExecuteCurrentAction
   {
     super();
     this.target = aPanel;
-    this.initMenuDefinition("MnuTxtExecuteCurrent", KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK));
+    this.initMenuDefinition("MnuTxtExecuteCurrent", KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK));
     this.setIcon("execute_current");
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
   }

@@ -498,7 +498,7 @@ public class WbCommandAnalyzer
     {
       fname = cmdLine.getValue(CommonArgs.ARG_FILE);
     }
-    fname = VariablePool.getInstance().replaceAllParameters(fname);
+    fname = VariablePool.getInstance(wbImport.getVariablePoolID()).replaceAllParameters(fname);
     WbFile input = wbImport.evaluateFileArgument(fname);
 
     List result = new ArrayList();

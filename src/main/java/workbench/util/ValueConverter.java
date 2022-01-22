@@ -350,7 +350,7 @@ public class ValueConverter
 
     try
     {
-      return new Long(value);
+      return Long.valueOf(value);
     }
     catch (NumberFormatException e)
     {

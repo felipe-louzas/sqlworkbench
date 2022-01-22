@@ -63,7 +63,7 @@ public class FileDiscardAction
   public void addToInputMap(InputMap im, ActionMap am)
   {
     super.addToInputMap(im, am);
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK), this.getActionName());
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK), this.getActionName());
   }
 
   @Override

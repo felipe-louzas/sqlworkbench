@@ -84,7 +84,7 @@ public class XlsXMLRowDataConverterTest
 
     RowData data = new RowData(info);
     data.setValue(0, "char_column_data");
-    data.setValue(1, new Integer(42));
+    data.setValue(1, 42);
     ValueConverter valueConverter = new ValueConverter("yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss");
     data.setValue(2, valueConverter.convertValue("2008-07-23", Types.DATE));
     data.setValue(3, valueConverter.convertValue("2008-07-23 13:42:01", Types.TIMESTAMP));
@@ -98,7 +98,7 @@ public class XlsXMLRowDataConverterTest
 //    System.out.println(xml);
 //    System.out.println("-----------------------------------------");
 
-    Map<String, String> nsMap = new HashMap<String, String>();
+    Map<String, String> nsMap = new HashMap<>();
     nsMap.put("mso", "urn:schemas-microsoft-com:office:spreadsheet");
 
     // Check header row
@@ -142,7 +142,7 @@ public class XlsXMLRowDataConverterTest
     converter.setNullString("[NULL]");
     RowData data = new RowData(info);
     data.setValue(0, null);
-    data.setValue(1, new Integer(42));
+    data.setValue(1, 42);
 
     converter.setEncoding("UTF-8");
     StringBuilder header = converter.getStart();
@@ -158,7 +158,7 @@ public class XlsXMLRowDataConverterTest
 //    System.out.println(xml);
 //    System.out.println("-----------------------------------------");
 
-    Map<String, String> nsMap = new HashMap<String, String>();
+    Map<String, String> nsMap = new HashMap<>();
     nsMap.put("mso", "urn:schemas-microsoft-com:office:spreadsheet");
 
     // Check data values

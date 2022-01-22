@@ -470,7 +470,7 @@ public class WbTable
     // nothing to fix, already mapped correctly.
     if (uiAction != null) return;
 
-    KeyStroke ctlrC = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK);
+    KeyStroke ctlrC = KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK);
     uiAction = im.get(ctlrC);
 
     if (uiAction != null)
@@ -1233,8 +1233,8 @@ public class WbTable
       int ctrl = PlatformShortcuts.getDefaultModifier();
       // Don't start when non-printing keys are typed.
       // Keystrokes like Alt-F4 should not automatically start editing mode
-      int code = e.getModifiers();
-      boolean modifierKeyPressed = ((code & KeyEvent.ALT_MASK) == KeyEvent.ALT_MASK || (code & ctrl) == ctrl);
+      int code = e.getModifiersEx();
+      boolean modifierKeyPressed = ((code & KeyEvent.ALT_DOWN_MASK) == KeyEvent.ALT_DOWN_MASK || (code & ctrl) == ctrl);
       if (modifierKeyPressed)
       {
         // temporarily disable auto-editing

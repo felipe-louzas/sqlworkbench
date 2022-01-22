@@ -28,7 +28,7 @@ import java.awt.Insets;
 
 import javax.swing.border.AbstractBorder;
 
-import workbench.gui.renderer.ColorUtils;
+import workbench.gui.WbSwingUtilities;
 
 /**
  *
@@ -46,11 +46,12 @@ public class DividerBorder
   public static final int VERTICAL_MIDDLE = 16;
   public static final int HORIZONTAL_MIDDLE = 32;
 
-  private final int borderType;
-  private final boolean useShadow;
   public static final DividerBorder BOTTOM_DIVIDER = new DividerBorder(BOTTOM);
-  public static final DividerBorder LEFT_DIVIDER = new DividerBorder(LEFT, false);
-  public static final DividerBorder RIGHT_DIVIDER = new DividerBorder(RIGHT, false);
+  public static final DividerBorder LEFT_DIVIDER = new DividerBorder(LEFT);
+  public static final DividerBorder RIGHT_DIVIDER = new DividerBorder(RIGHT);
+  public static final DividerBorder TOP_DIVIDER = new DividerBorder(TOP);
+
+  private final int borderType;
   private Color lineColor;
 
   /**
@@ -59,21 +60,14 @@ public class DividerBorder
    */
   public DividerBorder(int type)
   {
-    this(type, true);
-  }
-
-  public DividerBorder(int type, boolean useShadow)
-  {
     super();
     this.borderType = type;
-    this.useShadow = useShadow;
   }
 
   public DividerBorder(int type, Color lineColor)
   {
     super();
     this.borderType = type;
-    this.useShadow = false;
     this.lineColor= lineColor;
   }
 
@@ -81,77 +75,44 @@ public class DividerBorder
   public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
   {
     Color oldColor = g.getColor();
-
     Color bg = c.getBackground();
-    Color lColor = this.lineColor != null ? this.lineColor : bg.brighter();
-    Color shade = ColorUtils.darker(bg, 0.85);
+    Color lColor = this.lineColor == null ? WbSwingUtilities.getLineBorderColor(bg) : this.lineColor;
 
     if ((this.borderType & TOP) == TOP)
     {
-      g.setColor(shade);
+      g.setColor(lColor);
       g.drawLine(x, y, x + width, y);
-      if (useShadow)
-      {
-        g.setColor(lColor);
-        g.drawLine(x, y + 1, x + width, y + 1);
-      }
     }
 
     if ((this.borderType & BOTTOM) == BOTTOM)
     {
-      g.setColor(shade);
+      g.setColor(lColor);
       g.drawLine(x, y + height - 2, x + width, y + height - 2);
-      if (useShadow)
-      {
-        g.setColor(lColor);
-        g.drawLine(x, y + height - 1, x + width, y + height - 1);
-      }
     }
 
     if ((this.borderType & LEFT) == LEFT)
     {
-      g.setColor(shade);
+      g.setColor(lColor);
       g.drawLine(x, y, x, y + height);
-      if (useShadow)
-      {
-        g.setColor(lColor);
-        g.drawLine(x + 1, y, x + 1, y + height);
-      }
     }
     if ((this.borderType & RIGHT) == RIGHT)
     {
-      g.setColor(shade);
+      g.setColor(lColor);
       g.drawLine(x + width - 2, y, x + width - 2, y + height);
-      if (useShadow)
-      {
-        g.setColor(lColor);
-        g.drawLine(x + width - 1, y, x + width - 1, y + height);
-      }
     }
 
     if ((this.borderType & VERTICAL_MIDDLE) == VERTICAL_MIDDLE)
     {
       int w2 = (int)width / 2;
-      g.setColor(shade);
+      g.setColor(lColor);
       g.drawLine(x + w2, y, x + w2, y + height);
-      if (useShadow)
-      {
-        g.setColor(lColor);
-        g.drawLine(x + w2 + 1, y, x + w2 + 1, y + height);
-      }
     }
     if ((this.borderType & HORIZONTAL_MIDDLE) == HORIZONTAL_MIDDLE)
     {
       int h2 = (int)height / 2;
-      g.setColor(shade);
+      g.setColor(lColor);
       g.drawLine(0, y + h2, width, y + h2);
-      if (useShadow)
-      {
-        g.setColor(lColor);
-        g.drawLine(0, y + h2 + 1, width, y + h2 + 1);
-      }
     }
-
     g.setColor(oldColor);
   }
 

@@ -69,7 +69,7 @@ public class TextRowDataConverterTest
     price.setPosition(2);
     ResultInfo info = new ResultInfo(new ColumnIdentifier[] { nr, price});
     RowData data = new RowData(info);
-    data.setValue(0, new Integer(42));
+    data.setValue(0, 42);
     data.setValue(1, new BigDecimal("3.14"));
     converter.setResultInfo(info);
     converter.setDelimiter(";");
@@ -100,7 +100,7 @@ public class TextRowDataConverterTest
     converter.setNullString("<NULL>");
     converter.setColumnsToExport(CollectionUtil.arrayList(id, name2));
     RowData data = new RowData(info);
-    data.setValue(0, new Integer(42));
+    data.setValue(0, 42);
     data.setValue(1, "name_1");
     data.setValue(2, "name_2");
 
@@ -123,7 +123,7 @@ public class TextRowDataConverterTest
     converter.setNullString("<NULL>");
     RowData data = new RowData(info);
     data.setValue(0, null);
-    data.setValue(1, new Integer(42));
+    data.setValue(1, 42);
 
     StringBuilder line = converter.convertRowData(data, 0);
     assertEquals("Wrong data", "<NULL>;42", line.toString().trim());
@@ -171,7 +171,7 @@ public class TextRowDataConverterTest
 
     RowData data = new RowData(info);
     data.setValue(0, "data1");
-    data.setValue(1, new Integer(42));
+    data.setValue(1, 42);
     Calendar c = Calendar.getInstance();
     c.set(2006, 9, 26, 17, 0);
     c.set(Calendar.SECOND, 0);
@@ -221,7 +221,7 @@ public class TextRowDataConverterTest
     assertEquals("Wrong header", "id;blob_col", header.toString().trim());
 
     RowData data = new RowData(info);
-    data.setValue(0, new Integer(42));
+    data.setValue(0, 42);
     data.setValue(1, new byte[] {1,2,3,4} );
 
     StringBuilder line = converter.convertRowData(data, 0);

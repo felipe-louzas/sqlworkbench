@@ -339,7 +339,7 @@ public class ClasspathEditor
   {
     java.awt.GridBagConstraints gridBagConstraints;
 
-    jScrollPane1 = new javax.swing.JScrollPane();
+    jScrollPane1 = new WbScrollPane();
     libList = new javax.swing.JList();
     btnAdd = new javax.swing.JButton();
     btnRemove = new javax.swing.JButton();

@@ -40,10 +40,10 @@ public class ComplexExpressionTest
     expr.addColumnExpression("firstname", new ContainsComparator(), "pho", true);
     expr.addColumnExpression("lastname", new ContainsComparator(), "ble", true);
 
-    Map<String, Object> values = new HashMap<String, Object>();
+    Map<String, Object> values = new HashMap<>();
     values.put("firstname", "zaphod");
     values.put("lastname", "Beeblebrox");
-    values.put("age", new Integer(43));
+    values.put("age", 43);
     values.put("spaceship", null);
     assertTrue(expr.evaluate(values));
   }
@@ -55,24 +55,24 @@ public class ComplexExpressionTest
     ComplexExpression expr = new AndExpression();
     expr.addColumnExpression("firstname", new StringEqualsComparator(), "Zaphod");
     expr.addColumnExpression("lastname", new StartsWithComparator(), "Bee");
-    expr.addColumnExpression("age", new GreaterOrEqualComparator(), new Integer(42));
+    expr.addColumnExpression("age", new GreaterOrEqualComparator(), 42);
 
-    Map<String, Object> values = new HashMap<String, Object>();
+    Map<String, Object> values = new HashMap<>();
     values.put("firstname", "zaphod");
     values.put("lastname", "Beeblebrox");
-    values.put("age", new Integer(43));
+    values.put("age", 43);
     assertTrue(expr.evaluate(values));
 
-    values = new HashMap<String, Object>();
+    values.clear();
     values.put("firstname", "zaphod");
     values.put("lastname", "Beeblebrox");
-    values.put("age", new Integer(40));
+    values.put("age", 40);
     assertFalse(expr.evaluate(values));
 
-    values = new HashMap<String, Object>();
+    values.clear();
     values.put("firstname", "zaphod");
     values.put("lastname", null);
-    values.put("age", new Integer(40));
+    values.put("age", 40);
 
     expr = new AndExpression();
     expr.addColumnExpression("lastname", new IsNullComparator(), null);

@@ -43,7 +43,7 @@ public class FindPreviousAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtFindPrevious", KeyStroke.getKeyStroke(KeyEvent.VK_F3, KeyEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtFindPrevious", KeyStroke.getKeyStroke(KeyEvent.VK_F3, KeyEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
     this.setDescriptiveName(ResourceMgr.getString("TxtEdPrefix") + " " + getMenuLabel());
   }

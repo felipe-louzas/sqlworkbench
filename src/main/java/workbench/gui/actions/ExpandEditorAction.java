@@ -48,7 +48,7 @@ public class ExpandEditorAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtExpandEditor", KeyStroke.getKeyStroke(KeyEvent.VK_D, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtExpandEditor", KeyStroke.getKeyStroke(KeyEvent.VK_D, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_VIEW);
     this.setIcon(null);
   }

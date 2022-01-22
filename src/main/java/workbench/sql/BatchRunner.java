@@ -140,6 +140,7 @@ public class BatchRunner
   private ScriptErrorHandler retryHandler;
   private int maxDisplaySize = Integer.MAX_VALUE;
   private WbFile pagerToUse;
+  private String variablePoolID;
 
   public BatchRunner()
   {
@@ -176,6 +177,11 @@ public class BatchRunner
     if (errors != null) errors.clear();
     queryResults.clear();
     stmtRunner.done();
+  }
+
+  public void setVariablePoolID(String variablePoolID)
+  {
+    this.variablePoolID = variablePoolID;
   }
 
   public void setMaxColumnDisplayLength(int maxLength)
@@ -1024,7 +1030,7 @@ public class BatchRunner
       }
       catch (Exception e)
       {
-        VariablePool.getInstance().setLastError(e);
+        VariablePool.getInstance(variablePoolID).setLastError(e);
         LogMgr.logError(ci, ResourceMgr.getString("MsgBatchStatementError") + " "  + sql, e);
         printMessage(ExceptionUtil.getDisplay(e));
         status = ExecutionStatus.Error;

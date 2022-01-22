@@ -45,6 +45,7 @@ import workbench.db.postgres.PgPassReader;
 import workbench.gui.profiles.ProfileKey;
 
 import workbench.sql.DelimiterDefinition;
+import workbench.sql.VariablePool;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileDialogUtil;
@@ -1406,6 +1407,24 @@ public class ConnectionProfile
         sshConfig = config.createCopy();
         changed = true;
       }
+    }
+  }
+
+  public void applyProfileVariables(String variablePoolId)
+  {
+    if (CollectionUtil.isNonEmpty(variables))
+    {
+      LogMgr.logInfo(new CallerInfo(){}, "Applying variables defined in the connection profile: " + variables);
+      VariablePool.getInstance(variablePoolId).readFromProperties(variables, "connection profile " + getKey());
+    }
+  }
+
+  public void removeProfileVariables(String variablePoolId)
+  {
+    if (CollectionUtil.isNonEmpty(variables))
+    {
+      LogMgr.logInfo(new CallerInfo(){}, "Removing variables defined in the connection profile.");
+      VariablePool.getInstance(variablePoolId).removeVariables(variables);
     }
   }
 

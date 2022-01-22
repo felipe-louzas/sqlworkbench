@@ -32,7 +32,7 @@ public class SelectNextLine
 {
   public SelectNextLine()
   {
-    super("TxtEdNxtLineSel", KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK);
+    super("TxtEdNxtLineSel", KeyEvent.VK_DOWN, KeyEvent.SHIFT_DOWN_MASK);
     select = true;
   }
 }

@@ -49,7 +49,7 @@ public class ExecuteAllAction
   {
     super();
     this.client = aPanel;
-    this.initMenuDefinition("MnuTxtExecuteAll", KeyStroke.getKeyStroke(KeyEvent.VK_E, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtExecuteAll", KeyStroke.getKeyStroke(KeyEvent.VK_E, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setIcon("execute_all");
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
   }

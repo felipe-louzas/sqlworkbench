@@ -100,6 +100,7 @@ public class SqlCommand
   protected boolean showDataLoading = true;
   protected boolean alwaysBufferResults;
   protected boolean useMessageLoggerForResults = true;
+  protected String variablePoolID = null;
 
   public void setRowMonitor(RowActionMonitor monitor)
   {
@@ -135,6 +136,15 @@ public class SqlCommand
     return new StatementRunnerResult(sql);
   }
 
+  public String getVariablePoolID()
+  {
+    return variablePoolID;
+  }
+
+  public void setVariablePoolID(String variablePoolID)
+  {
+    this.variablePoolID = variablePoolID;
+  }
 
   public void setErrorReportLevel(ErrorReportLevel level)
   {
@@ -1247,7 +1257,8 @@ public class SqlCommand
       return false;
     }
 
-    ConditionCheck.Result check = ConditionCheck.checkConditions(cmdLine, currentConnection, this::evaluateFileArgument);
+    ConditionCheck.Result check = ConditionCheck.checkConditions(cmdLine, currentConnection,
+                                                                 this::evaluateFileArgument, variablePoolID);
     if (check.isOK())
     {
       return true;

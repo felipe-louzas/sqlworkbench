@@ -37,7 +37,6 @@ import workbench.db.TableIdentifier;
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 
-
 import workbench.util.CollectionUtil;
 
 import org.junit.Assume;
@@ -83,12 +82,12 @@ public class DbUnitCopierTest
     info.setUpdateTable(tbl);
     DataStore ds = new DataStore(info);
     int row = ds.addRow();
-    ds.setValue(row, 0, new Integer(1));
+    ds.setValue(row, 0, 1);
     ds.setValue(row, 1, "Arthur");
     ds.setValue(row, 2, "Dent");
 
     row = ds.addRow();
-    ds.setValue(row, 0, new Integer(2));
+    ds.setValue(row, 0, 2);
     ds.setValue(row, 1, "Ford");
     ds.setValue(row, 2, "Prefect");
 
@@ -107,7 +106,7 @@ public class DbUnitCopierTest
       GuiSettings.setDisplayNullString("<[NULL]>");
       DataStore ds = createDataStore();
       int row = ds.addRow();
-      ds.setValue(row, 0, new Integer(1));
+      ds.setValue(row, 0, 1);
       ds.setValue(row, 1, "Marvin");
       ds.setValue(row, 2, null);
       ds.setUpdateTableToBeUsed(new TableIdentifier("PERSON"));

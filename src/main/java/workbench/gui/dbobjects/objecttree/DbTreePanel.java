@@ -965,7 +965,7 @@ public class DbTreePanel
   @Override
   public void keyPressed(KeyEvent e)
   {
-    if (e.getSource() != this.filterValue || e.getModifiers() != 0) return;
+    if (e.getSource() != this.filterValue || e.getModifiersEx() != 0) return;
 
     switch (e.getKeyCode())
     {

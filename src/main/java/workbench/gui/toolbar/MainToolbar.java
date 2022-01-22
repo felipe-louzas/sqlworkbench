@@ -47,7 +47,7 @@ public class MainToolbar
   {
     if (LnFHelper.isWindowsLookAndFeel())
     {
-      this.setBorder(new DividerBorder(DividerBorder.TOP, false));
+      this.setBorder(new DividerBorder(DividerBorder.TOP));
       this.setBorderPainted(true);
       this.setRollover(true);
     }

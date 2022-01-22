@@ -40,13 +40,15 @@ public abstract class VariablesTable
   extends WbTable
 {
   private DropDownCellEditor dropDownEditor;
+  private String variablePoolID;
 
-  public VariablesTable()
+  public VariablesTable(String variablePoolID)
   {
     super();
     defaultEditor.addActionListener(this);
     dropDownEditor = new DropDownCellEditor(this);
     dropDownEditor.addActionListener(this);
+    this.variablePoolID = variablePoolID;
   }
 
   @Override
@@ -66,7 +68,7 @@ public abstract class VariablesTable
     }
     String varName = (String)getValueAt(row, 0);
 
-    List<String> values = VariablePool.getInstance().getLookupValues(varName);
+    List<String> values = VariablePool.getInstance(variablePoolID).getLookupValues(varName);
 
     if (CollectionUtil.isEmpty(values))
     {

@@ -55,6 +55,7 @@ import workbench.gui.actions.NewListEntryAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ClassFinderGUI;
 import workbench.gui.components.DividerBorder;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.lnf.LnFDefinition;
 import workbench.gui.lnf.LnFManager;
@@ -89,7 +90,7 @@ public class LnFOptionsPanel
     lnfList.setBorder(new EmptyBorder(2,1,2,1));
 
     lnfList.setMinimumSize(new Dimension(100, 100));
-    JScrollPane scroll = new JScrollPane(lnfList);
+    JScrollPane scroll = new WbScrollPane(lnfList);
 
     WbAction search = new WbAction()
     {

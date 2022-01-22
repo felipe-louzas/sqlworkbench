@@ -35,12 +35,12 @@ public class SequenceDefinitionTest
   public void testEquals()
   {
     SequenceDefinition def1 = new SequenceDefinition("public", "seq_one");
-    def1.setSequenceProperty("INCREMENT", new Integer(1));
+    def1.setSequenceProperty("INCREMENT", Integer.valueOf(1));
     SequenceDefinition def2 = new SequenceDefinition("public", "seq_two");
-    def2.setSequenceProperty("INCREMENT", new Integer(1));
+    def2.setSequenceProperty("INCREMENT", Integer.valueOf(1));
     assertEquals(def1.propertiesAreEqual(def2), true);
 
-    def2.setSequenceProperty("CACHE", new Integer(50));
+    def2.setSequenceProperty("CACHE", Integer.valueOf(50));
     assertEquals(def1.propertiesAreEqual(def2), false);
   }
 }

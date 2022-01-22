@@ -54,9 +54,14 @@ import workbench.util.WbProperties;
 
 /**
  * A class to store workbench specific variables.
- * This is a singleton which stores the variables inside a Map.
+ *
+ * This is a singleton that manages a pool of variables including a global
+ * one that is always created. Additional pools are created on demand
+ * if a non-null ID is passed to {@link #getInstance(java.lang.String)}
+ *
  * When the Pool is created it looks for any variable definition
  * passed through the system properties.
+ *
  * Any system property that starts with wbp. is used to define a variable.
  * The name of the variable is the part after the <tt>wbp.</tt> prefix.
  *
@@ -72,6 +77,7 @@ public class VariablePool
   public static final String VAR_NAME_LAST_ERROR_MSG = "wb_last_error_msg";
 
   public static final String PROP_PREFIX = "wbp.";
+  private static final Map<String, VariablePool> POOLS = new HashMap<>(5);
   private final Map<String, String> data = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
   private final Map<String, List<String>> lookups = new HashMap<>();
   private final Set<String> globalVars = CollectionUtil.caseInsensitiveSet();
@@ -82,19 +88,60 @@ public class VariablePool
   private final Pattern validNamePattern = Pattern.compile("[\\w\\.]*");
   private Pattern promptPattern;
   private Pattern variablePattern;
+  private String poolID;
 
+  /**
+   * Returns the global VariablePool.
+   */
   public static VariablePool getInstance()
   {
-    return InstanceHolder.INSTANCE;
+    return InstanceHolder.GLOBAL_INSTANCE;
+  }
+
+  /**
+   * Returns a named VariablePool.
+   */
+  public static VariablePool getInstance(String id)
+  {
+    if (StringUtil.isBlank(id)) return InstanceHolder.GLOBAL_INSTANCE;
+
+    synchronized (getInstance().data)
+    {
+      VariablePool pool = POOLS.get(id);
+      if (pool == null)
+      {
+        pool = new VariablePool(id);
+        pool.data.putAll(getInstance().data);
+        POOLS.put(id, pool);
+        LogMgr.logDebug(new CallerInfo(){}, "New variable pool with ID=" + id +" created.");
+      }
+      return pool;
+    }
+  }
+
+  public static void disposeInstance(String id)
+  {
+    if (StringUtil.isBlank(id)) return;
+
+    synchronized (getInstance().data)
+    {
+      VariablePool old = POOLS.remove(id);
+      if (old != null)
+      {
+        old.clear();
+      }
+    }
+    LogMgr.logDebug(new CallerInfo(){}, "Removed variable pool with ID=" + id);
   }
 
   private static class InstanceHolder
   {
-    protected static final VariablePool INSTANCE = new VariablePool();
+    protected static final VariablePool GLOBAL_INSTANCE = new VariablePool(null);
   }
 
-  private VariablePool()
+  private VariablePool(String id)
   {
+    this.poolID = id;
     initPromptPattern();
     initFromProperties(System.getProperties());
     Settings.getInstance().addPropertyChangeListener(this, Settings.PROPERTY_VAR_PREFIX, Settings.PROPERTY_VAR_SUFFIX);
@@ -275,7 +322,10 @@ public class VariablePool
   public boolean containsVariable(CharSequence sql, Set<String> names)
   {
     if (StringUtil.isBlank(sql)) return false;
-    return containsVariable(sql, names, getNamePatterns(names));
+    synchronized (data)
+    {
+      return containsVariable(sql, names, getNamePatterns(names));
+    }
   }
 
   private boolean containsVariable(CharSequence sql, Set<String> names, Map<String, Pattern> patterns)
@@ -350,7 +400,7 @@ public class VariablePool
 
   public DataStore getVariablesDataStore(Set<String> varNames, boolean doSort)
   {
-    DataStore vardata = new VariablesDataStore();
+    DataStore vardata = new VariablesDataStore(this.poolID);
 
     synchronized (this.data)
     {
@@ -376,7 +426,10 @@ public class VariablePool
 
   public boolean isDefined(String varName)
   {
-    return data.containsKey(varName);
+    synchronized (data)
+    {
+      return data.containsKey(varName);
+    }
   }
 
   public String getParameterValue(String varName)

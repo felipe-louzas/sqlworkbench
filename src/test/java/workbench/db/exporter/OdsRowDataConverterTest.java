@@ -99,7 +99,7 @@ public class OdsRowDataConverterTest
 
     RowData row1 = new RowData(info);
     row1.setValue(0, "char_column_data");
-    row1.setValue(1, new Integer(42));
+    row1.setValue(1, 42);
     ValueConverter valueConverter = new ValueConverter("yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss");
     row1.setValue(2, valueConverter.convertValue("2008-07-23", Types.DATE));
     row1.setValue(3, valueConverter.convertValue("2008-07-23 13:42:01", Types.TIMESTAMP));

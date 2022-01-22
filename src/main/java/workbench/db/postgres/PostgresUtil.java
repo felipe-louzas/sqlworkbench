@@ -110,11 +110,11 @@ public class PostgresUtil
    * @return true if the driver supports the ApplicationName property
    * @see #APP_NAME_PROPERTY
    */
-  public static boolean supportsAppInfoProperty(Class pgDriver)
+  public static boolean supportsAppInfoProperty(Class<? extends Driver> pgDriver)
   {
     try
     {
-      Driver drv = (Driver)pgDriver.newInstance();
+      Driver drv = pgDriver.getDeclaredConstructor().newInstance();
       int majorVersion = drv.getMajorVersion();
       int minorVersion = drv.getMinorVersion();
 

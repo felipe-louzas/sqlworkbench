@@ -149,7 +149,6 @@ import workbench.gui.actions.workspace.SaveWorkspaceAction;
 import workbench.gui.bookmarks.BookmarkManager;
 import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.components.ConnectionSelector;
-import workbench.gui.components.GuiPosition;
 import workbench.gui.components.MenuScroller;
 import workbench.gui.components.RunningJobIndicator;
 import workbench.gui.components.TabCloser;
@@ -341,14 +340,7 @@ public class MainWindow
     restoreTabPolicy();
     this.deviceId = getDeviceID(graphics);
 
-    Color color = GuiSettings.getEditorTabHighlightColor();
-    if (color != null)
-    {
-      int hwidth = GuiSettings.getEditorTabHighlightWidth();
-      GuiPosition location = GuiSettings.getEditorTabHighlightLocation();
-      sqlTab.setTabHighlight(color, hwidth, location);
-    }
-
+    sqlTab.initializeTabHighlight();
     sqlTab.addChangeListener(this);
     sqlTab.addMouseListener(this);
     sqlTab.hideDisabledButtons(false);
@@ -1785,6 +1777,7 @@ public class MainWindow
   @Override
   public void windowClosed(WindowEvent e)
   {
+    VariablePool.disposeInstance(getVariablePoolID());
   }
 
   @Override
@@ -1996,6 +1989,8 @@ public class MainWindow
   @Override
   public void connected(WbConnection conn)
   {
+    conn.getProfile().applyProfileVariables(getVariablePoolID());
+
     Optional<MainPanel> panel = this.getCurrentPanel();
     if (!panel.isPresent())
     {
@@ -2205,6 +2200,15 @@ public class MainWindow
     return currentWorkspace != null;
   }
 
+  public String getVariablePoolID()
+  {
+    if (Settings.getInstance().useWindowSpecificVariables())
+    {
+      return this.getWindowId();
+    }
+    return null;
+  }
+
   private void resetWorkspace(String realFilename)
   {
     // if the file does not exist, set all variables as if it did
@@ -2327,7 +2331,7 @@ public class MainWindow
     if (CollectionUtil.isNonEmpty(variables))
     {
       LogMgr.logInfo(new CallerInfo(){}, "Applying variables defined in the workspace: " + variables);
-      VariablePool.getInstance().readFromProperties(variables, "workspace " + currentWorkspace.getFilename());
+      VariablePool.getInstance(getVariablePoolID()).readFromProperties(variables, "workspace " + currentWorkspace.getFilename());
     }
   }
 
@@ -2337,7 +2341,7 @@ public class MainWindow
     {
       StringBuilder msg = new StringBuilder();
 
-      VariablePool vp = VariablePool.getInstance();
+      VariablePool vp = VariablePool.getInstance(getVariablePoolID());
       if (currentProfile != null)
       {
         appendVariables(msg, vp.removeGlobalVars(currentProfile.getConnectionVariables()), ResourceMgr.getString("TxtProfile"));
@@ -2626,6 +2630,10 @@ public class MainWindow
 
   protected void disconnected(boolean closeWorkspace)
   {
+    if (this.currentProfile != null)
+    {
+      this.currentProfile.removeProfileVariables(getVariablePoolID());
+    }
     this.currentProfile = null;
     this.currentConnection = null;
     if (closeWorkspace)
@@ -3494,7 +3502,7 @@ public class MainWindow
 
     if (currentWorkspace != null)
     {
-      VariablePool.getInstance().removeVariables(currentWorkspace.getVariables());
+      VariablePool.getInstance(getVariablePoolID()).removeVariables(currentWorkspace.getVariables());
     }
     this.currentWorkspace = null;
 
@@ -3808,6 +3816,7 @@ public class MainWindow
   private MainPanel addTabAtIndex(boolean selectNew, boolean checkConnection, boolean renumber, int index)
   {
     final SqlPanel sql = new SqlPanel(getMacroClientId());
+    sql.setVariablePoolID(getVariablePoolID());
     sql.registerObjectFinder(treePanel);
     addTabAtIndex(sql, selectNew, checkConnection, renumber, index);
     return sql;

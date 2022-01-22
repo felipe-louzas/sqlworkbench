@@ -101,7 +101,7 @@ public class WbSplitPane
     try
     {
       Class clz = Class.forName(className);
-      return (SplitPaneUI)clz.newInstance();
+      return (SplitPaneUI)clz.getDeclaredConstructor().newInstance();
     }
     catch (Throwable th)
     {

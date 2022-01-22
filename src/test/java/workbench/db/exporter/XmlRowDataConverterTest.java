@@ -74,7 +74,7 @@ public class XmlRowDataConverterTest
 
     RowData data = new RowData(info);
     data.setValue(0, "char_column_data");
-    data.setValue(1, new Integer(42));
+    data.setValue(1, 42);
     ValueConverter valueConverter = new ValueConverter("yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss");
     Date d1 = (Date)valueConverter.convertValue("2008-07-23", Types.DATE);
     data.setValue(2, d1);

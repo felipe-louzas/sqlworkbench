@@ -54,8 +54,6 @@ import workbench.db.shutdown.DbShutdownHook;
 
 import workbench.gui.profiles.ProfileKey;
 
-import workbench.sql.VariablePool;
-
 import workbench.util.ClasspathUtil;
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
@@ -275,7 +273,6 @@ public class ConnectionMgr
     }
 
     copyPropsToSystem(profile);
-    applyProfileVariables(profile);
 
     int oldTimeout = DriverManager.getLoginTimeout();
     Connection sqlConn = null;
@@ -457,8 +454,8 @@ public class ConnectionMgr
       {
         // not found --> maybe it's present in the normal classpath...
         // eg the ODBC bridge
-        Class drvcls = Class.forName(drvClassName);
-        Driver drv = (Driver)drvcls.newInstance();
+        Class<? extends Driver> drvcls = (Class<? extends Driver>)Class.forName(drvClassName);
+        Driver drv = drvcls.getDeclaredConstructor().newInstance();
         db = new DbDriver(drv);
       }
       catch (Exception cnf)
@@ -701,11 +698,8 @@ public class ConnectionMgr
       }
 
       conn.runPreDisconnectScript();
-
       removePropsFromSystem(conn.getProfile());
-
-      removeProfileVariables(conn.getProfile());
-
+      
       DbShutdownHook hook = DbShutdownFactory.getShutdownHook(conn);
       if (hook != null)
       {
@@ -726,32 +720,6 @@ public class ConnectionMgr
     catch (Exception e)
     {
       LogMgr.logError(new CallerInfo(){}, ResourceMgr.getString("ErrOnDisconnect"), e);
-    }
-  }
-
-  private void applyProfileVariables(ConnectionProfile profile)
-  {
-    if (profile != null)
-    {
-      Properties variables = profile.getConnectionVariables();
-      if (CollectionUtil.isNonEmpty(variables))
-      {
-        LogMgr.logInfo(new CallerInfo(){}, "Applying variables defined in the connection profile: " + variables);
-        VariablePool.getInstance().readFromProperties(variables, "connection profile " + profile.getKey());
-      }
-    }
-  }
-
-  private void removeProfileVariables(ConnectionProfile profile)
-  {
-    if (profile != null)
-    {
-      Properties variables = profile.getConnectionVariables();
-      if (CollectionUtil.isNonEmpty(variables))
-      {
-        LogMgr.logInfo(new CallerInfo(){}, "Removing variables defined in the connection profile.");
-        VariablePool.getInstance().removeVariables(variables);
-      }
     }
   }
 

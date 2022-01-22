@@ -134,8 +134,6 @@ public class WbFormatterOptionsPanel
     insertWithColumnNames = new javax.swing.JCheckBox();
     jLabel2 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
-    jSeparator1 = new javax.swing.JSeparator();
-    jSeparator2 = new javax.swing.JSeparator();
     jSeparator3 = new javax.swing.JSeparator();
     jPanel1 = new javax.swing.JPanel();
     subselectMaxLabel = new javax.swing.JLabel();
@@ -146,7 +144,6 @@ public class WbFormatterOptionsPanel
     maxCharElements = new javax.swing.JTextField();
     maxNumElementsLabel = new javax.swing.JLabel();
     maxNumElements = new javax.swing.JTextField();
-    jSeparator4 = new javax.swing.JSeparator();
     colsPerLinePanel = new javax.swing.JPanel();
     selectColumnsLabel = new javax.swing.JLabel();
     selectColumns = new javax.swing.JTextField();
@@ -171,7 +168,7 @@ public class WbFormatterOptionsPanel
     spaceAfterComma.setBorder(null);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
@@ -182,7 +179,7 @@ public class WbFormatterOptionsPanel
     addSpaceAfterLineBreakComma.setBorder(null);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 11;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(10, 19, 0, 0);
@@ -194,7 +191,7 @@ public class WbFormatterOptionsPanel
     commaAfterLineBreak.addActionListener(this);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 10;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
@@ -202,10 +199,10 @@ public class WbFormatterOptionsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(8, 9, 0, 15);
+    gridBagConstraints.insets = new java.awt.Insets(18, 9, 0, 15);
     add(joinWrappingStyle, gridBagConstraints);
 
     insertWithColumnNames.setText(ResourceMgr.getString("LblColNameComment")); // NOI18N
@@ -213,7 +210,7 @@ public class WbFormatterOptionsPanel
     insertWithColumnNames.setBorder(null);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 12;
+    gridBagConstraints.gridy = 8;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
@@ -222,37 +219,23 @@ public class WbFormatterOptionsPanel
     jLabel2.setText(ResourceMgr.getString("LblJoinWrapStyle")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(18, 0, 0, 0);
     add(jLabel2, gridBagConstraints);
 
     jLabel3.setText(ResourceMgr.getString("LblMaxCols")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(9, 2, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
     add(jLabel3, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
-    add(jSeparator1, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-    add(jSeparator2, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 13;
+    gridBagConstraints.gridy = 9;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(11, 0, 4, 0);
@@ -339,19 +322,12 @@ public class WbFormatterOptionsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 14;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
     add(jPanel2, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
-    add(jSeparator4, gridBagConstraints);
 
     colsPerLinePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -411,12 +387,12 @@ public class WbFormatterOptionsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(5, 9, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(4, 11, 5, 0);
     add(colsPerLinePanel, gridBagConstraints);
 
     jPanel3.setLayout(new java.awt.GridBagLayout());
@@ -427,7 +403,7 @@ public class WbFormatterOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(8, 10, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
     jPanel3.add(keywordCaseLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -450,7 +426,7 @@ public class WbFormatterOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new java.awt.Insets(8, 10, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
     jPanel3.add(functionCaseLabel, gridBagConstraints);
 
     identifierCaseLabel.setLabelFor(identifierCase);
@@ -485,7 +461,7 @@ public class WbFormatterOptionsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
@@ -527,10 +503,7 @@ public class WbFormatterOptionsPanel
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
-  private javax.swing.JSeparator jSeparator1;
-  private javax.swing.JSeparator jSeparator2;
   private javax.swing.JSeparator jSeparator3;
-  private javax.swing.JSeparator jSeparator4;
   private javax.swing.JComboBox joinWrappingStyle;
   private javax.swing.JComboBox keywordCase;
   private javax.swing.JLabel keywordCaseLabel;

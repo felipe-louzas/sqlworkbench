@@ -4,6 +4,7 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2021-11-01">
+    <entry dev-build="1" type="enh">It's now possible to have a different set of variables per window.</entry>
     <entry dev-build="1" type="enh">Using FlatLaf themes is now supported.</entry>
     <entry dev-build="1" type="enh">The DbTree, Macro list and the new file browser can now be displayed at the same time as side panels.</entry>
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>

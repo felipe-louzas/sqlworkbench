@@ -21,14 +21,18 @@
  */
 package workbench.db.importer;
 
-import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.ConnectionMgr;
 import workbench.db.WbConnection;
+
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -54,8 +58,8 @@ public class ValueStatementTest
     assertEquals("select max(id) from the_table where some_col = ? and other_col = ?", stmt.getSelectSQL());
     Set<Integer> indexes = stmt.getInputColumnIndexes();
     assertEquals(2, indexes.size());
-    assertTrue(indexes.contains(new Integer(2)));
-    assertTrue(indexes.contains(new Integer(14)));
+    assertTrue(indexes.contains(Integer.valueOf(2)));
+    assertTrue(indexes.contains(Integer.valueOf(14)));
   }
 
   @Test
@@ -79,7 +83,7 @@ public class ValueStatementTest
       data.put(7, "Arthur");
       Object id = stmt.getDatabaseValue(con, data);
       assertNotNull(id);
-      assertEquals(new Integer(1), id);
+      assertEquals(Integer.valueOf(1), id);
 
       data.clear();
       id = stmt.getDatabaseValue(con, data);

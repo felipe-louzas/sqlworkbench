@@ -117,6 +117,7 @@ public class StatementRunner
   private final RemoveEmptyResultsAnnotation removeEmpty = new RemoveEmptyResultsAnnotation();
   private final RemoveResultAnnotation removeResult = new RemoveResultAnnotation();
   private int macroClientId;
+  private String variablePoolID;
   private ScriptErrorHandler retryHandler;
 
   // The history provider is here to give SqlCommands access to the command history.
@@ -136,6 +137,16 @@ public class StatementRunner
   public void setMacroClientId(int id)
   {
     macroClientId = id;
+  }
+
+  public String getVariablePoolID()
+  {
+    return variablePoolID;
+  }
+
+  public void setVariablePoolID(String variablePoolID)
+  {
+    this.variablePoolID = variablePoolID;
   }
 
   public int getMacroClientId()
@@ -475,6 +486,8 @@ public class StatementRunner
     }
 
     final CallerInfo ci = new CallerInfo(){};
+    this.currentCommand.setVariablePoolID(variablePoolID);
+    
     if (!this.currentCommand.isModeSupported(WbManager.getInstance().getRunMode()))
     {
       result = new StatementRunnerResult();
@@ -527,9 +540,9 @@ public class StatementRunner
     this.currentCommand.setShowDataLoading(this.showDataLoadingProgress);
 
     String realSql = aSql;
-    if (VariablePool.getInstance().getParameterCount() > 0)
+    if (VariablePool.getInstance(currentCommand.getVariablePoolID()).getParameterCount() > 0)
     {
-      realSql = VariablePool.getInstance().replaceAllParameters(aSql);
+      realSql = VariablePool.getInstance(currentCommand.getVariablePoolID()).replaceAllParameters(aSql);
       if (Settings.getInstance().getLogParameterSubstitution() && LogMgr.isDebugEnabled())
       {
         if (StringUtil.equalString(aSql, realSql))

@@ -75,7 +75,7 @@ public class ConstantColumnValuesTest
       );
     ConstantColumnValues values = new ConstantColumnValues(entries, columns);
     assertEquals(7, values.getColumnCount());
-    assertEquals(new Integer(42), values.getValue(0));
+    assertEquals(42, values.getValue(0));
     assertEquals("hello, world", values.getValue(1));
     assertEquals(true, values.getValue(2) instanceof java.sql.Timestamp);
     assertEquals("bla", values.getValue(3));
@@ -103,7 +103,7 @@ public class ConstantColumnValuesTest
       List<String> entries = CollectionUtil.arrayList("test_run_id=42","title=hello, world");
       ConstantColumnValues values = new ConstantColumnValues(entries, con, tablename, converter);
       assertEquals(2, values.getColumnCount());
-      assertEquals(new Integer(42), values.getValue(0));
+      assertEquals(42, values.getValue(0));
       assertEquals("hello, world", values.getValue(1));
     }
     catch (Exception ex)

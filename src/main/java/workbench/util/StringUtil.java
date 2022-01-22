@@ -299,6 +299,16 @@ public class StringUtil
     return s;
   }
 
+  public static String ltrim(String s)
+  {
+    if (s == null) return s;
+    if (s.isBlank()) return EMPTY_STRING;
+
+    int pos = findFirstNonWhitespace(s);
+    if (pos < 0) return s;
+    return s.substring(pos);
+  }
+
   public static String rtrim(String s)
   {
     if (s == null) return s;

@@ -53,7 +53,7 @@ public class ToggleCommentAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtToggleCommentSelection", KeyStroke.getKeyStroke(KeyEvent.VK_C, PlatformShortcuts.getDefaultModifier() + InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtToggleCommentSelection", KeyStroke.getKeyStroke(KeyEvent.VK_C, PlatformShortcuts.getDefaultModifier() + InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
   }
 

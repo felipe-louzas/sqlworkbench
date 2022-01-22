@@ -22,8 +22,10 @@
 package workbench.storage;
 
 import workbench.WbTestCase;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Thomas Kellerer
@@ -46,12 +48,12 @@ public class RowDataListTest
     // Make sure add() still works properly after calling reset()
     RowData row = new RowData(2);
     row.setValue(0, "Test");
-    row.setValue(1, new Integer(42));
+    row.setValue(1, 42);
     list.add(row);
     RowData r = list.get(0);
     assertNotNull(r);
     assertEquals(r.getValue(0), "Test");
-    assertEquals(r.getValue(1), new Integer(42));
+    assertEquals(r.getValue(1), 42);
   }
 
   @Test
@@ -64,7 +66,7 @@ public class RowDataListTest
     {
       RowData row = new RowData(2);
       row.setValue(0, "Foobar");
-      row.setValue(1, new Integer(i));
+      row.setValue(1, i);
       list.add(row);
     }
     assertEquals(500, list.size());
@@ -86,15 +88,15 @@ public class RowDataListTest
     list = new RowDataList();
     RowData one = new RowData(2);
     one.setValue(0, "foobar");
-    one.setValue(1, new Integer(1));
+    one.setValue(1, 1);
 
     RowData two = new RowData(2);
     two.setValue(0, "foobar");
-    two.setValue(1, new Integer(2));
+    two.setValue(1, 2);
 
     RowData three = new RowData(2);
     three.setValue(0, "foobar");
-    three.setValue(1, new Integer(3));
+    three.setValue(1, 3);
 
     list.add(one);
     list.add(three);

@@ -55,7 +55,7 @@ import workbench.storage.DataStore;
 import workbench.sql.VariablePool;
 
 /**
- * A panel to enter the value for Workbench variables inside SQL statements
+ * A panel to enter the value for Workbench variables inside SQL statements.
  *
  * @see workbench.sql.VariablePool
  *
@@ -70,14 +70,15 @@ public class VariablesEditor
   private ValidatingDialog dialog;
   private boolean autoAdvance;
   private boolean autoCloseOnAdvance;
+  private String variablePoolID;
 
-  public VariablesEditor(DataStore data)
+  public VariablesEditor(DataStore data, String variablePoolID)
   {
     super();
     autoAdvance = Settings.getInstance().getBoolProperty("workbench.gui.variables.editor.autoadvance", true);
     autoCloseOnAdvance = Settings.getInstance().getBoolProperty("workbench.gui.variables.editor.autoclose", autoAdvance);
-
-    this.variablesTable = new VariablesTable()
+    this.variablePoolID = variablePoolID;
+    this.variablesTable = new VariablesTable(variablePoolID)
     {
       @Override
       public void userStoppedEditing(int row)
@@ -165,7 +166,7 @@ public class VariablesEditor
     for (int i=0; i < rows; i++)
     {
       String varName = this.varData.getValueAsString(i, 0);
-      if (!VariablePool.getInstance().isValidVariableName(varName))
+      if (!VariablePool.getInstance(variablePoolID).isValidVariableName(varName))
       {
         String msg = ResourceMgr.getString("ErrIllegalVariableName");
         msg = msg.replace("%varname%", varName);
@@ -179,12 +180,12 @@ public class VariablesEditor
 
   private static boolean dialogResult;
 
-  public static boolean showVariablesDialog(final DataStore vardata)
+  public static boolean showVariablesDialog(final DataStore vardata, final String variablePoolID)
   {
 
     WbSwingUtilities.invoke(() ->
     {
-      VariablesEditor editor = new VariablesEditor(vardata);
+      VariablesEditor editor = new VariablesEditor(vardata, variablePoolID);
       String settingsId = "workbench.gui.variables.dialog";
       JFrame window = WbManager.getInstance().getCurrentWindow();
       editor.dialog = ValidatingDialog.createDialog(window, editor, ResourceMgr.getString("TxtEditVariablesWindowTitle"), null, 0, false);

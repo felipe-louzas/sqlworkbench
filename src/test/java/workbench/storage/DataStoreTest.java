@@ -35,6 +35,7 @@ import workbench.WbTestCase;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -47,9 +48,6 @@ import workbench.storage.filter.StartsWithComparator;
 import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.util.Alias;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 
 import org.junit.Test;
@@ -388,7 +386,7 @@ public class DataStoreTest
       JdbcUtils.closeResult(rs);
 
       int row = ds.addRow();
-      ds.setValue(row, 0, new Integer(42));
+      ds.setValue(row, 0, 42);
       ds.setValue(row, 1, "Beeblebrox");
       assertEquals("Row not inserted", rowcount + 1, ds.getRowCount());
       ds.setValue(row, 2, "Zaphod");
@@ -515,12 +513,12 @@ public class DataStoreTest
       assertEquals("AND Filter not correct", 1, ds.getRowCount());
 
       expr = new AndExpression();
-      expr.addColumnExpression("KEY", new NumberEqualsComparator(), new Integer(100));
+      expr.addColumnExpression("KEY", new NumberEqualsComparator(), Integer.valueOf(100));
       ds.applyFilter(expr);
       assertEquals("Number Filter not correct", 0, ds.getRowCount());
 
       expr = new OrExpression();
-      expr.addColumnExpression("KEY", new LessThanComparator(), new Integer(1));
+      expr.addColumnExpression("KEY", new LessThanComparator(), Integer.valueOf(1));
       expr.addColumnExpression("FIRSTNAME", new StringEqualsComparator(), "Zaphod");
 
       ds.applyFilter(expr);
@@ -553,7 +551,7 @@ public class DataStoreTest
 
       ds.checkUpdateTable(con);
       int row = ds.addRow();
-      ds.setValue(row, 0, new Integer(42));
+      ds.setValue(row, 0, 42);
       ds.setValue(row, 1, "TestData");
       ds.updateDb(con, null);
 
@@ -630,8 +628,8 @@ public class DataStoreTest
       ds.addRow();
       assertEquals(1, ds.getRowCount());
       String s = "Testvalue";
-      Integer i = new Integer(42);
-      Double d = new Double(4.2);
+      Integer i = 42;
+      Double d = 4.2;
       ds.setValue(0, 0, s);
       ds.setValue(0, 1, i);
       ds.setValue(0, 2, d);

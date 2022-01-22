@@ -23,8 +23,10 @@ package workbench.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -36,10 +38,10 @@ public class FixedLengthLineParserTest
   @Test
   public void testParser()
   {
-    List<Integer> cols = new ArrayList<Integer>();
-    cols.add(new Integer(5));
-    cols.add(new Integer(1));
-    cols.add(new Integer(10));
+    List<Integer> cols = new ArrayList<>();
+    cols.add(Integer.valueOf(5));
+    cols.add(Integer.valueOf(1));
+    cols.add(Integer.valueOf(10));
     FixedLengthLineParser parser = new FixedLengthLineParser(cols);
     String line = "12345H1234567890";
     parser.setLine(line);
@@ -70,10 +72,10 @@ public class FixedLengthLineParserTest
     assertEquals("        10", third);
 
 
-    cols = new ArrayList<Integer>();
-    cols.add(new Integer(2));
-    cols.add(new Integer(2));
-    cols.add(new Integer(4));
+    cols.clear();
+    cols.add(Integer.valueOf(2));
+    cols.add(Integer.valueOf(2));
+    cols.add(Integer.valueOf(4));
     parser = new FixedLengthLineParser(cols);
     parser.setLine("1122333");
     parser.setTrimValues(false);

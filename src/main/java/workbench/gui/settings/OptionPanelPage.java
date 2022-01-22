@@ -22,10 +22,10 @@
 package workbench.gui.settings;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
@@ -40,6 +40,7 @@ import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.DividerBorder;
 
 import workbench.util.CollectionUtil;
@@ -50,20 +51,22 @@ import workbench.util.ExceptionUtil;
  */
 public class OptionPanelPage
 {
-  public static final Border PAGE_BORDER = new EmptyBorder(8, 8, 8, 8);
-  private static final Set<String> NO_BORDER_PANELS = CollectionUtil.treeSet("LnFOptionsPanel", "ExternalToolsPanel", "FormatterOptionsPanel", "DbExplorerOptionsPanel");
+  public static final Border PAGE_PADDING = new EmptyBorder(8, 8, 8, 8);
+  private static final Set<String> NO_PADDING_PANELS = CollectionUtil.treeSet(
+    "LnFOptionsPanel", "ExternalToolsPanel",
+    "FormatterOptionsPanel", "DbExplorerOptionsPanel");
 
   private String label;
   private String pageClass;
   private JPanel panel;
   private Restoreable options;
-  private boolean addBorder;
+  private boolean addPadding;
 
   public OptionPanelPage(String clz, String key)
   {
     this.label = ResourceMgr.getString(key);
     this.pageClass = "workbench.gui.settings." + clz;
-    addBorder = !NO_BORDER_PANELS.contains(clz);
+    addPadding = !NO_PADDING_PANELS.contains(clz);
   }
 
   @Override
@@ -83,26 +86,32 @@ public class OptionPanelPage
     {
       try
       {
-        Class clz = Class.forName(this.pageClass);
-        JPanel optionPanel = (JPanel)clz.getDeclaredConstructor().newInstance();
+        Class<? extends JPanel> clz = (Class<? extends JPanel>)Class.forName(this.pageClass);
+        JPanel optionPanel = clz.getDeclaredConstructor().newInstance();
         this.options = (Restoreable)optionPanel;
         this.options.restoreSettings();
 
         JLabel title = new JLabel(this.label);
-        title.setName("pagetitle");
         title.setOpaque(true);
         title.setBackground(GuiSettings.getEditorBackground());
         title.setForeground(GuiSettings.getEditorForeground());
+        title.setBorder(new EmptyBorder(6,6,6,6));
         Font f = title.getFont();
-        Font f2 = f.deriveFont(Font.BOLD, 12.0f);
-        title.setBorder(new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(4,6,4,6)));
-        title.setFont(f2);
+        float newSize = f.getSize2D() * 1.1f;
+        title.setFont(f.deriveFont(Font.BOLD, newSize));
         panel = new JPanel(new BorderLayout());
-        if (addBorder)
+        Color c = WbSwingUtilities.getLineBorderColor(panel);
+        DividerBorder db = new DividerBorder(DividerBorder.TOP, c);
+        Border pb;
+        if (addPadding)
         {
-          optionPanel.setBorder(PAGE_BORDER);
+          pb = new CompoundBorder(db, PAGE_PADDING);
         }
-        panel.setBorder(BorderFactory.createEtchedBorder());
+        else
+        {
+          pb = db;
+        }
+        optionPanel.setBorder(pb);
         panel.add(title, BorderLayout.NORTH);
         panel.add(optionPanel, BorderLayout.CENTER);
       }

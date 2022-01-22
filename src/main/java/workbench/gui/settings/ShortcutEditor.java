@@ -65,6 +65,7 @@ import workbench.gui.components.ColumnWidthOptimizer;
 import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbButton;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.settings.ShortcutDisplay.DisplayType;
 
@@ -126,7 +127,7 @@ public class ShortcutEditor
     this.keysTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     this.keysTable.getExportAction().setLastDirKey("workbench.shortcuteditor.lastDir");
     this.setLayout(new BorderLayout());
-    JScrollPane scroll = new JScrollPane(this.keysTable);
+    JScrollPane scroll = new WbScrollPane(this.keysTable);
     contentPanel.add(scroll, BorderLayout.CENTER);
 
     EscAction esc = new EscAction(window, this);

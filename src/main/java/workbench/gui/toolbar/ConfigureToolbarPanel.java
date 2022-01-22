@@ -32,6 +32,7 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
+import workbench.gui.components.WbScrollPane;
 
 import workbench.util.FileDialogUtil;
 import workbench.util.StringUtil;
@@ -385,7 +386,7 @@ public class ConfigureToolbarPanel
   {
     java.awt.GridBagConstraints gridBagConstraints;
 
-    jScrollPane1 = new javax.swing.JScrollPane();
+    jScrollPane1 = new WbScrollPane();
     allActionList = new javax.swing.JList<>();
     jPanel1 = new javax.swing.JPanel();
     addItem = new javax.swing.JButton();
@@ -393,7 +394,7 @@ public class ConfigureToolbarPanel
     addSeparator = new javax.swing.JButton();
     resetButton = new javax.swing.JButton();
     jPanel3 = new javax.swing.JPanel();
-    jScrollPane2 = new javax.swing.JScrollPane();
+    jScrollPane2 = new WbScrollPane();
     configuredActions = new javax.swing.JList<>();
     jPanel2 = new javax.swing.JPanel();
     moveUp = new javax.swing.JButton();

@@ -47,7 +47,7 @@ public class FindDataAction
   {
     super();
     this.client = aClient;
-    this.initMenuDefinition("MnuTxtFindInTableData", KeyStroke.getKeyStroke(KeyEvent.VK_F, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_MASK));
+    this.initMenuDefinition("MnuTxtFindInTableData", KeyStroke.getKeyStroke(KeyEvent.VK_F, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setIcon("find-data");
     this.setMenuItemName(ResourceMgr.MNU_TXT_DATA);
   }

@@ -184,7 +184,7 @@ public class InputHandler
 
     addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), insertBreak);
     addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), insertTab);
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK), shiftTab);
+    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK), shiftTab);
 
     addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), overWriteAction);
 
@@ -387,9 +387,9 @@ public class InputHandler
 
     // For some reason we still wind up here even if Ctrl-Space was
     // already handled by keyPressed
-    if (c == 0x20 && evt.getModifiers() == KeyEvent.CTRL_MASK)
+    if (c == 0x20 && evt.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK)
     {
-      KeyStroke pressed = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_MASK);
+      KeyStroke pressed = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK);
       if (bindings.get(pressed) != null)
       {
         // already processed!

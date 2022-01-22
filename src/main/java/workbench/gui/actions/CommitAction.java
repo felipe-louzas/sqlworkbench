@@ -47,7 +47,7 @@ public class CommitAction
   {
     super();
     this.client = aClient;
-    KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.ALT_MASK);
+    KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.ALT_DOWN_MASK);
     this.initMenuDefinition("MnuTxtCommit", key);
     this.setMenuItemName(ResourceMgr.MNU_TXT_SQL);
     this.setIcon("Commit");

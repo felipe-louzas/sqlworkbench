@@ -109,7 +109,7 @@ public class WbAction
 
   public static boolean invokedByMouse(ActionEvent e)
   {
-    boolean mouse = ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0);
+    boolean mouse = ((e.getModifiers() & InputEvent.BUTTON1_DOWN_MASK) != 0);
     return mouse;
   }
 
@@ -544,7 +544,7 @@ public class WbAction
 
     if (this.hasShiftModifier())
     {
-      im.remove(KeyStroke.getKeyStroke(key, modifiers | InputEvent.SHIFT_MASK));
+      im.remove(KeyStroke.getKeyStroke(key, modifiers | InputEvent.SHIFT_DOWN_MASK));
     }
     if (this.hasCtrlModifier())
     {
