@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -45,9 +44,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 
 import workbench.interfaces.Connectable;
 import workbench.interfaces.DbExecutionListener;
@@ -369,9 +365,7 @@ public class DbExplorerPanel
   public void showConnectButton(ConnectionSelector selector)
   {
     this.connectionSelector = selector;
-    this.selectConnectionButton = new JButton(ResourceMgr.getString("LblSelectConnection"));
-    Border b = new CompoundBorder(BorderFactory.createEtchedBorder(), new EmptyBorder(1, 10, 1, 10));
-    this.selectConnectionButton.setBorder(b);
+    this.selectConnectionButton = new FlatButton(ResourceMgr.getString("LblSelectConnection"));
     this.selectConnectionButton.addActionListener(this);
     this.selectorPanel.add(Box.createHorizontalStrut(15));
     this.selectorPanel.add(this.selectConnectionButton);

@@ -42,9 +42,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
 import workbench.interfaces.EncodingSelector;
@@ -63,6 +64,7 @@ import workbench.db.exporter.PoiHelper;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnSelectorPanel;
 import workbench.gui.components.DbUnitHelper;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.ExtensionFileFilter;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbFilePicker;
@@ -197,7 +199,7 @@ public class ExportOptionsPanel
       this.columnSelectEventSource = generalOptions.addColumnSelectListener(this);
     }
 
-    JPanel baseOptionsPanel = new JPanel(new BorderLayout(0, 0));
+    JPanel baseOptionsPanel = new JPanel(new BorderLayout(0, 8));
 
     baseOptionsPanel.add(pickerPanel, BorderLayout.PAGE_START);
     baseOptionsPanel.add(this.generalOptions, BorderLayout.CENTER);
@@ -258,21 +260,21 @@ public class ExportOptionsPanel
   public void setExportInfo(String info)
   {
     if (pickerPanel == null) return;
+    if (StringUtil.isBlank(info)) return;
 
-    if (StringUtil.isNonBlank(info))
-    {
-      int gap = IconMgr.getInstance().getSizeForLabel() / 2;
-      GridBagConstraints gc = new GridBagConstraints();
-      gc.gridx = 0;
-      gc.gridy = 0;
-      gc.gridwidth = 3;
-      gc.weightx = 0;
-      gc.weighty = 0;
-      gc.fill = GridBagConstraints.NONE;
-      gc.anchor = GridBagConstraints.LINE_START;
-      gc.insets = new Insets(0, 0, gap, 0);
-      pickerPanel.add(new JLabel(ResourceMgr.getFormattedString("LblExportInfo", info)), gc);
-    }
+    int gap = IconMgr.getInstance().getSizeForLabel() / 2;
+    GridBagConstraints gc = new GridBagConstraints();
+    gc.gridx = 0;
+    gc.gridy = 2;
+    gc.gridwidth = 3;
+    gc.weightx = 1;
+    gc.weighty = 0;
+    gc.fill = GridBagConstraints.HORIZONTAL;
+    gc.anchor = GridBagConstraints.LINE_START;
+    gc.insets = new Insets(gap, 0, gap, 0);
+    JLabel l = new JLabel(ResourceMgr.getFormattedString("LblExportInfo", info));
+    l.setToolTipText(info);
+    pickerPanel.add(l, gc);
   }
 
   public void setAllowOpenFile(boolean flag)
@@ -345,16 +347,8 @@ public class ExportOptionsPanel
     gc.fill = GridBagConstraints.HORIZONTAL;
     panel.add(typeSelector, gc);
 
-    // third line
-    gc.gridx = 0;
-    gc.gridy++;
-    gc.gridwidth = picker == null ? 2 : 3;
-    gc.weightx = 1.0;
-    gc.weighty = 1.0;
-    gc.fill = GridBagConstraints.HORIZONTAL;
-    gc.anchor = GridBagConstraints.LINE_START;
-    gc.insets = new Insets(gap, 0, gap, 0);
-    panel.add(new JSeparator(SwingConstants.HORIZONTAL), gc);
+    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, gap/2, 0));
+    panel.setBorder(b);
 
     return panel;
   }
@@ -368,6 +362,8 @@ public class ExportOptionsPanel
     {
       String label = selectDirs ? ResourceMgr.getString("LblExportOutputDir") : ResourceMgr.getString("LblExportOutput");
       pickerLabel.setText(label);
+      picker.setDialogTitle(label);
+      this.invalidate();
     }
   }
 

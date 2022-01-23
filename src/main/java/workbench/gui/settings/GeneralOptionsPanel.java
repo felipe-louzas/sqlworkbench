@@ -37,10 +37,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import workbench.interfaces.Disposable;
@@ -54,6 +55,7 @@ import workbench.resource.Settings;
 import workbench.db.KeepAliveDaemon;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.MasterPasswordDialog;
 import workbench.gui.components.WbLabelField;
 import workbench.gui.sql.IconHandler;
@@ -78,6 +80,10 @@ public class GeneralOptionsPanel
   {
     super();
     initComponents();
+    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, 4, 0));
+    jPanel2.setBorder(b);
+    jPanel1.setBorder(b);
+    jPanel4.setBorder(new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, 10, 0)));
 
     if (LogMgr.isTraceEnabled())
     {
@@ -345,19 +351,15 @@ public class GeneralOptionsPanel
     showResultTabClose = new JCheckBox();
     onlyActiveTab = new JCheckBox();
     closeButtonRightSide = new JCheckBox();
-    jSeparator1 = new JSeparator();
     tabLRUclose = new JCheckBox();
     imagePanel = new JPanel();
     iconCombobox = new IconListCombobox();
     busyIconLabel = new JLabel();
     cancelIconCombo = new IconListCombobox();
     cancelIconLabel = new JLabel();
-    jSeparator2 = new JSeparator();
-    jSeparator3 = new JSeparator();
     jPanel3 = new JPanel();
     logLevelLabel = new JLabel();
     logLevel = new JComboBox();
-    jSeparator4 = new JSeparator();
     jPanel4 = new JPanel();
     showFinishAlert = new JCheckBox();
     jLabel2 = new JLabel();
@@ -370,7 +372,6 @@ public class GeneralOptionsPanel
     checkInterval = new JComboBox();
     logAllStatements = new JCheckBox();
     logMetaSQL = new JCheckBox();
-    jSeparator5 = new JSeparator();
     logfileLabel = new WbLabelField();
     obfuscateDbInfo = new JCheckBox();
 
@@ -530,7 +531,7 @@ public class GeneralOptionsPanel
     settingsfilename.setText("Settings");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 14;
+    gridBagConstraints.gridy = 12;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
@@ -590,9 +591,10 @@ public class GeneralOptionsPanel
     showTabCloseButton.setHorizontalTextPosition(SwingConstants.RIGHT);
     showTabCloseButton.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(0, 0, 2, 0);
+    gridBagConstraints.insets = new Insets(6, 0, 2, 0);
     jPanel1.add(showTabCloseButton, gridBagConstraints);
 
     showResultTabClose.setText(ResourceMgr.getString("LblShowResultClose")); // NOI18N
@@ -602,10 +604,11 @@ public class GeneralOptionsPanel
     showResultTabClose.setHorizontalTextPosition(SwingConstants.RIGHT);
     showResultTabClose.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(0, 16, 2, 0);
+    gridBagConstraints.insets = new Insets(6, 16, 2, 0);
     jPanel1.add(showResultTabClose, gridBagConstraints);
 
     onlyActiveTab.setText(ResourceMgr.getString("LblCloseActive")); // NOI18N
@@ -613,7 +616,7 @@ public class GeneralOptionsPanel
     onlyActiveTab.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(3, 0, 5, 0);
     jPanel1.add(onlyActiveTab, gridBagConstraints);
@@ -623,19 +626,12 @@ public class GeneralOptionsPanel
     closeButtonRightSide.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(3, 16, 5, 0);
     jPanel1.add(closeButtonRightSide, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 3;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(2, 0, 3, 0);
-    jPanel1.add(jSeparator1, gridBagConstraints);
 
     tabLRUclose.setText(ResourceMgr.getString("LblTabOrderLRU")); // NOI18N
     tabLRUclose.setToolTipText(ResourceMgr.getString("d_LblTabOrderLRU")); // NOI18N
@@ -696,29 +692,15 @@ public class GeneralOptionsPanel
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(2, 0, 0, 0);
-    add(jPanel1, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(3, 0, 3, 0);
-    add(jSeparator2, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(4, 0, 3, 0);
-    add(jSeparator3, gridBagConstraints);
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new Insets(4, 0, 0, 0);
+    add(jPanel1, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 11;
+    gridBagConstraints.gridy = 9;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(jPanel3, gridBagConstraints);
@@ -727,26 +709,19 @@ public class GeneralOptionsPanel
     logLevelLabel.setToolTipText(ResourceMgr.getString("d_LblLogLevel")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 13;
+    gridBagConstraints.gridy = 11;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     add(logLevelLabel, gridBagConstraints);
 
     logLevel.setModel(new DefaultComboBoxModel(new String[] { "ERROR", "WARNING", "INFO", "DEBUG" }));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 13;
+    gridBagConstraints.gridy = 11;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(0, 10, 0, 10);
     add(logLevel, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(0, 0, 6, 0);
-    add(jSeparator4, gridBagConstraints);
 
     jPanel4.setLayout(new GridBagLayout());
 
@@ -789,11 +764,12 @@ public class GeneralOptionsPanel
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(5, 0, 0, 0);
     add(jPanel4, gridBagConstraints);
 
     jPanel5.setLayout(new GridBagLayout());
@@ -846,10 +822,10 @@ public class GeneralOptionsPanel
     logAllStatements.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(3, 0, 5, 0);
+    gridBagConstraints.insets = new Insets(7, 0, 5, 0);
     add(logAllStatements, gridBagConstraints);
 
     logMetaSQL.setText(ResourceMgr.getString("LblLogMetaSql")); // NOI18N
@@ -860,23 +836,16 @@ public class GeneralOptionsPanel
     logMetaSQL.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(3, 0, 5, 0);
     add(logMetaSQL, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 10;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(10, 0, 10, 0);
-    add(jSeparator5, gridBagConstraints);
 
     logfileLabel.setText("Logfile");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 15;
+    gridBagConstraints.gridy = 13;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
@@ -888,7 +857,7 @@ public class GeneralOptionsPanel
     obfuscateDbInfo.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(4, 0, 2, 0);
@@ -968,11 +937,6 @@ public class GeneralOptionsPanel
   private JPanel jPanel3;
   private JPanel jPanel4;
   private JPanel jPanel5;
-  private JSeparator jSeparator1;
-  private JSeparator jSeparator2;
-  private JSeparator jSeparator3;
-  private JSeparator jSeparator4;
-  private JSeparator jSeparator5;
   private JLabel langLabel;
   private JComboBox languageDropDown;
   private JCheckBox logAllStatements;

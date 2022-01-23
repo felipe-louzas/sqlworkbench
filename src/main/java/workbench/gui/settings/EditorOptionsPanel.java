@@ -70,6 +70,7 @@ public class EditorOptionsPanel
     TextFieldWidthAdjuster adjuster = new TextFieldWidthAdjuster();
     adjuster.adjustAllFields(this);
     defaultDir.setSelectDirectoryOnly(true);
+    defaultDir.setDialogTitleByKey("MsgSelectScriptDir");
     EncodingUtil.fetchEncodings();
   }
 

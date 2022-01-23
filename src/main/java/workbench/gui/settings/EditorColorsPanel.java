@@ -34,6 +34,7 @@ import workbench.interfaces.Restoreable;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.WbColorPicker;
 import workbench.gui.components.WbFontStylePicker;
 import workbench.gui.editor.SyntaxStyle;
@@ -55,6 +56,8 @@ public class EditorColorsPanel
   public EditorColorsPanel()
   {
     initComponents();
+    editorColors.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "LblEditorColors", 2));
+    syntaxColors.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "LblSyntaxColors", 2));
   }
 
   @Override
@@ -327,7 +330,7 @@ public class EditorColorsPanel
     gridBagConstraints.insets = new Insets(0, 0, 0, 9);
     add(syntaxColors, gridBagConstraints);
 
-    editorColors.setBorder(BorderFactory.createTitledBorder(ResourceMgr.getString("LblEditorColors"))); // NOI18N
+    editorColors.setBorder(BorderFactory.createTitledBorder("Editor Colors"));
     editorColors.setLayout(new GridBagLayout());
 
     currLineLabel.setText(ResourceMgr.getString("LblCurrLineColor")); // NOI18N

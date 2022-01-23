@@ -50,7 +50,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 import workbench.interfaces.ResultSetter;
 import workbench.log.CallerInfo;
@@ -122,7 +121,7 @@ public class CompletionPopup
 
     content.setLayout(new BorderLayout());
     scroll = new JScrollPane(this.elementList);
-    scroll.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+    scroll.setBorder(WbSwingUtilities.createLineBorder(content));
     elementList.setVisibleRowCount(10);
     content.add(scroll);
     elementList.addKeyListener(this);

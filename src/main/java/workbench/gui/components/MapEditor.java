@@ -112,7 +112,7 @@ public class MapEditor
 
     this.propTable.setModel(new DataStoreTableModel(this.propData));
     this.setLayout(new BorderLayout());
-    JScrollPane scroll = new JScrollPane(this.propTable);
+    JScrollPane scroll = new WbScrollPane(this.propTable);
 
     WbToolbar toolbar = new WbToolbar();
     newItem = new NewListEntryAction(this);

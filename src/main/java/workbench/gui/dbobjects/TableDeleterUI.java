@@ -96,6 +96,7 @@ public class TableDeleterUI
   {
     super();
     initComponents();
+    statusLabel.setBorder(WbSwingUtilities.createLineBorder(this));
     statusLabel.setText("  ");
   }
 

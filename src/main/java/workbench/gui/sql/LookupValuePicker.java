@@ -60,7 +60,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.text.JTextComponent;
 
 import workbench.interfaces.NullableEditor;
@@ -322,7 +321,7 @@ public class LookupValuePicker
     gc.gridx ++;
     result.add(maxRows, gc);
 
-    Border b = new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED), new EmptyBorder(1,5,1,1));
+    Border b = new CompoundBorder(WbSwingUtilities.createLineBorder(result), new EmptyBorder(1,5,1,1));
     result.setBorder(b);
 
     return result;
@@ -585,7 +584,7 @@ public class LookupValuePicker
   @Override
   public void keyPressed(KeyEvent e)
   {
-    if (e.getSource() == this.filterValue && e.getModifiers() == 0)
+    if (e.getSource() == this.filterValue && e.getModifiersEx() == 0)
     {
       if (e.getKeyCode() == KeyEvent.VK_ESCAPE && StringUtil.isNonBlank(filterValue.getText()))
       {

@@ -161,7 +161,8 @@ public class Settings
   public static final String PROPERTY_EDITOR_CURSOR_COLOR = "workbench.editor.color.cursor";
   public static final String PROPERTY_EDITOR_GUTTER_COLOR = "workbench.editor.color.gutter";
   public static final String PROPERTY_EDITOR_LINENUMBER_COLOR = "workbench.editor.color.linenumber";
-  public static final String PROPERTY_EDITOR_SELECTION_COLOR = "workbench.editor.color.selection";
+  public static final String PROPERTY_EDITOR_SELECTION_BG_COLOR = "workbench.editor.color.selection";
+  public static final String PROPERTY_EDITOR_SELECTION_FG_COLOR = "workbench.editor.color.selection.foreground";
 
   public static final String PROPERTY_CONSOLIDATE_LOG_MESSAGES = "workbench.gui.log.consolidate";
   public static final String PROPERTY_LOG_ALL_SQL = "workbench.sql.log.statements";
@@ -1966,12 +1967,22 @@ public class Settings
 
   public void setEditorSelectionColor(Color c)
   {
-    setColor(PROPERTY_EDITOR_SELECTION_COLOR, c);
+    setColor(PROPERTY_EDITOR_SELECTION_BG_COLOR, c);
   }
 
   public Color getEditorSelectionColor()
   {
-    return getColor(PROPERTY_EDITOR_SELECTION_COLOR, null);
+    return getColor(PROPERTY_EDITOR_SELECTION_BG_COLOR, null);
+  }
+
+  public void setEditorSelectedTextColor(Color c)
+  {
+    setColor(PROPERTY_EDITOR_SELECTION_FG_COLOR, c);
+  }
+
+  public Color getEditorSelectedTextColor()
+  {
+    return getColor(PROPERTY_EDITOR_SELECTION_FG_COLOR, null);
   }
 
   public void setEditorCurrentStmtColor(Color c)

@@ -60,6 +60,8 @@ public class CompletionOptionsPanel
   {
     initComponents();
 
+    jPanel1.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "MnuTxtAutoCompleteJoin", 0));
+
     DefaultComboBoxModel model = new DefaultComboBoxModel(ObjectCacheStorage.values());
     localStorageType.setModel(model);
 
@@ -294,7 +296,7 @@ public class CompletionOptionsPanel
     gridBagConstraints.insets = new Insets(6, 11, 0, 15);
     add(maxAgeField, gridBagConstraints);
 
-    jPanel1.setBorder(BorderFactory.createTitledBorder(ResourceMgr.getString("MnuTxtAutoCompleteJoin"))); // NOI18N
+    jPanel1.setBorder(BorderFactory.createTitledBorder("JOIN completion"));
     jPanel1.setLayout(new GridBagLayout());
 
     addParens.setText(ResourceMgr.getString("LblJoinComplParens")); // NOI18N

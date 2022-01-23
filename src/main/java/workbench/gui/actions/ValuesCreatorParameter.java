@@ -31,6 +31,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.editor.ValuesListCreator;
 
 import workbench.util.StringUtil;
@@ -238,9 +239,8 @@ public class ValuesCreatorParameter
 
     jLabel1 = new javax.swing.JLabel();
     delimiter = new javax.swing.JTextField();
-    jScrollPane1 = new javax.swing.JScrollPane();
+    jScrollPane1 = new WbScrollPane();
     previewArea = new javax.swing.JTextArea();
-    jSeparator1 = new javax.swing.JSeparator();
     previewButton = new javax.swing.JButton();
     jLabel2 = new javax.swing.JLabel();
     nullString = new javax.swing.JTextField();
@@ -279,14 +279,6 @@ public class ValuesCreatorParameter
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
     add(jScrollPane1, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(12, 0, 0, 0);
-    add(jSeparator1, gridBagConstraints);
 
     previewButton.setText(ResourceMgr.getString("LblPreview")); // NOI18N
     previewButton.addActionListener(new java.awt.event.ActionListener()
@@ -446,7 +438,9 @@ public class ValuesCreatorParameter
     gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.gridheight = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(2, 0, 9, 0);
     add(jPanel1, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
@@ -501,7 +495,6 @@ public class ValuesCreatorParameter
   private javax.swing.JLabel jLabel2;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JScrollPane jScrollPane1;
-  private javax.swing.JSeparator jSeparator1;
   private javax.swing.JTextField nullString;
   private javax.swing.JTextArea previewArea;
   private javax.swing.JButton previewButton;

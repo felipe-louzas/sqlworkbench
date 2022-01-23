@@ -45,7 +45,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -1440,7 +1439,7 @@ public class DwPanel
     }
     return 0;
   }
-  
+
   public void hideSQLInfo()
   {
     if (sqlInfo != null)
@@ -1455,7 +1454,7 @@ public class DwPanel
     if (sqlInfo == null)
     {
       this.sqlInfo = new JLabel("");
-      Border b = new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED), new EmptyBorder(1,1,1,1));
+      Border b = new CompoundBorder(WbSwingUtilities.createLineBorder(this), new EmptyBorder(1,1,1,1));
       b = new CompoundBorder(new EmptyBorder(2,1,5,1), b);
       this.sqlInfo.setBorder(b);
       this.add(sqlInfo, BorderLayout.NORTH);

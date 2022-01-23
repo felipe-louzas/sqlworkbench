@@ -51,6 +51,7 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbButton;
 import workbench.gui.components.WbScrollPane;
 import workbench.gui.help.HelpManager;
@@ -156,7 +157,7 @@ public class SettingsPanel
     JScrollPane scroll = new WbScrollPane(pageList);
     content = new JPanel(new BorderLayout());
     content.add(scroll, BorderLayout.WEST);
-
+    content.setBorder(DividerBorder.BOTTOM_DIVIDER);
     okButton = new WbButton(ResourceMgr.getString("LblOK"));
     cancelButton = new WbButton(ResourceMgr.getString("LblCancel"));
     helpButton = new JButton(ResourceMgr.getString("LblHelp"));
@@ -169,25 +170,24 @@ public class SettingsPanel
 
     JPanel buttonPanel = new JPanel(new GridBagLayout());
 
-    GridBagConstraints constraints;
-    constraints = new GridBagConstraints();
-    constraints.gridx = 0;
-    constraints.gridy = 0;
-    constraints.anchor = GridBagConstraints.WEST;
-    constraints.insets = new Insets(0, 5, 0, 0);
-    buttonPanel.add(helpButton, constraints);
+    GridBagConstraints gc = new GridBagConstraints();
+    gc.gridx = 0;
+    gc.gridy = 0;
+    gc.anchor = GridBagConstraints.WEST;
+    gc.insets = new Insets(0, 5, 0, 0);
+    buttonPanel.add(helpButton, gc);
 
-    constraints.gridx++;
-    constraints.anchor = GridBagConstraints.EAST;
-    constraints.insets = new Insets(7, 0, 7, 10);
-    constraints.weightx = 1.0;
-    buttonPanel.add(okButton, constraints);
+    gc.gridx++;
+    gc.anchor = GridBagConstraints.EAST;
+    gc.insets = new Insets(7, 0, 7, 10);
+    gc.weightx = 1.0;
+    buttonPanel.add(okButton, gc);
 
-    constraints.gridx++;
-    constraints.anchor = GridBagConstraints.EAST;
-    constraints.weightx = 0.0;
-    constraints.insets = new Insets(7, 0, 7, 4);
-    buttonPanel.add(cancelButton, constraints);
+    gc.gridx++;
+    gc.anchor = GridBagConstraints.EAST;
+    gc.weightx = 0.0;
+    gc.insets = new Insets(7, 0, 7, 4);
+    buttonPanel.add(cancelButton, gc);
 
     add(content, BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);

@@ -37,6 +37,9 @@ import workbench.WbManager;
 import workbench.console.DataStorePrinter;
 import workbench.console.TextPrinter;
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.db.ConnectionInfoBuilder;
 import workbench.db.DriverInfo;
@@ -44,10 +47,6 @@ import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.*;
-
-import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
 
 import workbench.storage.DataStore;
 
@@ -76,13 +75,14 @@ public class ConnectionInfoPanel
       infotext.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
       infotext.setText(info.getHtmlDisplay(conn));
       infotext.setCaretPosition(0);
+      infotext.setBorder(WbSwingUtilities.EMPTY_BORDER);
       TextComponentMouseListener.addListener(infotext);
       FontMetrics fm = infotext.getFontMetrics(infotext.getFont());
-      int height = fm.getHeight() * 12 + 40;
-      Dimension d = new Dimension(470, height);
+      int height = fm.getHeight() * 14;  // minimum 14 lines
+      int width = fm.getMaxAdvance() * 75; // 75 characters
+      Dimension d = new Dimension(width, height);
       jScrollPane1.setSize(d);
       jScrollPane1.setPreferredSize(d);
-      jScrollPane1.setMaximumSize(d);
       infoTabs.setTitleAt(0, ResourceMgr.getString("TxtInfoBasic"));
 
       if (conn.isBusy())
@@ -95,7 +95,6 @@ public class ConnectionInfoPanel
         extendedInfoData = new WbTable(true, false, false);
         WbScrollPane scroll = new WbScrollPane(extendedInfoData);
         scroll.setPreferredSize(d);
-        scroll.setMaximumSize(d);
         DataStoreTableModel ds = new DataStoreTableModel(drvInfo.getInfo());
         extendedInfoData.setModel(ds, true);
         extendedPanel.add(scroll, BorderLayout.CENTER);
@@ -140,7 +139,7 @@ public class ConnectionInfoPanel
 
     infoTabs = new WbTabbedPane();
     jPanel1 = new javax.swing.JPanel();
-    jScrollPane1 = new javax.swing.JScrollPane();
+    jScrollPane1 = new WbScrollPane();
     infotext = new InfoEditorPane();
     copyButton = new javax.swing.JButton();
     extendedPanel = new javax.swing.JPanel();
@@ -149,9 +148,9 @@ public class ConnectionInfoPanel
 
     jPanel1.setLayout(new java.awt.GridBagLayout());
 
+    infotext.setEditable(false);
     infotext.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
     infotext.setContentType("text/html"); // NOI18N
-    infotext.setEditable(false);
     infotext.setFont(new java.awt.Font("Dialog", 0, 11)); // NOI18N
     jScrollPane1.setViewportView(infotext);
 

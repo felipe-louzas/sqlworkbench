@@ -40,6 +40,8 @@ import workbench.resource.GeneratedIdentifierCase;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.WbSwingUtilities;
+
 /**
  *
  * @author  Thomas Kellerer
@@ -53,7 +55,7 @@ public class SqlGenerationOptionsPanel
   {
     super();
     initComponents();
-
+    jPanel2.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "LblDefDateLiterals", 2));
     List<String> types = Settings.getInstance().getLiteralTypeList();
     ComboBoxModel model1 = new DefaultComboBoxModel(types.toArray());
     literalTypes.setModel(model1);

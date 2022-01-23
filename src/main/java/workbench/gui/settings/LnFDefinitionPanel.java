@@ -39,12 +39,13 @@ import java.util.stream.Collectors;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -54,6 +55,8 @@ import workbench.resource.ResourceMgr;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ClassFinderGUI;
 import workbench.gui.components.ClasspathEditor;
+import workbench.gui.components.DividerBorder;
+import workbench.gui.components.ExtensionFileFilter;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.StringPropertyEditor;
 import workbench.gui.components.TextComponentMouseListener;
@@ -81,10 +84,15 @@ public class LnFDefinitionPanel
   {
     super();
     initComponents();
+    infoText.setBorder(new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(4,0,0,0)));
+    statusLabel.setText("");
     lblLibrary.setToolTipText(ResourceMgr.getDescription("LblLnFLib"));
     classpathEditor.setLastDirProperty("workbench.lnf.lastdir");
     themeFileSelector.setLastDirProperty("workbench.lnf.themes.lastdir");
     themeFileSelector.setPropertyName("themeFileName");
+    themeFileSelector.setDialogTitleByKey("MsgSelectFlatLafTheme");
+    themeFileSelector.setFileFilter(ExtensionFileFilter.getJsonFilterFilter());
+
     tfClassName.getDocument().addDocumentListener(this);
     tfName.addPropertyChangeListener(this);
     tfName.addFocusListener(new FocusAdapter()
@@ -229,7 +237,6 @@ public class LnFDefinitionPanel
     tfClassName = new StringPropertyEditor();
     lblLibrary = new JLabel();
     infoText = new JTextArea();
-    jSeparator1 = new JSeparator();
     changeLnfButton = new WbButton();
     currentLabel = new HtmlLabel();
     statusLabel = new WbStatusLabel();
@@ -237,7 +244,6 @@ public class LnFDefinitionPanel
     classpathEditor = new ClasspathEditor();
     themeLabel = new JLabel();
     themeFileSelector = new WbFilePicker();
-    jSeparator2 = new JSeparator();
 
     setLayout(new GridBagLayout());
 
@@ -303,19 +309,12 @@ public class LnFDefinitionPanel
     infoText.setOpaque(false);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.gridwidth = 3;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(11, 10, 0, 10);
-    add(infoText, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(10, 0, 0, 0);
-    add(jSeparator1, gridBagConstraints);
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new Insets(5, 10, 0, 10);
+    add(infoText, gridBagConstraints);
 
     changeLnfButton.setText(ResourceMgr.getString("LblActivateLnf")); // NOI18N
     changeLnfButton.setMaximumSize(new Dimension(200, 50));
@@ -325,7 +324,7 @@ public class LnFDefinitionPanel
     changeLnfButton.addActionListener(this);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(10, 8, 0, 0);
@@ -334,19 +333,22 @@ public class LnFDefinitionPanel
     currentLabel.setText("Current Theme: What you see"); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 8;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTH;
+    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(7, 8, 5, 8);
     add(currentLabel, gridBagConstraints);
+
+    statusLabel.setText("Statuslabel");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(2, 10, 0, 7);
+    gridBagConstraints.insets = new Insets(5, 10, 0, 7);
     add(statusLabel, gridBagConstraints);
 
     selectClass.setText("...");
@@ -383,15 +385,6 @@ public class LnFDefinitionPanel
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 3, 0, 3);
     add(themeFileSelector, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
-    gridBagConstraints.gridwidth = 3;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.SOUTH;
-    gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
-    add(jSeparator2, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -490,8 +483,6 @@ public class LnFDefinitionPanel
   public ClasspathEditor classpathEditor;
   public JLabel currentLabel;
   public JTextArea infoText;
-  public JSeparator jSeparator1;
-  public JSeparator jSeparator2;
   public JLabel lblClassName;
   public JLabel lblLibrary;
   public JLabel lblName;

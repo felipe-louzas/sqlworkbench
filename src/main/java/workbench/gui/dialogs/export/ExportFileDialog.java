@@ -101,7 +101,7 @@ public class ExportFileDialog
 
   public ExportFileDialog(Component caller, ResultInfo info)
   {
-    this(caller,info, false);
+    this(caller, info, false);
   }
 
   public ExportFileDialog(Component caller, ResultInfo info, boolean forClipboard)

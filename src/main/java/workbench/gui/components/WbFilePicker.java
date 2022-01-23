@@ -37,6 +37,7 @@ import javax.swing.filechooser.FileFilter;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
@@ -60,6 +61,7 @@ public class WbFilePicker
   private boolean selectDirectory;
   private boolean showSaveAsDialog;
   private boolean showHiddenFiles;
+  private String dialogTitle;
 
   public WbFilePicker()
   {
@@ -73,11 +75,21 @@ public class WbFilePicker
     WbSwingUtilities.adjustButtonWidth(selectFileButton,22,22);
   }
 
+  public void setDialogTitleByKey(String key)
+  {
+    setDialogTitle(ResourceMgr.getString(key));
+  }
+  
+  public void setDialogTitle(String dialogTitle)
+  {
+    this.dialogTitle = StringUtil.trimToNull(dialogTitle);
+  }
+
   public void setPropertyName(String propName)
   {
     this.tfFilename.setName(propName);
   }
-  
+
   public void setShowHiddenFiles(boolean flag)
   {
     this.showHiddenFiles = flag;
@@ -216,7 +228,10 @@ public class WbFilePicker
           jf.setFileFilter(this.fileFilter);
         }
       }
-
+      if (dialogTitle != null)
+      {
+        jf.setDialogTitle(dialogTitle);
+      }
       int answer = JFileChooser.CANCEL_OPTION;
 
       if (showSaveAsDialog)

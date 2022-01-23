@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -37,7 +38,6 @@ import workbench.interfaces.Restoreable;
 import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.WbSwingUtilities;
@@ -93,8 +93,8 @@ public class OptionPanelPage
 
         JLabel title = new JLabel(this.label);
         title.setOpaque(true);
-        title.setBackground(GuiSettings.getEditorBackground());
-        title.setForeground(GuiSettings.getEditorForeground());
+        title.setBackground(UIManager.getColor("TextArea.background"));
+        title.setForeground(UIManager.getColor("TextArea.foreground"));
         title.setBorder(new EmptyBorder(6,6,6,6));
         Font f = title.getFont();
         float newSize = f.getSize2D() * 1.1f;

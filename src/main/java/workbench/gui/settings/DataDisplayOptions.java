@@ -63,7 +63,10 @@ public class DataDisplayOptions
     initComponents();
     ComboBoxModel model = new DefaultComboBoxModel(new String[] {ResourceMgr.getString("TxtTabRight"), ResourceMgr.getString("TxtTabLeft") });
     alignmentDropDown.setModel(model);
-
+    jPanel2.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "LblColHeaders", 0));
+    colWidthPanel.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "TxtColWidthSettings", 0));
+    multiLinePanel.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "LblMultiLineCols", 0));
+    rowHeightPanel.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "TxtRowHeightSettings", 0));
     nullFontStyle.setModel(new FontStyleComboBoxModel());
 
     WbSwingUtilities.setMinimumSizeFromCols(defMaxRows);

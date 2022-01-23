@@ -166,7 +166,13 @@ public class SyntaxUtilities
    *
    * @return The x co-ordinate, plus the width of the painted string
    */
-  public static float paintSyntaxLine(Segment line, Token tokens, SyntaxStyle[] styles, TabExpander expander, Graphics2D gfx, float x, float y, int addwidth)
+  public static float paintSyntaxLine(Segment line,
+                                      Token tokens,
+                                      SyntaxStyle[] styles,
+                                      TabExpander expander,
+                                      Graphics2D gfx,
+                                      float x, float y,
+                                      int addwidth)
   {
     if (tokens == null) return x;
 

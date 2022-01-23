@@ -34,14 +34,17 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import workbench.resource.ResourceMgr;
 import workbench.ssh.SshConfig;
 import workbench.ssh.SshConfigMgr;
 import workbench.ssh.SshHostConfig;
 import workbench.ssh.UrlParser;
+
+import workbench.gui.components.DividerBorder;
 
 import workbench.util.StringUtil;
 
@@ -57,6 +60,8 @@ public class SshConfigPanel
   public SshConfigPanel()
   {
     initComponents();
+    hostConfigPanel.setBorder(new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0,0,8,0)));
+    jPanel1.setBorder(new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0,0,8,0)));
     List<SshHostConfig> configs = new ArrayList<>();
     configs.add(null);
     configs.addAll(SshConfigMgr.getDefaultInstance().getGlobalConfigs());
@@ -215,13 +220,11 @@ public class SshConfigPanel
     labelDbHostname = new JLabel();
     dbHostname = new JTextField();
     dbPort = new JTextField();
-    jSeparator1 = new JSeparator();
     rewriteUrl = new JCheckBox();
     hostConfigPanel = new SshHostConfigPanel();
     jPanel1 = new JPanel();
     globalConfigDD = new JComboBox<>();
     globalConfigLabel = new JLabel();
-    jSeparator2 = new JSeparator();
     jLabel1 = new JLabel();
     jLabel2 = new JLabel();
 
@@ -232,7 +235,7 @@ public class SshConfigPanel
     labelLocalPort.setToolTipText(ResourceMgr.getString("d_LblSshLocalPort")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 0);
     add(labelLocalPort, gridBagConstraints);
@@ -240,7 +243,7 @@ public class SshConfigPanel
     localPort.setToolTipText(ResourceMgr.getString("d_LblSshLocalPort")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 11);
@@ -251,7 +254,7 @@ public class SshConfigPanel
     labelDbPort.setToolTipText(ResourceMgr.getString("d_LblSshDbHostname")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 0);
     add(labelDbPort, gridBagConstraints);
@@ -261,7 +264,7 @@ public class SshConfigPanel
     labelDbHostname.setToolTipText(ResourceMgr.getString("d_LblSshDbPort")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 0);
     add(labelDbHostname, gridBagConstraints);
@@ -269,7 +272,7 @@ public class SshConfigPanel
     dbHostname.setToolTipText(ResourceMgr.getString("d_LblSshDbHostname")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 11);
@@ -278,25 +281,18 @@ public class SshConfigPanel
     dbPort.setToolTipText(ResourceMgr.getString("d_LblSshDbPort")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 11);
     add(dbPort, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(8, 5, 5, 11);
-    add(jSeparator1, gridBagConstraints);
 
     rewriteUrl.setSelected(true);
     rewriteUrl.setText(ResourceMgr.getString("LblSshRewriteUrl")); // NOI18N
     rewriteUrl.setToolTipText(ResourceMgr.getString("d_LblSshRewriteUrl")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 10;
+    gridBagConstraints.gridy = 7;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
@@ -305,7 +301,7 @@ public class SshConfigPanel
     add(rewriteUrl, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = GridBagConstraints.BOTH;
     gridBagConstraints.weightx = 1.0;
@@ -317,6 +313,7 @@ public class SshConfigPanel
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(0, 7, 0, 0);
     jPanel1.add(globalConfigDD, gridBagConstraints);
 
@@ -324,27 +321,23 @@ public class SshConfigPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     jPanel1.add(globalConfigLabel, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.insets = new Insets(7, 5, 0, 0);
-    add(jPanel1, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(8, 5, 5, 11);
-    add(jSeparator2, gridBagConstraints);
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(1, 5, 0, 0);
+    add(jPanel1, gridBagConstraints);
 
     jLabel1.setText(ResourceMgr.getString("LblSshTunnel")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 2, 0);
@@ -353,10 +346,10 @@ public class SshConfigPanel
     jLabel2.setText(ResourceMgr.getString("LblSshConn")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.insets = new Insets(1, 5, 3, 0);
+    gridBagConstraints.insets = new Insets(12, 5, 3, 0);
     add(jLabel2, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
@@ -370,8 +363,6 @@ public class SshConfigPanel
   private JLabel jLabel1;
   private JLabel jLabel2;
   private JPanel jPanel1;
-  private JSeparator jSeparator1;
-  private JSeparator jSeparator2;
   private JLabel labelDbHostname;
   private JLabel labelDbPort;
   private JLabel labelLocalPort;

@@ -28,6 +28,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.FlatButton;
 
 import workbench.util.FileDialogUtil;
@@ -49,6 +50,7 @@ public class DataEditOptionsPanel
   {
     super();
     initComponents();
+    jPanel3.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "LblFreeFormSettings", 0));
   }
 
   @Override

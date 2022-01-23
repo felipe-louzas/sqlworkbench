@@ -23,7 +23,6 @@ package workbench.gui.dbobjects;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -41,8 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -71,6 +69,7 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.ReloadAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.DataStoreTableModel;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.EmptyTableModel;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.WbScrollPane;
@@ -133,7 +132,8 @@ public class TableSearchPanel
 
     this.tableListModel = EmptyTableModel.EMPTY_MODEL;
     initComponents();
-
+    WbSplitPane split = (WbSplitPane)jSplitPane1;
+    split.setDividerBorder(DividerBorder.RIGHT_DIVIDER);
     JScrollBar sb = this.resultScrollPane.getVerticalScrollBar();
     sb.setUnitIncrement(25); // approx. one line
     sb.setBlockIncrement(25 * 5); // approx. 5 lines
@@ -255,25 +255,19 @@ public class TableSearchPanel
         display.setModel(model, true);
         display.applyHighlightExpression(searcher.getSearchExpression());
         display.checkCopyActions();
-        JScrollPane pane = new ParentWidthScrollPane(display);
+        JScrollPane pane = new WbScrollPane(display);
         int rows = display.getRowCount();
         String label = table.getTableExpression() + " " + ResourceMgr.getFormattedString("MsgRows", rows);
-        TitledBorder b = new TitledBorder(" " + label);
-        pane.setBorder(b);
-        Font f = b.getTitleFont();
-        if (f == null)
-        {
-          // With JDK 7, getTitleFont() seems to return null...
-          UIDefaults def = UIManager.getDefaults();
-          f = def.getFont("Label.font");
-        }
-        // Check for != null again - just to make sure.
-        // Because if a NPE is thrown here, nothing will be shown to the user
+        TitledBorder tb = WbSwingUtilities.createTitleBorder(this, label);
+        Font f = tb.getTitleFont();
         if (f != null)
         {
           f = f.deriveFont(Font.BOLD);
-          b.setTitleFont(f);
+          tb.setTitleFont(f);
         }
+        Border b = new CompoundBorder(tb, new EmptyBorder(6,4,4,4));
+        pane.setBorder(b);
+
         // only the last component should have weighty = 1.0
         // so reset the weighty attribute for the component that is currently the last one
         int count = resultPanel.getComponentCount();
@@ -561,26 +555,6 @@ public class TableSearchPanel
   @Override
   public void keyTyped(java.awt.event.KeyEvent e)
   {
-  }
-
-  static class ParentWidthScrollPane
-    extends JScrollPane
-  {
-    private Dimension preferredSize = new Dimension(0,0);
-
-    ParentWidthScrollPane(Component view)
-    {
-      super(view);
-    }
-
-    @Override
-    public Dimension getPreferredSize()
-    {
-      Dimension d = super.getPreferredSize();
-      Container parent = this.getParent();
-      this.preferredSize.setSize( (double)parent.getWidth() - 5, d.getHeight());
-      return this.preferredSize;
-    }
   }
 
   @Override

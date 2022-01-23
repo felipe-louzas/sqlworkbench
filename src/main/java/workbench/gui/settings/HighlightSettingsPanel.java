@@ -29,6 +29,7 @@ import workbench.interfaces.Restoreable;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.TextFieldWidthAdjuster;
 import workbench.gui.components.WbColorPicker;
 
@@ -46,6 +47,8 @@ public class HighlightSettingsPanel
   public HighlightSettingsPanel()
   {
     initComponents();
+    jPanel1.setBorder(WbSwingUtilities.createLineBorder(this));
+    jPanel2.setBorder(WbSwingUtilities.createLineBorder(this));
     TextFieldWidthAdjuster adjuster = new TextFieldWidthAdjuster();
     adjuster.adjustField(selMinLength);
   }
@@ -179,7 +182,7 @@ public class HighlightSettingsPanel
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 5, 0);
     add(jPanel1, gridBagConstraints);
 
-    jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+    jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
     jPanel2.setLayout(new java.awt.GridBagLayout());
 
     hiliteType.add(hiliteBoth);

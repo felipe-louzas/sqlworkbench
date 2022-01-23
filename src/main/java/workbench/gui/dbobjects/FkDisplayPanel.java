@@ -33,7 +33,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -112,7 +111,7 @@ public class FkDisplayPanel
     treePanel.add(this.dependencyTree, BorderLayout.CENTER);
 
     WbToolbar toolbar = new WbToolbar();
-    toolbar.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+    toolbar.setBorder(WbSwingUtilities.EMPTY_BORDER);
     reloadTree = new ReloadAction(this);
     cancelAction = new StopAction(this);
     cancelAction.setEnabled(false);
@@ -259,7 +258,7 @@ public class FkDisplayPanel
     throws SQLException
   {
     if (table == null) return;
-    
+
     try
     {
       currentTable = table;

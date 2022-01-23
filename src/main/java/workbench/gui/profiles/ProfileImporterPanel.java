@@ -34,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -43,6 +44,7 @@ import workbench.db.ProfileManager;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ExtensionFileFilter;
+import workbench.gui.components.WbScrollPane;
 
 import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
@@ -81,6 +83,12 @@ public class ProfileImporterPanel
   {
     initComponents();
     sourceFilename.setText(ResourceMgr.getString("LblNone"));
+    sourceInfoPanel.setBorder(WbSwingUtilities.DEFAULT_LINE_BORDER);
+    currentInfopanel.setBorder(WbSwingUtilities.DEFAULT_LINE_BORDER);
+
+    splitPane.setDividerSize((int)(IconMgr.getInstance().getSizeForLabel() / 2));
+    splitPane.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
+
     Border b = new EmptyBorder(0,0,0,0);
     sourceFilename.setBorder(b);
     currentFilename.setBorder(b);
@@ -367,13 +375,13 @@ public class ProfileImporterPanel
     sourceInfoPanel = new javax.swing.JPanel();
     sourceFilename = new workbench.gui.components.WbLabelField();
     sourceToolbar = new workbench.gui.components.WbToolbar();
-    jScrollPane3 = new javax.swing.JScrollPane();
+    jScrollPane3 = new WbScrollPane();
     sourceProfiles = new workbench.gui.profiles.ProfileTree();
     currentPanel = new javax.swing.JPanel();
     currentInfopanel = new javax.swing.JPanel();
     currentFilename = new workbench.gui.components.WbLabelField();
     currentToolbar = new workbench.gui.components.WbToolbar();
-    jScrollPane4 = new javax.swing.JScrollPane();
+    jScrollPane4 = new WbScrollPane();
     currentProfiles = new workbench.gui.profiles.ProfileTree();
 
     setLayout(new java.awt.BorderLayout());
@@ -383,7 +391,6 @@ public class ProfileImporterPanel
 
     sourcePanel.setLayout(new java.awt.BorderLayout());
 
-    sourceInfoPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
     sourceInfoPanel.setLayout(new java.awt.GridBagLayout());
 
     sourceFilename.setText("wbLabelField2");
@@ -412,7 +419,6 @@ public class ProfileImporterPanel
 
     currentPanel.setLayout(new java.awt.BorderLayout());
 
-    currentInfopanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
     currentInfopanel.setLayout(new java.awt.GridBagLayout());
 
     currentFilename.setText("wbLabelField1");

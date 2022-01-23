@@ -40,7 +40,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Types;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -74,6 +73,7 @@ import workbench.gui.components.BlobHandler;
 import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.components.WbDocument;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbTraversalPolicy;
 import workbench.gui.renderer.ButtonDisplayPanel;
@@ -162,7 +162,7 @@ public class RecordFormPanel
 
     this.removeAll();
     JPanel formPanel = new JPanel(new GridBagLayout());
-
+    formPanel.setBorder(new CompoundBorder(WbSwingUtilities.createLineBorder(this), new EmptyBorder(10,6,10,6)));
     GridBagConstraints c = new GridBagConstraints();
     c.gridx = 0;
     c.gridy = 0;
@@ -258,7 +258,7 @@ public class RecordFormPanel
 
         inputControls[i] = area;
 
-        JScrollPane scroll = new JScrollPane(area, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scroll = new WbScrollPane(area, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scroll.setMinimumSize(areaSize);
         scroll.setPreferredSize(areaSize);
         inputControls[i].setFont(displayFont);
@@ -308,7 +308,8 @@ public class RecordFormPanel
     }
 
     // Put the input form into a scrollpane in case there are a lot of columns in the row
-    JScrollPane formScroll = new JScrollPane(formPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane formScroll = new WbScrollPane(formPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    formScroll.setBorder(null);
     formScroll.setWheelScrollingEnabled(true);
     JScrollBar vscroll = formScroll.getVerticalScrollBar();
     if (vscroll != null)
@@ -316,7 +317,6 @@ public class RecordFormPanel
       vscroll.setUnitIncrement(charHeight * 2); // clicking on the scrollbar arrows, scrolls by two "lines"
       vscroll.setBlockIncrement(charHeight * 10); // clicking on the scrollbar "free area", scrolls by ten "lines"
     }
-    formScroll.setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(), new EmptyBorder(10,5,10,5)));
     this.add(formScroll, BorderLayout.CENTER);
 
     // make the first input field the default component

@@ -22,7 +22,6 @@
 package workbench.gui.dbobjects;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -35,9 +34,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -55,6 +54,7 @@ import workbench.db.WbConnection;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.ReloadAction;
 import workbench.gui.components.DataStoreTableModel;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbToolbar;
@@ -97,18 +97,18 @@ public class TablePartitionsPanel
 
     split = new WbSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-    JPanel mainPanel = new JPanel(new BorderLayout());
+    JPanel mainPanel = new JPanel(new BorderLayout(0,2));
     partitionLabel = createTitleLabel("TxtPartitions");
     mainPanel.add(partitionLabel, BorderLayout.PAGE_START);
-    usedScroll = new JScrollPane(mainPartitions);
+    usedScroll = new WbScrollPane(mainPartitions);
     mainPanel.add(usedScroll, BorderLayout.CENTER);
     split.setTopComponent(mainPanel);
 
-    subPanel = new JPanel(new BorderLayout());
+    subPanel = new JPanel(new BorderLayout(0,2));
     subPartitionLabel = createTitleLabel("TxtSubPartitions");
 
     subPanel.add(subPartitionLabel, BorderLayout.PAGE_START);
-    JScrollPane scroll2 = new JScrollPane(subPartitions);
+    JScrollPane scroll2 = new WbScrollPane(subPartitions);
     subPanel.add(scroll2, BorderLayout.CENTER);
     split.setBottomComponent(subPanel);
     split.setDividerLocation(0.5);
@@ -137,7 +137,8 @@ public class TablePartitionsPanel
   {
     JLabel title = new JLabel(ResourceMgr.getString(key));
     title.setOpaque(true);
-    title.setBackground(Color.WHITE);
+    title.setBackground(UIManager.getColor("TextArea.background"));
+    title.setForeground(UIManager.getColor("TextArea.foreground"));
     title.setIconTextGap((int)(IconMgr.getInstance().getSizeForLabel() / 2));
     title.setHorizontalTextPosition(SwingConstants.LEADING);
     Font f = title.getFont();
@@ -147,7 +148,7 @@ public class TablePartitionsPanel
 
     int top = (int)(fontHeight / 3);
     int left = (int)(fontHeight / 5);
-    title.setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED), new EmptyBorder(top, left, top, left)));
+    title.setBorder(new CompoundBorder(WbSwingUtilities.createLineBorder(this), new EmptyBorder(top, left, top, left)));
     title.setFont(f2);
     return title;
   }

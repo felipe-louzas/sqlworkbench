@@ -84,6 +84,7 @@ public class MacroFileSelector
     JFileChooser fc = new WbFileChooser(lastDir);
     fc.addChoosableFileFilter(ExtensionFileFilter.getXmlFileFilter());
     fc.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
+    fc.setDialogTitle(ResourceMgr.getString("MsgSelectMacroFile"));
 
     int answer = JFileChooser.CANCEL_OPTION;
 

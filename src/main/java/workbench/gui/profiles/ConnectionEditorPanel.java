@@ -54,6 +54,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import workbench.interfaces.SimplePropertyEditor;
 import workbench.interfaces.ValidatingComponent;
@@ -116,6 +120,11 @@ public class ConnectionEditorPanel
   {
     super();
     this.initComponents();
+    Border b = new CompoundBorder(DividerBorder.TOP_BOTTOM_DIVIDER, new EmptyBorder(8, 0, 6, 0));
+    wbOptionsPanel.setBorder(b);
+
+    groupNameLabel.setBackground(UIManager.getColor("TextArea.background"));
+    groupNameLabel.setForeground(UIManager.getColor("TextArea.foreground"));
     echoChar = tfPwd.getEchoChar();
     String text = altDelimLabel.getText();
     altDelimLabel.setText("<html><u>" + text + "</u></html>");
@@ -334,7 +343,6 @@ public class ConnectionEditorPanel
     cbDrivers = new javax.swing.JComboBox();
     lblUrl = new javax.swing.JLabel();
     tfUserName = new StringPropertyEditor();
-    jSeparator2 = new javax.swing.JSeparator();
     jPanel2 = new javax.swing.JPanel();
     tfFetchSize = new IntegerPropertyEditor();
     cbAutocommit = new BooleanPropertyEditor();
@@ -344,7 +352,6 @@ public class ConnectionEditorPanel
     jLabel1 = new javax.swing.JLabel();
     fetchSizeLabel = new javax.swing.JLabel();
     sshConfig = new javax.swing.JButton();
-    jSeparator3 = new javax.swing.JSeparator();
     tfURL = new StringPropertyEditor();
     wbOptionsPanel = new javax.swing.JPanel();
     cbStorePassword = new BooleanPropertyEditor();
@@ -373,7 +380,7 @@ public class ConnectionEditorPanel
     setOpaque(false);
     setLayout(new java.awt.BorderLayout());
 
-    groupNameLabel.setBackground(new java.awt.Color(255, 255, 255));
+    groupNameLabel.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
     groupNameLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
     groupNameLabel.setText(ResourceMgr.getString("LblGroupName")); // NOI18N
     groupNameLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 6, 3, 6));
@@ -767,14 +774,6 @@ public class ConnectionEditorPanel
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 6, 2, 2);
     mainPanel.add(tfUserName, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 8;
-    gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 0);
-    mainPanel.add(jSeparator2, gridBagConstraints);
 
     jPanel2.setLayout(new java.awt.GridBagLayout());
 
@@ -800,7 +799,7 @@ public class ConnectionEditorPanel
     extendedProps.setText(ResourceMgr.getString("LblConnExtendedProps")); // NOI18N
     extendedProps.setToolTipText(ResourceMgr.getString("d_LblConnExtendedProps")); // NOI18N
     extendedProps.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-    extendedProps.addMouseListener(formListener);
+    extendedProps.addActionListener(formListener);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 7;
     gridBagConstraints.gridy = 0;
@@ -866,14 +865,6 @@ public class ConnectionEditorPanel
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(1, 1, 0, 5);
     mainPanel.add(jPanel2, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 13;
-    gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-    mainPanel.add(jSeparator3, gridBagConstraints);
 
     tfURL.setHorizontalAlignment(javax.swing.JTextField.LEFT);
     tfURL.setName("url"); // NOI18N
@@ -1083,7 +1074,7 @@ public class ConnectionEditorPanel
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+    gridBagConstraints.insets = new java.awt.Insets(8, 5, 8, 5);
     mainPanel.add(wbOptionsPanel, gridBagConstraints);
 
     showPassword.setText(ResourceMgr.getString("LblShowPassword")); // NOI18N
@@ -1111,16 +1102,12 @@ public class ConnectionEditorPanel
 
   // Code for dispatching events from components to event handlers.
 
-  private class FormListener implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.ItemListener, java.awt.event.MouseListener
+  private class FormListener implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.ItemListener
   {
     FormListener() {}
     public void actionPerformed(java.awt.event.ActionEvent evt)
     {
-      if (evt.getSource() == sshConfig)
-      {
-        ConnectionEditorPanel.this.sshConfigActionPerformed(evt);
-      }
-      else if (evt.getSource() == editConnectionScriptsButton)
+      if (evt.getSource() == editConnectionScriptsButton)
       {
         ConnectionEditorPanel.this.editConnectionScriptsButtonActionPerformed(evt);
       }
@@ -1135,6 +1122,14 @@ public class ConnectionEditorPanel
       else if (evt.getSource() == testConnectionButton)
       {
         ConnectionEditorPanel.this.testConnectionButtonActionPerformed(evt);
+      }
+      else if (evt.getSource() == sshConfig)
+      {
+        ConnectionEditorPanel.this.sshConfigActionPerformed(evt);
+      }
+      else if (evt.getSource() == extendedProps)
+      {
+        ConnectionEditorPanel.this.extendedPropsActionPerformed(evt);
       }
     }
 
@@ -1157,36 +1152,7 @@ public class ConnectionEditorPanel
         ConnectionEditorPanel.this.cbDriversItemStateChanged(evt);
       }
     }
-
-    public void mouseClicked(java.awt.event.MouseEvent evt)
-    {
-      if (evt.getSource() == extendedProps)
-      {
-        ConnectionEditorPanel.this.extendedPropsMouseClicked(evt);
-      }
-    }
-
-    public void mouseEntered(java.awt.event.MouseEvent evt)
-    {
-    }
-
-    public void mouseExited(java.awt.event.MouseEvent evt)
-    {
-    }
-
-    public void mousePressed(java.awt.event.MouseEvent evt)
-    {
-    }
-
-    public void mouseReleased(java.awt.event.MouseEvent evt)
-    {
-    }
   }// </editor-fold>//GEN-END:initComponents
-
-  private void extendedPropsMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_extendedPropsMouseClicked
-  {//GEN-HEADEREND:event_extendedPropsMouseClicked
-    this.editExtendedProperties();
-  }//GEN-LAST:event_extendedPropsMouseClicked
 
   private void cbDriversItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbDriversItemStateChanged
   {//GEN-HEADEREND:event_cbDriversItemStateChanged
@@ -1322,6 +1288,11 @@ public class ConnectionEditorPanel
     }
   }//GEN-LAST:event_sshConfigActionPerformed
 
+  private void extendedPropsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_extendedPropsActionPerformed
+  {//GEN-HEADEREND:event_extendedPropsActionPerformed
+    this.editExtendedProperties();
+  }//GEN-LAST:event_extendedPropsActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   protected javax.swing.JLabel altDelimLabel;
   protected javax.swing.JTextField altDelimiter;
@@ -1360,8 +1331,6 @@ public class ConnectionEditorPanel
   protected javax.swing.JPanel jPanel5;
   protected javax.swing.JPanel jPanel6;
   protected javax.swing.JPanel jPanel7;
-  protected javax.swing.JSeparator jSeparator2;
-  protected javax.swing.JSeparator jSeparator3;
   protected javax.swing.JLabel lblDriver;
   protected javax.swing.JLabel lblPwd;
   protected javax.swing.JLabel lblUrl;
@@ -1467,6 +1436,7 @@ public class ConnectionEditorPanel
     fc.removeChoosableFileFilter(fc.getAcceptAllFileFilter());
     fc.addChoosableFileFilter(ff);
     fc.setFileFilter(ff);
+    fc.setDialogTitle(ResourceMgr.getString("MsgSelectIcon"));
 
     int answer = fc.showOpenDialog(SwingUtilities.getWindowAncestor(this));
 
@@ -1511,6 +1481,7 @@ public class ConnectionEditorPanel
     JFileChooser jf = new WbFileChooser();
     jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     jf.setMultiSelectionEnabled(false);
+    jf.setDialogTitle(ResourceMgr.getString("MsgSelectScriptDir"));
     if (currentDir != null)
     {
       File f = new File(currentDir);

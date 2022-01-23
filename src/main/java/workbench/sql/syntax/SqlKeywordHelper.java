@@ -227,7 +227,7 @@ public class SqlKeywordHelper
         Collection<String> custom = FileUtil.getLines(customFile, true, true);
         result.addAll(custom);
         long duration = System.nanoTime()- start;
-        LogMgr.logInfo(ci, "Reading keywords from: " + f.getAbsolutePath() + " took " + String.format("%.2f", (double)(duration) / 1_000_000d) + "ms");
+        LogMgr.logDebug(ci, "Reading keywords from: " + f.getAbsolutePath() + " took " + String.format("%.2f", (double)(duration) / 1_000_000d) + "ms");
       }
       catch (Exception e)
       {

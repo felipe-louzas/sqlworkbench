@@ -26,6 +26,9 @@ import java.awt.event.ActionListener;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import workbench.interfaces.Restoreable;
 import workbench.resource.GeneratedIdentifierCase;
@@ -33,6 +36,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.DividerBorder;
 
 import workbench.sql.formatter.JoinWrapStyle;
 
@@ -50,6 +54,8 @@ public class WbFormatterOptionsPanel
   {
     super();
     initComponents();
+    Border b = new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(8,0,0,0));
+    jPanel2.setBorder(b);
     ComboBoxModel model = new DefaultComboBoxModel(JoinWrapStyle.values());
     joinWrappingStyle.setModel(model);
     ComboBoxModel caseModel = new DefaultComboBoxModel(GeneratedIdentifierCase.values());
@@ -134,7 +140,6 @@ public class WbFormatterOptionsPanel
     insertWithColumnNames = new javax.swing.JCheckBox();
     jLabel2 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
-    jSeparator3 = new javax.swing.JSeparator();
     jPanel1 = new javax.swing.JPanel();
     subselectMaxLabel = new javax.swing.JLabel();
     subselectMaxLength = new javax.swing.JTextField();
@@ -233,13 +238,6 @@ public class WbFormatterOptionsPanel
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
     add(jLabel3, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(11, 0, 4, 0);
-    add(jSeparator3, gridBagConstraints);
 
     jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -295,7 +293,6 @@ public class WbFormatterOptionsPanel
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(7, 4, 0, 7);
     jPanel2.add(maxCharElements, gridBagConstraints);
 
@@ -322,11 +319,12 @@ public class WbFormatterOptionsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 10;
+    gridBagConstraints.gridy = 9;
     gridBagConstraints.gridwidth = 4;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
     add(jPanel2, gridBagConstraints);
 
     colsPerLinePanel.setLayout(new java.awt.GridBagLayout());
@@ -465,6 +463,7 @@ public class WbFormatterOptionsPanel
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(1, 0, 0, 0);
     add(jPanel3, gridBagConstraints);
   }
 
@@ -503,7 +502,6 @@ public class WbFormatterOptionsPanel
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
-  private javax.swing.JSeparator jSeparator3;
   private javax.swing.JComboBox joinWrappingStyle;
   private javax.swing.JComboBox keywordCase;
   private javax.swing.JLabel keywordCaseLabel;

@@ -62,6 +62,7 @@ public class MavenDownloadPanel
   public MavenDownloadPanel(String className)
   {
     initComponents();
+    downloadDir.setDialogTitle(ResourceMgr.getString("MsgSelectDownloadDir"));
     artefact = downloader.searchByClassName(className);
     downloader.setProgressBar(downloadProgress);
     downloadDir.setSelectDirectoryOnly(true);

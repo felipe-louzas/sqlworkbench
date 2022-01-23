@@ -24,6 +24,8 @@ package workbench.gui.settings;
 import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import workbench.interfaces.Restoreable;
 import workbench.interfaces.ValidatingComponent;
@@ -31,6 +33,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.NumberField;
 import workbench.gui.help.HelpManager;
 
@@ -49,6 +52,7 @@ public class DataFormattingOptionsPanel
   {
     super();
     initComponents();
+    jPanel2.setBorder(new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(6, 0, 0, 0)));
     WbSwingUtilities.setMinimumSize(decimalField, 5);
     WbSwingUtilities.setMinimumSize(groupSeparator, 5);
     WbSwingUtilities.setMinimumSize(maxDigitsField, 5);
@@ -205,7 +209,6 @@ public class DataFormattingOptionsPanel
     timeFormat = new javax.swing.JTextField();
     oraDateFix = new javax.swing.JCheckBox();
     helpLabel = new javax.swing.JLabel();
-    jSeparator1 = new javax.swing.JSeparator();
     jPanel2 = new javax.swing.JPanel();
     decimalLabel = new javax.swing.JLabel();
     decimalField = new javax.swing.JTextField();
@@ -256,13 +259,13 @@ public class DataFormattingOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 11, 0);
     add(timeFormatLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(7, 7, 0, 11);
+    gridBagConstraints.insets = new java.awt.Insets(7, 7, 11, 11);
     add(timeFormat, gridBagConstraints);
 
     oraDateFix.setText(ResourceMgr.getString("LblOraDataTS")); // NOI18N
@@ -289,13 +292,6 @@ public class DataFormattingOptionsPanel
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
     add(helpLabel, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 3;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(11, 0, 8, 0);
-    add(jSeparator1, gridBagConstraints);
 
     jPanel2.setLayout(new java.awt.GridBagLayout());
 
@@ -388,13 +384,12 @@ public class DataFormattingOptionsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 56);
     add(jPanel2, gridBagConstraints);
   }
 
@@ -452,7 +447,6 @@ public class DataFormattingOptionsPanel
   private javax.swing.JTextField intFormat;
   private javax.swing.JLabel intFormatLabel;
   private javax.swing.JPanel jPanel2;
-  private javax.swing.JSeparator jSeparator1;
   private javax.swing.JTextField maxDigitsField;
   private javax.swing.JLabel maxDigitsLabel;
   private javax.swing.JLabel numberFormatHelp;

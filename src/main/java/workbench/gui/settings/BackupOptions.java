@@ -54,6 +54,7 @@ public class BackupOptions
   {
     super();
     initComponents();
+    backupDirPicker.setDialogTitleByKey("MsgSelectBackupDir");
   }
 
   @Override

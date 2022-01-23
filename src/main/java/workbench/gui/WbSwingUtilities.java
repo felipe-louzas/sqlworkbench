@@ -74,9 +74,10 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -97,6 +98,7 @@ import workbench.gui.components.PlainEditor;
 import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbOptionPane;
+import workbench.gui.lnf.LnFHelper;
 import workbench.gui.renderer.ColorUtils;
 
 import workbench.util.NumberStringCache;
@@ -110,8 +112,10 @@ import workbench.util.WbThread;
  */
 public class WbSwingUtilities
 {
+
   public static final String PROP_ERROR_MSG_WRAP = "workbench.sql.error.wordwrap";
   public static final LineBorder FOCUSED_CELL_BORDER = new LineBorder(Color.YELLOW);
+  public static final Border DEFAULT_LINE_BORDER = createLineBorder(UIManager.getColor("Panel.background"));
   public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
   public static final KeyStroke CTRL_TAB = KeyStroke.getKeyStroke("control TAB");
   public static final KeyStroke TAB = KeyStroke.getKeyStroke("TAB");
@@ -637,7 +641,7 @@ public class WbSwingUtilities
     msg.removeBorders();
     msg.setText(message);
     msg.setCaretPosition(0);
-    msg.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+    msg.setBorder(createLineBorder(msg));
     msg.restoreSettings();
     msg.setFocusable(false);
 
@@ -1714,7 +1718,7 @@ public class WbSwingUtilities
     Color background = reference == null ? Color.LIGHT_GRAY : reference.getBackground();
     return getLineBorderColor(background);
   }
-  
+
   public static Color getLineBorderColor(Color background)
   {
     Color borderColor;
@@ -1724,7 +1728,7 @@ public class WbSwingUtilities
     }
     else
     {
-      borderColor = ColorUtils.darker(background, 0.9);
+      borderColor = ColorUtils.darker(background, 0.85);
     }
     return borderColor;
   }
@@ -1733,4 +1737,27 @@ public class WbSwingUtilities
   {
     return new LineBorder(getLineBorderColor(reference), 1);
   }
+
+  public static Border createLineBorder(Color reference)
+  {
+    return new LineBorder(getLineBorderColor(reference), 1);
+  }
+
+  public static Border createTitleBorderByKey(JComponent reference, String titleKey, int margin)
+  {
+    TitledBorder tb = createTitleBorder(reference, ResourceMgr.getString(titleKey));
+    if (margin < 0) return tb;
+    return new CompoundBorder(tb, new EmptyBorder(margin, margin, margin, margin));
+  }
+
+  public static TitledBorder createTitleBorder(JComponent reference, String label)
+  {
+    if (!LnFHelper.isWindowsLookAndFeel())
+    {
+      return BorderFactory.createTitledBorder(label);
+    }
+    Border lb = createLineBorder(reference);
+    return BorderFactory.createTitledBorder(lb, label);
+  }
+
 }

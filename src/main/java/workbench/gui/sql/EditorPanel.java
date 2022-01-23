@@ -44,14 +44,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.GapContent;
@@ -128,7 +127,7 @@ public class EditorPanel
   implements FontChangedListener, DropTargetListener,
              SqlTextContainer, TextFileContainer, FormattableSql
 {
-  private static final Border DEFAULT_BORDER = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+  private static final Border DEFAULT_BORDER = WbSwingUtilities.createLineBorder(UIManager.getColor("Label.background"));
   private AnsiSQLTokenMarker sqlTokenMarker;
   private static final int SQL_EDITOR = 0;
   private static final int TEXT_EDITOR = 1;

@@ -22,7 +22,6 @@
 package workbench.gui.dbobjects;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -33,18 +32,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 import workbench.interfaces.Reloadable;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.DbObject;
+import workbench.db.ObjectListDataStore;
 import workbench.db.PackageDefinition;
 import workbench.db.ProcedureDefinition;
-import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
 import workbench.db.dependency.DependencyReaderFactory;
@@ -52,6 +51,7 @@ import workbench.db.dependency.DependencyReaderFactory;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.ReloadAction;
 import workbench.gui.components.DataStoreTableModel;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbToolbar;
@@ -88,19 +88,19 @@ public class ObjectDependencyPanel
     usedByObjects = new WbTable(false, false, false);
 
     split = new WbSplitPane(JSplitPane.VERTICAL_SPLIT);
-
-    JPanel usesPanel = new JPanel(new BorderLayout());
+    split.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
+    JPanel usesPanel = new JPanel(new BorderLayout(0,2));
     usingLabel = createTitleLabel("TxtDepsUses");
     usesPanel.add(usingLabel, BorderLayout.PAGE_START);
-    usedScroll = new JScrollPane(objectsUsed);
+    usedScroll = new WbScrollPane(objectsUsed);
     usesPanel.add(usedScroll, BorderLayout.CENTER);
     split.setTopComponent(usesPanel);
 
-    JPanel usingPanel = new JPanel(new BorderLayout());
+    JPanel usingPanel = new JPanel(new BorderLayout(0,2));
     usedByLabel = createTitleLabel("TxtDepsUsedBy");
 
     usingPanel.add(usedByLabel, BorderLayout.PAGE_START);
-    JScrollPane scroll2 = new JScrollPane(usedByObjects);
+    JScrollPane scroll2 = new WbScrollPane(usedByObjects);
     usingPanel.add(scroll2, BorderLayout.CENTER);
     split.setBottomComponent(usingPanel);
     split.setDividerLocation(150);
@@ -121,18 +121,18 @@ public class ObjectDependencyPanel
   {
     JLabel title = new JLabel(ResourceMgr.getString(key));
     title.setOpaque(true);
-    title.setBackground(Color.WHITE);
+    title.setBackground(UIManager.getColor("TextArea.background"));
+    title.setForeground(UIManager.getColor("TextArea.foreground"));
     title.setIconTextGap((int)(IconMgr.getInstance().getSizeForLabel() / 2));
     title.setHorizontalTextPosition(SwingConstants.LEADING);
     Font f = title.getFont();
     Font f2 = f.deriveFont(Font.BOLD);
-    //title.setBorder();
     FontMetrics fm = title.getFontMetrics(f2);
     int fontHeight = fm.getHeight();
 
     int top = (int)(fontHeight / 3);
     int left = (int)(fontHeight / 5);
-    title.setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED), new EmptyBorder(top, left, top, left)));
+    title.setBorder(new CompoundBorder(WbSwingUtilities.DEFAULT_LINE_BORDER, new EmptyBorder(top, left, top, left)));
     title.setFont(f2);
     return title;
   }

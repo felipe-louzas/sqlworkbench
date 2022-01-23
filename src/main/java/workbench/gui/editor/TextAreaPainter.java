@@ -58,7 +58,8 @@ public class TextAreaPainter
   protected JEditTextArea textArea;
   protected SyntaxStyle[] styles;
   protected Color caretColor;
-  protected Color selectionColor;
+  protected Color selectionBackground;
+  protected Color selectionForeground;
   protected Color currentLineColor;
   protected Color bracketHighlightColor;
   protected Color occuranceHighlightColor;
@@ -117,7 +118,8 @@ public class TextAreaPainter
       Settings.PROPERTY_EDITOR_GUTTER_COLOR,
       Settings.PROPERTY_EDITOR_LINENUMBER_COLOR,
       Settings.PROPERTY_EDITOR_CURRENT_LINE_COLOR,
-      Settings.PROPERTY_EDITOR_SELECTION_COLOR,
+      Settings.PROPERTY_EDITOR_SELECTION_BG_COLOR,
+      Settings.PROPERTY_EDITOR_SELECTION_FG_COLOR,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_COLOR,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_IGNORE_CASE,
       Settings.PROPERTY_EDITOR_BRACKET_HILITE,
@@ -266,10 +268,15 @@ public class TextAreaPainter
     currentLineColor = Settings.getInstance().getEditorCurrentLineColor();
     bracketHighlightColor = Settings.getInstance().getEditorBracketHighlightColor();
     occuranceHighlightColor = Settings.getInstance().geSelectionHighlightColor();
-    selectionColor = Settings.getInstance().getEditorSelectionColor();
-    if (selectionColor == null)
+    selectionBackground = Settings.getInstance().getEditorSelectionColor();
+    if (selectionBackground == null)
     {
-      selectionColor = getDefaultColor("TextArea.selectionBackground", DEFAULT_SELECTION_COLOR);
+      selectionBackground = getDefaultColor("TextArea.selectionBackground", DEFAULT_SELECTION_COLOR);
+    }
+    selectionForeground = Settings.getInstance().getEditorSelectedTextColor();
+    if (selectionForeground == null)
+    {
+      selectionForeground = getDefaultColor("TextArea.selectionForeground", null);
     }
   }
 
@@ -366,18 +373,18 @@ public class TextAreaPainter
   /**
    * Returns the selection color.
    */
-  public final Color getSelectionColor()
+  public final Color getSelectionBackground()
   {
-    return selectionColor;
+    return selectionBackground;
   }
 
   /**
    * Sets the selection color.
    * @param selectionColor The selection color
    */
-  public final void setSelectionColor(Color selectionColor)
+  public final void setSelectionBackground(Color selectionColor)
   {
-    this.selectionColor = selectionColor;
+    this.selectionBackground = selectionColor;
     invalidateSelectedLines();
   }
 
@@ -760,7 +767,7 @@ public class TextAreaPainter
     }
     else
     {
-      gfx.setColor(selectionColor);
+      gfx.setColor(selectionBackground);
     }
 
     int selectionStartLine = textArea.getSelectionStartLine();

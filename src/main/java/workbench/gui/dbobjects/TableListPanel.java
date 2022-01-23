@@ -124,6 +124,7 @@ import workbench.gui.actions.SpoolDataAction;
 import workbench.gui.actions.ToggleTableSourceAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.DataStoreTableModel;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.MultiSelectComboBox;
 import workbench.gui.components.QuickFilterPanel;
@@ -400,7 +401,7 @@ public class TableListPanel
     this.listPanel.setBorder(WbSwingUtilities.EMPTY_BORDER);
     this.splitPane.setLeftComponent(this.listPanel);
     this.splitPane.setRightComponent(displayTab);
-    this.splitPane.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
+    this.splitPane.setDividerBorder(DividerBorder.RIGHT_DIVIDER);
     this.splitPane.setOneTouchExpandable(true);
     this.splitPane.setContinuousLayout(true);
 

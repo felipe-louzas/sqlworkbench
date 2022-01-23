@@ -220,9 +220,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="JOIN completion">
-              <ResourceString PropertyName="titleX" bundle="language/wbstrings.properties" key="MnuTxtAutoCompleteJoin" replaceFormat="ResourceMgr.getString(&quot;{key}&quot;)"/>
-            </TitledBorder>
+            <TitledBorder title="JOIN completion"/>
           </Border>
         </Property>
       </Properties>

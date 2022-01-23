@@ -88,7 +88,7 @@ public class WbSplitPane
 
   private SplitPaneUI getSplitPaneUI()
   {
-    if (LnFHelper.isFlatLaf() || LnFHelper.isWebLaf())
+    if (!LnFHelper.isWindowsLookAndFeel())
     {
       SplitPaneUI sui = createInstance((String)UIManager.getDefaults().get("SplitPaneUI"));
       if (sui != null) return sui;
@@ -139,7 +139,7 @@ public class WbSplitPane
         divSize = 14;
         break;
       default:
-        divSize = 8;
+        divSize = 10;
     }
     this.setDividerSize(divSize);
     this.setBorder(WbSwingUtilities.EMPTY_BORDER);
@@ -155,11 +155,7 @@ public class WbSplitPane
   public void setDividerBorder(Border newBorder)
   {
     int divider = this.getDividerSize();
-    if (LnFHelper.isWebLaf())
-    {
-      this.setDividerSize(dividerSize);
-    }
-    else
+    if (LnFHelper.isWindowsLookAndFeel())
     {
       try
       {

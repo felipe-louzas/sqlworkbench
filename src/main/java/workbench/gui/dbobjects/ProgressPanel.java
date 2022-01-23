@@ -37,6 +37,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 import workbench.interfaces.Interruptable;
 import workbench.interfaces.InterruptableJob;
@@ -68,6 +69,12 @@ public class ProgressPanel
     super();
     task = aWorker;
     initComponents();
+
+    Border b = BorderFactory.createCompoundBorder(WbSwingUtilities.createLineBorder(this), BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+    fileNameField.setBorder(b);
+    infoPanel.setBorder(b);
+
     if (!showFilename)
     {
       remove(fileNameField);
