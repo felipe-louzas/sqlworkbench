@@ -65,18 +65,10 @@
               <useIncrementalCompilation>false</useIncrementalCompilation>
               <debuglevel>lines,vars,source</debuglevel>
               <compilerArgs>
-                <arg>-Xlint:deprecation</arg>
+                <arg>-Xlint:none</arg>
                 <arg>-g:source,lines</arg>
                 <arg>--add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED</arg>
               </compilerArgs>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>${surefire.plugin.version}</version>
-            <configuration>
-              <excludedGroups>workbench.db.DbTest</excludedGroups>
             </configuration>
           </plugin>
         </plugins>
@@ -101,11 +93,22 @@
               </excludes>
               <debuglevel>lines,vars,source</debuglevel>
               <compilerArgs>
-                <arg>-Xlint:deprecation</arg>
+                <arg>-Xlint:none</arg>
                 <arg>-g:source,lines</arg>
               </compilerArgs>
             </configuration>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>test-default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>

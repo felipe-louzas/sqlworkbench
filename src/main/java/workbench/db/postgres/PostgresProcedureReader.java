@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -49,6 +50,7 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
+import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -64,6 +66,7 @@ public class PostgresProcedureReader
   // Maps PG type names to Java types.
   private final Map<String, Integer> pgType2Java = createJavaTypeMap();
   private final String argTypesExp;
+  private final Set<String> trimSourceLanguages = CollectionUtil.caseInsensitiveSet("sql", "plpgsql");
 
   public PostgresProcedureReader(WbConnection conn)
   {
@@ -294,7 +297,7 @@ public class PostgresProcedureReader
     String isSQLFuncCol = "false as is_sql_function";
     if (is14)
     {
-      srcColumn = "coalesce(nullif(trim(p.prosrc),''), pg_get_functiondef(p.oid)) as prosrc";
+      srcColumn = "case when p.prosqlbody is null then p.prosrc else pg_get_functiondef(p.oid) end as prosrc";
       isSQLFuncCol = "p.prosqlbody is not null as is_sql_function";
     }
 
@@ -494,7 +497,10 @@ public class PostgresProcedureReader
       source.append("\n  LANGUAGE ");
       source.append(lang);
       source.append("\nAS\n$body$\n");
-      src = src.trim();
+      if (trimSourceLanguages.contains(lang))
+      {
+        src = src.trim();
+      }
       source.append(StringUtil.makePlainLinefeed(src));
       if (!src.endsWith(";")) source.append(';');
       source.append("\n$body$\n");
