@@ -476,10 +476,10 @@ public class GeneralOptionsPanel
     showMenuIcons.setHorizontalTextPosition(SwingConstants.RIGHT);
     showMenuIcons.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(0, 0, 4, 0);
+    gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(showMenuIcons, gridBagConstraints);
 
     focusToQuickFilter.setText(ResourceMgr.getString("LblProfileQuickFilterFocus")); // NOI18N
@@ -489,10 +489,10 @@ public class GeneralOptionsPanel
     focusToQuickFilter.setHorizontalTextPosition(SwingConstants.RIGHT);
     focusToQuickFilter.setIconTextGap(5);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(0, 10, 4, 0);
+    gridBagConstraints.insets = new Insets(0, 0, 4, 0);
     jPanel2.add(focusToQuickFilter, gridBagConstraints);
 
     masterPwdButton.setText(ResourceMgr.getString("LblMasterPwd")); // NOI18N
