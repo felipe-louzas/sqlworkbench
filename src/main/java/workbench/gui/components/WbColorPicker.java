@@ -31,7 +31,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
@@ -72,15 +71,16 @@ public class WbColorPicker
     if (showReset)
     {
       resetButton.setIcon(IconMgr.getInstance().getLabelIcon("delete"));
-      WbSwingUtilities.adjustButtonWidth(resetButton, buttonSize, buttonSize);
     }
     this.defaultLabel.setVisible(false);
     WbSwingUtilities.adjustButtonWidth(selectColor, buttonSize, buttonSize);
+    resetButton.setPreferredSize(selectColor.getPreferredSize());
+    resetButton.setSize(selectColor.getSize());
 
     Dimension d = new Dimension((int)(buttonSize * 0.9), (int)(buttonSize * 0.9));
     setButtonSize(sampleColor, d);
     sampleColor.setOpaque(true);
-    sampleColor.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    sampleColor.setBorder(WbSwingUtilities.createLineBorder(this));
   }
 
   private void setButtonSize(JComponent button, Dimension d)

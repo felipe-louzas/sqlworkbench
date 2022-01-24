@@ -1962,7 +1962,12 @@ public class Settings
 
   public Color getEditorCursorColor()
   {
-    return getColor(PROPERTY_EDITOR_CURSOR_COLOR, Color.BLACK);
+    return getEditorCursorColor(null);
+  }
+
+  public Color getEditorCursorColor(Color defaultColor)
+  {
+    return getColor(PROPERTY_EDITOR_CURSOR_COLOR, defaultColor);
   }
 
   public void setEditorSelectionColor(Color c)

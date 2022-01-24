@@ -627,9 +627,33 @@ public class DbObjectsTree
     {
       ObjectTreeNode node = getSelectedNode();
       String type = node.getType();
-      if (TreeLoader.TYPE_DBO_TYPE_NODE.equals(type) && node.isLoaded())
+      if (node.isLoaded() && type != null)
       {
-        msg = ResourceMgr.getFormattedString("TxtTableListObjects", node.getChildCount());
+        String key = null;
+        switch (type)
+        {
+          case TreeLoader.TYPE_DBO_TYPE_NODE:
+          case TreeLoader.TYPE_FK_LIST:
+          case TreeLoader.TYPE_REF_LIST:
+          case TreeLoader.TYPE_DEPENDENCY_USED:
+          case TreeLoader.TYPE_DEPENDENCY_USING:
+          case TreeLoader.TYPE_PROCEDURES_NODE:
+            key = "TxtTableListObjects";
+            break;
+          case TreeLoader.TYPE_COLUMN_LIST:
+            key = "TxtTableListColumns";
+            break;
+          case TreeLoader.TYPE_INDEX_LIST:
+            key = "TxtTableListIndexes";
+            break;
+          case TreeLoader.TYPE_PARTITIONS_NODE:
+            key = "TxtTableListPart";
+            break;
+        }
+        if (key != null)
+        {
+          msg = ResourceMgr.getFormattedString(key, node.getChildCount());
+        }
       }
     }
     statusBar.setStatusMessage(msg);

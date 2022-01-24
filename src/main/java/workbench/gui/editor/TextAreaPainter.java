@@ -34,7 +34,6 @@ import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.renderer.ColorUtils;
 
 import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
@@ -50,10 +49,10 @@ public class TextAreaPainter
   extends JComponent
   implements TabExpander, PropertyChangeListener
 {
-  public static final Color DEFAULT_GUTTER_TEXT_COLOR = Color.DARK_GRAY;
-  public static final Color DEFAULT_GUTTER_BG  = new Color(238,240,238);
+  public static final Color DEFAULT_GUTTER_TEXT_COLOR = UIManager.getColor("Label.foreground");
+  public static final Color DEFAULT_GUTTER_BG  = UIManager.getColor("Label.background");;
   public static final Color DEFAULT_SELECTION_COLOR = new Color(204,204,255);
-  private final Segment currentLine;
+  private final Segment currentLine = new Segment();
 
   protected JEditTextArea textArea;
   protected SyntaxStyle[] styles;
@@ -76,8 +75,8 @@ public class TextAreaPainter
   protected int gutterWidth = 0;
 
   protected int gutterMargin = 8;
-  private Color gutterBackground = DEFAULT_GUTTER_BG;
-  private Color gutterTextColor = DEFAULT_GUTTER_TEXT_COLOR;
+  private Color gutterBackground;
+  private Color gutterTextColor;
 
   private final Object stylesLockMonitor = new Object();
   private String highlighText;
@@ -98,8 +97,6 @@ public class TextAreaPainter
 
     setDoubleBuffered(true);
     setOpaque(true);
-
-    currentLine = new Segment();
 
     super.setCursor(DEFAULT_CURSOR);
     super.setFont(Settings.getInstance().getEditorFont());
@@ -241,30 +238,11 @@ public class TextAreaPainter
 
   private void setColors()
   {
-    Color textColor = GuiSettings.getEditorForeground();
-    setForeground(textColor);
-    Color bg = GuiSettings.getEditorBackground();
-    setBackground(bg);
-
-    Color defaultGutterBg;
-    Color defaultGutterText;
-
-    if (ColorUtils.isDark(bg))
-    {
-      defaultGutterBg = bg.brighter();
-      defaultGutterText = textColor.brighter();
-    }
-    else
-    {
-      defaultGutterBg = DEFAULT_GUTTER_BG;
-      defaultGutterText = DEFAULT_GUTTER_TEXT_COLOR;
-    }
-
-    gutterBackground = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, defaultGutterBg);
-    gutterTextColor = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, defaultGutterText);
+    gutterBackground = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, DEFAULT_GUTTER_BG);
+    gutterTextColor = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, DEFAULT_GUTTER_TEXT_COLOR);
 
     setStyles(SyntaxUtilities.getDefaultSyntaxStyles());
-    caretColor = Settings.getInstance().getEditorCursorColor();
+    caretColor = Settings.getInstance().getEditorCursorColor(UIManager.getColor("TextArea.foreground"));
     currentLineColor = Settings.getInstance().getEditorCurrentLineColor();
     bracketHighlightColor = Settings.getInstance().getEditorBracketHighlightColor();
     occuranceHighlightColor = Settings.getInstance().geSelectionHighlightColor();
