@@ -1138,6 +1138,11 @@ public class GuiSettings
     return Settings.getInstance().getBoolProperty("workbench.dbexplorer.sequence.transpose", true);
   }
 
+  public static boolean getShowTabsInViewMenu()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.view.menu.show.tabs", true);
+  }
+
   public static boolean limitMenuLength()
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.limit.menu", true);

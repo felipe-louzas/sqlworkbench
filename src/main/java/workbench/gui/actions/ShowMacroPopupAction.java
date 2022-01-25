@@ -37,6 +37,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 
 import workbench.gui.MainWindow;
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.dbobjects.objecttree.ComponentPosition;
 import workbench.gui.macros.MacroPanel;
 import workbench.gui.macros.MacroPopup;
@@ -107,6 +108,18 @@ public class ShowMacroPopupAction
       macroWindow = new MacroPopup(client);
       client.addWindowFocusListener(ShowMacroPopupAction.this);
       macroWindow.addWindowListener(ShowMacroPopupAction.this);
+    }
+  }
+
+  public void closeMacrosPanel()
+  {
+    if (this.macroPanel != null)
+    {
+      this.macroPanel.removePropertyChangeListener(this);
+      WbSwingUtilities.invoke(() -> {
+        this.macroPanel.closePanel();
+        this.macroPanel = null;}
+      );
     }
   }
 

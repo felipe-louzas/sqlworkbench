@@ -55,7 +55,7 @@ public class RecentFileManager
   /**
    * Thread safe singleton-instance
    */
-  protected static class LazyInstanceHolder
+  private static class LazyInstanceHolder
   {
     protected static final RecentFileManager INSTANCE = new RecentFileManager();
   }
@@ -82,6 +82,8 @@ public class RecentFileManager
 
   public void populateRecentWorkspaceMenu(JMenu recentMenu, MainWindow window)
   {
+    if (recentMenu == null || window == null) return;
+
     recentMenu.removeAll();
 
     FixedSizeList<WbFile> workspaces = recentFiles.get(WKSP_PROP_NAME);

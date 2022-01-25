@@ -825,12 +825,15 @@ public class MainWindow
     menuBar.add(viewMenu);
     menus.put(ResourceMgr.MNU_TXT_VIEW, viewMenu);
 
-    int tabCount = this.sqlTab.getTabCount();
-    for (int i = 0; i < tabCount; i++)
+    if (GuiSettings.getShowTabsInViewMenu())
     {
-      viewMenu.add(new SelectTabAction(this.sqlTab, i));
+      int tabCount = this.sqlTab.getTabCount();
+      for (int i = 0; i < tabCount; i++)
+      {
+        viewMenu.add(new SelectTabAction(this.sqlTab, i));
+      }
+      viewMenu.addSeparator();
     }
-    viewMenu.addSeparator();
     viewMenu.add(nextTab.getMenuItem());
     viewMenu.add(prevTab.getMenuItem());
 
@@ -939,7 +942,6 @@ public class MainWindow
     fileMenu.add(fileExitAction);
 
     AddTabAction add = new AddTabAction(this);
-    viewMenu.addSeparator();
     viewMenu.add(add);
     InsertTabAction insert = new InsertTabAction(this);
     viewMenu.add(insert);
@@ -2319,6 +2321,11 @@ public class MainWindow
     BookmarkManager.getInstance().updateInBackground(this);
   }
 
+  private void closeMacroPanel()
+  {
+    EventQueue.invokeLater(showMacroPopup::closeMacrosPanel);
+  }
+
   private void showMacros()
   {
     EventQueue.invokeLater(showMacroPopup::showMacros);
@@ -2883,6 +2890,7 @@ public class MainWindow
 
   protected void updateViewMenu(int sqlTabIndex, String aName)
   {
+    if (!GuiSettings.getShowTabsInViewMenu()) return;
     int panelCount = this.panelMenus.size();
     if (aName == null) aName = ResourceMgr.getDefaultTabLabel();
     for (int i = 0; i < panelCount; i++)
@@ -3061,11 +3069,14 @@ public class MainWindow
     this.sqlTab.add(explorer);
 
     explorer.setTabTitle(this.sqlTab, this.sqlTab.getTabCount() - 1);
-
-    SelectTabAction action = new SelectTabAction(this.sqlTab, this.sqlTab.getTabCount() - 1);
-    action.setMenuText(explorer.getTabTitle());
     this.panelMenus.add(dbmenu);
-    this.addToViewMenu(action);
+
+    if (GuiSettings.getShowTabsInViewMenu())
+    {
+      SelectTabAction action = new SelectTabAction(this.sqlTab, this.sqlTab.getTabCount() - 1);
+      action.setMenuText(explorer.getTabTitle());
+      this.addToViewMenu(action);
+    }
   }
 
   public List<ToolWindow> getExplorerWindows()
@@ -3171,30 +3182,21 @@ public class MainWindow
       setIgnoreTabChange(true);
       closeFileTree();
       closeDbTree();
-      int keep = (keepOne ? 1 : 0);
-      while (sqlTab.getTabCount() > keep)
+      closeMacroPanel();
+
+      while (sqlTab.getTabCount() > 0)
       {
         // I'm not using removeCurrentTab() as that will also
         // update the GUI and immediately check for a new
         // connection which is not necessary when removing all tabs.
-        removeTab(keep, false, false);
+        removeTab(0, false, false);
       }
 
-      // Reset the first panel, now we have a "clean" workspace
       if (keepOne)
       {
-        Optional<MainPanel> p = getPanel(0);
-        if (!p.isPresent())
-        {
-          addTabAtIndex(false, false, false, -1);
-          p = getPanel(0);
-        }
-        else
-        {
-          p.get().reset();
-        }
+        // Add an empty panel
+        addTabAtIndex(false, false, false, -1);
         resetTabTitles();
-
         // make sure the toolbar and menus are updated correctly
         updateCurrentTab(0);
       }
@@ -4032,10 +4034,12 @@ public class MainWindow
 
   /**
    * Rebuild the part of the view menu that handles the
-   * selecting of tabs
+   * selecting of tabs.
    */
   private void rebuildViewMenu(int panel)
   {
+    if (!GuiSettings.getShowTabsInViewMenu()) return;
+
     JMenu menu = this.getViewMenu(panel);
     JMenuItem item = menu.getItem(0);
     while (item != null && (item.getAction() instanceof SelectTabAction))
@@ -4178,7 +4182,7 @@ public class MainWindow
         setIgnoreTabChange(true);
 
         WbConnection conn = panel.getConnection();
-        boolean doDisconnect = conn != null && conn.isShared() == false; // usesSeparateConnection(panel) || (this.currentProfile != null && this.currentProfile.getUseSeparateConnectionPerTab());
+        boolean doDisconnect = conn != null && conn.isShared() == false;
 
         panel.dispose();
 
@@ -4188,8 +4192,12 @@ public class MainWindow
         {
           disconnectInBackground(conn);
         }
-        disposeMenu(panelMenus.get(index));
-        this.panelMenus.remove(index);
+
+        if (index < panelMenus.size())
+        {
+          disposeMenu(panelMenus.get(index));
+          this.panelMenus.remove(index);
+        }
         this.sqlTab.removeTabAt(index);
 
         if (updateGUI)

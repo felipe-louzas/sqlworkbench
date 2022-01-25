@@ -374,13 +374,19 @@ public class MacroPanel
     }
     if (e.getSource() == this.closeButton)
     {
-      saveExpandedGroups();
-      saveWorkspaceSettings();
-      saveMacros(false);
-      mainWindow.removeAdditionalComponent(this);
-      dispose();
-      firePropertyChange("display", "visible", "closed");
+      closePanel();
     }
+  }
+
+  public void closePanel()
+  {
+    saveExpandedGroups();
+    saveWorkspaceSettings();
+    saveMacros(false);
+    mainWindow.removeAdditionalComponent(this);
+    dispose();
+    firePropertyChange("display", "visible", "closed");
+
   }
 
   private void copyMacroText()
