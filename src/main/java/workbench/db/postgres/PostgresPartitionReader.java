@@ -32,11 +32,11 @@ import java.util.regex.Matcher;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -148,6 +148,7 @@ public class PostgresPartitionReader
   private void readPartitions()
   {
     String sql =
+      "-- SQL Workbench/J \n" +
       "with recursive inh as ( \n" +
       "\n" +
       "  select i.inhrelid, null::text as parent  \n" +
@@ -258,6 +259,7 @@ public class PostgresPartitionReader
     if (table == null) return;
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "select p.partstrat, \n" +
       "       pg_catalog.pg_get_expr(p.partexprs, t.oid, true) as partition_expression, \n" +
       "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
@@ -334,6 +336,7 @@ public class PostgresPartitionReader
   public static PostgresPartition getPartitionDefinition(TableIdentifier table, WbConnection dbConnection)
   {
     String sql =
+      "-- SQL Workbench/J \n" +
       "select base.relnamespace::regnamespace::text as base_table_schema, \n" +
       "       base.relname as base_table, \n" +
       "       pg_catalog.pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, \n" +

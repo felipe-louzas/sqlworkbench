@@ -39,8 +39,8 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.EnumIdentifier;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -58,6 +58,7 @@ public class PostgresEnumReader
   implements ObjectListExtender
 {
   final String baseSql =
+    "-- SQL Workbench/J \n" +
     "select current_database() as enum_catalog, \n" +
     "       n.nspname as enum_schema,  \n" +
     "       t.typname as enum_name,  \n" +

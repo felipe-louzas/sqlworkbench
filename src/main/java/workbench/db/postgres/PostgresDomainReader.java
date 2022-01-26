@@ -58,6 +58,7 @@ public class PostgresDomainReader
   implements ObjectListExtender
 {
   final String baseSql =
+    "-- SQL Workbench/J \n" +
     "SELECT null::text as domain_catalog,  \n" +
     "       n.nspname as domain_schema, \n" +
     "       t.typname as domain_name, \n" +

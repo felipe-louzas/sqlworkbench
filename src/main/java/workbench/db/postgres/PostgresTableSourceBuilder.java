@@ -208,6 +208,7 @@ public class PostgresTableSourceBuilder
     ResultSet rs = null;
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "select " + persistenceCol + ", \n" +
       "       ct.relkind, \n" +
       "       array_to_string(ct.reloptions, ', ') as options, \n" +

@@ -90,7 +90,7 @@ public class PostgresIndexReader
     String schema = "'" + table.getRawSchema() + "'";
 
     StringBuilder sql = new StringBuilder(50 + count * 20);
-
+    sql.append("-- SQL Workbench/J \n");
     String colStatsExpr = "null::int[] as column_stats";
 
     if (JdbcUtils.hasMinimumServerVersion(con, "11"))

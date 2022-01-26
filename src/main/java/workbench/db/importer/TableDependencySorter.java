@@ -61,6 +61,7 @@ public class TableDependencySorter
   private final DbObjectFinder finder;
   private boolean cancel;
   private boolean validateInputTables = true;
+  private boolean resolveSynonyms = true;
 
   public TableDependencySorter(WbConnection con)
   {
@@ -76,6 +77,11 @@ public class TableDependencySorter
   public void setProgressMonitor(ScriptGenerationMonitor monitor)
   {
     this.monitor = monitor;
+  }
+
+  public void setResolveSynonyms(boolean flag)
+  {
+    this.resolveSynonyms = flag;
   }
 
   public List<TableIdentifier> sortForInsert(List<TableIdentifier> tables)
@@ -201,6 +207,7 @@ public class TableDependencySorter
     List<DependencyNode> allNodes = new ArrayList<>(tables.size() * 2);
     Set<DependencyNode> rootNodes = new HashSet<>(tables.size());
     dependencyReader = new TableDependency(dbConn);
+    dependencyReader.setResolveSynonyms(resolveSynonyms);
 
     int num = 1;
     for (TableIdentifier tbl : tables)

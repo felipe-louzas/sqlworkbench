@@ -37,8 +37,8 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -65,6 +65,7 @@ public class PostgresForeignServerReader
     Savepoint sp = null;
     List<ForeignServer> result = new ArrayList<>();
     String sql =
+      "-- SQL Workbench/J \n" +
       "select s.srvname as name, \n" +
       "       s.srvtype as type,\n" +
       "       s.srvversion as version,\n" +

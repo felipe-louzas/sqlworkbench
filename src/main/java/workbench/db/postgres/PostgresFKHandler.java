@@ -28,12 +28,11 @@ import workbench.log.LogMgr;
 
 import workbench.db.DefaultFKHandler;
 import workbench.db.FKMatchType;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -90,6 +89,7 @@ public class PostgresFKHandler
     int nameColumn = keys.getColumnIndex("FK_NAME");
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "select c.conname, \n" +
       "       c.confmatchtype, \n" +
       "       pg_catalog.obj_description(c.oid, 'pg_constraint') as remarks\n" +

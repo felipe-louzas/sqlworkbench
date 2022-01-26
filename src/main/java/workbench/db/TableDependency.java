@@ -68,6 +68,8 @@ public class TableDependency
   private ScriptGenerationMonitor monitor;
   private final List<TableIdentifier> excludeTables = new ArrayList<>();
   private final DbObjectFinder finder;
+  private boolean resolveSynonyms = true;
+
   public TableDependency(WbConnection con)
   {
     this.connection = con;
@@ -119,6 +121,11 @@ public class TableDependency
       this.excludeTables.clear();
       this.excludeTables.addAll(toExclude);
     }
+  }
+
+  public void setResolveSynonyms(boolean flag)
+  {
+    this.resolveSynonyms = flag;
   }
 
   public void setScriptMonitor(ScriptGenerationMonitor monitor)
@@ -321,7 +328,8 @@ public class TableDependency
       int tablecolumncol;
       int parentcolumncol;
 
-      TableIdentifier ptbl = this.metaData.resolveSynonym(parent.getTable());
+      boolean doResolveSyn = resolveSynonyms || metaData.isSynonym(parent.getTable());
+      TableIdentifier ptbl = doResolveSyn ? this.metaData.resolveSynonym(parent.getTable()) : parent.getTable();
 
       if (LogMgr.isTraceEnabled())
       {

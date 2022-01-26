@@ -35,8 +35,8 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -63,6 +63,7 @@ public class PostgresExtensionReader
     List<PgExtension> result = new ArrayList<>();
 
     StringBuilder sql = new StringBuilder(
+      "-- SQL Workbench/J \n" +
       "select nsp.nspname as schema_name, \n" +
       "       ext.extname, \n" +
       "       ext.extversion, \n" +

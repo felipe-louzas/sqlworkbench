@@ -117,20 +117,21 @@ public class PostgresProcedureReader
     boolean showParametersInName = connection.getDbSettings().showProcedureParameters();
 
     String sql =
-          "SELECT n.nspname AS proc_schema, \n" +
-          "       p.proname AS proc_name, \n" +
-          "       d.description AS remarks, \n" +
-          "       " + argTypesExp + ", \n" +
-          "       array_to_string(p.proargnames, ';') as argnames, \n" +
-          "       array_to_string(p.proargmodes, ';') as argmodes, \n"+
-          "       p.proretset, \n" +
-          getProctypeColumnExpression() +
-          "       p.oid::text as procid \n" +
-          " FROM pg_catalog.pg_proc p \n " +
-          "   JOIN pg_catalog.pg_namespace n on p.pronamespace = n.oid \n" +
-          "   LEFT JOIN pg_catalog.pg_description d ON p.oid = d.objoid \n" +
-          "   LEFT JOIN pg_catalog.pg_class c ON d.classoid=c.oid AND c.relname='pg_proc' \n" +
-          "   LEFT JOIN pg_catalog.pg_namespace pn ON c.relnamespace=pn.oid AND pn.nspname='pg_catalog'";
+        "-- SQL Workbench/J \n" +
+        "SELECT n.nspname AS proc_schema, \n" +
+        "       p.proname AS proc_name, \n" +
+        "       d.description AS remarks, \n" +
+        "       " + argTypesExp + ", \n" +
+        "       array_to_string(p.proargnames, ';') as argnames, \n" +
+        "       array_to_string(p.proargmodes, ';') as argmodes, \n"+
+        "       p.proretset, \n" +
+        getProctypeColumnExpression() +
+        "       p.oid::text as procid \n" +
+        " FROM pg_catalog.pg_proc p \n " +
+        "   JOIN pg_catalog.pg_namespace n on p.pronamespace = n.oid \n" +
+        "   LEFT JOIN pg_catalog.pg_description d ON p.oid = d.objoid \n" +
+        "   LEFT JOIN pg_catalog.pg_class c ON d.classoid=c.oid AND c.relname='pg_proc' \n" +
+        "   LEFT JOIN pg_catalog.pg_namespace pn ON c.relnamespace=pn.oid AND pn.nspname='pg_catalog'";
 
     boolean whereNeeded = true;
     if (StringUtil.isNonBlank(schemaPattern))
@@ -304,6 +305,7 @@ public class PostgresProcedureReader
     PGProcName name = new PGProcName(def);
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "SELECT " + srcColumn + ", \n" +
       "       " + isSQLFuncCol + ", \n" +
       "       l.lanname as lang_name, \n" +

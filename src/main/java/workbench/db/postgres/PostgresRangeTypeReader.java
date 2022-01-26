@@ -37,8 +37,8 @@ import workbench.db.CommentSqlManager;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -82,6 +82,7 @@ public class PostgresRangeTypeReader
     StringBuilder select = new StringBuilder(100);
 
     String baseSelect =
+      "-- SQL Workbench/J \n" +
       "select t.typname as type_name,  \n" +
       "       n.nspname as type_schema, \n" +
       "       pg_catalog.obj_description(t.oid, 'pg_type') as remarks, \n" +

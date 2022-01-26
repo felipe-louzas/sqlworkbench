@@ -40,7 +40,6 @@ import workbench.db.sqltemplates.TemplateHandler;
 import workbench.sql.formatter.FormatterUtil;
 
 import workbench.util.ExceptionUtil;
-import workbench.db.JdbcUtils;
 
 /**
  *
@@ -48,7 +47,6 @@ import workbench.db.JdbcUtils;
  */
 public class TableDeleter
 {
-
   private WbConnection connection;
   private boolean cancelExecution;
   private Statement currentStatement;
@@ -56,6 +54,7 @@ public class TableDeleter
   private StatusBar statusDisplay;
   private TableDependencySorter sorter;
   private ScriptGenerationMonitor scriptMonitor;
+  private boolean resolveSynonyms = true;
 
   public TableDeleter(WbConnection con)
   {
@@ -74,6 +73,11 @@ public class TableDeleter
   public boolean isCanelled()
   {
     return cancelExecution;
+  }
+
+  public void setResolveSynonyms(boolean flag)
+  {
+    this.resolveSynonyms = flag;
   }
 
   public void setScriptMonitor(ScriptGenerationMonitor monitor)
@@ -352,7 +356,9 @@ public class TableDeleter
   {
     sorter = new TableDependencySorter(connection);
     sorter.setValidateTables(false);
+    sorter.setResolveSynonyms(resolveSynonyms);
     sorter.setProgressMonitor(scriptMonitor);
+
     List<TableIdentifier> sorted = sorter.sortForDelete(objectNames, true);
     if (sorter.isCancelled()) return "";
     sorter = null;

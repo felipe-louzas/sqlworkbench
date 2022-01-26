@@ -28,10 +28,9 @@ import java.sql.Savepoint;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -59,6 +58,7 @@ public class PostgresPolicyReader
     }
 
     String query =
+      "-- SQL Workbench/J \n" +
       "select polname, \n" +
       "       pg_catalog.pg_get_expr(p.polqual, p.polrelid, true) as expression, \n" +
       "       case p.polcmd \n" +

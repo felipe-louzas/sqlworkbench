@@ -79,6 +79,7 @@ public class PostgresTriggerReader
   public int retrieveEventTriggers(DataStore triggers, String namePattern)
   {
     String sql =
+      "-- SQL Workbench/J \n" +
       "select evtname as trigger, \n" +
       "       evtevent as event, \n" +
       "       pg_catalog.obj_description(oid, 'pg_event_trigger') as remarks \n" +
@@ -171,6 +172,7 @@ public class PostgresTriggerReader
 
 
     final String sql =
+      "-- SQL Workbench/J \n" +
       "select pr.proname, \n" +
       "       trg.evtevent, \n " +
       "       trg.evttags, \n "+
@@ -253,6 +255,7 @@ public class PostgresTriggerReader
   {
 
     final String sql =
+      "-- SQL Workbench/J \n" +
       "SELECT trgsch.nspname as function_schema, proc.proname as function_name \n" +
       "FROM pg_catalog.pg_trigger trg  \n" +
       "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
@@ -358,6 +361,7 @@ public class PostgresTriggerReader
     }
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "select trg.tgname,\n" +
       "       CASE trg.tgtype::integer & 66 \n" +
       "         WHEN 2 THEN 'BEFORE'\n" +

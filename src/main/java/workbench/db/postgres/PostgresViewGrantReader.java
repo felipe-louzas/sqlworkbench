@@ -45,6 +45,7 @@ public class PostgresViewGrantReader
   public String getViewGrantSql()
   {
     return
+      "-- SQL Workbench/J \n" +
       "select grantee, privilege_type, is_grantable  \n" +
       "from information_schema.table_privileges \n" +
       "where table_name = ? \n" +

@@ -59,6 +59,7 @@ public class PostgresUniqueConstraintReader
     if (JdbcUtils.hasMinimumServerVersion(con, "9.0"))
     {
       baseSql =
+        "-- SQL Workbench/J \n" +
         "  select ind.relname as index_name, \n" +
         "         indschem.nspname as index_schema, \n" +
         "         cons.conname as constraint_name, \n" +
@@ -76,6 +77,7 @@ public class PostgresUniqueConstraintReader
       // Prior to 9.0 the unique index supporting the constraint could not be named differently
       // than the constraint itself (and pg_constraint.conindid does not exist there)
       baseSql =
+        "-- SQL Workbench/J \n" +
         "  select cons.conname as index_name,  \n" +
         "         cns.nspname as index_schema, \n" +
         "         cons.conname as constraint_name, \n" +

@@ -278,6 +278,7 @@ public class PostgresUtil
       "            ELSE 'No Access'\n" +
       "       END as \"Size\", \n" : "";
     String sql =
+      "-- SQL Workbench/J \n" +
       "SELECT d.datname as \"" + name + "\",\n" +
       "       pg_catalog.pg_get_userbyid(d.datdba) as \"Owner\",\n" +
       "       pg_catalog.pg_encoding_to_char(d.encoding) as \"Encoding\",\n" +
@@ -389,6 +390,8 @@ public class PostgresUtil
   public static boolean isRedshift(WbConnection conn)
   {
     if (conn == null) return false;
-    return conn.getUrl().startsWith("jdbc:redshift:");
+    String url = conn.getUrl();
+    if (url == null) return false;
+    return url.startsWith("jdbc:redshift:");
   }
 }

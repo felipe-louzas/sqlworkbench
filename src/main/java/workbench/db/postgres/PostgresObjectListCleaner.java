@@ -34,8 +34,8 @@ import workbench.resource.Settings;
 import workbench.db.DbMetadata;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListCleaner;
-import workbench.db.TableIdentifier;
 import workbench.db.ObjectListDataStore;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
@@ -98,6 +98,7 @@ public class PostgresObjectListCleaner
     if (!JdbcUtils.hasMinimumServerVersion(conn, "11")) return partitions;
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "with recursive inh as ( \n" +
       "\n" +
       "  select i.inhrelid, i.inhparent\n" +

@@ -32,14 +32,13 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.StringUtil;
 
@@ -53,6 +52,7 @@ public class PostgresSequenceReader
   private static final String NAME_PLACEHOLDER = "%sequence_name%";
 
   private final String baseSql =
+      "-- SQL Workbench/J \n" +
       "SELECT seq_info.*, \n" +
       "       null::text as data_type, \n" +
       "       pg_catalog.obj_description(seq.oid, 'pg_class') as remarks, \n" +
@@ -68,6 +68,7 @@ public class PostgresSequenceReader
       "WHERE seq.relkind = 'S'";
 
   private final String baseSqlV10 =
+    "-- SQL Workbench/J \n" +
     "select s.min_value,\n" +
     "       s.max_value,\n" +
     "       s.last_value,\n" +
@@ -272,6 +273,7 @@ public class PostgresSequenceReader
     String seqInfoSql = is10 ? baseSqlV10 : baseSql;
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "select min_value, max_value, last_value, increment_by, cache_value, is_cycled, data_type, remarks, owned_by \n" +
       "from ( \n" + seqInfoSql.replace(NAME_PLACEHOLDER, fullname) + "\n) t \n" +
       "where sequence_name = ? ";

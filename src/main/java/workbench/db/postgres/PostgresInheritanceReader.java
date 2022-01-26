@@ -29,10 +29,9 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 /**
  *
@@ -50,6 +49,7 @@ public class PostgresInheritanceReader
     ResultSet rs = null;
 
     String sql83 =
+      "-- SQL Workbench/J \n" +
       "select bt.relname as table_name, bns.nspname as table_schema, 0 as level \n" +
       "from pg_catalog.pg_class ct \n" +
       "    join pg_catalog.pg_namespace cns on ct.relnamespace = cns.oid and cns.nspname = ? \n" +
@@ -63,6 +63,7 @@ public class PostgresInheritanceReader
 
     // Recursive version for 8.4+ based Craig Ringer's statement from here: https://stackoverflow.com/a/12139506/330315
     String sql84 =
+      "-- SQL Workbench/J \n" +
       "with recursive inh as ( \n" +
       "\n" +
       "  select i.inhrelid, 1 as level, array[inhrelid] as path \n" +
@@ -137,6 +138,7 @@ public class PostgresInheritanceReader
     ResultSet rs = null;
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "select bt.relname as table_name, bns.nspname as table_schema \n" +
       "from pg_catalog.pg_class ct \n" +
       "  join pg_catalog.pg_namespace cns on ct.relnamespace = cns.oid and cns.nspname = ? \n" +

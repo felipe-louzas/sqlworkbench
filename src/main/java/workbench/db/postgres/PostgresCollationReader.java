@@ -36,8 +36,8 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -66,6 +66,7 @@ public class PostgresCollationReader
       providerCol = "case c.collprovider when 'i' then 'icu' when 'c' then 'libc' end as provider";
     }
     StringBuilder sql = new StringBuilder(
+      "-- SQL Workbench/J \n" +
       "select s.nspname as schema_name, \n" +
       "       c.collname, \n" +
       "       c.collcollate, \n" +

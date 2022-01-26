@@ -72,24 +72,27 @@ public class PostgresDependencyReader
     "       p.oid::text as proc_id \n";
 
   private final String tablesUsedByView =
-      "select vtu.table_schema, \n" +
-      "       vtu.table_name, \n" + typeCase +
-      "       obj_description(cl.oid) as remarks\n" +
-      "from information_schema.view_table_usage vtu \n" +
-      "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.table_schema)||'.'||quote_ident(vtu.table_name))::regclass \n" +
-      "where (vtu.view_schema, vtu.view_name) = (?, ?) \n" +
-      "order by vtu.view_schema, vtu.view_name";
+    "-- SQL Workbench/J \n" +
+    "select vtu.table_schema, \n" +
+    "       vtu.table_name, \n" + typeCase +
+    "       obj_description(cl.oid) as remarks\n" +
+    "from information_schema.view_table_usage vtu \n" +
+    "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.table_schema)||'.'||quote_ident(vtu.table_name))::regclass \n" +
+    "where (vtu.view_schema, vtu.view_name) = (?, ?) \n" +
+    "order by vtu.view_schema, vtu.view_name";
 
   private final String viewsUsingTable =
-        "select vtu.view_schema, \n" +
-        "       vtu.view_name, \n" + typeCase +
-        "       obj_description(cl.oid) as remarks\n" +
-        "from information_schema.view_table_usage vtu \n" +
-        "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.view_schema)||'.'||quote_ident(vtu.view_name))::regclass \n" +
-        "where (vtu.table_schema, vtu.table_name) = (?, ?) \n" +
-        "order by vtu.view_schema, vtu.view_name";
+    "-- SQL Workbench/J \n" +
+    "select vtu.view_schema, \n" +
+    "       vtu.view_name, \n" + typeCase +
+    "       obj_description(cl.oid) as remarks\n" +
+    "from information_schema.view_table_usage vtu \n" +
+    "  join pg_catalog.pg_class cl on cl.oid = (quote_ident(vtu.view_schema)||'.'||quote_ident(vtu.view_name))::regclass \n" +
+    "where (vtu.table_schema, vtu.table_name) = (?, ?) \n" +
+    "order by vtu.view_schema, vtu.view_name";
 
   private String typesUsedByFunction =
+    "-- SQL Workbench/J \n" +
     "select distinct ts.nspname as type_schema, typ.typname as type_name, 'TYPE', obj_description(typ.oid) as remarks \n" +
     "from pg_catalog.pg_proc c \n" +
     "  join pg_catalog.pg_namespace n on n.oid = c.pronamespace \n" +
@@ -100,6 +103,7 @@ public class PostgresDependencyReader
     "  and c.proname = ?";
 
   private final String functionsUsingType =
+    "-- SQL Workbench/J \n" +
     "select distinct n.nspname as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, \n" + proArgs +
     "from pg_catalog.pg_proc p \n" +
     "  join pg_catalog.pg_namespace n on n.oid = p.pronamespace \n" +
@@ -110,6 +114,7 @@ public class PostgresDependencyReader
     "  and typ.typname = ? \n";
 
   private final String tablesUsingType =
+    "-- SQL Workbench/J \n" +
     "select distinct n.nspname as table_schema, \n " +
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
@@ -125,6 +130,7 @@ public class PostgresDependencyReader
     "  and t.typname = ? \n";
 
   private final String typesUsedByTable =
+    "-- SQL Workbench/J \n" +
     "select distinct tn.nspname as type_schema, t.typname as type_name, \n" +
     "       case t.typtype \n" +
     "          when 'e' then 'ENUM' \n" +
@@ -142,6 +148,7 @@ public class PostgresDependencyReader
     "  and c.relname = ? ";
 
   private final String sequencesUsedByTable =
+    "-- SQL Workbench/J \n" +
     "select distinct sn.nspname as sequence_schema, s.relname as sequence_name, 'SEQUENCE', obj_description(s.oid) as remarks\n" +
     "from pg_catalog.pg_class s\n" +
     "  join pg_catalog.pg_namespace sn on sn.oid = s.relnamespace \n" +
@@ -156,6 +163,7 @@ public class PostgresDependencyReader
     "  and tbl.relname = ?";
 
   private final String tablesUsingSequence =
+    "-- SQL Workbench/J \n" +
     "select distinct n.nspname as table_schema, \n" +
     "       cl.relname as table_name, \n" +
     "       " + typeCase +
@@ -172,6 +180,7 @@ public class PostgresDependencyReader
     "  and s.relname = ?";
 
   private final String triggerImplementationFunction =
+    "-- SQL Workbench/J \n" +
     "SELECT trgsch.nspname as function_schema, p.proname as function_name, 'FUNCTION', obj_description(p.oid) as remarks, " + proArgs +
     "FROM pg_catalog.pg_trigger trg  \n" +
     "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
@@ -182,6 +191,7 @@ public class PostgresDependencyReader
     "  AND trg.tgname = ? ";
 
   private final String triggerTable =
+    "-- SQL Workbench/J \n" +
     "SELECT tblsch.nspname as table_schema, tbl.relname as table_name, 'TABLE', obj_description(tbl.oid) as remarks \n" +
     "FROM pg_catalog.pg_trigger trg  \n" +
     "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
@@ -192,6 +202,7 @@ public class PostgresDependencyReader
     "  AND trg.tgname = ? ";
 
   private final String triggersUsingFunction =
+    "-- SQL Workbench/J \n" +
     "SELECT trgsch.nspname as trigger_schema, trg.tgname as trigger_name, 'TRIGGER', obj_description(trg.oid) as remarks \n" +
     "FROM pg_catalog.pg_trigger trg  \n" +
     "  JOIN pg_catalog.pg_class tbl ON tbl.oid = trg.tgrelid  \n" +
@@ -202,6 +213,7 @@ public class PostgresDependencyReader
     "  and proc.proname = ? ";
 
   private final String tablesUsingSpecificType =
+    "-- SQL Workbench/J \n" +
     "select nsp.nspname as table_schema, \n" +
     "       cl.relname as table_name, \n" +
     typeCase +

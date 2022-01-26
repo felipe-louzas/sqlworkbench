@@ -68,6 +68,7 @@ public class WbGenDelete
   public static final String ARG_SHOW_FK_NAMES = "showConstraints";
   public static final String ARG_EXCLUDE_TABLES = "excludeTables";
   public static final String ARG_USE_TRUNCATE = "useTruncate";
+  public static final String ARG_RESOLVE_SYNS = "resolveSynonyms";
 
   private DeleteScriptGenerator generator;
   private TableDeleter simpleGenerator;
@@ -84,6 +85,7 @@ public class WbGenDelete
     cmdLine.addArgument(ARG_INCLUDE_COMMIT, ArgumentType.BoolSwitch);
     cmdLine.addArgument(ARG_APPEND, ArgumentType.BoolSwitch);
     cmdLine.addArgument(ARG_SHOW_FK_NAMES, ArgumentType.BoolSwitch);
+    cmdLine.addArgument(ARG_RESOLVE_SYNS, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_EXCLUDE_TABLES, ArgumentType.TableArgument);
   }
 
@@ -167,7 +169,9 @@ public class WbGenDelete
     }
     else
     {
+      boolean defaultSyn = currentConnection.getDbSettings().getBoolProperty("delete.generator.resolve.synonyms", false);
       simpleGenerator = new TableDeleter(currentConnection);
+      simpleGenerator.setResolveSynonyms(cmdLine.getBoolean(ARG_RESOLVE_SYNS, defaultSyn));
       if (this.rowMonitor != null)
       {
         rowMonitor.setMonitorType(RowActionMonitor.MONITOR_PROCESS_TABLE);

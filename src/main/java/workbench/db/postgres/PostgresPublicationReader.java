@@ -34,9 +34,9 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
+import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableIdentifier;
-import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -103,6 +103,7 @@ public class PostgresPublicationReader
       truncateCol = "       false as pubtruncate, \n";
     }
     StringBuilder sql = new StringBuilder(
+      "-- SQL Workbench/J \n" +
       "select pubname, \n" +
       "       puballtables, \n" +
       "       pubinsert, \n" +

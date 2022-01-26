@@ -98,6 +98,7 @@ public class PostgresViewReader
     }
 
     String sql =
+      "-- SQL Workbench/J \n" +
       "select c.attname as column_name, \n" +
       "       " + src + " as expression\n" +
       "from pg_catalog.pg_attrdef d\n" +

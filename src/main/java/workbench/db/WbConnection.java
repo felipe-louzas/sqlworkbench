@@ -1293,7 +1293,7 @@ public class WbConnection
     {
       return StringUtil.stringToBool(flag);
     }
-    
+
     try
     {
       return sqlConnection.getMetaData().supportsSavepoints();
@@ -1339,7 +1339,7 @@ public class WbConnection
       return switchedUrl;
     }
 
-    if (profile != null)
+    if (profile != null && profile.getActiveUrl() != null)
     {
       return profile.getActiveUrl();
     }

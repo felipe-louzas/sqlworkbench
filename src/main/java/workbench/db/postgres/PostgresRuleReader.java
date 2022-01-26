@@ -38,9 +38,9 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DbSettings;
 import workbench.db.JdbcUtils;
+import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectListExtender;
 import workbench.db.TableIdentifier;
-import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -59,6 +59,7 @@ public class PostgresRuleReader
 {
 
   private final String baseSql =
+    "-- SQL Workbench/J \n" +
     "select current_database() as rule_catalog,\n " +
     "       n.nspname as rule_schema, \n" +
     "       r.rulename as rule_name, \n" +
