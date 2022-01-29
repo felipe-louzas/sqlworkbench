@@ -49,6 +49,7 @@ public class DividerBorder
   public static final DividerBorder BOTTOM_DIVIDER = new DividerBorder(BOTTOM);
   public static final DividerBorder LEFT_DIVIDER = new DividerBorder(LEFT);
   public static final DividerBorder RIGHT_DIVIDER = new DividerBorder(RIGHT);
+  public static final DividerBorder LEFT_RIGHT_DIVIDER = new DividerBorder(LEFT + RIGHT);
   public static final DividerBorder TOP_DIVIDER = new DividerBorder(TOP);
   public static final DividerBorder TOP_BOTTOM_DIVIDER = new DividerBorder(TOP + BOTTOM);
 
@@ -96,7 +97,7 @@ public class DividerBorder
       g.setColor(lColor);
       g.drawLine(x, y, x, y + height);
     }
-    
+
     if ((this.borderType & RIGHT) == RIGHT)
     {
       g.setColor(lColor);

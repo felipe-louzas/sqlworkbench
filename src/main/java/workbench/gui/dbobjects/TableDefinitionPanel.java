@@ -260,7 +260,7 @@ public class TableDefinitionPanel
     alterButton.setUseDefaultMargin(false);
     toolbar.add(alterButton, cc);
 
-    WbScrollPane scroll = new WbScrollPane(this.tableDefinition);
+    WbScrollPane scroll = new WbScrollPane(this.tableDefinition, WbSwingUtilities.EMPTY_BORDER);
     this.setLayout(new BorderLayout());
     this.add(toolbar, BorderLayout.NORTH);
     this.add(scroll, BorderLayout.CENTER);

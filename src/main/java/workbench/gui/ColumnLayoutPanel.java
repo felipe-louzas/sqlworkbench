@@ -638,7 +638,7 @@ public class ColumnLayoutPanel
   {
     if (leftSplit == null)
     {
-      leftSplit = createSplitPane(DividerBorder.LEFT_DIVIDER);
+      leftSplit = createSplitPane(DividerBorder.LEFT_RIGHT_DIVIDER);
     }
   }
 
@@ -646,7 +646,7 @@ public class ColumnLayoutPanel
   {
     if (rightSplit == null)
     {
-      rightSplit = createSplitPane(DividerBorder.RIGHT_DIVIDER);
+      rightSplit = createSplitPane(DividerBorder.LEFT_RIGHT_DIVIDER);
     }
   }
 

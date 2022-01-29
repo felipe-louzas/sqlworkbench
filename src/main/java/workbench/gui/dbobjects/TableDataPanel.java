@@ -85,7 +85,7 @@ import workbench.gui.actions.SelectionFilterAction;
 import workbench.gui.actions.StopAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ColumnOrderMgr;
-import workbench.gui.components.FlatButton;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.TabCloser;
 import workbench.gui.components.WbButton;
 import workbench.gui.components.WbLabelField;
@@ -124,10 +124,10 @@ public class TableDataPanel
 
   private ReloadAction reloadAction;
 
-  private FlatButton config;
+  private JButton config;
   private WbLabelField tableNameLabel;
   private JLabel rowCountLabel;
-  private WbButton rowCountButton;
+  private JButton rowCountButton;
   private JCheckBox autoRetrieve;
   private JPanel topPanel;
 
@@ -195,6 +195,7 @@ public class TableDataPanel
       }
     };
     dataDisplay.showCreateDeleteScript();
+    dataDisplay.setBorder(WbSwingUtilities.EMPTY_BORDER);
     dataDisplay.setShowLoadProcess(true);
     dataDisplay.setDefaultStatusMessage("");
 
@@ -226,22 +227,26 @@ public class TableDataPanel
     gc.insets = new Insets(0, 1, 0, 0);
     topPanel.add(tableNameLabel, gc);
 
-    rowCountButton = new WbButton();
-    rowCountButton.setResourceKey("LblTableDataRowCount");
-    rowCountButton.enableBasicRollover();
-    rowCountButton.addActionListener(this);
-    rowCountButton.setToolTipText(ResourceMgr.getDescription("LblTableDataRowCountButton"));
-    rowCountButton.setFocusable(false);
     gc.gridx ++;
     gc.insets = new Insets(0, (int)(buttonWidth/2), 0, 0);
-    topPanel.add(rowCountButton, gc);
-
+    topPanel.add(new JLabel(ResourceMgr.getString("LblTableDataRowCount")), gc);
     rowCountLabel = new JLabel();
     rowCountLabel.setFont(bold);
     rowCountLabel.setHorizontalTextPosition(SwingConstants.LEFT);
     gc.gridx ++;
     gc.insets = new Insets(0, (int)(buttonWidth/4), 0, 0);
     topPanel.add(rowCountLabel, gc);
+
+    rowCountButton = new WbButton(IconMgr.getInstance().getToolbarIcon("refresh"));
+    rowCountButton.setMargin(new Insets(1,1,1,1));
+    rowCountButton.setRolloverEnabled(true);
+    rowCountButton.setBackground(topPanel.getBackground());
+    rowCountButton.addActionListener(this);
+    rowCountButton.setToolTipText(ResourceMgr.getDescription("LblTableDataRowCountButton"));
+    rowCountButton.setFocusable(false);
+    gc.gridx ++;
+    gc.insets = new Insets(0, (int)(buttonWidth/4), 0, 0);
+    topPanel.add(rowCountButton, gc);
 
     autoRetrieve = new JCheckBox(ResourceMgr.getString("LblAutoLoad"));
     autoRetrieve.setToolTipText(ResourceMgr.getDescription("LblAutoLoadTableData"));
@@ -251,14 +256,14 @@ public class TableDataPanel
     gc.insets = new Insets(0, buttonWidth, 0, 0);
     topPanel.add(autoRetrieve, gc);
 
-    config = new FlatButton(ResourceMgr.getString("LblConfigureWarningThreshold"));
+    config = new JButton(ResourceMgr.getString("LblConfigureWarningThreshold"));
     config.setToolTipText(ResourceMgr.getDescription("LblConfigureWarningThreshold"));
     config.addActionListener(this);
-    config.setUseDefaultMargin(true);
     gc.gridx ++;
     gc.weightx = 0.0;
     gc.anchor = GridBagConstraints.LINE_END;
     topPanel.add(this.config, gc);
+    topPanel.setBorder(DividerBorder.BOTTOM_DIVIDER);
 
     this.add(topPanel, BorderLayout.NORTH);
     this.add(dataDisplay, BorderLayout.CENTER);

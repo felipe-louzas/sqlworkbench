@@ -199,7 +199,10 @@ public class KeyboardMapper
   private void updateDisplay()
   {
     showKey(display, newPrimaryKey);
-    showKey(alternateKey, newAlternateKey);
+    if (alternateKey != null)
+    {
+      showKey(alternateKey, newAlternateKey);
+    }
   }
 
   private void showKey(JTextField keyDisplay, KeyStroke keyStroke)

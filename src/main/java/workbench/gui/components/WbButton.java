@@ -21,18 +21,9 @@
  */
 package workbench.gui.components;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicBorders;
 
 import workbench.resource.ResourceMgr;
 
@@ -42,17 +33,7 @@ import workbench.resource.ResourceMgr;
  */
 public class WbButton
   extends JButton
-  implements MouseListener
 {
-  private static final Border ICON_EMPTY_BORDER = new EmptyBorder(1,0,0,0);
-  private static final Border SMALL_EMPTY_BORDER = new EmptyBorder(2,2,2,2);
-  private static final Border LARGE_EMPTY_BORDER = new EmptyBorder(5,5,5,5);
-
-  private Border rolloverBorder;
-  private Border emptyBorder;
-  protected boolean iconButton;
-  private boolean rolloverEnabled;
-
   public WbButton()
   {
     super();
@@ -74,7 +55,6 @@ public class WbButton
   public WbButton(Icon i)
   {
     super(i);
-    iconButton = true;
     init();
   }
 
@@ -108,93 +88,10 @@ public class WbButton
     super.setText(newText);
   }
 
-  public void setBasicUI()
-  {
-    this.setUI(new javax.swing.plaf.basic.BasicButtonUI());
-  }
-
-  public void disableBasicRollover()
-  {
-    removeMouseListener(this);
-    rolloverEnabled = false;
-  }
-
-  public void enableBasicRollover()
-  {
-    if (rolloverEnabled) return;
-
-    setBasicUI();
-    UIDefaults table = UIManager.getLookAndFeelDefaults();
-    Border out = new BasicBorders.RolloverButtonBorder(
-      table.getColor("controlShadow"),
-      table.getColor("controlDkShadow"),
-      table.getColor("controlHighlight"),
-      table.getColor("controlLtHighlight"));
-
-    if (iconButton)
-    {
-      this.rolloverBorder = new CompoundBorder(out, ICON_EMPTY_BORDER);
-      this.emptyBorder = SMALL_EMPTY_BORDER;
-    }
-    else
-    {
-      this.rolloverBorder = new CompoundBorder(out, SMALL_EMPTY_BORDER);
-      this.emptyBorder = LARGE_EMPTY_BORDER;
-    }
-    this.setBorderPainted(true);
-    this.setBorder(emptyBorder);
-    this.addMouseListener(this);
-    rolloverEnabled = true;
-  }
-
   public void enableToolbarRollover()
   {
-    this.rolloverBorder = null;
-    this.emptyBorder = null;
     this.setBorderPainted(false);
     this.setRolloverEnabled(false);
-    this.addMouseListener(this);
-  }
-
-  @Override
-  public void mouseClicked(MouseEvent e)
-  {
-  }
-
-  @Override
-  public void mousePressed(MouseEvent e)
-  {
-  }
-
-  @Override
-  public void mouseReleased(MouseEvent e)
-  {
-  }
-
-  @Override
-  public void mouseEntered(MouseEvent e)
-  {
-    if (this.rolloverBorder == null)
-    {
-      this.setBorderPainted(true);
-    }
-    else
-    {
-      this.setBorder(this.rolloverBorder);
-    }
-  }
-
-  @Override
-  public void mouseExited(MouseEvent e)
-  {
-    if (this.rolloverBorder == null)
-    {
-      this.setBorderPainted(false);
-    }
-    else
-    {
-      this.setBorder(this.emptyBorder);
-    }
   }
 
 }

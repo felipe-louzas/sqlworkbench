@@ -21,13 +21,13 @@
  */
 package workbench.gui.components;
 
-import javax.swing.LookAndFeel;
-import javax.swing.UIManager;
 import javax.swing.plaf.TabbedPaneUI;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
+import workbench.gui.lnf.LnFHelper;
 
 /**
  *
@@ -35,32 +35,15 @@ import workbench.resource.Settings;
  */
 public class TabbedPaneUIFactory
 {
-  public static String getTabbedPaneUIClass()
-  {
-    if (!Settings.getInstance().getBoolProperty("workbench.gui.replacetabbedpane", true))
-    {
-      return null;
-    }
-
-    LookAndFeel lnf = UIManager.getLookAndFeel();
-    String lnfClass = lnf.getClass().getName();
-
-    if (lnfClass.startsWith("com.sun.java.swing.plaf.windows.Windows"))
-    {
-      return "workbench.gui.components.BorderLessWindowsTabbedPaneUI";
-    }
-    else if (lnfClass.contains("WebLookAndFeel"))
-    {
-      return "com.alee.laf.tabbedpane.WebTabbedPaneUI";
-    }
-    return null;
-  }
 
   public static TabbedPaneUI getBorderLessUI()
   {
-    String uiClass = getTabbedPaneUIClass();
-    if (uiClass == null) return null;
-    return getClassInstance(uiClass);
+    if (LnFHelper.isWindowsLookAndFeel() &&
+        Settings.getInstance().getBoolProperty("workbench.gui.replacetabbedpane", true))
+    {
+      return getClassInstance("workbench.gui.components.BorderLessWindowsTabbedPaneUI");
+    }
+    return null;
   }
 
   private static TabbedPaneUI getClassInstance(String className)

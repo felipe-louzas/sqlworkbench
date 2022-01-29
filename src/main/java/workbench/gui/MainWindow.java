@@ -3008,9 +3008,14 @@ public class MainWindow
     for (int i = 0; i < panelCount; i++)
     {
       JMenu view = this.getViewMenu(i);
-      for (int k = 0; k < panelCount; k++)
+      if (view == null) continue;
+
+      int cCount = view.getItemCount();
+      for (int k = 0; k < cCount; k++)
       {
         JMenuItem item = view.getItem(k);
+        if (item == null) continue;
+
         Action a = item.getAction();
         if (a instanceof SelectTabAction)
         {

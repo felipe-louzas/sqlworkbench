@@ -255,7 +255,7 @@ public class TableSearchPanel
         display.setModel(model, true);
         display.applyHighlightExpression(searcher.getSearchExpression());
         display.checkCopyActions();
-        JScrollPane pane = new WbScrollPane(display);
+        
         int rows = display.getRowCount();
         String label = table.getTableExpression() + " " + ResourceMgr.getFormattedString("MsgRows", rows);
         TitledBorder tb = WbSwingUtilities.createTitleBorder(this, label);
@@ -266,7 +266,7 @@ public class TableSearchPanel
           tb.setTitleFont(f);
         }
         Border b = new CompoundBorder(tb, new EmptyBorder(6,4,4,4));
-        pane.setBorder(b);
+        JScrollPane pane = new WbScrollPane(display, b);
 
         // only the last component should have weighty = 1.0
         // so reset the weighty attribute for the component that is currently the last one

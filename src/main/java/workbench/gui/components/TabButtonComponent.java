@@ -121,19 +121,12 @@ public class TabButtonComponent
       }
     };
     closeButton.setOpaque(true);
-    if (GuiSettings.useFlatTabCloseButton())
-    {
-      closeButton.setContentAreaFilled(false);
-      closeButton.setBorderPainted(false);
-      closeButton.setRolloverEnabled(true);
-      closeButton.setIcon(img);
-      closeButton.setRolloverIcon(rolloverImg);
-      closeButton.setPressedIcon(pressedImg);
-    }
-    else
-    {
-      closeButton.enableBasicRollover();
-    }
+    closeButton.setContentAreaFilled(false);
+    closeButton.setBorderPainted(false);
+    closeButton.setRolloverEnabled(true);
+    closeButton.setIcon(img);
+    closeButton.setRolloverIcon(rolloverImg);
+    closeButton.setPressedIcon(pressedImg);
 
     closeButton.setFocusable(false);
     closeButton.addActionListener(this);

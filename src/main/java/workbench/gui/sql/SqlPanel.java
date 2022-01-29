@@ -394,6 +394,7 @@ public class SqlPanel
     highlighter = new Highlighter(editor);
 
     statusBar = new DwStatusBar(true, true);
+    statusBar.setBorder(DividerBorder.TOP_DIVIDER);
 
     int defRows = GuiSettings.getDefaultMaxRows();
     if (defRows > 0)
@@ -421,11 +422,7 @@ public class SqlPanel
     resultTab.enableDragDropReordering(this);
     resultTab.hideDisabledButtons(true);
 
-    // The name of the component is used for the Jemmy GUI Tests
-    resultTab.setName("resultspane");
-
-    JScrollPane scroll = new WbScrollPane(log);
-    scroll.setBorder(WbSwingUtilities.createLineBorder(this));
+    JScrollPane scroll = new WbScrollPane(log, WbSwingUtilities.EMPTY_BORDER);
     resultTab.addTab(ResourceMgr.getString("LblTabMessages"), scroll);
 
     contentPanel = new WbSplitPane(JSplitPane.VERTICAL_SPLIT, editor, resultTab);

@@ -21,13 +21,11 @@
  */
 package workbench.gui.components;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.lnf.LnFHelper;
@@ -39,57 +37,52 @@ import workbench.gui.lnf.LnFHelper;
 public class WbScrollPane
   extends JScrollPane
 {
-  private boolean useCustomizedBorder = !LnFHelper.isFlatLaf();
-
   public WbScrollPane()
   {
     super();
-    this.initDefaults();
+    initDefaultBorder();
+    setDoubleBuffered(true);
   }
 
   public WbScrollPane(Component view)
   {
+    this(view, null);
+  }
+
+  public WbScrollPane(Component view, Border border)
+  {
     super(view);
-    this.initDefaults();
+    if (border == null)
+    {
+      initDefaultBorder();
+    }
+    else
+    {
+      setBorder(border);
+    }
+    setDoubleBuffered(true);
   }
 
   public WbScrollPane(Component view, int vsbPolicy, int hsbPolicy)
   {
     super(view, vsbPolicy, hsbPolicy);
-    this.initDefaults();
+    initDefaultBorder();
+    setDoubleBuffered(true);
   }
 
   public WbScrollPane(int vsbPolicy, int hsbPolicy)
   {
     super(vsbPolicy, hsbPolicy);
-    this.initDefaults();
-  }
-
-  @Override
-  public void setBorder(Border newBorder)
-  {
-    super.setBorder(newBorder);
-    useCustomizedBorder = false;
-  }
-
-  private void initDefaults()
-  {
+    initDefaultBorder();
     setDoubleBuffered(true);
-    if (useCustomizedBorder)
+  }
+
+  private void initDefaultBorder()
+  {
+    if (LnFHelper.isWindowsLookAndFeel())
     {
-      try
-      {
-        // With some Linux distributions (Debian) creating this border during
-        // initialization fails. So if we can't create our own border
-        // we simply skip this for the future
-        Color cl = WbSwingUtilities.getLineBorderColor(UIManager.getColor("Label.background"));
-        Border myBorder = new LineBorder(cl, 1);
-        super.setBorder(myBorder);
-      }
-      catch (Throwable e)
-      {
-        useCustomizedBorder = false;
-      }
+      Border myBorder = WbSwingUtilities.createLineBorder(UIManager.getColor("Label.background"));
+      super.setBorder(myBorder);
     }
   }
 

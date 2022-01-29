@@ -352,24 +352,20 @@ public class WbTabbedPane
     putClientProperty("jgoodies.embeddedTabs", Boolean.FALSE);
     putClientProperty("jgoodies.tabIconsEnabled", Boolean.FALSE);
 
-    isFlatLaf = LnFHelper.isFlatLaf();
-
-    if (!isFlatLaf)
+    try
     {
-      try
+      TabbedPaneUI tui = TabbedPaneUIFactory.getBorderLessUI();
+      if (tui != null)
       {
-        TabbedPaneUI tui = TabbedPaneUIFactory.getBorderLessUI();
-        if (tui != null)
-        {
-          this.setUI(tui);
-          LogMgr.logDebug(new CallerInfo(){}, "Installed custom TabbedPaneUI");
-        }
-      }
-      catch (Throwable e)
-      {
-        LogMgr.logError(new CallerInfo(){}, "Cannot set custom TabbedPaneUI", e);
+        this.setUI(tui);
+        LogMgr.logDebug(new CallerInfo(){}, "Installed custom TabbedPaneUI");
       }
     }
+    catch (Throwable e)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Cannot set custom TabbedPaneUI", e);
+    }
+
     onlyCloseActive = GuiSettings.getCloseActiveTabOnly();
     Settings.getInstance().addPropertyChangeListener(this, GuiSettings.PROPERTY_CLOSE_ACTIVE_TAB);
     addChangeListener(this);
@@ -380,7 +376,7 @@ public class WbTabbedPane
   public void initializeTabHighlight()
   {
     if (LnFHelper.isFlatLaf()) return;
-    
+
     Color color = GuiSettings.getEditorTabHighlightColor();
     if (color != null)
     {

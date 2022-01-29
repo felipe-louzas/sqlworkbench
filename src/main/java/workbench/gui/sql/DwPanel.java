@@ -1421,7 +1421,7 @@ public class DwPanel
 
     this.statusBar.setFocusable(false);
     this.setFocusable(false);
-    this.scrollPane = new WbScrollPane(this.dataTable);
+    this.scrollPane = new WbScrollPane(this.dataTable, WbSwingUtilities.EMPTY_BORDER);
     this.scrollPane.getViewport().addChangeListener(this);
 
     this.add(this.scrollPane, BorderLayout.CENTER);

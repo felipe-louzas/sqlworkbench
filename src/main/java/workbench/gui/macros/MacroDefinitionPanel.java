@@ -502,7 +502,7 @@ public class MacroDefinitionPanel
         String name = ShortcutManager.getInstance().getActionNameForClass(clazz);
         if (name != null)
         {
-          String msg = ResourceMgr.getFormattedString("MsgShortcutAlreadyAssigned", name);
+          String msg = ResourceMgr.getFormattedString("MsgShortcutAlreadyAssigned", StoreableKeyStroke.displayString(key), name);
           boolean choice = WbSwingUtilities.getYesNo(this, msg);
           if (!choice)
           {

@@ -222,12 +222,9 @@ public class SqlKeywordHelper
 
       try
       {
-        long start = System.nanoTime();
         BufferedReader customFile = new BufferedReader(new FileReader(f));
         Collection<String> custom = FileUtil.getLines(customFile, true, true);
         result.addAll(custom);
-        long duration = System.nanoTime()- start;
-        LogMgr.logDebug(ci, "Reading keywords from: " + f.getAbsolutePath() + " took " + String.format("%.2f", (double)(duration) / 1_000_000d) + "ms");
       }
       catch (Exception e)
       {

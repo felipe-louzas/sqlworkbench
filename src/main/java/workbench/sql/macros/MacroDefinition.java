@@ -23,8 +23,8 @@ package workbench.sql.macros;
 
 import workbench.resource.GuiSettings;
 import workbench.resource.StoreableKeyStroke;
-import workbench.util.HtmlUtil;
 
+import workbench.util.HtmlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -185,6 +185,7 @@ public class MacroDefinition
     def.setVisibleInMenu(this.showInMenu);
     def.setVisibleInPopup(this.showInPopup);
     def.setShortcut(this.shortcut);
+    def.shortcutChanged = this.shortcutChanged;
     def.setExpandWhileTyping(this.expandWhileTyping);
     def.setAppendResult(this.appendResult);
     def.setDbTreeMacro(this.isDbTreeMacro);
@@ -233,7 +234,7 @@ public class MacroDefinition
   public void resetModified()
   {
     modified = false;
-    shortcutChanged = true;
+    shortcutChanged = false;
   }
 
   public boolean isShortcutChanged()
@@ -266,8 +267,8 @@ public class MacroDefinition
     }
     else if (keystroke != null && shortcut != null)
     {
-      modified = !keystroke.equals(shortcut);
-      shortcutChanged = true;
+      modified = modified || !keystroke.equals(shortcut);
+      shortcutChanged = shortcutChanged || modified;
     }
     this.shortcut = keystroke;
   }

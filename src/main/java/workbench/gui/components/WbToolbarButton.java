@@ -64,7 +64,6 @@ public class WbToolbarButton
   {
     super(a);
     this.setText(null);
-    iconButton = true;
     init();
   }
 
