@@ -99,7 +99,7 @@ public class MavenDownloader
     int defaultMax = Settings.getInstance().getIntProperty("workbench.maven.download.max", 15);
     return Settings.getInstance().getIntProperty("workbench.maven.download.max." + groupId, defaultMax);
   }
-  
+
   public List<MavenArtefact> getAvailableVersions(String groupId, String artefactId)
   {
     return getAvailableVersions(groupId, artefactId, getMaxResults(groupId));
@@ -250,7 +250,8 @@ public class MavenDownloader
       long duration = System.currentTimeMillis() - start;
 
       if (!cancelled) bytes = filesize;
-      LogMgr.logInfo(new CallerInfo(){}, "Downloaded " + bytes + " bytes from \"" + downloadUrl + "\" in "+ duration + "ms");
+      LogMgr.logInfo(new CallerInfo(){},
+        "Downloaded \"" + downloadUrl + "\" to \"" + target.getAbsolutePath() + "\", size=" + bytes + "bytes, duration="+ duration + "ms");
     }
     catch (Throwable th)
     {
@@ -270,18 +271,6 @@ public class MavenDownloader
   public List<MavenArtefact> getKnownArtefacts()
   {
     return Collections.unmodifiableList(knownArtefacts);
-  }
-
-  private String getLatestVersion(String xml)
-  {
-    MavenResultParser parser = new MavenResultParser(xml);
-    List<MavenArtefact> result = parser.getResult();
-    if (result.isEmpty()) return null;
-
-    // the result is sorted newest to oldest
-    // so the first entry is the most recent one
-    MavenArtefact ma = result.get(0);
-    return ma.getVersion();
   }
 
   public MavenArtefact searchByClassName(String className)

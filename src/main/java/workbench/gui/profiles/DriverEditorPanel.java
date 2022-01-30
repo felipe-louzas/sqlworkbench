@@ -241,7 +241,6 @@ public class DriverEditorPanel
 
   private void setDownloadEnabled(boolean flag)
   {
-    //this.downloadButton.setVisible(flag);
     this.downloadButton.setEnabled(flag);
   }
 
@@ -261,7 +260,18 @@ public class DriverEditorPanel
   {
     JDialog dialog = (JDialog)SwingUtilities.getWindowAncestor(this);
 
-    MavenDownloadPanel panel = new MavenDownloadPanel(tfClassName.getText());
+    File targetDir = null;
+    List<String> libs = classpathEditor.getLibraries();
+    if (CollectionUtil.isNonEmpty(libs))
+    {
+      File f = new File(libs.get(0));
+      File dir = f.getParentFile();
+      if (dir != null && dir.exists())
+      {
+        targetDir = dir;
+      }
+    }
+    MavenDownloadPanel panel = new MavenDownloadPanel(tfClassName.getText(), targetDir);
     boolean ok = panel.showDialog(dialog);
     if (ok)
     {

@@ -31,7 +31,7 @@
           <string>Vertica</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:vertica://(hostname):5433/(database)</string>
+          <string>jdbc:vertica://hostname:port/database</string>
         </void>
       </object>
     </void>
@@ -48,7 +48,7 @@
           <string>Apache Derby Network Client</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:derby://(hostname):1527/(database)</string>
+          <string>jdbc:derby://hostname:1527/database</string>
         </void>
       </object>
     </void>
@@ -82,7 +82,7 @@
           <string>Informix</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:informix-sqli://host-name:port-number/dbName:INFORMIXSERVER=serverName</string>
+          <string>jdbc:informix-sqli://hostname:port/dbName:INFORMIXSERVER=serverName</string>
         </void>
       </object>
     </void>
@@ -99,7 +99,7 @@
           <string>EnterpriseDB</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:edb://servername:port/database</string>
+          <string>jdbc:edb://hostname:port/database</string>
         </void>
       </object>
     </void>
@@ -116,7 +116,7 @@
           <string>MaxDB</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:sapdb://hostname[:port]/database_name</string>
+          <string>jdbc:sapdb://hostname:port/database_name</string>
         </void>
       </object>
     </void>
@@ -167,7 +167,7 @@
           <string>Sybase jConnect</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:sybase:Tds:machine-name:port-number</string>
+          <string>jdbc:sybase:Tds:hostname:port-number</string>
         </void>
       </object>
     </void>
@@ -212,37 +212,10 @@
           <string>oracle.jdbc.OracleDriver</string>
         </void>
         <void property="library">
-          <string>ojdbc6.jar</string>
+          <string>ojdbc10.jar</string>
         </void>
         <void property="name">
           <string>Oracle</string>
-        </void>
-        <void property="sampleUrl">
-          <string>jdbc:oracle:thin:@//hostname:port/service_name</string>
-        </void>
-      </object>
-    </void>
-
-    <void method="add">
-      <object class="workbench.db.DbDriver">
-        <void property="driverClass">
-          <string>oracle.jdbc.OracleDriver</string>
-        </void>
-        <void property="libraryList">
-          <object class="java.util.ArrayList">
-            <void method="add">
-              <string>ojdbc7.jar</string>
-            </void>
-            <void method="add">
-              <string>xdb6.jar</string>
-            </void>
-            <void method="add">
-              <string>xmlparserv2.jar</string>
-            </void>
-          </object>
-        </void>
-        <void property="name">
-          <string>Oracle/XML</string>
         </void>
         <void property="sampleUrl">
           <string>jdbc:oracle:thin:@//hostname:port/service_name</string>
@@ -262,7 +235,7 @@
           <string>Adabas</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:adabasd://servername/name_of_database</string>
+          <string>jdbc:adabasd://hostname/name_of_database</string>
         </void>
       </object>
     </void>
@@ -279,7 +252,7 @@
           <string>PostgreSQL</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:postgresql://host:port/name_of_database</string>
+          <string>jdbc:postgresql://hostname/name_of_database</string>
         </void>
       </object>
     </void>
@@ -313,7 +286,7 @@
           <string>FirebirdSQL</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:firebirdsql://host:port/name_of_database</string>
+          <string>jdbc:firebirdsql://hostname:port/name_of_database</string>
         </void>
       </object>
     </void>
@@ -330,7 +303,7 @@
           <string>IBM DB2 UDB for AS/400 (iSeries)</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:as400://server_name/database_name</string>
+          <string>jdbc:as400://hostname/database_name</string>
         </void>
       </object>
     </void>
@@ -347,7 +320,7 @@
           <string>IBM DB2</string>
         </void>
         <void property="sampleUrl">
-          <string>jdbc:db2://server_name:50000/database_name</string>
+          <string>jdbc:db2://hostname:50000/database_name</string>
         </void>
       </object>
     </void>

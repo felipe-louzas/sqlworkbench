@@ -21,17 +21,11 @@
  */
 package workbench.gui.components;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
@@ -75,11 +69,16 @@ public class WbFilePicker
     WbSwingUtilities.adjustButtonWidth(selectFileButton,22,22);
   }
 
+  public void setTextFieldColumns(int columns)
+  {
+    this.tfFilename.setColumns(columns);
+  }
+  
   public void setDialogTitleByKey(String key)
   {
     setDialogTitle(ResourceMgr.getString(key));
   }
-  
+
   public void setDialogTitle(String dialogTitle)
   {
     this.dialogTitle = StringUtil.trimToNull(dialogTitle);
@@ -168,41 +167,41 @@ public class WbFilePicker
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents()
   {
-    GridBagConstraints gridBagConstraints;
+    java.awt.GridBagConstraints gridBagConstraints;
 
     tfFilename = new StringPropertyEditor();
     selectFileButton = new FlatButton();
 
-    setLayout(new GridBagLayout());
+    setLayout(new java.awt.GridBagLayout());
 
-    tfFilename.setColumns(10);
-    tfFilename.setHorizontalAlignment(JTextField.LEFT);
+    tfFilename.setColumns(20);
+    tfFilename.setHorizontalAlignment(javax.swing.JTextField.LEFT);
     tfFilename.setName("library"); // NOI18N
     tfFilename.addMouseListener(new TextComponentMouseListener());
-    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(tfFilename, gridBagConstraints);
 
     selectFileButton.setText("...");
-    selectFileButton.addActionListener(new ActionListener()
+    selectFileButton.addActionListener(new java.awt.event.ActionListener()
     {
-      public void actionPerformed(ActionEvent evt)
+      public void actionPerformed(java.awt.event.ActionEvent evt)
       {
         selectFileButtonActionPerformed(evt);
       }
     });
-    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(0, 2, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
     add(selectFileButton, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
   private void selectFileButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectFileButtonActionPerformed
@@ -330,8 +329,8 @@ public class WbFilePicker
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private JButton selectFileButton;
-  private JTextField tfFilename;
+  private javax.swing.JButton selectFileButton;
+  private javax.swing.JTextField tfFilename;
   // End of variables declaration//GEN-END:variables
 
 }

@@ -53,8 +53,8 @@ public class OptionPanelPage
 {
   public static final Border PAGE_PADDING = new EmptyBorder(8, 8, 8, 8);
   private static final Set<String> NO_PADDING_PANELS = CollectionUtil.treeSet(
-    "LnFOptionsPanel", "ExternalToolsPanel",
-    "FormatterOptionsPanel", "DbExplorerOptionsPanel");
+    "LnFOptionsPanel", "ExternalToolsPanel", "FormatterOptionsPanel",
+    "DbExplorerOptionsPanel", "GlobalSshHostsPanel");
 
   private String label;
   private String pageClass;

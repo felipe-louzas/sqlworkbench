@@ -56,21 +56,30 @@ public class MavenDownloadPanel
   private static final String LAST_DIR_PROP = "workbench.driver.download.last.dir";
   private final MavenArtefact artefact;
   private MavenDownloader downloader = new MavenDownloader();
-  private File downloadedFile;
+  private WbFile downloadedFile;
   private ValidatingDialog dialog;
+  private boolean isDownloading;
 
-  public MavenDownloadPanel(String className)
+  public MavenDownloadPanel(String className, File defaultDir)
   {
     initComponents();
     downloadDir.setDialogTitle(ResourceMgr.getString("MsgSelectDownloadDir"));
+    downloadDir.setTextFieldColumns(30);
     artefact = downloader.searchByClassName(className);
     downloader.setProgressBar(downloadProgress);
     downloadDir.setSelectDirectoryOnly(true);
     downloadDir.setAllowMultiple(false);
-    File dir = getDefaultDownloadDir();
-    if (dir != null)
+    if (defaultDir != null && defaultDir.exists() && defaultDir.isDirectory())
     {
-      downloadDir.setFilename(dir.getAbsolutePath());
+      downloadDir.setFilename(defaultDir.getAbsolutePath());
+    }
+    else
+    {
+      File dir = getDefaultDownloadDir();
+      if (dir != null)
+      {
+        downloadDir.setFilename(dir.getAbsolutePath());
+      }
     }
     versionList.addListSelectionListener(this);
   }
@@ -131,7 +140,33 @@ public class MavenDownloadPanel
       if (d.exists()) return d;
     }
     ClasspathUtil cp = new ClasspathUtil();
-    return cp.getExtDir();
+    File jarDir = cp.getJarDir();
+    String dirName = "JDBCDrivers";
+    WbFile dDir = new WbFile(jarDir, dirName);
+    if (!dDir.exists())
+    {
+      dDir.mkdirs();
+    }
+    if (isWriteable(dDir)) return dDir;
+
+    File configDir = Settings.getInstance().getConfigDir();
+    WbFile fdir = new WbFile(configDir, dirName);
+    if (!fdir.exists())
+    {
+      fdir.mkdirs();
+    }
+    if (isWriteable(fdir)) return fdir;
+
+    WbFile extDir = cp.getExtDir();
+    if (isWriteable(extDir)) return extDir;
+    return null;
+  }
+
+  private boolean isWriteable(File dir)
+  {
+    if (!dir.exists()) return false;
+    WbFile f = new WbFile(dir, "test.wb");
+    return f.canCreate();
   }
 
   @Override
@@ -147,8 +182,8 @@ public class MavenDownloadPanel
   {
     String version = versionList.getSelectedValue();
     if (version == null) return;
-    cancelButton.setEnabled(true);
-    WbSwingUtilities.showWaitCursorOnWindow(this);
+    this.downloadSelected.setText(ResourceMgr.getString("LblCancelPlain"));
+    this.downloadSelected.setEnabled(true);
     WbThread th = new WbThread("Download Driver")
     {
       @Override
@@ -163,12 +198,28 @@ public class MavenDownloadPanel
   private void downloadFile()
   {
     long bytes = -1;
+
     File dir = this.downloadDir.getSelectedFile();
+    String version = versionList.getSelectedValue();
+    if (version == null) return;
+
+    this.artefact.setVersion(version);
+    WbFile target = new WbFile(dir, artefact.buildFilename());
+
+    if (target.exists())
+    {
+      String msg = ResourceMgr.getFormattedString("ErrDownloadFileExists", target.getAbsolutePath());
+      boolean ok = WbSwingUtilities.getYesNo(this, msg);
+      if (!ok)
+      {
+        return;
+      }
+    }
+
     try
     {
-      String version = versionList.getSelectedValue();
-      if (version == null) return;
-      this.artefact.setVersion(version);
+      WbSwingUtilities.showWaitCursorOnWindow(this);
+      this.isDownloading = true;
       bytes = downloader.download(this.artefact, dir);
     }
     catch (Exception ex)
@@ -182,7 +233,8 @@ public class MavenDownloadPanel
     }
     finally
     {
-      cancelButton.setEnabled(false);
+      this.isDownloading = false;
+      this.downloadSelected.setText(ResourceMgr.getString("LblDownloadSel"));
       WbSwingUtilities.showDefaultCursorOnWindow(this);
     }
 
@@ -193,6 +245,8 @@ public class MavenDownloadPanel
       {
         dialog.setButtonEnabled(0, true);
       }
+      downloadedFileName.setText(this.downloadedFile.getName());
+      downloadedFileName.setToolTipText(this.downloadedFile.getFullPath());
     }
     else
     {
@@ -254,7 +308,7 @@ public class MavenDownloadPanel
     downloadProgress = new javax.swing.JProgressBar();
     jPanel1 = new javax.swing.JPanel();
     downloadSelected = new javax.swing.JButton();
-    cancelButton = new javax.swing.JButton();
+    downloadedFileName = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
 
     setLayout(new java.awt.GridBagLayout());
@@ -281,7 +335,7 @@ public class MavenDownloadPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
@@ -290,14 +344,14 @@ public class MavenDownloadPanel
     add(jScrollPane1, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(2, 0, 6, 0);
     add(downloadProgress, gridBagConstraints);
 
-    jPanel1.setLayout(new java.awt.BorderLayout());
+    jPanel1.setLayout(new java.awt.BorderLayout(8, 0));
 
     downloadSelected.setText(ResourceMgr.getString("LblDownloadSel")); // NOI18N
     downloadSelected.setEnabled(false);
@@ -309,17 +363,7 @@ public class MavenDownloadPanel
       }
     });
     jPanel1.add(downloadSelected, java.awt.BorderLayout.WEST);
-
-    cancelButton.setText(ResourceMgr.getString("LblCancelPlain")); // NOI18N
-    cancelButton.setEnabled(false);
-    cancelButton.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        cancelButtonActionPerformed(evt);
-      }
-    });
-    jPanel1.add(cancelButton, java.awt.BorderLayout.EAST);
+    jPanel1.add(downloadedFileName, java.awt.BorderLayout.CENTER);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -333,7 +377,7 @@ public class MavenDownloadPanel
     jLabel2.setText(ResourceMgr.getString("LblDriverVersions")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -344,22 +388,21 @@ public class MavenDownloadPanel
 
   private void downloadSelectedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_downloadSelectedActionPerformed
   {//GEN-HEADEREND:event_downloadSelectedActionPerformed
-    startDownload();
+    if (isDownloading)
+    {
+      this.downloader.cancelDownload();
+    }
+    else
+    {
+      startDownload();
+    }
   }//GEN-LAST:event_downloadSelectedActionPerformed
 
-  private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed
-  {//GEN-HEADEREND:event_cancelButtonActionPerformed
-    if (downloader != null)
-    {
-      downloader.cancelDownload();
-    }
-  }//GEN-LAST:event_cancelButtonActionPerformed
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton cancelButton;
   private workbench.gui.components.WbFilePicker downloadDir;
   private javax.swing.JProgressBar downloadProgress;
   private javax.swing.JButton downloadSelected;
+  private javax.swing.JLabel downloadedFileName;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JPanel jPanel1;
