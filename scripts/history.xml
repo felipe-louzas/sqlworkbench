@@ -3,7 +3,8 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2021-11-01">
+
+  <release build="-1" date="2022-01-30">
     <entry dev-build="1" type="enh">When definining a JDBC driver, the jar file can now be downloaded from Maven central if available</entry>
     <entry dev-build="1" type="enh">It's now possible to assign a second, alternate keyboard shortcut for menu items</entry>
     <entry dev-build="1" type="enh">It's now possible to have a different set of variables per window.</entry>
@@ -17,7 +18,6 @@
     <entry dev-build="1" type="fix">In the "Copy data to clipboard" dialog, the "Selected rows" option wasn't always enabled correctly.</entry>
     <entry dev-build="1" type="fix">If no backup directory was defined, opening of the "Backup" options wasn't possible.</entry>
   </release>
-
   <release build="128" date="2021-11-01">
     <entry dev-build="8" type="enh">SQL Workbench/J now requires Java 11 or later.</entry>
     <entry dev-build="8" type="enh">It's now possible to filter the list of shortcuts in the "Configure shortcuts" dialog.</entry>
