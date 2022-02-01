@@ -263,6 +263,7 @@ public class GeneralExportOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(4, 4, 7, 4);
     add(dateFormat, gridBagConstraints);
 
@@ -278,6 +279,7 @@ public class GeneralExportOptionsPanel
     gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(0, 4, 7, 4);
     add(timestampFormat, gridBagConstraints);
 
@@ -307,6 +309,7 @@ public class GeneralExportOptionsPanel
     gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(0, 4, 7, 4);
     add(nullString, gridBagConstraints);
 

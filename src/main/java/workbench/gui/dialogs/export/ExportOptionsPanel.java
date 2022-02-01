@@ -289,7 +289,7 @@ public class ExportOptionsPanel
 
   private JPanel createPickerPanel()
   {
-    int gap = IconMgr.getInstance().getSizeForLabel() / 2;
+    int gap = 8;
 
     JPanel panel = new JPanel(new GridBagLayout());
     if (!forClipboard)
@@ -322,7 +322,6 @@ public class ExportOptionsPanel
       gc.gridx = 1;
       gc.fill = GridBagConstraints.HORIZONTAL;
       gc.weightx = 1.0;
-      gc.insets = new Insets(0, 0, gap, gap);
       panel.add(picker, gc);
 
       gc.gridx = 2;
@@ -337,17 +336,17 @@ public class ExportOptionsPanel
     gc.gridy++;
     gc.weightx = 0;
     gc.fill = GridBagConstraints.NONE;
-    gc.anchor = GridBagConstraints.LINE_START;
     gc.insets = new Insets(0, 0, 0, gap);
     JLabel typeLabel = new JLabel(ResourceMgr.getString("LblExportType"));
     panel.add(typeLabel, gc);
 
     gc.gridx = 1;
     gc.gridwidth = picker == null ? 1 : 2;
+    gc.weightx = 1.0;
     gc.fill = GridBagConstraints.HORIZONTAL;
     panel.add(typeSelector, gc);
 
-    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, gap/2, 0));
+    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, gap * 2, 0));
     panel.setBorder(b);
 
     return panel;
