@@ -302,6 +302,9 @@
         <void property="productName">
           <string>MariaDB</string>
         </void>
+        <void property="driverClassName">
+          <string>org.mariadb.jdbc.Driver</string>
+        </void>
       </object>
     </void>
 
