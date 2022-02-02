@@ -1236,7 +1236,7 @@ public class DbMetadata
     name = name.trim();
     if (name.length() < 2) return false;
 
-    if (name.startsWith(quoteCharacter)) return true;
+    if (name.startsWith(quoteCharacter) && name.endsWith(quoteCharacter)) return true;
 
     // SQL Server driver claims that a " is the quote character but still
     // accepts those iditotic brackets as quote characters...

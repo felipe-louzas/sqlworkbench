@@ -67,6 +67,7 @@ public class TableIdentifier
   private boolean useTableNameOnlyInExpression;
   private boolean pkInitialized;
   private boolean isPartitioned;
+  private String quoteChar = QuoteHandler.STANDARD_QUOTE_CHARACTER;
 
   // for Synonyms
   private TableIdentifier realTable;
@@ -356,6 +357,11 @@ public class TableIdentifier
     if (con == null) return;
     DbMetadata meta = con.getMetadata();
     if (meta == null) return;
+    this.quoteChar = meta.getIdentifierQuoteCharacter();
+    if (this.quoteChar == null)
+    {
+      this.quoteChar = QuoteHandler.STANDARD_HANDLER.getIdentifierQuoteCharacter();
+    }
     this.schemaWasQuoted = !meta.isDefaultCase(this.schema);
     this.catalogWasQuoted = !meta.isDefaultCase(this.catalog);
     this.tableWasQuoted = !meta.isDefaultCase(this.tablename);
@@ -389,6 +395,7 @@ public class TableIdentifier
     copy.owner = this.owner;
     copy.realTable = this.realTable == null ? null : realTable.createCopy();
     copy.useTableNameOnlyInExpression = this.useTableNameOnlyInExpression;
+    copy.quoteChar = this.quoteChar;
     return copy;
   }
 
@@ -574,9 +581,9 @@ public class TableIdentifier
     if (!tableWasQuoted || !preserveQuotes) return this.tablename;
 
     StringBuilder result = new StringBuilder(tablename.length() + 2);
-    result.append('\"');
+    result.append(this.quoteChar);
     result.append(tablename);
-    result.append('\"');
+    result.append(this.quoteChar);
     return result.toString();
   }
 
@@ -764,9 +771,9 @@ public class TableIdentifier
     if (!schemaWasQuoted || !preserveQuotes) return schema;
 
     StringBuilder result = new StringBuilder(schema.length() + 2);
-    result.append('\"');
+    result.append(this.quoteChar);
     result.append(schema);
-    result.append('\"');
+    result.append(this.quoteChar);
     return result.toString();
   }
 
@@ -791,9 +798,9 @@ public class TableIdentifier
     if (!catalogWasQuoted || !preserveQuotes) return this.catalog;
 
     StringBuilder result = new StringBuilder(catalog.length() + 2);
-    result.append('\"');
+    result.append(this.quoteChar);
     result.append(catalog);
-    result.append('\"');
+    result.append(this.quoteChar);
     return result.toString();
   }
 

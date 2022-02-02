@@ -32,6 +32,11 @@ import workbench.util.SqlUtil;
 public interface QuoteHandler
 {
   /**
+   * The quote character for identifiers as defined by the SQL standard.
+   */
+  public static final String STANDARD_QUOTE_CHARACTER = "\"";
+
+  /**
    * Check if the given name is already quoted.
    * @param name  the SQL name to check
    * @return true if it's quoted, false otherwise
@@ -65,7 +70,7 @@ public interface QuoteHandler
 
   default String getIdentifierQuoteCharacter()
   {
-    return "\"";
+    return STANDARD_QUOTE_CHARACTER;
   }
 
 
