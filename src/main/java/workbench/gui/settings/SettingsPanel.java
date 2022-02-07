@@ -94,11 +94,11 @@ public class SettingsPanel
     pages.add(new OptionPanelPage("DataColorOptions", "LblDataColors"));
     pages.add(new OptionPanelPage("DataEditOptionsPanel", "LblDataEdit"));
     pages.add(new OptionPanelPage("DbExplorerOptionsPanel", "LblSettingsDbExplorer"));
-    pages.add(new OptionPanelPage("FileTreeOptionsPanel", "LblFileTreeOptions"));
     pages.add(new OptionPanelPage("DbTreeOptionsPanel", "LblTreeOptions"));
-    pages.add(new OptionPanelPage("WindowTitleOptionsPanel", "LblSettingsWinTitle"));
+    pages.add(new OptionPanelPage("FileTreeOptionsPanel", "LblFileTreeOptions"));
     pages.add(new OptionPanelPage("FormatterOptionsPanel", "LblSqlFormat"));
     pages.add(new OptionPanelPage("SqlGenerationOptionsPanel", "LblSqlGeneration"));
+    pages.add(new OptionPanelPage("WindowTitleOptionsPanel", "LblSettingsWinTitle"));
     pages.add(new OptionPanelPage("ExternalToolsPanel", "LblExternalTools"));
     pages.add(new OptionPanelPage("GlobalSshHostsPanel", "LblSshGlobalCfg"));
     pages.add(new OptionPanelPage("LnFOptionsPanel", "LblLnFOptions"));
