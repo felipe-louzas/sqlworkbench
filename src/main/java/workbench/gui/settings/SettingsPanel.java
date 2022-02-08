@@ -223,12 +223,8 @@ public class SettingsPanel
     }
     else
     {
-      // if no page is displayed, pack() will not work properly (because only the first
-      // displayed page is taken into account, but other pages are bigger than the "General" page)
-      // So we need to instantiate and display the two largest pages
-
-      // data display options
-      pageList.setSelectedIndex(11);
+      // the "General" page is the highest page
+      pageList.setSelectedIndex(0);
       dialog.pack();
       int h = dialog.getSize().height;
 
@@ -237,11 +233,7 @@ public class SettingsPanel
       dialog.pack();
       int w = dialog.getSize().width;
 
-      dialog.setSize(w,h);
-
-      // the "Editor Colors" page is substantially wider than the general options page
-      // so increase the size after the pack()
-      WbSwingUtilities.scale(dialog, 1.02, 1.02);
+      dialog.setSize((int)(w * 1.03),(int)(h * 1.03));
     }
 
     dialog.getRootPane().setDefaultButton(this.okButton);
