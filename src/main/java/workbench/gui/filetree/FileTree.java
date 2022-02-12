@@ -22,6 +22,7 @@
 package workbench.gui.filetree;
 
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
@@ -35,6 +36,7 @@ import workbench.util.StringUtil;
 /**
  *
  * @author Matthias Melzner
+ * @author Thomas Kellerer
  */
 public class FileTree
   extends JTree
@@ -45,6 +47,7 @@ public class FileTree
   public FileTree()
   {
     super();
+    this.setRootVisible(false);
     setModel(loader.getModel());
     setBorder(WbSwingUtilities.EMPTY_BORDER);
     setShowsRootHandles(true);
@@ -59,14 +62,20 @@ public class FileTree
     dragSource = new FileTreeDragSource(this);
   }
 
-  public void setRootDir(File root)
+  public void setDirectories(List<File> dirs)
   {
-    this.loader.setRootDir(root);
+    this.loader.setDirectories(dirs);
   }
 
-  public File getRootDir()
+  public File getSelectedRootDir()
   {
-    return loader.getRootDir();
+    TreePath path = getSelectionPath();
+    return loader.getRootDirectoryForPath(path);
+  }
+
+  public List<File> getRootDirs()
+  {
+    return loader.getDirectories();
   }
 
   public FileTreeLoader getLoader()
@@ -85,6 +94,11 @@ public class FileTree
     finally
     {
       WbSwingUtilities.showDefaultCursorOnWindow(this);
+    }
+    this.collapseRow(0);
+    for (int i = this.getRowCount() - 1; i >= 0; i--)
+    {
+      this.expandRow(i);
     }
   }
 
@@ -109,6 +123,38 @@ public class FileTree
     {
       this.expandRow(i);
     }
+  }
+
+  public List<TreePath> getExpandedPaths()
+  {
+    return loader.getExpandedRootDirs(this);
+  }
+
+  public void restoreExpandedPaths(List<TreePath> expandedPaths)
+  {
+    for (TreePath path : expandedPaths)
+    {
+      expandPath(path);
+    }
+  }
+
+  public void removeSelectedRootDir()
+  {
+    if (!isRootDirSelected()) return;
+
+    List<TreePath> expandedPaths = getExpandedPaths();
+    File dir = getSelectedFile();
+    if (dir != null && loader.removeDirectory(dir))
+    {
+      restoreExpandedPaths(expandedPaths);
+    }
+  }
+
+  public boolean isRootDirSelected()
+  {
+    TreePath path = getSelectionPath();
+    if (path == null) return false;
+    return path.getPathCount() == 2;
   }
 
   public File getSelectedFile()

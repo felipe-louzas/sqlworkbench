@@ -33,7 +33,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -45,9 +47,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import workbench.interfaces.Reloadable;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -66,17 +72,20 @@ import workbench.gui.components.WbToolbarButton;
 import workbench.gui.dbobjects.DbObjectSourcePanel;
 import workbench.gui.sql.SqlPanel;
 
+import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
+import workbench.util.StringUtil;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
 
 /**
  *
  * @author Matthias Melzner
+ * @author Thomas Kellerer
  */
 public class FileTreePanel
   extends JPanel
-  implements Reloadable, ActionListener, MouseListener
+  implements Reloadable, ActionListener, MouseListener, TreeSelectionListener
 {
   public static final String PROP_DIVIDER = "filetree.divider.location";
   public static final String PROP_ROOT_DIR = "filetree.rootdir";
@@ -85,11 +94,11 @@ public class FileTreePanel
   private JPanel toolPanel;
   public ReloadAction reload;
   private WbToolbarButton closeButton;
-  private List<TreePath> expandedNodes;
   public DbObjectSourcePanel source;
   private MainWindow window;
   private JTextField filterText;
-  private JButton selectDirectoryButton;
+  private JButton addDirectoryButton;
+  private JButton removeDirectoryButton;
   private String workspaceDefaultDir;
 
   public FileTreePanel(MainWindow window)
@@ -98,11 +107,12 @@ public class FileTreePanel
     this.window = window;
     tree = new FileTree();
     this.setName("filetree");
+    tree.getSelectionModel().addTreeSelectionListener(this);
 
     ConnectionProfile profile = window.getCurrentProfile();
     if (profile != null)
     {
-      this.workspaceDefaultDir = profile.getDefaultDirectory();
+      workspaceDefaultDir = StringUtil.trimToNull(profile.getDefaultDirectory());
     }
     tree.addMouseListener(this);
     JScrollPane scroll = new JScrollPane(tree);
@@ -136,12 +146,18 @@ public class FileTreePanel
 
     WbToolbar bar = new WbToolbar();
 
-    selectDirectoryButton = new WbToolbarButton(IconMgr.getInstance().getLabelIcon("open"));
-    selectDirectoryButton.addActionListener(this);
+    addDirectoryButton = new WbToolbarButton(IconMgr.getInstance().getLabelIcon("folder_add"));
+    addDirectoryButton.addActionListener(this);
+    removeDirectoryButton = new WbToolbarButton(IconMgr.getInstance().getLabelIcon("folder_remove"));
+    removeDirectoryButton.addActionListener(this);
+    removeDirectoryButton.setEnabled(false);
+
     reload = new ReloadAction(this);
     reload.setUseLabelIconSize(true);
+    reload.setTooltip(null);
 
-    bar.add(selectDirectoryButton);
+    bar.add(addDirectoryButton);
+    bar.add(removeDirectoryButton);
     bar.add(reload);
     bar.addSeparator();
 
@@ -177,7 +193,6 @@ public class FileTreePanel
   public void reload()
   {
     filterText.setText("");
-    resetExpanded();
     loadInBackground();
   }
 
@@ -196,33 +211,86 @@ public class FileTreePanel
     }
   }
 
-  private void selectNewRoot()
+  private File getDefaultDir()
   {
-    JFileChooser jf = new WbFileChooser();
-    jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    jf.setMultiSelectionEnabled(false);
-    File dir = tree.getLoader().getRootDir();
+    File dir = getFileFromName(workspaceDefaultDir);
+    if (dir == null)
+    {
+      dir = getFileFromName(FileTreeSettings.getDefaultDirectory());
+    }
     if (dir == null)
     {
       dir = new File(".").getAbsoluteFile();
     }
+    return dir;
+  }
+
+  private File getFileFromName(String name)
+  {
+    if (StringUtil.isBlank(name)) return null;
+    File f = new File(name);
+    if (f.exists() && f.isDirectory()) return f;
+    return null;
+  }
+
+  private void addDirectory()
+  {
+    final JFileChooser jf = new WbFileChooser();
+    jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    jf.setMultiSelectionEnabled(false);
+    File dir = tree.getSelectedRootDir();
+    if (dir == null)
+    {
+      dir = getDefaultDir();
+    }
+
     jf.setCurrentDirectory(dir);
     int answer = jf.showOpenDialog(SwingUtilities.getWindowAncestor(this));
     if (answer == JFileChooser.APPROVE_OPTION)
     {
-      File newDir = jf.getSelectedFile();
-      tree.getLoader().setRootDir(newDir);
-      loadInBackground();
+      final List<TreePath> expandedPaths = tree.getExpandedPaths();
+      final File newDir = jf.getSelectedFile();
+      WbThread th = new WbThread("Load Directory")
+      {
+        @Override
+        public void run()
+        {
+          try
+          {
+            WbSwingUtilities.showWaitCursor(FileTreePanel.this);
+            long start = System.currentTimeMillis();
+            TreePath newPath = tree.getLoader().addDirectory(newDir);
+            long duration = System.currentTimeMillis() - start;
+            LogMgr.logDebug(new CallerInfo(){}, "Loading directory " + newDir + " took: " + duration + "ms");
+            WbSwingUtilities.invoke(() ->
+            {
+              tree.restoreExpandedPaths(expandedPaths);
+              tree.setSelectionPath(newPath);
+              tree.expandPath(newPath);
+              tree.scrollPathToVisible(newPath);
+            });
+          }
+          finally
+          {
+            WbSwingUtilities.showDefaultCursor(FileTreePanel.this);
+          }
+        }
+      };
+      th.start();
     }
   }
+
   @Override
   public void actionPerformed(ActionEvent evt)
   {
-    if (evt.getSource() == selectDirectoryButton)
+    if (evt.getSource() == addDirectoryButton)
     {
-      selectNewRoot();
+      addDirectory();
     }
-
+    if (evt.getSource() == removeDirectoryButton)
+    {
+      tree.removeSelectedRootDir();
+    }
     if (evt.getSource() == closeButton)
     {
       closePanel();
@@ -255,37 +323,53 @@ public class FileTreePanel
     panel.readFile(toSelect, encodingToUse);
   }
 
-  private void resetExpanded()
-  {
-    if (expandedNodes != null)
-    {
-      expandedNodes.clear();
-      expandedNodes = null;
-    }
-  }
-
   public void saveSettings(WbProperties props)
   {
-    File currentDir = tree.getRootDir();
-    if (currentDir != null)
+    // clear existing directory first
+    List<String> keys = props.getKeysWithPrefix(PROP_ROOT_DIR);
+    for (String key : keys)
     {
-      props.setProperty(PROP_ROOT_DIR, currentDir.getAbsolutePath());
+      props.setProperty(key, null);
+    }
+
+    List<File> dirs = tree.getRootDirs();
+    props.setProperty(PROP_ROOT_DIR, null);
+    for (int i = 0; i < dirs.size(); i++)
+    {
+      props.setProperty(PROP_ROOT_DIR + "." + i, dirs.get(i).getAbsolutePath());
     }
   }
 
   public void restoreSettings(WbProperties props)
   {
-    File dir = null;
-    String path = props.getProperty(PROP_ROOT_DIR, workspaceDefaultDir);
-    if (path == null)
+    List<String> keys = props.getKeysWithPrefix(PROP_ROOT_DIR);
+    List<File> dirs = new ArrayList<>();
+    Set<String> paths = CollectionUtil.caseInsensitiveSet();
+    for (String key : keys)
     {
-      dir = FileTreeSettings.getDirectoryToUse();
+      String path = props.getProperty(key);
+      if (StringUtil.isBlank(path)) continue;
+
+      // Prevent loading of the same directory twice
+      if (paths.contains(path)) continue;
+      paths.add(path);
+
+      File f = new File(path);
+      if (f.exists())
+      {
+        dirs.add(f);
+      }
     }
-    else
+
+    if (dirs.isEmpty() && StringUtil.isNonBlank(workspaceDefaultDir))
     {
-      dir = new File(path);
+      File f = new File(workspaceDefaultDir);
+      if (f.exists())
+      {
+        dirs.add(f);
+      }
     }
-    tree.setRootDir(dir);
+    tree.setDirectories(dirs);
   }
 
   @Override
@@ -301,12 +385,16 @@ public class FileTreePanel
 
       if (!f.isDirectory())
       {
-        if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK)
+        if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK || FileTreeSettings.getClickOption() == FileOpenMode.newTab)
         {
           this.loadFile(f, true);
         }
         else
         {
+          if (!window.getCurrentSqlPanel().checkAndSaveFile())
+          {
+            return;
+          }
           this.loadFile(f, false);
         }
       }
@@ -369,6 +457,24 @@ public class FileTreePanel
     };
     openInNewTab.initMenuDefinition("MnuTxtOpenInNewTab");
     menu.add(openInNewTab);
+
+    File selected = tree.getSelectedFile();
+    boolean isDir = selected != null && selected.isDirectory();
+    openInSameTab.setEnabled(!isDir);
+    openInNewTab.setEnabled(!isDir);
+
+    WbAction closeDir = new WbAction()
+    {
+      @Override
+      public void executeAction(ActionEvent e)
+      {
+        tree.removeSelectedRootDir();
+      }
+    };
+    closeDir.initMenuDefinition("LblClose");
+    closeDir.setEnabled(tree.isRootDirSelected());
+    menu.add(closeDir);
+
     return menu;
   }
 
@@ -391,4 +497,11 @@ public class FileTreePanel
   public void mouseExited(MouseEvent e)
   {
   }
+
+  @Override
+  public void valueChanged(TreeSelectionEvent e)
+  {
+    removeDirectoryButton.setEnabled(tree.isRootDirSelected());
+  }
+
 }

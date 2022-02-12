@@ -22,15 +22,18 @@
 package workbench.gui.filetree;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -43,35 +46,81 @@ import workbench.util.WbFile;
 /**
  *
  * @author Matthias Melzner
+ * @author Thomas Kellerer
  */
 public class FileTreeLoader
 {
-  private final FileNode root = new FileNode(true);
-  private File rootDir;
-  private final DefaultTreeModel model;
+  private final FileNode dummyRoot = new FileNode(false);
+  private final List<File> directories = new ArrayList<File>();
+  private final DefaultTreeModel model = new DefaultTreeModel(dummyRoot);
   private final Set<String> excludedFiles = new TreeSet<>(String::compareToIgnoreCase);
   private final Set<String> excludedExtensions = new TreeSet<>(String::compareToIgnoreCase);
 
   public FileTreeLoader()
   {
-    this(FileTreeSettings.getDirectoryToUse());
+    this(List.of(FileTreeSettings.getDirectoryToUse()));
   }
 
-  public FileTreeLoader(File dir)
+  public FileTreeLoader(List<File> dirs)
   {
-    setRootDir(dir);
-    model = new DefaultTreeModel(root);
+    setDirectories(dirs);
     excludedFiles.addAll(FileTreeSettings.getFilesToExclude());
     excludedExtensions.addAll(FileTreeSettings.getExtensionsToExclude());
   }
 
-  public void load()
+  public boolean removeDirectory(File directory)
   {
-    createChildren(root, rootDir);
-    WbSwingUtilities.invoke(() -> {model.nodeStructureChanged(root);});
+    if (directory == null) return false;
+    boolean changed = false;
+    directory = getCanonicalFile(directory);
+    for (int i=0; i < dummyRoot.getChildCount(); i++)
+    {
+      FileNode node = (FileNode)dummyRoot.getChildAt(i);
+      if (directory.equals(node.getFile()))
+      {
+        dummyRoot.remove(i);
+        changed = true;
+        break;
+      }
+    }
+
+    if (changed)
+    {
+      this.directories.remove(directory);
+      WbSwingUtilities.invoke(() ->{model.nodeStructureChanged(dummyRoot);});
+    }
+    return changed;
   }
 
-  public void createChildren(DefaultMutableTreeNode parent, File folder)
+  public List<TreePath> getExpandedRootDirs(JTree tree)
+  {
+    List<TreePath> result = new ArrayList<>();
+    int count = dummyRoot.getChildCount();
+    for (int i=0; i < count; i++)
+    {
+      Object[] nodes = new Object[] {dummyRoot, dummyRoot.getChildAt(i)};
+      TreePath path = new TreePath(nodes);
+      if (tree.isExpanded(path))
+      {
+        result.add(path);
+      }
+    }
+    return result;
+  }
+
+  public void load()
+  {
+    dummyRoot.removeAllChildren();
+    for (File dir : directories)
+    {
+      FileNode node = new FileNode(dir, true);
+      dummyRoot.add(node);
+      createChildren(node, dir);
+    }
+    WbSwingUtilities.invoke(() ->{model.nodeStructureChanged(dummyRoot);});
+  }
+
+  public void createChildren(FileNode parent, File folder)
   {
     List<File> files = Arrays.asList(folder.listFiles());
     files.sort(getComparator());
@@ -91,12 +140,17 @@ public class FileTreeLoader
 
   public void loadFiltered(String text)
   {
-    this.clear();
-    this.createChildrenFiltered(root, rootDir, text);
-    model.nodeStructureChanged(root);
+    dummyRoot.removeAllChildren();
+    for (File dir : directories)
+    {
+      FileNode fileTemp = new FileNode(dir, true);
+      dummyRoot.add(fileTemp);
+      this.createChildrenFiltered(dummyRoot, dir, text);
+    }
+    model.nodeStructureChanged(dummyRoot);
   }
 
-  private void createChildrenFiltered(DefaultMutableTreeNode parent, File folder, String text)
+  private void createChildrenFiltered(FileNode parent, File folder, String text)
   {
     List<File> files = Arrays.asList(folder.listFiles());
     files.sort(getComparator());
@@ -146,19 +200,43 @@ public class FileTreeLoader
     return false;
   }
 
-  public void setRootDir(File newRoot)
+  public void setDirectories(List<File> directories)
   {
-    if (newRoot == null || !newRoot.exists()) return;
+    this.directories.clear();
+    if (directories == null) return;
+
+    for (File dir : directories)
+    {
+      if (dir == null || !dir.exists()) continue;
+      this.directories.add(getCanonicalFile(dir));
+    }
+  }
+
+  public TreePath addDirectory(File dir)
+  {
+    if (dir == null || !dir.exists()) return null;
+    dir = getCanonicalFile(dir);
+    this.directories.add(0, dir);
+    FileNode node = new FileNode(dir, true);
+    this.dummyRoot.insert(node, 0);
+    createChildren(node, dir);
+    WbSwingUtilities.invoke(() -> {model.nodeStructureChanged(dummyRoot);});
+    Object[] nodes = new Object[]{dummyRoot, node};
+    return new TreePath(nodes);
+  }
+
+  private File getCanonicalFile(File f)
+  {
+    if (f == null) return null;
     try
     {
-      this.rootDir = newRoot.getCanonicalFile();
+      return f.getCanonicalFile();
     }
-    catch (Throwable th)
+    catch(Throwable th)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not get canonical file from " + newRoot, th);
-      this.rootDir = newRoot.getAbsoluteFile();
+      LogMgr.logWarning(new CallerInfo(){}, "Could not get canonical file from " + f, th);
+      return f.getAbsoluteFile();
     }
-    root.setUserObject(rootDir);
   }
 
   private Comparator<File> getComparator()
@@ -171,9 +249,22 @@ public class FileTreeLoader
     };
   }
 
-  public File getRootDir()
+  public File getRootDirectoryForPath(TreePath path)
   {
-    return this.rootDir;
+    if (path == null) return null;
+    if (path.getPathCount() < 2) return null;
+    Object[] nodes = path.getPath();
+
+    if (nodes[1] instanceof FileNode)
+    {
+      return ((FileNode)nodes[1]).getFile();
+    }
+    return null;
+  }
+
+  public List<File> getDirectories()
+  {
+    return Collections.unmodifiableList(this.directories);
   }
 
   public TreeModel getModel()
@@ -183,7 +274,7 @@ public class FileTreeLoader
 
   public void clear()
   {
-    root.removeAllChildren();
-    model.nodeStructureChanged(root);
+    dummyRoot.removeAllChildren();
+    WbSwingUtilities.invokeLater(() -> {model.nodeStructureChanged(dummyRoot);});
   }
 }

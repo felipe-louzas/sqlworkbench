@@ -47,6 +47,12 @@ public class FileNode
     super(userObject);
   }
 
+  public FileNode(Object userObject, boolean showFullPath)
+  {
+    super(userObject);
+    this.showFullPath = showFullPath;
+  }
+
   public File getFile()
   {
     return (File)getUserObject();

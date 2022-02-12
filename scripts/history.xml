@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2022-01-30">
+    <entry dev-build="1" type="enh">It's now possible to add multiple directories to the file system tree</entry>
     <entry dev-build="1" type="enh">When definining a JDBC driver, the jar file can now be downloaded from Maven central if available</entry>
     <entry dev-build="1" type="enh">It's now possible to assign a second, alternate keyboard shortcut for menu items</entry>
     <entry dev-build="1" type="enh">It's now possible to have a different set of variables per window.</entry>
@@ -47,7 +48,7 @@
     <entry dev-build="7" type="fix">For Oracle, when using WbImport with -mode=upsert and -columnConstantValues, a wrong SQL statement was generated</entry>
     <entry dev-build="7" type="fix">For Postgres, when using WbImport with -mode=upsert and -columnConstantValues, the columns for the constant values were not included in the UPDATE part of the INSERT statement</entry>
     <entry dev-build="7" type="fix">When Using an Oracle connection without a username, displaying the table definition or the table's source resulted in an error</entry>
-    <entry dev-build="7" type="fix">For some fonts, "Optimize column widths" did calculate the width correctly</entry>
+    <entry dev-build="7" type="fix">For some fonts, "Optimize column widths" did calculate the width incorrectly</entry>
     <entry dev-build="7" type="fix">Improved the performance for retrieving the list of procedures and functions in Oracle</entry>
     <entry dev-build="7" type="fix">For SQL Server, the DROP statements for multiple sequences wasn't generated correctly.</entry>
     <entry dev-build="6" type="fix">For Oracle, the COMPRESS attribute wasn't generated properly for tables and materialized views</entry>
