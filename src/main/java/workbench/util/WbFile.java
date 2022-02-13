@@ -30,9 +30,9 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 /**
- * A wrapper around Java's File object to allow of automatic "expansion" of
+ * A wrapper around Java's File object to allow of automatic expansion of
  * system properties and other utility functions such as getFullPath() which
- * does not throw an exception
+ * does not throw an exception.
  *
  * @author Thomas Kellerer
  */
@@ -143,7 +143,7 @@ public class WbFile
    * If it exists the result of this call is super.canWrite().
    *
    * If it does not exist, an attempt will be made to create
-   * the file to ensure that it's writeabl.
+   * the file to ensure that it's writeable.
    *
    * @see #canCreate()
    * @see #tryCreate()
@@ -155,13 +155,16 @@ public class WbFile
   }
 
   /**
-   * Checks if this file can be created
-   * Note that canCreate() does <b>not</b> check if the file already
-   * exists. <br/>
+   * Checks if this file can be created.
    *
-   * <b>If the file already exists, it will be deleted!</b>
+   * <p>
+   * canCreate() does <b>not</b> check if the file already
+   * exists.
+   * </p>
    *
-   * This method calls tryCreate() and swallows any IOException
+   * <p><b>If the file already exists, it will be deleted!</b></p>
+   *
+   * <p>This method calls tryCreate() and swallows any IOException</p>
    *
    * @return true if the file can be created
    */

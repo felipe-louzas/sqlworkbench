@@ -35,11 +35,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import workbench.log.CallerInfo;
-import workbench.log.LogMgr;
-
 import workbench.gui.WbSwingUtilities;
 
+import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -72,7 +70,7 @@ public class FileTreeLoader
   {
     if (directory == null) return false;
     boolean changed = false;
-    directory = getCanonicalFile(directory);
+    directory = FileUtil.getCanonicalFile(directory);
     for (int i=0; i < dummyRoot.getChildCount(); i++)
     {
       FileNode node = (FileNode)dummyRoot.getChildAt(i);
@@ -208,14 +206,14 @@ public class FileTreeLoader
     for (File dir : directories)
     {
       if (dir == null || !dir.exists()) continue;
-      this.directories.add(getCanonicalFile(dir));
+      this.directories.add(FileUtil.getCanonicalFile(dir));
     }
   }
 
   public TreePath addDirectory(File dir)
   {
     if (dir == null || !dir.exists()) return null;
-    dir = getCanonicalFile(dir);
+    dir = FileUtil.getCanonicalFile(dir);
     this.directories.add(0, dir);
     FileNode node = new FileNode(dir, true);
     this.dummyRoot.insert(node, 0);
@@ -223,20 +221,6 @@ public class FileTreeLoader
     WbSwingUtilities.invoke(() -> {model.nodeStructureChanged(dummyRoot);});
     Object[] nodes = new Object[]{dummyRoot, node};
     return new TreePath(nodes);
-  }
-
-  private File getCanonicalFile(File f)
-  {
-    if (f == null) return null;
-    try
-    {
-      return f.getCanonicalFile();
-    }
-    catch(Throwable th)
-    {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not get canonical file from " + f, th);
-      return f.getAbsoluteFile();
-    }
   }
 
   private Comparator<File> getComparator()

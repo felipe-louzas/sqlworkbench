@@ -35,7 +35,6 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -72,7 +71,6 @@ import workbench.gui.components.WbToolbarButton;
 import workbench.gui.dbobjects.DbObjectSourcePanel;
 import workbench.gui.sql.SqlPanel;
 
-import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbProperties;
@@ -325,7 +323,7 @@ public class FileTreePanel
 
   public void saveSettings(WbProperties props)
   {
-    // clear existing directory first
+    // clear existing directories first
     List<String> keys = props.getKeysWithPrefix(PROP_ROOT_DIR);
     for (String key : keys)
     {
@@ -333,7 +331,6 @@ public class FileTreePanel
     }
 
     List<File> dirs = tree.getRootDirs();
-    props.setProperty(PROP_ROOT_DIR, null);
     for (int i = 0; i < dirs.size(); i++)
     {
       props.setProperty(PROP_ROOT_DIR + "." + i, dirs.get(i).getAbsolutePath());
@@ -343,19 +340,15 @@ public class FileTreePanel
   public void restoreSettings(WbProperties props)
   {
     List<String> keys = props.getKeysWithPrefix(PROP_ROOT_DIR);
-    List<File> dirs = new ArrayList<>();
-    Set<String> paths = CollectionUtil.caseInsensitiveSet();
+    List<File> dirs = new ArrayList<>(keys.size());
+
     for (String key : keys)
     {
       String path = props.getProperty(key);
       if (StringUtil.isBlank(path)) continue;
 
-      // Prevent loading of the same directory twice
-      if (paths.contains(path)) continue;
-      paths.add(path);
-
-      File f = new File(path);
-      if (f.exists())
+      File f = FileUtil.getCanonicalFile(new File(path));
+      if (f.exists() && !dirs.contains(f))
       {
         dirs.add(f);
       }
@@ -459,9 +452,9 @@ public class FileTreePanel
     menu.add(openInNewTab);
 
     File selected = tree.getSelectedFile();
-    boolean isDir = selected != null && selected.isDirectory();
-    openInSameTab.setEnabled(!isDir);
-    openInNewTab.setEnabled(!isDir);
+    boolean isFile = selected != null && selected.isFile() && selected.canRead();
+    openInSameTab.setEnabled(isFile);
+    openInNewTab.setEnabled(isFile);
 
     WbAction closeDir = new WbAction()
     {
@@ -471,9 +464,25 @@ public class FileTreePanel
         tree.removeSelectedRootDir();
       }
     };
-    closeDir.initMenuDefinition("LblClose");
+    menu.addSeparator();
+
+    closeDir.initMenuDefinition("MnuTxtRemoveFolder");
+    closeDir.setIcon("folder_remove");
     closeDir.setEnabled(tree.isRootDirSelected());
     menu.add(closeDir);
+
+    WbAction addDir = new WbAction()
+    {
+      @Override
+      public void executeAction(ActionEvent e)
+      {
+        addDirectory();
+      }
+    };
+    addDir.initMenuDefinition("MnuTxtAddFolder");
+    addDir.setIcon("folder_add");
+    addDir.setEnabled(true);
+    menu.add(addDir);
 
     return menu;
   }

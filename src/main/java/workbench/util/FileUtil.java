@@ -811,4 +811,24 @@ public class FileUtil
     File f = new File(fname);
     return f.exists();
   }
+
+  public static File getParentFile(File f)
+  {
+    if (f == null) return null;
+    return getCanonicalFile(f).getParentFile();
+  }
+
+  public static File getCanonicalFile(File f)
+  {
+    if (f == null) return null;
+    try
+    {
+      return f.getCanonicalFile();
+    }
+    catch(Throwable th)
+    {
+      return f.getAbsoluteFile();
+    }
+  }
+
 }
