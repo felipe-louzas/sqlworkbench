@@ -53,6 +53,7 @@ import workbench.db.ibm.Db2IndexReader;
 import workbench.db.ibm.Db2ProcedureReader;
 import workbench.db.ibm.Db2SequenceReader;
 import workbench.db.ibm.Db2SynonymReader;
+import workbench.db.ibm.Db2ViewReader;
 import workbench.db.ibm.InformixConstraintReader;
 import workbench.db.ibm.InformixProcedureReader;
 import workbench.db.ibm.InformixSequenceReader;
@@ -236,6 +237,7 @@ public class ReaderFactory
       case SQL_Server:
         return new SqlServerIndexReader(meta);
       case DB2_LUW:
+      case DB2_ISERIES:
         return new Db2IndexReader(meta);
       case Teradata:
         return new TeradataIndexReader(meta);
@@ -332,6 +334,8 @@ public class ReaderFactory
     DBID dbid = DBID.fromID(con.getDbId());
     switch (dbid)
     {
+      case DB2_ISERIES:
+        return new Db2ViewReader(con);
       case Postgres:
       case Yugabyte:
         return new PostgresViewReader(con);

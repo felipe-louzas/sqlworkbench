@@ -431,7 +431,7 @@ public class JdbcIndexReader
     return sql;
   }
 
-  private String getNativeIndexSource(TableIdentifier table, IndexDefinition index)
+  protected CharSequence getNativeIndexSource(TableIdentifier table, IndexDefinition index)
   {
     String sql = metaData.getDbSettings().getRetrieveIndexSourceSql();
     if (sql == null) return null;
@@ -479,14 +479,14 @@ public class JdbcIndexReader
       result.append(";\n");
     }
 
-    return result.toString();
+    return result;
   }
 
   @Override
   public CharSequence getIndexSource(TableIdentifier table, IndexDefinition indexDefinition)
   {
     if (indexDefinition == null) return null;
-    String nativeSource = getNativeIndexSource(table, indexDefinition);
+    CharSequence nativeSource = getNativeIndexSource(table, indexDefinition);
     if (nativeSource != null) return nativeSource;
 
     String uniqueConstraint = null;

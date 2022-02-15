@@ -31,13 +31,13 @@ import java.util.regex.Pattern;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcIndexReader;
-import workbench.db.TableIdentifier;
-
 import workbench.db.JdbcUtils;
+import workbench.db.TableIdentifier;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -49,15 +49,18 @@ import workbench.util.StringUtil;
 public class Db2IndexReader
   extends JdbcIndexReader
 {
+  private final DBID dbid;
+
   public Db2IndexReader(DbMetadata meta)
   {
     super(meta);
+    dbid = DBID.fromConnection(meta.getWbConnection());
   }
 
   @Override
   public void processIndexList(Collection<IndexDefinition> indexList)
   {
-    if (JdbcUtils.hasMinimumServerVersion(metaData.getSqlConnection(), "10.5"))
+    if (dbid == DBID.DB2_LUW && JdbcUtils.hasMinimumServerVersion(metaData.getSqlConnection(), "10.5"))
     {
       readExpressionIndex(indexList);
     }
@@ -155,6 +158,11 @@ public class Db2IndexReader
   @Override
   public String getIndexOptions(TableIdentifier table, IndexDefinition index)
   {
+    if (dbid != DBID.DB2_LUW)
+    {
+      return super.getIndexOptions(table, index);
+    }
+
     String type = index.getIndexType();
     if ("CLUSTERED".equals(type))
     {
@@ -231,6 +239,29 @@ public class Db2IndexReader
     {
       JdbcUtils.closeAll(rs, stmt);
     }
+  }
+
+  @Override
+  protected CharSequence getNativeIndexSource(TableIdentifier table, IndexDefinition index)
+  {
+    if (useSystemProc())
+    {
+      return retrieveIndexSource(table, index);
+    }
+    return super.getNativeIndexSource(table, index);
+  }
+
+  public CharSequence retrieveIndexSource(TableIdentifier table, IndexDefinition indexDefinition)
+  {
+    Db2GenerateSQL gen = new Db2GenerateSQL(metaData.getWbConnection());
+    gen.setGenerateRecreate(false);
+    return gen.getIndexSource(table.getRawSchema(), indexDefinition.getName());
+  }
+
+  private boolean useSystemProc()
+  {
+    if (metaData == null) return false;
+    return metaData.getDbSettings().getBoolProperty("indexsource.use.systemproc", false);
   }
 
 

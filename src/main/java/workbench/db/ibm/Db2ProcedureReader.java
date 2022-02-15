@@ -34,13 +34,13 @@ import workbench.log.LogMgr;
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.JdbcProcedureReader;
+import workbench.db.JdbcUtils;
+import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -61,6 +61,38 @@ public class Db2ProcedureReader
   public Db2ProcedureReader(WbConnection conn, String dbID)
   {
     super(conn);
+  }
+
+  @Override
+  public boolean isRecreateStatement(CharSequence sql)
+  {
+    if (useSystemProc() && sql != null)
+    {
+      return sql.toString().toUpperCase().contains("CREATE OR REPLACE");
+    }
+    return super.isRecreateStatement(sql);
+  }
+
+  @Override
+  public void readProcedureSource(ProcedureDefinition def, String catalogForSource, String schemaForSource)
+    throws NoConfigException
+  {
+    if (useSystemProc())
+    {
+      CharSequence source = retrieveSource(def);
+      def.setSource(source);
+    }
+    else
+    {
+      super.readProcedureSource(def, catalogForSource, schemaForSource);
+    }
+  }
+
+  private CharSequence retrieveSource(ProcedureDefinition def)
+  {
+    if (def == null) return null;
+    Db2GenerateSQL gen = new Db2GenerateSQL(connection);
+    return gen.getProcedureSource(def.getSchema(), def.getObjectName());
   }
 
   @Override
@@ -286,4 +318,11 @@ public class Db2ProcedureReader
   {
     return connection.getDbSettings().getBoolProperty("functionparams.fixretrieval", true);
   }
+
+  private boolean useSystemProc()
+  {
+    if (connection == null) return false;
+    return connection.getDbSettings().getBoolProperty("procsource.use.systemproc", false);
+  }
+
 }

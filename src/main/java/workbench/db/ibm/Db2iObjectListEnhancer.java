@@ -145,6 +145,7 @@ public class Db2iObjectListEnhancer
     }
     else
     {
+      schemas.removeIf(s -> s == null);
       String values = SqlUtil.makeList(schemas);
       sql.append("where table_schema in (" + values + ")");
       whereAdded = true;

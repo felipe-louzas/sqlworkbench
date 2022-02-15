@@ -29,6 +29,8 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
+import workbench.db.DropType;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
@@ -43,11 +45,12 @@ public class Db2TableSourceBuilder
   extends TableSourceBuilder
 {
   private boolean checkHistoryTable;
-
+  private final DBID dbid;
   public Db2TableSourceBuilder(WbConnection con)
   {
     super(con);
-    checkHistoryTable = JdbcUtils.hasMinimumServerVersion(con, "10.1");
+    dbid = DBID.fromConnection(dbConnection);
+    checkHistoryTable = (dbid == DBID.DB2_LUW && JdbcUtils.hasMinimumServerVersion(con, "10.1"));
   }
 
   @Override
@@ -111,6 +114,31 @@ public class Db2TableSourceBuilder
       JdbcUtils.closeAll(rs, stmt);
     }
     table.getSourceOptions().setInitialized();
+  }
+
+  @Override
+  public String getNativeTableSource(TableIdentifier table, DropType dropType)
+  {
+    if (useSystemProc())
+    {
+      return retrieveTableSource(table, dropType);
+    }
+    return super.getNativeTableSource(table, dropType);
+  }
+
+  public String retrieveTableSource(TableIdentifier tbl, DropType dropType)
+  {
+    if (tbl == null) return null;
+    Db2GenerateSQL gen = new Db2GenerateSQL(dbConnection);
+    gen.setGenerateRecreate(dropType != DropType.none);
+    CharSequence source = gen.getTableSource(tbl.getRawSchema(), tbl.getRawTableName());
+    return source == null ? null : source.toString();
+  }
+
+  private boolean useSystemProc()
+  {
+    if (dbConnection == null) return false;
+    return dbConnection.getDbSettings().getBoolProperty("tablesource.use.systemproc", false);
   }
 
 }

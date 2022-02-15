@@ -255,7 +255,7 @@ public class ObjectListDataStore
 
     for (int row=0; row < this.getRowCount(); row ++)
     {
-      result.add(getCatalog(row));
+      result.add(getValueAsString(row, columnName));
     }
     return result;
   }

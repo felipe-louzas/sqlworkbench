@@ -69,6 +69,7 @@ public class TableSourceBuilderFactory
       case HSQLDB:
         return new HsqlTableSourceBuilder(con);
       case DB2_LUW:
+      case DB2_ISERIES:
         return new Db2TableSourceBuilder(con);
       case Informix:
         return new InformixTableSourceBuilder(con);

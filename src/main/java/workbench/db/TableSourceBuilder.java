@@ -130,7 +130,7 @@ public class TableSourceBuilder
     TableIdentifier toShow = tbl;
     List<DependencyNode> fkDef = null;
 
-    if (dbConnection.getDbSettings().needTableDefinitionForTableSource())
+    if (needTableDefinitionForTableSource())
     {
       TableDefinition def = meta.getTableDefinition(tbl);
       cols = def.getColumns();
@@ -152,6 +152,11 @@ public class TableSourceBuilder
       table.setSourceOptions(toShow.getSourceOptions());
     }
     return source;
+  }
+
+  protected boolean needTableDefinitionForTableSource()
+  {
+    return dbConnection.getDbSettings().needTableDefinitionForTableSource();
   }
 
   public String getTableSource(TableIdentifier table, List<ColumnIdentifier> columns)

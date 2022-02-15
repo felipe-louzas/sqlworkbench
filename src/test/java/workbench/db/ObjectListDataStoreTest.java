@@ -21,6 +21,9 @@
 package workbench.db;
 
 
+import java.util.Collection;
+import java.util.List;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -50,4 +53,34 @@ public class ObjectListDataStoreTest
     assertEquals("The heroes", tbl.getComment());
   }
 
+  @Test
+  public void testGetSchemasAndCatalogs()
+  {
+    ObjectListDataStore ds = new ObjectListDataStore();
+    int row = ds.addRow();
+    ds.setObjectName(row, "T1");
+    ds.setType(row, "TABLE");
+    ds.setCatalog(row, "CAT1");
+    ds.setSchema(row, "SCHEMA1");
+
+    row = ds.addRow();
+    ds.setObjectName(row, "T2");
+    ds.setType(row, "TABLE");
+    ds.setCatalog(row, "CAT2");
+    ds.setSchema(row, "SCHEMA1");
+
+    row = ds.addRow();
+    ds.setObjectName(row, "T3");
+    ds.setType(row, "TABLE");
+    ds.setCatalog(row, "CAT3");
+    ds.setSchema(row, "SCHEMA2");
+
+    Collection<String> schemas = ds.getAllSchemas();
+    assertEquals(2, schemas.size());
+    assertTrue(schemas.containsAll(List.of("SCHEMA1", "SCHEMA2")));
+
+    Collection<String> catalogs = ds.getAllCatalogs();
+    assertEquals(3, catalogs.size());
+    assertTrue(catalogs.containsAll(List.of("CAT1", "CAT2", "CAT3")));
+  }
 }

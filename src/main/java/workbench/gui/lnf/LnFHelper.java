@@ -60,7 +60,6 @@ public class LnFHelper
 {
   public static final String MENU_FONT_KEY = "MenuItem.font";
   public static final String LABEL_FONT_KEY = "Label.font";
-  public static final String TREE_FONT_KEY = "Tree.font";
 
   private LnFManager lnfManager = new LnFManager();
 
@@ -68,7 +67,7 @@ public class LnFHelper
   private final Set<String> noScale = CollectionUtil.treeSet(
     "Menu.font",
     "MenuBar.font",
-    "MenuItem.font",
+    MENU_FONT_KEY,
     "PopupMenu.font",
     "CheckBoxMenuItem.font");
 
@@ -103,7 +102,9 @@ public class LnFHelper
     "ToggleButton.font",
     "ToolBar.font",
     "ToolTip.font",
-    TREE_FONT_KEY,
+    "Table.font",
+    "TableHeader.font",
+    "Tree.font",
     "ViewPort.font");
 
   private static boolean isWebLaf;
@@ -157,7 +158,8 @@ public class LnFHelper
     Settings settings = Settings.getInstance();
     UIDefaults def = UIManager.getDefaults();
 
-    Font stdFont = settings.getStandardFont();
+    Font configuredStdFont = settings.getStandardFont();
+    Font stdFont = configuredStdFont;
 
     if (stdFont == null && isWindowsLookAndFeel())
     {
@@ -177,10 +179,11 @@ public class LnFHelper
         def.put(property, stdFont);
       }
     }
-    else if (isWindowsLookAndFeel())
+
+    if (isWindowsLookAndFeel())
     {
-      // The default Windows look and feel does not scale the fonts properly
-      scaleDefaultFonts();
+      // The default Windows look and feel does notx scale the fonts properly
+      if (configuredStdFont == null) scaleDefaultFonts();
       adjustWindowsLnF();
     }
 
