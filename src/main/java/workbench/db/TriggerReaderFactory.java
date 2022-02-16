@@ -21,6 +21,7 @@
  */
 package workbench.db;
 
+import workbench.db.ibm.Db2iTriggerReader;
 import workbench.db.mssql.SqlServerTriggerReader;
 import workbench.db.oracle.OracleTriggerReader;
 import workbench.db.postgres.PostgresTriggerReader;
@@ -49,6 +50,10 @@ public class TriggerReaderFactory
     if (con.getMetadata().isSqlServer())
     {
       return new SqlServerTriggerReader(con);
+    }
+    if (DBID.fromConnection(con) == DBID.DB2_ISERIES)
+    {
+      return new Db2iTriggerReader(con);
     }
     return new DefaultTriggerReader(con);
   }

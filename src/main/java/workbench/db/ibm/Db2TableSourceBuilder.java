@@ -45,12 +45,14 @@ public class Db2TableSourceBuilder
   extends TableSourceBuilder
 {
   private boolean checkHistoryTable;
+  private boolean useSystemProc = false;
   private final DBID dbid;
   public Db2TableSourceBuilder(WbConnection con)
   {
     super(con);
     dbid = DBID.fromConnection(dbConnection);
     checkHistoryTable = (dbid == DBID.DB2_LUW && JdbcUtils.hasMinimumServerVersion(con, "10.1"));
+    useSystemProc = Db2GenerateSQL.useGenerateSQLProc(dbConnection, Db2GenerateSQL.TYPE_TABLE);
   }
 
   @Override
@@ -119,11 +121,31 @@ public class Db2TableSourceBuilder
   @Override
   public String getNativeTableSource(TableIdentifier table, DropType dropType)
   {
-    if (useSystemProc())
+    if (useSystemProc)
     {
       return retrieveTableSource(table, dropType);
     }
     return super.getNativeTableSource(table, dropType);
+  }
+
+  @Override
+  protected boolean shouldIncludeFKInTableSource()
+  {
+    if (useSystemProc)
+    {
+      return false;
+    }
+    return super.shouldIncludeFKInTableSource();
+  }
+
+  @Override
+  protected boolean shouldIncludeGrantsInTableSource()
+  {
+    if (useSystemProc)
+    {
+      return false;
+    }
+    return super.shouldIncludeGrantsInTableSource();
   }
 
   public String retrieveTableSource(TableIdentifier tbl, DropType dropType)
@@ -133,12 +155,6 @@ public class Db2TableSourceBuilder
     gen.setGenerateRecreate(dropType != DropType.none);
     CharSequence source = gen.getTableSource(tbl.getRawSchema(), tbl.getRawTableName());
     return source == null ? null : source.toString();
-  }
-
-  private boolean useSystemProc()
-  {
-    if (dbConnection == null) return false;
-    return dbConnection.getDbSettings().getBoolProperty("tablesource.use.systemproc", false);
   }
 
 }

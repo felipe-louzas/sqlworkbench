@@ -213,6 +213,21 @@ public class TableSourceBuilder
     return getTableSource(table, columns, indexList, fkList, dropType, includeFk, dbConnection.getDbSettings().getGenerateTableGrants());
   }
 
+  protected boolean shouldIncludeFKInTableSource()
+  {
+    return dbConnection.getDbSettings().getGenerateTableFKSource();
+  }
+
+  protected boolean shouldIncludeIndexInTableSource()
+  {
+    return dbConnection.getDbSettings().getGenerateTableIndexSource();
+  }
+
+  protected boolean shouldIncludeGrantsInTableSource()
+  {
+    return true;
+  }
+
   public String getTableSource(TableIdentifier table, List<ColumnIdentifier> columns, List<IndexDefinition> indexList, List<DependencyNode> fkList, DropType dropType, boolean includeFk, boolean includeGrants)
   {
     CharSequence createSql = getCreateTable(table, columns, indexList, fkList, dropType, includeFk);
@@ -227,7 +242,7 @@ public class TableSourceBuilder
     StringUtil.trimTrailingWhitespace(result);
     result.append(lineEnding);
 
-    if (!inlineFK && includeFk && dbConnection.getDbSettings().getGenerateTableFKSource())
+    if (!inlineFK && includeFk && shouldIncludeFKInTableSource())
     {
       CharSequence fk = getFkSource(table, fkList, false);
       if (StringUtil.isNonBlank(fk))
@@ -239,7 +254,7 @@ public class TableSourceBuilder
       result.append(lineEnding);
     }
 
-    if (dbConnection.getDbSettings().getGenerateTableIndexSource())
+    if (shouldIncludeIndexInTableSource())
     {
       List<IndexDefinition> toCreate = getIndexesToCreate(indexList, fkList);
       StringBuilder indexSource = getIndexReader().getIndexSource(table, toCreate);
@@ -254,7 +269,7 @@ public class TableSourceBuilder
 
     appendTableComments(result, table, columns, lineEnding);
 
-    if (includeGrants)
+    if (includeGrants && shouldIncludeGrantsInTableSource())
     {
       TableGrantReader grantReader = TableGrantReader.createReader(dbConnection);
       StringBuilder grants = grantReader.getTableGrantSource(this.dbConnection, table);

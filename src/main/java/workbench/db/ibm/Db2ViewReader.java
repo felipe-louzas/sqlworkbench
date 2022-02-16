@@ -106,7 +106,6 @@ public class Db2ViewReader
 
   private boolean useSystemProc()
   {
-    if (connection == null) return false;
-    return connection.getDbSettings().getBoolProperty("viewsource.use.systemproc", false);
+    return Db2GenerateSQL.useGenerateSQLProc(connection, Db2GenerateSQL.TYPE_VIEW);
   }
 }

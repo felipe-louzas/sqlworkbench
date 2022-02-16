@@ -58,11 +58,13 @@ public class Db2Variable
     return catalog;
   }
 
+  @Override
   public void setCatalog(String catalog)
   {
     this.catalog = catalog;
   }
 
+  @Override
   public void setSchema(String schema)
   {
     this.schema = schema;
@@ -153,6 +155,13 @@ public class Db2Variable
   public CharSequence getSource(WbConnection con)
     throws SQLException
   {
+    if (Db2GenerateSQL.useGenerateSQLProc(con, Db2GenerateSQL.TYPE_VARIABLE))
+    {
+      Db2GenerateSQL gen = new Db2GenerateSQL(con);
+      gen.setGenerateRecreate(true);
+      return gen.getVariableSource(schema, variable);
+    }
+
     String sql = "CREATE OR REPLACE VARIABLE " + getObjectExpression(con) + " " + dataType;
     if (ccsid > -1)
     {
@@ -187,7 +196,7 @@ public class Db2Variable
   @Override
   public String getDropStatement(WbConnection con, boolean cascade)
   {
-    return "DROP VARIABLE " + getFullyQualifiedName(con);
+    return "DROP VARIABLE " + getFullyQualifiedName(con) + ";";
   }
 
   @Override

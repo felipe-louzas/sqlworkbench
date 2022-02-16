@@ -246,7 +246,8 @@ public class Db2IndexReader
   {
     if (useSystemProc())
     {
-      return retrieveIndexSource(table, index);
+      CharSequence source = retrieveIndexSource(table, index);
+      return source == null ? "" : source;
     }
     return super.getNativeIndexSource(table, index);
   }
@@ -260,9 +261,7 @@ public class Db2IndexReader
 
   private boolean useSystemProc()
   {
-    if (metaData == null) return false;
-    return metaData.getDbSettings().getBoolProperty("indexsource.use.systemproc", false);
+    return Db2GenerateSQL.useGenerateSQLProc(metaData.getWbConnection(), Db2GenerateSQL.TYPE_INDEX);
   }
-
 
 }

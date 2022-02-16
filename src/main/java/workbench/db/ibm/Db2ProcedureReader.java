@@ -321,8 +321,7 @@ public class Db2ProcedureReader
 
   private boolean useSystemProc()
   {
-    if (connection == null) return false;
-    return connection.getDbSettings().getBoolProperty("procsource.use.systemproc", false);
+    return Db2GenerateSQL.useGenerateSQLProc(connection, Db2GenerateSQL.TYPE_PROCEDURE);
   }
 
 }

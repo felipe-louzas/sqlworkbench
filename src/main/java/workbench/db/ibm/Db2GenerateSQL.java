@@ -27,6 +27,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
 import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
@@ -45,6 +46,8 @@ public class Db2GenerateSQL
   public static final String TYPE_VIEW = "VIEW";
   public static final String TYPE_TABLE = "TABLE";
   public static final String TYPE_INDEX = "INDEX";
+  public static final String TYPE_TRIGGER = "TRIGGER";
+  public static final String TYPE_VARIABLE = "VARIABLE";
 
   public static final String RECREATE_PROP = "generate_sql.use.replace";
 
@@ -53,6 +56,7 @@ public class Db2GenerateSQL
     "DATABASE_OBJECT_NAME => ?, " +
     "DATABASE_OBJECT_TYPE => ?, " +
     "CREATE_OR_REPLACE_OPTION  => ?, " +
+    "STATEMENT_FORMATTING_OPTION => '0', " +
     "TEMPORAL_OPTION => '1', " +
     "HEADER_OPTION => '0')";
 
@@ -89,11 +93,21 @@ public class Db2GenerateSQL
     return getObjectSource(schema, procName, TYPE_PROCEDURE);
   }
 
+  public CharSequence getTriggerSource(String schema, String triggerName)
+  {
+    return getObjectSource(schema, triggerName, TYPE_TRIGGER);
+  }
+
+  public CharSequence getVariableSource(String schema, String varName)
+  {
+    return getObjectSource(schema, varName, TYPE_VARIABLE);
+  }
+
   public CharSequence getObjectSource(String schema, String objectName, String objectType)
   {
     StringBuilder result = null;
 
-    boolean generateReplace = getGenerateReplace(objectType);
+    boolean generateReplace = getGenerateRecreate(objectType);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -141,7 +155,7 @@ public class Db2GenerateSQL
     return result;
   }
 
-  private boolean getGenerateReplace(String type)
+  private boolean getGenerateRecreate(String type)
   {
     if (type == null) return false;
     if (conn == null) return false;
@@ -149,6 +163,16 @@ public class Db2GenerateSQL
     type = type.trim().toLowerCase();
     boolean defaultValue = conn.getDbSettings().getBoolProperty(RECREATE_PROP, true);
     return conn.getDbSettings().getBoolProperty(RECREATE_PROP + "." + type, defaultValue);
+  }
+
+  public static boolean useGenerateSQLProc(WbConnection conn, String type)
+  {
+    if (conn == null) return false;
+    if (type == null) return false;
+    if (DBID.fromConnection(conn) != DBID.DB2_ISERIES) return false;
+    if (!JdbcUtils.hasMinimumServerVersion(conn, "7.2")) return false;
+
+    return conn.getDbSettings().getBoolProperty("source." + type.toLowerCase() + ".use.systemproc", false);
   }
 
 }
