@@ -295,11 +295,11 @@ public class EditConnectionFiltersPanel
     schemaFilter.setInclusionFilter(schemaInclusionFlag.isSelected());
     if (schemaInclusionFlag.isSelected())
     {
-      schemaFilter.setIsRetrievalFilter(retrievalFilter.isSelected());
+      schemaFilter.setRetrievalFilter(retrievalFilter.isSelected());
     }
     else
     {
-      schemaFilter.setIsRetrievalFilter(false);
+      schemaFilter.setRetrievalFilter(false);
     }
 
     for (int i=0; i < lines; i++)

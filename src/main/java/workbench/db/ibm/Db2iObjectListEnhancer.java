@@ -30,6 +30,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectListEnhancer;
@@ -37,7 +38,9 @@ import workbench.db.ObjectListLookup;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
+import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 
 /**
  *
@@ -73,8 +76,11 @@ public class Db2iObjectListEnhancer
 
   protected void updateResult(WbConnection con, ObjectListDataStore result, String schemaPattern, String objectPattern, boolean readRemarks)
   {
-    String sql = buildQuery(con, schemaPattern, objectPattern, result.getAllSchemas());
-    LogMgr.logMetadataSql(new CallerInfo(){}, "object info", sql);
+    final CallerInfo  ci = new CallerInfo(){};
+
+    Collection<String> schemas = result.getAllSchemas();
+    String sql = buildQuery(con, schemaPattern, objectPattern, schemas);
+    LogMgr.logMetadataSql(ci, "object info", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -95,7 +101,7 @@ public class Db2iObjectListEnhancer
         int row = finder.findObject(schema, objectname);
         if (row > -1)
         {
-          TableIdentifier tbl = (TableIdentifier)result.getRow(row).getUserObject();
+          DbObject tbl = (DbObject)result.getRow(row).getUserObject();
           if (readRemarks)
           {
             result.setRemarks(row, remark);
@@ -108,19 +114,19 @@ public class Db2iObjectListEnhancer
           if (systemNameCol > -1)
           {
             result.setValue(row, systemNameCol, systemName);
-            if (tbl != null)
+            if (tbl instanceof TableIdentifier)
             {
-              tbl.setSystemTablename(systemName);
+              ((TableIdentifier)tbl).setSystemTablename(systemName);
             }
           }
         }
       }
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug(new CallerInfo(){}, "Reading additional object information took " + duration + "ms");
+      LogMgr.logDebug(ci, "Reading additional object information took " + duration + "ms");
     }
     catch (Exception e)
     {
-      LogMgr.logMetadataError(new CallerInfo(){}, e, "object info", sql);
+      LogMgr.logMetadataError(ci, e, "object info", sql);
     }
     finally
     {
@@ -136,6 +142,7 @@ public class Db2iObjectListEnhancer
       "select table_schema, table_name, table_text, system_table_name \n" +
       "from qsys2" + con.getMetadata().getCatalogSeparator() + "systables \n");
 
+    if (schemas != null) schemas.removeIf(s -> StringUtil.isBlank(s));
     boolean whereAdded = false;
     if (schemaPattern != null && !"%".equals(schemaPattern))
     {
@@ -143,9 +150,8 @@ public class Db2iObjectListEnhancer
       sql.append("where ");
       SqlUtil.appendExpression(sql, "table_schema", schemaPattern, con);
     }
-    else
+    else if (CollectionUtil.isNonEmpty(schemas))
     {
-      schemas.removeIf(s -> s == null);
       String values = SqlUtil.makeList(schemas);
       sql.append("where table_schema in (" + values + ")");
       whereAdded = true;

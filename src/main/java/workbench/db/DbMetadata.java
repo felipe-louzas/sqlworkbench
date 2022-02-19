@@ -1655,7 +1655,7 @@ public class DbMetadata
       }
 
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug(ci, getConnId() + ": Retrieving table list took: " + duration + "ms");
+      LogMgr.logDebug(ci, getConnId() + ": getTables() took: " + duration + "ms");
 
       if (tableRs != null && Settings.getInstance().getDebugMetadataSql())
       {
@@ -1784,9 +1784,21 @@ public class DbMetadata
     {
       cleaner.cleanupObjectList(dbConnection, result, catalogPattern, schemaPattern, namePattern, types);
     }
+
+    applyRetrievalFilters(result);
     result.resetStatus();
 
     return result;
+  }
+
+  private void applyRetrievalFilters(ObjectListDataStore result)
+  {
+    if (!Settings.getInstance().getBoolProperty("workbench.db.objectlist.applyfilter", true)) return;
+    if (dbConnection == null) return;
+
+    ObjectNameFilter schemaFilter = dbConnection.getSchemaFilter();
+    ObjectNameFilter catalogFilter = dbConnection.getCatalogFilter();
+    result.applyRetrievalFilters(catalogFilter, schemaFilter);
   }
 
   /**

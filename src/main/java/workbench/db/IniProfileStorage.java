@@ -520,7 +520,7 @@ public class IniProfileStorage
     if (filter != null)
     {
       boolean retrieval = props.getBoolProperty(PROP_PREFIX + key + PROP_SCHEMA_FILTER + ".retrieval_filter", false);
-      filter.setIsRetrievalFilter(retrieval);
+      filter.setRetrievalFilter(retrieval);
     }
     return filter;
   }

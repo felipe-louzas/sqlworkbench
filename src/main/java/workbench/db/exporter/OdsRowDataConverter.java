@@ -24,6 +24,7 @@ package workbench.db.exporter;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 
 import workbench.log.CallerInfo;
@@ -296,24 +297,27 @@ public class OdsRowDataConverter
       out.write("<office:meta>\n");
       out.write("<meta:generator>SQL Workbench/J</meta:generator>\n");
       out.write("<dc:title>SQL Workbench/J Export</dc:title>\n");
-      String s;
+      String s = null;
       if (this.generatingSql != null)
       {
         Matcher m = StringUtil.PATTERN_CRLF.matcher(generatingSql);
         s = m.replaceAll(" ");
       }
-      else
+      else if (metaData != null && metaData.getUpdateTable() != null)
       {
         s = "SELECT * FROM " + metaData.getUpdateTable().getTableExpression(originalConnection);
       }
-      out.write("<dc:description>");
-      out.write(TagWriter.CDATA_START);
-      out.write(s);
-      out.write(TagWriter.CDATA_END);
-      out.write("</dc:description>");
+      if (s != null)
+      {
+        out.write("<dc:description>");
+        out.write(TagWriter.CDATA_START);
+        out.write(s);
+        out.write(TagWriter.CDATA_END);
+        out.write("</dc:description>");
+      }
       out.write("<meta:initial-creator>SQL Workbench/J</meta:initial-creator>\n");
       out.write("<meta:creation-date>");
-      out.write(tsFormat.formatUtilDate(new java.util.Date()));
+      out.write(tsFormat.formatDate(LocalDate.now()));
       out.write("</meta:creation-date>\n");
       out.write("</office:meta>\n");
       out.write("</office:document-meta>\n");
@@ -532,7 +536,7 @@ public class OdsRowDataConverter
       attr.append("\"");
       return attr;
     }
-    
+
     attr.append("office:value-type=");
     int type = metaData.getColumnType(column);
 

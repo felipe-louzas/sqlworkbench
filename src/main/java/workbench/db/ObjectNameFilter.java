@@ -83,7 +83,7 @@ public class ObjectNameFilter
    *
    * @see #isInclusionFilter()
    */
-  public void setIsRetrievalFilter(boolean flag)
+  public void setRetrievalFilter(boolean flag)
   {
     modified = flag != this.isRetrievalFilter;
     isRetrievalFilter = flag;

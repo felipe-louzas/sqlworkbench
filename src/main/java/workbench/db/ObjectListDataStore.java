@@ -30,6 +30,8 @@ import workbench.storage.ResultInfo;
 import workbench.storage.RowDataListSorter;
 import workbench.storage.SortDefinition;
 
+import workbench.util.StringUtil;
+
 /**
  *
  * @author Thomas Kellerer
@@ -258,6 +260,50 @@ public class ObjectListDataStore
       result.add(getValueAsString(row, columnName));
     }
     return result;
+  }
+
+
+  /**
+   * Remove objects from this data store if the passed filters indicate the schema or catalog
+   * should be excluded.
+   *
+   * The filters will only be applied if {@link ObjectNameFilter#isRetrievalFilter()} is true.
+   *
+   * A row is removed, if at least one of the filters indicate that it is excluded
+   *
+   * @param schemaFilter   the schema filter to apply
+   * @param catalogFilter  the catalog filter to apply
+   *
+   * @see ObjectNameFilter#isExcluded(String)
+   * @see ObjectNameFilter#isRetrievalFilter()
+   */
+  public void applyRetrievalFilters(ObjectNameFilter catalogFilter, ObjectNameFilter schemaFilter)
+  {
+    boolean applyCatalogFilter =  catalogFilter != null && catalogFilter.isRetrievalFilter();
+    boolean applySchemaFilter = schemaFilter != null && schemaFilter.isRetrievalFilter();
+
+    if (!applyCatalogFilter && !applySchemaFilter) return;
+
+    int rowCount = getRowCount();
+
+    for (int row=rowCount - 1; row >= 0; row --)
+    {
+      String schema = getSchema(row);
+      String catalog = getCatalog(row);
+      boolean removeRow = false;
+      if (applyCatalogFilter && StringUtil.isNonBlank(catalog))
+      {
+        removeRow = catalogFilter.isExcluded(catalog);
+      }
+      if (applySchemaFilter && StringUtil.isNonBlank(schema))
+      {
+        removeRow = removeRow || schemaFilter.isExcluded(schema);
+      }
+      if (removeRow)
+      {
+        deleteRow(row);
+      }
+    }
   }
 
 }
