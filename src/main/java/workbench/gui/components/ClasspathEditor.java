@@ -58,7 +58,9 @@ public class ClasspathEditor
 {
   private String lastDirProperty;
   private String lastDir = null;
-  private List<ActionListener> listener = new ArrayList<>();
+  private final List<ActionListener> listener = new ArrayList<>();
+  private boolean onlyDirectories = false;
+  private String dialogTitleKey = "TxtWindowTitleSelectDrv";
 
   public ClasspathEditor()
   {
@@ -68,6 +70,30 @@ public class ClasspathEditor
     btnDown.addActionListener(this);
     btnRemove.addActionListener(this);
     btnAdd.addActionListener(this);
+  }
+
+  public void setDialogTitleKey(String resourceKey)
+  {
+    this.dialogTitleKey = resourceKey;
+  }
+
+  public void setAddDirIcon(String iconKey)
+  {
+    btnAdd.setIcon(IconMgr.getInstance().getLabelIcon(iconKey));
+  }
+
+  public void setRemoveDirIcon(String iconKey)
+  {
+    btnRemove.setIcon(IconMgr.getInstance().getLabelIcon(iconKey));
+  }
+
+  public void setAllowOnlyDirectories(boolean flag)
+  {
+    this.onlyDirectories = flag;
+    if (flag)
+    {
+      this.btnAdd.setToolTipText(null);
+    }
   }
 
   public void restoreSettings()
@@ -184,6 +210,9 @@ public class ClasspathEditor
     {
       if (GuiSettings.useAWTFileDialog())
       {
+        // This seems to be necessary on some MacOS installations
+        // that won't show any files in the file open dialog
+        // from a Java application due to some weird security restrictions
         selectFileAWT();
       }
       else
@@ -218,6 +247,8 @@ public class ClasspathEditor
 
   private void removeSingleInvalidEntry()
   {
+    if (this.onlyDirectories) return;
+
     DefaultListModel model = (DefaultListModel)libList.getModel();
 
     if (model.getSize() == 1)
@@ -234,18 +265,35 @@ public class ClasspathEditor
 
   private void selectFileAWT()
   {
-    FileDialog dialog = new FileDialog((Dialog)SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("TxtWindowTitleSelectDrv"));
+    FileDialog dialog = new FileDialog((Dialog)SwingUtilities.getWindowAncestor(this), ResourceMgr.getString(dialogTitleKey));
     dialog.setMode(FileDialog.LOAD);
     if (FileUtil.fileExists(lastDir))
     {
       dialog.setDirectory(lastDir);
     }
-    FilenameFilter filter = (File file, String fname) ->
+
+    FilenameFilter jarFilter = (File file, String fname) ->
     {
       if (fname == null) return false;
       return fname.toLowerCase().endsWith("jar") || fname.toLowerCase().endsWith("zip");
     };
-    dialog.setFilenameFilter(filter);
+
+    FilenameFilter dirFilter = (File file, String fname) ->
+    {
+      if (file == null && fname == null) return false;
+      if (fname == null) return file.isDirectory();
+      File f = new File(file, fname);
+      return f.isDirectory();
+    };
+
+    if (onlyDirectories)
+    {
+      dialog.setFilenameFilter(dirFilter);
+    }
+    else
+    {
+      dialog.setFilenameFilter(jarFilter);
+    }
     dialog.setMultipleMode(true);
     dialog.setVisible(true);
     File[] files = dialog.getFiles();
@@ -258,15 +306,23 @@ public class ClasspathEditor
   private void selectFile()
   {
     JFileChooser jf = new WbFileChooser();
-    jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     jf.setMultiSelectionEnabled(true);
-    jf.setDialogTitle(ResourceMgr.getString("TxtWindowTitleSelectDrv"));
+
+    if (this.onlyDirectories)
+    {
+      jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    }
+    else
+    {
+      jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+      jf.setFileFilter(ExtensionFileFilter.getJarFileFilter());
+    }
+
     if (this.lastDir != null)
     {
       jf.setCurrentDirectory(new File(this.lastDir));
     }
-    jf.setFileFilter(ExtensionFileFilter.getJarFileFilter());
-    jf.setDialogTitle(ResourceMgr.getString("TxtWindowTitleSelectDrv"));
+    jf.setDialogTitle(ResourceMgr.getString(dialogTitleKey));
     int answer = jf.showOpenDialog(SwingUtilities.getWindowAncestor(this));
     if (answer == JFileChooser.APPROVE_OPTION)
     {

@@ -52,9 +52,11 @@ public class FileTreeOptionsPanel
       ResourceMgr.getString("TxtTabRight"),
     };
     treePosition.setModel(new DefaultComboBoxModel(locations));
-    this.defaultDir.setAllowMultiple(false);
-    this.defaultDir.setSelectDirectoryOnly(true);
-    treePosition.invalidate();
+
+    defaultDirs.setAllowOnlyDirectories(true);
+    defaultDirs.setAddDirIcon("folder_add");
+    defaultDirs.setRemoveDirIcon("folder_remove");
+    defaultDirs.setDialogTitleKey("MnuTxtAddFolder");
 
     String[] openTypes = new String[] {
       ResourceMgr.getString("TxtFileTreeSameTab"),
@@ -70,7 +72,7 @@ public class FileTreeOptionsPanel
   {
     this.excludedExtensions.setText(FileTreeSettings.getExcludedExtensions());
     this.excludedFiles.setText(FileTreeSettings.getExcludedFiles());
-    this.defaultDir.setFilename(FileTreeSettings.getDefaultDirectory());
+    this.defaultDirs.setLibraries(FileTreeSettings.getDefaultDirectorieNames());
     ComponentPosition position = FileTreeSettings.getComponentPosition();
     switch (position)
     {
@@ -98,7 +100,7 @@ public class FileTreeOptionsPanel
   {
     FileTreeSettings.setExcludedExtensions(excludedExtensions.getText());
     FileTreeSettings.setExcludedFiles(excludedFiles.getText());
-    FileTreeSettings.setDefaultDirectory(defaultDir.getFilename());
+    FileTreeSettings.setDefaultDirectoryNames(defaultDirs.getLibraries());
     int selected = treePosition.getSelectedIndex();
     switch (selected)
     {
@@ -138,10 +140,10 @@ public class FileTreeOptionsPanel
     jLabel1 = new javax.swing.JLabel();
     treePosition = new javax.swing.JComboBox<>();
     jLabel2 = new javax.swing.JLabel();
-    defaultDir = new workbench.gui.components.WbFilePicker();
     jLabel3 = new javax.swing.JLabel();
     clickOption = new javax.swing.JComboBox<>();
     dummy = new javax.swing.JPanel();
+    defaultDirs = new workbench.gui.components.ClasspathEditor();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -204,20 +206,13 @@ public class FileTreeOptionsPanel
     gridBagConstraints.insets = new java.awt.Insets(6, 8, 6, 0);
     add(treePosition, gridBagConstraints);
 
-    jLabel2.setText(ResourceMgr.getString("LblEditorDefaultDir")); // NOI18N
+    jLabel2.setText(ResourceMgr.getString("LblFileTreeDefDirs")); // NOI18N
+    jLabel2.setToolTipText(ResourceMgr.getString("d_LblFileTreeDefDirs")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     add(jLabel2, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 3);
-    add(defaultDir, gridBagConstraints);
 
     jLabel3.setText(ResourceMgr.getString("LblFileTreeClickOption")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -241,11 +236,19 @@ public class FileTreeOptionsPanel
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(dummy, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 3);
+    add(defaultDirs, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   public javax.swing.JComboBox<String> clickOption;
-  public workbench.gui.components.WbFilePicker defaultDir;
+  public workbench.gui.components.ClasspathEditor defaultDirs;
   public javax.swing.JPanel dummy;
   public javax.swing.JTextField excludedExtensions;
   public javax.swing.JTextField excludedFiles;

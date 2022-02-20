@@ -22,6 +22,7 @@
 package workbench.gui.filetree;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,41 +30,76 @@ import workbench.resource.Settings;
 
 import workbench.gui.dbobjects.objecttree.ComponentPosition;
 
+import workbench.util.CollectionUtil;
+import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 
 /**
- *
  * @author Matthias Melzner
+ * @author Thomas Kellerer
  */
 public class FileTreeSettings
 {
   public static final String SETTINGS_PREFIX = "workbench.gui.filetree.";
+  public static final String DIR_PREFIX = SETTINGS_PREFIX + ".default.dir";
   public static final String EXCLUDED_FILES_PROPERTY = SETTINGS_PREFIX + ".exclude.files";
   public static final String EXCLUDED_EXT_PROPERTY = SETTINGS_PREFIX + ".exclude.extensions";
   public static final String PROP_VISIBLE = "tree.visible";
 
-  public static void setDefaultDirectory(String dir)
+  public static void setDefaultDirectoryNames(List<String> dirs)
   {
-    Settings.getInstance().setProperty(SETTINGS_PREFIX + ".default.dir", dir);
+    Settings settings = Settings.getInstance();
+
+    List<String> keys = settings.getKeysWithPrefix(DIR_PREFIX);
+    for (String key : keys)
+    {
+      settings.setProperty(key, null);
+    }
+
+    if (CollectionUtil.isEmpty(dirs)) return;
+
+    int index = 1;
+    for (String dir : dirs)
+    {
+      if (StringUtil.isNonBlank(dir))
+      {
+        settings.setProperty(DIR_PREFIX + "." + index, dir);
+        index++;
+      }
+    }
   }
 
-  public static String getDefaultDirectory()
+  public static List<String> getDefaultDirectorieNames()
   {
-    return Settings.getInstance().getProperty(SETTINGS_PREFIX + ".default.dir", null);
+    Settings settings = Settings.getInstance();
+    List<String> keys = settings.getKeysWithPrefix(DIR_PREFIX);
+    List<String> dirs = new ArrayList<>(keys.size());
+    for (String key : keys)
+    {
+      String path = settings.getProperty(key, null);
+      if (StringUtil.isNonBlank(path))
+      {
+        dirs.add(path);
+      }
+    }
+    return dirs;
   }
 
-  public static File getDirectoryToUse()
+  public static List<File> getDefaultDirectories()
   {
-    String dir = getDefaultDirectory();
-    if (dir == null)
+    List<File> dirs = new ArrayList<>();
+    List<String> defaultDirectories = getDefaultDirectorieNames();
+    for (String path : defaultDirectories)
     {
-      dir = Settings.getInstance().getLastSqlDir();
+      if (StringUtil.isBlank(path)) continue;
+
+      File f = FileUtil.getCanonicalFile(new File(path));
+      if (f.exists() && !dirs.contains(f))
+      {
+        dirs.add(f);
+      }
     }
-    if (dir == null)
-    {
-      dir = ".";
-    }
-    return new File(dir);
+    return dirs;
   }
 
   public static String getExcludedFiles()

@@ -77,7 +77,6 @@ import workbench.util.WbProperties;
 import workbench.util.WbThread;
 
 /**
- *
  * @author Matthias Melzner
  * @author Thomas Kellerer
  */
@@ -214,10 +213,6 @@ public class FileTreePanel
     File dir = getFileFromName(workspaceDefaultDir);
     if (dir == null)
     {
-      dir = getFileFromName(FileTreeSettings.getDefaultDirectory());
-    }
-    if (dir == null)
-    {
       dir = new File(".").getAbsoluteFile();
     }
     return dir;
@@ -243,6 +238,7 @@ public class FileTreePanel
     }
 
     jf.setCurrentDirectory(dir);
+    jf.setDialogTitle(ResourceMgr.getString("MnuTxtAddFolder"));
     int answer = jf.showOpenDialog(SwingUtilities.getWindowAncestor(this));
     if (answer == JFileChooser.APPROVE_OPTION)
     {
@@ -356,11 +352,16 @@ public class FileTreePanel
 
     if (dirs.isEmpty() && StringUtil.isNonBlank(workspaceDefaultDir))
     {
-      File f = new File(workspaceDefaultDir);
+      File f = FileUtil.getCanonicalFile(new File(workspaceDefaultDir));
       if (f.exists())
       {
         dirs.add(f);
       }
+    }
+
+    if (dirs.isEmpty())
+    {
+      dirs.addAll(FileTreeSettings.getDefaultDirectories());
     }
     tree.setDirectories(dirs);
   }

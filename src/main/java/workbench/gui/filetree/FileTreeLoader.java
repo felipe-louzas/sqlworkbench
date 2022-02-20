@@ -56,7 +56,7 @@ public class FileTreeLoader
 
   public FileTreeLoader()
   {
-    this(List.of(FileTreeSettings.getDirectoryToUse()));
+    this(Collections.emptyList());
   }
 
   public FileTreeLoader(List<File> dirs)
