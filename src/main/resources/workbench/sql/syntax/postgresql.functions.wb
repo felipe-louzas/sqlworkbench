@@ -221,6 +221,7 @@ stddev_pop
 stddev_samp
 string_agg
 string_to_array
+string_to_table
 strpos
 substr
 substring
