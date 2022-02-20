@@ -72,7 +72,7 @@ public class FileTreeOptionsPanel
   {
     this.excludedExtensions.setText(FileTreeSettings.getExcludedExtensions());
     this.excludedFiles.setText(FileTreeSettings.getExcludedFiles());
-    this.defaultDirs.setLibraries(FileTreeSettings.getDefaultDirectorieNames());
+    this.defaultDirs.setLibraries(FileTreeSettings.getDefaultDirectoryNames());
     ComponentPosition position = FileTreeSettings.getComponentPosition();
     switch (position)
     {

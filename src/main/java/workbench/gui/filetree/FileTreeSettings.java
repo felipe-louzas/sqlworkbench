@@ -69,7 +69,7 @@ public class FileTreeSettings
     }
   }
 
-  public static List<String> getDefaultDirectorieNames()
+  public static List<String> getDefaultDirectoryNames()
   {
     Settings settings = Settings.getInstance();
     List<String> keys = settings.getKeysWithPrefix(DIR_PREFIX);
@@ -88,7 +88,7 @@ public class FileTreeSettings
   public static List<File> getDefaultDirectories()
   {
     List<File> dirs = new ArrayList<>();
-    List<String> defaultDirectories = getDefaultDirectorieNames();
+    List<String> defaultDirectories = getDefaultDirectoryNames();
     for (String path : defaultDirectories)
     {
       if (StringUtil.isBlank(path)) continue;
