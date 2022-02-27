@@ -19,7 +19,6 @@ import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -52,6 +51,8 @@ public class TextAreaPainter
   public static final Color DEFAULT_GUTTER_TEXT_COLOR = UIManager.getColor("Label.foreground");
   public static final Color DEFAULT_GUTTER_BG  = UIManager.getColor("Label.background");;
   public static final Color DEFAULT_SELECTION_COLOR = new Color(204,204,255);
+  private static final Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+
   private final Segment currentLine = new Segment();
 
   protected JEditTextArea textArea;
@@ -82,13 +83,6 @@ public class TextAreaPainter
   private String highlighText;
 
   private Map renderingHints;
-
-//  private static final RenderingHints FRACTIONAL_HINT_OFF = new RenderingHints(KEY_FRACTIONALMETRICS, VALUE_FRACTIONALMETRICS_OFF);
-//  private static final RenderingHints FRACTIONAL_HINT_ON = new RenderingHints(KEY_FRACTIONALMETRICS, VALUE_FRACTIONALMETRICS_ON);
-
-  private static final Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
-  private final Map<String, Boolean> devicesReported = new HashMap<>(2);
-  private boolean logFractional = false;
 
   public TextAreaPainter(JEditTextArea textArea)
   {
@@ -149,7 +143,6 @@ public class TextAreaPainter
       Toolkit tk = Toolkit.getDefaultToolkit();
       renderingHints = (Map) tk.getDesktopProperty("awt.font.desktophints");
     }
-    this.logFractional = Settings.getInstance().getBoolProperty("workbench.gui.editor.log.fractional.use", false);
   }
 
   @Override
@@ -466,18 +459,6 @@ public class TextAreaPainter
     this.tabSize = tabWidth * textArea.getTabSize();
   }
 
-  private void logFractional(Graphics2D g)
-  {
-    String id = g.getDeviceConfiguration().getDevice().getIDstring();
-    boolean isLogged = devicesReported.getOrDefault(id, Boolean.FALSE);
-    devicesReported.put(id, Boolean.TRUE);
-    if (!isLogged)
-    {
-      boolean flag = g.getFontRenderContext().usesFractionalMetrics();
-      LogMgr.logDebug(new CallerInfo(){}, "DeviceID: \"" + id + "\" usesFractionalMetrics: " + flag);
-    }
-  }
-
   @Override
   public void paint(Graphics g)
   {
@@ -490,8 +471,6 @@ public class TextAreaPainter
 
     gfx.setFont(getFont());
     calculateGutterWidth(gfx);
-
-    if (logFractional) logFractional(gfx);
 
     final FontMetrics fm = gfx.getFontMetrics(getFont());
     final Rectangle clipRect = gfx.getClipBounds();

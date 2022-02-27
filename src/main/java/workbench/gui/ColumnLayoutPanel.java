@@ -438,9 +438,13 @@ public class ColumnLayoutPanel
 
     if (rightComponents.size() == 0)
     {
-      remove(rightSplit);
-      rightSplit.removeAll();
-      rightSplit = null;
+      if (rightSplit != null)
+      {
+        remove(rightSplit);
+        rightSplit.removeAll();
+        rightSplit = null;
+      }
+
       if (leftSplit == null)
       {
         add(mainComponent, BorderLayout.CENTER);
@@ -457,7 +461,10 @@ public class ColumnLayoutPanel
         rightTab.removeAll();
         rightTab = null;
       }
-      rightSplit.setRightComponent(rightComponents.get(0));
+      if (rightSplit != null)
+      {
+        rightSplit.setRightComponent(rightComponents.get(0));
+      }
     }
   }
 
@@ -501,14 +508,17 @@ public class ColumnLayoutPanel
         leftTab.removeAll();
         leftTab = null;
       }
-      leftSplit.setLeftComponent(leftComponents.get(0));
-      if (rightSplit != null)
+      if (leftSplit != null)
       {
-        leftSplit.setRightComponent(rightSplit);
-      }
-      else
-      {
-        leftSplit.setRightComponent(mainComponent);
+        leftSplit.setLeftComponent(leftComponents.get(0));
+        if (rightSplit != null)
+        {
+          leftSplit.setRightComponent(rightSplit);
+        }
+        else
+        {
+          leftSplit.setRightComponent(mainComponent);
+        }
       }
     }
   }
