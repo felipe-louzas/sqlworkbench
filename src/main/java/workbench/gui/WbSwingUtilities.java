@@ -1392,6 +1392,23 @@ public class WbSwingUtilities
     }
   }
 
+  public static void setMinTextSize(JComponent component, int numChars)
+  {
+    if (numChars <= 0) return;
+    if (component == null) return;
+
+    Font font = component.getFont();
+    if (font == null) return;
+
+    FontMetrics fm = component.getFontMetrics(font);
+    int charWidth = fm.stringWidth("M");
+    int width = charWidth * numChars;
+    int height = fm.getHeight();
+    Dimension d = new Dimension(width, height);
+    component.setMinimumSize(d);
+    component.setPreferredSize(d);
+  }
+
   public static int calculateCharWidth(JComponent component, int numChars)
   {
     if (numChars < 0) return -1;

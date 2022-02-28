@@ -68,7 +68,7 @@ public class DwStatusBar
   private final JTextField tfMaxRows;
   private String readyMsg;
   private JTextField tfTimeout;
-  private final WbTextLabel execTime;
+  private final JLabel execTime;
   private JLabel editorStatus;
   private JLabel maxRowsLabel;
   private final JPanel infoPanel;
@@ -111,11 +111,6 @@ public class DwStatusBar
 
     setBorder(DEFAULT_BORDER);
 
-    execTime = new WbTextLabel();
-    execTime.setMininumCharacters(8);
-    execTime.setHorizontalAlignment(SwingConstants.RIGHT);
-    execTime.setToolTipText(ResourceMgr.getString("MsgTotalSqlTime"));
-
     if (showTimer)
     {
       this.executionTimer = new Timer(timerInterval, this);
@@ -134,6 +129,10 @@ public class DwStatusBar
       this.editorLinePrefix = ResourceMgr.getString("LblEditorPosLine");
     }
 
+    execTime = new JLabel();
+    WbSwingUtilities.setMinTextSize(execTime, 8);
+    execTime.setHorizontalAlignment(SwingConstants.RIGHT);
+    execTime.setToolTipText(ResourceMgr.getString("MsgTotalSqlTime"));
     infoPanel.add(execTime);
 
     if (showTimeout)
