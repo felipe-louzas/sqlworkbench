@@ -22,6 +22,7 @@
 package workbench.gui.sql;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -116,12 +117,13 @@ public class DwStatusBar
       this.executionTimer = new Timer(timerInterval, this);
     }
 
+    Color c = WbSwingUtilities.getLineBorderColor(this);
     if (showEditorStatus)
     {
       this.editorStatus = new JLabel();
       this.editorStatus.setHorizontalAlignment(SwingConstants.CENTER);
-      Border d = new DividerBorder(DividerBorder.LEFT_RIGHT, WbSwingUtilities.getLineBorderColor(this));
-      Border db = new CompoundBorder(d, new EmptyBorder(0, 6, 0, 6));
+      Border d = new DividerBorder(DividerBorder.LEFT_RIGHT, c);
+      Border db = new CompoundBorder(d, new EmptyBorder(0,6,0,6));
       this.editorStatus.setBorder(db);
       this.editorStatus.setToolTipText(ResourceMgr.getDescription("LblEditorStatus"));
       infoPanel.add(editorStatus);
@@ -131,6 +133,8 @@ public class DwStatusBar
 
     execTime = new JLabel();
     WbSwingUtilities.setMinTextSize(execTime, 8);
+    Border eb = new CompoundBorder(new DividerBorder(DividerBorder.RIGHT, c), new EmptyBorder(0,6,0,6));
+    execTime.setBorder(eb);
     execTime.setHorizontalAlignment(SwingConstants.RIGHT);
     execTime.setToolTipText(ResourceMgr.getString("MsgTotalSqlTime"));
     infoPanel.add(execTime);
