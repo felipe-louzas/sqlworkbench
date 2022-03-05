@@ -109,8 +109,7 @@ public class WbAction
 
   public static boolean invokedByMouse(ActionEvent e)
   {
-    boolean mouse = ((e.getModifiers() & InputEvent.BUTTON1_DOWN_MASK) != 0);
-    return mouse;
+    return ((e.getModifiers() & (int)ActionEvent.MOUSE_EVENT_MASK) != 0);
   }
 
   public static boolean isAltPressed(ActionEvent e)
@@ -140,9 +139,7 @@ public class WbAction
 
   public static boolean isCtrlPressed(int modifiers)
   {
-    int ctrl = PlatformShortcuts.getDefaultModifier();
-    boolean ctrlPressed = ((modifiers & ctrl) == ctrl);
-    return ctrlPressed;
+    return ((modifiers & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK);
   }
 
   public void setUseLabelIconSize(boolean flag)

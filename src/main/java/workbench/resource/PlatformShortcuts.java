@@ -25,16 +25,18 @@ package workbench.resource;
 
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+
 import javax.swing.KeyStroke;
+
 import workbench.util.PlatformHelper;
 
 /**
  * Centralize the definition of default keyboard shortcuts for MacOS and the rest of the world.
- *
- * KeyEvent.META_MASK is the "Command" (or "Apple") Key<br/>
- * KeyEvent.ALT_MASK is the "Option" key<br/>s
- * KeyEvent.CTRL_MASK is the Control key<br/>
- *
+ *<ul>
+ * <li>KeyEvent.META_DOWN_MASK is the "Command" (or "Apple") Key</li>
+ * <li>KeyEvent.ALT_DOWN_MASK is the "Option" key</li>
+ * <li>KeyEvent.CTRL_DOWN_MASK is the Control key</li>
+ *</uol>
  * @author Thomas Kellerer
  */
 public class PlatformShortcuts
@@ -56,61 +58,61 @@ public class PlatformShortcuts
 
   public static int getDefaultModifier()
   {
-    return Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    return Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
   }
 
   public static KeyStroke getDefaultPrevWord(boolean select)
   {
     if (PlatformHelper.isMacOS())
     {
-      return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK | (select ? KeyEvent.SHIFT_MASK : 0) );
+      return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0) );
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_MASK | (select ? KeyEvent.SHIFT_MASK : 0));
+    return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0));
   }
 
   public static KeyStroke getDefaultNextWord(boolean select)
   {
     if (PlatformHelper.isMacOS())
     {
-      return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK | (select ? KeyEvent.SHIFT_MASK : 0) );
+      return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0) );
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_MASK | (select ? KeyEvent.SHIFT_MASK : 0));
+    return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0));
   }
 
   public static KeyStroke getDefaultEndOfLine(boolean select)
   {
     if (PlatformHelper.isMacOS())
     {
-      return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.META_MASK | (select ? KeyEvent.SHIFT_MASK : 0) );
+      return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.META_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0) );
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_END, (select ? KeyEvent.SHIFT_MASK : 0));
+    return KeyStroke.getKeyStroke(KeyEvent.VK_END, (select ? KeyEvent.SHIFT_DOWN_MASK : 0));
   }
 
   public static KeyStroke getDefaultStartOfLine(boolean select)
   {
     if (PlatformHelper.isMacOS())
     {
-      return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.META_MASK | (select ? KeyEvent.SHIFT_MASK : 0) );
+      return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.META_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0) );
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_HOME, (select ? KeyEvent.SHIFT_MASK : 0));
+    return KeyStroke.getKeyStroke(KeyEvent.VK_HOME, (select ? KeyEvent.SHIFT_DOWN_MASK : 0));
   }
 
   public static KeyStroke getDefaultStartOfDoc(boolean select)
   {
     if (PlatformHelper.isMacOS())
     {
-      return KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.META_MASK | (select ? KeyEvent.SHIFT_MASK : 0) );
+      return KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.META_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0) );
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_MASK | (select ? KeyEvent.SHIFT_MASK : 0));
+    return KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0));
   }
 
   public static KeyStroke getDefaultEndOfDoc(boolean select)
   {
     if (PlatformHelper.isMacOS())
     {
-      return KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.META_MASK | (select ? KeyEvent.SHIFT_MASK : 0) );
+      return KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.META_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0) );
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_MASK | (select ? KeyEvent.SHIFT_MASK : 0));
+    return KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK | (select ? KeyEvent.SHIFT_DOWN_MASK : 0));
   }
 
   /**
@@ -122,7 +124,7 @@ public class PlatformShortcuts
     {
       return null;
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK);
+    return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_DOWN_MASK);
   }
 
   /**
@@ -135,7 +137,7 @@ public class PlatformShortcuts
     {
       return null;
     }
-    return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK);
+    return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK);
   }
 
 }
