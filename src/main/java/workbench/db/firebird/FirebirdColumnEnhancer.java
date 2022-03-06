@@ -35,7 +35,6 @@ import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**

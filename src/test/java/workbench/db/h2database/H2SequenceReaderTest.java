@@ -23,18 +23,23 @@
  */
 package workbench.db.h2database;
 
-import org.junit.Test;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.DbObject;
 import workbench.db.SequenceDefinition;
+import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
+
 import workbench.util.StringUtil;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -60,7 +65,7 @@ public class H2SequenceReaderTest
     db = util.getConnection("h2_seq_test");
     TestUtil.executeScript(db,
       "create sequence seq_aaa;\n" +
-      "create sequence seq_bbb;\n" +
+      "create sequence seq_bbb increment by 5;\n" +
       "commit;");
   }
 
@@ -76,19 +81,13 @@ public class H2SequenceReaderTest
   {
     H2SequenceReader instance = new H2SequenceReader(db);
     List<SequenceDefinition> result = instance.getSequences(null, "PUBLIC", null);
-    Collections.sort(result, new Comparator<DbObject>()
-    {
-      @Override
-      public int compare(DbObject o1, DbObject o2)
-      {
-        return StringUtil.compareStrings(o1.getObjectName(), o2.getObjectName(), true);
-      }
-    });
+    Collections.sort(result, (DbObject o1, DbObject o2) -> StringUtil.compareStrings(o1.getObjectName(), o2.getObjectName(), true));
 
     assertNotNull(result);
     assertEquals(2, result.size());
     assertEquals("SEQ_AAA", result.get(0).getSequenceName());
     assertEquals("SEQ_BBB", result.get(1).getSequenceName());
+    assertEquals(Long.valueOf(5), result.get(1).getSequenceProperty(SequenceReader.PROP_INCREMENT));
 
     CharSequence sql = result.get(0).getSource();
     assertNotNull(sql);

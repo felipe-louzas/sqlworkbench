@@ -25,11 +25,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.ColumnIdentifier;
 import workbench.db.JdbcUtils;
 import workbench.db.SequenceAdjuster;
 import workbench.db.TableIdentifier;
@@ -54,18 +56,81 @@ public class H2SequenceAdjuster
   public int adjustTableSequences(WbConnection connection, TableIdentifier table, boolean includeCommit)
     throws SQLException
   {
-    Map<String, String> columns = getColumnSequences(connection, table);
-
-    for (Map.Entry<String, String> entry : columns.entrySet())
+    int numAdjusted = 0;
+    if (JdbcUtils.hasMinimumServerVersion(connection, "2.0"))
     {
-      syncSingleSequence(connection, table, entry.getKey(), entry.getValue());
+      numAdjusted = syncIdentityColumns(connection, table);
+    }
+    else
+    {
+      Map<String, String> columns = getColumnSequences(connection, table);
+
+      for (Map.Entry<String, String> entry : columns.entrySet())
+      {
+        syncSingleSequence(connection, table, entry.getKey(), entry.getValue());
+      }
+      numAdjusted = columns.size();
     }
 
     if (includeCommit && !connection.getAutoCommit())
     {
       connection.commit();
     }
-    return columns.size();
+    return numAdjusted;
+  }
+
+  private int syncIdentityColumns(WbConnection dbConnection, TableIdentifier table)
+    throws SQLException
+  {
+    List<ColumnIdentifier> columns = dbConnection.getMetadata().getTableColumns(table, false);
+    ColumnIdentifier identityCol = null;
+    for (ColumnIdentifier col : columns)
+    {
+      if (col.isIdentityColumn())
+      {
+        identityCol = col;
+        break;
+      }
+    }
+
+    if (identityCol == null) return 0;
+
+    Statement stmt = null;
+    ResultSet rs = null;
+    String ddl = null;
+
+    String colName = identityCol.getColumnName(dbConnection);
+    String tableName = table.getTableExpression(dbConnection);
+    try
+    {
+      stmt = dbConnection.createStatement();
+
+      long maxValue = -1;
+      rs = stmt.executeQuery("select max(" + colName + ") from " + tableName);
+
+      if (rs.next())
+      {
+        maxValue = rs.getLong(1) + 1;
+        JdbcUtils.closeResult(rs);
+      }
+
+      if (maxValue > 0)
+      {
+        ddl = "alter table " + tableName + " alter column " + colName + " restart with " + Long.toString(maxValue);
+        LogMgr.logDebug(new CallerInfo(){}, "Syncing identityc column using: " + ddl);
+        stmt.execute(ddl);
+      }
+    }
+    catch (SQLException ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could adjust identity column using:\n" + ddl, ex);
+      throw ex;
+    }
+    finally
+    {
+      JdbcUtils.closeAll(rs, stmt);
+    }
+    return 1;
   }
 
   private void syncSingleSequence(WbConnection dbConnection, TableIdentifier table, String column, String sequence)

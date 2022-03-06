@@ -53,7 +53,7 @@ public class ResultInfoDisplayBuilder
     columns.add("UPDATEABLE");
     columns.add("TABLE_NAME");
 
-    String[] cols = columns.toArray(new String[0]);
+    String[] cols = columns.toArray(String[]::new);
     int[] types = new int[cols.length];
 
     for (int i=0; i < cols.length; i++)

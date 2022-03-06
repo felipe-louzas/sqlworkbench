@@ -60,7 +60,12 @@ public class JoinCreatorTest
     TestUtil util = new TestUtil("JoinCreatorTest");
     WbConnection conn = util.getConnection();
     TestUtil.executeScript(conn,
-      "create table person (per_id integer not null, tenant_id integer not null, person_name varchar(10), primary key (per_id, tenant_id));\n" +
+      "create table person (\n" +
+      "  per_id integer not null unique, \n" +
+      "  tenant_id integer not null, \n" +
+      "  person_name varchar(10), \n" +
+      "  primary key (per_id, tenant_id)\n" +
+      ");\n" +
       "create table address_type (type_id integer primary key, type_name varchar(50));\n" +
       "create table address (" +
       "   adr_id integer primary key, \n" +

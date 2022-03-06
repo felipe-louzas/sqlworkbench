@@ -367,7 +367,6 @@ public class TableDependencyTest
       "( \n" +
       "   BASE integer not null,  \n" +
       "   REGION integer not null,  \n" +
-      "   YEAR integer not null,  \n" +
       "   MOVEMENTNUM integer not null, \n" +
       "   location integer not null, \n" +
       "   store integer not null, \n" +
@@ -379,7 +378,7 @@ public class TableDependencyTest
       "); \n" +
       " \n" +
       "ALTER TABLE main \n" +
-      "   ADD CONSTRAINT PK_main PRIMARY KEY (BASE, REGION, YEAR, MOVEMENTNUM); \n" +
+      "   ADD CONSTRAINT PK_main PRIMARY KEY (BASE, REGION, MOVEMENTNUM); \n" +
       " \n" +
       "create table STORE  \n" +
       "( \n" +

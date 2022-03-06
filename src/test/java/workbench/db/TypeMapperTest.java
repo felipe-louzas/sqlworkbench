@@ -78,7 +78,7 @@ public class TypeMapperTest
       WbConnection conn = util.getConnection("TypeMapper");
       TypeMapper mapper = new TypeMapper(conn);
       String type = mapper.getTypeName(Types.VARCHAR, 20, -1);
-      assertEquals("VARCHAR(20)", type);
+      assertEquals("CHARACTER VARYING(20)", type);
     }
     finally
     {

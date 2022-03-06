@@ -61,8 +61,8 @@ public class WbViewSourceTest
     StatementRunnerResult result = stmt.execute("WbViewSource v_foo");
     assertTrue(result.isSuccess());
     String sql = result.getMessages().toString();
-    assertTrue(sql.contains("VIEW PUBLIC.V_FOO"));
-    assertTrue(sql.contains("ID * 42"));
+    assertTrue(sql.contains("VIEW V_FOO"));
+    assertTrue(sql.contains("\"ID\" * 42"));
   }
 
 }

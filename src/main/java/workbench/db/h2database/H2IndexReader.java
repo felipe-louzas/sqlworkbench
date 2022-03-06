@@ -59,7 +59,8 @@ public class H2IndexReader
   public H2IndexReader(DbMetadata meta)
   {
     super(meta);
-    this.useJDBCRetrieval = Settings.getInstance().getBoolProperty("workbench.db.h2.getprimarykeyindex.usejdbc", false);
+    boolean is20 = JdbcUtils.hasMinimumServerVersion(this.metaData.getWbConnection(), "2.0");
+    this.useJDBCRetrieval = is20 || Settings.getInstance().getBoolProperty("workbench.db.h2.getprimarykeyindex.usejdbc", false);
     if (!this.useJDBCRetrieval)
     {
       this.pkIndexNameColumn = "PK_INDEX_NAME";

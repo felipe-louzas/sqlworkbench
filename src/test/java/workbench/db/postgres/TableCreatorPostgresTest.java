@@ -51,8 +51,6 @@ import static org.junit.Assert.*;
 public class TableCreatorPostgresTest
   extends WbTestCase
 {
-  private static final String TEST_ID = "pgtablecreator";
-
   public TableCreatorPostgresTest()
   {
     super("TableCreatorTest");

@@ -83,7 +83,7 @@ public class ObjectSourceSearcherTest
       assertEquals(3, result.size());
 
       searcher.setTypesToSearch(CollectionUtil.arrayList("table", "view"));
-      result = searcher.searchObjects(CollectionUtil.arrayList("varchar(50)", "integer"), true, true, false);
+      result = searcher.searchObjects(CollectionUtil.arrayList("character varying(50)", "integer"), true, true, false);
       assertNotNull(result);
       assertEquals(1, result.size());
 

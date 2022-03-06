@@ -1144,15 +1144,15 @@ public class WbCopyTest
       stmt.executeUpdate("CREATE SCHEMA copy_src");
       stmt.executeUpdate("SET SCHEMA copy_src");
 
-      stmt.executeUpdate("create table person (nr integer not null primary key, lastname varchar(50), firstname varchar(50), binary_data blob)");
+      stmt.executeUpdate("create table person (nr integer not null primary key, lastname varchar(50), firstname varchar(50), binary_data binary varying)");
       stmt.executeUpdate("create table address (person_id integer not null primary key, address_details varchar(100))");
       stmt.executeUpdate("create table some_data (id integer, some_details varchar(100))");
       stmt.executeUpdate("alter table address add foreign key (person_id) references person(nr)");
 
-      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (1,'Dent', 'Arthur', '01')");
-      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (2,'Beeblebrox', 'Zaphod','0202')");
-      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (3,'Moviestar', 'Mary', '030303')");
-      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (4,'Perfect', 'Ford', '04040404')");
+      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (1,'Dent', 'Arthur', x'01')");
+      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (2,'Beeblebrox', 'Zaphod', x'0202')");
+      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (3,'Moviestar', 'Mary', x'030303')");
+      stmt.executeUpdate("insert into person (nr, lastname, firstname, binary_data) values (4,'Perfect', 'Ford', x'04040404')");
 
       stmt.executeUpdate("insert into address (person_id, address_details) values (1, 'Arlington')");
       stmt.executeUpdate("insert into address (person_id, address_details) values (2, 'Heart of Gold')");
@@ -1164,7 +1164,7 @@ public class WbCopyTest
       Statement tstmt = target.createStatement();
       tstmt.executeUpdate("CREATE SCHEMA copy_target");
       tstmt.executeUpdate("SET SCHEMA copy_target");
-      tstmt.executeUpdate("create table person (nr integer not null primary key, lastname varchar(50), firstname varchar(50), binary_data blob)");
+      tstmt.executeUpdate("create table person (nr integer not null primary key, lastname varchar(50), firstname varchar(50), binary_data binary varying)");
       tstmt.executeUpdate("create table address (person_id integer not null primary key, address_details varchar(100))");
       tstmt.executeUpdate("alter table address add foreign key (person_id) references person(nr)");
 

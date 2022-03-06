@@ -272,7 +272,7 @@ public class ReaderFactory
       case Firebird:
         return new FirebirdConstraintReader();
       case H2:
-        return new H2ConstraintReader();
+        return new H2ConstraintReader(meta.getWbConnection());
       case Derby:
         return new DerbyConstraintReader();
       case MySQL:

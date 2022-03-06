@@ -24,15 +24,19 @@
 package workbench.db.h2database;
 
 import java.util.List;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
+import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
+import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
 import org.junit.AfterClass;
 import org.junit.Test;
-import workbench.db.ColumnIdentifier;
-import workbench.db.TableDefinition;
+
 import static org.junit.Assert.*;
 
 /**
@@ -72,6 +76,6 @@ public class H2ColumnEnhancerTest
     assertEquals(2, cols.size());
     ColumnIdentifier col = cols.get(1);
     assertEquals("ID2", col.getColumnName());
-    assertEquals("AS (ID * 2)", col.getComputedColumnExpression());
+    assertEquals("AS \"ID\" * 2", col.getComputedColumnExpression());
   }
 }

@@ -95,7 +95,7 @@ public class ObjectScripterTest
     assertTrue(fkPos > personPos);
     assertTrue(fkPos > addressPos);
 
-    int viewPos = script.indexOf("CREATE FORCE VIEW");
+    int viewPos = script.indexOf("CREATE VIEW V_PERSON");
     assertTrue(viewPos > -1);
     assertTrue(viewPos > personPos);
     assertTrue(viewPos > addressPos);

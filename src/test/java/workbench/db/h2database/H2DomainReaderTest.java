@@ -24,14 +24,18 @@
 package workbench.db.h2database;
 
 import java.util.List;
-import org.junit.AfterClass;
-import workbench.db.TableIdentifier;
-import org.junit.Test;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
+
 import workbench.db.ConnectionMgr;
 import workbench.db.DomainIdentifier;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+
+import org.junit.AfterClass;
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -60,7 +64,7 @@ public class H2DomainReaderTest
     TestUtil util = getTestUtil();
     WbConnection con = util.getConnection();
 
-    String script = "CREATE DOMAIN positive_integer AS integer NOT NULL CHECK (value > 0);";
+    String script = "CREATE DOMAIN positive_integer AS integer CHECK (value > 0);";
     TestUtil.executeScript(con, script);
 
     List<TableIdentifier> objects = con.getMetadata().getObjectList(null, new String[] { "DOMAIN" });
@@ -77,7 +81,8 @@ public class H2DomainReaderTest
     assertEquals("INTEGER", domain.getDataType());
     assertFalse(domain.isNullable());
     String sql = domain.getSource(con).toString();
-    assertEquals("CREATE DOMAIN POSITIVE_INTEGER AS INTEGER\n   CHECK NOT NULL (VALUE > 0);", sql.trim());
+//    System.out.println(sql);
+    assertEquals("CREATE DOMAIN POSITIVE_INTEGER AS INTEGER\n   CHECK (VALUE > 0);", sql.trim());
   }
 
 }

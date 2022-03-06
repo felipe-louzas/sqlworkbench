@@ -37,8 +37,8 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -55,16 +55,21 @@ import workbench.util.StringUtil;
 public class H2ConstantReader
   implements ObjectListExtender
 {
-  final String baseSql = "SELECT constant_catalog,  \n" +
-                         "       constant_schema, \n" +
-                         "       constant_name, \n" +
-                         "       data_type, \n" +
-                         "       sql as constant_value, \n" +
-                         "       remarks \n" +
-                         " FROM information_schema.constants ";
-
   private String getSql(WbConnection connection, String schema, String name)
   {
+    boolean is20 = JdbcUtils.hasMinimumServerVersion(connection, "2.0");
+    String baseSql =
+      "SELECT constant_catalog,  \n" +
+      "       constant_schema, \n" +
+      "       constant_name, \n" +
+      "       data_type, \n" +
+      (is20 ?
+      "       value_definition as constant_value, \n"
+      :
+      "       sql as constant_value, \n") +
+      "       remarks \n" +
+      "FROM information_schema.constants ";
+
     StringBuilder sql = new StringBuilder(baseSql.length() + 40);
 
     sql.append(baseSql);
@@ -72,7 +77,7 @@ public class H2ConstantReader
     boolean whereAdded = false;
     if (StringUtil.isNonBlank(name))
     {
-      sql.append(" WHERE constant_name like '");
+      sql.append("\nWHERE constant_name like '");
       sql.append(connection.getMetadata().quoteObjectname(name));
       sql.append("%' ");
       whereAdded = true;
@@ -80,10 +85,10 @@ public class H2ConstantReader
 
     if (StringUtil.isNonBlank(schema))
     {
-      sql.append(whereAdded ? " AND " : " WHERE ");
+      sql.append(whereAdded ? "\n  AND " : "\nWHERE ");
 
       sql.append(" constant_schema = '");
-      sql.append(connection.getMetadata().quoteObjectname(schema));
+      sql.append(schema);
       sql.append("'");
     }
     sql.append(" ORDER BY 1, 2 ");
@@ -95,6 +100,7 @@ public class H2ConstantReader
 
   public List<H2Constant> getConstantsList(WbConnection connection, String schemaPattern, String namePattern)
   {
+    boolean is20 = JdbcUtils.hasMinimumServerVersion(connection, "2.0");
     Statement stmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
@@ -111,8 +117,16 @@ public class H2ConstantReader
         String schema = rs.getString("constant_schema");
         String name = rs.getString("constant_name");
         H2Constant constant = new H2Constant(cat, schema, name);
-        int type = rs.getInt("data_type");
-        String dataType = SqlUtil.getTypeName(type);
+        String dataType = null;
+        if (is20)
+        {
+          dataType = rs.getString("data_type");
+        }
+        else
+        {
+          int type = rs.getInt("data_type");
+          dataType = SqlUtil.getTypeName(type);
+        }
         constant.setDataType(dataType);
         constant.setValue(rs.getString("constant_value"));
         constant.setComment(rs.getString("remarks"));

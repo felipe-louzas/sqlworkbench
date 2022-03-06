@@ -81,9 +81,9 @@ public class H2ConstraintReaderTest
     assertEquals(1, cons.size());
     TableConstraint constraint = cons.get(0);
     assertEquals("POSITIVE_ID", constraint.getConstraintName());
-    assertEquals("(ID > 42)", constraint.getExpression());
+    assertEquals("(\"ID\" > 42)", constraint.getExpression());
     assertEquals(ConstraintType.Check, constraint.getConstraintType());
-    assertEquals("CONSTRAINT POSITIVE_ID CHECK (ID > 42)", constraint.getSql());
+    assertEquals("CONSTRAINT POSITIVE_ID CHECK (\"ID\" > 42)", constraint.getSql());
   }
 
 }

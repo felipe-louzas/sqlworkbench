@@ -38,8 +38,8 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -56,18 +56,37 @@ import workbench.util.StringUtil;
 public class H2DomainReader
   implements ObjectListExtender
 {
-  final String baseSql = "SELECT domain_catalog,  \n" +
-                         "       domain_schema, \n" +
-                         "       domain_name, \n" +
-                         "       type_name, \n" +
-                         "       data_type, \n" +
-                         "       precision, \n" +
-                         "       scale, \n" +
-                         "       is_nullable as nullable, \n" +
-                         "       column_default as default_value, \n" +
-                         "       check_constraint as constraint_definition, \n" +
-                         "       remarks \n" +
-                         " FROM information_schema.domains ";
+  final String baseSql =
+    "SELECT d.domain_catalog,  \n" +
+    "       d.domain_schema, \n" +
+    "       d.domain_name, \n" +
+    "       data_type_sql(d.domain_schema, d.domain_name, 'DOMAIN', d.dtd_identifier) as type_name, \n" +
+    "       null as data_type, \n" +
+    "       null as nullable, \n" +
+    "       d.domain_default as default_value, \n" +
+    "       cc.check_clause as constraint_definition, \n" +
+    "       d.remarks \n" +
+    "FROM information_schema.domains d\n" +
+    "  left join information_schema.domain_constraints dc \n" +
+    "         on dc.domain_schema = d.domain_schema\n" +
+    "        and dc.domain_name = d.domain_name\n" +
+    "  left join information_schema.check_constraints cc\n" +
+    "         on cc.constraint_schema = dc.constraint_schema\n" +
+    "        and cc.constraint_name = dc.constraint_name \n";
+
+  final String baseSql20 =
+    "SELECT d.domain_catalog,  \n" +
+    "       d.domain_schema, \n" +
+    "       d.domain_name, \n" +
+    "       d.type_name, \n" +
+    "       d.data_type, \n" +
+    "       d.precision, \n" +
+    "       d.scale, \n" +
+    "       d.is_nullable as nullable, \n" +
+    "       d.column_default as default_value, \n" +
+    "       d.check_constraint as constraint_definition, \n" +
+    "       d.remarks \n" +
+    "FROM information_schema.domains d\n";
 
   private String getSql(WbConnection connection, String schema, String name)
   {
@@ -78,7 +97,7 @@ public class H2DomainReader
     boolean whereAdded = false;
     if (StringUtil.isNonBlank(name))
     {
-      sql.append(" WHERE domain_name like '");
+      sql.append(" WHERE d.domain_name like '");
       sql.append(connection.getMetadata().quoteObjectname(name));
       sql.append("%' ");
       whereAdded = true;
@@ -88,7 +107,7 @@ public class H2DomainReader
     {
       sql.append(whereAdded ? " AND " : " WHERE ");
 
-      sql.append(" domain_schema = '");
+      sql.append(" d.domain_schema = '");
       sql.append(connection.getMetadata().quoteObjectname(schema));
       sql.append("'");
     }
@@ -117,14 +136,31 @@ public class H2DomainReader
         String schema = rs.getString("domain_schema");
         String name = rs.getString("domain_name");
         DomainIdentifier domain = new DomainIdentifier(cat, schema, name);
-        domain.setCheckConstraint(rs.getString("constraint_definition"));
+        String check = rs.getString("constraint_definition");
+        if (check != null && !check.startsWith("(") && !check.endsWith(")"))
+        {
+          check = "(" + check + ")";
+        }
+        domain.setCheckConstraint(check);
         String typeName = rs.getString("type_name");
         int type = rs.getInt("data_type");
-        int precision = rs.getInt("precision");
-        int scale = rs.getInt("scale");
-        String dataType = SqlUtil.getSqlTypeDisplay(typeName, type, scale, precision);
+        String dataType = null;
+        if (rs.wasNull())
+        {
+          dataType = typeName;
+        }
+        else
+        {
+          int precision = rs.getInt("precision");
+          int scale = rs.getInt("scale");
+          dataType = SqlUtil.getSqlTypeDisplay(typeName, type, scale, precision);
+        }
         domain.setDataType(dataType);
-        domain.setNullable(rs.getBoolean("nullable"));
+        boolean nullable = rs.getBoolean("nullable");
+        if (!rs.wasNull())
+        {
+          domain.setNullable(nullable);
+        }
         domain.setDefaultValue(rs.getString("default_value"));
         domain.setComment(rs.getString("remarks"));
         result.add(domain);
@@ -171,18 +207,10 @@ public class H2DomainReader
       result.append("\n   DEFAULT ");
       result.append(domain.getDefaultValue());
     }
-    if (StringUtil.isNonBlank(domain.getCheckConstraint()) || !domain.isNullable())
+    if (StringUtil.isNonBlank(domain.getCheckConstraint()))
     {
       result.append("\n   CHECK ");
-      if (StringUtil.isNonBlank(domain.getConstraintName()))
-      {
-        result.append(domain.getConstraintName() + " ");
-      }
-      if (!domain.isNullable()) result.append("NOT NULL ");
-      if (StringUtil.isNonBlank(domain.getCheckConstraint()))
-      {
-        result.append(domain.getCheckConstraint());
-      }
+      result.append(domain.getCheckConstraint());
     }
     result.append(";\n");
     if (StringUtil.isNonBlank(domain.getComment()))

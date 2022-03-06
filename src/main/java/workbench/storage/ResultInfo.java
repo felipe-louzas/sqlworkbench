@@ -389,7 +389,7 @@ public class ResultInfo
 
   public ColumnIdentifier[] getColumns()
   {
-    return this.columns.toArray(new ColumnIdentifier[0]);
+    return this.columns.toArray(ColumnIdentifier[]::new);
   }
 
   public List<ColumnIdentifier> getColumnList()

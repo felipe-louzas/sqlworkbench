@@ -45,6 +45,7 @@ import workbench.resource.Settings;
 
 import workbench.db.derby.DerbyTypeReader;
 import workbench.db.firebird.FirebirdDomainReader;
+import workbench.db.firebird.FirebirdTypeResolver;
 import workbench.db.greenplum.GreenplumObjectListCleaner;
 import workbench.db.greenplum.GreenplumObjectListEnhancer;
 import workbench.db.greenplum.GreenplumUtil;
@@ -343,6 +344,7 @@ public class DbMetadata
     {
       this.isFirebird = true;
       this.dbId = DBID.Firebird.getId();
+      dataTypeResolver = new FirebirdTypeResolver();
       extenders.add(new FirebirdDomainReader());
     }
     else if (productLower.contains("microsoft") && productLower.contains("sql server"))
@@ -1664,7 +1666,7 @@ public class DbMetadata
 
       boolean useColumnNames = dbSettings.useColumnNameForMetadata();
 
-      Set<String> alternateTableTypeNames = getDbSettings().getTableTypeSynonyms();
+      ObjectTypeNameMapper mapper = new ObjectTypeNameMapper(dbSettings);
 
       start = System.currentTimeMillis();
 
@@ -1676,10 +1678,7 @@ public class DbMetadata
         String ttype = useColumnNames ? tableRs.getString("TABLE_TYPE") : tableRs.getString(4);
         if (name == null) continue;
 
-        if (alternateTableTypeNames.contains(ttype))
-        {
-          ttype = "TABLE";
-        }
+        ttype = mapper.mapInternalNameToSQL(ttype);
 
         if (filter.isExcluded(ttype, name)) continue;
 
@@ -2678,6 +2677,8 @@ public class DbMetadata
     boolean ignoreIndexTypes = getDbSettings().getBoolProperty("metadata.tabletypes.ignore.index", true);
     boolean useDefaults = getDbSettings().getBoolProperty("metadata.tabletypes.use.defaults", true);
 
+    ObjectTypeNameMapper mapper = new ObjectTypeNameMapper(dbSettings);
+
     Set<String> types = CollectionUtil.caseInsensitiveSet();
     ResultSet rs = null;
     String ignoredTypes = "";
@@ -2702,6 +2703,11 @@ public class DbMetadata
           continue;
         }
         types.add(type.toUpperCase());
+        String sqlTypeName = mapper.mapInternalNameToSQL(type);
+        if (StringUtil.stringsAreNotEqual(type.toUpperCase(), sqlTypeName.toUpperCase()))
+        {
+          types.add(sqlTypeName.toUpperCase());
+        }
       }
     }
     catch (Exception e)

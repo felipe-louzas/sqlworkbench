@@ -110,7 +110,6 @@ public class WbSchemaDiffTest
 
     FileReader in = new FileReader(output);
     String xml = FileUtil.readCharacters(in);
-
     String value = TestUtil.getXPathValue(xml, "count(/schema-diff/modify-table)");
     assertEquals("Incorrect table count", "2", value);
 
@@ -174,43 +173,38 @@ public class WbSchemaDiffTest
     WbConnection source = util.getConnection(new File(util.getBaseDir(), "source"), "source", false);
     WbConnection target = util.getConnection(new File(util.getBaseDir(), "target"), "target", false);
 
-    Statement stmt = null;
-
     try
     {
-      stmt = source.createStatement();
-      stmt.executeUpdate("create table person (person_id integer primary key, firstname varchar(100), lastname varchar(100))");
-      stmt.executeUpdate("create table address (address_id integer primary key, street varchar(50), city varchar(100), phone varchar(50), email varchar(50))");
-      stmt.executeUpdate("create table person_address (person_id integer, address_id integer, primary key (person_id, address_id))");
-      stmt.executeUpdate("create table to_ignore (some_id integer, another_id integer)");
-      stmt.executeUpdate("alter table person_address add constraint fk_pa_person foreign key (person_id) references person(person_id)");
-      stmt.executeUpdate("alter table person_address add constraint fk_pa_address foreign key (address_id) references address(address_id)");
+      TestUtil.executeScript(source,
+        "create table person (person_id integer primary key, firstname varchar(100), lastname varchar(100));\n" +
+        "create table address (address_id integer primary key, street varchar(50), city varchar(100), phone varchar(50), email varchar(50));\n" +
+        "create table person_address (person_id integer, address_id integer, primary key (person_id, address_id));\n" +
+        "create table to_ignore (some_id integer, another_id integer);\n" +
+        "alter table person_address add constraint fk_pa_person foreign key (person_id) references person(person_id);\n" +
+        "alter table person_address add constraint fk_pa_address foreign key (address_id) references address(address_id);\n" +
+        "CREATE VIEW v_person AS SELECT * FROM person;\n" +
+        "CREATE VIEW to_ignore_view AS SELECT * FROM person;\n" +
+        "CREATE sequence seq_one;\n" +
+        "CREATE sequence seq_two  increment by 5;\n" +
+        "CREATE sequence seq_three;\n" +
+        "commit;\n");
 
-      stmt.executeUpdate("CREATE VIEW v_person AS SELECT * FROM person");
-      stmt.executeUpdate("CREATE VIEW to_ignore_view AS SELECT * FROM person");
-      stmt.executeUpdate("CREATE sequence seq_one");
-      stmt.executeUpdate("CREATE sequence seq_two  increment by 5");
-      stmt.executeUpdate("CREATE sequence seq_three");
-      JdbcUtils.closeStatement(stmt);
-
-      stmt = target.createStatement();
-      stmt.executeUpdate("create table person (person_id integer primary key, firstname varchar(50), lastname varchar(100))");
-      stmt.executeUpdate("create table to_ignore (some_id integer)");
-      stmt.executeUpdate("create table drop_me (some_id integer)");
-      stmt.executeUpdate("create table address (address_id integer primary key, street varchar(10), city varchar(100), pone varchar(50), remark varchar(500))");
-      stmt.executeUpdate("create table person_address (person_id integer, address_id integer, primary key (person_id, address_id))");
-      stmt.executeUpdate("alter table person_address add constraint fk_pa_person foreign key (person_id) references person(person_id)");
-
-      stmt.executeUpdate("CREATE VIEW something AS SELECT * FROM address");
-      stmt.executeUpdate("CREATE VIEW to_ignore_view AS SELECT * FROM address");
-
-      stmt.executeUpdate("CREATE sequence seq_one");
-      stmt.executeUpdate("CREATE sequence seq_two");
-      stmt.executeUpdate("CREATE sequence seq_to_be_deleted");
+      TestUtil.executeScript(target,
+        "create table person (person_id integer primary key, firstname varchar(50), lastname varchar(100));\n" +
+        "create table to_ignore (some_id integer);\n" +
+        "create table drop_me (some_id integer);\n" +
+        "create table address (address_id integer primary key, street varchar(10), city varchar(100), pone varchar(50), remark varchar(500));\n" +
+        "create table person_address (person_id integer, address_id integer, primary key (person_id, address_id));\n" +
+        "alter table person_address add constraint fk_pa_person foreign key (person_id) references person(person_id);\n" +
+        "CREATE VIEW something AS SELECT * FROM address;\n" +
+        "CREATE VIEW to_ignore_view AS SELECT * FROM address;\n" +
+        "CREATE sequence seq_one;\n" +
+        "CREATE sequence seq_two;\n" +
+        "CREATE sequence seq_to_be_deleted;\n" +
+        "commit;\n");
     }
     finally
     {
-      JdbcUtils.closeStatement(stmt);
       source.disconnect();
       target.disconnect();
     }

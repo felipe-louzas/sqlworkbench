@@ -31,13 +31,12 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -71,9 +70,9 @@ public class H2SequenceReader
   }
 
   @Override
-  public List<SequenceDefinition> getSequences(String catalog, String owner, String namePattern)
+  public List<SequenceDefinition> getSequences(String catalog, String schema, String namePattern)
   {
-    DataStore ds = getRawSequenceDefinition(catalog, owner, namePattern);
+    DataStore ds = getRawSequenceDefinition(catalog, schema, namePattern);
     if (ds == null) return Collections.emptyList();
     List<SequenceDefinition> result = new ArrayList<>();
 
@@ -99,14 +98,22 @@ public class H2SequenceReader
 
     if (ds == null || ds.getRowCount() == 0) return null;
 
+    boolean is20 = JdbcUtils.hasMinimumServerVersion(dbConnection, "2.0");
     String name = ds.getValueAsString(row, "SEQUENCE_NAME");
     String schema = ds.getValueAsString(row, "SEQUENCE_SCHEMA");
     result = new SequenceDefinition(schema, name);
 
-    result.setSequenceProperty(PROP_CURRENT_VALUE, ds.getValue(row, "CURRENT_VALUE"));
+    if (is20)
+    {
+      result.setSequenceProperty(PROP_CURRENT_VALUE, ds.getValue(row, "BASE_VALUE"));
+    }
+    else
+    {
+      result.setSequenceProperty(PROP_CURRENT_VALUE, ds.getValue(row, "CURRENT_VALUE"));
+    }
     result.setSequenceProperty(PROP_INCREMENT, ds.getValue(row, "INCREMENT"));
-    result.setSequenceProperty(PROP_IS_GENERATED, ds.getValue(row, "IS_GENERATED"));
     result.setSequenceProperty(PROP_CACHE_SIZE, ds.getValue(row, "CACHE"));
+    result.setSequenceProperty(PROP_CYCLE, ds.getValue(row, "CYCLE_OPTION"));
 
     String comment = ds.getValueAsString(row, "REMARKS");
     result.setComment(comment);
@@ -136,6 +143,12 @@ public class H2SequenceReader
     result.append("\n       CACHE ");
     result.append(def.getSequenceProperty(PROP_CACHE_SIZE).toString());
 
+    String cycle = def.getSequenceProperty(PROP_CYCLE).toString();
+    if ("YES".equals(cycle))
+    {
+      result.append("\n      CYCLE");
+    }
+
     result.append(';');
     result.append(nl);
 
@@ -153,50 +166,68 @@ public class H2SequenceReader
   }
 
   @Override
-  public DataStore getRawSequenceDefinition(String catalog, String owner, String sequence)
+  public DataStore getRawSequenceDefinition(String catalog, String schema, String sequence)
   {
     Statement stmt = null;
     ResultSet rs = null;
     DataStore ds = null;
 
     StringBuilder sql = new StringBuilder(100);
-    sql.append("SELECT SEQUENCE_CATALOG, " +
-      "SEQUENCE_SCHEMA, " +
-      "SEQUENCE_NAME, " +
-      "CURRENT_VALUE, " +
-      "INCREMENT, " +
-      "IS_GENERATED, " +
-      "REMARKS, " +
-      "ID," +
-      "CACHE " +
-      "FROM information_schema.sequences ");
+    boolean is20 = JdbcUtils.hasMinimumServerVersion(dbConnection, "2.0");
+
+    if (is20)
+    {
+      sql.append(
+        "SELECT SEQUENCE_CATALOG, \n" +
+        "       SEQUENCE_SCHEMA, \n" +
+        "       SEQUENCE_NAME, \n" +
+        "       BASE_VALUE, \n" +
+        "       INCREMENT, \n" +
+        "       REMARKS, \n" +
+        "       CACHE, \n" +
+        "       cycle_option \n" +
+        "FROM information_schema.sequences ");
+    }
+    else
+    {
+      sql.append(
+        "SELECT SEQUENCE_CATALOG, \n" +
+        "       SEQUENCE_SCHEMA, \n" +
+        "       SEQUENCE_NAME, \n" +
+        "       CURRENT_VALUE, \n" +
+        "       INCREMENT, \n" +
+        "       REMARKS, \n" +
+        "       CACHE, \n" +
+        "       case when is_cycle then 'YES' else 'NO' end as cycle_option \n" +
+        "FROM information_schema.sequences ");
+    }
 
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(owner))
+    if (StringUtil.isNonBlank(schema))
     {
       if (!whereAdded)
       {
-        sql.append(" WHERE ");
+        sql.append("\nWHERE ");
         whereAdded = true;
       }
       else
       {
-        sql.append(" AND ");
+        sql.append("\n  AND ");
       }
-      sql.append(" sequence_schema = '" + owner + "'");
+      sql.append(" sequence_schema = '" + schema + "'");
     }
 
     if (StringUtil.isNonBlank(sequence))
     {
       if (!whereAdded)
       {
-        sql.append(" WHERE ");
+        sql.append("\nWHERE ");
         whereAdded = true;
       }
       else
       {
-        sql.append(" AND ");
+        sql.append("\n  AND ");
       }
       SqlUtil.appendExpression(sql, "sequence_name", sequence, dbConnection);
     }

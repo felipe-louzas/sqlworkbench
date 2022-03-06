@@ -113,7 +113,8 @@ public class TableCreatorTest
   {
     try
     {
-      WbConnection con = util.getConnection();
+      WbConnection con = util.getHSQLConnection("tablecreator");
+      con.setAutoCommit(false);
 
       List<TableIdentifier> tables = con.getMetadata().getTableList("%", "PUBLIC");
       assertEquals(0, tables.size());
@@ -141,7 +142,7 @@ public class TableCreatorTest
       cols.add(lastname);
 
       String template =
-        "CREATE LOCAL TEMPORARY TABLE " + MetaDataSqlManager.FQ_TABLE_NAME_PLACEHOLDER +
+        "CREATE TEMPORARY TABLE " + MetaDataSqlManager.FQ_TABLE_NAME_PLACEHOLDER +
         "\n(\n" + MetaDataSqlManager.COLUMN_LIST_PLACEHOLDER + "\n)";
 
       con.getDbSettings().setCreateTableTemplate("table_creator_default", template);

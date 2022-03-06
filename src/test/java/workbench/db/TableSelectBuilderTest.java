@@ -142,7 +142,7 @@ public class TableSelectBuilderTest
     throws Exception
   {
     TestUtil util = getTestUtil();
-    WbConnection con = util.getConnection();
+    WbConnection con = util.getHSQLConnection("selectbuilder");
     TestUtil.executeScript(con, "create table person (nr integer, firstname varchar(20), lastname varchar(20))");
 
     DbSettings dbconfig = con.getDbSettings();

@@ -52,10 +52,22 @@ public class H2UniqueConstraintReader
     if (CollectionUtil.isEmpty(indexList))  return;
     if (con == null) return;
 
-    String baseSql =
+    String baseSql;
+    if (JdbcUtils.hasMinimumServerVersion(con, "2.0"))
+    {
+      baseSql =
+        "select unique_index_name, constraint_name\n" +
+        "from information_schema.table_constraints \n" +
+        "where constraint_type = 'UNIQUE' \n" +
+        "  and (table_catalog, table_schema, table_name) = (?,?,?)";
+    }
+    else
+    {
+      baseSql =
         "select unique_index_name, constraint_name\n" +
         "from information_schema.constraints \n" +
         "where (table_catalog, table_schema, table_name) = (?,?,?)";
+    }
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "unique constraints", baseSql, table.getCatalog(), table.getSchema(), table.getTableName());
 

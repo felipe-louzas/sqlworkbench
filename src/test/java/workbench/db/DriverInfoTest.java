@@ -59,7 +59,7 @@ public class DriverInfoTest
     expected.put("supportsUnion", "true");
     expected.put("supportsSavepoints", "true");
     expected.put("maxCharLiteralLength", "0");
-    expected.put("storesMixedCaseQuotedIdentifiers", "true");
+    expected.put("storesMixedCaseQuotedIdentifiers", "false");
     expected.put("supportsTransactions", "true");
     expected.put("supportsANSI92FullSQL", "false");
     expected.put("allProceduresAreCallable", "true");

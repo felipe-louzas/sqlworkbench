@@ -563,6 +563,30 @@ WHERE trigger_name not like 'BIN$%'
   </void>
 
   <void method="put">
+   <string>H2-2</string>
+   <object class="workbench.db.GetMetaDataSql">
+    <void property="baseSql">
+     <string>
+        SELECT trigger_name,
+               event_manipulation as trigger_type,
+               action_timing as trigger_event,
+               event_object_table as trigger_table
+        FROM information_schema.triggers
+      </string>
+    </void>
+    <void property="objectNameField">
+     <string>event_object_table</string>
+    </void>
+    <void property="schemaField">
+     <string>event_object_schema</string>
+    </void>
+    <void property="orderBy">
+     <string>ORDER BY trigger_name</string>
+    </void>
+   </object>
+  </void>
+
+  <void method="put">
    <string>HSQL Database Engine</string>
    <object class="workbench.db.GetMetaDataSql">
     <void property="baseSql">

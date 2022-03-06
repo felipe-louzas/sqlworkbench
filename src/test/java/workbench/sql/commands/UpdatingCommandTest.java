@@ -88,7 +88,7 @@ public class UpdatingCommandTest
     try
     {
       Statement stmt = this.connection.createStatement();
-      stmt.executeUpdate("CREATE MEMORY TABLE blob_test(nr integer, blob_data BINARY)");
+      stmt.executeUpdate("CREATE MEMORY TABLE blob_test(nr integer, blob_data BINARY VARYING)");
       stmt.close();
 
       final byte[] blobData = new byte[] { 1,2,3,4,5,6 };

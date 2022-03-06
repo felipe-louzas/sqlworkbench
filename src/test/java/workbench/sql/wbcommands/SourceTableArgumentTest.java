@@ -26,21 +26,19 @@ import java.util.List;
 import java.util.Set;
 
 import workbench.TestUtil;
-
-import workbench.db.ConnectionMgr;
-import workbench.db.TableIdentifier;
-import workbench.db.WbConnection;
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 import workbench.WbTestCase;
 import workbench.resource.Settings;
 
+import workbench.db.ConnectionMgr;
 import workbench.db.JdbcUtils;
+import workbench.db.TableIdentifier;
+import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -195,15 +193,15 @@ public class SourceTableArgumentTest
   {
     WbConnection con = null;
     Statement stmt = null;
-    String oldCatIgnore = Settings.getInstance().getProperty("workbench.sql.ignorecatalog.h2", null);
-    String schemaIgnore = Settings.getInstance().getProperty("workbench.sql.ignoreschema.h2", null);
+    String oldCatIgnore = Settings.getInstance().getProperty("workbench.sql.ignorecatalog.hsqldb", null);
+    String schemaIgnore = Settings.getInstance().getProperty("workbench.sql.ignoreschema.hsqldb", null);
     try
     {
-      Settings.getInstance().setProperty("workbench.sql.ignorecatalog.h2", "args");
-      Settings.getInstance().setProperty("workbench.sql.ignoreschema.h2", null);
+      Settings.getInstance().setProperty("workbench.sql.ignorecatalog.hsqldb", "args");
+      Settings.getInstance().setProperty("workbench.sql.ignoreschema.hsqldb", null);
 
       TestUtil util = new TestUtil("args");
-      con = util.getConnection();
+      con = util.getHSQLConnection("tableargs");
 
       String script =
         "create table arg_test (nr integer, data varchar(100));\n" +

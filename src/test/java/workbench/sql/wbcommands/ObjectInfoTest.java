@@ -59,7 +59,7 @@ public class ObjectInfoTest
     throws Exception
   {
     TestUtil util = getTestUtil();
-    db = util.getConnection();
+    db = util.getHSQLConnection("objectinfo");
     TestUtil.executeScript(db,
       "CREATE TABLE person (nr integer primary key, person_name varchar(100)); \n" +
       "CREATE TABLE person_group (person_nr integer, group_nr integer); \n" +
@@ -174,7 +174,7 @@ public class ObjectInfoTest
 
     StatementRunnerResult viewInfo = info.getObjectInfo(db, "v_person", false, true);
 //    System.out.println(viewInfo.getSourceCommand());
-    assertTrue(viewInfo.getSourceCommand().startsWith("CREATE FORCE VIEW"));
+    assertTrue(viewInfo.getSourceCommand().startsWith("CREATE VIEW"));
     assertTrue(viewInfo.hasDataStores());
 
     DataStore viewDs = viewInfo.getDataStores().get(0);

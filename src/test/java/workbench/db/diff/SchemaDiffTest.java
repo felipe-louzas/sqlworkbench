@@ -99,10 +99,10 @@ public class SchemaDiffTest
     assertEquals("Remark column not removed", "1", count);
 
     String value = TestUtil.getXPathValue(xml, "/schema-diff/modify-table[@name='ADDRESS']/modify-column[@name='STREET']/new-column-attributes/dbms-data-type");
-    assertEquals("Street column not changed", "VARCHAR(50)", value);
+    assertEquals("Street column not changed", "CHARACTER VARYING(50)", value);
 
     value = TestUtil.getXPathValue(xml, "/schema-diff/modify-table[@name='PERSON']/modify-column[@name='FIRSTNAME']/new-column-attributes/dbms-data-type");
-    assertEquals("Firstname column not changed", "VARCHAR(100)", value);
+    assertEquals("Firstname column not changed", "CHARACTER VARYING(100)", value);
 
     value = TestUtil.getXPathValue(xml, "count(/schema-diff/modify-table[@name='PERSON_ADDRESS']/add-foreign-keys/foreign-key)");
     assertEquals("Wrong FK count", "1", value);
@@ -365,7 +365,7 @@ public class SchemaDiffTest
       "CREATE sequence ref.seq_two  increment by 5;\n"+
       "CREATE sequence ref.seq_three;\n" +
       "CREATE TRIGGER ref.TRIG_INS BEFORE INSERT ON ref.person FOR EACH ROW CALL \"workbench.db.diff.H2TestTrigger\";\n" +
-      "commit;");
+      "commit;", true);
 
     TestUtil.executeScript(target,
       "create schema old;\n" +
@@ -377,7 +377,7 @@ public class SchemaDiffTest
       "CREATE sequence old.seq_one;\n"+
       "CREATE sequence old.seq_two;\n"+
       "CREATE sequence old.seq_to_be_deleted;\n" +
-      "commit;");
+      "commit;", true);
 
   }
 }

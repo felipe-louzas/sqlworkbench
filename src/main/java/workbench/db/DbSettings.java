@@ -2072,6 +2072,11 @@ public class DbSettings
     return getBoolProperty("fixfkretrieval", true);
   }
 
+  public List<String> getObjectTypeNameMap()
+  {
+    return getListProperty("typenames.mapping", null, false, false);
+  }
+
   public Set<String> getTableTypeSynonyms()
   {
     return CollectionUtil.caseInsensitiveSet(getListProperty("table.type.alternate.names"));

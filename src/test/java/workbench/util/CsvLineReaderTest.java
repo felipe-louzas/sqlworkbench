@@ -147,7 +147,6 @@ public class CsvLineReaderTest
       assertEquals("first2\tlast2\t2", line);
 
       line = reader.readLine();
-      TestUtil.dump(line);
       assertEquals("first3\t\"last3\nlast3last3\"\t3", line);
 
       line = reader.readLine();

@@ -704,6 +704,16 @@ public class StringUtil
     return !isBlank(value);
   }
 
+  public static boolean isNoneBlank(CharSequence... values)
+  {
+    if (values == null) return false;
+    for (CharSequence value : values)
+    {
+      if (isBlank(value)) return false;
+    }
+    return true;
+  }
+
   /**
    * Checks if the given parameter is "empty",
    * i.e: either null, length == 0 or contains only whitespace

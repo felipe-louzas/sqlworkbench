@@ -24,7 +24,7 @@ package workbench.db.exporter;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.Types;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 
 import workbench.log.CallerInfo;
@@ -313,11 +313,11 @@ public class OdsRowDataConverter
         out.write(TagWriter.CDATA_START);
         out.write(s);
         out.write(TagWriter.CDATA_END);
-        out.write("</dc:description>");
+        out.write("</dc:description>\n");
       }
       out.write("<meta:initial-creator>SQL Workbench/J</meta:initial-creator>\n");
       out.write("<meta:creation-date>");
-      out.write(tsFormat.formatDate(LocalDate.now()));
+      out.write(tsFormat.formatDateTimeValue(LocalDateTime.now()));
       out.write("</meta:creation-date>\n");
       out.write("</office:meta>\n");
       out.write("</office:document-meta>\n");

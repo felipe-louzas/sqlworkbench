@@ -2950,7 +2950,7 @@ public class WbImportTest
              "   salary    decimal(12,2), \n" +
              "   birthday  date, \n" +
              "   Lastname varchar(50)  NULL, \n" +
-             "   id        int4         NOT NULL, \n" +
+             "   id        int         NOT NULL, \n" +
              "   FIRSTNAME  varchar(50)  NULL \n" +
              ")";
     File xmlFile = new File(this.basedir, "xml_import.xml");
@@ -3978,7 +3978,7 @@ public class WbImportTest
     int rows = TestUtil.getNumberValue(connection, "select count(*) from junit_test");
     assertEquals(3, rows);
 
-    File ods = util.getResourceFile(this, "col_filter_test.ods");
+    File ods = TestUtil.getResourceFile(this, "col_filter_test.ods");
 
     result = importCmd.execute(
       "wbimport -file='" + ods.getAbsolutePath() + "' " +
@@ -3998,7 +3998,7 @@ public class WbImportTest
     rows = TestUtil.getNumberValue(connection, "select count(*) from junit_test where nr = 3");
     assertEquals(0, rows);
 
-    File xls = util.getResourceFile(this, "col_filter_test.xlsx");
+    File xls = TestUtil.getResourceFile(this, "col_filter_test.xlsx");
 
     result = importCmd.execute(
       "wbimport -file='" + xls.getAbsolutePath() + "' " +
@@ -4488,7 +4488,7 @@ public class WbImportTest
       "CREATE TABLE junit_test_pk (nr integer primary key, firstname varchar(100), lastname varchar(100));\n" +
       "CREATE TABLE numeric_test (nr integer primary key, amount double, prod_name varchar(50));\n" +
       "CREATE TABLE datatype_test (int_col integer, double_col double, char_col varchar(50), date_col date, time_col time, ts_col timestamp, nchar_col nvarchar(10));\n" +
-      "CREATE TABLE blob_test (nr integer, binary_data BINARY);\n" +
+      "CREATE TABLE blob_test (nr integer, binary_data binary varying);\n" +
       "CREATE TABLE bool_int_test (nr integer, int_flag INTEGER);\n" +
       "CREATE TABLE bool_test (nr integer, flag BOOLEAN);\n" +
       "CREATE TABLE const_test (id integer, flag1 varchar(2), flag2 varchar(2));\n" +

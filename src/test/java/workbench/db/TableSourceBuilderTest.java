@@ -74,7 +74,7 @@ public class TableSourceBuilderTest
       builder = new TableSourceBuilder(con);
       sql = builder.getTableSource(tbl, DropType.none, false);
 //      System.out.println(sql);
-      assertTrue(sql.contains("FIRSTNAME  VARCHAR(20)   NULL"));
+      assertTrue(sql.contains("FIRSTNAME  CHARACTER VARYING(20)   NULL"));
 
       TestUtil.executeScript(con,
         "ALTER TABLE person ALTER COLUMN firstname SET DEFAULT 'Arthur';" +
@@ -96,7 +96,7 @@ public class TableSourceBuilderTest
       Settings.getInstance().setProperty("workbench.db." + dbid + ".coldef", ColumnChanger.PARAM_DATATYPE + " " + ColumnDefinitionTemplate.PARAM_NOT_NULL + " " + ColumnChanger.PARAM_DEFAULT_VALUE);
       sql = builder.getTableSource(tbl, DropType.none, false);
 //      System.out.println(sql);
-      assertTrue(sql.contains("FIRSTNAME  VARCHAR(20)   DEFAULT 'Arthur'"));
+      assertTrue(sql.contains("FIRSTNAME  CHARACTER VARYING(20)   DEFAULT 'Arthur'"));
     }
     finally
     {
@@ -127,8 +127,8 @@ public class TableSourceBuilderTest
       TableIdentifier tbl = new TableIdentifier("ORDERS");
       String sql = builder.getTableSource(tbl, DropType.none, false);
 //      System.out.println(sql);
-      assertTrue(sql.contains("CONSTRAINT CHK_AMOUNT CHECK (AMOUNT >= 0)"));
-      assertTrue(sql.contains("CONSTRAINT CHK_STATUS CHECK (STATUS_FLAG IN(0, 1, 2))"));
+      assertTrue(sql.contains("CONSTRAINT CHK_AMOUNT CHECK (\"AMOUNT\" >= CAST(0 AS NUMERIC(1))"));
+      assertTrue(sql.contains("CONSTRAINT CHK_STATUS CHECK (\"STATUS_FLAG\" IN(0, 1, 2))"));
 
       TestUtil.executeScript(con,
         "drop table orders; \n" +
@@ -143,7 +143,7 @@ public class TableSourceBuilderTest
       );
       sql = builder.getTableSource(tbl, DropType.none, false);
 //      System.out.println(sql);
-      assertTrue(sql.contains("CONSTRAINT CHK_AMOUNT CHECK (AMOUNT >= 0)\n);"));
+      assertTrue(sql.contains("CONSTRAINT CHK_AMOUNT CHECK (\"AMOUNT\" >= CAST(0 AS NUMERIC(1))"));
     }
     finally
     {

@@ -77,7 +77,7 @@ public class ColumnDropperTest
     assertNotNull(sql);
     ScriptParser p = new ScriptParser(sql.trim());
     p.setReturnStartingWhitespace(false);
-    assertEquals(2, p.getSize());
+    assertEquals(3, p.getSize());
 
     assertEquals("ALTER TABLE PERSON DROP COLUMN DUMMY1", p.getCommand(0).trim());
     assertEquals("ALTER TABLE PERSON DROP COLUMN DUMMY2", p.getCommand(1).trim());
