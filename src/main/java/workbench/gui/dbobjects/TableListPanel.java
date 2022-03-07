@@ -39,7 +39,6 @@ import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -78,7 +77,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.GuiSettings;
-import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 import workbench.workspace.WbWorkspace;
@@ -107,7 +105,6 @@ import workbench.db.TriggerReaderFactory;
 import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
 import workbench.db.dependency.DependencyReaderFactory;
-import workbench.db.postgres.PostgresEventTriggerReader;
 
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
@@ -192,7 +189,7 @@ public class TableListPanel
   private WbTabbedPane displayTab;
   private final WbSplitPane splitPane;
 
-  private JComboBox tableTypes;
+  private MultiSelectComboBox tableTypes;
   private String currentSchema;
   private String currentCatalog;
   private final SpoolDataAction spoolData;
@@ -264,15 +261,9 @@ public class TableListPanel
     displayTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
     displayTab.setName("displaytab");
 
-    if (DbExplorerSettings.getDbExplorerMultiSelectTypes())
-    {
-      tableTypes = new MultiSelectComboBox();
-      ((MultiSelectComboBox)tableTypes).setCloseOnSelect(DbExplorerSettings.getDbExplorerMultiSelectTypesAutoClose());
-    }
-    else
-    {
-       tableTypes = new JComboBox<>();
-    }
+    tableTypes = new MultiSelectComboBox();
+    tableTypes.setCloseOnSelect(DbExplorerSettings.getDbExplorerMultiSelectTypesAutoClose());
+
     this.tableDefinition = new TableDefinitionPanel();
     this.tableDefinition.setName("tabledefinition");
     this.tableDefinition.addPropertyChangeListener(TableDefinitionPanel.INDEX_PROP, this);
@@ -1015,75 +1006,8 @@ public class TableListPanel
     shouldRetrievePartitions = true;
   }
 
-  private void setupSingleSelectTypes()
+  private void setupObjectTypes()
   {
-    Collection<String> types = this.dbConnection.getMetadata().getObjectTypes();
-
-    // Event Triggers are displayed in the trigger panel
-    types.remove(PostgresEventTriggerReader.TYPE);
-
-    this.tableTypes.removeAllItems();
-    this.tableTypes.addItem("*");
-
-    try
-    {
-      String longestName = "";
-      for (String type : types)
-      {
-        this.tableTypes.addItem(type);
-        if (type.length() > longestName.length())
-        {
-          longestName = type;
-        }
-      }
-
-      int maxWidth = (int)(WbSwingUtilities.calculateCharWidth(this, longestName.length() * 2) * 1.2);
-      int maxHeight = (int)(IconMgr.getInstance().getSizeForLabel() * 1.2);
-      Dimension maxSize = new Dimension(maxWidth, maxHeight);
-      tableTypes.setMaximumSize(maxSize);
-      tableTypes.setPreferredSize(maxSize);
-
-      String tableView = this.dbConnection.getMetadata().getBaseTableTypeName() + "," + this.dbConnection.getMetadata().getViewTypeName();
-      String add = Settings.getInstance().getProperty("workbench.dbexplorer." + dbConnection.getDbId() + ".typefilter.additional", null);
-
-      if (add == null)
-      {
-        // no DBMS specific configuration use a global one
-        add = Settings.getInstance().getProperty("workbench.dbexplorer.typefilter.additional", tableView);
-      }
-
-      List<String> userFilter = StringUtil.stringToList(add, ";", true, true);
-
-      for (String t : userFilter)
-      {
-        List<String> l = StringUtil.stringToList(t, ",");
-        l.retainAll(types); // make sure only types are used that are actually valid.
-        String newFilter = StringUtil.listToString(l, ',');
-        if (StringUtil.isNonBlank(newFilter) && !types.contains(newFilter) )
-        {
-          this.tableTypes.addItem(newFilter);
-        }
-      }
-
-      if (tableTypeToSelect != null)
-      {
-        this.tableTypes.setSelectedItem(this.tableTypeToSelect.toUpperCase());
-      }
-      else
-      {
-        this.tableTypes.setSelectedIndex(0);
-      }
-    }
-    catch (Exception e)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Error when setting table types", e);
-    }
-  }
-
-  private void setupMultiSelectTypes()
-  {
-    MultiSelectComboBox<String> typeCb = (MultiSelectComboBox)tableTypes;
-
     List<String> types = new ArrayList<>(this.dbConnection.getMetadata().getObjectTypes());
     List<String> toSelect = new ArrayList<>();
 
@@ -1100,11 +1024,11 @@ public class TableListPanel
     }
 
     // setItems() will clear all previous items
-    typeCb.setItems(types, toSelect);
+    tableTypes.setItems(types, toSelect);
 
     if (toSelect.isEmpty())
     {
-      typeCb.selectAll();
+      tableTypes.selectAll();
     }
   }
 
@@ -1150,14 +1074,7 @@ public class TableListPanel
 
     reset();
 
-    if (tableTypes instanceof MultiSelectComboBox)
-    {
-      setupMultiSelectTypes();
-    }
-    else
-    {
-      setupSingleSelectTypes();
-    }
+    setupObjectTypes();
     tableTypes.setMaximumRowCount(Math.min(tableTypes.getItemCount() + 1, maxTypeItems));
 
     this.tableTypes.addActionListener(this);
@@ -1239,30 +1156,8 @@ public class TableListPanel
   private String[] getSelectedTypes()
   {
     if (tableTypes == null) return null;
-
-    String[] types = null;
-
-    if (tableTypes instanceof MultiSelectComboBox)
-    {
-      MultiSelectComboBox<String> cb = (MultiSelectComboBox<String>)tableTypes;
-      List<String> items = cb.getSelectedItems();
-      types = items.toArray(String[]::new);
-    }
-    else
-    {
-      String type = (String)tableTypes.getSelectedItem();
-
-      if (!"*".equals(type))
-      {
-        List<String> typeList = StringUtil.stringToList(type);
-        types = new String[typeList.size()];
-        for (int i=0; i < typeList.size(); i++)
-        {
-          types[i] = typeList.get(i);
-        }
-      }
-    }
-    return types;
+    List<String> items = tableTypes.getSelectedItems();
+    return items.toArray(String[]::new);
   }
 
   public void retrieve()

@@ -22,8 +22,6 @@
 package workbench.gui.dialogs.export;
 
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -47,7 +45,6 @@ import workbench.db.exporter.ControlFileFormat;
 import workbench.db.exporter.WrongFormatFileException;
 
 import workbench.gui.WbSwingUtilities;
-import workbench.gui.components.WbComboBox;
 import workbench.gui.dialogs.QuoteEscapeSelector;
 
 import workbench.util.CharacterEscapeType;
@@ -68,7 +65,9 @@ public class TextOptionsPanel
   {
     super();
     initComponents();
-    populateEscapeRange((WbComboBox)escapeRange);
+    
+    ComboBoxModel model = new DefaultComboBoxModel(CharacterRange.getRanges());
+    escapeRange.setModel(model);
 
     StringBuilder formatList = new StringBuilder(20);
     boolean first = true;
@@ -98,53 +97,6 @@ public class TextOptionsPanel
     ComboBoxModel blobModel = new DefaultComboBoxModel(bTypes.toArray());
     blobTypes.setModel(blobModel);
     blobTypes.setSelectedItem(BlobMode.SaveToFile.toString());
-  }
-
-  public static void populateEscapeRange(WbComboBox combo)
-  {
-    CharacterRange[] ranges = CharacterRange.getRanges();
-
-    Font f = combo.getFont();
-
-    int width = 0;
-    int maxwidth = 0;
-
-    for (int i = 0; i < ranges.length; i++)
-    {
-      combo.addItem(ranges[i]);
-      if (f != null)
-      {
-        FontMetrics fm = combo.getFontMetrics(f);
-        if (fm != null)
-        {
-          int w = fm.stringWidth(ranges[i].toString());
-          if (i == 0)
-          {
-            width = w;
-          }
-          if (w > maxwidth)
-          {
-            maxwidth = w;
-          }
-        }
-      }
-    }
-
-    if (width == 0)
-    {
-      width = 50;
-    }
-
-    Dimension pref = combo.getPreferredSize();
-    int prefWidth = (int) pref.getWidth();
-
-    int add = prefWidth - maxwidth;
-    width += add;
-
-    Dimension max = new Dimension(width, (int) pref.getHeight());
-    combo.setMaximumSize(max);
-    combo.setPreferredSize(max);
-    combo.setPopupWidth(prefWidth);
   }
 
   public void saveSettings(String type)
@@ -387,7 +339,7 @@ public class TextOptionsPanel
     blobTypes = new JComboBox();
     blobTypesLabel = new JLabel();
     escapeLabel = new JLabel();
-    escapeRange = new WbComboBox();
+    escapeRange = new JComboBox();
     quoteHeader = new JCheckBox();
 
     setMinimumSize(new Dimension(200, 50));

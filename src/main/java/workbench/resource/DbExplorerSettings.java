@@ -136,11 +136,6 @@ public class DbExplorerSettings
     Settings.getInstance().setProperty(PROP_TABLE_HISTORY, flag);
   }
 
-  public static boolean getDbExplorerMultiSelectTypes()
-  {
-    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.tablelist.types.multiselect", true);
-  }
-
   public static boolean getDbExplorerMultiSelectTypesAutoClose()
   {
     return Settings.getInstance().getBoolProperty("workbench.dbexplorer.tablelist.types.multiselect.autoclose", false);

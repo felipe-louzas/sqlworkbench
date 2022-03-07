@@ -22,7 +22,6 @@
 package workbench.gui.components;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,18 +34,16 @@ import javax.swing.ComboBoxEditor;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
-
-import workbench.gui.lnf.LnFHelper;
 
 import workbench.util.CollectionUtil;
 
@@ -65,7 +62,7 @@ import workbench.util.CollectionUtil;
  * @author Thomas Kellerer
  */
 public class MultiSelectComboBox<T extends Object>
-  extends WbComboBox
+  extends JComboBox
   implements PopupMenuListener
 {
   private static final String PROP_KEY = "userObject";
@@ -106,10 +103,7 @@ public class MultiSelectComboBox<T extends Object>
   private boolean closePopupOnSelect;
   private List<T> lastSelected;
 
-  private int maxElementWidth;
-
   private final MultiSelectRenderer myRenderer = new MultiSelectRenderer();
-  private final DividerBorder topDivider = new DividerBorder(DividerBorder.TOP);
 
   public MultiSelectComboBox()
   {
@@ -134,19 +128,11 @@ public class MultiSelectComboBox<T extends Object>
 
     setupItemIndexes();
 
-    maxElementWidth = Integer.MIN_VALUE;
-
     for (T item : items)
     {
       boolean selected = selectedItems == null ? false : selectedItems.contains(item);
       JCheckBox cb = new JCheckBox(item.toString());
       cb.setBorder(EMPTY_BORDER);
-
-      int cwidth = cb.getPreferredSize().width;
-      if (cwidth > maxElementWidth)
-      {
-        maxElementWidth = cwidth;
-      }
       cb.putClientProperty(PROP_KEY, item);
       cb.setSelected(selected);
       newItems.add(cb);
@@ -158,13 +144,6 @@ public class MultiSelectComboBox<T extends Object>
       values = newItems;
     }
 
-    Dimension pref = getPreferredSize();
-    this.setMinimumSize(new Dimension(maxElementWidth / 2, pref.height));
-    if (!LnFHelper.isFlatLaf())
-    {
-      int scrollWidth = UIManager.getInt("ScrollBar.width");
-      setPopupWidth(maxElementWidth + scrollWidth + 5);
-    }
     setMaximumRowCount(Math.min(getItemCount() + 1, 25));
     this.setToolTipText(getSelectedItemsDisplay());
     super.addActionListener(this);
@@ -513,6 +492,7 @@ public class MultiSelectComboBox<T extends Object>
   public void popupMenuWillBecomeVisible(PopupMenuEvent e)
   {
     lastSelected = getSelectedItems();
+
   }
 
   @Override
@@ -531,15 +511,7 @@ public class MultiSelectComboBox<T extends Object>
   private class MultiSelectRenderer
     extends DefaultListCellRenderer
   {
-    private ImageIcon icon;
-    private Dimension iconSize;
-    MultiSelectRenderer()
-    {
-      icon = IconMgr.getInstance().getLabelIcon("filter_go");
-      int width = icon.getIconWidth();
-      int height = icon.getIconHeight();
-      iconSize = new Dimension((int)(width * 1.5), (int)(height * 1.5));
-    }
+    private final ImageIcon icon = IconMgr.getInstance().getLabelIcon("filter_go");
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
@@ -557,7 +529,7 @@ public class MultiSelectComboBox<T extends Object>
       else if (index == selectAllIndex)
       {
         JComponent renderer = (JComponent) super.getListCellRendererComponent(list, selectAllLabel, index, isSelected, cellHasFocus);
-        renderer.setBorder(topDivider);
+        renderer.setBorder(DividerBorder.TOP_DIVIDER);
         renderer.setToolTipText(null);
         return renderer;
       }
@@ -571,7 +543,6 @@ public class MultiSelectComboBox<T extends Object>
       else if (index == summaryIndex)
       {
         JComponent renderer = (JComponent) super.getListCellRendererComponent(list, getSelectedItemsDisplay(), index, isSelected, cellHasFocus);
-        renderer.setPreferredSize(iconSize);
         renderer.setToolTipText(ResourceMgr.getDescription("LblMultiClose"));
         try
         {
@@ -588,7 +559,6 @@ public class MultiSelectComboBox<T extends Object>
       // index == -1 means the currently selected item should be displayed
       // which is only requested when the ComboBox is closed, so we need
       // to adjust the ComboBox editor
-
       int selectedCount = getSelectedCount();
       ComboBoxEditor editor = MultiSelectComboBox.this.getEditor();
       if (selectedCount == 0)
