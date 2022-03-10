@@ -647,6 +647,13 @@ public class ExportOptionsPanel
         if (poiAvailable) setTypeXls();
         break;
     }
+
+    // This can happen if XLSX or XLS was passed, but the POI
+    // libraries aren't present.
+    if (this.currentType == null)
+    {
+      setTypeText();
+    }
   }
 
   public ExportType getExportType()

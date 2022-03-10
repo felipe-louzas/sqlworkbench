@@ -306,7 +306,7 @@ public class ExportFileDialog
     this.restoreSettings();
     this.exportOptions.addPropertyChangeListener("exportType", this);
 
-    if (exportOptions.getExportType().isSqlType())
+    if (exportOptions.getExportType() != null && exportOptions.getExportType().isSqlType())
     {
       EventQueue.invokeLater(this::checkSqlOptions);
     }

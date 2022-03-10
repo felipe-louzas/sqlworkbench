@@ -63,7 +63,7 @@ public class DataStoreExporter
     }
     this.output = null;
     boolean selected = dialog.selectOutput();
-    if (selected)
+    if (selected && getSelectedFilename() != null)
     {
       this.output = new WbFile(getSelectedFilename());
       writeFile();

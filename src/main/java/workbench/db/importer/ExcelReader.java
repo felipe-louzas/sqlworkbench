@@ -45,7 +45,6 @@ import workbench.util.MessageBuffer;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -53,6 +52,7 @@ import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -541,7 +541,7 @@ public class ExcelReader
         value = null;
         break;
       case NUMERIC:
-        boolean isDate = HSSFDateUtil.isCellDateFormatted(cell);
+        boolean isDate = DateUtil.isCellDateFormatted(cell);
         if (isDate)
         {
           if (useStringDates)
