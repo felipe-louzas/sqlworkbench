@@ -21,9 +21,13 @@
  */
 package workbench.db.exporter;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -52,9 +56,19 @@ class ExcelDataFormat
   ExcelDataFormat(String decFormat, String dtFormat, String intFormat, String tsFormat)
   {
     this.decimalFormat = decFormat;
-    this.dateFormat = dtFormat;
+    this.dateFormat = cleanupDateTimeFormat(dtFormat);
     this.integerFormat = intFormat;
-    this.timestampFormat = tsFormat;
+    this.timestampFormat = cleanupDateTimeFormat(tsFormat);
+  }
+
+  public String cleanupDateTimeFormat(String format)
+  {
+    if (format == null) return format;
+    if (DateUtil.isADateFormat(0, format)) return format;
+    String newFormat = format.replaceAll("\\.[nN]+", "");
+    newFormat = newFormat.replaceAll("[QqgkKAVvYL]+", "");
+    LogMgr.logWarning(new CallerInfo(){}, "Converted invalid Excel format: \"" + format + "\" to: " + newFormat);
+    return newFormat;
   }
 
   protected void setupWithWorkbook(Workbook wb)
