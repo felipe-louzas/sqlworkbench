@@ -149,18 +149,19 @@ public class PostgresDependencyReader
 
   private final String sequencesUsedByTable =
     "-- SQL Workbench/J \n" +
-    "select distinct sn.nspname as sequence_schema, s.relname as sequence_name, 'SEQUENCE', obj_description(s.oid) as remarks\n" +
-    "from pg_catalog.pg_class s\n" +
-    "  join pg_catalog.pg_namespace sn on sn.oid = s.relnamespace \n" +
-    "  join pg_depend d on d.refobjid = s.oid and d.refclassid='pg_class'::regclass \n" +
-    "  join pg_attrdef ad on ad.oid = d.objid and d.classid = 'pg_attrdef'::regclass\n" +
-    "  join pg_attribute col on col.attrelid = ad.adrelid and col.attnum = ad.adnum\n" +
-    "  join pg_catalog.pg_class tbl on tbl.oid = ad.adrelid \n" +
-    "  join pg_catalog.pg_namespace ts on ts.oid = tbl.relnamespace \n" +
-    "where s.relkind = 'S' \n" +
-    "  and d.deptype in ('a', 'n') \n " +
-    "  and ts.nspname = ? \n" +
-    "  and tbl.relname = ?";
+    "select seq_ns.nspname as sequence_schema, \n" +
+    "       seq.relname as sequence_name,\n" +
+    "       tab_ns.nspname as table_schema,\n" +
+    "       'SEQUENCE' as object_type, \n" +
+    "       pg_catalog.obj_description(seq.oid) as remarks\n" +
+    "from pg_catalog.pg_class tab \n" +
+    "  JOIN pg_catalog.pg_namespace tab_ns on tab.relnamespace = tab_ns.oid \n" +
+    "  JOIN pg_catalog.pg_depend d ON d.refobjid = tab.oid AND d.deptype in ('i', 'a') \n" +
+    "  JOIN pg_catalog.pg_class seq ON d.objid = seq.oid \n" +
+    "  join pg_catalog.pg_namespace seq_ns on seq.relnamespace = seq_ns.oid \n" +
+    "where seq.relkind = 'S' \n" +
+    "  and tab_ns.nspname = ? \n" +
+    "  and tab.relname = ?";
 
   private final String tablesUsingSequence =
     "-- SQL Workbench/J \n" +
