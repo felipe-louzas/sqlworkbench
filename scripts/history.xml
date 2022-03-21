@@ -14,6 +14,7 @@
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
     <entry dev-build="1" type="enh">It's now possible to jump to the corresponding table from within the trigger list.</entry>
     <entry dev-build="1" type="enh">In the DbTree, table nodes for "Uses", Used by", "References" and "Referenced by" can now be expanded to show the table details.</entry>
+    <entry dev-build="2" type="fix">For PostgreSQL, implicit sequences (identity, serial) where not shown in the dependency of a table</entry>
     <entry dev-build="2" type="fix">When exporting to Excel (XLS, XLSX), SQL Workbench/J tries to cleanup invalid date/time formats</entry>
     <entry dev-build="2" type="fix">The "Save As" dialog wouldn't work, if the previously an XLS export was used, but the POI libraries aren't available</entry>
     <entry dev-build="2" type="fix">OpenDocument spreadsheets (.ods) where not generated correctly</entry>

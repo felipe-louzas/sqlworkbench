@@ -2452,6 +2452,12 @@ public class DbSettings
     return getBoolProperty("errorinfo.leading.comment.included", false);
   }
 
+  public boolean getIncludeErrorCodeInMessage()
+  {
+    boolean globalDefault = Settings.getInstance().getBoolProperty("workbench.errorinfo.include.sqlcode", false);
+    return getBoolProperty("errorinfo.include.sqlcode", globalDefault);
+  }
+
   public boolean getCheckResultSetReadOnlyCols()
   {
     return getBoolProperty("resultset.columns.check.readonly", true);

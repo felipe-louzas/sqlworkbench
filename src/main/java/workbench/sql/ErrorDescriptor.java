@@ -24,6 +24,7 @@ import java.sql.SQLException;
 
 import workbench.util.DdlObjectInfo;
 import workbench.util.ExceptionUtil;
+import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
 /**
@@ -43,10 +44,12 @@ public class ErrorDescriptor
   private DdlObjectInfo object;
   private String errorMessage;
   private String errorCode;
+  private String sqlState;
   private boolean messageIncludesPosition;
   private int inStatementOffset = 0;
   private String originalStatement;
   private WbFile scriptFile;
+  private boolean includeErrorCodeInMessage;
 
   public ErrorDescriptor()
   {
@@ -81,6 +84,11 @@ public class ErrorDescriptor
   public void setOriginalStatement(String statement)
   {
     this.originalStatement = statement;
+  }
+
+  public void setIncludeErrorCode(boolean flag)
+  {
+    this.includeErrorCodeInMessage = flag;
   }
 
   /**
@@ -157,43 +165,42 @@ public class ErrorDescriptor
     return object;
   }
 
-  public String getErrorCode(boolean upper)
-  {
-    if (errorCode != null && upper)
-    {
-      return errorCode.toUpperCase();
-    }
-
-    return errorCode;
-  }
-
-  public String getErrorCode()
-  {
-    return errorCode;
-  }
-
   public void setErrorCode(Throwable th)
   {
+    errorCode = null;
+    sqlState = null;
     if (th instanceof SQLException)
     {
       SQLException se = (SQLException)th;
-
-      int errCod = se.getErrorCode();
-      String errState = se.getSQLState();
-
-      if (errCod != 0)
+      sqlState = StringUtil.trimToNull(se.getSQLState());
+      int code = se.getErrorCode();
+      if (code != 0)
       {
-        errorCode = String.valueOf(errCod);
-      }
-      else if (errState != null)
-      {
-        errorCode = errState;
+        errorCode = String.valueOf(code);
       }
     }
   }
 
   public String getErrorMessage()
   {
+    if (includeErrorCodeInMessage)
+    {
+      String msg = "";
+      if (StringUtil.isNonBlank(errorCode))
+      {
+        msg = "Error code: " + errorCode;
+      }
+      if (StringUtil.isNonBlank(sqlState))
+      {
+        if (msg.length() > 0) msg += "\n";
+        msg += "SQL state: " + sqlState;
+      }
+
+      if (msg.length() > 0)
+      {
+        return msg + "\n" + errorMessage;
+      }
+    }
     return errorMessage;
   }
 
