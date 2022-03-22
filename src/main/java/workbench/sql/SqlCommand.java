@@ -1229,7 +1229,7 @@ public class SqlCommand
       ErrorDescriptor error = reader.getErrorPosition(currentConnection, sql, e);
       if (error != null && error.getErrorMessage() != null)
       {
-        error.setIncludeErrorCode(currentConnection.getDbSettings().getIncludeTableFunctionsForTableCompletion());
+        error.setIncludeErrorCode(currentConnection.getDbSettings().getIncludeErrorCodeInMessage());
         String fullMsg = reader.enhanceErrorMessage(sql, error.getErrorMessage(), error);
         result.addErrorMessage(error, fullMsg);
       }
