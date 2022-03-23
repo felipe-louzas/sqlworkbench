@@ -715,9 +715,19 @@ public class InputHandler
       if (textArea.isEditable())
       {
         char typedChar = str.charAt(0);
-        if (textArea.shouldInsert(typedChar))
+        if (textArea.getAutoQuoteSelection() && str.length() == 1
+            && (typedChar == '"' || typedChar == '\''))
+        {
+          String newSelection = typedChar + textArea.getSelectedText() + typedChar;
+          textArea.setSelectedText(newSelection);
+        }
+        else
         {
           textArea.overwriteSetSelectedText(str);
+        }
+
+        if (textArea.shouldInsert(typedChar))
+        {
           if (str.length() == 1)
           {
             textArea.completeBracket(typedChar);

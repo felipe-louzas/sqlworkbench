@@ -195,6 +195,8 @@ public class JEditTextArea
   private BracketCompleter bracketCompleter;
 
   private MacroExpander expander;
+  private boolean autoQuoteSelection = false;
+
 
   /**
    * Creates a new JEditTextArea with the default settings.
@@ -279,9 +281,11 @@ public class JEditTextArea
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_NO_WHITESPACE,
       Settings.PROPERTY_EDITOR_CURRENT_STMT_COLOR,
       Settings.PROPERTY_EDITOR_ERROR_STMT_COLOR,
+      Settings.PROPERTY_EDITOR_AUTO_QUOTE,
       Settings.PROPERTY_EDITOR_BRACKET_HILITE_MIN_DIST,
       GuiSettings.PROP_FONT_ZOOM_WHEEL);
 
+    autoQuoteSelection = Settings.getInstance().getEditorAutoQuoteSelection();
     minHighlightLength = Settings.getInstance().getMinLengthForSelectionHighlight();
     highlightNoWhitespace = Settings.getInstance().getSelectionHighlightNoWhitespace();
     minBracketHiliteDistance = Settings.getInstance().getMinDistanceForBracketHighlight();
@@ -302,7 +306,11 @@ public class JEditTextArea
   @Override
   public void propertyChange(PropertyChangeEvent evt)
   {
-    if (evt.getPropertyName().startsWith(Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_BASE))
+    if (evt.getPropertyName().equals(Settings.PROPERTY_EDITOR_AUTO_QUOTE))
+    {
+      autoQuoteSelection = Settings.getInstance().getEditorAutoQuoteSelection();
+    }
+    else if (evt.getPropertyName().startsWith(Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_BASE))
     {
       minHighlightLength = Settings.getInstance().getMinLengthForSelectionHighlight();
       highlightNoWhitespace = Settings.getInstance().getSelectionHighlightNoWhitespace();
@@ -404,6 +412,16 @@ public class JEditTextArea
       this.setSelectedText(sel);
       this.select(start, end);
     }
+  }
+
+  public boolean getAutoQuoteSelection()
+  {
+    return autoQuoteSelection;
+  }
+
+  public void setAutoQuoteSelection(boolean flag)
+  {
+    this.autoQuoteSelection = flag;
   }
 
   public String getCommentChar()

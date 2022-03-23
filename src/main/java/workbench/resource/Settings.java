@@ -139,6 +139,7 @@ public class Settings
 
   public static final String PROPERTY_EDITOR_TAB_WIDTH = "workbench.editor.tabwidth";
 
+  public static final String PROPERTY_EDITOR_AUTO_QUOTE = "workbench.editor.selection.autoquote";
   public static final String PROPERTY_EDITOR_CURRENT_LINE_COLOR = "workbench.editor.currentline.color";
   public static final String PROPERTY_EDITOR_CURRENT_STMT_COLOR = "workbench.editor.currentstmt.color";
   public static final String PROPERTY_EDITOR_ERROR_STMT_COLOR = "workbench.editor.color.error";
@@ -2013,6 +2014,16 @@ public class Settings
   public Color getEditorCurrentLineColor()
   {
     return getColor(PROPERTY_EDITOR_CURRENT_LINE_COLOR, null);
+  }
+
+  public boolean getEditorAutoQuoteSelection()
+  {
+    return getBoolProperty(PROPERTY_EDITOR_AUTO_QUOTE, false);
+  }
+
+  public void setEditorAutoQuoteSelection(boolean flag)
+  {
+    setProperty(PROPERTY_EDITOR_AUTO_QUOTE, flag);
   }
 
   public void setMinLengthForSelectionHighlight(int len)
