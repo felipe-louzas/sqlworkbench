@@ -78,6 +78,8 @@ import workbench.gui.fontzoom.DecreaseFontSize;
 import workbench.gui.fontzoom.IncreaseFontSize;
 import workbench.gui.fontzoom.ResetFontSize;
 
+import workbench.util.StringUtil;
+
 
 /**
  * An input handler converts the user's key strokes into concrete actions.
@@ -715,19 +717,18 @@ public class InputHandler
       if (textArea.isEditable())
       {
         char typedChar = str.charAt(0);
-        if (textArea.getAutoQuoteSelection() && str.length() == 1
-            && (typedChar == '"' || typedChar == '\''))
+        if (textArea.getAutoQuoteSelection()
+            && textArea.getSelectionLength() > 0
+            && str.length() == 1
+            && (typedChar == '"' || typedChar == '\'')
+            && !StringUtil.equalString(str, textArea.getSelectedText()))
         {
           String newSelection = typedChar + textArea.getSelectedText() + typedChar;
           textArea.setSelectedText(newSelection);
         }
-        else
+        else if (textArea.shouldInsert(typedChar))
         {
           textArea.overwriteSetSelectedText(str);
-        }
-
-        if (textArea.shouldInsert(typedChar))
-        {
           if (str.length() == 1)
           {
             textArea.completeBracket(typedChar);
