@@ -1,6 +1,4 @@
 /*
- * CleanJavaCodeAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
@@ -27,13 +25,14 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.TextContainer;
 import workbench.resource.ResourceMgr;
+
 import workbench.util.StringUtil;
 
 /**

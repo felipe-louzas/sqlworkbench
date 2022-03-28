@@ -1,6 +1,4 @@
 /*
- * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
- *
  * Copyright 2002-2013, Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
@@ -36,7 +34,6 @@ import workbench.db.WbConnection;
 import workbench.gui.actions.WbAction;
 
 import workbench.sql.DelimiterDefinition;
-import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
 
 import workbench.util.StringUtil;

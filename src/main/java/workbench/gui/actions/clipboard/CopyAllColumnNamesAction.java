@@ -1,6 +1,4 @@
 /*
- * CopyAllColumnNamesAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
@@ -28,10 +26,9 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 
-import workbench.gui.actions.WbAction;
-
 import workbench.resource.Settings;
 
+import workbench.gui.actions.WbAction;
 import workbench.gui.components.WbTable;
 
 /**

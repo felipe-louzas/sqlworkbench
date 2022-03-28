@@ -1,6 +1,4 @@
 /*
- * CloseResultTabAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
@@ -24,10 +22,7 @@
 package workbench.gui.actions;
 
 import java.awt.EventQueue;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
-
-import javax.swing.SwingUtilities;
 
 import workbench.gui.sql.DetachedResultWindow;
 import workbench.gui.sql.DwPanel;

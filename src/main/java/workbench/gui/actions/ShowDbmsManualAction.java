@@ -1,6 +1,4 @@
 /*
- * ShowDbmsManualAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
@@ -72,7 +70,7 @@ public class ShowDbmsManualAction
   {
     setDbms(null, -1, -1);
   }
-  
+
   public void setDbms(String dbid, VersionNumber version)
   {
     if (version == null)

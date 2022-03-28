@@ -1,6 +1,4 @@
 /*
- * CloseResultTabAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
@@ -26,10 +24,13 @@ package workbench.gui.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import javax.swing.KeyStroke;
-import workbench.gui.sql.SqlPanel;
+
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
+
+import workbench.gui.sql.SqlPanel;
 
 /**
  * An action to close the currently selected result tab of a SqlPanel.

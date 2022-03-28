@@ -1,6 +1,4 @@
 /*
- * JumpToStatement.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
@@ -23,23 +21,15 @@
  */
 package workbench.gui.actions;
 
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JComboBox;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.components.ValidatingDialog;
 import workbench.gui.sql.SqlPanel;
 
 import workbench.sql.parser.ScriptParser;
 
-import workbench.util.StringUtil;
 
 /**
  *

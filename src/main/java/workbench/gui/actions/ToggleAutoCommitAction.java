@@ -1,6 +1,4 @@
 /*
- * ToggleAutoCommitAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
@@ -34,6 +32,7 @@ import javax.swing.JToolBar;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.WbConnection;
+
 import workbench.gui.components.WbToolbarButton;
 
 /**

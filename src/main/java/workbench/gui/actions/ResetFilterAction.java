@@ -1,6 +1,4 @@
 /*
- * ResetFilterAction.java
- *
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
  * Copyright 2002-2022, Thomas Kellerer
