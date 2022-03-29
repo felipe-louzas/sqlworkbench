@@ -58,7 +58,7 @@ public class UpdateDatabaseAction
     {
       confirm = confirm || connection.confirmUpdatesInSession();
     }
-    confirm = confirm || isCtrlPressed(e);
+    confirm = confirm || (invokedByMouse(e) && isCtrlPressed(e));
 
     panel.saveChangesToDatabase(confirm);
   }

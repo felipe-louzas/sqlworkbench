@@ -94,12 +94,12 @@ public class CreateDropScriptAction
     }
     DropScriptGenerator generator = new DropScriptGenerator(source.getConnection());
     generator.setEndTransaction(true);
-    if (isCtrlPressed(e))
+    if (invokedByMouse(e) && isCtrlPressed(e))
     {
       generator.setIncludeRecreateStatements(false);
     }
 
-    if (isAltPressed(e))
+    if (invokedByMouse(e) && isAltPressed(e))
     {
       generator.setIncludeDropTable(false);
     }

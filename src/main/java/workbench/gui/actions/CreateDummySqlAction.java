@@ -122,7 +122,7 @@ public class CreateDummySqlAction
 
     boolean generatePrepared = Settings.getInstance().getBoolProperty(PROP_CONFIG_MAKE_PREPARED, false);
 
-    if (isCtrlPressed(e))
+    if (invokedByMouse(e) && isCtrlPressed(e))
     {
       generatePrepared = true;
     }
