@@ -305,7 +305,7 @@ public class MacroPanel
           else
           {
             MacroRunner runner = new MacroRunner();
-            runner.runMacro(macro, panel, WbAction.isShiftPressed(e.getModifiersEx()));
+            runner.runMacro(macro, panel, WbAction.isShiftPressed(e));
           }
           WbSwingUtilities.requestComponentFocus(mainWindow, panel);
         }

@@ -391,7 +391,7 @@ public class TagSearchPopup
   public void mouseClicked(MouseEvent mouseEvent)
   {
     int clicks = mouseEvent.getClickCount();
-    boolean ctrlPressed = WbAction.isCtrlPressed(mouseEvent.getModifiers());
+    boolean ctrlPressed = WbAction.isCtrlPressed(mouseEvent);
     if (clicks == 2 || (clicks == 1 && !ctrlPressed))
     {
       closePopup(true);

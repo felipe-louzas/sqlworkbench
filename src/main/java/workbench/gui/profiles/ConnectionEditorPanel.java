@@ -281,7 +281,7 @@ public class ConnectionEditorPanel
   @Override
   public void keyPressed(KeyEvent e)
   {
-    if (e.getKeyCode() == KeyEvent.VK_SPACE && WbAction.isCtrlPressed(e.getModifiersEx()))
+    if (e.getKeyCode() == KeyEvent.VK_SPACE && WbAction.isCtrlPressed(e))
     {
       e.consume();
       EventQueue.invokeLater(this::showTagSearch);

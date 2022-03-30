@@ -2980,7 +2980,7 @@ public class JEditTextArea
 
     // Do not scroll if the Ctrl-Key is pressed
     // because that combination is handled by the font zoomer
-    if (WbAction.isCtrlPressed(e.getModifiersEx())) return;
+    if (WbAction.isCtrlPressed(e)) return;
 
     int units = GuiSettings.getWheelScrollLines();
 

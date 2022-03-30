@@ -615,7 +615,7 @@ public class QuickFilterPanel
     if (ignoreEvents) return;
 
     // ignore key events with Alt or Ctrl Modifiers
-    if (WbAction.isAltPressed(e.getModifiersEx()) || WbAction.isCtrlPressed(e.getModifiersEx())) return;
+    if (WbAction.isAltPressed(e) || WbAction.isCtrlPressed(e)) return;
 
     EventQueue.invokeLater(() ->
     {

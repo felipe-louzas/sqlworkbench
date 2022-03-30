@@ -783,7 +783,7 @@ public class CompletionPopup
     int nextIndex = -1;
     boolean syncEntry = false;
     boolean cycleList = GuiSettings.getCycleCompletionPopup();
-    boolean shiftPressed = WbAction.isShiftPressed(evt.getModifiersEx());
+    boolean shiftPressed = WbAction.isShiftPressed(evt);
 
     switch (evt.getKeyCode())
     {

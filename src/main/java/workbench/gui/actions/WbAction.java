@@ -28,6 +28,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -130,6 +132,51 @@ public class WbAction
   public static boolean isShiftPressed(int modifiers)
   {
     return ((modifiers & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK);
+  }
+
+  public static boolean isShiftPressed(KeyEvent evt)
+  {
+    return isShiftPressedEx(evt.getModifiersEx());
+  }
+
+  public static boolean isShiftPressed(MouseEvent evt)
+  {
+    return isShiftPressedEx(evt.getModifiersEx());
+  }
+
+  private static boolean isShiftPressedEx(int modifiersEx)
+  {
+    return (modifiersEx & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK;
+  }
+
+  public static boolean isCtrlPressed(KeyEvent evt)
+  {
+    return isCtrlPressedEx(evt.getModifiersEx());
+  }
+
+  public static boolean isCtrlPressed(MouseWheelEvent evt)
+  {
+    return isCtrlPressedEx(evt.getModifiersEx());
+  }
+
+  public static boolean isCtrlPressed(MouseEvent evt)
+  {
+    return isCtrlPressedEx(evt.getModifiersEx());
+  }
+
+  private static boolean isCtrlPressedEx(int modifiersEx)
+  {
+    return (modifiersEx & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK;
+  }
+
+  public static boolean isAltPressed(KeyEvent evt)
+  {
+    return isAltPressedEx(evt.getModifiersEx());
+  }
+
+  private static boolean isAltPressedEx(int modifiersEx)
+  {
+    return (modifiersEx & InputEvent.ALT_DOWN_MASK) == InputEvent.ALT_DOWN_MASK;
   }
 
   public static boolean isCtrlPressed(ActionEvent e)
