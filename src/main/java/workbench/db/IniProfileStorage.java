@@ -441,6 +441,7 @@ public class IniProfileStorage
     String xml = toXML(profile.getConnectionProperties());
     props.setProperty(PROP_PREFIX + key + PROP_CONN_PROPS, xml);
     props.setProperty(PROP_PREFIX + key + PROP_CONN_VARS, toXML(profile.getConnectionVariables()));
+    props.setProperty(PROP_PREFIX + key + PROP_COPY_PROPS, profile.getCopyExtendedPropsToSystem());
   }
 
   private void setNonDefaultProperty(WbProperties props, String key, boolean value, boolean defaultValue)

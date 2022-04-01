@@ -289,8 +289,8 @@ public class TypeMapper
     }
     catch (SQLException e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error reading type info for target connection", e);
-      this.typeInfo = new HashMap<>();
+      LogMgr.logError(new CallerInfo(){}, "Error reading type info for target connection. Using default map", e);
+      createAnsiMap();
     }
     finally
     {
@@ -303,18 +303,34 @@ public class TypeMapper
   {
     typeInfo = new HashMap<>();
     typeInfo.put(Types.INTEGER, "integer");
-    typeInfo.put(Types.VARCHAR, "varchar");
+    typeInfo.put(Types.TINYINT, "smallint");
+    typeInfo.put(Types.SMALLINT, "smallint");
     typeInfo.put(Types.BIGINT, "bigint");
     typeInfo.put(Types.DECIMAL, "decimal");
+    typeInfo.put(Types.NUMERIC, "numeric");
+    typeInfo.put(Types.DOUBLE, "double precision");
+    typeInfo.put(Types.FLOAT, "float");
+    typeInfo.put(Types.REAL, "real");
+
     typeInfo.put(Types.BOOLEAN, "boolean");
+
     typeInfo.put(Types.CLOB, "clob");
+    typeInfo.put(Types.NCLOB, "clob");
     typeInfo.put(Types.BLOB, "blob");
+    typeInfo.put(Types.VARCHAR, "varchar");
     typeInfo.put(Types.NVARCHAR, "nvarchar");
-    typeInfo.put(Types.NUMERIC, "decimal");
+    typeInfo.put(Types.CHAR, "char");
+    typeInfo.put(Types.NCHAR, "nchar");
+    typeInfo.put(Types.LONGNVARCHAR, "nvarchar");
+    typeInfo.put(Types.LONGVARCHAR, "varchar");
+    typeInfo.put(Types.SQLXML, "xml");
+
+    typeInfo.put(Types.BIT, "bit");
     typeInfo.put(Types.DATE, "date");
     typeInfo.put(Types.TIMESTAMP, "timestamp");
+    typeInfo.put(Types.TIMESTAMP_WITH_TIMEZONE, "timestamp with time zone");
     typeInfo.put(Types.TIME, "time");
-    typeInfo.put(Types.CHAR, "char");
+
   }
 
 }
