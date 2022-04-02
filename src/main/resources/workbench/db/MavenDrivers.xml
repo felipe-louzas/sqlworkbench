@@ -76,7 +76,7 @@
           <string>org.firebirdsql.jdbc</string>
         </void>
         <void property="artefactId">
-          <string>jaybird-jdk18</string>
+          <string>jaybird</string>
         </void>
         <void property="driverClassName">
           <string>org.firebirdsql.jdbc.FBDriver</string>

@@ -38,8 +38,8 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -83,7 +83,7 @@ public class FirebirdDomainReader
     "FROM rdb$fields \n" +
     "WHERE rdb$field_name NOT LIKE 'RDB$%' \n" +
     "  AND rdb$field_name NOT LIKE 'SEC$%' \n" +
-    "  AND rdb$field_name NOT LIKE 'MON$SEC%'"; // for Firebird 3.0
+    "  AND rdb$field_name NOT LIKE 'MON$%'"; // for Firebird 3.0+
 
   @Override
   public boolean isDerivedType()

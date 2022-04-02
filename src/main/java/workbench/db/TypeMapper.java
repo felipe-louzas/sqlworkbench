@@ -157,8 +157,7 @@ public class TypeMapper
     String userType = getUserMapping(type, size, digits);
     if (userType != null) return userType;
 
-    Integer key = Integer.valueOf(type);
-    String name = this.typeInfo.get(key);
+    String name = this.typeInfo.get(type);
 
     // BLOBs and CLOBs are mapped to different types in different
     // DBMS and not all are using the same java.sql.Types value.
@@ -176,7 +175,8 @@ public class TypeMapper
       }
       if (name != null)
       {
-        LogMgr.logInfo(new CallerInfo(){}, "Could not find a direct mapping for java.sql.Types." + SqlUtil.getTypeName(type) + ", using DBMS type: " + name);
+        LogMgr.logInfo(new CallerInfo(){}, "Could not find a direct mapping for java.sql.Types." +
+          SqlUtil.getTypeName(type) + ", using DBMS type: " + name);
       }
     }
 
@@ -252,6 +252,7 @@ public class TypeMapper
 
     Pattern p = Pattern.compile("[\\(\\)\\[\\]{}'\"`]");
 
+    final CallerInfo ci = new CallerInfo(){};
     try
     {
       LogMgr.logInfo(new CallerInfo(){}, "Reading type map for " + targetDb.getDbId());
@@ -259,7 +260,19 @@ public class TypeMapper
       while (rs.next())
       {
         String name = rs.getString(1);
-        int type = rs.getInt(2);
+
+        // This is a workaround for the buggy MariaDB driver
+        // which throws an exception when using getInt()
+        // even though only int values are returned
+        int type;
+        if (DBID.MariaDB.isDB(targetDb))
+        {
+          type = (int)rs.getLong(2);
+        }
+        else
+        {
+          type = rs.getInt(2);
+        }
 
         // we can't handle arrays anyway
         if (type == java.sql.Types.ARRAY || type == java.sql.Types.OTHER || type == java.sql.Types.STRUCT) continue;
@@ -270,26 +283,26 @@ public class TypeMapper
           String clean = m.replaceAll("");
           if (!clean.equals(name))
           {
-            LogMgr.logInfo(new CallerInfo(){}, "Using type name ["  + clean + "] instead of [" + name + "]");
+            LogMgr.logInfo(ci, "Using type name ["  + clean + "] instead of [" + name + "]");
             name = clean;
           }
         }
 
-        Integer key = Integer.valueOf(type);
-        if (this.typeInfo.containsKey(key))
+        if (this.typeInfo.containsKey(type))
         {
-          LogMgr.logWarning(new CallerInfo(){}, "The mapping from java.sql.Types."  + SqlUtil.getTypeName(type) + " to  DBMS type " + name + " will be ignored. A mapping is already present.");
+          LogMgr.logWarning(ci, "The mapping from java.sql.Types."  + SqlUtil.getTypeName(type) +
+            " to  DBMS type " + name + " will be ignored. A mapping is already present.");
         }
         else
         {
-          LogMgr.logInfo(new CallerInfo(){}, "Mapping java.sql.Types."  + SqlUtil.getTypeName(type) + " to DBMS type " + name);
-          this.typeInfo.put(key, name);
+          LogMgr.logInfo(ci, "Mapping java.sql.Types."  + SqlUtil.getTypeName(type) + " to DBMS type " + name);
+          this.typeInfo.put(type, name);
         }
       }
     }
     catch (SQLException e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error reading type info for target connection. Using default map", e);
+      LogMgr.logError(ci, "Error reading type info for target connection. Using default map", e);
       createAnsiMap();
     }
     finally

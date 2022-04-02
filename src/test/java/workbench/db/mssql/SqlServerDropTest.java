@@ -39,9 +39,9 @@ import workbench.db.WbConnection;
 import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
 
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -61,8 +61,8 @@ public class SqlServerDropTest
     super("SqlServerDropTest");
   }
 
-  @BeforeClass
-  public static void setUpClass()
+  @Before
+  public void setup()
     throws Exception
   {
     SQLServerTestUtil.initTestcase("SqlServerDropTest");
@@ -81,8 +81,8 @@ public class SqlServerDropTest
     TestUtil.executeScript(conn, sql);
   }
 
-  @AfterClass
-  public static void tearDownClass()
+  @After
+  public void cleanup()
     throws Exception
   {
     WbConnection conn = SQLServerTestUtil.getSQLServerConnection();
@@ -107,10 +107,14 @@ public class SqlServerDropTest
     ScriptParser p = new ScriptParser(sql.toString(), ParserType.SqlServer);
     assertEquals(2, p.getSize());
     String drop = p.getCommand(0);
-    //System.out.println(drop);
-    assertEquals("IF OBJECT_ID('dbo.foo', 'U') IS NOT NULL DROP TABLE dbo.foo", drop);
+//    System.out.println(drop);
+    assertEquals("IF OBJECT_ID('wb_junit.dbo.foo', 'U') IS NOT NULL DROP TABLE wb_junit.dbo.foo", drop);
     drop = p.getCommand(1);
     assertEquals("COMMIT", drop);
+
+    TestUtil.executeScript(conn, sql.toString());
+    tbl = new DbObjectFinder(conn).findTable(new TableIdentifier("foo"));
+    assertNull(tbl);
   }
 
   @Test
@@ -140,6 +144,10 @@ public class SqlServerDropTest
     assertEquals("DROP INDEX idx_foo_2 ON wb_junit.dbo.foo", drop);
     drop = p.getCommand(2);
     assertEquals("COMMIT", drop);
+    
+    TestUtil.executeScript(conn, sql.toString());
+    indexes = conn.getMetadata().getIndexReader().getTableIndexList(tbl, false);
+    assertTrue(indexes.isEmpty());
   }
 
 }

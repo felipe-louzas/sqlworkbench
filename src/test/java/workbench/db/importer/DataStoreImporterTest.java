@@ -139,7 +139,7 @@ public class DataStoreImporterTest
   public void testXmlImport()
     throws Exception
   {
-    File input = util.getResourceFile(this.getClass(), "person.xml");
+    File input = TestUtil.getResourceFile(this.getClass(), "person.xml");
     DataStore ds = prepareDataStore();
     DataStoreImporter importer = new DataStoreImporter(ds, null, null);
     importer.setImportOptions(input, ProducerFactory.ImportType.XML, new DefaultImportOptions(), null);
