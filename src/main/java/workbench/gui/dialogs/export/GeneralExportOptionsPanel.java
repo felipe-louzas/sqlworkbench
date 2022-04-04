@@ -92,7 +92,10 @@ public class GeneralExportOptionsPanel
   public void setSelectedRowCount(int count)
   {
     this.selectedRows.setEnabled(count > 0);
-    this.selectedRows.setSelected(count > 0);
+    if (count <= 0)
+    {
+      this.selectedRows.setSelected(false);
+    }
   }
 
   @Override
