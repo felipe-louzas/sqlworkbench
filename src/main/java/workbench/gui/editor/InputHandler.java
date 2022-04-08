@@ -719,6 +719,7 @@ public class InputHandler
         char typedChar = str.charAt(0);
         if (textArea.getAutoQuoteSelection()
             && textArea.getSelectionLength() > 0
+            && !textArea.isSelectionRectangular()
             && str.length() == 1
             && (typedChar == '"' || typedChar == '\'')
             && !StringUtil.equalString(str, textArea.getSelectedText()))
