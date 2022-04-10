@@ -796,6 +796,13 @@ public class JEditTextArea
     this.electricScroll = scrollValue;
   }
 
+  public void fontChanged()
+  {
+    recalculateVisibleLines();
+    updateScrollBars();
+    invalidate();
+  }
+  
   /**
    * Updates the state of the scroll bars.
    *

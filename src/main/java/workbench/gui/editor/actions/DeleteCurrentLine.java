@@ -53,7 +53,7 @@ public class DeleteCurrentLine
     int len = textArea.getLineLength(line);
     if (line < textArea.getLineCount() - 1)
     {
-       len += Settings.getInstance().getInternalEditorLineEnding().length();
+      len += Settings.getInstance().getInternalEditorLineEnding().length();
     }
     try
     {

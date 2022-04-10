@@ -401,6 +401,8 @@ public class TextAreaPainter
   {
     calculateTabSize();
     calculateGutterWidth(getGraphics());
+    invalidate();
+    textArea.fontChanged();
   }
 
   /**

@@ -70,7 +70,7 @@ public class ShowTipAction
     super();
     area = edit;
     tipProvider = provider;
-    initMenuDefinition("MnuTxtShowInsertParms", KeyStroke.getKeyStroke(KeyEvent.VK_NUMBER_SIGN, KeyEvent.CTRL_MASK));
+    initMenuDefinition("MnuTxtShowInsertParms", KeyStroke.getKeyStroke(KeyEvent.VK_NUMBER_SIGN, KeyEvent.CTRL_DOWN_MASK));
     setMenuItemName(ResourceMgr.MNU_TXT_SQL);
   }
 

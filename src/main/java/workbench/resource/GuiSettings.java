@@ -26,6 +26,7 @@ import java.awt.Font;
 import java.io.File;
 import java.util.Set;
 
+import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -1729,6 +1730,15 @@ public class GuiSettings
     Color bg = Settings.getInstance().getEditorBackgroundColor();
     if (bg == null) bg = UIManager.getColor("TextArea.background");
     return bg;
+  }
+
+  public static int getEditorDividerType()
+  {
+    int type = Settings.getInstance().getIntProperty("workbench.editor.divider.type", JSplitPane.VERTICAL_SPLIT);
+    if (type == JSplitPane.VERTICAL_SPLIT || type == JSplitPane.HORIZONTAL_SPLIT) return type;
+    LogMgr.logError(new CallerInfo(){}, "Invalid divider type: " + type + " speicified. " +
+      "Allowed values are: " + JSplitPane.VERTICAL_SPLIT + ", " + JSplitPane.HORIZONTAL_SPLIT, null);
+    return JSplitPane.VERTICAL_SPLIT;
   }
 
   public static Color getEditorForeground()

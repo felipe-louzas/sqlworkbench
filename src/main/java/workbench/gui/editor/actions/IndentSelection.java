@@ -22,10 +22,16 @@
 package workbench.gui.editor.actions;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+import workbench.interfaces.TextSelectionListener;
+import workbench.resource.ResourceMgr;
+
 import workbench.gui.actions.WbAction;
 import workbench.gui.editor.JEditTextArea;
 import workbench.gui.editor.TextIndenter;
-import workbench.resource.ResourceMgr;
 
 /**
  *
@@ -33,15 +39,18 @@ import workbench.resource.ResourceMgr;
  */
 public class IndentSelection
   extends WbAction
+  implements TextSelectionListener
 {
   private JEditTextArea area;
 
   public IndentSelection(JEditTextArea edit)
   {
     super();
-    initMenuDefinition("MnuTxtIndent");
+    initMenuDefinition("MnuTxtIndent", KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
     setMenuItemName(ResourceMgr.MNU_TXT_EDIT);
+    setEnabled(false);
     area = edit;
+    area.addSelectionListener(this);
   }
 
   @Override
@@ -50,4 +59,11 @@ public class IndentSelection
     TextIndenter indenter = new TextIndenter(area);
     indenter.indentSelection();
   }
+
+  @Override
+  public void selectionChanged(int newStart, int newEnd)
+  {
+    this.setEnabled(newStart < newEnd);
+  }
+
 }

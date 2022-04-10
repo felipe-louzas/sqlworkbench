@@ -52,6 +52,7 @@ import workbench.gui.editor.actions.DocumentEnd;
 import workbench.gui.editor.actions.DocumentHome;
 import workbench.gui.editor.actions.DuplicateCurrentLine;
 import workbench.gui.editor.actions.EditorAction;
+import workbench.gui.editor.actions.IndentSelection;
 import workbench.gui.editor.actions.LineEnd;
 import workbench.gui.editor.actions.LineStart;
 import workbench.gui.editor.actions.NextChar;
@@ -127,7 +128,6 @@ public class InputHandler
 
   private final ActionListener insertBreak = new InsertBreak();
   private final ActionListener insertTab = new InsertTab();
-  private final ActionListener shiftTab = new ShiftTab();
 
   private final EditorAction prevWord = new PrevWord();
   private final EditorAction selectPrevWord = new SelectPrevWord();
@@ -186,7 +186,6 @@ public class InputHandler
 
     addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), insertBreak);
     addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), insertTab);
-    addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK), shiftTab);
 
     addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), overWriteAction);
 
@@ -648,10 +647,11 @@ public class InputHandler
         return;
       }
 
-      int start = textArea.getSelectionStart();
-      int end = textArea.getSelectionEnd();
-
-      if (start < end)
+      String action = ShortcutManager.getInstance().getActionClassForKey(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
+      // If the  "IndentSelection" action isn't mapped to the Tab key, then we shouldn't
+      // do it here. But we can't completely remove it here, as then we wouldn't be able
+      // to deal with the TAB key in the editor.
+      if (IndentSelection.class.getName().equals(action) && textArea.getSelectionLength() > 1)
       {
         TextIndenter indenter = new TextIndenter(textArea);
         indenter.indentSelection();
@@ -669,12 +669,10 @@ public class InputHandler
           int lineStart = textArea.getLineStartOffset(textArea.getCaretLine());
           int posInLine = textArea.getCaretPosition() - lineStart;
           int inc = (tabSize - (posInLine % tabSize));
-          StringBuilder spaces = new StringBuilder(inc);
-          for (int i=0; i < inc; i++)
-          {
-            spaces.append(' ');
-          }
-          textArea.overwriteSetSelectedText(spaces.toString());
+          char[] indent = new char[inc];
+          Arrays.fill(indent, ' ');
+          String spaces = new String(indent);
+          textArea.overwriteSetSelectedText(spaces);
         }
       }
     }
@@ -719,12 +717,11 @@ public class InputHandler
         char typedChar = str.charAt(0);
         if (textArea.getAutoQuoteSelection()
             && textArea.getSelectionLength() > 0
-            && !textArea.isSelectionRectangular()
             && str.length() == 1
             && (typedChar == '"' || typedChar == '\'')
             && !StringUtil.equalString(str, textArea.getSelectedText()))
         {
-          String newSelection = typedChar + textArea.getSelectedText() + typedChar;
+          String newSelection = applyAutoQuote(textArea, typedChar);
           textArea.setSelectedText(newSelection);
         }
         else if (textArea.shouldInsert(typedChar))
@@ -746,5 +743,24 @@ public class InputHandler
         textArea.getToolkit().beep();
       }
     }
+
+    private String applyAutoQuote(JEditTextArea textArea, char quote)
+    {
+      String selected = textArea.getSelectedText();
+      // Shouldn't happen
+      if (selected == null || selected.length() < 1) return selected;
+
+      List<String> lines = StringUtil.getLines(selected);
+      StringBuilder result = new StringBuilder(selected.length() + (lines.size() * 3));
+      for (int i=0; i < lines.size(); i++)
+      {
+        if (i > 0) result.append('\n');
+        result.append(quote);
+        result.append(lines.get(i));
+        result.append(quote);
+      }
+      return result.toString();
+    }
+
   }
 }

@@ -14,6 +14,8 @@
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
     <entry dev-build="1" type="enh">It's now possible to jump to the corresponding table from within the trigger list.</entry>
     <entry dev-build="1" type="enh">In the DbTree, table nodes for "Uses", Used by", "References" and "Referenced by" can now be expanded to show the table details.</entry>
+    <entry dev-build="3" type="fix">It wasn't possible to assign keyboard shortcuts to "Indent" and "Un-Indent"</entry>
+    <entry dev-build="3" type="fix">When changing the font size in the editor, the scrollbars weren't updated correctly</entry>
     <entry dev-build="2" type="fix">Zooming fonts with the mouse wheel did not work any longer.</entry>
     <entry dev-build="2" type="fix">The option to copy connection properties to system properties was not saved when the properties storage for connection profiles was used.</entry>
     <entry dev-build="2" type="fix">For PostgreSQL, implicit sequences (identity, serial) where not shown in the dependency of a table</entry>

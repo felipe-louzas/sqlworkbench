@@ -47,7 +47,6 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -425,7 +424,8 @@ public class SqlPanel
     JScrollPane scroll = new WbScrollPane(log, WbSwingUtilities.EMPTY_BORDER);
     resultTab.addTab(ResourceMgr.getString("LblTabMessages"), scroll);
 
-    contentPanel = new WbSplitPane(JSplitPane.VERTICAL_SPLIT, editor, resultTab);
+    int dividerType = GuiSettings.getEditorDividerType();
+    contentPanel = new WbSplitPane(dividerType, editor, resultTab);
     contentPanel.setOneTouchExpandable(true);
     contentPanel.setBorder(WbSwingUtilities.EMPTY_BORDER);
     contentPanel.setDividerSize(10);
