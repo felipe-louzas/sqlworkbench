@@ -57,7 +57,7 @@ import workbench.util.StringUtil;
 public class PostgresDomainReader
   implements ObjectListExtender
 {
-  final String baseSql =
+  private final String sqlTemplate =
     "-- SQL Workbench/J \n" +
     "SELECT null::text as domain_catalog,  \n" +
     "       n.nspname as domain_schema, \n" +
@@ -65,16 +65,38 @@ public class PostgresDomainReader
     "       pg_catalog.format_type(t.typbasetype, t.typtypmod) as data_type, \n" +
     "       not t.typnotnull as nullable, \n" +
     "       t.typdefault as default_value, \n" +
-    "       c.conname as constraint_name, \n" +
-    "       pg_catalog.pg_get_constraintdef(c.oid, true) as constraint_definition, \n" +
+    "       c.constraint_definition, \n" +
     "       pg_catalog.obj_description(t.oid) as remarks \n" +
     "FROM pg_catalog.pg_type t \n" +
     "  LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace \n" +
-    "  LEFT JOIN pg_catalog.pg_constraint c ON t.oid = c.contypid \n" +
+    "__CONSTRAINTS__" +
     "WHERE t.typtype = 'd' \n" +
     "  AND n.nspname <> 'pg_catalog' \n" +
     "  AND n.nspname <> 'information_schema' \n";
 
+  private final String baseSql_94;
+  private final String baseSql_93;
+
+  public PostgresDomainReader()
+  {
+    // In theory the statement for <= 9.3 can be used
+    // for later versions as well, but the lateral join
+    // makes this more efficient.
+    baseSql_94 = sqlTemplate.replace("__CONSTRAINTS__",
+        "  LEFT JOIN LATERAL ( \n" +
+        "    SELECT string_agg(format('CONSTRAINT %I %s', ci.conname, pg_catalog.pg_get_constraintdef(ci.oid, true)), E'\\n  ') as constraint_definition \n" +
+        "    FROM pg_catalog.pg_constraint ci\n" +
+        "    WHERE ci.contypid = t.oid \n" +
+        "  ) c ON true \n");
+
+    baseSql_93 = sqlTemplate.replace("__CONSTRAINTS__",
+        "  LEFT JOIN ( \n" +
+        "    SELECT ci.contypid,\n" +
+        "           string_agg(format('CONSTRAINT %I %s', ci.conname, pg_catalog.pg_get_constraintdef(ci.oid, true)), E'\\n  ') as constraint_definition \n" +
+        "    FROM pg_catalog.pg_constraint ci\n" +
+        "    GROUP BY ci.contypid \n" +
+        "  ) c ON t.oid = c.contypid \n");
+  }
 
   public Map<String, DomainIdentifier> getDomainInfo(WbConnection connection, String schema)
   {
@@ -87,8 +109,18 @@ public class PostgresDomainReader
     return result;
   }
 
+  private String getBaseSql(WbConnection con)
+  {
+    if (JdbcUtils.hasMinimumServerVersion(con, "9.4"))
+    {
+      return baseSql_94;
+    }
+    return baseSql_93;
+  }
+
   private String getSql(WbConnection con, String schema, String name)
   {
+    String baseSql = getBaseSql(con);
     StringBuilder sql = new StringBuilder(baseSql.length() + 40);
 
     sql.append("SELECT * FROM ( ");
@@ -134,17 +166,9 @@ public class PostgresDomainReader
         String cat = rs.getString("domain_catalog");
         String schema = rs.getString("domain_schema");
         String name = rs.getString("domain_name");
-        String constraintName = rs.getString("constraint_name");
         String constraintDef = rs.getString("constraint_definition");
         DomainIdentifier domain = new DomainIdentifier(cat, schema, name);
-        if (StringUtil.isBlank(constraintName))
-        {
-          domain.setCheckConstraint(constraintDef);
-        }
-        else
-        {
-          domain.setCheckConstraint("CONSTRAINT " + constraintName + " " + constraintDef);
-        }
+        domain.setCheckConstraint(constraintDef);
         domain.setDataType(rs.getString("data_type"));
         domain.setNullable(rs.getBoolean("nullable"));
         domain.setDefaultValue(rs.getString("default_value"));
