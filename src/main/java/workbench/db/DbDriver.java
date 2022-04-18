@@ -50,7 +50,7 @@ import workbench.util.WbFile;
 
 /**
  *  Represents a JDBC Driver definition.
- * 
+ *
  *  The definition includes a (logical) name, a driver class
  *  and (optional) a library from which the driver is to
  *  be loaded.
@@ -316,7 +316,12 @@ public class DbDriver
         {
           File f = buildFile(fname);
           url[index] = f.toURI().toURL();
-          LogMgr.logInfo(ci, "Adding ClassLoader URL=" + url[index].toString());
+          String fpath = url[index].toString();
+          if (Settings.getInstance().getObfuscateLogInformation())
+          {
+            fpath = WbFile.getPathForLogging(fpath);
+          }
+          LogMgr.logInfo(ci, "Adding ClassLoader URL=" + fpath);
           index ++;
         }
         classLoader = createClassLoader(url);
@@ -727,7 +732,7 @@ public class DbDriver
   public static String getURLForLogging(String url)
   {
     if (url == null) return "";
-    if (Settings.getInstance().getObfuscateDbInformation())
+    if (Settings.getInstance().getObfuscateLogInformation())
     {
       return JdbcUtils.extractPrefix(url) + "******";
     }
@@ -737,7 +742,7 @@ public class DbDriver
   public static String getUsernameForLogging(String user)
   {
     if (user == null) return "";
-    if (Settings.getInstance().getObfuscateDbInformation())
+    if (Settings.getInstance().getObfuscateLogInformation())
     {
       return "****";
     }

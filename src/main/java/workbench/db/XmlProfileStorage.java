@@ -45,13 +45,13 @@ public class XmlProfileStorage
     Object result = null;
     try
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Loading connection profiles from " + storage);
+      LogMgr.logDebug(new CallerInfo(){}, "Loading connection profiles from " + storage.getFullpathForLogging());
       WbPersistence reader = new WbPersistence(storage.getFullPath());
       result = reader.readObject();
     }
     catch (Throwable e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error when reading connection profiles from " + storage, e);
+      LogMgr.logError(new CallerInfo(){}, "Error when reading connection profiles from " + storage.getFullpathForLogging(), e);
       result = null;
     }
 
@@ -76,7 +76,7 @@ public class XmlProfileStorage
 
       if (noProfileCount == loaded.size())
       {
-        LogMgr.logDebug(new CallerInfo(){}, "No connection profiles found in " + storage);
+        LogMgr.logDebug(new CallerInfo(){}, "No connection profiles found in " + storage.getFullpathForLogging());
 
         profiles = null;
       }
@@ -96,7 +96,7 @@ public class XmlProfileStorage
       LogMgr.logDebug(new CallerInfo(){}, "Input file " + storage + " is not a profile storage XML");
       profiles = null;
     }
-    LogMgr.logInfo(new CallerInfo(){}, "Loaded " + profiles.size() + " connection profiles from " + storage);
+    LogMgr.logInfo(new CallerInfo(){}, "Loaded " + profiles.size() + " connection profiles from " + storage.getFullpathForLogging());
     return profiles;
   }
 

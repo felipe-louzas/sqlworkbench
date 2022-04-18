@@ -723,11 +723,11 @@ public class DbSettings
     {
       if (includeCascade)
       {
-        ddl = ddl.replace("%cascade%", cascade == null ? "" : cascade);
+        ddl = TemplateHandler.replacePlaceholder(ddl, MetaDataSqlManager.CASCADE_PLACEHOLDER, cascade, true);
       }
       else
       {
-        ddl = TemplateHandler.removePlaceholder(ddl, "%cascade%", true);
+        ddl = TemplateHandler.removePlaceholder(ddl, MetaDataSqlManager.CASCADE_PLACEHOLDER, true);
       }
     }
     return ddl.trim();

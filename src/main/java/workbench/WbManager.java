@@ -874,17 +874,23 @@ public final class WbManager
       }
       Settings.getInstance().setMacroStorage(macros);
 
-      LogMgr.logInfo(callerInfo, "Starting " + ResourceMgr.TXT_PRODUCT_NAME + ", " + ResourceMgr.getBuildInfo());
+      LogMgr.logInfo(callerInfo, "Starting " + ResourceMgr.TXT_PRODUCT_NAME + ", " + ResourceMgr.getBuildInfo() + " in " + runMode + " mode");
       LogMgr.logInfo(callerInfo, ResourceMgr.getFullJavaInfo());
       LogMgr.logInfo(callerInfo, ResourceMgr.getOSInfo());
 
       long maxMem = MemoryWatcher.MAX_MEMORY / (1024*1024);
       LogMgr.logInfo(callerInfo, "Available memory: " + maxMem + "MB");
-      LogMgr.logInfo(callerInfo, "Classpath: " + System.getProperty("java.class.path"));
+      LogMgr.logInfo(callerInfo, "Classpath: " + WbFile.getPathForLogging(System.getProperty("java.class.path")));
 
       if (cmdLine.isArgPresent(AppArguments.ARG_NOSETTNGS))
       {
         LogMgr.logInfo(callerInfo, "The '" + AppArguments.ARG_NOSETTNGS + "' option was specified on the commandline. Global settings will not be saved.");
+      }
+
+      if (Settings.getInstance().getBoolProperty("workbench.batch.log.arguments", true))
+      {
+        String fullArgs = StringUtil.arrayToString(args, ' ');
+        LogMgr.logDebug(callerInfo, "Arguments provided: " + fullArgs);
       }
     }
     catch (Exception e)
@@ -926,7 +932,7 @@ public final class WbManager
         }
         catch (Exception e)
         {
-          LogMgr.logError(new CallerInfo(){}, "Error reading variable definition from file: " + file, e);
+          LogMgr.logError(new CallerInfo(){}, "Error reading variable definition from file: " + WbFile.getPathForLogging(file), e);
         }
       }
     }

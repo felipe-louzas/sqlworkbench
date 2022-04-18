@@ -148,7 +148,7 @@ public class IniProfileStorage
     {
       FileUtil.closeQuietely(reader);
     }
-    LogMgr.logInfo(new CallerInfo(){}, "Loaded " + profiles.size() + " connection profiles from " + inifile.getFullPath());
+    LogMgr.logInfo(new CallerInfo(){}, "Loaded " + profiles.size() + " connection profiles from " + inifile.getFullpathForLogging());
     return profiles;
   }
 
@@ -233,14 +233,17 @@ public class IniProfileStorage
     {
       if (StringUtil.isBlank(driverClass))
       {
-        LogMgr.logError(new CallerInfo(){}, "Profile " + name + " defines a JDBC driver but no driver class was specified. Ignoring the profile", null);
+        LogMgr.logError(new CallerInfo(){},
+          "Profile " + name + " defines a JDBC driver but no driver class was specified. Ignoring the profile", null);
         return null;
       }
       WbFile drvFile = new WbFile(driverJar);
       if (!drvFile.isAbsolute())
       {
         drvFile = new WbFile(baseDir, driverJar);
-        LogMgr.logDebug(new CallerInfo(){}, "Using full path: " + drvFile.getFullPath() + " for driver jar " + driverJar + " from profile " + name);
+        LogMgr.logDebug(new CallerInfo(){},
+          "Using full path: " + drvFile.getFullpathForLogging() +
+          " for driver jar " + driverJar + " from profile " + name);
         driverJar = drvFile.getFullPath();
       }
       else
@@ -249,7 +252,8 @@ public class IniProfileStorage
       }
       if (!drvFile.exists())
       {
-        LogMgr.logError(new CallerInfo(){}, "Driver jar: \"" + drvFile.getFullPath() + "\" for profile: " + name + " does not exist.", null);
+        LogMgr.logError(new CallerInfo(){},
+          "Driver jar: \"" + drvFile.getFullpathForLogging() + "\" for profile: " + name + " does not exist.", null);
       }
       DbDriver drv = ConnectionMgr.getInstance().registerDriver(driverClass, driverJar);
       driverName = drv.getName();

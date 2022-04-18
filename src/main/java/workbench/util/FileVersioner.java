@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Iterator;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -121,14 +120,18 @@ public class FileVersioner
     {
       if (!dir.mkdirs())
       {
-        LogMgr.logError(new CallerInfo(){}, "Could not create backup dir: " + dir.getAbsolutePath() + ", using directory: " + toBackup.getParentFile().getAbsolutePath(), null);
+        LogMgr.logError(new CallerInfo(){}, "Could not create backup dir: " +
+          WbFile.getPathForLogging(dir.getAbsolutePath()) + ", using directory: " +
+          WbFile.getPathForLogging(toBackup.getParentFile().getAbsolutePath()), null);
         dir = toBackup.getParentFile();
       }
     }
     File backup = new File(dir, toBackup.getName() + versionSeparator + nextVersion);
     FileUtil.copy(toBackup, backup);
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(new CallerInfo(){}, "Created file \"" + backup.getAbsolutePath() + "\" as a backup of \"" + toBackup + "\" in " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Created file \"" +
+      WbFile.getPathForLogging(backup.getAbsolutePath()) + "\" as a backup of \"" +
+      WbFile.getPathForLogging(toBackup) + "\" in " + duration + "ms");
     return backup;
   }
 
@@ -150,10 +153,8 @@ public class FileVersioner
 
     try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir, name))
     {
-      Iterator<Path> itr = dirStream.iterator();
-      while (itr.hasNext())
+      for (Path p : dirStream)
       {
-        Path p = itr.next();
         String fname = p.getFileName().toString();
         int pos = fname.lastIndexOf(versionSeparator);
         if (pos < 0) continue;
@@ -224,6 +225,7 @@ public class FileVersioner
       }
     }
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(new CallerInfo(){}, "Adjusting backup versions for \"" + target + "\" took " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Adjusting backup versions for \"" +
+      WbFile.getPathForLogging(target) + "\" took " + duration + "ms");
   }
 }

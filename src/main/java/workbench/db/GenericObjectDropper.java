@@ -197,13 +197,15 @@ public class GenericObjectDropper
 
     if (ddl.contains(MetaDataSqlManager.NAME_PLACEHOLDER))
     {
-      ddl = ddl.replace(MetaDataSqlManager.NAME_PLACEHOLDER, toDrop.getObjectNameForDrop(this.connection));
+      ddl = TemplateHandler.replacePlaceholder(ddl, MetaDataSqlManager.NAME_PLACEHOLDER, toDrop.getObjectNameForDrop(this.connection), false);
     }
 
     if (ddl.contains(MetaDataSqlManager.FQ_NAME_PLACEHOLDER))
     {
-      ddl = ddl.replace(MetaDataSqlManager.FQ_NAME_PLACEHOLDER, toDrop.getFullyQualifiedName(connection));
+      ddl = TemplateHandler.replacePlaceholder(ddl, MetaDataSqlManager.FQ_NAME_PLACEHOLDER, toDrop.getFullyQualifiedName(connection), false);
     }
+    ddl = TemplateHandler.replacePlaceholder(ddl, MetaDataSqlManager.SCHEMA_NAME_PLACEHOLDER, toDrop.getSchema(), false);
+    ddl = TemplateHandler.replacePlaceholder(ddl, MetaDataSqlManager.CATALOG_NAME_PLACEHOLDER, toDrop.getCatalog(), false);
 
     ddl = TemplateHandler.replaceTablePlaceholder(ddl, toDrop, connection, true);
 

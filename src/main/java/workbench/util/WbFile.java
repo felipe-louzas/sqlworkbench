@@ -24,10 +24,16 @@ package workbench.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 /**
  * A wrapper around Java's File object to allow of automatic expansion of
@@ -223,4 +229,68 @@ public class WbFile
     return getFullPath();
   }
 
+  public String getFullpathForLogging()
+  {
+    String path = getFullPath();
+    return getPathForLogging(path);
+  }
+
+  public static String getPathForLogging(File f)
+  {
+    if (f == null) return "";
+    try
+    {
+      return getPathForLogging(f.getCanonicalPath());
+    }
+    catch (Throwable th)
+    {
+      return getPathForLogging(f.getAbsolutePath());
+    }
+  }
+
+  public static String obfuscate(String path)
+  {
+    if (path == null) return "";
+
+    List<String> toReplace = new ArrayList<>(5);
+    String username = System.getProperty("user.name");
+    if (username != null) toReplace.add(username);
+
+    try
+    {
+      String hostname = InetAddress.getLocalHost().getHostName();
+      if (hostname != null) toReplace.add(hostname);
+    }
+    catch (Throwable th)
+    {
+
+    }
+    return obfuscate(path, toReplace);
+  }
+
+  public static String obfuscate(String path, List<String> toReplace)
+  {
+    if (path == null) return "";
+    if (CollectionUtil.isEmpty(toReplace)) return path;
+    String newPath = path;
+    for (String s : toReplace)
+    {
+      Pattern p = Pattern.compile(StringUtil.quoteRegexMeta(s), Pattern.CASE_INSENSITIVE);
+      Matcher matcher = p.matcher(newPath);
+      newPath = matcher.replaceAll("*****");
+    }
+    return newPath;
+  }
+
+  public static String getPathForLogging(String path)
+  {
+    // Can happen when running unit tests
+    if (Settings.getInstance() == null) return path;
+
+    if (Settings.getInstance().getObfuscateLogInformation())
+    {
+      return obfuscate(path);
+    }
+    return path;
+  }
 }

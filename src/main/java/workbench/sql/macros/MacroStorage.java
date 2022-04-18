@@ -166,7 +166,7 @@ public class MacroStorage
       }
       catch (IOException e)
       {
-        LogMgr.logWarning(new CallerInfo(){}, "Error when creating backup for: " + f.getAbsolutePath(), e);
+        LogMgr.logWarning(new CallerInfo(){}, "Error when creating backup for: " + f.getFullpathForLogging(), e);
       }
     }
     return f.makeBackup();
@@ -220,7 +220,7 @@ public class MacroStorage
         {
           backupFile = createBackup(sourceFile);
           sourceFile.delete();
-          LogMgr.logDebug(new CallerInfo(){}, "All macros from " + sourceFile.getFullPath()+ " were removed. Macro file deleted.");
+          LogMgr.logDebug(new CallerInfo(){}, "All macros from " + sourceFile.getFullpathForLogging()+ " were removed. Macro file deleted.");
         }
         else
         {
@@ -236,7 +236,7 @@ public class MacroStorage
         {
           writer.writeObject(this.groups);
           long duration = System.currentTimeMillis() - start;
-          LogMgr.logDebug(new CallerInfo(){}, "Saved " + allMacros.size() + " macros to " + sourceFile.getFullPath() + " in " + duration + "ms");
+          LogMgr.logDebug(new CallerInfo(){}, "Saved " + allMacros.size() + " macros to " + sourceFile.getFullpathForLogging()+ " in " + duration + "ms");
         }
         catch (Throwable th)
         {
@@ -248,12 +248,14 @@ public class MacroStorage
         {
           if (restoreBackup)
           {
-            LogMgr.logWarning(new CallerInfo(){}, "Restoring the old macro file from backup: " + backupFile.getAbsolutePath());
+            LogMgr.logWarning(new CallerInfo(){}, "Restoring the old macro file from backup: " +
+              WbFile.getPathForLogging(backupFile.getAbsolutePath()));
             FileUtil.copySilently(backupFile, sourceFile);
           }
           else if (deleteBackup)
           {
-            LogMgr.logDebug(new CallerInfo(){}, "Deleting temporary backup file: " + backupFile.getAbsolutePath());
+            LogMgr.logDebug(new CallerInfo(){}, "Deleting temporary backup file: " +
+              WbFile.getPathForLogging(backupFile.getAbsolutePath()));
             backupFile.delete();
           }
         }
@@ -351,7 +353,7 @@ public class MacroStorage
 
     if (!sourceFile .exists())
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Macro file " + sourceFile + " not found. No Macros loaded");
+      LogMgr.logDebug(new CallerInfo(){}, "Macro file " + sourceFile.getFullpathForLogging() + " not found. No Macros loaded");
       return;
     }
 

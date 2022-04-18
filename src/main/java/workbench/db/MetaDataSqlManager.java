@@ -68,6 +68,7 @@ public class MetaDataSqlManager
   public static final String FK_DELETE_RULE = "%fk_delete_rule%";
   public static final String FK_MATCH_TYPE = "%fk_match_type%";
   public static final String DEFERRABLE = "%deferrable%";
+  public static final String CASCADE_PLACEHOLDER = "%cascade%";
   public static final String DEFERRED = "%deferred%";
   public static final String GENERAL_SQL = "All";
 

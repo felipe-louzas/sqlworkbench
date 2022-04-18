@@ -358,7 +358,6 @@ public class WbTabbedPane
       if (tui != null)
       {
         this.setUI(tui);
-        LogMgr.logDebug(new CallerInfo(){}, "Installed custom TabbedPaneUI");
       }
     }
     catch (Throwable e)

@@ -1725,9 +1725,21 @@ public class SqlUtil
     return fullyQualifiedName(quoter, conn, object);
   }
 
+
   public static String fullyQualifiedName(QuoteHandler quoter, WbConnection conn, DbObject object)
   {
     if (object == null) return null;
+    return fullyQualifiedName(quoter, conn, object.getCatalog(), object.getSchema(), object.getObjectName());
+  }
+
+  public static String fullyQualifiedName(WbConnection conn, String catalog, String schema, String name)
+  {
+    QuoteHandler quoter = getQuoteHandler(conn);
+    return fullyQualifiedName(quoter, conn, catalog, schema, name);
+  }
+
+  public static String fullyQualifiedName(QuoteHandler quoter, WbConnection conn, String catalog, String schema, String name)
+  {
     StringBuilder result = new StringBuilder(30);
 
     boolean supportsCatalogs = (conn != null ? conn.getDbSettings().supportsCatalogs() : true);
@@ -1735,17 +1747,17 @@ public class SqlUtil
 
     char catalogSeparator = SqlUtil.getCatalogSeparator(conn);
     char schemaSeparator = SqlUtil.getSchemaSeparator(conn);
-    if (supportsCatalogs && StringUtil.isNonEmpty(object.getCatalog()))
+    if (supportsCatalogs && StringUtil.isNonEmpty(catalog))
     {
-      result.append(quoter.quoteObjectname(object.getCatalog()));
+      result.append(quoter.quoteObjectname(catalog));
       result.append(catalogSeparator);
     }
-    if (supportsSchemas && StringUtil.isNonEmpty(object.getSchema()))
+    if (supportsSchemas && StringUtil.isNonEmpty(schema))
     {
-      result.append(quoter.quoteObjectname(object.getSchema()));
+      result.append(quoter.quoteObjectname(schema));
       result.append(schemaSeparator);
     }
-    result.append(quoter.quoteObjectname(object.getObjectName()));
+    result.append(quoter.quoteObjectname(name));
     return result.toString();
   }
 

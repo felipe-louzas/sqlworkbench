@@ -384,7 +384,8 @@ public class ProcedureDefinition
     if (paramCount == 0) return getObjectExpression(con) + "()";
 
     StringBuilder result = new StringBuilder(procName.length() + paramCount * 5 + 5);
-    result.append(SqlUtil.buildExpression(con, catalog, schema, getBasename(useSpecificName)));
+
+    result.append(SqlUtil.fullyQualifiedName(con, catalog, schema, getBasename(useSpecificName)));
     result.append('(');
 
     int colCount = 0;

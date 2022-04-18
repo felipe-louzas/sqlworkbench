@@ -955,7 +955,7 @@ public class ConnectionProfile
       }
 
       PgPassReader reader = new PgPassReader(url, getLoginUser());
-      LogMgr.logDebug(new CallerInfo(){}, "Using password from " + PgPassReader.getPgPassFile());
+      LogMgr.logDebug(new CallerInfo(){}, "Using password from " + PgPassReader.getPgPassFile().getFullpathForLogging());
       return reader.getPasswordFromFile();
     }
     return null;

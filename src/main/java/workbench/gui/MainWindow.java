@@ -2259,7 +2259,7 @@ public class MainWindow
 
       if (entryCount == 0)
       {
-        LogMgr.logWarning(ci, "No panels stored in the workspace: " + toLoad.getFilename());
+        LogMgr.logWarning(ci, "No panels stored in the workspace: " + WbFile.getPathForLogging(toLoad.getFilename()));
         addTabAtIndex(false, false, false, -1);
       }
       // this needs to be done before checking workspace actions
@@ -2285,7 +2285,7 @@ public class MainWindow
     }
     catch (Throwable e)
     {
-      LogMgr.logWarning(ci, "Error loading workspace  " + toLoad.getFilename(), e);
+      LogMgr.logWarning(ci, "Error loading workspace  " + WbFile.getPathForLogging(toLoad.getFilename()), e);
       currentWorkspace = null;
     }
     finally
@@ -2316,7 +2316,7 @@ public class MainWindow
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(new CallerInfo(){}, "Loading workspace " + currentWorkspace + " took " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){}, "Loading workspace " + WbFile.getPathForLogging(currentWorkspace.getFilename()) + " took " + duration + "ms");
 
     BookmarkManager.getInstance().updateInBackground(this);
   }
@@ -3590,7 +3590,8 @@ public class MainWindow
     if (currentWorkspace != null && currentWorkspace.isOpen())
     {
       LogMgr.logWarning(ci,
-        "Current workspace " + currentWorkspace.getFilename() + " is already open in window \"" + getTitle() + "\". Can't save it now.",
+        "Current workspace " + WbFile.getPathForLogging(currentWorkspace.getFilename()) +
+          " is already open in window \"" + getTitle() + "\". Can't save it now.",
         new Exception("Backtrace"));
       return true;
     }
@@ -3634,7 +3635,7 @@ public class MainWindow
       // create a backup of the current workspace in order to preserve it
       // in case something goes wrong when writing the new workspace, at least the last good version can be restored
       backupFile = workspaceFile.makeBackup();
-      LogMgr.logDebug(ci, "Created temporary backup file: " + backupFile);
+      LogMgr.logDebug(ci, "Created temporary backup file: " + WbFile.getPathForLogging(backupFile));
       deleteBackup = true;
     }
 
@@ -3689,10 +3690,10 @@ public class MainWindow
       currentWorkspace.openForWriting();
       currentWorkspace.save();
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug(ci, "Workspace " + workspaceFile + " saved in " + duration + "ms");
+      LogMgr.logDebug(ci, "Workspace " + workspaceFile.getFullpathForLogging() + " saved in " + duration + "ms");
       if (deleteBackup && backupFile != null)
       {
-        LogMgr.logDebug(ci, "Deleting temporary backup file: " + backupFile.getAbsolutePath());
+        LogMgr.logDebug(ci, "Deleting temporary backup file: " + WbFile.getPathForLogging(backupFile));
         backupFile.delete();
       }
     }
@@ -3709,7 +3710,7 @@ public class MainWindow
 
     if (restoreBackup && backupFile != null)
     {
-      LogMgr.logWarning(ci, "Restoring the old workspace file from backup: " + backupFile.getAbsolutePath());
+      LogMgr.logWarning(ci, "Restoring the old workspace file from backup: " + WbFile.getPathForLogging(backupFile));
       FileUtil.copySilently(backupFile, workspaceFile);
     }
 

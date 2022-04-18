@@ -182,7 +182,7 @@ public class GeneralOptionsPanel
     alertDuration.setEnabled(showFinishAlert.isSelected());
     logAllStatements.setSelected(Settings.getInstance().getLogAllStatements());
     logMetaSQL.setSelected(Settings.getInstance().getDebugMetadataSql());
-    obfuscateDbInfo.setSelected(Settings.getInstance().getObfuscateDbInformation());
+    obfuscateDbInfo.setSelected(Settings.getInstance().getObfuscateLogInformation());
     autoSaveProfiles.setSelected(Settings.getInstance().getSaveProfilesImmediately());
     enableQuickFilter.setSelected(GuiSettings.enableProfileQuickFilter());
     focusToQuickFilter.setSelected(GuiSettings.focusToProfileQuickFilter());
@@ -228,7 +228,7 @@ public class GeneralOptionsPanel
     set.setShowConnectDialogOnStartup(autoConnect.isSelected());
     set.setLogAllStatements(logAllStatements.isSelected());
     set.setDebugMetadataSql(logMetaSQL.isSelected());
-    set.setObfuscateDbInformation(obfuscateDbInfo.isSelected());
+    set.setObfuscateLogInformation(obfuscateDbInfo.isSelected());
     int index = checkInterval.getSelectedIndex();
     switch (index)
     {

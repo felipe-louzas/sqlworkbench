@@ -280,7 +280,7 @@ public class PostgresProcedureReaderTest
     WbConnection con = PostgresTestUtil.getPostgresConnection();
     assertNotNull(con);
     if (!JdbcUtils.hasMinimumServerVersion(con, "14")) return;
-    
+
     String sql =
       "drop procedure if exists do_something cascade;\n" +
       "create procedure do_something(IN p_one int, OUT p_result integer)\n" +
@@ -366,7 +366,7 @@ public class PostgresProcedureReaderTest
     dropper.setConnection(con);
     String drop = dropper.getDropForObject(def).toString();
 //    System.out.println(drop);
-    assertEquals("DROP AGGREGATE array_accum(integer);", drop);
+    assertEquals("DROP AGGREGATE procreadertest.array_accum(integer);", drop);
   }
 
   @Test

@@ -339,8 +339,8 @@ public class Settings
       initLogging();
 
       // These messages should not be logged before initLogging() has been called!
-      LogMgr.logInfo(ci, "Using configdir: " + configfile.getParentFile().getAbsolutePath());
-      LogMgr.logDebug(ci, "Using default xstlDir: " + getDefaultXsltDirectory());
+      LogMgr.logInfo(ci, "Using configdir: " + obfuscateFileName(configfile.getParentFile()));
+      LogMgr.logDebug(ci, "Using default xstlDir: " + obfuscateFileName(getDefaultXsltDirectory()));
       LogMgr.logDebug(ci, "Last modification time of loaded config file: " + this.fileTime);
 
       if (getBoolProperty("workbench.db.resetdefaults"))
@@ -357,6 +357,19 @@ public class Settings
       LogMgr.logDebug(ci, "Removing hidden attribute of the configuration directory");
       changer.removeHidden(cfd);
     }
+  }
+
+  private String obfuscateFileName(File f)
+  {
+    if (f == null) return "";
+    if (getObfuscateLogInformation())
+    {
+      // We can't use WbFile.getPathForLogging() because at this point
+      // The Settings instance isn't initialized and WbFile uses
+      // Settings.getInstance()
+      return WbFile.obfuscate(f.getAbsolutePath());
+    }
+    return f.getAbsolutePath();
   }
 
   private boolean initLog4j()
@@ -863,12 +876,12 @@ public class Settings
     return getBoolProperty("workbench.db.postgresql.check.cockroachdb", false);
   }
 
-  public boolean getObfuscateDbInformation()
+  public boolean getObfuscateLogInformation()
   {
     return getBoolProperty(PROPERTY_LOG_OBFUSCATE, false);
   }
 
-  public void setObfuscateDbInformation(boolean flag)
+  public void setObfuscateLogInformation(boolean flag)
   {
     setProperty(PROPERTY_LOG_OBFUSCATE, flag);
   }
@@ -2674,22 +2687,22 @@ public class Settings
     return getDelimiter("workbench.import.text.fielddelimiter", "\\t", readable);
   }
 
-  public File getDefaultXsltDirectory()
+  public WbFile getDefaultXsltDirectory()
   {
     // this can happen if the Settings instance is accessed by
     // a component that is instantiated in the NetBeans GUI editor
-    if (WbManager.getInstance() == null) return new File(".");
+    if (WbManager.getInstance() == null) return new WbFile(".");
 
     String dir = getProperty("workbench.xslt.dir", null);
-    File result = null;
+    WbFile result = null;
     if (dir == null)
     {
       ClasspathUtil cp = new ClasspathUtil();
-      result = new File(cp.getJarPath(), "xslt");
+      result = new WbFile(cp.getJarPath(), "xslt");
     }
     else
     {
-      result = new File(dir);
+      result = new WbFile(dir);
     }
     return result;
   }
@@ -4041,13 +4054,13 @@ public class Settings
     try
     {
       WbProperties defaults = getDefaultProperties();
-      LogMgr.logDebug(new CallerInfo(){}, "Saving global settings to: " + configfile.getFullPath());
+      LogMgr.logDebug(new CallerInfo(){}, "Saving global settings to: " + configfile.getFullpathForLogging());
       this.props.saveToFile(this.configfile, defaults);
       fileTime = configfile.lastModified();
     }
     catch (Throwable th)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error saving Settings file '" + configfile.getFullPath() + "'", th);
+      LogMgr.logError(new CallerInfo(){}, "Error saving Settings file '" + configfile.getFullpathForLogging()+ "'", th);
     }
 
     if (this.getPKMappingFilename() != null && PkMapping.isInitialized())

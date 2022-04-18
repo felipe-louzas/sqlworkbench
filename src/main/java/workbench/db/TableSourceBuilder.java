@@ -515,7 +515,6 @@ public class TableSourceBuilder
     String type = toDrop.getObjectType();
     type = type.replace("SYSTEM ", "");
     String objectName = toDrop.getObjectNameForDrop(dbConnection);
-    String fqName = toDrop.getFullyQualifiedName(dbConnection);
     StringBuilder result = new StringBuilder(type.length() + objectName.length() + 15);
 
     String drop = dbConnection.getDbSettings().getDropDDL(type, dropType == DropType.cascaded);
@@ -536,8 +535,7 @@ public class TableSourceBuilder
     }
     else
     {
-      drop = TemplateHandler.replacePlaceholder(drop, MetaDataSqlManager.FQ_TABLE_NAME_PLACEHOLDER, fqName, false);
-      drop = TemplateHandler.replacePlaceholder(drop, NAME_PLACEHOLDER, objectName, false);
+      drop = TemplateHandler.replaceTablePlaceholder(drop, toDrop, dbConnection, false);
       result.append(SqlUtil.addSemicolon(drop));
     }
     return result;

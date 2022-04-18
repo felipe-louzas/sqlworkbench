@@ -1978,12 +1978,17 @@ public class StringUtil
 
   public static String arrayToString(String[] values)
   {
+    return arrayToString(values, ',');
+  }
+
+  public static String arrayToString(String[] values, char delimiter)
+  {
     if (values == null || values.length == 0) return "";
 
     StringBuilder sb = new StringBuilder(values.length);
     for (int i=0; i < values.length; i++)
     {
-      if (i > 0) sb.append(',');
+      if (i > 0) sb.append(delimiter);
       sb.append(values[i]);
     }
     return sb.toString();

@@ -153,10 +153,10 @@ public class PgPassReader
     return entry.equals("*") || entry.equals(compareTo);
   }
 
-  public static File getPgPassFile()
+  public static WbFile getPgPassFile()
   {
     String passFile = System.getenv("PGPASSFILE");
-    File result = null;
+    WbFile result = null;
     if (passFile == null)
     {
       if (PlatformHelper.isWindows())

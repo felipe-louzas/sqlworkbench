@@ -203,14 +203,7 @@ public class ArgumentParser
   {
     reset();
     if (args == null) return;
-
-    StringBuilder line = new StringBuilder(args.length * 20);
-    for (String arg : args)
-    {
-      line.append(arg);
-      line.append(' ');
-    }
-    parse(line.toString());
+    parse(StringUtil.arrayToString(args, ' '));
   }
 
   public void parse(String cmdLine)
@@ -487,10 +480,8 @@ public class ArgumentParser
 
   private void reset()
   {
-    Iterator<String> keys = this.arguments.keySet().iterator();
-    while (keys.hasNext())
+    for (String key : this.arguments.keySet())
     {
-      String key = keys.next();
       this.arguments.put(key, null);
     }
     this.argCount = 0;

@@ -1453,7 +1453,8 @@ public class SqlPanel
     PanelWorkspaceHandler handler = new PanelWorkspaceHandler(this);
     handler.readFromWorkspace(w, index);
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(new CallerInfo(){}, "Restoring panel " + (index + 1) + " from workspace " + w.getFilename() + " took " + duration + "ms");
+    LogMgr.logTrace(new CallerInfo(){},
+      "Restoring panel " + (index + 1) + " from workspace " + WbFile.getPathForLogging(w.getFilename()) + " took " + duration + "ms");
   }
 
   private boolean confirmDiscardChanges(int index, boolean showResultName)
