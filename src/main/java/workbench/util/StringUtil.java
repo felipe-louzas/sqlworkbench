@@ -1933,6 +1933,16 @@ public class StringUtil
     return start;
   }
 
+  public static boolean hasLineFeed(String text)
+  {
+    if (isEmptyString(text)) return false;
+    if (text.endsWith("\r\n")) return true;
+    if (text.endsWith("\n")) return true;
+    if (text.endsWith("\n\r")) return true;
+    if (text.endsWith("\r")) return true;
+    return false;
+  }
+
   /**
    * Calculate the end-offset of the line indicated by the position.
    *

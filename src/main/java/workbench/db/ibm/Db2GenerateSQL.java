@@ -56,7 +56,7 @@ public class Db2GenerateSQL
     "DATABASE_OBJECT_NAME => ?, " +
     "DATABASE_OBJECT_TYPE => ?, " +
     "CREATE_OR_REPLACE_OPTION  => ?, " +
-    "STATEMENT_FORMATTING_OPTION => '0', " +
+    "STATEMENT_FORMATTING_OPTION => ?, " +
     "TEMPORAL_OPTION => '1', " +
     "HEADER_OPTION => '0')";
 
@@ -108,11 +108,14 @@ public class Db2GenerateSQL
     StringBuilder result = null;
 
     boolean generateReplace = getGenerateRecreate(objectType);
+    boolean enableFormatting = getEnableFormatting(objectType);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
     String nl = Settings.getInstance().getInternalEditorLineEnding();
     String replaceParm = generateReplace ? "1" : "0";
+    String formatParam = enableFormatting ? "1" : "0";
+
     try
     {
       stmt = conn.getSqlConnection().prepareStatement(GEN_SQL);
@@ -120,8 +123,9 @@ public class Db2GenerateSQL
       stmt.setString(2, objectName);
       stmt.setString(3, objectType);
       stmt.setString(4, replaceParm);
+      stmt.setString(5, formatParam);
 
-      LogMgr.logMetadataSql(new CallerInfo(){}, "object source", GEN_SQL, schema, objectName, objectType, replaceParm);
+      LogMgr.logMetadataSql(new CallerInfo(){}, "object source", GEN_SQL, schema, objectName, objectType, replaceParm, formatParam);
 
       stmt.execute();
       rs = stmt.getResultSet();
@@ -135,12 +139,15 @@ public class Db2GenerateSQL
         result = new StringBuilder(100);
         while (rs.next())
         {
-          String line = StringUtil.rtrim(rs.getString(3));
+          String line = StringUtil.removeTrailing(rs.getString(3), ' ');
           if (line != null)
           {
             result.append(line);
           }
-          result.append(nl);
+          if (!enableFormatting && !StringUtil.hasLineFeed(line))
+          {
+            result.append(nl);
+          }
         }
       }
     }
@@ -165,6 +172,13 @@ public class Db2GenerateSQL
     return conn.getDbSettings().getBoolProperty(RECREATE_PROP + "." + type, defaultValue);
   }
 
+  private boolean getEnableFormatting(String type)
+  {
+    if (type == null) return false;
+    if (conn == null) return false;
+    return conn.getDbSettings().getBoolProperty("source." + type.toLowerCase() + ".systemproc.enable.formatting", true);
+  }
+
   public static boolean useGenerateSQLProc(WbConnection conn, String type)
   {
     if (conn == null) return false;
@@ -174,5 +188,4 @@ public class Db2GenerateSQL
 
     return conn.getDbSettings().getBoolProperty("source." + type.toLowerCase() + ".use.systemproc", false);
   }
-
 }

@@ -375,7 +375,7 @@ public class RowDataReader
         value = rs.getString(column);
         if (trimCharData)
         {
-          value = StringUtil.rtrim((String)value);
+          value = StringUtil.removeTrailing((String)value, ' ');
         }
       }
       else if (refCursorConsumer != null && refCursorConsumer.isRefCursor(type, resultInfo.getDbmsTypeName(column - 1)))
