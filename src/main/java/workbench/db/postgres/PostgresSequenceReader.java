@@ -31,6 +31,7 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.DbExplorerSettings;
 
 import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
@@ -58,8 +59,9 @@ public class PostgresSequenceReader
       "       pg_catalog.obj_description(seq.oid, 'pg_class') as remarks, \n" +
       "       pg_catalog.quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by, \n" +
       "       seq.relname as sequence_name, \n" +
-      "       sn.nspname as sequence_schema \n" +
-      "FROM pg_catalog.pg_class seq   \n" +
+      "       sn.nspname as sequence_schema, \n" +
+      "       array_to_string(seq.relacl, ',') as acl \n" +
+      "FROM pg_catalog.pg_class seq \n" +
       "  JOIN pg_catalog.pg_namespace sn ON sn.oid = seq.relnamespace \n" +
       "  CROSS JOIN (SELECT min_value, max_value, last_value, increment_by, cache_value, is_cycled FROM " + NAME_PLACEHOLDER + ") seq_info \n" +
       "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = seq.oid AND deptype = 'a' \n" +
@@ -79,8 +81,10 @@ public class PostgresSequenceReader
     "       pg_catalog.obj_description(to_regclass(format('%I.%I', s.schemaname, s.sequencename)), 'pg_class') as remarks,\n" +
     "       pg_catalog.quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by,\n" +
     "       s.sequencename as sequence_name, \n" +
-    "       s.schemaname as sequence_schema\n" +
-    "from pg_catalog.pg_sequences s\n" +
+    "       s.schemaname as sequence_schema, \n" +
+    "       array_to_string(cl.relacl, ',') as acl " +
+    "FROM pg_catalog.pg_sequences s \n" +
+    "  JOIN pg_class cl on cl.relname = s.sequencename and cl.relnamespace = s.schemaname::text::regnamespace " +
     "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = pg_catalog.to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND deptype in ('a', 'i') \n" +
     "  LEFT JOIN pg_catalog.pg_class tab ON d.objid = pg_catalog.to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND d.refobjid = tab.oid   \n" +
     "  LEFT JOIN pg_catalog.pg_attribute col ON (d.refobjid, d.refobjsubid) = (col.attrelid, col.attnum)";
@@ -179,6 +183,21 @@ public class PostgresSequenceReader
         buf.append('\n');
         buf.append("COMMENT ON SEQUENCE ").append(def.getSequenceName()).append(" IS '").append(def.getComment().replace("'", "''")).append("';");
       }
+
+      if (DbExplorerSettings.getGenerateTableGrants())
+      {
+        String acl = (String)def.getSequenceProperty("acl");
+        if (StringUtil.isNonBlank(acl))
+        {
+          PgACLParser parser = new PgACLParser(acl);
+          String grants = parser.getSQL(def.getObjectExpression(dbConnection), "SEQUENCE");
+          if (StringUtil.isNonBlank(grants))
+          {
+            buf.append('\n');
+            buf.append(grants);
+          }
+        }
+      }
     }
     catch (Exception e)
     {
@@ -234,6 +253,7 @@ public class PostgresSequenceReader
     def.setSequenceProperty(PROP_CYCLE, ds.getValue(0, "is_cycled"));
     def.setSequenceProperty(PROP_LAST_VALUE, ds.getValue(0, "last_value"));
     def.setSequenceProperty(PROP_DATA_TYPE, ds.getValue(0, "data_type"));
+    def.setSequenceProperty("acl", ds.getValueAsString(0, "acl"));
     String ownedBy = ds.getValueAsString(0, "owned_by");
     if (StringUtil.isNonEmpty(ownedBy))
     {
@@ -274,7 +294,7 @@ public class PostgresSequenceReader
 
     String sql =
       "-- SQL Workbench/J \n" +
-      "select min_value, max_value, last_value, increment_by, cache_value, is_cycled, data_type, remarks, owned_by \n" +
+      "select min_value, max_value, last_value, increment_by, cache_value, is_cycled, data_type, remarks, owned_by, acl \n" +
       "from ( \n" + seqInfoSql.replace(NAME_PLACEHOLDER, fullname) + "\n) t \n" +
       "where sequence_name = ? ";
 
