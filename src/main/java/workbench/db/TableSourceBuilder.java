@@ -536,6 +536,7 @@ public class TableSourceBuilder
     else
     {
       drop = TemplateHandler.replaceTablePlaceholder(drop, toDrop, dbConnection, false);
+      drop = TemplateHandler.replacePlaceholder(drop, NAME_PLACEHOLDER, objectName, false);
       result.append(SqlUtil.addSemicolon(drop));
     }
     return result;
@@ -789,6 +790,7 @@ public class TableSourceBuilder
     DbMetadata metaData = dbConnection.getMetadata();
 
     sql = replacePlaceHolder(sql, MetaDataSqlManager.TABLE_NAME_PLACEHOLDER, table.getTableName(), needQuotes, metaData);
+    sql = replacePlaceHolder(sql, NAME_PLACEHOLDER, table.getTableName(), needQuotes, metaData);
     if (sql.contains(MetaDataSqlManager.FQ_TABLE_NAME_PLACEHOLDER))
     {
       sql = replacePlaceHolder(sql, MetaDataSqlManager.FQ_TABLE_NAME_PLACEHOLDER, table.getFullyQualifiedName(dbConnection), false, metaData);

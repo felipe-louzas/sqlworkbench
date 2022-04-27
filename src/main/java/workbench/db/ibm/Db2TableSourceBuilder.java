@@ -47,6 +47,7 @@ public class Db2TableSourceBuilder
   private boolean checkHistoryTable;
   private boolean useSystemProc = false;
   private final DBID dbid;
+  
   public Db2TableSourceBuilder(WbConnection con)
   {
     super(con);
