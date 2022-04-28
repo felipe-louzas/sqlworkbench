@@ -301,6 +301,12 @@ public class DbSettings
     return dbmsNames;
   }
 
+  public boolean isPropertySet(String property)
+  {
+    String value = this.getProperty(property, null);
+    return value != null;
+  }
+
   public boolean supportsCreateArray()
   {
     return getBoolProperty("createarray.supported", true);

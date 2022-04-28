@@ -228,6 +228,11 @@ public class TableSourceBuilder
     return true;
   }
 
+  protected boolean shouldIncludeCommentInTableSource()
+  {
+    return true;
+  }
+
   public String getTableSource(TableIdentifier table, List<ColumnIdentifier> columns, List<IndexDefinition> indexList, List<DependencyNode> fkList, DropType dropType, boolean includeFk, boolean includeGrants)
   {
     CharSequence createSql = getCreateTable(table, columns, indexList, fkList, dropType, includeFk);
@@ -267,7 +272,10 @@ public class TableSourceBuilder
       result.append(lineEnding);
     }
 
-    appendTableComments(result, table, columns, lineEnding);
+    if (shouldIncludeCommentInTableSource())
+    {
+      appendTableComments(result, table, columns, lineEnding);
+    }
 
     if (includeGrants && shouldIncludeGrantsInTableSource())
     {

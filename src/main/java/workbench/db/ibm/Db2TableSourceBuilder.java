@@ -47,7 +47,7 @@ public class Db2TableSourceBuilder
   private boolean checkHistoryTable;
   private boolean useSystemProc = false;
   private final DBID dbid;
-  
+
   public Db2TableSourceBuilder(WbConnection con)
   {
     super(con);
@@ -130,6 +130,28 @@ public class Db2TableSourceBuilder
   }
 
   @Override
+  protected boolean shouldIncludeIndexInTableSource()
+  {
+    if (useSystemProc)
+    {
+      final String propIndexIncluded = "generate_sql.table.includes.index";
+      if (dbConnection.getDbSettings().isPropertySet(propIndexIncluded))
+      {
+        boolean indexIncluded = dbConnection.getDbSettings().getBoolProperty(propIndexIncluded, false);
+        return !indexIncluded;
+      }
+
+      // Starting with 7.4, GENERATE_SQL includes the indexes
+      if (JdbcUtils.hasMinimumServerVersion(dbConnection, "7.4"))
+      {
+        return false;
+      }
+      return true;
+    }
+    return super.shouldIncludeIndexInTableSource();
+  }
+
+  @Override
   protected boolean shouldIncludeFKInTableSource()
   {
     if (useSystemProc)
@@ -141,6 +163,16 @@ public class Db2TableSourceBuilder
 
   @Override
   protected boolean shouldIncludeGrantsInTableSource()
+  {
+    if (useSystemProc)
+    {
+      return false;
+    }
+    return super.shouldIncludeGrantsInTableSource();
+  }
+
+  @Override
+  protected boolean shouldIncludeCommentInTableSource()
   {
     if (useSystemProc)
     {
