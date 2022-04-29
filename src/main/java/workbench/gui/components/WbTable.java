@@ -1946,8 +1946,11 @@ public class WbTable
     this.setDefaultRenderer(java.sql.Timestamp.class, tsRenderer);
     this.setDefaultRenderer(java.time.LocalDateTime.class, tsRenderer);
     this.setDefaultRenderer(java.time.ZonedDateTime.class, tsRenderer);
+    this.setDefaultRenderer(java.time.OffsetDateTime.class, tsRenderer);
 
-    this.setDefaultRenderer(java.sql.Time.class, new DateColumnRenderer(sett.getDefaultTimeFormat(), variableFractions));
+    DateColumnRenderer timeRenderer = new DateColumnRenderer(sett.getDefaultTimeFormat(), variableFractions);
+    this.setDefaultRenderer(java.sql.Time.class, timeRenderer);
+    this.setDefaultRenderer(java.time.LocalTime.class, timeRenderer);
   }
 
   @Override

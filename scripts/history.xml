@@ -3,7 +3,6 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-
   <release build="-1" date="2022-04-02">
     <entry dev-build="2" type="enh">It's now possible to add multiple directories to the file system tree</entry>
     <entry dev-build="1" type="enh">When definining a JDBC driver, the jar file can now be downloaded from Maven central if available</entry>
@@ -14,6 +13,7 @@
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
     <entry dev-build="1" type="enh">It's now possible to jump to the corresponding table from within the trigger list.</entry>
     <entry dev-build="1" type="enh">In the DbTree, table nodes for "Uses", Used by", "References" and "Referenced by" can now be expanded to show the table details.</entry>
+    <entry dev-build="3" type="fix">For PostgreSQL, the format for time columns wasn't used</entry>
     <entry dev-build="3" type="fix">For PostgreSQL, domains with multiple constraints weren't retrieved or displayed correctly.</entry>
     <entry dev-build="3" type="fix">It wasn't possible to assign keyboard shortcuts to "Indent" and "Un-Indent"</entry>
     <entry dev-build="3" type="fix">When changing the font size in the editor, the scrollbars weren't updated correctly</entry>

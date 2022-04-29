@@ -37,11 +37,10 @@ import java.util.TimeZone;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.ResultInfo;
-
-import workbench.db.JdbcUtils;
 
 import static java.time.temporal.ChronoField.*;
 
@@ -58,7 +57,7 @@ class PostgresRowDataReader
 
   private static boolean java8InfoLogged = false;
   private static boolean strategyLogged = false;
-  
+
   private final boolean useJava8Time;
   private int timeTzStrategy = PARSE_STRING;
 
@@ -90,13 +89,17 @@ class PostgresRowDataReader
     }
 
     useJava8Time = TimestampTZHandler.Factory.supportsJava8Time(conn);
-    if (useJava8Time && !java8InfoLogged)
+    if (useJava8Time)
     {
+      useGetObjectForTime = true;
       useGetObjectForTimestamps = true;
       useGetObjectForTimestampTZ = true;
       useGetObjectForDates = true;
-      LogMgr.logInfo(new CallerInfo(){}, "Using ZonedDateTime to read TIMESTAMP WITH TIME ZONE columns");
-      java8InfoLogged = true;
+      if (!java8InfoLogged)
+      {
+        java8InfoLogged = true;
+        LogMgr.logInfo(new CallerInfo(){}, "Using ZonedDateTime to read TIMESTAMP WITH TIME ZONE columns");
+      }
     }
   }
 
