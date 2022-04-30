@@ -32,13 +32,13 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DBID;
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -129,7 +129,7 @@ public class Db2SequenceReader
     }
 
     result.setComment(getDSValueString(ds, row, "REMARKS", "LONG_COMMENT"));
-    readSequenceSource(result);
+    generateSource(result);
     return result;
   }
 
@@ -269,15 +269,14 @@ public class Db2SequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String schema, String sequence)
+  public CharSequence getSequenceSource(String catalog, String schema, String sequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, schema, sequence);
     if (def == null) return null;
     return def.getSource();
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void generateSource(SequenceDefinition def)
   {
     StringBuilder result = new StringBuilder(100);
 

@@ -24,7 +24,7 @@ package workbench.db.report;
 import java.util.Collection;
 import java.util.Collections;
 
-import workbench.db.TableGrant;
+import workbench.db.GrantItem;
 import workbench.db.TableGrantReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -42,7 +42,7 @@ public class ReportTableGrants
   public static final String TAG_GRANT_GRANTEE = "grantee";
   public static final String TAG_GRANT_PRIV = "privilege";
   public static final String TAG_GRANT_GRANTABLE = "grantable";
-  private Collection<TableGrant> grants;
+  private Collection<GrantItem> grants;
 
   public ReportTableGrants(WbConnection con, TableIdentifier tbl)
   {
@@ -50,7 +50,7 @@ public class ReportTableGrants
     grants = reader.getTableGrants(con, tbl);
   }
 
-  public ReportTableGrants(Collection<TableGrant> tableGrants)
+  public ReportTableGrants(Collection<GrantItem> tableGrants)
   {
     this.grants = tableGrants;
   }
@@ -64,7 +64,7 @@ public class ReportTableGrants
     StringBuilder indent1 = new StringBuilder(indent);
     indent1.append("  ");
 
-    for (TableGrant grant : grants)
+    for (GrantItem grant : grants)
     {
       tagWriter.appendOpenTag(result, indent, TAG_GRANT);
       result.append('\n');
@@ -75,7 +75,7 @@ public class ReportTableGrants
     }
   }
 
-  public Collection<TableGrant> getGrants()
+  public Collection<GrantItem> getGrants()
   {
     return Collections.unmodifiableCollection(grants);
   }

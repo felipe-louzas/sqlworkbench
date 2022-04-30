@@ -122,9 +122,8 @@ public class VerticaSequenceReaderTest
     assertEquals("foo_sequence", seq.getObjectName());
     assertEquals("public", seq.getSchema());
     assertEquals("vertica", seq.getCatalog());
-    reader.readSequenceSource(seq);
-    String create = seq.getSource().toString();
-//    System.out.println(create);
+    String create = reader.getSequenceSource(seq, null).toString();
+    System.out.println(create);
     String expected =
       "CREATE SEQUENCE foo_sequence\n" +
       "       INCREMENT BY 1\n" +

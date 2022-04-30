@@ -23,6 +23,8 @@ package workbench.db.postgres;
 import java.util.List;
 import java.util.Map;
 
+import workbench.db.GrantItem;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -39,12 +41,12 @@ public class PgACLParserTest
   {
     PgACLParser parser = new PgACLParser("arthur=rw/zaphod,arthur=rwa/arthur");
     Map<String, List<GrantItem>> privs = parser.getPrivileges();
-    System.out.println(privs);
+//    System.out.println(privs);
     assertEquals(1, privs.size());
     assertEquals(2, privs.get("arthur").size());
 
     assertEquals("SELECT", privs.get("arthur").get(0).getPrivilege());
-    assertEquals(false, privs.get("arthur").get(0).isWithGrantOption());
+    assertEquals(false, privs.get("arthur").get(0).isGrantable());
     assertEquals("arthur", privs.get("arthur").get(0).getGrantee());
     assertEquals("UPDATE", privs.get("arthur").get(1).getPrivilege());
     String sql = parser.getSQL("PERSON", "TABLE");
@@ -57,15 +59,15 @@ public class PgACLParserTest
   {
     PgACLParser parser = new PgACLParser("arthur=r*w*/zaphod,arthur=rwa/arthur");
     Map<String, List<GrantItem>> privs = parser.getPrivileges();
-    System.out.println(privs);
+//    System.out.println(privs);
     assertEquals(1, privs.size());
     assertEquals(2, privs.get("arthur").size());
 
     assertEquals("SELECT", privs.get("arthur").get(0).getPrivilege());
-    assertEquals(true, privs.get("arthur").get(0).isWithGrantOption());
+    assertEquals(true, privs.get("arthur").get(0).isGrantable());
     assertEquals("arthur", privs.get("arthur").get(0).getGrantee());
     assertEquals("UPDATE", privs.get("arthur").get(1).getPrivilege());
-    assertEquals(true, privs.get("arthur").get(1).isWithGrantOption());
+    assertEquals(true, privs.get("arthur").get(1).isGrantable());
     String sql = parser.getSQL("PERSON", "TABLE");
 //    System.out.println(sql);
     assertEquals("GRANT SELECT, UPDATE ON TABLE PERSON TO arthur WITH GRANT OPTION;", sql);
@@ -76,15 +78,15 @@ public class PgACLParserTest
   {
     PgACLParser parser = new PgACLParser("arthur=rw*/zaphod,arthur=rwa/arthur");
     Map<String, List<GrantItem>> privs = parser.getPrivileges();
-    System.out.println(privs);
+//    System.out.println(privs);
     assertEquals(1, privs.size());
     assertEquals(2, privs.get("arthur").size());
 
     assertEquals("SELECT", privs.get("arthur").get(0).getPrivilege());
     assertEquals("arthur", privs.get("arthur").get(0).getGrantee());
-    assertFalse(privs.get("arthur").get(0).isWithGrantOption());
+    assertFalse(privs.get("arthur").get(0).isGrantable());
     assertEquals("UPDATE", privs.get("arthur").get(1).getPrivilege());
-    assertTrue(privs.get("arthur").get(1).isWithGrantOption());
+    assertTrue(privs.get("arthur").get(1).isGrantable());
   }
 
 }

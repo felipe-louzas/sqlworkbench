@@ -31,13 +31,13 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -102,7 +102,7 @@ public class DerbySequenceReader
     result.setSequenceProperty(PROP_INCREMENT, ds.getValue(row, "increment"));
     result.setSequenceProperty(PROP_CYCLE, Boolean.valueOf(StringUtil.stringToBool(ds.getValueAsString(row, "cycleoption"))));
     result.setSequenceProperty(PROP_DATA_TYPE, ds.getValueAsString(row, "sequencedatatype"));
-    readSequenceSource(result);
+    generateSource(result);
     return result;
   }
 
@@ -156,15 +156,14 @@ public class DerbySequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String schema, String sequence)
+  public CharSequence getSequenceSource(String catalog, String schema, String sequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, schema, sequence);
     if (def == null) return null;
     return def.getSource();
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void generateSource(SequenceDefinition def)
   {
     StringBuilder result = new StringBuilder(100);
 

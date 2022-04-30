@@ -80,7 +80,7 @@ public class OracleIndexPartition
   protected String getRetrieveColumnsSql()
   {
     return
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select column_name, \n" +
       "       column_position \n" +
       "from all_part_key_columns \n" +
@@ -94,7 +94,7 @@ public class OracleIndexPartition
   protected String getRetrievePartitionDefinitionSql()
   {
     return
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select owner,  \n" +
       "       table_name, \n" +
       "       partitioning_type,  \n" +
@@ -117,7 +117,7 @@ public class OracleIndexPartition
     if (useCompression)
     {
       return
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "SELECT partition_name,  \n" +
         "       high_value,  \n" +
         "       partition_position, \n" +
@@ -129,7 +129,7 @@ public class OracleIndexPartition
         "ORDER BY partition_position";
     }
     return
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT partition_name,  \n" +
       "       high_value,  \n" +
       "       partition_position, \n" +
@@ -144,7 +144,7 @@ public class OracleIndexPartition
   protected String getRetrieveSubColumnsSql()
   {
     return
-    "-- SQL Workbench \n" +
+    "-- SQL Workbench/J \n" +
     "select name, \n" +
     "       object_type, \n" +
     "       column_name, \n" +
@@ -162,7 +162,7 @@ public class OracleIndexPartition
     if (useCompression)
     {
     return
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select partition_name,  \n" +
       "       subpartition_name,  \n" +
       "       high_value, \n" +
@@ -174,7 +174,7 @@ public class OracleIndexPartition
       "order by subpartition_position";
     }
     return
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select partition_name,  \n" +
       "       subpartition_name,  \n" +
       "       high_value, \n" +

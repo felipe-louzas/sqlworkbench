@@ -31,6 +31,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
 import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -62,7 +63,7 @@ public class H2SequenceReader
    *  @return The SQL to recreate the given sequence
    */
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String aSequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String aSequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, aSequence);
     if (def == null) return "";
@@ -117,13 +118,12 @@ public class H2SequenceReader
 
     String comment = ds.getValueAsString(row, "REMARKS");
     result.setComment(comment);
-    readSequenceSource(result);
+    generateSource(result);
 
     return result;
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void generateSource(SequenceDefinition def)
   {
     if (def == null) return;
 

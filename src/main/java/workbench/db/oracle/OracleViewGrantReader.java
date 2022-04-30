@@ -37,7 +37,7 @@ public class OracleViewGrantReader
   public String getViewGrantSql()
   {
     return
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT grantee, privilege, grantable \n" +
       "FROM all_tab_privs \n" +
       "WHERE table_name = ? \n" +

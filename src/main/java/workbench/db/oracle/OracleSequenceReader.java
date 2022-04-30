@@ -32,6 +32,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
 import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -89,7 +90,7 @@ public class OracleSequenceReader
   {
     StringBuilder sql = new StringBuilder(100);
     sql.append(
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select " + OracleUtils.getCacheHint() + "s.sequence_owner, \n" +
       "       s.sequence_name, \n" +
       "       s.min_value, \n" +
@@ -153,11 +154,21 @@ public class OracleSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String sequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String sequence, GenerationOptions option)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, sequence);
     if (def == null) return null;
-    return def.getSource();
+    CharSequence source = def.getSource();
+    if (option != null && option.getIncludeGrants())
+    {
+      OracleSequenceGrantReader reader = new OracleSequenceGrantReader();
+      String grants = reader.getSequenceGrants(connection, def);
+      if (grants != null)
+      {
+        return source + "\n" + grants;
+      }
+    }
+    return source;
   }
 
   private SequenceDefinition createDefinition(DataStore ds, int row)
@@ -184,13 +195,12 @@ public class OracleSequenceReader
         result.setRelatedTable(seqTable, col);
       }
     }
-    readSequenceSource(result);
+    buildSource(result);
     return result;
   }
 
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void buildSource(SequenceDefinition def)
   {
     if (def == null) return;
     if (def.getSource() != null) return;

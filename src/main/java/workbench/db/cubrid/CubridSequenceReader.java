@@ -31,13 +31,13 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 
@@ -63,8 +63,7 @@ public class CubridSequenceReader
     this.dbConnection = conn;
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void generateSource(SequenceDefinition def)
   {
     if (def == null) return;
 
@@ -114,10 +113,10 @@ public class CubridSequenceReader
    *  @return The SQL to recreate the given sequence
    */
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String aSequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String aSequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, aSequence);
-    readSequenceSource(def);
+    generateSource(def);
     return def.getSource();
   }
 

@@ -229,7 +229,7 @@ public class OracleMViewReader
     }
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select mv.query, \n" +
       "       mv.rewrite_enabled, \n" +
       "       mv.refresh_mode, \n" +

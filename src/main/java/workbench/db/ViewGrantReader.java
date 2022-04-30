@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.derby.DerbyViewGrantReader;
 import workbench.db.firebird.FirebirdViewGrantReader;
@@ -45,7 +44,6 @@ import workbench.db.ibm.Db2ViewGrantReader;
 import workbench.db.oracle.OracleViewGrantReader;
 import workbench.db.postgres.PostgresViewGrantReader;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -112,9 +110,9 @@ public abstract class ViewGrantReader
 
    *  @return a List with TableGrant objects.
    */
-  public Collection<TableGrant> getViewGrants(WbConnection dbConnection, TableIdentifier viewName)
+  public Collection<GrantItem> getViewGrants(WbConnection dbConnection, TableIdentifier viewName)
   {
-    Collection<TableGrant> result = new HashSet<>();
+    Collection<GrantItem> result = new HashSet<>();
 
     String sql = this.getViewGrantSql();
     if (sql == null) return Collections.emptyList();
@@ -144,7 +142,7 @@ public abstract class ViewGrantReader
         String to = rs.getString(1);
         String what = rs.getString(2);
         boolean grantable = StringUtil.stringToBool(rs.getString(3));
-        TableGrant grant = new TableGrant(to, what, grantable);
+        GrantItem grant = new GrantItem(to, what, grantable);
         result.add(grant);
       }
     }
@@ -168,7 +166,7 @@ public abstract class ViewGrantReader
    */
   public StringBuilder getViewGrantSource(WbConnection dbConnection, TableIdentifier view)
   {
-    Collection<TableGrant> grantList = this.getViewGrants(dbConnection, view);
+    Collection<GrantItem> grantList = this.getViewGrants(dbConnection, view);
     StringBuilder result = new StringBuilder(200);
     int count = grantList.size();
 
@@ -176,7 +174,7 @@ public abstract class ViewGrantReader
     // first, in order to be able to build the complete statements
     Map<String, List<String>> grants = new HashMap<>(count);
 
-    for (TableGrant grant : grantList)
+    for (GrantItem grant : grantList)
     {
       String grantee = grant.getGrantee();
       String priv = grant.getPrivilege();

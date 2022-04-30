@@ -153,7 +153,7 @@ public class OracleIndexReader
     boolean useUserTables = OracleUtils.useUserSpecificCatalogs(currentUser, tbl.getRawSchema());
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT " + OracleUtils.getCacheHint() + " null as table_cat, \n" +
       "       " + (useUserTables ? "user" : "i.owner") + " as table_schem, \n" +
       "       i.table_name, \n" +
@@ -389,7 +389,7 @@ public class OracleIndexReader
     if (CollectionUtil.isEmpty(indexDefs)) return;
 
     String base=
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT " + OracleUtils.getCacheHint() + "i.index_name, e.column_expression, e.column_position \n" +
       "FROM all_indexes i \n" +
       "  JOIN all_ind_expressions e \n" +
@@ -539,7 +539,7 @@ public class OracleIndexReader
     }
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select " + OracleUtils.getCacheHint() + "null as table_cat,  \n" +
       "       cols.owner as table_schem,  \n" +
       "       cols.table_name,  \n" +

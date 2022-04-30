@@ -28,6 +28,7 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.GenerationOptions;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
@@ -56,14 +57,6 @@ public class NuoDBSequenceReader
       "SELECT schema, \n" +
       "       sequencename\n " +
       "FROM system.sequences";
-  }
-
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
-  {
-    if (def == null) return;
-    CharSequence s = getSequenceSource(def.getCatalog(), def.getSequenceOwner(), def.getSequenceName());
-    def.setSource(s);
   }
 
   @Override
@@ -145,7 +138,7 @@ public class NuoDBSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String sequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String sequence, GenerationOptions option)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, sequence);
     return buildSource(def);

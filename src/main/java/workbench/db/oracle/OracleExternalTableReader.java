@@ -43,7 +43,7 @@ import workbench.util.StringUtil;
 public class OracleExternalTableReader
 {
   private String baseSql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select et.owner,  \n" +
       "       et.table_name,  \n" +
       "       et.type_name,  \n" +

@@ -77,7 +77,7 @@ public class OracleFKHandler
     // Otherwise foreign keys referencing unique constraints (rather than primary keys) would
     // not be displayed (DbExplorer, WbSchemaReport) or correctly processed (TableDependency)
     baseSql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT " + OracleUtils.getCacheHint() + " NULL AS pktable_cat, \n" +
       "       p.owner AS pktable_schem, \n" +
       "       p.table_name AS pktable_name, \n" +

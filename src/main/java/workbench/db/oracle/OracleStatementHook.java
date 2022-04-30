@@ -69,7 +69,7 @@ public class OracleStatementHook
 {
 
   private static final String RETRIEVE_STATS =
-      "-- SQL Workbench \n " +
+      "-- SQL Workbench/J \n " +
       "select a.name, coalesce(s.value,0) as value, s.statistic# \n" +
       "from v$sesstat s \n" +
       "  join v$statname a on a.statistic# = s.statistic# \n" +
@@ -458,7 +458,7 @@ public class OracleStatementHook
       if (searchSQL)
       {
         String findSql =
-          "-- SQL Workbench \n " +
+          "-- SQL Workbench/J \n " +
           "select sql.sql_id, sql.child_number \n" +
           "from v$sql sql \n" +
           "where sql_text like '" + getIDPrefix() + "%' \n" +

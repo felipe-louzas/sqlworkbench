@@ -63,7 +63,7 @@ public class OracleSynonymReader
     }
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT s.synonym_name, s.table_owner, s.table_name, s.db_link, o.object_type, s.owner";
 
     if (readComments)

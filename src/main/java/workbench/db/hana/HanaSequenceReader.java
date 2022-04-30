@@ -32,13 +32,13 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -70,14 +70,6 @@ public class HanaSequenceReader
       "       cache_size, \n" +
       "       reset_by_query \n" +
       "FROM sys.sequences";
-  }
-
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
-  {
-    if (def == null) return;
-    CharSequence s = getSequenceSource(def.getCatalog(), def.getSequenceOwner(), def.getSequenceName());
-    def.setSource(s);
   }
 
   @Override
@@ -182,7 +174,7 @@ public class HanaSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String sequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String sequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, sequence);
     return buildSource(def);

@@ -33,6 +33,8 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
@@ -40,14 +42,11 @@ import workbench.db.WbConnection;
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
- * A sequence reader for SQL Server 2012
+ * A sequence reader for SQL Server 2012.
  *
  * @author  Thomas Kellerer
  */
@@ -139,13 +138,13 @@ public class SqlServerSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String sequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String sequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, sequence);
     if (def == null) return null;
     if (def.getSource() == null)
     {
-      readSequenceSource(def);
+      generateSequenceSource(def);
     }
     return def.getSource();
   }
@@ -188,8 +187,7 @@ public class SqlServerSequenceReader
     return null;
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  public void generateSequenceSource(SequenceDefinition def)
   {
     if (def == null) return;
     if (def.getSource() != null) return;

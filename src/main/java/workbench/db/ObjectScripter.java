@@ -424,8 +424,9 @@ public class ObjectScripter
         {
           if (dbConnection.getMetadata().isSequenceType(dbo.getObjectType()))
           {
+            GenerationOptions opt = new GenerationOptions(false, includeGrants);
             SequenceDefinition seq = seqReader.getSequenceDefinition(dbo.getCatalog(), dbo.getSchema(), dbo.getObjectName());
-            source = adjustDelimiter(seqReader.getSequenceSource(seq, false));
+            source = adjustDelimiter(seqReader.getSequenceSource(seq, opt));
             List<String> sectionScript = additionalSQL.get(ScriptSection.AfterAllTables);
             if (sectionScript == null)
             {

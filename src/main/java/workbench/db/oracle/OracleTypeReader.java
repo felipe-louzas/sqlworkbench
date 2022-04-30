@@ -109,7 +109,7 @@ public class OracleTypeReader
   {
     StringBuilder select = new StringBuilder(50);
     select.append(
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT owner,  \n" +
       "       type_name, \n" +
       "       methods, \n" +
@@ -261,7 +261,7 @@ public class OracleTypeReader
     if (type == null) return null;
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT attr_name,  \n" +
       "       attr_type_name, \n" +
       "       length,  \n" +

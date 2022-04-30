@@ -29,13 +29,13 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -189,14 +189,6 @@ public class OpenEdgeSequenceReader
     return result;
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
-  {
-    if (def == null) return;
-    CharSequence s = getSequenceSource(null, def.getSequenceOwner(), def.getSequenceName());
-    def.setSource(s);
-  }
-
   private String buildSource(SequenceDefinition def)
   {
     StringBuilder result = new StringBuilder(100);
@@ -254,7 +246,7 @@ public class OpenEdgeSequenceReader
   }
 
   @Override
-  public String getSequenceSource(String catalog, String owner, String sequenceName)
+  public String getSequenceSource(String catalog, String owner, String sequenceName, GenerationOptions option)
   {
     SequenceDefinition sequence = getSequenceDefinition(catalog, owner, sequenceName);
     if (sequence == null) return null;

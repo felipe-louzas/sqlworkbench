@@ -31,8 +31,8 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.DbExplorerSettings;
 
+import workbench.db.GenerationOptions;
 import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -50,6 +50,7 @@ public class PostgresSequenceReader
   implements SequenceReader
 {
   private WbConnection dbConnection;
+  public static final String PROP_ACL = "acl";
   private static final String NAME_PLACEHOLDER = "%sequence_name%";
 
   private final String baseSql =
@@ -82,7 +83,7 @@ public class PostgresSequenceReader
     "       pg_catalog.quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by,\n" +
     "       s.sequencename as sequence_name, \n" +
     "       s.schemaname as sequence_schema, \n" +
-    "       array_to_string(cl.relacl, ',') as acl " +
+    "       array_to_string(cl.relacl, ',') as acl \n" +
     "FROM pg_catalog.pg_sequences s \n" +
     "  JOIN pg_class cl on cl.relname = s.sequencename and cl.relnamespace = s.schemaname::text::regnamespace " +
     "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = pg_catalog.to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND deptype in ('a', 'i') \n" +
@@ -94,33 +95,21 @@ public class PostgresSequenceReader
     this.dbConnection = conn;
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
-  {
-    readSequenceSource(def, true);
-  }
-
-  public void readSequenceSource(SequenceDefinition def, boolean includeOwner)
-  {
-    CharSequence source = getSequenceSource(def, includeOwner);
-    def.setSource(source);
-  }
-
   /**
    *  Return the source SQL for a PostgreSQL sequence definition.
    *
    *  @return The SQL to recreate the given sequence
    */
   @Override
-  public CharSequence getSequenceSource(String catalog, String schema, String aSequence)
+  public CharSequence getSequenceSource(String catalog, String schema, String aSequence, GenerationOptions opt)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, schema, aSequence);
     if (def == null) return "";
-    return def.getSource();
+    return getSequenceSource(def, opt);
   }
 
   @Override
-  public CharSequence getSequenceSource(SequenceDefinition def, boolean includeOwner)
+  public CharSequence getSequenceSource(SequenceDefinition def, GenerationOptions options)
   {
     if (def == null) return null;
 
@@ -168,7 +157,7 @@ public class PostgresSequenceReader
       {
         String owningColumn = tbl.getTableName() + "." + col;
 
-        if (includeOwner)
+        if (options != null && options.getIncludeDependencies())
         {
           buf.append("\n       OWNED BY ");
           buf.append(owningColumn);
@@ -184,20 +173,17 @@ public class PostgresSequenceReader
         buf.append("COMMENT ON SEQUENCE ").append(def.getSequenceName()).append(" IS '").append(def.getComment().replace("'", "''")).append("';");
       }
 
-      if (DbExplorerSettings.getGenerateTableGrants())
+      if (options != null && options.getIncludeGrants())
       {
-        String acl = (String)def.getSequenceProperty("acl");
-        if (StringUtil.isNonBlank(acl))
+        PostgresSequenceGrantReader reader = new PostgresSequenceGrantReader();
+        String grants = reader.getSequenceGrants(dbConnection, def);
+        if (StringUtil.isNonBlank(grants))
         {
-          PgACLParser parser = new PgACLParser(acl);
-          String grants = parser.getSQL(def.getObjectExpression(dbConnection), "SEQUENCE");
-          if (StringUtil.isNonBlank(grants))
-          {
-            buf.append('\n');
-            buf.append(grants);
-          }
+          buf.append('\n');
+          buf.append(grants);
         }
       }
+
     }
     catch (Exception e)
     {
@@ -253,7 +239,7 @@ public class PostgresSequenceReader
     def.setSequenceProperty(PROP_CYCLE, ds.getValue(0, "is_cycled"));
     def.setSequenceProperty(PROP_LAST_VALUE, ds.getValue(0, "last_value"));
     def.setSequenceProperty(PROP_DATA_TYPE, ds.getValue(0, "data_type"));
-    def.setSequenceProperty("acl", ds.getValueAsString(0, "acl"));
+    def.setSequenceProperty(PROP_ACL, ds.getValueAsString(0, "acl"));
     String ownedBy = ds.getValueAsString(0, "owned_by");
     if (StringUtil.isNonEmpty(ownedBy))
     {
@@ -272,7 +258,6 @@ public class PostgresSequenceReader
     DataStore ds = getRawSequenceDefinition(null, schema, sequence);
     if (ds == null) return null;
     SequenceDefinition result = createDefinition(sequence, schema, ds);
-    readSequenceSource(result);
     return result;
   }
 
@@ -363,12 +348,6 @@ public class PostgresSequenceReader
   public String getSequenceTypeName()
   {
     return SequenceReader.DEFAULT_TYPE_NAME;
-  }
-
-  @Override
-  public boolean supportsDependentSQL()
-  {
-    return true;
   }
 
 }

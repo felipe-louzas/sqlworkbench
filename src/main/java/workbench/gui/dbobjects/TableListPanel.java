@@ -88,6 +88,7 @@ import workbench.db.DbObject;
 import workbench.db.DbObjectComparator;
 import workbench.db.DbSettings;
 import workbench.db.DropType;
+import workbench.db.GenerationOptions;
 import workbench.db.GenericObjectDropper;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
@@ -1847,8 +1848,10 @@ public class TableListPanel
         {
           drop = getDropForCurrentObject(dropType);
         }
+        GenerationOptions opt = new GenerationOptions(true, dbs.getGenerateTableGrants());
+        CharSequence seqSql = sequenceReader.getSequenceSource(selectedTable.getCatalog(),
+          this.selectedTable.getSchema(), this.selectedTable.getTableName(), opt);
 
-        CharSequence seqSql = sequenceReader.getSequenceSource(selectedTable.getCatalog(), this.selectedTable.getSchema(), this.selectedTable.getTableName());
         if (StringUtil.isEmptyString(seqSql))
         {
           sql = ResourceMgr.getString("MsgSequenceSourceNotImplemented") + " " + meta.getProductName();

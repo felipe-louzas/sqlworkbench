@@ -72,7 +72,7 @@ public class OracleDataTypeResolver
     if (!alwaysShowCharSemantics)
     {
       String sql
-        = "-- SQL Workbench \n" +
+        = "-- SQL Workbench/J \n" +
         "SELECT value \n" +
         "FROM v$nls_parameters \n" +
         "WHERE parameter = 'NLS_LENGTH_SEMANTICS'";

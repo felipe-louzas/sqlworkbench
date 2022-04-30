@@ -222,7 +222,7 @@ public class OracleUtils
   public static String getCurrentContainer(WbConnection conn)
   {
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select sys_context('userenv', 'CON_NAME') from dual";
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "current container", sql);
@@ -242,7 +242,7 @@ public class OracleUtils
     if (conn.getSessionProperty(PROP_KEY_TBLSPACE) != null) return;
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select default_tablespace \n" +
       "from user_users";
 

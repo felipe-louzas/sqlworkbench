@@ -31,6 +31,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
 import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
@@ -89,7 +90,7 @@ public class InformixSequenceReader
     result.setSequenceProperty(PROP_CYCLE, Boolean.valueOf(StringUtil.stringToBool(ds.getValueAsString(row, "cycle"))));
     result.setSequenceProperty(PROP_ORDERED, Boolean.valueOf(StringUtil.stringToBool(ds.getValueAsString(row, "order"))));
     result.setSequenceProperty(PROP_CACHE_SIZE, ds.getValue(row, "cache"));
-    readSequenceSource(result);
+    generateSource(result);
     return result;
   }
 
@@ -161,15 +162,14 @@ public class InformixSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String schema, String sequence)
+  public CharSequence getSequenceSource(String catalog, String schema, String sequence, GenerationOptions option)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, schema, sequence);
     if (def == null) return null;
     return def.getSource();
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void generateSource(SequenceDefinition def)
   {
     StringBuilder result = new StringBuilder(100);
 

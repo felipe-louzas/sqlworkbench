@@ -125,7 +125,7 @@ public class OracleTableSourceBuilder
     }
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select " + OracleUtils.getCacheHint() + "atb.tablespace_name, \n" +
       "       atb.degree, \n" +
       "       atb.row_movement, \n" +
@@ -445,7 +445,7 @@ public class OracleTableSourceBuilder
     ResultSet rs = null;
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select column_name, tablespace_name, chunk, retention, cache, logging, encrypt, compression, deduplication, in_row, securefile, retention_type, retention_value \n" +
       "from all_lobs \n" +
       "where table_name = '" +tbl.getRawTableName() + "' \n " +
@@ -613,7 +613,7 @@ public class OracleTableSourceBuilder
     // but there is no way to retrieve that information as far as I can tell
     // (not even SQL Developer displays the flashback archive information!)
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select fa.flashback_archive_name,   \n" +
       "       fa.retention_in_days, \n" +
       "       tbl.tablespace_name \n" +
@@ -718,7 +718,7 @@ public class OracleTableSourceBuilder
     if (!hasUserType) return null;
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT 'NESTED TABLE '||parent_table_column||' STORE AS '||table_name \n" +
       "FROM all_nested_tables \n" +
       "WHERE parent_table_name = ? \n" +
@@ -874,7 +874,7 @@ public class OracleTableSourceBuilder
   {
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select " + OracleUtils.getCacheHint() + "coalesce(atb.tablespace_name, pt.def_tablespace_name) as tablespace_name, \n" +
       "       iot.tablespace_name as iot_overflow, \n" +
       "       iot.table_name as overflow_table, \n" +
@@ -983,7 +983,7 @@ public class OracleTableSourceBuilder
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select column_name \n" +
       "from all_tab_columns \n" +
       "where column_name not in (select column_name \n" +

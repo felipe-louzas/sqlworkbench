@@ -82,7 +82,7 @@ public class OracleErrorInformationReader
     }
 
     String query =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT line, position, text, name, type \n" +
       "FROM all_errors \n" +
       "WHERE owner = ? \n";

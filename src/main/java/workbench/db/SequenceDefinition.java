@@ -89,7 +89,7 @@ public class SequenceDefinition
     if (con == null) return null;
     SequenceReader reader = con.getMetadata().getSequenceReader();
     if (reader == null) return null;
-    return reader.getSequenceSource(catalog, schema, sequenceName);
+    return reader.getSequenceSource(catalog, schema, sequenceName, new GenerationOptions());
   }
 
   @Override
@@ -189,6 +189,11 @@ public class SequenceDefinition
   public String getSequenceOwner()
   {
     return this.schema;
+  }
+
+  public boolean isPropertySet(String property)
+  {
+    return properties.containsKey(property);
   }
 
   /**

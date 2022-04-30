@@ -56,15 +56,13 @@ public interface SequenceReader
   /**
    *  Return a SQL String to recreate the given sequence
    */
-  CharSequence getSequenceSource(String catalog, String schema, String sequence);
+  CharSequence getSequenceSource(String catalog, String schema, String sequence, GenerationOptions options);
 
-  default CharSequence getSequenceSource(SequenceDefinition seq, boolean includeDependencies)
+  default CharSequence getSequenceSource(SequenceDefinition seq, GenerationOptions options)
   {
     if (seq == null) return null;
-    return getSequenceSource(seq.getCatalog(), seq.getSchema(), seq.getSequenceName());
+    return getSequenceSource(seq.getCatalog(), seq.getSchema(), seq.getSequenceName(), options);
   };
-
-  void readSequenceSource(SequenceDefinition def);
 
   /**
    *  Get a list of sequences for the given owner.
@@ -77,8 +75,4 @@ public interface SequenceReader
 
   String getSequenceTypeName();
 
-  default boolean supportsDependentSQL()
-  {
-    return false;
-  }
 }

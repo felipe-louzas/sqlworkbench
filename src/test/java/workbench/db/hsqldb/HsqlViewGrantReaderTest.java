@@ -26,7 +26,7 @@ import java.util.Collection;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
-import workbench.db.TableGrant;
+import workbench.db.GrantItem;
 import workbench.db.TableIdentifier;
 import workbench.db.ViewGrantReader;
 import workbench.db.WbConnection;
@@ -67,9 +67,9 @@ public class HsqlViewGrantReaderTest
     view.setType("VIEW");
     assertEquals("V_PERSON", view.getTableName());
     ViewGrantReader reader = ViewGrantReader.createViewGrantReader(con);
-    Collection<TableGrant> grants = reader.getViewGrants(con, view);
+    Collection<GrantItem> grants = reader.getViewGrants(con, view);
     int grantCount = 0;
-    for (TableGrant grant : grants)
+    for (GrantItem grant : grants)
     {
       if ("SOMEONE".equals(grant.getGrantee()))
       {

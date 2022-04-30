@@ -126,7 +126,7 @@ public class OracleUniqueConstraintReader
 
     StringBuilder sql = new StringBuilder(500);
     sql.append(
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select " + OracleUtils.getCacheHint() + " index_name, constraint_name, deferrable, deferred, status, validated \n" +
       "from " + consView + " \n" +
       "where constraint_type = 'U' \n" +
@@ -197,7 +197,7 @@ public class OracleUniqueConstraintReader
   private DataStore getConstraintsForOwner(String owner, WbConnection con)
   {
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select index_name, constraint_name, deferrable, deferred, status, validated \n" +
       "from all_constraints \n" +
       "where constraint_type = 'U'" +

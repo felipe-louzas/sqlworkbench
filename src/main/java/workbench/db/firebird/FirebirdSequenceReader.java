@@ -30,13 +30,13 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -62,7 +62,7 @@ public class FirebirdSequenceReader
    *  @return The SQL to recreate the given sequence
    */
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String aSequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String aSequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, aSequence);
     if (def == null) return "";
@@ -100,16 +100,18 @@ public class FirebirdSequenceReader
 
     String name = ds.getValueAsString(row, 0);
     result = new SequenceDefinition(null, name);
-
-    String comment = ds.getValueAsString(row, 1);
+    int start = ds.getValueAsInt(row, 1, 0);
+    int increment = ds.getValueAsInt(row, 2, 1);
+    String comment = ds.getValueAsString(row, 3);
     result.setComment(comment);
-    readSequenceSource(result);
+    result.setSequenceProperty(PROP_START_VALUE, start);
+    result.setSequenceProperty(PROP_INCREMENT, increment);
+    generateSource(result);
 
     return result;
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void generateSource(SequenceDefinition def)
   {
     if (def == null) return;
 
@@ -117,6 +119,19 @@ public class FirebirdSequenceReader
 
     result.append("CREATE SEQUENCE ");
     result.append(def.getSequenceName());
+
+    Integer start = (Integer)def.getSequenceProperty(PROP_START_VALUE);
+    if (start != null && start.intValue() > 1)
+    {
+      result.append(" START WITH ");
+      result.append(start);
+    }
+    Integer increment = (Integer)def.getSequenceProperty(PROP_INCREMENT);
+    if (increment != null && increment.intValue() > 1)
+    {
+      result.append(" INCREMENT BY ");
+      result.append(increment);
+    }
 
     result.append(";\n");
 
@@ -142,6 +157,8 @@ public class FirebirdSequenceReader
     StringBuilder sql = new StringBuilder(100);
     sql.append(
       "SELECT trim(rdb$generator_name) AS SEQUENCE_NAME, \n" +
+      "       rdb$initial_value as START_VALUE, \n " +
+      "       rdb$generator_increment as INCREMENT, \n" +
       "       trim(rdb$description) AS REMARKS \n" +
       "FROM rdb$generators \n" +
       "WHERE (rdb$system_flag = 0 OR rdb$system_flag IS NULL) \n");

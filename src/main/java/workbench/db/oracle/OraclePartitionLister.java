@@ -98,7 +98,7 @@ public class OraclePartitionLister
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     String sql =
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "select sub.subpartition_name, sub.high_value, sub.subpartition_position, tbl.subpartitioning_type \n" +
         "from all_tab_subpartitions sub \n" +
         "  join all_part_tables tbl on tbl.owner = sub.table_owner and tbl.table_name = sub.table_name \n" +

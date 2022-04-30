@@ -28,7 +28,7 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.OracleTest;
-import workbench.db.TableGrant;
+import workbench.db.GrantItem;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -91,10 +91,10 @@ public class OracleViewGrantReaderTest
     assertTrue(sql.contains("GRANT SELECT ON V_PERSON TO PUBLIC"));
 
     OracleViewGrantReader reader = new OracleViewGrantReader();
-    Collection<TableGrant> grants = reader.getViewGrants(con, views.get(0));
+    Collection<GrantItem> grants = reader.getViewGrants(con, views.get(0));
     assertNotNull(grants);
     assertEquals(1, grants.size());
-    TableGrant grant = grants.iterator().next();
+    GrantItem grant = grants.iterator().next();
     assertEquals("SELECT", grant.getPrivilege());
     assertEquals("PUBLIC", grant.getGrantee());
   }

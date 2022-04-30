@@ -53,7 +53,7 @@ public class OracleConstraintReader
   extends AbstractConstraintReader
 {
   private final String TABLE_SQL =
-    "-- SQL Workbench \n" +
+    "-- SQL Workbench/J \n" +
     "SELECT " + OracleUtils.getCacheHint() + " constraint_name, search_condition, status, validated \n" +
      "FROM all_constraints cons   \n" +
      "WHERE constraint_type = 'C' \n" +

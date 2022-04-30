@@ -24,7 +24,7 @@ package workbench.db.diff;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import workbench.db.TableGrant;
+import workbench.db.GrantItem;
 import workbench.db.report.ReportTableGrants;
 import workbench.db.report.TagWriter;
 
@@ -39,8 +39,8 @@ public class TableGrantDiff
   public static final String TAG_ADD_GRANTS = "add-grants";
   public static final String TAG_REVOKE_GRANTS = "revoke-grants";
 
-  private Collection<TableGrant> referenceGrants;
-  private Collection<TableGrant> targetGrants;
+  private Collection<GrantItem> referenceGrants;
+  private Collection<GrantItem> targetGrants;
 
   public TableGrantDiff(ReportTableGrants reference, ReportTableGrants target)
   {
@@ -57,7 +57,7 @@ public class TableGrantDiff
 
   public StringBuilder getMigrateTargetXml(TagWriter writer, StringBuilder indent)
   {
-    Collection<TableGrant> grantsToAdd = new ArrayList<>();
+    Collection<GrantItem> grantsToAdd = new ArrayList<>();
     if (this.referenceGrants != null)
     {
       grantsToAdd.addAll(this.referenceGrants);
@@ -67,7 +67,7 @@ public class TableGrantDiff
       grantsToAdd.removeAll(targetGrants);
     }
 
-    Collection<TableGrant> grantsToRemove = new ArrayList<>();
+    Collection<GrantItem> grantsToRemove = new ArrayList<>();
     if (this.targetGrants != null)
     {
       grantsToRemove.addAll(targetGrants);

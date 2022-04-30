@@ -32,14 +32,14 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -83,14 +83,6 @@ public class HsqlSequenceReader
     }
     baseQuery = query;
     supportsColumnSequence = JdbcUtils.hasMinimumServerVersion(conn, "2.1.1");
-  }
-
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
-  {
-    if (def == null) return;
-    CharSequence s = getSequenceSource(def.getCatalog(), def.getSequenceOwner(), def.getSequenceName());
-    def.setSource(s);
   }
 
   @Override
@@ -192,7 +184,7 @@ public class HsqlSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String sequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String sequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, sequence);
     return buildSource(def);

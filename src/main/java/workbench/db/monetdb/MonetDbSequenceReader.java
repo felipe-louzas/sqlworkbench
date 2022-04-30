@@ -29,6 +29,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
@@ -67,14 +68,6 @@ public class MonetDbSequenceReader
   {
     this.dbConn = conn;
     this.dbName = conn.getCurrentCatalog();
-  }
-
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
-  {
-    if (def == null) return;
-    CharSequence s = getSequenceSource(def.getCatalog(), def.getSequenceOwner(), def.getSequenceName());
-    def.setSource(s);
   }
 
   @Override
@@ -165,7 +158,7 @@ public class MonetDbSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String owner, String sequence)
+  public CharSequence getSequenceSource(String catalog, String owner, String sequence, GenerationOptions options)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, owner, sequence);
     return buildSource(def);

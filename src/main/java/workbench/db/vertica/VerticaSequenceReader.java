@@ -32,13 +32,13 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -66,8 +66,7 @@ public class VerticaSequenceReader
     this.dbConnection = conn;
   }
 
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
+  private void buildSource(SequenceDefinition def)
   {
     if (def == null) return;
 
@@ -136,7 +135,7 @@ public class VerticaSequenceReader
    *  @return The SQL to recreate the given sequence
    */
   @Override
-  public CharSequence getSequenceSource(String catalog, String schema, String aSequence)
+  public CharSequence getSequenceSource(String catalog, String schema, String aSequence, GenerationOptions option)
   {
     SequenceDefinition def = getSequenceDefinition(catalog, schema, aSequence);
     return def.getSource();
@@ -206,7 +205,7 @@ public class VerticaSequenceReader
       return null;
     }
     SequenceDefinition result = createDefinition(ds, 0);
-    readSequenceSource(result);
+    buildSource(result);
     return result;
   }
 

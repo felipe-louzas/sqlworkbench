@@ -26,7 +26,7 @@ import workbench.util.StringUtil;
 /**
  * @author Thomas Kellerer
  */
-public class TableGrant
+public class GrantItem
 {
   private String grantee;
   private String privilege;
@@ -39,7 +39,7 @@ public class TableGrant
    * @param what the privilege that was granted to the user <tt>to</tt>. May not be null.
    * @param grantToOthers whether the user may grant the privilege to other users
    */
-  public TableGrant(String to, String what, boolean grantToOthers)
+  public GrantItem(String to, String what, boolean grantToOthers)
   {
     this.grantee = to;
     this.privilege = what;
@@ -64,7 +64,7 @@ public class TableGrant
 
     try
     {
-      TableGrant otherGrant = (TableGrant)other;
+      GrantItem otherGrant = (GrantItem)other;
       int c1 = grantee.compareToIgnoreCase(otherGrant.grantee);
       int c2 = privilege.compareToIgnoreCase(otherGrant.privilege);
       if (c1 == 0)
@@ -95,7 +95,7 @@ public class TableGrant
   {
     try
     {
-      TableGrant otherGrant = (TableGrant)other;
+      GrantItem otherGrant = (GrantItem)other;
       return StringUtil.equalStringIgnoreCase(grantee, otherGrant.grantee) &&
              StringUtil.equalStringIgnoreCase(privilege, otherGrant.privilege) &&
              grantable == otherGrant.grantable;
@@ -115,4 +115,5 @@ public class TableGrant
   public String getGrantee() { return grantee; }
   public String getPrivilege() { return privilege; }
   public boolean isGrantable() { return grantable; }
+
 }

@@ -71,9 +71,9 @@ public class TableGrantReader
    *
    *  @return a List with TableGrant objects.
    */
-  public Collection<TableGrant> getTableGrants(WbConnection dbConnection, TableIdentifier table)
+  public Collection<GrantItem> getTableGrants(WbConnection dbConnection, TableIdentifier table)
   {
-    Collection<TableGrant> result = new HashSet<>();
+    Collection<GrantItem> result = new HashSet<>();
     ResultSet rs = null;
     Set<String> ignoreGrantors = dbConnection.getDbSettings().getGrantorsToIgnore();
     Set<String> ignoreGrantees = dbConnection.getDbSettings().getGranteesToIgnore();
@@ -99,7 +99,7 @@ public class TableGrantReader
 
         String what = useColumnNames ? rs.getString("PRIVILEGE") : rs.getString(6);
         boolean grantable = StringUtil.stringToBool(useColumnNames ? rs.getString("IS_GRANTABLE") : rs.getString(7));
-        TableGrant grant = new TableGrant(to, what, grantable);
+        GrantItem grant = new GrantItem(to, what, grantable);
         result.add(grant);
       }
     }
@@ -124,7 +124,7 @@ public class TableGrantReader
    */
   public StringBuilder getTableGrantSource(WbConnection dbConnection, TableIdentifier table)
   {
-    Collection<TableGrant> grantList = this.getTableGrants(dbConnection, table);
+    Collection<GrantItem> grantList = this.getTableGrants(dbConnection, table);
     StringBuilder result = new StringBuilder(200);
     int count = grantList.size();
 
@@ -132,7 +132,7 @@ public class TableGrantReader
     // first, in order to be able to build the complete statements
     Map<String, List<String>> grants = new HashMap<>(count);
 
-    for (TableGrant grant : grantList)
+    for (GrantItem grant : grantList)
     {
       String grantee = grant.getGrantee();
       String priv = grant.getPrivilege();

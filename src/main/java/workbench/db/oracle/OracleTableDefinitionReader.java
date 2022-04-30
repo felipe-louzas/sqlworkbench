@@ -241,7 +241,7 @@ public class OracleTableDefinitionReader
     boolean useUserTables = OracleUtils.useUserSpecificCatalogs(currentUser, owner);
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select column_name,  generation_type,  identity_options\n";
 
     if (useUserTables)
@@ -345,7 +345,7 @@ public class OracleTableDefinitionReader
     // this statement fixes this problem and also removes the usage of LIKE
     // to speed up the retrieval.
     final String sql1 =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "SELECT " + OracleUtils.getCacheHint() + " t.column_name AS column_name,  \n" +
             getDecodeForDataType("t.data_type", OracleUtils.getMapDateToTimestamp(dbConnection)) + " AS data_type, \n" +
       "     t.data_type AS type_name,  \n" +

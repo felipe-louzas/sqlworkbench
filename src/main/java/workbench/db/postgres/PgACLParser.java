@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import workbench.db.GrantItem;
+
 import workbench.util.StringUtil;
 
 /**
  * A class to pass an ACL string from Postgres.
- * 
+ *
  * @author Thomas Kellerer
  */
 public class PgACLParser
@@ -89,8 +91,7 @@ public class PgACLParser
           grantOption = true;
           i++;
         }
-        GrantItem gi = new GrantItem(grantee, grantor, privilege);
-        gi.setWithGrantOption(grantOption);
+        GrantItem gi = new GrantItem(grantee, privilege, grantOption);
         List<GrantItem> granteeItems = grants.get(grantee);
         if (granteeItems == null)
         {
@@ -115,7 +116,7 @@ public class PgACLParser
       // is an option to the GRANT command, not for each privilege.
       // The alternative would be a single GRANT statement per
       // privilege which I find a bit too much
-      List<GrantItem> plain = entry.getValue().stream().filter(g -> !g.isWithGrantOption()).collect(Collectors.toList());
+      List<GrantItem> plain = entry.getValue().stream().filter(g -> !g.isGrantable()).collect(Collectors.toList());
       if (plain.size() > 0)
       {
         CharSequence sql = getSingleGranteeSQL(plain, objectName, objectType, entry.getKey(), false);
@@ -129,7 +130,7 @@ public class PgACLParser
         }
       }
 
-      List<GrantItem> grantable = entry.getValue().stream().filter(g -> g.isWithGrantOption()).collect(Collectors.toList());
+      List<GrantItem> grantable = entry.getValue().stream().filter(g -> g.isGrantable()).collect(Collectors.toList());
       if (grantable.size() > 0)
       {
         CharSequence sql = getSingleGranteeSQL(grantable, objectName, objectType, entry.getKey(), true);

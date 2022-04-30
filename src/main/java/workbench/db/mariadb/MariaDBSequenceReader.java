@@ -30,15 +30,15 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.GenerationOptions;
+import workbench.db.JdbcUtils;
 import workbench.db.QuoteHandler;
 import workbench.db.SequenceDefinition;
-
 import workbench.db.SequenceReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 import static workbench.db.SequenceReader.*;
@@ -65,16 +65,10 @@ public class MariaDBSequenceReader
   }
 
   @Override
-  public CharSequence getSequenceSource(String catalog, String schema, String sequence)
+  public CharSequence getSequenceSource(String catalog, String schema, String sequence, GenerationOptions options)
   {
     SequenceDefinition seq = getSequenceDefinition(catalog, schema, sequence);
     return seq.getSource();
-  }
-
-  @Override
-  public void readSequenceSource(SequenceDefinition def)
-  {
-    def.setSource(buildSource(def));
   }
 
   @Override

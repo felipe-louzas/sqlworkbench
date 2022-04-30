@@ -107,7 +107,7 @@ public class OracleProcedureReader
     if (useUserSpecificCatalogs)
     {
       sql =
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "SELECT count(*) \n" +
         "FROM user_objects \n" +
         "WHERE object_name = ? \n" +
@@ -116,7 +116,7 @@ public class OracleProcedureReader
     else
     {
       sql =
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "SELECT count(*) \n" +
         "FROM all_objects \n" +
         "WHERE object_name = ? \n" +
@@ -176,7 +176,7 @@ public class OracleProcedureReader
     if (useUserSpecificCatalogs)
     {
       sql =
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "SELECT text \n" +
         "FROM user_source \n" +
         "WHERE name = ? \n" +
@@ -186,7 +186,7 @@ public class OracleProcedureReader
     else
     {
       sql =
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "SELECT text \n" +
         "FROM all_source \n" +
         "WHERE name = ? \n" +
@@ -515,7 +515,7 @@ public class OracleProcedureReader
     }
 
     String sql =
-      "-- SQL Workbench \n" +
+      "-- SQL Workbench/J \n" +
       "select " + OracleUtils.getCacheHint() + "* \n" +
       "from (\n";
 

@@ -980,7 +980,7 @@ public class TableIdentifier
   public CharSequence getSource(WbConnection con, boolean includeFk, boolean includeGrants)
     throws SQLException
   {
-    CharSequence source;
+    CharSequence source = null;
     DbMetadata meta = con.getMetadata();
     if (meta.isExtendedObject(this))
     {
@@ -1002,7 +1002,10 @@ public class TableIdentifier
     else if (con.getMetadata().isSequenceType(type))
     {
       SequenceReader reader = meta.getSequenceReader();
-      source = (reader != null ? reader.getSequenceSource(getCatalog(), getSchema(), getTableName()) : null);
+      if (reader != null)
+      {
+        source = reader.getSequenceSource(getCatalog(), getSchema(), getTableName(), new GenerationOptions(true, includeGrants));
+      }
     }
     else
     {

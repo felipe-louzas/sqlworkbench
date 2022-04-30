@@ -33,7 +33,7 @@ import workbench.db.IndexDefinition;
 import workbench.db.NoConfigException;
 import workbench.db.TableCommentReader;
 import workbench.db.TableDefinition;
-import workbench.db.TableGrant;
+import workbench.db.GrantItem;
 import workbench.db.TableIdentifier;
 import workbench.db.ViewGrantReader;
 import workbench.db.ViewReader;
@@ -138,7 +138,7 @@ public class ReportView
       ViewGrantReader grantReader = ViewGrantReader.createViewGrantReader(conn);
       if (grantReader != null)
       {
-        Collection<TableGrant> viewGrants = grantReader.getViewGrants(conn, tbl);
+        Collection<GrantItem> viewGrants = grantReader.getViewGrants(conn, tbl);
         grants = new ReportTableGrants(viewGrants);
       }
     }

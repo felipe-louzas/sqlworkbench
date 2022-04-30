@@ -105,7 +105,7 @@ public class OracleObjectListEnhancer
     if (OracleUtils.getRemarksReporting(connection))
     {
       sql =
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "SELECT mv.owner, mv.mview_name, \n" +
         "       c.comments\n" +
         "FROM all_mviews mv\n" +
@@ -114,7 +114,7 @@ public class OracleObjectListEnhancer
     else
     {
       sql =
-        "-- SQL Workbench \n" +
+        "-- SQL Workbench/J \n" +
         "SELECT mv.owner, mv.mview_name, \n " +
         "      null as comments  \n" +
         "FROM all_mviews mv \n";
