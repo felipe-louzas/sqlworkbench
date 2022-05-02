@@ -71,6 +71,7 @@ import workbench.db.QuoteHandler;
 import workbench.db.WbConnection;
 
 import workbench.gui.MainWindow;
+import workbench.gui.ModifiedFileStrategy;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.ColumnSelectionAction;
 import workbench.gui.actions.CommentAction;
@@ -688,6 +689,18 @@ public class EditorPanel
   public int checkAndSaveFile(boolean allowCancel)
   {
     if (!this.hasFileLoaded()) return JOptionPane.YES_OPTION;
+
+    ModifiedFileStrategy strategy = GuiSettings.getModifiedFileStrategy();
+    if (strategy == ModifiedFileStrategy.discard) return JOptionPane.YES_OPTION;
+
+    if (this.isModified() && strategy == ModifiedFileStrategy.save)
+    {
+      if (this.saveCurrentFile())
+      {
+        return JOptionPane.YES_OPTION;
+      }
+    }
+
     int result = JOptionPane.YES_OPTION;
 
     if (this.isModified())

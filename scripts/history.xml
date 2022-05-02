@@ -4,6 +4,7 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2022-04-02">
+    <entry dev-build="3" type="enh">For PostgreSQL and Oracle, GRANTs for sequences are now shown in the generated SQL source</entry>
     <entry dev-build="2" type="enh">It's now possible to add multiple directories to the file system tree</entry>
     <entry dev-build="1" type="enh">When definining a JDBC driver, the jar file can now be downloaded from Maven central if available</entry>
     <entry dev-build="1" type="enh">It's now possible to assign a second, alternate keyboard shortcut for menu items</entry>

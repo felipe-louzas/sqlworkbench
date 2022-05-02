@@ -37,6 +37,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.objectcache.ObjectCacheStorage;
 
+import workbench.gui.ModifiedFileStrategy;
 import workbench.gui.components.GuiPosition;
 import workbench.gui.dbobjects.objecttree.ComponentPosition;
 import workbench.gui.sql.FileReloadType;
@@ -1522,6 +1523,11 @@ public class GuiSettings
       LogMgr.logError(new CallerInfo(){}, "Invalid type \"" + type + "\" specified!", th);
       return ResultReceiver.ShowType.appendText;
     }
+  }
+
+  public static ModifiedFileStrategy getModifiedFileStrategy()
+  {
+    return Settings.getInstance().getEnumProperty("workbench.editor.modified.file.strategy", ModifiedFileStrategy.ask);
   }
 
   /**
