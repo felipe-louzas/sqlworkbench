@@ -26,7 +26,20 @@ package workbench.resource;
  */
 public enum AutoFileSaveType
 {
-  never,
-  always,
-  ask
+  never("LblOptNever"),
+  always("LblOptAuto"),
+  ask("LblOptPrompt");
+
+  private final String label;
+
+  private AutoFileSaveType(String resourceKey)
+  {
+    this.label = ResourceMgr.getString(resourceKey);
+  }
+
+  @Override
+  public String toString()
+  {
+    return label;
+  }
 }

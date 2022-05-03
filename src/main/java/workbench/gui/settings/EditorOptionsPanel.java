@@ -88,50 +88,19 @@ public class EditorOptionsPanel
     externalLineEnding.setModel(new DefaultComboBoxModel(items));
 
 
-    String[] editorSavetypes = new String[] {
-      ResourceMgr.getString("LblOptNever"),
-      ResourceMgr.getString("LblOptAuto"),
-      ResourceMgr.getString("LblOptPrompt")
-    };
-    autoFileSave.setModel(new DefaultComboBoxModel<>(editorSavetypes));
+    autoFileSave.setModel(new DefaultComboBoxModel(AutoFileSaveType.values()));
 
     AutoFileSaveType autoSaveType = Settings.getInstance().getAutoSaveExternalFiles();
-    switch (autoSaveType)
-    {
-      case never:
-        autoFileSave.setSelectedIndex(0);
-        break;
-      case always:
-        autoFileSave.setSelectedIndex(1);
-        break;
-      default:
-        autoFileSave.setSelectedIndex(2);
-    }
+    autoFileSave.setSelectedItem(autoSaveType);
+    autoFileSave.doLayout();
 
-    String[] promptTypes = new String[] {
-      ResourceMgr.getString("LblOptPrompt"),
-      ResourceMgr.getString("LblOptSave"),
-      ResourceMgr.getString("LblOptDiscard")
-    };
-    promptUnsaved.setModel(new DefaultComboBoxModel<>(promptTypes));
-    ModifiedFileStrategy strategy = GuiSettings.getModifiedFileStrategy();
-    switch (strategy)
-    {
-      case ask:
-        promptUnsaved.setSelectedIndex(0);
-        break;
-      case save:
-        promptUnsaved.setSelectedIndex(1);
-        break;
-      default:
-        promptUnsaved.setSelectedIndex(2);
-    }
+    promptUnsaved.setModel(new DefaultComboBoxModel(ModifiedFileStrategy.values()));
+    promptUnsaved.setSelectedItem(GuiSettings.getModifiedFileStrategy());
+    promptUnsaved.doLayout();
 
     reloadType.setModel(new DefaultComboBoxModel(FileReloadType.values()));
+    reloadType.setSelectedItem(GuiSettings.getReloadType());
     reloadType.doLayout();
-
-    FileReloadType type = GuiSettings.getReloadType();
-    reloadType.setSelectedItem(type);
 
     String value = Settings.getInstance().getInteralLineEndingValue();
     internalLineEnding.setSelectedIndex(lineEndingValueToIndex(value));
@@ -222,18 +191,12 @@ public class EditorOptionsPanel
     FileReloadType fileReloadType = (FileReloadType) this.reloadType.getSelectedItem();
     GuiSettings.setReloadType(fileReloadType);
 
-    int index = autoFileSave.getSelectedIndex();
-    switch (index)
-    {
-      case 0:
-        set.setAutoSaveExternalFiles(AutoFileSaveType.never);
-        break;
-      case 1:
-        set.setAutoSaveExternalFiles(AutoFileSaveType.always);
-        break;
-      default:
-        set.setAutoSaveExternalFiles(AutoFileSaveType.ask);
-    }
+    AutoFileSaveType type = (AutoFileSaveType)autoFileSave.getSelectedItem();
+    set.setAutoSaveExternalFiles(type);
+
+    ModifiedFileStrategy strategy = (ModifiedFileStrategy)promptUnsaved.getSelectedItem();
+    GuiSettings.setModifiedFileStrategy(strategy);
+
     String encoding = (String)encodings.getSelectedItem();
     set.setDefaultFileEncoding(encoding);
   }

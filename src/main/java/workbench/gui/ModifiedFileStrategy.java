@@ -20,13 +20,29 @@
  */
 package workbench.gui;
 
+import workbench.resource.ResourceMgr;
+
 /**
  *
  * @author Thomas Kellerer
  */
 public enum ModifiedFileStrategy
 {
-  ask,
-  save,
-  discard;
+  ask("LblOptPrompt"),
+  save("LblOptSave"),
+  discard("LblOptDiscard");
+
+  private final String label;
+
+  private ModifiedFileStrategy(String key)
+  {
+    this.label = ResourceMgr.getString(key);
+  }
+
+  @Override
+  public String toString()
+  {
+    return label;
+  }
+
 }

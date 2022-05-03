@@ -1231,7 +1231,7 @@ public class GuiSettings
 
   public static void setReloadType(FileReloadType type)
   {
-    Settings.getInstance().setProperty(PROP_FILE_RELOAD_TYPE, type.name());
+    Settings.getInstance().setEnumProperty(PROP_FILE_RELOAD_TYPE, type);
   }
 
   public static FileReloadType getReloadType()
@@ -1259,20 +1259,12 @@ public class GuiSettings
 
   public static void setLocalStorageForObjectCache(ObjectCacheStorage storage)
   {
-    Settings.getInstance().setProperty(PROP_LOCAL_OBJECT_CACHE, storage.name());
+    Settings.getInstance().setEnumProperty(PROP_LOCAL_OBJECT_CACHE, storage);
   }
 
   public static ObjectCacheStorage getLocalStorageForObjectCache()
   {
-    String type = Settings.getInstance().getProperty(PROP_LOCAL_OBJECT_CACHE, ObjectCacheStorage.profile.name());
-    try
-    {
-      return ObjectCacheStorage.valueOf(type);
-    }
-    catch (Exception ex)
-    {
-      return ObjectCacheStorage.never;
-    }
+    return Settings.getInstance().getEnumProperty(PROP_LOCAL_OBJECT_CACHE, ObjectCacheStorage.profile);
   }
 
   public static boolean showTableNameInColumnHeader()
@@ -1452,20 +1444,12 @@ public class GuiSettings
 
   public static void setErrorPromptType(ErrorPromptType type)
   {
-    Settings.getInstance().setProperty("workbench.gui.sql.error.prompt", type.name());
+    Settings.getInstance().setEnumProperty("workbench.gui.sql.error.prompt", type);
   }
 
   public static ErrorPromptType getErrorPromptType()
   {
-    String value = Settings.getInstance().getProperty("workbench.gui.sql.error.prompt", ErrorPromptType.PromptWithErroressage.name());
-    try
-    {
-      return ErrorPromptType.valueOf(value);
-    }
-    catch (Throwable th)
-    {
-      return ErrorPromptType.PromptWithErroressage;
-    }
+    return Settings.getInstance().getEnumProperty("workbench.gui.sql.error.prompt", ErrorPromptType.PromptWithErroressage);
   }
 
   public static boolean allowWordWrapForErrorMessage()
@@ -1480,8 +1464,9 @@ public class GuiSettings
 
   public static void setDataTooltipType(DataTooltipType type)
   {
-    Settings.getInstance().setProperty("workbench.gui.data.sql.tooltip", type.name());
+    Settings.getInstance().setEnumProperty("workbench.gui.data.sql.tooltip", type);
   }
+
   public static DataTooltipType getDataTooltipType()
   {
     String value = Settings.getInstance().getProperty("workbench.gui.data.sql.tooltip", DataTooltipType.full.name());
@@ -1513,16 +1498,7 @@ public class GuiSettings
    */
   public static ResultReceiver.ShowType getDefaultShowType()
   {
-    String type = Settings.getInstance().getProperty("workbench.gui.refnavigator.showtype", ResultReceiver.ShowType.showNone.name());
-    try
-    {
-      return ResultReceiver.ShowType.valueOf(type);
-    }
-    catch (Throwable th)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Invalid type \"" + type + "\" specified!", th);
-      return ResultReceiver.ShowType.appendText;
-    }
+    return Settings.getInstance().getEnumProperty("workbench.gui.refnavigator.showtype", ResultReceiver.ShowType.showNone);
   }
 
   public static void setModifiedFileStrategy(ModifiedFileStrategy strategy)
@@ -1541,16 +1517,7 @@ public class GuiSettings
    */
   public static ResultReceiver.ShowType getDefaultShowTypeNewTab()
   {
-    String type = Settings.getInstance().getProperty("workbench.gui.refnavigator.showtype.newtab", ResultReceiver.ShowType.replaceText.name());
-    try
-    {
-      return ResultReceiver.ShowType.valueOf(type);
-    }
-    catch (Throwable th)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Invalid type \"" + type + "\" specified!", th);
-      return ResultReceiver.ShowType.appendText;
-    }
+    return Settings.getInstance().getEnumProperty("workbench.gui.refnavigator.showtype.newtab", ResultReceiver.ShowType.replaceText);
   }
 
   public static boolean installFocusManager()

@@ -33,7 +33,7 @@ public enum FileReloadType
   prompt("LblOptPrompt"),
   automatic("LblOptAuto");
 
-  private String label;
+  private final String label;
 
   private FileReloadType(String resourceKey)
   {

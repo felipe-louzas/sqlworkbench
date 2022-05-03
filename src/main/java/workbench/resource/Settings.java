@@ -1126,7 +1126,7 @@ public class Settings
 
   public void setFormatterJoinWrapStyle(JoinWrapStyle style)
   {
-    setProperty("workbench.sql.formatter.join.condition.wrapstyle", style.name());
+    setEnumProperty("workbench.sql.formatter.join.condition.wrapstyle", style);
   }
 
   public JoinWrapStyle getFormatterJoinWrapStyle()
@@ -2239,7 +2239,7 @@ public class Settings
 
   private void setIdentifierCase(String property, GeneratedIdentifierCase value)
   {
-    setProperty(property, value.name());
+    setEnumProperty(property, value);
   }
 
   public GeneratedIdentifierCase getAutoCompletionPasteCase()
@@ -2269,7 +2269,7 @@ public class Settings
 
   public void setAutoCompletionColumnSort(ColumnSortType sort)
   {
-    setProperty("workbench.editor.autocompletion.paste.sort", sort.name());
+    setEnumProperty("workbench.editor.autocompletion.paste.sort", sort);
   }
 
   public boolean getCloseAutoCompletionWithSearch()
@@ -2300,22 +2300,13 @@ public class Settings
       defaultValue = AutoFileSaveType.always;
     }
 
-    String type = getProperty("workbench.editor.autosave", defaultValue.name());
-
-    try
-    {
-      return AutoFileSaveType.valueOf(type);
-    }
-    catch (Throwable ex)
-    {
-      return defaultValue;
-    }
+    return getEnumProperty("workbench.editor.autosave", defaultValue);
   }
 
   public void setAutoSaveExternalFiles(AutoFileSaveType type)
   {
     if (type == null) return;
-    setProperty("workbench.editor.autosave", type.name());
+    setEnumProperty("workbench.editor.autosave", type);
   }
 
   public boolean getAutoSaveWorkspace()
@@ -2429,8 +2420,7 @@ public class Settings
 
   public ExternalFileHandling getFilesInWorkspaceHandling()
   {
-    String v = getProperty("workbench.workspace.store.filenames", ExternalFileHandling.link.toString());
-    return ExternalFileHandling.getValue(v);
+    return getEnumProperty("workbench.workspace.store.filenames", ExternalFileHandling.link);
   }
 
   public char getFileVersionDelimiter()
@@ -4133,15 +4123,7 @@ public class Settings
 
   public PasswordTrimType getPassworTrimType()
   {
-    String type = getProperty(PROPERTY_TRIM_PWD, PasswordTrimType.never.name());
-    try
-    {
-      return PasswordTrimType.valueOf(type);
-    }
-    catch (Throwable th)
-    {
-      return PasswordTrimType.always;
-    }
+    return getEnumProperty(PROPERTY_TRIM_PWD, PasswordTrimType.never);
   }
 
   public boolean useMarkDownForConsolePrint()
