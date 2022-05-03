@@ -41,7 +41,8 @@
 
     <Root level="info">
       <AppenderRef ref="file"/>
-      <AppenderRef ref="console"/>
+      <!-- enable this ref, if the Console appender is enabled -->
+      <!-- <AppenderRef ref="console"/> -->
     </Root>
   </Loggers>
 

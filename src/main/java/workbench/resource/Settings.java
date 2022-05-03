@@ -203,6 +203,7 @@ public class Settings
   // </editor-fold>
 
   public static final String TEST_MODE_PROPERTY = "workbench.gui.testmode";
+  public static final String LOG4_CONFIG_PROP = "log4j.configurationFile";
 
   public static final String DEFAULT_MACRO_FILENAME = "WbMacros.xml";
   public static final String PK_MAPPING_FILENAME_PROPERTY = "workbench.pkmapping.file";
@@ -406,7 +407,7 @@ public class Settings
         if (f.exists())
         {
           String fileUrl = f.toURI().toString();
-          System.setProperty("log4j.configurationFile", fileUrl);
+          System.setProperty(LOG4_CONFIG_PROP, fileUrl);
         }
       }
       catch (Throwable th)

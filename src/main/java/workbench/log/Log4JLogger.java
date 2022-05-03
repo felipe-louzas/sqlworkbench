@@ -34,7 +34,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender;
+import org.apache.logging.log4j.core.appender.FileManager;
+import org.apache.logging.log4j.core.appender.OutputStreamManager;
+
+import static workbench.resource.Settings.*;
 
 /**
  * An implementation of WbLogger that acts as a facade to Log4J.
@@ -45,7 +49,7 @@ import org.apache.logging.log4j.core.appender.FileAppender;
 public class Log4JLogger
   implements WbLogger
 {
-  private List<LogListener> listenerList = new ArrayList<>(1);
+  private final List<LogListener> listenerList = new ArrayList<>(1);
 
   public Log4JLogger()
   {
@@ -142,13 +146,18 @@ public class Log4JLogger
       Map<String, Appender> appenders = coreLogger.getAppenders();
       for (Appender appender : appenders.values())
       {
-        if (appender instanceof FileAppender)
+        if (appender instanceof AbstractOutputStreamAppender)
         {
-          FileAppender fileApp = (FileAppender)appender;
-          String fname = fileApp.getFileName();
-          if (fname != null)
+          AbstractOutputStreamAppender streamAppender = (AbstractOutputStreamAppender)appender;
+          OutputStreamManager manager = streamAppender.getManager();
+          if (manager instanceof FileManager)
           {
-            return new File(fname);
+            FileManager fileMgr = (FileManager)manager;
+            String fname = fileMgr.getFileName();
+            if (fname != null)
+            {
+              return new File(fname);
+            }
           }
         }
       }
@@ -161,7 +170,7 @@ public class Log4JLogger
   {
     Logger log = LogManager.getLogger(getClass());
     log.info("=================== Log started ===================");
-    String configFile = System.getProperty("log4j.configuration");
+    String configFile = System.getProperty(LOG4_CONFIG_PROP);
     if (StringUtil.isNonBlank(configFile))
     {
       log.info("Log4J initialized from: " + configFile);
