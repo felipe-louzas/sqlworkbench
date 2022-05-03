@@ -44,6 +44,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.ModifiedFileStrategy;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.NumberField;
 import workbench.gui.components.TextFieldWidthAdjuster;
@@ -105,6 +106,25 @@ public class EditorOptionsPanel
         break;
       default:
         autoFileSave.setSelectedIndex(2);
+    }
+
+    String[] promptTypes = new String[] {
+      ResourceMgr.getString("LblOptPrompt"),
+      ResourceMgr.getString("LblOptSave"),
+      ResourceMgr.getString("LblOptDiscard")
+    };
+    promptUnsaved.setModel(new DefaultComboBoxModel<>(promptTypes));
+    ModifiedFileStrategy strategy = GuiSettings.getModifiedFileStrategy();
+    switch (strategy)
+    {
+      case ask:
+        promptUnsaved.setSelectedIndex(0);
+        break;
+      case save:
+        promptUnsaved.setSelectedIndex(1);
+        break;
+      default:
+        promptUnsaved.setSelectedIndex(2);
     }
 
     reloadType.setModel(new DefaultComboBoxModel(FileReloadType.values()));
@@ -281,6 +301,8 @@ public class EditorOptionsPanel
     autoFileSave = new JComboBox<>();
     jLabel4 = new JLabel();
     encodings = new JComboBox<>();
+    jLabel5 = new JLabel();
+    promptUnsaved = new JComboBox<>();
 
     setLayout(new GridBagLayout());
 
@@ -468,7 +490,7 @@ public class EditorOptionsPanel
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 12;
+    gridBagConstraints.gridy = 13;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
@@ -523,7 +545,7 @@ public class EditorOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 8;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(3, 0, 0, 0);
+    gridBagConstraints.insets = new Insets(5, 0, 0, 0);
     add(reloadLabel, gridBagConstraints);
 
     reloadType.setModel(new DefaultComboBoxModel(new String[] { "Never", "Prompt", "Automatic" }));
@@ -531,8 +553,9 @@ public class EditorOptionsPanel
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 8;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(3, 11, 0, 0);
+    gridBagConstraints.insets = new Insets(5, 11, 0, 0);
     add(reloadType, gridBagConstraints);
 
     rightClickMovesCursor.setSelected(Settings.getInstance().getRightClickMovesCursor());
@@ -541,7 +564,7 @@ public class EditorOptionsPanel
     rightClickMovesCursor.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new Insets(9, 0, 0, 0);
@@ -553,7 +576,7 @@ public class EditorOptionsPanel
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 8;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(3, 10, 0, 0);
+    gridBagConstraints.insets = new Insets(5, 10, 0, 0);
     add(jLabel3, gridBagConstraints);
 
     autoFileSave.setModel(new DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -561,7 +584,7 @@ public class EditorOptionsPanel
     gridBagConstraints.gridx = 3;
     gridBagConstraints.gridy = 8;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(3, 8, 0, 0);
+    gridBagConstraints.insets = new Insets(5, 8, 0, 0);
     add(autoFileSave, gridBagConstraints);
 
     jLabel4.setText(ResourceMgr.getString("LblFileEncoding")); // NOI18N
@@ -580,6 +603,25 @@ public class EditorOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.insets = new Insets(5, 11, 0, 0);
     add(encodings, gridBagConstraints);
+
+    jLabel5.setLabelFor(promptUnsaved);
+    jLabel5.setText(ResourceMgr.getString("LblUnsavedFilesPrompt")); // NOI18N
+    jLabel5.setToolTipText(ResourceMgr.getString("d_LblUnsavedFilesPrompt")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 9;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(5, 0, 0, 0);
+    add(jLabel5, gridBagConstraints);
+
+    promptUnsaved.setModel(new DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 9;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(5, 11, 0, 0);
+    add(promptUnsaved, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -617,9 +659,11 @@ public class EditorOptionsPanel
   private JLabel jLabel2;
   private JLabel jLabel3;
   private JLabel jLabel4;
+  private JLabel jLabel5;
   private JPanel jPanel1;
   private JTextField noWordSep;
   private JLabel noWordSepLabel;
+  private JComboBox<String> promptUnsaved;
   private JLabel reloadLabel;
   private JComboBox reloadType;
   private JCheckBox rightClickMovesCursor;

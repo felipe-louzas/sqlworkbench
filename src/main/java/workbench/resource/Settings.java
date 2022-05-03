@@ -3381,6 +3381,14 @@ public class Settings
     return System.getProperty(property, this.props.getProperty(property, aDefault));
   }
 
+  public final <E extends Enum<E>> void setEnumProperty(String key, E value)
+  {
+    if (value != null)
+    {
+      setProperty(key, value.name());
+    }
+  }
+
   public final <E extends Enum<E>> E getEnumProperty(String key, E defaultValue)
   {
     String value = getProperty(key, null);

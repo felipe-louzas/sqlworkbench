@@ -1525,6 +1525,11 @@ public class GuiSettings
     }
   }
 
+  public static void setModifiedFileStrategy(ModifiedFileStrategy strategy)
+  {
+    Settings.getInstance().setEnumProperty("workbench.editor.modified.file.strategy", strategy);
+  }
+
   public static ModifiedFileStrategy getModifiedFileStrategy()
   {
     return Settings.getInstance().getEnumProperty("workbench.editor.modified.file.strategy", ModifiedFileStrategy.ask);
@@ -1718,7 +1723,7 @@ public class GuiSettings
 
   public static void setMacroListPosition(ComponentPosition position)
   {
-    Settings.getInstance().setProperty("workbench.gui.macropopup.position", position.name());
+    Settings.getInstance().setEnumProperty("workbench.gui.macropopup.position", position);
   }
 
   public static boolean useTabHighlightForResult()
