@@ -14,6 +14,7 @@
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
     <entry dev-build="1" type="enh">It's now possible to jump to the corresponding table from within the trigger list.</entry>
     <entry dev-build="1" type="enh">In the DbTree, table nodes for "Uses", Used by", "References" and "Referenced by" can now be expanded to show the table details.</entry>
+    <entry dev-build="3" type="fix">It was not possible to configure the color of the table grid lines for the FlatLaf Look &amp; Feel</entry>
     <entry dev-build="3" type="fix">For PostgreSQL, the format for time columns wasn't used</entry>
     <entry dev-build="3" type="fix">For PostgreSQL, domains with multiple constraints weren't retrieved or displayed correctly.</entry>
     <entry dev-build="3" type="fix">It wasn't possible to assign keyboard shortcuts to "Indent" and "Un-Indent"</entry>

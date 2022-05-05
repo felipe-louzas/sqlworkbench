@@ -194,25 +194,22 @@ public class LnFHelper
       def.put("TableHeader.font", dataFont);
     }
 
-    if (settings.getBoolProperty("workbench.gui.adjustgridcolor", true))
-    {
-      Color c = settings.getColor("workbench.table.gridcolor", new Color(215,215,215));
-      def.put("Table.gridColor", c);
-    }
-
-
     def.put("Button.showMnemonics", Boolean.valueOf(GuiSettings.getShowMnemonics()));
     UIManager.put("Synthetica.extendedFileChooser.rememberLastDirectory", false);
   }
 
   private void adjustWindowsLnF()
   {
+    if (!Settings.getInstance().getBoolProperty("workbench.gui.adjust.windows.theme", true)) return;
+
     UIDefaults def = UIManager.getDefaults();
-    if (!Settings.getInstance().getBoolProperty("workbench.gui.adjusttheme", true)) return;
     Border b = new CompoundBorder(new LineBorder(ColorUtils.brighter(Color.LIGHT_GRAY, 0.90), 1), new EmptyBorder(2, 1, 1, 1));
     def.put("TextField.border", b);
     def.put("TextArea.border", b);
     def.put("PasswordField.border", b);
+
+    Color c = Settings.getInstance().getColor("workbench.table.gridcolor", new Color(215,215,215));
+    def.put("Table.gridColor", c);
   }
 
   private void scaleDefaultFonts()

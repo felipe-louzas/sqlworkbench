@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="jar" name="SQLWorkbench"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless"
          xmlns:mvn="antlib:org.apache.maven.resolver.ant">
 
   <property name="root" value=".."/>
@@ -30,6 +32,11 @@
     <tstamp>
       <format pattern="yyyy-MM-dd HH:mm" property="build_timestamp"/>
     </tstamp>
+
+    <condition property="is_windows">
+        <os family="windows"/>
+    </condition>
+
     <echo>Java/JVM version: ${java.version}</echo>
   </target>
 
@@ -123,7 +130,8 @@
            includes="workbench/WbStarter.java"/>
 
     <!-- the rest of the application is compiled to the needed class file version -->
-    <javac debug="on"
+    <javac if:set="is_windows"
+           debug="on"
            debuglevel="source,lines"
            destdir="${build}"
            srcdir="${javasrc}"
@@ -132,6 +140,19 @@
            encoding="ISO-8859-15">
       <compilerarg line="-Xlint:none --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
       <exclude name="workbench/WbStarter.java"/>
+    </javac>
+
+    <javac unless:set="is_windows"
+           debug="on"
+           debuglevel="source,lines"
+           destdir="${build}"
+           srcdir="${javasrc}"
+           includeantruntime="false"
+           classpathref="maven.cp"
+           encoding="ISO-8859-15">
+      <compilerarg line="-Xlint:none"/>
+      <exclude name="workbench/WbStarter.java"/>
+      <exclude name="workbench/gui/components/BorderLessWindowsTabbedPaneUI.java"/>
     </javac>
 
   </target>
