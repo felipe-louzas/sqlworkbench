@@ -39,6 +39,8 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 
 import workbench.log.CallerInfo;
@@ -110,7 +112,7 @@ public class ToolTipRenderer
 
   protected RowHighlighter filter;
 
-  private int valign = SwingConstants.TOP;
+  private int valign = SwingConstants.CENTER;
   private int halign = SwingConstants.LEFT;
 
   private boolean isAlternatingRow;
@@ -147,7 +149,13 @@ public class ToolTipRenderer
 
   static Insets getDefaultInsets()
   {
-    Insets result = null;
+    UIDefaults def = UIManager.getDefaults();
+    // This used by FlatLaf
+    Insets result = def.getInsets("Table.cellMargins");
+    if (result != null)
+    {
+      return result;
+    }
 
     String prop = Settings.getInstance().getProperty("workbench.gui.renderer.insets", null);
     List<String> values = prop != null ? StringUtil.stringToList(prop, ",", true, true, false) : null;

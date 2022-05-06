@@ -72,6 +72,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -140,6 +141,7 @@ import workbench.gui.fontzoom.FontZoomProvider;
 import workbench.gui.fontzoom.FontZoomer;
 import workbench.gui.fontzoom.IncreaseFontSize;
 import workbench.gui.fontzoom.ResetFontSize;
+import workbench.gui.lnf.LnFHelper;
 import workbench.gui.macros.MacroMenuBuilder;
 import workbench.gui.renderer.BlobColumnRenderer;
 import workbench.gui.renderer.DateColumnRenderer;
@@ -259,6 +261,7 @@ public class WbTable
 
   private RendererSetup rendererSetup;
   private boolean sortIgnoreCase;
+  private boolean honorLNFRowHeight;
 
   // </editor-fold>
 
@@ -397,6 +400,8 @@ public class WbTable
     this.copyAsTextAction.addToInputMap(im, am);
     this.saveDataAsAction.addToInputMap(im, am);
     this.optimizeAllCol.addToInputMap(im, am);
+
+    this.honorLNFRowHeight = Settings.getInstance().getBoolProperty("workbench.table.row.height.prefer.lnf", true);
 
     Settings.getInstance().addFontChangedListener(this);
     Settings.getInstance().registerDateFormatChangeListener(this);
@@ -699,6 +704,16 @@ public class WbTable
   @SuppressWarnings("deprecation")
   private void calculateGlobalRowHeight()
   {
+    if (honorLNFRowHeight)
+    {
+      UIDefaults def = UIManager.getDefaults();
+      int height = def.getInt("Table.rowHeight");
+      if (LnFHelper.isFlatLaf() || height > 0)
+      {
+        return;
+      }
+    }
+
     Font f = getFont();
     if (f == null) return;
 

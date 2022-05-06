@@ -27,9 +27,12 @@ import java.awt.Graphics;
 import java.util.HashMap;
 
 import javax.swing.Icon;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 
 import workbench.resource.Settings;
 
+import workbench.gui.lnf.LnFHelper;
 import workbench.gui.renderer.ColorUtils;
 
 /**
@@ -52,7 +55,7 @@ public class SortArrowIcon
   private static final HashMap<Integer, SortArrowIcon> sharedUpArrows = new HashMap<>(2);
   private static final HashMap<Integer, SortArrowIcon> sharedDownArrows = new HashMap<>(2);
   private final int blendValue;
-
+  private Color flatLafColor;
   public static synchronized SortArrowIcon getIcon(Direction dir, int size)
   {
     HashMap<Integer, SortArrowIcon> cache = (dir == Direction.UP ? sharedUpArrows : sharedDownArrows);
@@ -73,6 +76,11 @@ public class SortArrowIcon
     width = (int)(size * 1.1);
     height = size;
     blendValue = Settings.getInstance().getIntProperty("workbench.gui.sorticon.blend", 128);
+    if (LnFHelper.isFlatLaf())
+    {
+      UIDefaults def = UIManager.getDefaults();
+      flatLafColor = def.getColor("TableHeader.sortIconColor");
+    }
   }
 
   @Override
@@ -87,13 +95,19 @@ public class SortArrowIcon
     return height;
   }
 
+  private Color getArrowColor(Color background)
+  {
+    if (flatLafColor != null) return flatLafColor;
+    return ColorUtils.blend(background, Color.BLACK, blendValue);
+  }
+
   @Override
   public void paintIcon(Component c, Graphics g, int x, int y)
   {
     Color bg = c.getBackground();
     Color fg = c.getForeground();
 
-    Color arrowColor = ColorUtils.blend(bg, Color.BLACK, blendValue);
+    Color arrowColor = getArrowColor(bg);
     int w = width;
     int h = height;
     int top = y + h;

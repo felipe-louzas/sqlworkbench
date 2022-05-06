@@ -24,6 +24,7 @@ package workbench.gui.renderer;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Types;
@@ -32,6 +33,10 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
 import workbench.resource.GuiSettings;
@@ -64,6 +69,7 @@ public class SortHeaderRenderer
   implements TableCellRenderer, PropertyChangeListener
 {
   private final JLabel displayLabel = new JLabel();
+  private Border margin;
   private boolean showFullTypeInfo;
   private boolean showBoldHeader;
   private boolean showDatatype;
@@ -77,6 +83,13 @@ public class SortHeaderRenderer
   {
     readSettings();
     Settings.getInstance().addPropertyChangeListener(this, GuiSettings.PROP_TABLE_HEADER_BOLD, GuiSettings.PROP_TABLE_HEADER_FULL_TYPE_INFO);
+    Insets insets = UIManager.getDefaults().getInsets("TableHeader.cellMargins");
+    if (insets != null)
+    {
+      // This honors the configuration from FlatLaf
+      Border outer = displayLabel.getBorder();
+      margin = new CompoundBorder(outer, new EmptyBorder(insets));
+    }
   }
 
   public void setUnderlinePK(boolean flag)
@@ -158,7 +171,10 @@ public class SortHeaderRenderer
       display = displayLabel;
     }
 
-    display.setVerticalAlignment(SwingConstants.TOP);
+    if (margin != null)
+    {
+      display.setBorder(margin);
+    }
     display.setHorizontalTextPosition(SwingConstants.LEFT);
     display.setHorizontalAlignment(SwingConstants.LEFT);
 
@@ -176,6 +192,7 @@ public class SortHeaderRenderer
     }
 
     String tableName = null;
+    int valign = SwingConstants.CENTER;
 
     if (table instanceof WbTable)
     {
@@ -222,14 +239,17 @@ public class SortHeaderRenderer
             if (showColumnTable && !showTableAsPrefix && tableName != null)
             {
               label += "<br><i>" + tableName + "</i>";
+              valign = SwingConstants.TOP;
             }
             if (showDatatype && type != null)
             {
               label += "<br>" + type;
+              valign = SwingConstants.TOP;
             }
 
             if (showRemarks && StringUtil.isNonEmpty(remarks))
             {
+              valign = SwingConstants.TOP;
               label += "<p style=\"word-wrap: break-word\">" + remarks + "</p>";
             }
           }
@@ -238,8 +258,8 @@ public class SortHeaderRenderer
     }
 
     display.setText("<html>" + label + "</html>");
+    display.setVerticalAlignment(valign);
     display.invalidate();
-    display.setVerticalAlignment(SwingConstants.TOP);
 
     if (sorted)
     {
