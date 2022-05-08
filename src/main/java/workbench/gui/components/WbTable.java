@@ -2149,7 +2149,7 @@ public class WbTable
         TableColumn col = colMod.getColumn(i);
         if (col == null) continue;
         int type = dwModel.getColumnType(i);
-        if (isMultiLineColumn(i))
+        if (GuiSettings.getEnableMultilineRenderer() && isMultiLineColumn(i))
         {
           col.setCellRenderer(this.multiLineRenderer);
         }

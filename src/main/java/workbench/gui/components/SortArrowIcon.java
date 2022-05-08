@@ -27,12 +27,10 @@ import java.awt.Graphics;
 import java.util.HashMap;
 
 import javax.swing.Icon;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
 import workbench.resource.Settings;
 
-import workbench.gui.lnf.LnFHelper;
 import workbench.gui.renderer.ColorUtils;
 
 /**
@@ -76,11 +74,7 @@ public class SortArrowIcon
     width = (int)(size * 1.1);
     height = size;
     blendValue = Settings.getInstance().getIntProperty("workbench.gui.sorticon.blend", 128);
-    if (LnFHelper.isFlatLaf())
-    {
-      UIDefaults def = UIManager.getDefaults();
-      flatLafColor = def.getColor("TableHeader.sortIconColor");
-    }
+    flatLafColor = UIManager.getDefaults().getColor("TableHeader.sortIconColor");
   }
 
   @Override

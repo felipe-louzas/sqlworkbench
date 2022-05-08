@@ -168,7 +168,7 @@ public class ResourceMgr
 
   public static void setWindowIcons(Window window, String baseName)
   {
-    int[] sizes = new int[] {128,64,48,32,16};
+    int[] sizes = new int[] {256,128,64,48,32,16};
     List<Image> icons = new ArrayList<>(sizes.length);
     for (int size : sizes)
     {

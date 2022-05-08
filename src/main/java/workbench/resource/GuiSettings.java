@@ -626,14 +626,19 @@ public class GuiSettings
     return Settings.getInstance().getBoolProperty(PROP_MULTILINE_RENDERER_USE_READER, false);
   }
 
+  public static boolean getEnableMultilineRenderer()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.display.multiline.renderer.enabled", true);
+  }
+
   public static int getMultiLineThreshold()
   {
-    return Settings.getInstance().getIntProperty("workbench.gui.display.multilinethreshold", 250);
+    return Settings.getInstance().getIntProperty("workbench.gui.display.multiline.threshold", 250);
   }
 
   public static void setMultiLineThreshold(int value)
   {
-    Settings.getInstance().setProperty("workbench.gui.display.multilinethreshold", value);
+    Settings.getInstance().setProperty("workbench.gui.display.multiline.threshold", value);
   }
 
   public static int getDefaultFormFieldWidth()

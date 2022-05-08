@@ -3757,6 +3757,7 @@ public class Settings
     renameProperty("connection.last", "workbench.connection.last");
     renameProperty("drivers.lastlibdir", "workbench.drivers.lastlibdir");
     renameProperty("workbench.db.debugger", "workbench.db.previewsql");
+    renameProperty("workbench.gui.display.multilinethreshold", "workbench.gui.display.multiline.threshold");
 
     // Fix typos from incorrect default.properties
     renameProperty("workbench.db.objecttype.data.postgres", "workbench.db.objecttype.data.postgresql");

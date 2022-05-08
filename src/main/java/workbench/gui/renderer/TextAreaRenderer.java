@@ -35,7 +35,9 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 
-import workbench.util.StringUtil;
+import static workbench.gui.renderer.ToolTipRenderer.*;
+
+
 
 /**
  * A renderer to display multi-line character data.
@@ -56,12 +58,15 @@ public class TextAreaRenderer
   public TextAreaRenderer()
   {
     super();
+    useOwnPaint = false;
     textDisplay = new JTextArea()
     {
+      private final Insets insets = getDefaultInsets();
+
       @Override
       public Insets getInsets()
       {
-        return new Insets(1,0,0,0);
+        return insets;
       }
 
       @Override
@@ -69,7 +74,6 @@ public class TextAreaRenderer
       {
         return WbSwingUtilities.getEmptyInsets();
       }
-
     };
 
     boolean wrap = GuiSettings.getWrapMultilineRenderer();
@@ -119,8 +123,7 @@ public class TextAreaRenderer
     if (this.isNull)
     {
       this.displayValue = rendererSetup == null ? null : rendererSetup.nullString;
-      this.textDisplay.setText(displayValue);
-      this.textDisplay.setToolTipText(null);
+      setTooltip(null);
     }
     else
     {
@@ -128,32 +131,29 @@ public class TextAreaRenderer
       {
         this.displayValue = (String)value;
       }
-      catch (ClassCastException cce)
+      catch (Exception cce)
       {
         this.displayValue = value.toString();
       }
+      setTooltip(displayValue);
+    }
+    textDisplay.setToolTipText(tooltip);
 
-      if (useStringReader)
+    if (useStringReader)
+    {
+      try
       {
-        try
-        {
-          StringReader reader = new StringReader(this.displayValue);
-          this.textDisplay.read(reader, null);
-        }
-        catch (Throwable th)
-        {
-          // cannot happen
-        }
+        StringReader reader = new StringReader(this.displayValue);
+        this.textDisplay.read(reader, null);
       }
-      else
+      catch (Throwable th)
       {
-        this.textDisplay.setText(this.displayValue);
+        // cannot happen
       }
-
-      if (showTooltip)
-      {
-        this.textDisplay.setToolTipText(StringUtil.getMaxSubstring(this.displayValue, maxTooltipSize));
-      }
+    }
+    else
+    {
+      textDisplay.setText(displayValue);
     }
   }
 

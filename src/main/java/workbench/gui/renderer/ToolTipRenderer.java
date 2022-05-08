@@ -75,7 +75,7 @@ public class ToolTipRenderer
   protected String displayValue = StringUtil.EMPTY_STRING;
   protected Object currentValue;
   protected String tooltip;
-
+  protected boolean useOwnPaint = true;
   protected int rightMargin;
   protected Color selectedForeground;
   protected Color selectedBackground;
@@ -193,11 +193,6 @@ public class ToolTipRenderer
   public void setHighlightColumns(boolean[] cols)
   {
     this.highlightCols = cols;
-  }
-
-  public void setVerticalAlignment(int align)
-  {
-    this.valign = align;
   }
 
   public void setHorizontalAlignment(int align)
@@ -365,6 +360,12 @@ public class ToolTipRenderer
   @Override
   public void paint(Graphics g)
   {
+    if (!useOwnPaint)
+    {
+      super.paint(g);
+      return;
+    }
+
     int w = this.getWidth();
     int h = this.getHeight();
 
@@ -415,7 +416,7 @@ public class ToolTipRenderer
 
     g.setFont(f);
     g.setColor(getBackgroundColor());
-    g.fillRect(0,0,w,h);
+    g.fillRect(0, 0, w, h);
     g.setColor(getForegroundColor());
     g.drawString(clippedText, textX, textY);
 
@@ -469,7 +470,7 @@ public class ToolTipRenderer
   {
     if (showTooltip && tip != null && tip.length() > 0)
     {
-      tooltip = StringUtil.getMaxSubstring(tip, maxTooltipSize);
+      tooltip = StringUtil.getMaxSubstring(tip, maxTooltipSize, null);
     }
     else
     {
