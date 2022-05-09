@@ -154,7 +154,7 @@ public class ColumnWidthOptimizer
       if (c instanceof WbRenderer)
       {
         WbRenderer wb = (WbRenderer)c;
-        addWidth += wb.addToDisplayWidth();
+        stringWidth += wb.addToDisplayWidth();
         displayValue = wb.getDisplayValue();
       }
       else if (c instanceof JTextArea)
