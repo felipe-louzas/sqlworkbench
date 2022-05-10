@@ -52,9 +52,8 @@ public class ButtonDisplayPanel
   implements WbRenderer
 {
   private final int BUTTON_WIDTH = IconMgr.getInstance().getSizeForLabel()+1;
-  private JButton openButton = new JButton("...");
-  private JLabel label = new JLabel();
-  private Insets insets = ToolTipRenderer.getDefaultInsets();
+  private final JButton openButton = new JButton("...");
+  private final JLabel label = new JLabel();
 
   public ButtonDisplayPanel()
   {
@@ -73,11 +72,11 @@ public class ButtonDisplayPanel
     c.weightx = 1;
     c.weighty = 1;
     c.fill = GridBagConstraints.NONE;
-    c.anchor = GridBagConstraints.NORTHWEST;
+    c.anchor = GridBagConstraints.LINE_START;
     add(label, c);
 
     c.gridx = 1;
-    c.fill = GridBagConstraints.NONE;
+    c.anchor = GridBagConstraints.LINE_END;
     c.weightx = 0;
     add(openButton, c);
 
@@ -87,7 +86,7 @@ public class ButtonDisplayPanel
   @Override
   public Insets getInsets()
   {
-    return insets;
+    return ToolTipRenderer.getDefaultInsets();
   }
 
   public int getButtonWidth()
@@ -124,11 +123,6 @@ public class ButtonDisplayPanel
     if (label != null) label.setFont(f);
   }
 
-  public String getLabel()
-  {
-    return label.getText();
-  }
-
   @Override
   public void setBackground(Color c)
   {
@@ -146,7 +140,7 @@ public class ButtonDisplayPanel
   @Override
   public String getDisplayValue()
   {
-    return getLabel();
+    return label.getText();
   }
 
   @Override
@@ -163,7 +157,7 @@ public class ButtonDisplayPanel
   @Override
   public int addToDisplayWidth()
   {
-    return (int)(BUTTON_WIDTH * 1.1);
+    return (int)(BUTTON_WIDTH * 1.2);
   }
 
 }

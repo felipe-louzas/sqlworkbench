@@ -176,7 +176,7 @@ public class ColumnWidthOptimizer
       if (displayValue != null)
       {
         String visible = StringUtil.rtrim(displayValue);
-        stringWidth = (int)Math.ceil(f.getStringBounds(visible, fm.getFontRenderContext()).getWidth());
+        stringWidth += (int)Math.ceil(f.getStringBounds(visible, fm.getFontRenderContext()).getWidth());
         stringWidth += (int)(fm.getMaxAdvance() / 4);
         if (visible.length() < displayValue.length())
         {
