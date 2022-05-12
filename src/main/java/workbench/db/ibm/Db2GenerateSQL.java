@@ -43,6 +43,7 @@ import workbench.util.StringUtil;
 public class Db2GenerateSQL
 {
   public static final String TYPE_PROCEDURE = "PROCEDURE";
+  public static final String TYPE_FUNCTION = "FUNCTION";
   public static final String TYPE_VIEW = "VIEW";
   public static final String TYPE_TABLE = "TABLE";
   public static final String TYPE_INDEX = "INDEX";
@@ -91,6 +92,11 @@ public class Db2GenerateSQL
   public CharSequence getProcedureSource(String schema, String procName)
   {
     return getObjectSource(schema, procName, TYPE_PROCEDURE);
+  }
+
+  public CharSequence getFunctionSource(String schema, String procName)
+  {
+    return getObjectSource(schema, procName, TYPE_FUNCTION);
   }
 
   public CharSequence getTriggerSource(String schema, String triggerName)

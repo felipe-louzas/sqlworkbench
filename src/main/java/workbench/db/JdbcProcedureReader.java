@@ -217,7 +217,18 @@ public class JdbcProcedureReader
 
         String displayName = stripProcGroupInfo(name);
 
-        RoutineType type = procType == DatabaseMetaData.procedureReturnsResult ? RoutineType.function : RoutineType.procedure;
+        RoutineType type;
+        if (forProcedures)
+        {
+          type = procType == DatabaseMetaData.procedureReturnsResult ? RoutineType.function : RoutineType.procedure;
+        }
+        else
+        {
+          type = procType == DatabaseMetaData.functionReturnsTable  ? RoutineType.tableFunction: RoutineType.function;
+          // a lot of places still use the pre-JDBC 4.0 way of determining base on this
+          // TOOD: convert everything to only use RoutineType
+          procType = DatabaseMetaData.procedureReturnsResult;
+        }
         ProcedureDefinition def = new ProcedureDefinition(cat, schema, displayName, type, procType);
         def.setComment(remark);
 

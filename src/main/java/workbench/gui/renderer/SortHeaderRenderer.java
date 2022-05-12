@@ -51,6 +51,7 @@ import workbench.gui.components.WbTable;
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 
+import workbench.util.HtmlUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -250,7 +251,7 @@ public class SortHeaderRenderer
             if (showRemarks && StringUtil.isNonEmpty(remarks))
             {
               valign = SwingConstants.TOP;
-              label += "<p style=\"word-wrap: break-word\">" + remarks + "</p>";
+              label += "<p style=\"word-wrap: break-word\">" + HtmlUtil.convertToMultiline(remarks) + "</p>";
             }
           }
         }

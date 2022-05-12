@@ -92,6 +92,10 @@ public class Db2ProcedureReader
   {
     if (def == null) return null;
     Db2GenerateSQL gen = new Db2GenerateSQL(connection);
+    if (def.isFunction() || def.isTableFunction())
+    {
+      return gen.getFunctionSource(def.getSchema(), def.getObjectName());
+    }
     return gen.getProcedureSource(def.getSchema(), def.getObjectName());
   }
 
