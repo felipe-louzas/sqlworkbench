@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import workbench.interfaces.BatchCommitter;
 import workbench.interfaces.Committer;
@@ -394,10 +395,13 @@ public class CommonArgs
     try
     {
       format = cmdLine.getValue(ARG_DATE_FORMAT);
+      addMonthWarning(format, result);
       if (format != null) converter.setDefaultDateFormat(format);
 
       format = cmdLine.getValue(ARG_TIMESTAMP_FORMAT);
+      addMonthWarning(format, result);
       if (format != null) converter.setDefaultTimestampFormat(format);
+
     }
     catch (Exception e)
     {
@@ -425,6 +429,24 @@ public class CommonArgs
       converter.setAutoConvertBooleanNumbers(true);
     }
     return converter;
+  }
+
+  private static void addMonthWarning(String format, StatementRunnerResult result)
+  {
+    if (format == null) return;
+    if (result == null) return;
+
+    Set<String> patterns = Set.of("yyyy-mm-dd", "yyyy/mm/dd", "yyyy.mm.dd",
+                                  "dd-mm-yyyy", "dd.mm.yyyy", "dd/mm/yyyy",
+                                  "mm/dd/yyyy");
+    for (String pattern : patterns)
+    {
+      if (format.contains(pattern))
+      {
+        String fixed = format.replace(pattern, pattern.replace("mm", "MM"));
+        result.addWarning(ResourceMgr.getFormattedString("MsgMonthLowerCase", fixed));
+      }
+    }
   }
 
   public static DropType getDropType(ArgumentParser cmdLine)

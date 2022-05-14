@@ -185,7 +185,7 @@ public class PostgresColumnEnhancer
       "  left join pg_catalog.pg_attrdef d on d.adrelid = att.attrelid  and d.adnum = att.attnum \n" : "") +
       "where tbl.relname = ? \n" +
       "  and ns.nspname = ? \n" +
-      "  and not att.attisdropped \n " +
+      "  and not att.attisdropped \n" +
       "  and att.attname not in ('tableoid', 'cmax', 'xmax', 'cmin', 'xmin', 'ctid')";
 
     String tname = table.getTable().getRawTableName();

@@ -134,6 +134,7 @@ localtime
 localtimestamp
 log
 lower
+lower_inf
 lpad
 ltrim
 make_date
@@ -240,6 +241,7 @@ translate
 trim
 trim_scale
 trunc
+upper_inf
 unnest
 var_pop
 var_samp

@@ -155,6 +155,21 @@ public class DdlObjectInfoTest
     info = new DdlObjectInfo(createRule, ParserType.Postgres);
     assertEquals("RULE", info.getObjectType());
     assertEquals("insert_some_view_rule", info.getObjectName());
+
+    info = new DdlObjectInfo("create index concurrently if not exists ix_one on t(id)", ParserType.Postgres);
+    assertTrue(info.isValid());
+    assertEquals("ix_one", info.getObjectName());
+    assertEquals("INDEX", info.getObjectType());
+
+    info = new DdlObjectInfo("create index concurrently on t(id)", ParserType.Postgres);
+    assertTrue(info.isValid());
+    assertNull(info.getObjectName());
+    assertEquals("INDEX", info.getObjectType());
+
+    info = new DdlObjectInfo("create index concurrently ix_one on t(id)", ParserType.Postgres);
+    assertTrue(info.isValid());
+    assertEquals("ix_one", info.getObjectName());
+    assertEquals("INDEX", info.getObjectType());
   }
 
   @Test

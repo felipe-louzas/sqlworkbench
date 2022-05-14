@@ -129,6 +129,15 @@ public class DdlObjectInfo
         SQLToken name = lexer.getNextToken(false, false);
         if (name == null) return;
         String content = name.getContents();
+
+        // For PostgreSQL
+        if (type == ParserType.Postgres && content.equalsIgnoreCase("CONCURRENTLY"))
+        {
+          name = lexer.getNextToken(false, false);
+          if (name == null) return;
+          content = name.getContents();
+        }
+
         if (content.equals("IF NOT EXISTS") || content.equals("IF EXISTS") || content.equals(OracleUtils.KEYWORD_EDITIONABLE))
         {
           name = lexer.getNextToken(false, false);
@@ -142,7 +151,7 @@ public class DdlObjectInfo
           if (next != null) name = next;
         }
 
-        if (this.objectType.equalsIgnoreCase("index") && name.getContents().equals("ON"))
+        if (this.objectType.equalsIgnoreCase("index") && name.getContents().equalsIgnoreCase("ON"))
         {
           // this is for unnamed indexes in Postgres to avoid the message
           // Index "ON" created.
