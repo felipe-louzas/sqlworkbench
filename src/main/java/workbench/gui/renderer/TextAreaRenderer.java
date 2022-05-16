@@ -35,9 +35,9 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 
+import workbench.util.StringUtil;
+
 import static workbench.gui.renderer.ToolTipRenderer.*;
-
-
 
 /**
  * A renderer to display multi-line character data.
@@ -122,13 +122,21 @@ public class TextAreaRenderer
     this.isNull = (value == null);
     if (this.isNull)
     {
-      this.displayValue = rendererSetup == null ? null : rendererSetup.nullString;
+      if (rendererSetup.nullString == null)
+      {
+        this.displayValue = StringUtil.EMPTY_STRING;
+      }
+      else
+      {
+        this.displayValue = rendererSetup.nullString;
+      }
       setTooltip(null);
     }
     else
     {
       try
       {
+        // A direct cast is faster that calling toString()
         this.displayValue = (String)value;
       }
       catch (Exception cce)
