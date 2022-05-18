@@ -23,7 +23,6 @@ package workbench.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -37,11 +36,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import workbench.WbManager;
-
-import workbench.gui.WbSwingUtilities;
-import workbench.gui.actions.EscAction;
-import workbench.gui.sql.EditorPanel;
-
 import workbench.interfaces.Restoreable;
 import workbench.interfaces.TextContainer;
 import workbench.log.CallerInfo;
@@ -49,6 +43,10 @@ import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
+import workbench.gui.WbSwingUtilities;
+import workbench.gui.actions.EscAction;
+import workbench.gui.sql.EditorPanel;
 
 /**
  *
@@ -179,8 +177,7 @@ public class EditWindow
     {
       this.textContainer.setText(text);
     }
-    this.editor.setMinimumSize(new Dimension(100,100));
-    this.editor.setPreferredSize(new Dimension(300,200));
+
     this.textContainer.setCaretPosition(0);
 
     this.okButton.addActionListener(this);

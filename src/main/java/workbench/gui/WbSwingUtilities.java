@@ -638,7 +638,6 @@ public class WbSwingUtilities
       }
     };
 
-    msg.removeBorders();
     msg.setText(message);
     msg.setCaretPosition(0);
     msg.setBorder(createLineBorder(msg));

@@ -83,7 +83,7 @@ public class PlainEditor
     editor.putClientProperty("JTextArea.infoBackground", Boolean.TRUE);
     editMenu = new TextComponentMouseListener(editor);
 
-    scroll = new JScrollPane(editor);
+    scroll = new WbScrollPane(editor, WbSwingUtilities.EMPTY_BORDER);
     editor.setFont(Settings.getInstance().getEditorFont());
     this.setLayout(new BorderLayout());
 
@@ -94,6 +94,7 @@ public class PlainEditor
       editor.setWrapStyleWord(true);
       toolPanel = new JPanel();
       toolPanel.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
+      toolPanel.setBorder(DividerBorder.BOTTOM_DIVIDER);
       wordWrap = new JCheckBox(ResourceMgr.getString("LblWordWrap"));
       wordWrap.setSelected(true);
       wordWrap.setFocusable(false);
@@ -127,12 +128,6 @@ public class PlainEditor
   {
     super.removeNotify();
     editMenu.dispose();
-  }
-
-  public void removeBorders()
-  {
-    scroll.setBorder(WbSwingUtilities.EMPTY_BORDER);
-    if (toolPanel != null) toolPanel.setBorder(DividerBorder.BOTTOM_DIVIDER);
   }
 
   @Override
