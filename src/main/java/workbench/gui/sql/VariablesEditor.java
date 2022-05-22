@@ -22,16 +22,15 @@
 package workbench.gui.sql;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.TableCellEditor;
 
@@ -46,6 +45,7 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnWidthOptimizer;
 import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.ValidatingDialog;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbTextCellEditor;
 import workbench.gui.renderer.RendererSetup;
@@ -65,12 +65,12 @@ public class VariablesEditor
   extends JPanel
   implements ValidatingComponent
 {
-  private DataStore varData;
-  private WbTable variablesTable;
+  private final DataStore varData;
+  private final WbTable variablesTable;
   private ValidatingDialog dialog;
-  private boolean autoAdvance;
-  private boolean autoCloseOnAdvance;
-  private String variablePoolID;
+  private final boolean autoAdvance;
+  private final boolean autoCloseOnAdvance;
+  private final String variablePoolID;
 
   public VariablesEditor(DataStore data, String variablePoolID)
   {
@@ -103,17 +103,13 @@ public class VariablesEditor
     JLabel l = new JLabel(ResourceMgr.getString("TxtVariableInputText"));
     Border b = BorderFactory.createEmptyBorder(5, 2, 5, 2);
     l.setBorder(b);
-    l.setBackground(Color.WHITE);
+    l.setBackground(UIManager.getColor("TextArea.background"));
+    l.setForeground(UIManager.getColor("TextArea.foreground"));
     l.setOpaque(true);
     l.setHorizontalAlignment(SwingConstants.CENTER);
 
-    this.setLayout(new BorderLayout());
-
-    JScrollPane scroll = new JScrollPane(this.variablesTable);
-    b = BorderFactory.createEmptyBorder(5, 0, 0, 0);
-    Border b2 = BorderFactory.createCompoundBorder(b, scroll.getBorder());
-    scroll.setBorder(b2);
-
+    this.setLayout(new BorderLayout(0,8));
+    WbScrollPane scroll = new WbScrollPane(this.variablesTable);
     this.add(l, BorderLayout.NORTH);
     this.add(scroll, BorderLayout.CENTER);
   }

@@ -802,7 +802,7 @@ public class JEditTextArea
     updateScrollBars();
     invalidate();
   }
-  
+
   /**
    * Updates the state of the scroll bars.
    *
@@ -2563,6 +2563,17 @@ public class JEditTextArea
   {
     this.overwrite = overwrite;
     painter.invalidateSelectedLines();
+  }
+
+  public int getRectangularSelectionColumns()
+  {
+    if (isSelectionRectangular())
+    {
+      int startCol = getSelectionStart(selectionStartLine);
+      int endCol = getSelectionEnd(selectionStartLine);
+      return endCol - startCol;
+    }
+    return -1;
   }
 
   /**

@@ -52,7 +52,7 @@ public class TextAreaRenderer
   extends ToolTipRenderer
   implements TableCellRenderer, WbRenderer
 {
-  protected JTextArea textDisplay;
+  private final JTextArea textDisplay;
   protected boolean useStringReader;
 
   public TextAreaRenderer()

@@ -715,10 +715,19 @@ public class InputHandler
       if (textArea.isEditable())
       {
         char typedChar = str.charAt(0);
+        boolean selectionSupportsAutoQuote = false;
+        if (textArea.isSelectionRectangular())
+        {
+          selectionSupportsAutoQuote = textArea.getRectangularSelectionColumns() > 1;
+        }
+        else
+        {
+          selectionSupportsAutoQuote = textArea.getSelectionLength() > 0;
+        }
+
         if (textArea.getAutoQuoteSelection()
-            && textArea.getSelectionLength() > 0
-            && str.length() == 1
-            && (typedChar == '"' || typedChar == '\'')
+            && selectionSupportsAutoQuote
+            && (str.equals("\"") || str.equals("'"))
             && !StringUtil.equalString(str, textArea.getSelectedText()))
         {
           String newSelection = applyAutoQuote(textArea, typedChar);

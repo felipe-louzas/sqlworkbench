@@ -32,14 +32,16 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.List;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -92,12 +94,13 @@ public class FileUtilTest
   {
     File f = new File(testUtil.getBaseDir(), "somedata.txt");
     String encoding = "ISO-8859-1";
-    Writer w = EncodingUtil.createWriter(new FileOutputStream(f), encoding);
-    for (int i=0; i < 100; i++)
+    try (Writer w = EncodingUtil.createWriter(new FileOutputStream(f), encoding))
     {
-      w.write("line_" + i + "\n");
+      for (int i=0; i < 100; i++)
+      {
+        w.write("line_" + i + "\n");
+      }
     }
-    w.close();
 
     BufferedReader in = new BufferedReader(new FileReader(f));
 
@@ -108,6 +111,10 @@ public class FileUtilTest
       String line = lines.get(i);
       assertEquals("line_" + i, line);
     }
+
+    String input = "\n\n\n\n";
+    lines = FileUtil.getLines(new BufferedReader(new StringReader(input)), false, false, false, 100);
+    assertEquals(4, lines.size());
   }
 
   @Test
@@ -253,12 +260,13 @@ public class FileUtilTest
     try
     {
       File sf = new File(testUtil.getBaseDir(), "sourcefile.dat");
-      OutputStream out = new FileOutputStream(sf);
-      for (int i = 0; i < 32768; i++)
+      try (OutputStream out = new FileOutputStream(sf))
       {
-        out.write(i);
+        for (int i = 0; i < 32768; i++)
+        {
+          out.write(i);
+        }
       }
-      out.close();
       InputStream in = new FileInputStream(sf);
 
       File tf = new File("copy.dat");
@@ -284,10 +292,12 @@ public class FileUtilTest
     try
     {
       File f = new File(testUtil.getBaseDir(), "chartest.txt");
-      PrintWriter pw = new PrintWriter(new FileWriter(f));
-      String content = "Don't panic, count to ten... then panic!";
-      pw.print(content);
-      pw.close();
+      String content;
+      try (PrintWriter pw = new PrintWriter(new FileWriter(f)))
+      {
+        content = "Don't panic, count to ten... then panic!";
+        pw.print(content);
+      }
 
       FileReader in = new FileReader(f);
       String result = FileUtil.readCharacters(in);
@@ -307,12 +317,13 @@ public class FileUtilTest
     try
     {
       File sf = new File(testUtil.getBaseDir(), "sourcefile.dat");
-      OutputStream out = new FileOutputStream(sf);
-      for (int i = 0; i < 32768; i++)
+      try (OutputStream out = new FileOutputStream(sf))
       {
-        out.write(i);
+        for (int i = 0; i < 32768; i++)
+        {
+          out.write(i);
+        }
       }
-      out.close();
       InputStream in = new FileInputStream(sf);
 
       byte[] b = FileUtil.readBytes(in);

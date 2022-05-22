@@ -1845,7 +1845,7 @@ public class StringUtil
   public static List<String> getLines(String source)
   {
     if (source == null) return Collections.emptyList();
-    return FileUtil.getLines(new BufferedReader(new StringReader(source)));
+    return FileUtil.getLines(new BufferedReader(new StringReader(source)), false, false, false, Integer.MAX_VALUE);
   }
 
   /**

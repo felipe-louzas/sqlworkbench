@@ -116,10 +116,10 @@ public class FileUtil
    */
   public static List<String> getLines(BufferedReader input, boolean trim, boolean checkComments)
   {
-    return getLines(input, trim, checkComments, Integer.MAX_VALUE);
+    return getLines(input, trim, checkComments, true, Integer.MAX_VALUE);
   }
 
-  public static List<String> getLines(BufferedReader input, boolean trim, boolean checkComments, int numLines)
+  public static List<String> getLines(BufferedReader input, boolean trim, boolean checkComments, boolean removeEmpty, int numLines)
   {
     List<String> result = new ArrayList<>();
 
@@ -128,14 +128,14 @@ public class FileUtil
       String line;
       while ( (line = input.readLine()) != null)
       {
-        if (StringUtil.isNonEmpty(line))
+        if (trim) line = StringUtil.trim(line);
+        if (removeEmpty && StringUtil.isEmptyString(line)) continue;
+
+        if (checkComments && StringUtil.isNonEmpty(line) && line.trim().startsWith("#"))
         {
-          if (checkComments && line.trim().startsWith("#"))
-          {
-            continue;
-          }
-          result.add(trim ? line.trim() : line);
+          continue;
         }
+        result.add(trim ? line.trim() : line);
         if (result.size() > numLines) break;
       }
     }
