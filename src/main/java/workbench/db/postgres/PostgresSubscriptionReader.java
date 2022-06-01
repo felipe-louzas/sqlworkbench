@@ -269,6 +269,11 @@ public class PostgresSubscriptionReader
       this.hasPrivileges = false;
       LogMgr.logDebug(new CallerInfo(){}, "Checking privileges for pg_catalog.pg_subscription");
       JdbcUtils.runQuery(conn, sql, false, (rs -> {if (rs.next()) this.hasPrivileges = rs.getBoolean(1);}));
+      if (hasPrivileges == null || hasPrivileges == false)
+      {
+        LogMgr.logInfo(new CallerInfo(){}, "Can not display subscription information because uUser "
+          + conn.getDisplayUser() + " does not have access to pg_catalog.pg_subscription");
+      }
     }
     catch (SQLException e)
     {

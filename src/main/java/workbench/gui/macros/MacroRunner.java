@@ -146,7 +146,7 @@ public class MacroRunner
     return sql;
   }
 
-  public void runDataMacro(MacroDefinition macro, ResultInfo info, RowData row, MacroClient client, String variablePool, Map<String, String> columnMap)
+  public void runDataMacro(MacroDefinition macro, ResultInfo info, RowData row, MacroClient client, String poolID, Map<String, String> columnMap)
   {
     if (macro == null) return;
     if (info == null) return;
@@ -155,16 +155,19 @@ public class MacroRunner
 
     TextRowDataConverter converter = new TextRowDataConverter();
     converter.setResultInfo(info);
+    VariablePool pool = VariablePool.getInstance(poolID);
 
     for (int i = 0; i < info.getColumnCount(); i++)
     {
       String col = info.getColumnName(i);
-      String varName = columnMap.get(col);
-      if (varName == null) varName = col;
-      if (VariablePool.getInstance(variablePool).isValidVariableName(varName))
+      String varName = StringUtil.coalesce(columnMap.get(col), col);
+      if (pool.isValidVariableName(varName))
       {
         String data = converter.getValueAsFormattedString(row, i);
-        VariablePool.getInstance(variablePool).setParameterValue(varName, data);
+        if (StringUtil.isNonEmpty(data))
+        {
+          pool.setParameterValue(varName, data);
+        }
       }
       else
       {
