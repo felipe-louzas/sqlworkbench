@@ -94,6 +94,15 @@ public class VariablePoolTest
   }
 
   @Test
+  public void testReplaceNull()
+  {
+    VariablePool pool = VariablePool.getInstance();
+    pool.setParameterValue("some_id", null);
+    String replaced = pool.replaceAllParameters("select * from foo where id = $[some_id]");
+    assertEquals("select * from foo where id = ", replaced);
+  }
+
+  @Test
   public void deleteVars()
   {
     VariablePool pool = VariablePool.getInstance();

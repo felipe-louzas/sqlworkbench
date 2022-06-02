@@ -625,7 +625,7 @@ public class VariablePool
     {
       synchronized (this.data)
       {
-        this.data.put(varName, value);
+        this.data.put(varName, value == null ? "" : value);
       }
     }
     else
