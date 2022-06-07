@@ -49,11 +49,6 @@ fi
 #   -Djava.awt.headless=true
 # might be needed for some combinations of OS and JDK
 
-# For High-DPI screens the following system properties might be needed:
-# -Dsun.java2d.uiScale=125%
-# -Dsun.java2d.uiScale.enabled=false
-
 exec "$JAVACMD"  $OPTS \
-                -Dawt.useSystemAAFontSettings=on \
                 -Xverify:none \
-                -Dvisualvm.display.name=SQLWorkbenchJ -cp "$cp" workbench.WbStarter "$@"
+                -Dvisualvm.display.name=SQLWorkbench/J -cp "$cp" workbench.WbStarter "$@"

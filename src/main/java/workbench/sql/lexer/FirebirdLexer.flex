@@ -173,8 +173,8 @@ keyword=(
 (OUTER{wsp}JOIN)|
 (CROSS{wsp}JOIN)|
 (CROSS{wsp}JOIN{wsp}LATERAL)|
-(OUTER{wsp}APPLY)|
-(CROSS{wsp}APPLY)|
+
+
 (FULL{wsp}JOIN)|
 (FULL{wsp}JOIN{wsp}LATERAL)|
 (FULL{wsp}OUTER{wsp}JOIN)|

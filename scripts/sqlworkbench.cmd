@@ -34,8 +34,6 @@ start "SQL Workbench/J" "%JAVA_BINPATH%javaw.exe"^
       -Xmx%max_mem%m ^
       -Xverify:none ^
       -Dvisualvm.display.name=SQLWorkbench/J ^
-      -Dsun.awt.keepWorkingSetOnMinimize=true ^
-      -Dsun.java2d.dpiaware=true ^
       -Dsun.java2d.noddraw=true ^
       -cp "%cp%" workbench.WbStarter %*
 goto :eof
@@ -43,7 +41,7 @@ goto :eof
 :console_mode
 title SQL Workbench/J
 
-"%JAVA_BINPATH%java.exe" -Dvisualvm.display.name=SQLWorkbench ^
+"%JAVA_BINPATH%java.exe" -Dvisualvm.display.name=SQLWorkbench/J ^
                          -cp "%cp%" workbench.console.SQLConsole %*
 
 goto :eof

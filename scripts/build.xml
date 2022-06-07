@@ -454,6 +454,8 @@
       <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
       <replacefilter token="(DATABASE{wsp}LINK)|"/>
       <replacefilter token="(DISTINCT{wsp}ON)|"/>
+      <replacefilter token="(OUTER{wsp}APPLY)|"/>
+      <replacefilter token="(CROSS{wsp}APPLY)|"/>
     </replace>
 
     <replace file="../src/main/java/workbench/sql/lexer/PostgresLexer.flex">
@@ -473,6 +475,8 @@
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
       <replacefilter token="(DATABASE{wsp}LINK)|"/>
       <replacefilter token='"SYSDATE"|'/>
+      <replacefilter token="(OUTER{wsp}APPLY)|"/>
+      <replacefilter token="(CROSS{wsp}APPLY)|"/>
       <replacefilter token='"SYSTIMESTAMP"|' value='"LOCALTIMESTAMP"|'/>
       <replacefilter token='"SESSION_USER"|'/>
       <replacefilter>

@@ -25,7 +25,7 @@ set wbdir=%~dp0
 set cp=%wbdir%sqlworkbench.jar
 set cp=%cp%;%wbdir%\ext\*
 
-"%JAVA_BINPATH%java.exe" -Dvisualvm.display.name=SQLWorkbench ^
+"%JAVA_BINPATH%java.exe" -Dvisualvm.display.name=SQLWorkbench/J ^
                          -Xmx512m -cp "%cp%" workbench.console.SQLConsole %*
 
 
