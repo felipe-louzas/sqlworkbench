@@ -141,6 +141,23 @@
     <void method="add">
       <object class="workbench.util.download.MavenArtefact">
         <void property="groupId">
+          <string>net.sf.jt400</string>
+        </void>
+        <void property="artefactId">
+          <string>jt400-jdk9</string>
+        </void>
+        <void property="driverClassName">
+          <string>com.ibm.as400.access.AS400JDBCDriver</string>
+        </void>
+        <void property="productName">
+          <string>Db2 for IBM i</string>
+        </void>
+      </object>
+    </void>
+
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
           <string>com.pivotal</string>
         </void>
         <void property="artefactId">

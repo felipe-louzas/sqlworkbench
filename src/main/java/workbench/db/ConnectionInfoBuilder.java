@@ -23,14 +23,14 @@ package workbench.db;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Map;
 
 import workbench.log.CallerInfo;
-
-import workbench.db.report.TagWriter;
-
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.ssh.SshConfig;
+
+import workbench.db.report.TagWriter;
 
 import workbench.util.StringUtil;
 
@@ -113,6 +113,13 @@ public class ConnectionInfoBuilder
       {
         content.append(lineStart + boldStart + "SSH:" + boldEnd + ssh.getInfoString() + lineEnd);
       }
+      ConnectionPropertiesReader reader = ConnectionPropertiesReader.Fatory.getReader(conn);
+      Map<String, String> info = reader.getConnectionProperties(conn);
+      for (Map.Entry<String, String> entry : info.entrySet())
+      {
+        content.append(lineStart + boldStart + entry.getKey() + ":" + boldEnd + entry.getValue() + lineEnd);
+      }
+
       content.append(space + boldStart + "Isolation Level:" + boldEnd + isolationlevel + newLine);
       content.append(space + boldStart + ResourceMgr.getString("LblUsername") + ":" + boldEnd + username + newLine);
 
@@ -132,7 +139,7 @@ public class ConnectionInfoBuilder
       }
       content.append(space + boldStart + s + ":" + boldEnd + nvl(busy ? "n/a" : conn.getCurrentCatalog()) + newLine);
       content.append(space + boldStart + "Workbench DBID:" + boldEnd + wbmeta.getDbId() + newLine);
-      content.append(space + boldStart + "Connection ID:" + boldEnd + conn.getId());
+      content.append(space + boldStart + "Workbench connection: " + boldEnd + conn.getId());
       if (useHtml) content.append("</html>");
       return content.toString();
     }

@@ -1901,6 +1901,7 @@ public class WbConnection
 
   /**
    * Calls Oracle's own cancel() method on the current connection.
+   * 
    * This seems to make cancelling statements much more reliable.
    * If this is not an Oracle connection, nothing happens.
    */
@@ -1911,11 +1912,11 @@ public class WbConnection
 
     try
     {
-      Method cancel = sqlConnection.getClass().getMethod("cancel", (Class[])null);
+      Method cancel = sqlConnection.getClass().getMethod("cancel");
       cancel.setAccessible(true);
 
       LogMgr.logDebug(new CallerInfo(){}, "Using OracleConnection.cancel() to cancel the current statement");
-      cancel.invoke(sqlConnection, (Object[])null);
+      cancel.invoke(sqlConnection);
     }
     catch (Throwable th)
     {
@@ -1928,11 +1929,11 @@ public class WbConnection
     {
       // calling pingDatabase() after a cancel() fixes the problem that the next statement
       // right after calling cancel() is cancelled immediately again with "ORA-01013: user requested cancel of current operation"
-      Method ping = sqlConnection.getClass().getMethod("pingDatabase", (Class[])null);
+      Method ping = sqlConnection.getClass().getMethod("pingDatabase");
       ping.setAccessible(true);
 
       LogMgr.logDebug(new CallerInfo(){}, "Calling pingDatabase() to clear the communication");
-      ping.invoke(sqlConnection, (Object[])null);
+      ping.invoke(sqlConnection);
     }
     catch (NoSuchMethodException | SecurityException | IllegalAccessException ex)
     {

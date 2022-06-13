@@ -21,7 +21,6 @@
  */
 package workbench.sql.annotations;
 
-
 import java.util.List;
 
 import org.junit.Test;
@@ -36,6 +35,16 @@ public class WbAnnotationTest
 {
   public WbAnnotationTest()
   {
+  }
+
+  @Test
+  public void testFindAnnotation()
+  {
+    ScrollAnnotation s1 = new ScrollAnnotation();
+    List<WbAnnotation> list = List.of(new MacroAnnotation(), s1, new ResultNameAnnotation());
+    ScrollAnnotation scroll = WbAnnotation.findAnnotation(list, ScrollAnnotation.class);
+    assertNotNull(scroll);
+    assertEquals(s1, scroll);
   }
 
   @Test

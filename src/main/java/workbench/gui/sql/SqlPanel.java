@@ -364,6 +364,7 @@ public class SqlPanel
   private boolean ignoreStateChange;
   private boolean cmdMode;
   private boolean cmdModeForScript;
+  private ResultAsTextAnnotation resultAsTextForScript;
   private long lastScriptExecTime;
   protected final List<ToolWindow> resultWindows = new ArrayList<>(1);
   private final int macroClientId;
@@ -3470,6 +3471,7 @@ public class SqlPanel
       }
 
       this.cmdModeForScript = cmdMode;
+      this.resultAsTextForScript = null;
 
       for (int i=startIndex; i < endIndex; i++)
       {
@@ -4194,18 +4196,23 @@ public class SqlPanel
   private boolean evaluateResultMode(List<WbAnnotation> sourceAnnotations)
   {
     final ResultAsTextMode textMode = ResultAsTextAnnotation.getMode(sourceAnnotations);
+    ResultAsTextAnnotation annotation = WbAnnotation.findAnnotation(sourceAnnotations, ResultAsTextAnnotation.class);
+
     boolean displayAsText = cmdModeForScript;
     switch (textMode)
     {
       case turnOff:
         cmdModeForScript = false;
+        resultAsTextForScript = null;
         displayAsText = false;
         break;
       case turnOn:
         cmdModeForScript = true;
+        resultAsTextForScript = annotation;
         displayAsText = true;
         break;
       case onceOnly:
+        resultAsTextForScript = null;
         displayAsText = true;
         break;
     }
@@ -4257,8 +4264,12 @@ public class SqlPanel
               localAnnotations = sourceAnnotations;
             }
             boolean showAsText = displayAsText || evaluateResultMode(localAnnotations);
-            boolean showContLines = ResultAsTextAnnotation.doShowContinuationLines(localAnnotations);
-            boolean showResultHeader = ResultAsTextAnnotation.showResultHeader(localAnnotations);
+            boolean showContLines = resultAsTextForScript != null ?
+                                    showContLines = resultAsTextForScript.applyConsoleFormat() :
+                                    ResultAsTextAnnotation.doShowContinuationLines(localAnnotations);
+            boolean showResultHeader = resultAsTextForScript != null ?
+                                       resultAsTextForScript.showResultHeader() :
+                                       ResultAsTextAnnotation.showResultHeader(localAnnotations);
             String tabName1 = localAnnotations.contains(useTab) ? useTab.getResultName(sql) : null;
             DwPanel p = null;
             if (StringUtil.isNonEmpty(tabName1))

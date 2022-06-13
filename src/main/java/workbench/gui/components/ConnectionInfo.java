@@ -34,6 +34,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -49,6 +50,7 @@ import workbench.resource.ResourceMgr;
 import workbench.ssh.SshConfig;
 
 import workbench.db.ConnectionProfile;
+import workbench.db.ConnectionPropertiesReader;
 import workbench.db.DbSwitcher;
 import workbench.db.WbConnection;
 
@@ -56,6 +58,8 @@ import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.WbAction;
 import workbench.gui.renderer.ColorUtils;
 import workbench.gui.tools.ConnectionInfoPanel;
+
+import workbench.util.CollectionUtil;
 
 /**
  * @author  Thomas Kellerer
@@ -266,22 +270,43 @@ public class ConnectionInfo
     {
       String display = conn.getDisplayString(useCachedSchema);
       infoText.setText(display);
-      StringBuilder tip = new StringBuilder(30);
-      tip.append("<html>");
+      StringBuilder tip = new StringBuilder(50);
+      tip.append("<html><div style=\"white-space:nowrap;\"><p>");
       tip.append(conn.getDatabaseProductName());
       tip.append(" ");
       tip.append(conn.getDatabaseVersion().toString());
-      tip.append("<br>");
+      tip.append("</p><p>");
       tip.append(ResourceMgr.getFormattedString("TxtDrvVersion", conn.getDriverVersion()));
-      tip.append("<br>");
-      tip.append("Connection ID: " + conn.getId());
+      tip.append("</p>");
+      ConnectionPropertiesReader reader = ConnectionPropertiesReader.Fatory.getReader(conn);
+      if (reader != null)
+      {
+        Map<String, String> info = reader.getConnectionProperties(conn);
+        if (CollectionUtil.isNonEmpty(info))
+        {
+          for (Map.Entry<String, String> entry : info.entrySet())
+          {
+            tip.append("<p>");
+            tip.append(entry.getKey());
+            tip.append(": ");
+            tip.append(entry.getValue());
+            tip.append("</p>");
+          }
+        }
+      }
+
+      tip.append("<p>Workbench connection: ");
+      tip.append(conn.getId());
+      tip.append("</p>");
+
       SshConfig sshConfig = conn.getProfile().getSshConfig();
       if (sshConfig != null)
       {
-        tip.append("<br>SSH: ");
+        tip.append("<p>SSH: ");
         tip.append(sshConfig.getInfoString());
+        tip.append("</p>");
       }
-      tip.append("</html>");
+      tip.append("</div></html>");
       infoText.setToolTipText(tip.toString());
     }
     else

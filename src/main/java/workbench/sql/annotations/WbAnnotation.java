@@ -83,6 +83,14 @@ public class WbAnnotation
     return extractAnnotationValue(token);
   }
 
+  public static <T extends WbAnnotation> T findAnnotation(List<WbAnnotation> annotations, Class<T> toFind)
+  {
+
+    return (T)annotations.stream().
+      filter(a -> toFind.isAssignableFrom(a.getClass())).
+      findFirst().orElse(null);
+  }
+
   public static List<WbAnnotation> readAllAnnotations(String sql, WbAnnotation... toRead)
   {
     sql = StringUtil.trimToNull(sql);
