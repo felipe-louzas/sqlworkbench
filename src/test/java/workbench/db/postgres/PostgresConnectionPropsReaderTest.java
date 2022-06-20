@@ -20,26 +20,40 @@
  */
 package workbench.db.postgres;
 
-
 import java.util.Map;
 
-import workbench.db.AbstractConnectionInfoReader;
+import workbench.TestUtil;
+import workbench.WbTestCase;
 
+import workbench.db.ConnectionPropertiesReader;
+import workbench.db.WbConnection;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 /**
- * A ConnectionPropertiesReader implementation for PostgreSQL.
- *
- * It will return the backend PID as returned by the JDBC driver.
  *
  * @author Thomas Kellerer
  */
-public class PostgresConnectionInfoReader
-  extends AbstractConnectionInfoReader
+public class PostgresConnectionPropsReaderTest
+  extends WbTestCase
 {
-
-  @Override
-  protected Map<String, String> getDriverProperties()
+  public PostgresConnectionPropsReaderTest()
   {
-    return Map.of("getBackendPID", "Backend PID");
+    super("TestPostgresConnectionProps");
+  }
+
+  @Test
+  public void testReadProperties()
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+
+    String pid = TestUtil.getSingleQueryValue(conn, "select pg_backend_pid()").toString();
+    ConnectionPropertiesReader reader = ConnectionPropertiesReader.Fatory.getReader(conn);
+    Map<String, String> props = reader.getConnectionProperties(conn);
+    String pid2 = props.get("Backend PID");
+    assertEquals(pid, pid2);
   }
 
 }

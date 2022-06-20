@@ -23,8 +23,10 @@ package workbench.db.ibm;
 
 import java.util.Map;
 
-import workbench.db.AbstractConnectionInfoReader;
+import workbench.db.DefaultConnectionPropertiesReader;
+import workbench.db.WbConnection;
 
+import workbench.util.CollectionUtil;
 
 /**
  * A ConnectionPropertiesReader implementation for DB2 for i.
@@ -34,12 +36,38 @@ import workbench.db.AbstractConnectionInfoReader;
  * @author Thomas Kellerer
  */
 public class Db2iConnectionInfoReader
-  extends AbstractConnectionInfoReader
+  extends DefaultConnectionPropertiesReader
 {
-  @Override
-  protected Map<String, String> getDriverProperties()
+  private static final String PROP_NAME = "JobIdentifier";
+
+  public Db2iConnectionInfoReader(Map<String, String> props)
   {
-    return Map.of("getServerJobIdentifier", "JobIdentifier");
+    super(CollectionUtil.combine(Map.of("getServerJobIdentifier", PROP_NAME), props));
+  }
+
+  @Override
+  public Map<String, String> getConnectionProperties(WbConnection conn)
+  {
+    Map<String, String> props = super.getConnectionProperties(conn);
+    if (conn != null && conn.getDbSettings().getBoolProperty("format.jobidentifier", true))
+    {
+      String id = props.get(PROP_NAME);
+      props.put(PROP_NAME, formatJobIdentifier(id));
+    }
+    return props;
+  }
+
+  public String formatJobIdentifier(String id)
+  {
+    if (id == null) return id;
+    if (id.contains("/")) return id;
+    if (id.length() != 26) return id;
+
+    String jobNumber = id.substring(16);
+    String jobName = id.substring(0,10);
+    String userName = id.substring(10,19);
+    
+    return  jobNumber.trim() + "/" + userName.trim() + "/" + jobName.trim();
   }
 
 }

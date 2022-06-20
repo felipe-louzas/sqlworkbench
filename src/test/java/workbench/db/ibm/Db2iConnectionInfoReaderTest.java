@@ -18,27 +18,31 @@
  *
  * To contact the author please send an email to: support@sql-workbench.eu
  */
-package workbench.db.mssql;
+package workbench.db.ibm;
 
-import java.util.Map;
+import java.util.Collections;
 
-import workbench.db.AbstractConnectionInfoReader;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
- * A ConnectionPropertiesReader implementation for Microsoft SQL Server.
- *
- * It will return the client connection ID as returned by the JDBC driver.
  *
  * @author Thomas Kellerer
  */
-public class SqlServerConnectionInfoReader
-  extends AbstractConnectionInfoReader
+public class Db2iConnectionInfoReaderTest
 {
 
-  @Override
-  protected Map<String, String> getDriverProperties()
+  public Db2iConnectionInfoReaderTest()
   {
-    return Map.of("getClientConnectionId", "Client connection ID");
+  }
+
+  @Test
+  public void testFormat()
+  {
+    Db2iConnectionInfoReader reader = new Db2iConnectionInfoReader(Collections.emptyMap());
+    String formatted = reader.formatJobIdentifier("QZDASOINITQUSER     147421");
+    assertEquals("147421/QUSER/QZDASOINIT", formatted);
   }
 
 }

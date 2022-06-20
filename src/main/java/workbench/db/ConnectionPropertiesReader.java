@@ -20,18 +20,14 @@
  */
 package workbench.db;
 
-import java.util.Collections;
 import java.util.Map;
 
 import workbench.db.ibm.Db2iConnectionInfoReader;
-import workbench.db.mssql.SqlServerConnectionInfoReader;
-import workbench.db.postgres.PostgresConnectionInfoReader;
-
 
 /**
  * An interface that defines an API to read custom connection
  * properties from a JDBC connection.
- *
+ * <p>
  * The result is used to build the connection information
  * display in the UI.
  *
@@ -41,9 +37,10 @@ public interface ConnectionPropertiesReader
 {
   /**
    * Returns a map of DBMS specific connection properties.
-   * 
+   *
    * @param conn the connection
-   * @return a map with properties, never null
+   *
+   * @return a map with connection specific properties, never null
    */
   Map<String, String> getConnectionProperties(WbConnection conn);
 
@@ -53,17 +50,14 @@ public interface ConnectionPropertiesReader
     {
       if (conn == null) return null;
       DBID db = DBID.fromConnection(conn);
+      Map<String, String> props = conn.getDbSettings().getDynamicInfoPropertiesMapping();
 
-      switch (db)
+      if (db == DBID.DB2_ISERIES)
       {
-        case Postgres:
-          return new PostgresConnectionInfoReader();
-        case DB2_ISERIES:
-          return new Db2iConnectionInfoReader();
-        case SQL_Server:
-          return new SqlServerConnectionInfoReader();
+        return new Db2iConnectionInfoReader(props);
       }
-      return (WbConnection wbConn) -> Collections.emptyMap();
+
+      return new DefaultConnectionPropertiesReader(props);
     }
   }
 }

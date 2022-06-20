@@ -37,10 +37,4 @@ class RootNode
     setAllowsChildren(true);
   }
 
-  RootNode(String name)
-  {
-    super(name, TreeLoader.TYPE_ROOT);
-    setAllowsChildren(true);
-  }
-
 }

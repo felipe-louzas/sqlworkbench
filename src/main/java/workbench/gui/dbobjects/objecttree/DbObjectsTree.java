@@ -638,6 +638,8 @@ public class DbObjectsTree
           case TreeLoader.TYPE_DEPENDENCY_USED:
           case TreeLoader.TYPE_DEPENDENCY_USING:
           case TreeLoader.TYPE_PROCEDURES_NODE:
+          case TreeLoader.TYPE_TRIGGERS_NODE:
+          case TreeLoader.TYPE_ROOT:
             key = "TxtTableListObjects";
             break;
           case TreeLoader.TYPE_COLUMN_LIST:

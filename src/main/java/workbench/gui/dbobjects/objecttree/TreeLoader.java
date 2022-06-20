@@ -302,6 +302,7 @@ public class TreeLoader
   {
     removeAllChildren(root);
     root.setNameAndType(getRootName(), TYPE_ROOT);
+    root.setChildrenLoaded(false);
     model.nodeStructureChanged(root);
   }
 
@@ -374,6 +375,7 @@ public class TreeLoader
         model.nodeStructureChanged(root);
       }
       connection.releaseSavepoint(sp, ci);
+      root.setChildrenLoaded(true);
     }
     catch (SQLException ex)
     {

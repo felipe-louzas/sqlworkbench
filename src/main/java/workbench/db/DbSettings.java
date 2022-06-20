@@ -2768,4 +2768,27 @@ public class DbSettings
   {
     return getBoolProperty("setschema.validate", false);
   }
+
+  /**
+   * Returns a map of method names to property names to
+   * retrieve additional information about a connection
+   *
+   * @return a map where the key is a method to be called on the Connection instance.
+   */
+  public Map<String, String> getDynamicInfoPropertiesMapping()
+  {
+    Map<String, String> result = new HashMap<>();
+    List<String> defs = getListProperty("connectioninfo.properties.methods");
+    if (CollectionUtil.isEmpty(defs)) return result;
+
+    for (String def : defs)
+    {
+      String[] elements = def.split(";");
+      if (elements.length == 2 || StringUtil.allNonEmpty(elements))
+      {
+        result.put(elements[0].trim(), elements[1].trim());
+      }
+    }
+    return result;
+  }
 }

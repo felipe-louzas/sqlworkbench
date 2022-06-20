@@ -37,21 +37,30 @@ import workbench.log.LogMgr;
  *
  * @author Thomas Kellerer
  */
-public abstract class AbstractConnectionInfoReader
+public class DefaultConnectionPropertiesReader
   implements ConnectionPropertiesReader
 {
+
+  private final Map<String, String> propertyMap = new HashMap<>();
+
+  public DefaultConnectionPropertiesReader(Map<String, String> properties)
+  {
+    if (properties != null)
+    {
+      this.propertyMap.putAll(properties);
+    }
+  }
 
   @Override
   public Map<String, String> getConnectionProperties(WbConnection conn)
   {
     Map<String, String> result = new HashMap<>(1);
-    Map<String, String> props = getDriverProperties();
-    if (conn == null || props == null || props.isEmpty()) return result;
+    if (conn == null || propertyMap.isEmpty()) return result;
 
     Connection sqlConn = conn.getSqlConnection();
     if (sqlConn == null) return result;
 
-    for (Map.Entry<String, String> propDef : props.entrySet())
+    for (Map.Entry<String, String> propDef : propertyMap.entrySet())
     {
       String method = propDef.getKey();
       String name = propDef.getValue();
@@ -66,27 +75,14 @@ public abstract class AbstractConnectionInfoReader
           {
             result.put(name, prop.toString());
           }
-          else
-          {
-            LogMgr.logWarning(new CallerInfo(){}, "No value returned by " + method + "()");
-          }
         }
       }
       catch (Throwable th)
       {
-        LogMgr.logError(new CallerInfo(){}, "Could not call " + method, th);
+        LogMgr.logError(new CallerInfo(){}, "Could not call " + method + "()", th);
       }
     }
-
     return result;
   }
-
-  /**
-   * Returns a map of driver property names and the corresponding
-   * method to call.
-   *
-   * The key is the method name, the value is the property name.
-   */
-  protected abstract Map<String, String> getDriverProperties();
 
 }

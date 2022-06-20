@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -169,6 +170,20 @@ public class CollectionUtil
     Set<String> result = caseInsensitiveSet();
     result.addAll(base);
     result.addAll(Arrays.asList(a));
+    return result;
+  }
+
+  public static <K,V> Map<K,V> combine(Map<K,V>... maps)
+  {
+    if (maps == null) return null;
+    Map<K,V> result = new HashMap<>();
+    for (Map<K,V> map : maps)
+    {
+      if (map != null)
+      {
+        result.putAll(map);
+      }
+    }
     return result;
   }
 

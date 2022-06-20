@@ -275,9 +275,9 @@ public class ConnectionInfo
       tip.append(conn.getDatabaseProductName());
       tip.append(" ");
       tip.append(conn.getDatabaseVersion().toString());
-      tip.append("</p><p>");
+      tip.append("&nbsp;&nbsp;</p><p>");
       tip.append(ResourceMgr.getFormattedString("TxtDrvVersion", conn.getDriverVersion()));
-      tip.append("</p>");
+      tip.append("&nbsp;&nbsp;</p>");
       ConnectionPropertiesReader reader = ConnectionPropertiesReader.Fatory.getReader(conn);
       if (reader != null)
       {
@@ -290,14 +290,14 @@ public class ConnectionInfo
             tip.append(entry.getKey());
             tip.append(": ");
             tip.append(entry.getValue());
-            tip.append("</p>");
+            tip.append("&nbsp;&nbsp;</p>");
           }
         }
       }
 
       tip.append("<p>Workbench connection: ");
       tip.append(conn.getId());
-      tip.append("</p>");
+      tip.append("&nbsp;&nbsp;</p>");
 
       SshConfig sshConfig = conn.getProfile().getSshConfig();
       if (sshConfig != null)
