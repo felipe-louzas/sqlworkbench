@@ -928,20 +928,19 @@ public class TableSourceBuilder
     return result.toString();
   }
 
-  private boolean getCreateInlinePKConstraints()
+  protected boolean getCreateInlinePKConstraints()
   {
     if (dbConnection == null) return false;
     return dbConnection.getDbSettings().createInlinePKConstraints();
   }
 
-  private boolean getCreateInlineFKConstraints()
+  protected boolean getCreateInlineFKConstraints()
   {
     if (dbConnection == null) return false;
     return dbConnection.getDbSettings().createInlineFKConstraints();
   }
 
-
-  private List<DependencyNode> getForeignKeys(TableIdentifier table)
+  protected List<DependencyNode> getForeignKeys(TableIdentifier table)
   {
     TableDependency deps = new TableDependency(dbConnection, table);
     deps.setRetrieveDirectChildrenOnly(true);

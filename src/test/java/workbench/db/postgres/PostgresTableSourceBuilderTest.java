@@ -289,7 +289,7 @@ public class PostgresTableSourceBuilderTest
     String source = builder.getTableSource(tbl, DropType.none, true);
 //    System.out.println(source);
     assertTrue(source.contains("COMMENT ON CONSTRAINT fk_two2one"));
-    assertTrue(source.contains("REFERENCES one (id) MATCH FULL"));
+    assertTrue(source.contains("REFERENCES one(id) MATCH FULL"));
   }
 
   @Test
@@ -326,8 +326,9 @@ public class PostgresTableSourceBuilderTest
     assertTrue(source.contains("ADD CONSTRAINT \"Some_PK\""));
     assertTrue(source.contains("PRIMARY KEY (\"PK_id\", \"Other_Value\")"));
     assertTrue(source.contains("COMMENT ON TABLE \"Foo_Bar\""));
-    assertTrue(source.contains("ADD CONSTRAINT \"Some_FK\" FOREIGN KEY (\"PK_id\")"));
-    assertTrue(source.contains("REFERENCES \"Base\" (\"Id\")"));
+    assertTrue(source.contains("ADD CONSTRAINT \"Some_FK\""));
+    assertTrue(source.contains("FOREIGN KEY (\"PK_id\")"));
+    assertTrue(source.contains("REFERENCES \"Base\"(\"Id\")"));
   }
 
 }

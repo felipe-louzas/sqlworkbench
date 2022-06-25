@@ -29,6 +29,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -485,11 +486,101 @@ public class PostgresTableSourceBuilder
   }
 
   @Override
+  public StringBuilder getFkSource(TableIdentifier table)
+  {
+    if (usePgFunctionForFKSource())
+    {
+      return readFKSource(table, null, false);
+    }
+    return getFkSource(table, getForeignKeys(table), getCreateInlineFKConstraints());
+  }
+
+  public StringBuilder readFKSource(TableIdentifier table, List<DependencyNode> fkList, boolean forInlineUse)
+  {
+    String sql =
+      "select pg_catalog.quote_ident(con.conname) as conname,  \n" +
+      "       pg_catalog.pg_get_constraintdef(con.oid) as src \n" +
+      "from pg_catalog.pg_class tbl \n" +
+      "  join pg_catalog.pg_constraint con on tbl.oid = con.conrelid   \n" +
+      "  join pg_catalog.pg_namespace nsp on tbl.relnamespace = nsp.oid \n" +
+      "where con.contype = 'f' \n" +
+      " and tbl.relname = ? \n" +
+      " and nsp.nspname = ?";
+
+    if (CollectionUtil.isNonEmpty(fkList))
+    {
+      sql += " \n and con.conname in (" +
+             fkList.stream().
+               map(n -> "'" + n.getFkName() + "'").
+               collect(Collectors.joining(",")) + ")";
+    }
+
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    StringBuilder result = new StringBuilder(100);
+    Savepoint sp = null;
+    final CallerInfo ci = new CallerInfo(){};
+    try
+    {
+      sp = dbConnection.setSavepoint();
+      stmt = dbConnection.getSqlConnection().prepareStatement(sql);
+      stmt.setString(1, table.getRawTableName());
+      stmt.setString(2, table.getRawSchema());
+
+      LogMgr.logMetadataSql(ci, "foreign key source", sql, table.getTableName(), table.getSchema());
+      String tableName = table.getTableExpression(dbConnection);
+      rs = stmt.executeQuery();
+      if (rs.next())
+      {
+        String name = rs.getString(1);
+        String source = rs.getString(2);
+        if (!forInlineUse)
+        {
+          result.append("ALTER TABLE ");
+          result.append(tableName);
+          result.append("\n  ADD ");
+        }
+        result.append("CONSTRAINT ");
+        result.append(name);
+        result.append("\n  ");
+        result.append(source);
+      }
+    }
+    catch (SQLException ex)
+    {
+      dbConnection.rollback(sp);
+      sp = null;
+      LogMgr.logMetadataError(ci, ex, "foreign key source", table.getTableName(), table.getSchema());
+    }
+    finally
+    {
+      dbConnection.releaseSavepoint(sp);
+      JdbcUtils.closeAll(rs, stmt);
+    }
+    return result;
+  }
+
+  @Override
   public StringBuilder getFkSource(TableIdentifier table, List<DependencyNode> fkList, boolean forInlineUse)
   {
-    StringBuilder fkSource = super.getFkSource(table, fkList, forInlineUse);
+    if (CollectionUtil.isEmpty(fkList)) return StringUtil.emptyBuilder();
+
+    StringBuilder fkSource;
+    if (usePgFunctionForFKSource())
+    {
+      fkSource = readFKSource(table, fkList, forInlineUse);
+    }
+    else
+    {
+      fkSource = super.getFkSource(table, fkList, forInlineUse);
+    }
     appendFKComments(table, fkSource, fkList);
     return fkSource;
+  }
+
+  private boolean usePgFunctionForFKSource()
+  {
+    return !dbConnection.getDbSettings().getBoolProperty("fk.source.generate", false);
   }
 
   private void appendFKComments(TableIdentifier table, StringBuilder fkSource, List<DependencyNode> fkList)

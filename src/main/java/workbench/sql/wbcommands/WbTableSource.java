@@ -99,8 +99,17 @@ public class WbTableSource
         TableDefinition tableDef = currentConnection.getMetadata().getTableDefinition(tbl);
         TableSourceBuilder reader = TableSourceBuilderFactory.getBuilder(currentConnection);
         source = reader.getTableSource(tableDef.getTable(), tableDef.getColumns());
+        if (!currentConnection.getDbSettings().createInlineFKConstraints())
+        {
+          StringBuilder fk = reader.getFkSource(tbl);
+          if (fk != null && fk.length() > 0)
+          {
+            source += "\n";
+            source += fk;
+          }
+        }
       }
-      
+
       if (source != null)
       {
         result.addMessage(source);
