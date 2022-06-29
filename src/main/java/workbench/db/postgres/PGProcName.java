@@ -28,8 +28,10 @@ import java.util.stream.Collectors;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ProcedureDefinition;
+import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -41,10 +43,12 @@ public class PGProcName
 {
   private List<PGArg> arguments;
   private String procName;
+  private String procSchema;
 
   public PGProcName(ProcedureDefinition def)
   {
-    procName = def.getProcedureName();
+    procName = SqlUtil.removeObjectQuotes(def.getProcedureName());
+    procSchema = SqlUtil.removeObjectQuotes(def.getSchema());
     List<ColumnIdentifier> parameters = def.getParameters(null);
     if (CollectionUtil.isNonEmpty(parameters))
     {
@@ -123,6 +127,9 @@ public class PGProcName
     return "cast(" + oids + " as oidvector)";
   }
 
+  /**
+   * For unit tests.
+   */
   List<PGArg> getArguments()
   {
     return arguments;
@@ -139,11 +146,19 @@ public class PGProcName
     return procName;
   }
 
+  public String getName(WbConnection conn)
+  {
+    return SqlUtil.buildExpression(conn, null, procSchema, procName) + getSignature();
+  }
+
+  /**
+   * Returns the signature of this procedure name <b>without</b> the procedure name.
+   * If this is a function without parameters, <tt>()</tt> will be returned.
+   */
   public String getSignature()
   {
-    if (arguments == null || arguments.isEmpty()) return procName +"()";
+    if (arguments == null || arguments.isEmpty()) return "()";
     StringBuilder b = new StringBuilder(procName.length() + arguments.size() * 10);
-    b.append(procName);
     b.append('(');
 
     String args = arguments.stream().

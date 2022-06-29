@@ -460,14 +460,16 @@ public class PostgresProcedureReaderTest
     TestUtil.executeScript(con,
       "create schema foo;\n" +
       "create function foo.bar(p_in integer) returns integer as $$ select 42; $$ language sql;\n" +
+      "comment on function foo.bar is 'Some smart comment'; \n"  +
       "commit;");
 
     TableIdentifier object = new TableIdentifier("foo.bar(integer)", con);
     object.adjustCase(con);
 
     ProcedureDefinition def = new ProcedureDefinition(object.getCatalog(), object.getSchema(), object.getObjectName(), RoutineType.function);
-    CharSequence sql = def.getSource(con);
-    assertNotNull(sql);
-    assertTrue(sql.toString().contains("FUNCTION foo.bar(p_in integer)"));
+    String sql = def.getSource(con).toString();
+//    System.out.println(sql);
+    assertTrue(sql.contains("FUNCTION foo.bar(p_in integer)"));
+    assertTrue(sql.contains("COMMENT ON FUNCTION foo.bar"));
   }
 }

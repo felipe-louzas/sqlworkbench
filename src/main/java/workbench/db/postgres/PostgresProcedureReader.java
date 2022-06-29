@@ -45,6 +45,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.QuoteHandler;
 import workbench.db.RoutineType;
 import workbench.db.WbConnection;
 
@@ -432,6 +433,8 @@ public class PostgresProcedureReader
     boolean isAggregate = "aggregate".equals(procType);
     boolean isFunction = "function".equals(procType);
 
+    QuoteHandler quoter = connection.getMetadata();
+
     if (isSQLBody)
     {
       source.append(StringUtil.trim(src));
@@ -444,9 +447,9 @@ public class PostgresProcedureReader
     else
     {
       source.append("CREATE OR REPLACE " + procType.toUpperCase() + " ");
-      source.append(schemaForSource == null ? schema : schemaForSource);
+      source.append(quoter.quoteObjectname(StringUtil.coalesce(schemaForSource, schema)));
       source.append('.');
-      source.append(name.getName());
+      source.append(quoter.quoteObjectname(name.getName()));
 
       String lang = rs.getString("lang_name");
       String returnType = rs.getString("return_type");
@@ -569,7 +572,10 @@ public class PostgresProcedureReader
 
     if (StringUtil.isNonBlank(comment))
     {
-      source.append("\nCOMMENT ON " + procType.toUpperCase());
+      source.append("\nCOMMENT ON " + procType.toUpperCase() + " ");
+      source.append(quoter.quoteObjectname(StringUtil.coalesce(schemaForSource, schema)));
+      source.append('.');
+      source.append(quoter.quoteObjectname(name.getName()));
       source.append(name.getSignature());
       source.append(" IS '");
       source.append(SqlUtil.escapeQuotes(comment));
@@ -610,7 +616,7 @@ public class PostgresProcedureReader
   protected void readFunctionDef(ProcedureDefinition def)
   {
     PGProcName name = new PGProcName(def);
-    String funcname = def.getSchema() + "." + name.getSignature();
+    String funcname = def.getSchema() + "." + name.getName() + name.getSignature();
     String sql;
 
     if (JdbcUtils.hasMinimumServerVersion(connection, "9.1"))

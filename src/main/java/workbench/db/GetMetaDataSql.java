@@ -236,7 +236,7 @@ public class GetMetaDataSql
 
   public void setInternalIdColumn(String columnName)
   {
-    this.internalIdColumn = columnName;
+    this.internalIdColumn = StringUtil.trimToNull(columnName);
   }
 
   public Object getInternalId()
@@ -257,7 +257,7 @@ public class GetMetaDataSql
 
   public void setBaseSql(String sql)
   {
-    this.baseSql = sql == null ? null : sql.trim();
+    this.baseSql = StringUtil.trimToNull(sql);
   }
 
   public String getSchema()
@@ -265,9 +265,9 @@ public class GetMetaDataSql
     return schema;
   }
 
-  public void setSchema(String schem)
+  public void setSchema(String schema)
   {
-    this.schema = schem;
+    this.schema = StringUtil.trimToNull(schema);
   }
 
   public String getCatalog()
@@ -277,7 +277,7 @@ public class GetMetaDataSql
 
   public void setCatalog(String cat)
   {
-    this.catalog = cat;
+    this.catalog = StringUtil.trimToNull(cat);
   }
 
   public String getObjectName()
@@ -303,7 +303,7 @@ public class GetMetaDataSql
 
   public void setSchemaField(String field)
   {
-    this.schemaField = field;
+    this.schemaField = StringUtil.trimToNull(field);
   }
 
   public String getCatalogField()
@@ -313,7 +313,7 @@ public class GetMetaDataSql
 
   public void setCatalogField(String field)
   {
-    this.catalogField = field;
+    this.catalogField = StringUtil.trimToNull(field);
   }
 
   public String getObjectNameField()
@@ -323,7 +323,7 @@ public class GetMetaDataSql
 
   public void setObjectNameField(String field)
   {
-    this.objectNameField = field;
+    this.objectNameField = StringUtil.trimToNull(field);
   }
 
   public String getOrderBy()
@@ -413,7 +413,7 @@ public class GetMetaDataSql
 
   public void setBaseObjectCatalog(String baseObjectCatalog)
   {
-    this.baseObjectCatalog = baseObjectCatalog;
+    this.baseObjectCatalog = StringUtil.trimToNull(baseObjectCatalog);
   }
 
   public String getBaseObjectCatalogField()
@@ -423,7 +423,7 @@ public class GetMetaDataSql
 
   public void setBaseObjectCatalogField(String baseObjectCatalogField)
   {
-    this.baseObjectCatalogField = baseObjectCatalogField;
+    this.baseObjectCatalogField = StringUtil.trimToNull(baseObjectCatalogField);
   }
 
   public String getBaseObjectName()
@@ -433,7 +433,7 @@ public class GetMetaDataSql
 
   public void setBaseObjectName(String baseObjectName)
   {
-    this.baseObjectName = baseObjectName;
+    this.baseObjectName = StringUtil.trimToNull(baseObjectName);
   }
 
   public String getBaseObjectNameField()
@@ -443,7 +443,7 @@ public class GetMetaDataSql
 
   public void setBaseObjectNameField(String baseObjectNameField)
   {
-    this.baseObjectNameField = baseObjectNameField;
+    this.baseObjectNameField = StringUtil.trimToNull(baseObjectNameField);
   }
 
   public String getBaseObjectSchema()
@@ -453,7 +453,7 @@ public class GetMetaDataSql
 
   public void setBaseObjectSchema(String baseObjectSchema)
   {
-    this.baseObjectSchema = baseObjectSchema;
+    this.baseObjectSchema = StringUtil.trimToNull(baseObjectSchema);
   }
 
   public String getBaseObjectSchemaField()
@@ -463,7 +463,7 @@ public class GetMetaDataSql
 
   public void setBaseObjectSchemaField(String baseObjectSchemaField)
   {
-    this.baseObjectSchemaField = baseObjectSchemaField;
+    this.baseObjectSchemaField = StringUtil.trimToNull(baseObjectSchemaField);
   }
 
   public String getSpecificNameColumn()

@@ -114,4 +114,56 @@ public class PostgresTriggerReaderTest
     assertNotNull(sql);
     assertTrue(sql.contains("CREATE OR REPLACE FUNCTION trgreadertest.my_trigger_func()"));
   }
+
+  @Test
+  public void testMultiTrigger()
+    throws Exception
+  {
+    String sql =
+      "create schema s1;\n" +
+      "create schema s2;\n" +
+      "create schema f1;\n" +
+      "create table s1.t1(id int);\n" +
+      "create table s2.t2(id int);\n" +
+
+      "CREATE OR REPLACE FUNCTION f1.some_trigger_func()  \n" +
+      "RETURNS trigger AS  \n" +
+      "$body$ \n" +
+      "BEGIN \n" +
+      "    RETURN NEW; \n" +
+      "END; \n" +
+      "$body$  \n" +
+      "LANGUAGE plpgsql; \n" +
+      "\n" +
+      "CREATE TRIGGER some_trg BEFORE UPDATE ON s1.t1\n" +
+      "    FOR EACH ROW EXECUTE PROCEDURE f1.some_trigger_func(); \n" +
+      "CREATE TRIGGER some_trg BEFORE UPDATE ON s2.t2\n" +
+      "    FOR EACH ROW EXECUTE PROCEDURE f1.some_trigger_func(); \n" +
+      "commit;";
+
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
+
+    TestUtil.executeScript(con, sql);
+
+    TriggerReader reader = TriggerReaderFactory.createReader(con);
+
+    List<TriggerDefinition> t1Triggers = reader.getTriggerList(null, "s1", "t1");
+    assertEquals(1, t1Triggers.size());
+    String src1 = reader.getTriggerSource(t1Triggers.get(0), false);
+    String expected1 =
+      "CREATE TRIGGER some_trg BEFORE UPDATE\n" +
+      "  ON s1.t1 FOR EACH ROW\n" +
+      "  EXECUTE FUNCTION f1.some_trigger_func();";
+    assertEquals(expected1, src1);
+
+    List<TriggerDefinition> t2Triggers = reader.getTriggerList(null, "s2", "t2");
+    assertEquals(1, t2Triggers.size());
+    String src2 = reader.getTriggerSource(t2Triggers.get(0), false);
+    String expected2 =
+      "CREATE TRIGGER some_trg BEFORE UPDATE\n" +
+      "  ON s2.t2 FOR EACH ROW\n" +
+      "  EXECUTE FUNCTION f1.some_trigger_func();";
+    assertEquals(expected2, src2);
+  }
 }

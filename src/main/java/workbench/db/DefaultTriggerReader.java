@@ -295,7 +295,9 @@ public class DefaultTriggerReader
 
     if (triggerTable != null)
     {
-      sql.setBaseObjectName(triggerTable.getTableName());
+      sql.setBaseObjectName(triggerTable.getRawTableName());
+      sql.setBaseObjectSchema(triggerTable.getRawSchema());
+      sql.setBaseObjectCatalog(triggerTable.getRawCatalog());
     }
     Statement stmt = this.dbConnection.createStatementForQuery();
     String query = null;

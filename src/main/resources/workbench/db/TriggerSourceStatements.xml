@@ -261,18 +261,22 @@
     <void method="put">
       <string>PostgreSQL</string>
       <object class="workbench.db.GetMetaDataSql">
-        <void property="baseObjectNameField">
-          <string>tbl.relname</string>
-        </void>
         <void property="baseSql">
           <string>
             SELECT replace(replace(pg_get_triggerdef(trg.oid), ' ON ', chr(10)||'  ON '), ' EXECUTE ', chr(10)||'  EXECUTE ') || ';'
             FROM pg_trigger trg
-            JOIN pg_class tbl on tbl.oid = trg.tgrelid
+              JOIN pg_class tbl on tbl.oid = trg.tgrelid
+              JOIN pg_namespace nsp on nsp.oid = tbl.relnamespace
           </string>
         </void>
         <void property="objectNameField">
           <string>trg.tgname</string>
+        </void>
+        <void property="baseObjectNameField">
+          <string>tbl.relname</string>
+        </void>
+        <void property="baseObjectSchemaField">
+          <string>nsp.nspname</string>
         </void>
       </object>
     </void>
