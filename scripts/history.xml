@@ -3,7 +3,8 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2022-04-02">
+
+  <release build="-1" date="2022-07-03">
     <entry dev-build="3" type="enh">For DB2 for i, PostgreSQL and SQL Server additional connection properties are now shown in the "Connection Info"</entry>
     <entry dev-build="3" type="enh">It's now possible to configure the behaviour when closing a tab with a modified external file.</entry>
     <entry dev-build="3" type="enh">For PostgreSQL and Oracle, GRANTs for sequences are now shown in the generated SQL source</entry>
