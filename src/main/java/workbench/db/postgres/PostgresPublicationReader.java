@@ -102,6 +102,17 @@ public class PostgresPublicationReader
     {
       truncateCol = "       false as pubtruncate, \n";
     }
+
+    String pubviarootCol;
+    if (JdbcUtils.hasMinimumServerVersion(connection, "13"))
+    {
+      pubviarootCol = "       pubviaroot, \n";
+    }
+    else
+    {
+      pubviarootCol = "       false as pubviaroot, \n";
+    }
+
     StringBuilder sql = new StringBuilder(
       "-- SQL Workbench/J \n" +
       "select pubname, \n" +
@@ -110,6 +121,7 @@ public class PostgresPublicationReader
       "       pubupdate, \n" +
       "       pubdelete, \n" +
       truncateCol +
+      pubviarootCol +
       "       pg_catalog.obj_description(oid) as remarks \n" +
       "from pg_catalog.pg_publication ");
 
@@ -137,6 +149,7 @@ public class PostgresPublicationReader
         pub.setReplicatesInserts(rs.getBoolean("pubinsert"));
         pub.setReplicatesUpdates(rs.getBoolean("pubupdate"));
         pub.setReplicatesTruncate(rs.getBoolean("pubtruncate"));
+        pub.setPublishViaPartitionRoot(rs.getBoolean("pubviaroot"));
         pub.setComment(remarks);
         result.add(pub);
       }

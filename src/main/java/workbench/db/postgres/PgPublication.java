@@ -33,14 +33,13 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 
 /**
  *
@@ -49,6 +48,7 @@ import workbench.util.SqlUtil;
 public class PgPublication
   implements DbObject, Serializable
 {
+  public static final String OPTION_KEY_FILTER = "publicationFilter";
   public static final String TYPE_NAME = "PUBLICATION";
   private String name;
   private String comment;
@@ -56,9 +56,11 @@ public class PgPublication
   private boolean replicatesUpdates;
   private boolean replicatesTruncate;
   private boolean replicatesDeletes;
+  private boolean publishViaRoot;
+
   private boolean includeAllTables;
   private boolean tablesInitialized;
-  private List<TableIdentifier> tables = new ArrayList<>();
+  private final List<TableIdentifier> tables = new ArrayList<>();
 
   public PgPublication(String name)
   {
@@ -117,20 +119,31 @@ public class PgPublication
         setTables(retrieveTables(con));
       }
       String indent = " ";
-      if (tables.size() > 5)
+      if (tables.size() > 1)
       {
-        indent = "\n    ";
+        indent = "\n  ";
       }
-      String options = tables.stream().map(t -> t.getTableExpression(con)).collect(Collectors.joining("," + indent));
-      source += "\n  FOR TABLE" + indent + options;
+      String options = tables.stream().map(t -> getTableOptionSource(con, t)).collect(Collectors.joining("," + indent));
+      source += "\nFOR TABLE" + indent + options;
     }
     String publish = getPublishOptions();
     if (publish != null)
     {
-      source += "\n WITH (publish = '" + publish + "')";
+      source += "\n" + publish;
     }
     source += ";";
     return source;
+  }
+
+  private String getTableOptionSource(WbConnection con, TableIdentifier tbl)
+  {
+    String option = tbl.getTableExpression(con);
+    String filter = tbl.getSourceOptions().getConfigSettings().get(OPTION_KEY_FILTER);
+    if (StringUtil.isNonEmpty(filter))
+    {
+      option = option + " WHERE " + filter;
+    }
+    return option;
   }
 
   @Override
@@ -175,6 +188,11 @@ public class PgPublication
     this.name = name;
   }
 
+  public void setPublishViaPartitionRoot(boolean flag)
+  {
+    this.publishViaRoot = flag;
+  }
+
   public void setReplicatesInserts(boolean replicatesInserts)
   {
     this.replicatesInserts = replicatesInserts;
@@ -200,38 +218,50 @@ public class PgPublication
     this.includeAllTables = includeAllTables;
   }
 
+  private boolean replicateAllDml()
+  {
+    return replicatesDeletes && replicatesInserts && replicatesUpdates && replicatesTruncate;
+  }
+
   private String getPublishOptions()
   {
-    if (replicatesDeletes && replicatesInserts && replicatesTruncate && replicatesUpdates)
+    String publish = "";
+    if (!replicateAllDml())
     {
-      return null;
+      int num = 0;
+      if (replicatesInserts)
+      {
+        publish += "insert";
+        num++;
+      }
+      if (replicatesUpdates)
+      {
+        if (num > 0) publish += ", ";
+        publish += "update";
+        num++;
+      }
+      if (replicatesDeletes)
+      {
+        if (num > 0) publish += ", ";
+        publish += "delete";
+        num++;
+      }
+      if (replicatesTruncate)
+      {
+        if (num > 0) publish += ", ";
+        publish += "truncate";
+        num++;
+      }
+      publish = "publish = '" + publish + "'";
     }
-    String setting = "";
-    int num = 0;
-    if (replicatesInserts)
+
+    if (publishViaRoot)
     {
-      setting += "insert";
-      num ++;
+      if (!publish.isEmpty()) publish += ", ";
+      publish += "publish_via_partition_root = true";
     }
-    if (replicatesUpdates)
-    {
-      if (num > 0) setting += ", ";
-      setting += "update";
-      num ++;
-    }
-    if (replicatesDeletes)
-    {
-      if (num > 0) setting += ", ";
-      setting += "delete";
-      num ++;
-    }
-    if (replicatesTruncate)
-    {
-      if (num > 0) setting += ", ";
-      setting += "truncate";
-      num ++;
-    }
-    return setting;
+    if (publish.isEmpty()) return null;
+    return "WITH (" + publish + ")";
   }
 
   public void setTables(List<TableIdentifier> pubTables)
@@ -249,15 +279,26 @@ public class PgPublication
     Savepoint sp = null;
     List<TableIdentifier> result = new ArrayList<>();
 
+    String filterCol;
+
+    if (JdbcUtils.hasMinimumServerVersion(connection, "15"))
+    {
+      filterCol = "       pg_get_expr(rel.prqual, rel.prrelid) as filter_clause, \n";
+    }
+    else
+    {
+      filterCol = "       null::text as filter_clause, \n";
+    }
+
     String sql =
       "select t.relnamespace::regnamespace::text as schema_name, \n" +
       "       t.relname as table_name, \n" +
+      filterCol +
       "       pg_catalog.obj_description(t.oid) as remarks \n" +
       "from pg_class t \n" +
-      "where t.oid in (select rel.prrelid \n" +
-      "                from pg_publication_rel rel " +
-      "                  join pg_publication pub on pub.oid = rel.prpubid \n" +
-      "                where pub.pubname = ?) \n" +
+      "  join pg_publication_rel rel on t.oid = rel.prrelid \n" +
+      "  join pg_publication pub on pub.oid = rel.prpubid \n" +
+      "where pub.pubname = ? \n" +
       "order by 1,2";
 
     LogMgr.logMetadataSql(new CallerInfo(){}, "publication tables", sql);
@@ -273,9 +314,14 @@ public class PgPublication
         String schema = rs.getString("schema_name");
         String table = rs.getString("table_name");
         String remarks = rs.getString("remarks");
+        String filter = rs.getString("filter_clause");
         TableIdentifier tbl = new TableIdentifier(schema, table);
         tbl.setComment(remarks);
         tbl.setNeverAdjustCase(true);
+        if (filter != null)
+        {
+          tbl.getSourceOptions().addConfigSetting(OPTION_KEY_FILTER, filter);
+        }
         result.add(tbl);
       }
       connection.releaseSavepoint(sp);
