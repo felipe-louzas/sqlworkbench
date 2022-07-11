@@ -231,6 +231,11 @@ public class TextAreaPainter
 
   private void setColors()
   {
+    Color textColor = GuiSettings.getEditorForeground();
+    setForeground(textColor);
+    Color bg = GuiSettings.getEditorBackground();
+    setBackground(bg);
+
     gutterBackground = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_GUTTER_COLOR, DEFAULT_GUTTER_BG);
     gutterTextColor = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, DEFAULT_GUTTER_TEXT_COLOR);
 
