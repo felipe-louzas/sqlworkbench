@@ -65,6 +65,7 @@ public class TableSourceBuilder
   protected WbConnection dbConnection;
   private ConstraintNameTester nameTester;
   protected boolean includePartitions = true;
+  protected Boolean createInlineFK;
 
   /**
    * This class should not be instantiated directly.
@@ -247,17 +248,25 @@ public class TableSourceBuilder
     StringUtil.trimTrailingWhitespace(result);
     result.append(lineEnding);
 
-    if (!inlineFK && includeFk && shouldIncludeFKInTableSource())
+    if (includeFk && shouldIncludeFKInTableSource())
     {
-      CharSequence fk = getFkSource(table, fkList, false);
-      if (StringUtil.isNonBlank(fk))
+      if (inlineFK)
       {
-        result.append(lineEnding);
-        result.append(fk);
+        appendFKComments(table, result, fkList);
       }
-      StringUtil.trimTrailingWhitespace(result);
-      result.append(lineEnding);
+      else
+      {
+        CharSequence fk = getFkSource(table, fkList, false);
+        if (StringUtil.isNonBlank(fk))
+        {
+          result.append(lineEnding);
+          result.append(fk);
+        }
+        StringUtil.trimTrailingWhitespace(result);
+        result.append(lineEnding);
+      }
     }
+
 
     if (shouldIncludeIndexInTableSource())
     {
@@ -934,8 +943,13 @@ public class TableSourceBuilder
     return dbConnection.getDbSettings().createInlinePKConstraints();
   }
 
+  public void setCreateInlineFKConstrants(boolean flag)
+  {
+    this.createInlineFK = flag;
+  }
   protected boolean getCreateInlineFKConstraints()
   {
+    if (createInlineFK != null) return createInlineFK;
     if (dbConnection == null) return false;
     return dbConnection.getDbSettings().createInlineFKConstraints();
   }
@@ -951,6 +965,10 @@ public class TableSourceBuilder
   public StringBuilder getFkSource(TableIdentifier table)
   {
     return getFkSource(table, getForeignKeys(table), getCreateInlineFKConstraints());
+  }
+
+  protected void appendFKComments(TableIdentifier table, StringBuilder fkSource, List<DependencyNode> fkList)
+  {
   }
 
   /**

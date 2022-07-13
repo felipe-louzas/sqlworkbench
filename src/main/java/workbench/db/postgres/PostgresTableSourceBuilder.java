@@ -530,20 +530,37 @@ public class PostgresTableSourceBuilder
       LogMgr.logMetadataSql(ci, "foreign key source", sql, table.getTableName(), table.getSchema());
       String tableName = table.getTableExpression(dbConnection);
       rs = stmt.executeQuery();
-      if (rs.next())
+      boolean first = true;
+      while (rs.next())
       {
         String name = rs.getString(1);
         String source = rs.getString(2);
-        if (!forInlineUse)
+        if (forInlineUse)
+        {
+          if (first)
+          {
+            first = false;
+          }
+          else
+          {
+            result.append(",\n");
+          }
+          result.append(COL_INDENT);
+          result.append("CONSTRAINT ");
+          result.append(name);
+          result.append("\n     ");
+          result.append(source);
+        }
+        else
         {
           result.append("ALTER TABLE ");
           result.append(tableName);
-          result.append("\n  ADD ");
+          result.append("\n  ADD CONSTRAINT ");
+          result.append(name);
+          result.append("\n  ");
+          result.append(source);
+          result.append(";\n");
         }
-        result.append("CONSTRAINT ");
-        result.append(name);
-        result.append("\n  ");
-        result.append(source);
       }
     }
     catch (SQLException ex)
@@ -574,7 +591,11 @@ public class PostgresTableSourceBuilder
     {
       fkSource = super.getFkSource(table, fkList, forInlineUse);
     }
-    appendFKComments(table, fkSource, fkList);
+
+    if (!forInlineUse)
+    {
+      appendFKComments(table, fkSource, fkList);
+    }
     return fkSource;
   }
 
@@ -583,7 +604,8 @@ public class PostgresTableSourceBuilder
     return !dbConnection.getDbSettings().getBoolProperty("fk.source.generate", false);
   }
 
-  private void appendFKComments(TableIdentifier table, StringBuilder fkSource, List<DependencyNode> fkList)
+  @Override
+  protected void appendFKComments(TableIdentifier table, StringBuilder fkSource, List<DependencyNode> fkList)
   {
     if (CollectionUtil.isEmpty(fkList)) return;
     String tblname = table.getTableExpression(dbConnection);

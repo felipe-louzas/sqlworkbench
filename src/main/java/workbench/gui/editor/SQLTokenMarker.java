@@ -137,8 +137,6 @@ public class SQLTokenMarker
           }
           break;
         case ' ':
-        case '+':
-        case '=':
         case '\t':
         case ';':
           if (token == Token.NULL)

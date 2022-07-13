@@ -273,11 +273,18 @@ public class PostgresTableSourceBuilderTest
       "   id integer primary key, \n" +
       "   some_column integer \n" +
       "); \n" +
+      "create table other \n" +
+      "(\n" +
+      "   id integer primary key, \n" +
+      "   some_column integer \n" +
+      "); \n" +
       "create table two \n" +
       "(\n" +
       "   id integer primary key, \n" +
       "   one_id integer, \n" +
-      "   constraint fk_two2one foreign key (one_id) references one (id) match full \n " +
+      "   other_id integer not null, \n" +
+      "   constraint fk_two2one foreign key (one_id) references one (id) match full, \n " +
+      "   constraint fk_two2other foreign key (other_id) references other (id) deferrable \n " +
       ");\n" +
       "comment on constraint fk_two2one on two is 'The foreign key';\n" +
       "commit;");
@@ -288,8 +295,14 @@ public class PostgresTableSourceBuilderTest
 
     String source = builder.getTableSource(tbl, DropType.none, true);
 //    System.out.println(source);
-    assertTrue(source.contains("COMMENT ON CONSTRAINT fk_two2one"));
-    assertTrue(source.contains("REFERENCES one(id) MATCH FULL"));
+    assertTrue(source.contains("COMMENT ON CONSTRAINT fk_two2one ON two IS 'The foreign key';"));
+    assertTrue(source.contains("FOREIGN KEY (one_id) REFERENCES one(id) MATCH FULL"));
+    assertTrue(source.contains("FOREIGN KEY (other_id) REFERENCES other(id) DEFERRABLE"));
+
+    builder.setCreateInlineFKConstrants(true);
+    source = builder.getTableSource(tbl, DropType.none, true);
+//    System.out.println(source);
+    assertTrue(source.contains("COMMENT ON CONSTRAINT fk_two2one ON two IS 'The foreign key';"));
   }
 
   @Test
