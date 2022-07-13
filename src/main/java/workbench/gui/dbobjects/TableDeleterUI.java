@@ -22,6 +22,7 @@
 package workbench.gui.dbobjects;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
@@ -49,7 +50,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 
 import workbench.interfaces.JobErrorHandler;
@@ -66,9 +66,11 @@ import workbench.db.WbConnection;
 import workbench.db.importer.TableDependencySorter;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.EditWindow;
 import workbench.gui.components.NoSelectionModel;
 import workbench.gui.components.WbButton;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbStatusLabel;
 
 import workbench.util.CollectionUtil;
@@ -96,7 +98,9 @@ public class TableDeleterUI
   {
     super();
     initComponents();
-    statusLabel.setBorder(WbSwingUtilities.createLineBorder(this));
+    Color lineColor = WbSwingUtilities.getLineBorderColor(this);
+    commitOptionsPanel.setBorder(new DividerBorder(DividerBorder.TOP, lineColor));
+    statusLabel.setBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, lineColor));
     statusLabel.setText("  ");
   }
 
@@ -116,16 +120,15 @@ public class TableDeleterUI
     cancelButton = new WbButton();
     showScript = new JButton();
     mainPanel = new JPanel();
-    jScrollPane1 = new JScrollPane();
+    jScrollPane1 = new WbScrollPane();
     objectList = new JList();
     optionPanel = new JPanel();
     statusLabel = new WbStatusLabel();
-    jPanel2 = new JPanel();
+    commitOptionsPanel = new JPanel();
     commitEach = new JRadioButton();
     commitAtEnd = new JRadioButton();
     useTruncateCheckBox = new JCheckBox();
     cascadeTruncate = new JCheckBox();
-    jSeparator1 = new JSeparator();
     addMissingTables = new JCheckBox();
     checkFKButton = new JButton();
 
@@ -145,7 +148,7 @@ public class TableDeleterUI
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 20, 0, 20);
+    gridBagConstraints.insets = new Insets(0, 20, 8, 20);
     buttonPanel.add(deleteButton, gridBagConstraints);
 
     cancelButton.setText(ResourceMgr.getString("LblClose")); // NOI18N
@@ -160,7 +163,7 @@ public class TableDeleterUI
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.EAST;
-    gridBagConstraints.insets = new Insets(0, 20, 0, 2);
+    gridBagConstraints.insets = new Insets(0, 20, 8, 7);
     buttonPanel.add(cancelButton, gridBagConstraints);
 
     showScript.setText(ResourceMgr.getString("LblShowScript")); // NOI18N
@@ -176,7 +179,7 @@ public class TableDeleterUI
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(1, 1, 0, 20);
+    gridBagConstraints.insets = new Insets(1, 6, 8, 20);
     buttonPanel.add(showScript, gridBagConstraints);
 
     add(buttonPanel, BorderLayout.SOUTH);
@@ -196,7 +199,7 @@ public class TableDeleterUI
     statusLabel.setMinimumSize(new Dimension(150, 24));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
@@ -205,7 +208,7 @@ public class TableDeleterUI
     gridBagConstraints.insets = new Insets(6, 0, 0, 0);
     optionPanel.add(statusLabel, gridBagConstraints);
 
-    jPanel2.setLayout(new GridBagLayout());
+    commitOptionsPanel.setLayout(new GridBagLayout());
 
     buttonGroup1.add(commitEach);
     commitEach.setSelected(true);
@@ -215,8 +218,8 @@ public class TableDeleterUI
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(0, 6, 0, 0);
-    jPanel2.add(commitEach, gridBagConstraints);
+    gridBagConstraints.insets = new Insets(10, 11, 0, 0);
+    commitOptionsPanel.add(commitEach, gridBagConstraints);
 
     buttonGroup1.add(commitAtEnd);
     commitAtEnd.setText(ResourceMgr.getString("LblCommitTableDeleteAtEnd")); // NOI18N
@@ -225,8 +228,8 @@ public class TableDeleterUI
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(4, 6, 0, 0);
-    jPanel2.add(commitAtEnd, gridBagConstraints);
+    gridBagConstraints.insets = new Insets(4, 11, 0, 0);
+    commitOptionsPanel.add(commitAtEnd, gridBagConstraints);
 
     useTruncateCheckBox.setText(ResourceMgr.getString("LblUseTruncate")); // NOI18N
     useTruncateCheckBox.setBorder(null);
@@ -242,8 +245,8 @@ public class TableDeleterUI
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 25, 0, 0);
-    jPanel2.add(useTruncateCheckBox, gridBagConstraints);
+    gridBagConstraints.insets = new Insets(10, 25, 0, 0);
+    commitOptionsPanel.add(useTruncateCheckBox, gridBagConstraints);
 
     cascadeTruncate.setText(ResourceMgr.getString("LblCascadeConstraints")); // NOI18N
     cascadeTruncate.setBorder(null);
@@ -252,25 +255,19 @@ public class TableDeleterUI
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(3, 41, 0, 0);
-    jPanel2.add(cascadeTruncate, gridBagConstraints);
+    commitOptionsPanel.add(cascadeTruncate, gridBagConstraints);
 
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.gridheight = 2;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 9);
-    optionPanel.add(jPanel2, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.gridheight = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new Insets(8, 0, 12, 0);
-    optionPanel.add(jSeparator1, gridBagConstraints);
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(9, 0, 0, 0);
+    optionPanel.add(commitOptionsPanel, gridBagConstraints);
 
     addMissingTables.setSelected(true);
     addMissingTables.setText(ResourceMgr.getString("LblIncFkTables")); // NOI18N
@@ -281,7 +278,7 @@ public class TableDeleterUI
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(8, 2, 0, 0);
+    gridBagConstraints.insets = new Insets(8, 0, 0, 0);
     optionPanel.add(addMissingTables, gridBagConstraints);
 
     checkFKButton.setText(ResourceMgr.getString("LblCheckFKDeps")); // NOI18N
@@ -299,7 +296,7 @@ public class TableDeleterUI
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(8, 6, 0, 5);
+    gridBagConstraints.insets = new Insets(8, 9, 0, 5);
     optionPanel.add(checkFKButton, gridBagConstraints);
 
     mainPanel.add(optionPanel, BorderLayout.SOUTH);
@@ -679,10 +676,9 @@ public class TableDeleterUI
   public JButton checkFKButton;
   public JRadioButton commitAtEnd;
   public JRadioButton commitEach;
+  public JPanel commitOptionsPanel;
   public JButton deleteButton;
-  public JPanel jPanel2;
   public JScrollPane jScrollPane1;
-  public JSeparator jSeparator1;
   public JPanel mainPanel;
   public JList objectList;
   public JPanel optionPanel;

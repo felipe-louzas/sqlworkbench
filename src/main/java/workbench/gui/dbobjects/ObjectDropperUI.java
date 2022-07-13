@@ -21,6 +21,7 @@
  */
 package workbench.gui.dbobjects;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
@@ -43,9 +44,11 @@ import workbench.db.WbConnection;
 import workbench.db.importer.TableDependencySorter;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.EditWindow;
 import workbench.gui.components.NoSelectionModel;
 import workbench.gui.components.WbButton;
+import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbStatusLabel;
 
 import workbench.storage.RowActionMonitor;
@@ -75,6 +78,8 @@ public class ObjectDropperUI
     super();
     dropper = drop;
     initComponents();
+    Color lineColor = WbSwingUtilities.getLineBorderColor(this);
+    statusLabel.setBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, lineColor));
     if (!dropper.supportsFKSorting())
     {
       checkFKButton.setEnabled(false);
@@ -312,16 +317,15 @@ public class ObjectDropperUI
     java.awt.GridBagConstraints gridBagConstraints;
 
     mainPanel = new javax.swing.JPanel();
-    jScrollPane1 = new javax.swing.JScrollPane();
+    jScrollPane1 = new WbScrollPane();
     objectList = new javax.swing.JList();
     optionPanel = new javax.swing.JPanel();
     checkPanel = new javax.swing.JPanel();
     checkFKButton = new javax.swing.JButton();
     addMissingTables = new javax.swing.JCheckBox();
-    showScriptButton = new javax.swing.JButton();
     checkBoxCascadeConstraints = new javax.swing.JCheckBox();
-    jSeparator1 = new javax.swing.JSeparator();
     buttonPanel = new javax.swing.JPanel();
+    showScriptButton = new javax.swing.JButton();
     dropButton = new WbButton();
     cancelButton = new WbButton();
     statusLabel = new WbStatusLabel();
@@ -338,7 +342,7 @@ public class ObjectDropperUI
 
     optionPanel.setLayout(new java.awt.GridBagLayout());
 
-    checkPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
+    checkPanel.setLayout(new java.awt.GridBagLayout());
 
     checkFKButton.setText(ResourceMgr.getString("LblCheckFKDeps")); // NOI18N
     checkFKButton.setToolTipText(ResourceMgr.getDescription("LblCheckFKDeps"));
@@ -349,21 +353,51 @@ public class ObjectDropperUI
         checkFKButtonActionPerformed(evt);
       }
     });
-    checkPanel.add(checkFKButton);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 6, 0);
+    checkPanel.add(checkFKButton, gridBagConstraints);
 
     addMissingTables.setSelected(true);
     addMissingTables.setText(ResourceMgr.getString("LblIncFkTables")); // NOI18N
     addMissingTables.setToolTipText(ResourceMgr.getDescription("LblIncFkTables"));
     addMissingTables.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 0));
-    checkPanel.add(addMissingTables);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 6, 0);
+    checkPanel.add(addMissingTables, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 6, 0);
     optionPanel.add(checkPanel, gridBagConstraints);
+
+    checkBoxCascadeConstraints.setText(ResourceMgr.getString("LblCascadeConstraints")); // NOI18N
+    checkBoxCascadeConstraints.setToolTipText(ResourceMgr.getDescription("LblCascadeConstraints"));
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
+    optionPanel.add(checkBoxCascadeConstraints, gridBagConstraints);
+
+    mainPanel.add(optionPanel, java.awt.BorderLayout.SOUTH);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    add(mainPanel, gridBagConstraints);
+
+    buttonPanel.setLayout(new java.awt.GridBagLayout());
 
     showScriptButton.setText(ResourceMgr.getString("LblShowScript")); // NOI18N
     showScriptButton.addActionListener(new java.awt.event.ActionListener()
@@ -375,39 +409,10 @@ public class ObjectDropperUI
     });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new java.awt.Insets(0, 2, 3, 0);
-    optionPanel.add(showScriptButton, gridBagConstraints);
-
-    checkBoxCascadeConstraints.setText(ResourceMgr.getString("LblCascadeConstraints")); // NOI18N
-    checkBoxCascadeConstraints.setToolTipText(ResourceMgr.getDescription("LblCascadeConstraints"));
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(0, 11, 3, 0);
-    optionPanel.add(checkBoxCascadeConstraints, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 2, 10, 2);
-    optionPanel.add(jSeparator1, gridBagConstraints);
-
-    mainPanel.add(optionPanel, java.awt.BorderLayout.SOUTH);
-
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
-    add(mainPanel, gridBagConstraints);
-
-    buttonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+    gridBagConstraints.insets = new java.awt.Insets(0, 5, 3, 0);
+    buttonPanel.add(showScriptButton, gridBagConstraints);
 
     dropButton.setText(ResourceMgr.getString("LblDrop")); // NOI18N
     dropButton.addActionListener(new java.awt.event.ActionListener()
@@ -417,7 +422,13 @@ public class ObjectDropperUI
         dropButtonActionPerformed(evt);
       }
     });
-    buttonPanel.add(dropButton);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
+    buttonPanel.add(dropButton, gridBagConstraints);
 
     cancelButton.setText(ResourceMgr.getString("LblCancel")); // NOI18N
     cancelButton.addActionListener(new java.awt.event.ActionListener()
@@ -427,7 +438,12 @@ public class ObjectDropperUI
         cancelButtonActionPerformed(evt);
       }
     });
-    buttonPanel.add(cancelButton);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+    buttonPanel.add(cancelButton, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -435,6 +451,7 @@ public class ObjectDropperUI
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
     gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
     add(buttonPanel, gridBagConstraints);
 
     statusLabel.setMinimumSize(new java.awt.Dimension(150, 24));
@@ -443,7 +460,6 @@ public class ObjectDropperUI
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     add(statusLabel, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
@@ -576,7 +592,6 @@ private void checkFKButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   protected javax.swing.JPanel checkPanel;
   protected javax.swing.JButton dropButton;
   protected javax.swing.JScrollPane jScrollPane1;
-  protected javax.swing.JSeparator jSeparator1;
   protected javax.swing.JPanel mainPanel;
   protected javax.swing.JList objectList;
   protected javax.swing.JPanel optionPanel;
