@@ -474,8 +474,8 @@
       <replacefilter token='"VARCHAR2"|' value='"STATISTICS"'/>
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
       <replacefilter token="(DATABASE{wsp}LINK)|"/>
-      <replacefilter token='"SYSDATE"|'/>
-      <replacefilter token="(OUTER{wsp}APPLY)|"/>
+      <replacefilter token='"SYSDATE"|' value="(EVENT{wsp}TRIGGER)|(TEXT{wsp}SEARCH{wsp}CONFIGURATION)|(TEXT{wsp}SEARCH{wsp}DICTIONARY)|(TEXT{wsp}SEARCH{wsp}PARSER)|(TEXT{wsp}SEARCH{wsp}TEMPLATE)|"/>
+      <replacefilter token="(OUTER{wsp}APPLY)|" value="TRANSFORM|(USER{wsp}MAPPING)|"/>
       <replacefilter token="(CROSS{wsp}APPLY)|"/>
       <replacefilter token='"SYSTIMESTAMP"|' value='"LOCALTIMESTAMP"|'/>
       <replacefilter token='"SESSION_USER"|'/>
