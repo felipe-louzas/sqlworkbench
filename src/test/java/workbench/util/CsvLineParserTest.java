@@ -35,6 +35,22 @@ public class CsvLineParserTest
 {
 
   @Test
+  public void testLeadingEmptyQuote()
+  {
+    String line = "\"\";3;\"test.dat\";\"KA007\";1;13;";
+    CsvLineParser parser = new CsvLineParser(";",'"');
+    parser.setQuoteEscaping(QuoteEscapeType.duplicate);
+    parser.setLine(line);
+    parser.setReturnEmptyStrings(true);
+
+    List<String> items = parser.getAllElements();
+    assertEquals("", items.get(0));
+    assertEquals("3", items.get(1));
+    assertEquals("test.dat", items.get(2));
+    assertEquals("KA007", items.get(3));
+  }
+
+  @Test
   public void testEscapedBackslash()
   {
     String input = "\"1\";\"foo \\\"bar\\\\\";\"2\"";

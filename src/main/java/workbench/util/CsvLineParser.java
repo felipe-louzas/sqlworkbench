@@ -109,14 +109,16 @@ public class CsvLineParser
     if (flag) returnEmptyStrings = false;
   }
 
-  private boolean isDelimiter(char current, int currentIndex)
+  private boolean isDelimiter(char toTest, int currentIndex)
   {
+    if (currentIndex < 0) return false;
+
     if (delimiterLength == 1)
     {
-      return (current == delimiter.charAt(0));
+      return (toTest == delimiter.charAt(0));
     }
 
-    if (current == delimiter.charAt(0))
+    if (toTest == delimiter.charAt(0))
     {
       for (int i=1; i < delimiterLength; i++)
       {
@@ -196,9 +198,18 @@ public class CsvLineParser
         char next = getNextChar(current);
         if (next == quoteChar)
         {
-          if (!isDelimiter(getCharAt(current - 1), current - 1) && !isDelimiter(getNextChar(current + 2), current + 2))
+          char prevChar = getPreviousChar(current);
+
+          // this is a leading quoted empty string
+          if (prevChar == 0 && isDelimiter(getNextChar(current + 1), current + 1))
           {
-            element.append(quoteChar);
+            current += 2;
+            break;
+          }
+
+          if (!isDelimiter(prevChar, current - 1) && !isDelimiter(getNextChar(current + 2), current + 2))
+          {
+            element.append(c);
             current += 2;
             continue;
           }
@@ -232,10 +243,10 @@ public class CsvLineParser
     return next;
   }
 
-  private char getCharAt(int pos)
+  private char getPreviousChar(int pos)
   {
-    if (pos >= len) return 0;
-    return lineData.charAt(pos);
+    if (pos < 1) return 0;
+    return lineData.charAt(pos - 1);
   }
 
   private char getNextChar(int pos)
