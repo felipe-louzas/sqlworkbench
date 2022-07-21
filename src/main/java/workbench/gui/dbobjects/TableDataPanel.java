@@ -83,6 +83,7 @@ import workbench.gui.actions.FilterPickerAction;
 import workbench.gui.actions.ReloadAction;
 import workbench.gui.actions.SelectionFilterAction;
 import workbench.gui.actions.StopAction;
+import workbench.gui.actions.UpdateDatabaseAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ColumnOrderMgr;
 import workbench.gui.components.DividerBorder;
@@ -336,7 +337,9 @@ public class TableDataPanel
     cancelRetrieve.setEnabled(false);
     toolbar.add(this.cancelRetrieve);
     toolbar.addSeparator();
-    toolbar.add(this.dataDisplay.getUpdateDatabaseAction());
+    UpdateDatabaseAction updateAction = this.dataDisplay.getUpdateDatabaseAction();
+    updateAction.addToInputMap(this.dataDisplay.getTable());
+    toolbar.add(updateAction);
     toolbar.add(this.dataDisplay.getSelectKeysAction());
     toolbar.addSeparator();
     toolbar.add(this.dataDisplay.getInsertRowAction());
