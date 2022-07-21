@@ -51,6 +51,23 @@ public class StringSelectionAdapterTest
   }
 
   @Test
+  public void testTsvWithNullToHtml()
+  {
+    String data =
+      "id\tfirstname\tlastname\n" +
+      "1\tArthur\tDent\n" +
+      "2\t\tPrefect\n" +
+      "3\tMarvin\t";
+
+    StringSelectionAdapter sel = new StringSelectionAdapter(data, true, "\t", "\"");
+    String html = sel.getHTMLContent();
+    assertTrue(html.contains("<tr><td>id</td><td>firstname</td><td>lastname</td></tr>"));
+    assertTrue(html.contains("<tr><td>1</td><td>Arthur</td><td>Dent</td></tr>"));
+    assertTrue(html.contains("<tr><td>2</td><td></td><td>Prefect</td></tr>"));
+    assertTrue(html.contains("<tr><td>3</td><td>Marvin</td><td></td></tr>"));
+  }
+
+  @Test
   public void testCsvToHtml()
   {
     String data =

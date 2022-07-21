@@ -56,6 +56,22 @@ public class WbStringTokenizerTest
   }
 
   @Test
+  public void testEmptyValue()
+  {
+    String data = "2\t\tPrefect";
+    WbStringTokenizer tok = new WbStringTokenizer("\t", "\"", false);
+    tok.setDelimiterNeedsWhitspace(false);
+    tok.setSingleWordDelimiter(true);
+    tok.setSourceString(data);
+    List<String> tokens = tok.getAllTokens();
+    assertEquals(3, tokens.size());
+
+    tok.setSourceString("2\tPrefect\t");
+    tokens = tok.getAllTokens();
+    assertEquals(3, tokens.size());
+  }
+
+  @Test
   public void testTokenizer()
   {
     String data = "value1\t\"quoted value\"\t  \tlast";

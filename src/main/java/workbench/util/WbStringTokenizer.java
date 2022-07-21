@@ -39,7 +39,7 @@ public class WbStringTokenizer
   private boolean keepQuotes;
   private int maxDelim;
   private Reader input;
-  private boolean endOfInput = false;
+  private boolean endOfInput = true;
   private boolean delimNeedWhitespace = false;
   private boolean checkBrackets = false;
 
@@ -49,8 +49,7 @@ public class WbStringTokenizer
 
   public WbStringTokenizer(String aSource, String delimiter)
   {
-    this(delimiter, false, "\"", false);
-    this.setSourceString(aSource);
+    this(aSource, delimiter, false, "\"", false);
   }
 
   public WbStringTokenizer(char delimChar, String quotingChars, boolean keepQuotes)
@@ -60,12 +59,7 @@ public class WbStringTokenizer
 
   public WbStringTokenizer(String aDelim, String quotingChars, boolean keepQuotes)
   {
-    this.delimit = aDelim;
-    this.singleWordDelimiter = false;
-    this.quoteChars = quotingChars;
-    this.keepQuotes = keepQuotes;
-    this.endOfInput = true;
-    this.maxDelim = this.delimit.length() - 1;
+    this(aDelim, false, quotingChars, keepQuotes);
   }
 
   /**
@@ -80,12 +74,7 @@ public class WbStringTokenizer
    */
   public WbStringTokenizer(String aDelim, boolean isSingleDelimiter, String quotingChars, boolean keep)
   {
-    this.delimit = aDelim;
-    this.singleWordDelimiter = isSingleDelimiter;
-    this.quoteChars = quotingChars;
-    this.keepQuotes = keep;
-    this.endOfInput = true;
-    this.maxDelim = this.delimit.length() - 1;
+    this(null, aDelim, isSingleDelimiter, quotingChars, keep);
   }
 
   public WbStringTokenizer(String input, String aDelim, boolean isSingleDelimiter, String quotingChars, boolean keepQuotes)
@@ -101,6 +90,11 @@ public class WbStringTokenizer
   public void setCheckBrackets(boolean flag)
   {
     this.checkBrackets = flag;
+  }
+
+  public void setSingleWordDelimiter(boolean flag)
+  {
+    this.singleWordDelimiter = flag;
   }
 
   public void setDelimiter(String aDelimiter, boolean isSingleWord)
@@ -126,8 +120,15 @@ public class WbStringTokenizer
 
   public final void setSourceString(String aString)
   {
-    StringReader reader = new StringReader(aString);
-    this.setReader(reader);
+    if (aString == null)
+    {
+      this.endOfInput = true;
+    }
+    else
+    {
+      StringReader reader = new StringReader(aString);
+      this.setReader(reader);
+    }
   }
 
   public List<String> getAllTokens()
@@ -139,8 +140,13 @@ public class WbStringTokenizer
     }
     return result;
   }
+
   private void setReader(Reader aReader)
   {
+    if (this.input != null)
+    {
+      FileUtil.closeQuietely(input);
+    }
     this.endOfInput = false;
     this.input = aReader;
   }

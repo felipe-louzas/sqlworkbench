@@ -33,6 +33,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.util.StringUtil;
 import workbench.util.WbStringTokenizer;
 
 /**
@@ -59,7 +60,7 @@ public class StringSelectionAdapter
     flavors = new DataFlavor[] { DataFlavor.fragmentHtmlFlavor, DataFlavor.stringFlavor };
     dataAsHTML = htmlText;
   }
-  
+
   public StringSelectionAdapter(String text, boolean includeHtml, String delimiter, String quoteChar)
   {
     this.data = text;
@@ -86,19 +87,21 @@ public class StringSelectionAdapter
         "table th { background-color: black; color: white; }";
 
       String css = Settings.getInstance().getCssForClipboardHtml(defaultCss);
-      String preHtml = "<html><head><style>" + css + "</style></head><body><table>";
-      String postHtml = "</table></body></html>";
+      String preHtml =
+        "<html><head><style>" + css + "</style></head><body>" + StringUtil.LINE_TERMINATOR +
+        "<table>" + StringUtil.LINE_TERMINATOR;
+      String postHtml = "</table>" + StringUtil.LINE_TERMINATOR + "</body></html>";
       String trOpen = "<tr>";
-      String trClose = "</tr>";
+      String trClose = "</tr>" + StringUtil.LINE_TERMINATOR;
       String tdOpen = "<td>";
       String tdClose = "</td>";
       StringReader srctext = new StringReader(text);
       BufferedReader src = new BufferedReader(srctext);
-      StringBuilder dst = new StringBuilder(text.length());
+      StringBuilder dst = new StringBuilder(text.length() + 100);
 
       dst.append(preHtml);
 
-      WbStringTokenizer tok = new WbStringTokenizer(delimiter, quoteChar, false);
+      WbStringTokenizer tok = new WbStringTokenizer(delimiter, true, quoteChar, false);
       for (String line = src.readLine(); line != null; line = src.readLine())
       {
         tok.setSourceString(line);
@@ -107,7 +110,7 @@ public class StringSelectionAdapter
         for (String field : fields)
         {
           dst.append(tdOpen);
-          dst.append(field);
+          dst.append(StringUtil.coalesce(field, ""));
           dst.append(tdClose);
         }
         dst.append(trClose);
