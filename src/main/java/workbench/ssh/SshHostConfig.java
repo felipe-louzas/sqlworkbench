@@ -268,7 +268,7 @@ public class SshHostConfig
     {
       return sshHost;
     }
-    return sshHost += ":" + sshPort;
+    return String.format("%s:%s", sshHost, sshPort);
   }
 
   @Override
