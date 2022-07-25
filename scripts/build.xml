@@ -271,6 +271,7 @@
       </zipfileset>
       <zipfileset dir="${distdir}/libs" prefix="ext">
         <include name="flatlaf.jar"/>
+        <include name="jsch.jar"/>
       </zipfileset>
       <zipfileset dir="${scriptsrc}">
         <include name="log4j-sample.xml"/>

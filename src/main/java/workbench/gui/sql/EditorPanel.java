@@ -529,11 +529,30 @@ public class EditorPanel
     removeKeyBinding(anAction);
   }
 
+  private boolean containsPopupAction(WbAction anAction)
+  {
+    if (anAction == null) return false;
+    if (popup == null) return false;
+    Component[] items = popup.getComponents();
+    for (Component comp : items)
+    {
+      if (comp instanceof JMenuItem)
+      {
+        JMenuItem mi = (JMenuItem)comp;
+        if (mi.getAction() == anAction) return true;
+      }
+    }
+    return false;
+  }
+
   public final void addPopupMenuItem(WbAction anAction, boolean withSeparator)
   {
     if (popup == null) return;
-    popup.addAction(anAction, withSeparator);
-    addKeyBinding(anAction);
+    if (!this.containsPopupAction(anAction))
+    {
+      popup.addAction(anAction, withSeparator);
+      addKeyBinding(anAction);
+    }
   }
 
   @Override
