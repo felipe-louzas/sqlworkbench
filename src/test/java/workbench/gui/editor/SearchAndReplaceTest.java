@@ -23,10 +23,10 @@ package workbench.gui.editor;
 
 import java.util.List;
 
-import org.junit.Assume;
 import workbench.WbTestCase;
 import workbench.interfaces.TextContainer;
 
+import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -74,12 +74,14 @@ public class SearchAndReplaceTest
     DummyContainer container = new DummyContainer();
     container.setText("go\ngo\ngo\n");
     SearchAndReplace replace = new SearchAndReplace(null, container);
-    replace.replaceAll("go$", ";", false, true, false, true);
+    int count = replace.replaceAll("go$", ";", false, true, false, true);
     assertEquals(";\n;\n;\n", container.getText());
+    assertEquals(3, count);
 
     container.setText("foo go\nfoo go\nfoo go\n");
-    replace.replaceAll("go$", ";", false, true, false, true);
+    count = replace.replaceAll("go$", ";", false, true, false, true);
     assertEquals("foo ;\nfoo ;\nfoo ;\n", container.getText());
+    assertEquals(3, count);
   }
 
   @Test

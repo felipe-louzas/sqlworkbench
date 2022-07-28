@@ -28,6 +28,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import workbench.interfaces.Replaceable;
+import workbench.interfaces.Searchable;
+import workbench.interfaces.TextContainer;
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
+
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.FindAction;
 import workbench.gui.actions.FindNextAction;
@@ -36,13 +43,6 @@ import workbench.gui.actions.ReplaceAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ReplacePanel;
 import workbench.gui.components.SearchCriteriaPanel;
-
-import workbench.interfaces.Replaceable;
-import workbench.interfaces.Searchable;
-import workbench.interfaces.TextContainer;
-import workbench.log.CallerInfo;
-import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
@@ -396,13 +396,13 @@ public class SearchAndReplace
   }
 
   @Override
-  public void replaceAll(String value, String replacement, boolean selectedText, boolean ignoreCase, boolean wholeWord, boolean useRegex)
+  public int replaceAll(String value, String replacement, boolean selectedText, boolean ignoreCase, boolean wholeWord, boolean useRegex)
   {
     String old = null;
     if (selectedText)
     {
       old = this.getSelectedText();
-      if (old == null) return;
+      if (old == null) return 0;
     }
     else
     {
@@ -418,7 +418,15 @@ public class SearchAndReplace
 
     Pattern p = Pattern.compile(regex, Pattern.MULTILINE);
     Matcher m = p.matcher(old);
-    String newText = m.replaceAll(replacement);
+    int count = 0;
+
+    StringBuilder sb = new StringBuilder(old.length());
+    while (m.find()) {
+      count++;
+      m.appendReplacement(sb, replacement);
+    }
+    m.appendTail(sb);
+    String newText = sb.toString();
 
     if (selectedText)
     {
@@ -448,6 +456,7 @@ public class SearchAndReplace
         this.editor.setCaretPosition(0);
       }
     }
+    return count;
   }
 
   @Override

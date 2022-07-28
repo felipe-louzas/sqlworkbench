@@ -105,7 +105,7 @@ public class TableReplacer
   {
     return this.replacer.getSelectedColumns();
   }
-  
+
   public void setColumn(List<ColumnIdentifier> columns)
   {
     this.replacer.setColumns(columns);
@@ -301,7 +301,7 @@ public class TableReplacer
   }
 
   @Override
-  public void replaceAll(String value, String replacement, boolean selectedText,
+  public int replaceAll(String value, String replacement, boolean selectedText,
     boolean ignoreCase, boolean wholeWord,
     boolean useRegex)
   {
@@ -312,9 +312,10 @@ public class TableReplacer
       rows = this.client.getSelectedRows();
     }
 
+    int replaced = 0;
     try
     {
-      int replaced = this.replacer.replaceAll(value, replacement, rows, ignoreCase, wholeWord, useRegex);
+      replaced = this.replacer.replaceAll(value, replacement, rows, ignoreCase, wholeWord, useRegex);
       if (replaced > 0)
       {
         fireTableChanged();
@@ -324,6 +325,7 @@ public class TableReplacer
     {
       WbSwingUtilities.showErrorMessage(client, e.getMessage());
     }
+    return replaced;
   }
 
   @Override

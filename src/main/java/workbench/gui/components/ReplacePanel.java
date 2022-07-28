@@ -88,7 +88,7 @@ public class ReplacePanel
     wrapProperty = settingsKey + ".wrapSearch";
     criteriaProperty = "criteria";
     replacementProperty = "replacement";
-
+    statusLabel.setText("");
     WbTraversalPolicy policy = new WbTraversalPolicy();
     policy.addComponent(this.searchCriteria.getEditor().getEditorComponent());
     policy.addComponent(this.replaceValue.getEditor().getEditorComponent());
@@ -196,7 +196,6 @@ public class ReplacePanel
 
     criteriaLabel = new javax.swing.JLabel();
     replaceLabel = new javax.swing.JLabel();
-    spacerPanel = new javax.swing.JPanel();
     findButton = new WbButton();
     findNextButton = new WbButton();
     replaceNextButton = new WbButton();
@@ -211,6 +210,8 @@ public class ReplacePanel
     selectedTextCheckBox = new javax.swing.JCheckBox();
     wrapSearchCbx = new javax.swing.JCheckBox();
     selectColumnsButton = new javax.swing.JButton();
+    jPanel2 = new javax.swing.JPanel();
+    statusLabel = new javax.swing.JLabel();
 
     setFocusCycleRoot(true);
     setLayout(new java.awt.GridBagLayout());
@@ -230,12 +231,6 @@ public class ReplacePanel
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(4, 8, 0, 0);
     add(replaceLabel, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.gridwidth = 3;
-    gridBagConstraints.weighty = 1.0;
-    add(spacerPanel, gridBagConstraints);
 
     findButton.setText(ResourceMgr.getString("LblFindNow")); // NOI18N
     findButton.setToolTipText(ResourceMgr.getString("d_LblFindNow")); // NOI18N
@@ -285,10 +280,11 @@ public class ReplacePanel
     closeButton.setName("closebutton"); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 9, 5);
     add(closeButton, gridBagConstraints);
 
     replaceValue.setName("replacetext"); // NOI18N
@@ -393,10 +389,33 @@ public class ReplacePanel
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.gridheight = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(12, 7, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(12, 8, 0, 0);
     add(jPanel1, gridBagConstraints);
+
+    jPanel2.setLayout(new java.awt.GridBagLayout());
+
+    statusLabel.setText("Status info");
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    jPanel2.add(statusLabel, gridBagConstraints);
+
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(10, 9, 10, 8);
+    add(jPanel2, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void wrapSearchCbxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_wrapSearchCbxActionPerformed
@@ -434,7 +453,7 @@ public class ReplacePanel
       this.dialog.setTitle(title);
       this.dialog.getContentPane().add(this);
       this.dialog.pack();
-      this.dialog.setResizable(false);
+      this.dialog.setResizable(true);
       if (!Settings.getInstance().restoreWindowPosition(this.dialog, settingsKey + ".window"))
       {
         WbSwingUtilities.center(dialog, w);
@@ -551,12 +570,15 @@ public class ReplacePanel
   private void replaceAll()
   {
     boolean selected = this.selectedTextCheckBox.isEnabled() && this.selectedTextCheckBox.isSelected();
-    this.client.replaceAll(((HistoryTextField)searchCriteria).getText(),
-                           ((HistoryTextField)replaceValue).getText(),
-                           selected,
-                           this.ignoreCaseCheckBox.isSelected(),
-                           this.wordsOnlyCheckBox.isSelected(),
-                           this.useRegexCheckBox.isSelected());
+    int replaced = this.client.replaceAll(
+          ((HistoryTextField)searchCriteria).getText(),
+          ((HistoryTextField)replaceValue).getText(),
+          selected,
+          this.ignoreCaseCheckBox.isSelected(),
+          this.wordsOnlyCheckBox.isSelected(),
+          this.useRegexCheckBox.isSelected());
+    
+    statusLabel.setText(ResourceMgr.getFormattedString("MsgNumReplaced", replaced));
   }
 
   private void closeWindow()
@@ -643,6 +665,7 @@ public class ReplacePanel
   protected javax.swing.JButton findNextButton;
   protected javax.swing.JCheckBox ignoreCaseCheckBox;
   protected javax.swing.JPanel jPanel1;
+  protected javax.swing.JPanel jPanel2;
   protected javax.swing.JButton replaceAllButton;
   protected javax.swing.JLabel replaceLabel;
   protected javax.swing.JButton replaceNextButton;
@@ -650,7 +673,7 @@ public class ReplacePanel
   protected javax.swing.JComboBox searchCriteria;
   protected javax.swing.JButton selectColumnsButton;
   protected javax.swing.JCheckBox selectedTextCheckBox;
-  protected javax.swing.JPanel spacerPanel;
+  protected javax.swing.JLabel statusLabel;
   protected javax.swing.JCheckBox useRegexCheckBox;
   protected javax.swing.JCheckBox wordsOnlyCheckBox;
   protected javax.swing.JCheckBox wrapSearchCbx;
