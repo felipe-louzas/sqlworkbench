@@ -100,6 +100,7 @@ public class ReplacePanel
     policy.addComponent(this.findButton);
     policy.addComponent(this.replaceNextButton);
     policy.addComponent(this.replaceAllButton);
+    policy.addComponent(this.countButton);
     policy.addComponent(this.closeButton);
     policy.setDefaultComponent(searchCriteria.getEditor().getEditorComponent());
     this.setFocusTraversalPolicy(policy);
@@ -109,6 +110,7 @@ public class ReplacePanel
     this.replaceAllButton.addActionListener(this);
     this.closeButton.addActionListener(this);
     this.findNextButton.addActionListener(this);
+    this.countButton.addActionListener(this);
 
     this.replaceNextButton.setEnabled(false);
     this.findNextButton.setEnabled(false);
@@ -212,6 +214,7 @@ public class ReplacePanel
     selectColumnsButton = new javax.swing.JButton();
     jPanel2 = new javax.swing.JPanel();
     statusLabel = new javax.swing.JLabel();
+    countButton = new WbButton();
 
     setFocusCycleRoot(true);
     setLayout(new java.awt.GridBagLayout());
@@ -416,6 +419,16 @@ public class ReplacePanel
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(10, 9, 10, 8);
     add(jPanel2, gridBagConstraints);
+
+    countButton.setText(ResourceMgr.getString("LblCountMatches")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 2;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 5);
+    add(countButton, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   private void wrapSearchCbxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_wrapSearchCbxActionPerformed
@@ -518,6 +531,10 @@ public class ReplacePanel
     {
       selectColumns();
     }
+    else if (source == this.countButton)
+    {
+      this.countMatches();
+    }
     else if (source == this.closeButton || e.getActionCommand().equals(escAction.getActionName()))
     {
       this.closeWindow();
@@ -577,8 +594,21 @@ public class ReplacePanel
           this.ignoreCaseCheckBox.isSelected(),
           this.wordsOnlyCheckBox.isSelected(),
           this.useRegexCheckBox.isSelected());
-    
+
     statusLabel.setText(ResourceMgr.getFormattedString("MsgNumReplaced", replaced));
+  }
+
+  private void countMatches()
+  {
+    boolean selected = this.selectedTextCheckBox.isEnabled() && this.selectedTextCheckBox.isSelected();
+    int matches = this.client.countMatches(
+          ((HistoryTextField)searchCriteria).getText(),
+          selected,
+          this.ignoreCaseCheckBox.isSelected(),
+          this.wordsOnlyCheckBox.isSelected(),
+          this.useRegexCheckBox.isSelected());
+
+    statusLabel.setText(ResourceMgr.getFormattedString("MsgNumMatches", matches));
   }
 
   private void closeWindow()
@@ -660,6 +690,7 @@ public class ReplacePanel
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   protected javax.swing.JButton closeButton;
+  protected javax.swing.JButton countButton;
   protected javax.swing.JLabel criteriaLabel;
   protected javax.swing.JButton findButton;
   protected javax.swing.JButton findNextButton;

@@ -241,6 +241,19 @@ public class TableReplacer
     panel.showReplaceDialog(this.client, this.replacer.getLastCriteria(), title);
   }
 
+  @Override
+  public int countMatches(String expression, boolean selectedText, boolean ignoreCase, boolean wholeWord, boolean useRegex)
+  {
+    int[] rows = null;
+
+    if (selectedText)
+    {
+      rows = this.client.getSelectedRows();
+    }
+    int matches = this.replacer.countMatches(expression, rows, ignoreCase, wholeWord, useRegex);
+    return matches;
+  }
+
   /**
    * Called by the ReplacePanel.
    */

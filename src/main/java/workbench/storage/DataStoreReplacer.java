@@ -301,6 +301,25 @@ public class DataStoreReplacer
     return replaced;
   }
 
+  public int countMatches(String search, int rows[], boolean ignoreCase, boolean wholeWord, boolean useRegex)
+  {
+    reset();
+    String expression = SearchAndReplace.getSearchExpression(search, ignoreCase, wholeWord, useRegex);
+    Pattern p = Pattern.compile(expression);
+
+    this.setSelectedRows(rows);
+
+    Position pos = findPattern(p);
+
+    int count = 0;
+    while (pos.isValid())
+    {
+      count ++;
+      pos = findNext();
+    }
+    return count;
+  }
+
   public boolean replaceCurrent(String replacement)
     throws ConverterException
   {

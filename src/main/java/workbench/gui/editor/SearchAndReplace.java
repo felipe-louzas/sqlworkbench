@@ -379,6 +379,17 @@ public class SearchAndReplace
     return result;
   }
 
+  @Override
+  public int countMatches(String expression, boolean selectedText, boolean ignoreCase, boolean wholeWord, boolean useRegex)
+  {
+    String regex = getSearchExpression(expression, ignoreCase, wholeWord, useRegex);
+    Pattern p = Pattern.compile(regex, Pattern.MULTILINE);
+    Matcher m = p.matcher(getText());
+
+    int count = (int)m.results().count();
+    return count;
+  }
+
   private String getLineContext(int line, int around)
   {
     if (line < 0) return null;

@@ -65,15 +65,18 @@ public interface Replaceable
   /**
    *  Find and replace all occurances of the given valuewith the replacement.
    *
-   * @param value          the value to find
-   * @param replacement    the replacement value
-   * @param selectedText   if true, only search and replace in the selected text
-   * @param ignoreCase     if true, do a case-insensitive match
-   * @param wholeWord      if true, only find whole words
-   * @param useRegex       if true, <tt>value</tt> is treated as a regular expression
+   * @param searchExpression   the value to find
+   * @param replacement        the replacement value
+   * @param selectedText       if true, only search and replace in the selected text
+   * @param ignoreCase         if true, do a case-insensitive match
+   * @param wholeWord          if true, only find whole words
+   * @param useRegex           if true, <tt>searchExpression</tt> is treated as a regular expression
+   *
    * @return the number of strings replaced
    */
-  int replaceAll(String value, String replacement, boolean selectedText, boolean ignoreCase, boolean wholeWord, boolean useRegex);
+  int replaceAll(String searchExpression, String replacement, boolean selectedText, boolean ignoreCase, boolean wholeWord, boolean useRegex);
+
+  int countMatches(String searchExpression, boolean selectedText, boolean ignoreCase, boolean wholeWord, boolean useRegex);
 
   void setWrapSearch(boolean flag);
 
