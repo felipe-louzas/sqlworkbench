@@ -29,6 +29,7 @@ import java.util.Map;
 
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
+import workbench.db.DbSettings;
 import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
@@ -60,8 +61,6 @@ public interface TimestampTZHandler
    */
   public static final TimestampTZHandler OFFSET_HANDLER = (Object value) ->
   {
-    if (value == null) return value;
-
     if (value instanceof ZonedDateTime)
     {
       ZonedDateTime zdt = (ZonedDateTime)value;
@@ -79,7 +78,7 @@ public interface TimestampTZHandler
   /**
    * An implementation that converts the input to a ZonedDateTime.
    */
-  public static final TimestampTZHandler ZONE_HANDLER = (Object value) ->
+  public static final TimestampTZHandler ZONED_HANDLER = (Object value) ->
   {
     if (value instanceof OffsetDateTime)
     {
@@ -116,6 +115,14 @@ public interface TimestampTZHandler
     public static TimestampTZHandler getHandler(WbConnection conn)
     {
       if (conn == null) return DUMMY_HANDLER;
+
+      DbSettings dbs = conn.getDbSettings();
+      if (dbs != null)
+      {
+        if (dbs.useOffsetDateTimeForTimestampTZ()) return OFFSET_HANDLER;
+        if (dbs.useZonedDateTimeForTimestampTZ()) return ZONED_HANDLER;
+      }
+
       if (!supportsJava8Time(conn)) return DUMMY_HANDLER;
 
       DbMetadata meta = conn.getMetadata();

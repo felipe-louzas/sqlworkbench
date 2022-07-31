@@ -347,6 +347,16 @@ public class DbSettings
     return getBoolProperty("timestamptz.use.getobject", false);
   }
 
+  public boolean useZonedDateTimeForTimestampTZ()
+  {
+    return getBoolProperty("timestamptz.use.zoneddatetime", false);
+  }
+  
+  public boolean useOffsetDateTimeForTimestampTZ()
+  {
+    return getBoolProperty("timestamptz.use.offsetdatetime", false);
+  }
+
   public boolean useGetXML()
   {
     return getBoolProperty("xml.use.getsqlxml", false);

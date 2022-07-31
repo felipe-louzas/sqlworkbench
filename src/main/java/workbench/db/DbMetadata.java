@@ -258,10 +258,7 @@ public class DbMetadata
       PostgresTypeReader typeReader = new PostgresTypeReader();
       objectListEnhancer = typeReader;
       extenders.add(typeReader);
-
       this.dbId = DBID.Redshift.getId();
-      // because the dbId is already initialized, we need to log it here
-      LogMgr.logInfo(ci, connectionId + ": Using DBID=" + this.dbId);
     }
     else if (productLower.contains("postgres")
              && Settings.getInstance().checkCockroachDBConnection()
