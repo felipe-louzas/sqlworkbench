@@ -83,7 +83,7 @@ public class ColumnSelectorPanel
   {
     super();
     this.setLayout(new GridBagLayout());
-    this.columnTable = new JTable();
+    this.columnTable = new WbTable();
     this.columnTable.setRowSelectionAllowed(false);
     this.columnTable.setColumnSelectionAllowed(false);
     this.model = new ColumnSelectTableModel(columns);

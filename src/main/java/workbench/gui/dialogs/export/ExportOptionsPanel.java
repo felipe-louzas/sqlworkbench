@@ -25,6 +25,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Desktop;
 import java.awt.Desktop.Action;
+import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -40,7 +41,6 @@ import java.util.stream.Collectors;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -980,9 +980,10 @@ public class ExportOptionsPanel
     ColumnSelectorPanel columnSelectorPanel = new ColumnSelectorPanel(this.dataStoreColumns.getColumns());
     columnSelectorPanel.selectColumns(this.selectedColumns);
 
-    int choice = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), columnSelectorPanel, ResourceMgr.getString("MsgSelectColumnsWindowTitle"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-    if (choice == JOptionPane.OK_OPTION)
+    boolean ok = ValidatingDialog.showOKCancelDialog((Dialog)SwingUtilities.getWindowAncestor(this),
+                                                      columnSelectorPanel,
+                                                      ResourceMgr.getString("MsgSelectColumnsWindowTitle"));
+    if (ok)
     {
       this.selectedColumns = columnSelectorPanel.getSelectedColumns();
     }

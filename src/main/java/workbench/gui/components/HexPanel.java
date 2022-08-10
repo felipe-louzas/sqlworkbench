@@ -54,7 +54,7 @@ public class HexPanel
   {
     super();
     setBorder(WbSwingUtilities.EMPTY_BORDER);
-    dataTable = new JTable();
+    dataTable = new WbTable();
     dataTable.setAutoCreateColumnsFromModel(true);
     dataTable.setCellSelectionEnabled(false);
     dataTable.setShowGrid(false);

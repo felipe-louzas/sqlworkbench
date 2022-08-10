@@ -45,6 +45,7 @@ import workbench.db.importer.RowDataProducer;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.WbScrollPane;
+import workbench.gui.components.WbTable;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -114,7 +115,7 @@ public class ColumnMapper
     // disables the editing of the sourceDropDown based on the
     // current value of the column (if the value is set to "Skip column"
     // then it may not be edited even if source editing is allowed
-    JTable t = new JTable()
+    JTable t = new WbTable()
     {
       @Override
       public TableCellEditor getCellEditor(int row, int column)

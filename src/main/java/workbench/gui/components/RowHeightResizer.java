@@ -106,16 +106,12 @@ public class RowHeightResizer
     int newHeight = startHeight + e.getY() - startY;
     newHeight = Math.max(1, newHeight);
     table.setRowHeight(row, newHeight);
-    EventQueue.invokeLater(new Runnable()
+    EventQueue.invokeLater(() ->
     {
-      @Override
-      public void run()
+      TableRowHeader header = TableRowHeader.getRowHeader(table);
+      if (header != null)
       {
-        TableRowHeader header = TableRowHeader.getRowHeader(table);
-        if (header != null)
-        {
-          header.rowHeightChanged(row);
-        }
+        header.rowHeightChanged(row);
       }
     });
   }
