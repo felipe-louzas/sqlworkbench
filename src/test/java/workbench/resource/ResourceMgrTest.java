@@ -24,6 +24,8 @@ package workbench.resource;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.Format;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -173,12 +175,22 @@ public class ResourceMgrTest
       String name = message.substring(m.start(), m.end());
       result.add(name);
     }
-    Pattern newParms = Pattern.compile("\\{[0-9]+\\}");
-    m = newParms.matcher(message);
-    while (m.find())
+    if (result.size() > 0)
     {
-      String name = message.substring(m.start(), m.end());
-      result.add(name);
+      return result;
+    }
+
+    if (message.contains("{0"))
+    {
+      MessageFormat fmt = new MessageFormat(message);
+      Format[] params = fmt.getFormatsByArgumentIndex();
+      if (params != null && params.length> 0)
+      {
+        for (int i=0; i < params.length; i++)
+        {
+          result.add(String.valueOf(i));
+        }
+      }
     }
     return result;
   }
