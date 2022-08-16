@@ -608,6 +608,10 @@ public class ProfileSelectionPanel
     {
       cp = ConnectionProfile.createEmptyProfile();
       cp.setGroup(getCurrentGroup());
+      if (Settings.getInstance().getDefaultAutoCommit())
+      {
+        cp.setAutocommit(true);
+      }
     }
     cp.setNew();
 

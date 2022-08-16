@@ -1161,6 +1161,7 @@ public class ConnectionEditorPanel
       return;
     }
 
+    boolean changed = false;
     if (evt.getStateChange() == ItemEvent.SELECTED)
     {
       String oldDriver = null;
@@ -1175,6 +1176,7 @@ public class ConnectionEditorPanel
         }
         if (oldDriver == null || !oldDriver.equals(newDriver.getDriverClass()))
         {
+          changed = true;
           this.tfURL.setText(newDriver.getSampleUrl());
         }
       }
@@ -1183,6 +1185,10 @@ public class ConnectionEditorPanel
         LogMgr.logError(new CallerInfo(){}, "Error changing driver", e);
       }
 
+      if (changed)
+      {
+        checkAutoCommit();
+      }
       checkOracle();
       checkUncommitted();
 
@@ -1720,6 +1726,24 @@ public class ConnectionEditorPanel
       checkOpenTrans.setEnabled(false);
       checkOpenTrans.setSelected(false);
       checkOpenTrans.setToolTipText(ResourceMgr.getDescription("LblCheckUncommittedNA"));
+    }
+  }
+
+  private void checkAutoCommit()
+  {
+    if (!Settings.getInstance().adjustNewProfileAutoCommit()) return;
+
+    if (this.currentProfile == null) return;
+    if (!this.currentProfile.isNew()) return;
+    if (this.currentProfile.getAutocommit()) return;
+
+    String currentDriver = this.currentProfile.getDriverclass();
+    if (currentDriver == null) return;
+
+    Set<String> classes = Settings.getInstance().getUseAutoCommitForNewProfile();
+    if (classes.contains(currentDriver))
+    {
+      this.cbAutocommit.setSelected(true);
     }
   }
 

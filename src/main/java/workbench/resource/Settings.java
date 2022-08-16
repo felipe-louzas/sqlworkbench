@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -4156,4 +4157,38 @@ public class Settings
   {
     setProperty("workbench.sql.variable.window.specific", flag);
   }
+
+  public boolean getDefaultAutoCommit()
+  {
+    return getBoolProperty("workbench.profile.new.default.autocommit", false);
+  }
+
+  public boolean adjustNewProfileAutoCommit()
+  {
+    return getBoolProperty("workbench.profile.new.autocommit.adjust", true);
+  }
+
+  /**
+   * Returns a list of driver classes for which auto commit
+   * should be enabled when creating a new connection profile.
+   */
+  public Set<String> getUseAutoCommitForNewProfile()
+  {
+    Set<String> result = new HashSet<>();
+    String property = "workbench.db.drivers.new.profile.enable.autocommit";
+    String defaultList = getProperty(property + ".default", null);
+    List<String> classes = getListProperty(property, false, defaultList);
+    if (classes != null)
+    {
+      result.addAll(classes);
+    }
+    Iterator<String> itr = result.iterator();
+    while (itr.hasNext())
+    {
+      String cls = itr.next();
+      if (cls.startsWith("-")) itr.remove();
+    }
+    return result;
+  }
+
 }
