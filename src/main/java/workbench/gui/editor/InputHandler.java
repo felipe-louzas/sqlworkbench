@@ -163,6 +163,8 @@ public class InputHandler
   private boolean enabled = true;
 
   private KeyStroke expandKey;
+  private static final String AUTO_QUOTE_CHARS = "\"'([";
+  private static final String AUTO_QUOTE_PAIRS = "\"')]";
 
   public InputHandler()
   {
@@ -727,7 +729,7 @@ public class InputHandler
 
         if (textArea.getAutoQuoteSelection()
             && selectionSupportsAutoQuote
-            && (str.equals("\"") || str.equals("'"))
+            && (AUTO_QUOTE_CHARS.indexOf(typedChar) > -1 && str.length() == 1)
             && !StringUtil.equalString(str, textArea.getSelectedText()))
         {
           String newSelection = applyAutoQuote(textArea, typedChar);
@@ -766,7 +768,7 @@ public class InputHandler
         if (i > 0) result.append('\n');
         result.append(quote);
         result.append(lines.get(i));
-        result.append(quote);
+        result.append(AUTO_QUOTE_PAIRS.charAt(AUTO_QUOTE_CHARS.indexOf(quote)));
       }
       return result.toString();
     }
