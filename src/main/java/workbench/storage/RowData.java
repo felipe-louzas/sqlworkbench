@@ -21,9 +21,14 @@
  */
 package workbench.storage;
 
+import java.sql.Array;
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.importer.ValueDisplay;
 
@@ -448,9 +453,20 @@ public class RowData
     {
       return Arrays.equals((byte[])one, (byte[])other);
     }
+
     if (one instanceof Number && other instanceof Number)
     {
       return NumberUtil.valuesAreEqual((Number)one, (Number)other);
+    }
+
+    if (one instanceof Array && other instanceof Array)
+    {
+      return jdbcArraysAreEqual((Array)one, (Array)other, normalizeNewlines);
+    }
+
+    if (one instanceof Struct && other instanceof Struct)
+    {
+      return jdbcStructsAreEqual((Struct)one, (Struct)other, normalizeNewlines);
     }
 
     if (normalizeNewlines && (one instanceof String && other instanceof String))
@@ -466,8 +482,58 @@ public class RowData
         return str1.equals(str2);
       }
     }
-
     return one.equals(other);
+  }
+
+  public static boolean jdbcStructsAreEqual(Struct one, Struct other, boolean normalizeNewLines)
+  {
+    if (one == null && other == null) return true;
+    if (one == null || other == null) return false;
+
+    try
+    {
+      Object[] attrOne = one.getAttributes();
+      Object[] attrOther = other.getAttributes();
+      return objectArraysAreEqual(attrOne, attrOther, normalizeNewLines);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not extract JDBC structure", th);
+      return one.equals(other);
+    }
+  }
+
+  public static boolean jdbcArraysAreEqual(Array one, Array other, boolean normalizeNewLines)
+  {
+    if (one == null && other == null) return true;
+    if (one == null || other == null) return false;
+
+    try
+    {
+      Object[] elementsOne = (Object[])one.getArray();
+      Object[] elementsOther = (Object[])other.getArray();
+      return objectArraysAreEqual(elementsOne, elementsOther, normalizeNewLines);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not extract JDBC array", th);
+      return one.equals(other);
+    }
+  }
+
+  private static boolean objectArraysAreEqual(Object[] one, Object[] other, boolean normalizeNewLines)
+  {
+    if (one == null && other == null) return true;
+    if (one == null || other == null) return false;
+
+    if (one.length != other.length) return false;
+
+    int length = one.length;
+    for (int i = 0; i < length; i++)
+    {
+      if (!objectsAreEqual(one[i], other[i], normalizeNewLines)) return false;
+    }
+    return true;
   }
 
   private static boolean containsNewLine(String s)

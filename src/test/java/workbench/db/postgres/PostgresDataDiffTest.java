@@ -28,6 +28,8 @@ import workbench.db.PostgresDbTest;
 import workbench.db.WbConnection;
 
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.parser.ParserType;
+import workbench.sql.parser.ScriptParser;
 import workbench.sql.wbcommands.WbDataDiff;
 
 import workbench.util.FileUtil;
@@ -119,6 +121,143 @@ public class PostgresDataDiffTest
     String updateSql = SqlUtil.makeCleanSql(content, false, false, false, true, '"');
     updateSql = updateSql.replaceAll("\\s+", " ").toLowerCase();
     assertEquals("update two.data set data = 42 where id_1 = 1 and id_2 is null", updateSql);
+  }
+
+  @Test
+  public void testStructDiff()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+
+    String sql1 =
+      "create schema one;\n" +
+      "create type one.container as (x int, y int); \n" +
+      "create table one.the_table (\n" +
+      "   id integer not null primary key, " +
+      "   data one.container\n " +
+      ");\n" +
+      "commit;\n";
+
+    TestUtil.executeScript(conn, sql1);
+    String sql2 = sql1.replace("one", "two");
+    TestUtil.executeScript(conn, sql2);
+
+    String insert1 =
+      "insert into one.the_table (id, data) values \n" +
+      "(1, row(4,2));\n" +
+      "commit;";
+    TestUtil.executeScript(conn, insert1);
+    String insert2 =
+      "insert into two.the_table (id, data) values \n" +
+      "(1, row(4,2));\n" +
+      "commit;";
+
+    TestUtil.executeScript(conn, insert2);
+
+    WbDataDiff diff = new WbDataDiff();
+    diff.setConnection(conn);
+    TestUtil util = getTestUtil();
+    WbFile outFile1 = util.getFile("diff1.sql");
+
+    String diffCmd =
+      "WbDataDiff -referenceSchema=one -targetSchema=two -file='" + outFile1.getAbsolutePath() + "' " +
+      "           -singleFile=true -encoding=UTF-8";
+
+    StatementRunnerResult result = diff.execute(diffCmd);
+    assertTrue(result.isSuccess());
+    assertTrue(outFile1.exists());
+    String script1 = FileUtil.readFile(outFile1, "UTF-8");
+//    System.out.println(script1);
+    assertTrue(script1.contains("-- No UPDATEs for the_table necessary"));
+    assertTrue(script1.contains("-- No INSERTs for the_table necessary"));
+    assertTrue(script1.contains("-- No DELETEs for the_table necessary"));
+
+    TestUtil.executeScript(conn,
+      "update two.the_table set data = row(42,0) where id = 1;\n" +
+      "commit;");
+
+
+    result = diff.execute(diffCmd);
+    String script2 = FileUtil.readFile(outFile1, "UTF-8");
+//    System.out.println(script2);
+    assertTrue(script2.contains("UPDATE two.the_table"));
+  }
+
+  @Test
+  public void testArrayDiff()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+
+    String sql1 =
+      "create schema one;\n" +
+      "create table one.the_table (\n" +
+      "   id integer not null primary key, " +
+      "   data text[]\n " +
+      ");\n" +
+      "commit;\n";
+
+    TestUtil.executeScript(conn, sql1);
+    String sql2 = sql1.replace("one", "two");
+    TestUtil.executeScript(conn, sql2);
+
+    String insert1 =
+      "insert into one.the_table (id, data) values \n" +
+      "(1, array['one', 'two']);\n" +
+      "commit;";
+    TestUtil.executeScript(conn, insert1);
+    String insert2 =
+      "insert into two.the_table (id, data) values \n" +
+      "(1, array['one', 'two']);\n" +
+      "commit;";
+
+    TestUtil.executeScript(conn, insert2);
+
+    WbDataDiff diff = new WbDataDiff();
+    diff.setConnection(conn);
+    TestUtil util = getTestUtil();
+    WbFile outFile1 = util.getFile("diff1.sql");
+
+    String diffCmd =
+      "WbDataDiff -referenceSchema=one -targetSchema=two -file='" + outFile1.getAbsolutePath() + "' " +
+      "           -singleFile=true -encoding=UTF-8";
+
+    StatementRunnerResult result = diff.execute(diffCmd);
+    assertTrue(result.isSuccess());
+    assertTrue(outFile1.exists());
+    String script1 = FileUtil.readFile(outFile1, "UTF-8");
+//    System.out.println(script1);
+    assertTrue(script1.contains("-- No UPDATEs for the_table necessary"));
+    assertTrue(script1.contains("-- No INSERTs for the_table necessary"));
+    assertTrue(script1.contains("-- No DELETEs for the_table necessary"));
+
+    TestUtil.executeScript(conn,
+      "update two.the_table set data = array['fourtytwo'] where id = 1;\n" +
+      "commit;");
+
+
+    result = diff.execute(diffCmd);
+    assertTrue(result.isSuccess());
+    assertTrue(outFile1.exists());
+    String script2 = FileUtil.readFile(outFile1, "UTF-8");
+
+    // remove comments and other noise
+    script2 = SqlUtil.makeCleanSql(script2, true);
+
+    ScriptParser parser = new ScriptParser(script2, ParserType.Postgres);
+
+    int size = parser.getSize();
+    // UPDATE and COMMIT
+    assertEquals(2, size);
+
+    String expected =
+      "UPDATE two.the_table \n" +
+      "   SET data = '{one,two}' \n" +
+      "WHERE id = 1";
+    assertEquals(expected, parser.getCommand(0));
+    assertEquals("COMMIT", parser.getCommand(1));
   }
 
   @Test
