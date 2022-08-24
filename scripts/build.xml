@@ -465,16 +465,16 @@
         <replacevalue>PostgresLexer</replacevalue>
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|"
-                     value='"LIMIT|OFFSET|CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|(DEFAULT{wsp}PRIVILEGES)|'/>
+                     value='"PASSING"|"PLAN"|"LIMIT"|"OFFSET"|"CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|(DEFAULT{wsp}PRIVILEGES)|'/>
       <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|" value="(USER{wsp}MAPPING)"/>
       <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
       <replacefilter token="(PACKAGE{wsp}BODY)|" value="(OPERATOR{wsp}CLASS)|(OPERATOR{wsp}FAMILY)|(ACCESS{wsp}METHOD)|"/>
       <replacefilter token="(TYPE{wsp}BODY)|" value="(FOREIGN{wsp}TABLE)|(TIME{wsp}ZONE)|"/>
       <replacefilter token="(SNAPSHOT{wsp}LOG)|" value="(ACCESS{wsp}METHOD)|"/>
       <replacefilter token="(CONNECT{wsp}BY)|" value='"TRANSFORM"|'/>
-      <replacefilter token='"VARCHAR2"|' value='"STATISTICS"'/>
+      <replacefilter token='"VARCHAR2"|' value='"STATISTICS"|"FORMAT"|"ABSENT"|'/>
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
-      <replacefilter token="(DATABASE{wsp}LINK)|"/>
+      <replacefilter token="(DATABASE{wsp}LINK)|" value="(NESTED{wsp}PATH)|(ON{wsp}ERROR)|(IS{wsp}DOCUMENT)|(IS{wsp}NOT{wsp}DOCUMENT)"/>
       <replacefilter token='"SYSDATE"|' value="(EVENT{wsp}TRIGGER)|(TEXT{wsp}SEARCH{wsp}CONFIGURATION)|(TEXT{wsp}SEARCH{wsp}DICTIONARY)|(TEXT{wsp}SEARCH{wsp}PARSER)|(TEXT{wsp}SEARCH{wsp}TEMPLATE)|"/>
       <replacefilter token="(OUTER{wsp}APPLY)|" value="TRANSFORM|(USER{wsp}MAPPING)|"/>
       <replacefilter token="(CROSS{wsp}APPLY)|"/>

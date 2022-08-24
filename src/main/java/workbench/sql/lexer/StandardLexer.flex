@@ -317,6 +317,8 @@ keyword=(
 "INTERVAL"|
 "INTO"|
 "IS"|
+(IS{wsp}JSON)|
+(IS{wsp}NOT{wsp}JSON)|
 "ISOLATION"|
 "ITERATE"|
 "JOIN"|
@@ -398,6 +400,7 @@ keyword=(
 "RESTRICT"|
 "RESULT"|
 "RETURN"|
+"RETURNING"|
 "RETURNS"|
 "REVOKE"|
 "RIGHT"|
@@ -501,6 +504,7 @@ keyword=(
 "WITHOUT"|
 "WORK"|
 "WRITE"|
+"WRAPPER"|
 "YEAR"|
 "ZONE"|
 "\$BLOBFILE"|
