@@ -122,7 +122,7 @@ public class Db2iObjectListEnhancer
         }
       }
       long duration = System.currentTimeMillis() - start;
-      LogMgr.logDebug(ci, "Reading additional object information took " + duration + "ms");
+      LogMgr.logDebug(ci, "Reading additional object information for " + result.getRowCount() + " rows took " + duration + "ms");
     }
     catch (Exception e)
     {

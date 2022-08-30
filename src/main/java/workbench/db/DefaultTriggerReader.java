@@ -23,10 +23,10 @@ package workbench.db;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +35,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.storage.DataStore;
+import workbench.storage.ResultInfo;
 
 import workbench.sql.DelimiterDefinition;
 
@@ -66,7 +67,7 @@ public class DefaultTriggerReader
    * Return a list of triggers available in the given schema.
    */
   @Override
-  public DataStore getTriggers(String catalog, String schema)
+  public TriggerListDataStore getTriggers(String catalog, String schema)
     throws SQLException
   {
     return getTriggers(catalog, schema, null);
@@ -76,7 +77,7 @@ public class DefaultTriggerReader
   public List<TriggerDefinition> getTriggerList(String catalog, String schema, String baseTable)
     throws SQLException
   {
-    DataStore triggers = getTriggers(catalog, schema, baseTable);
+    TriggerListDataStore triggers = getTriggers(catalog, schema, baseTable);
     List<TriggerDefinition> result = new ArrayList<>(triggers.getRowCount());
     for (int row = 0; row < triggers.getRowCount(); row ++)
     {
@@ -86,17 +87,18 @@ public class DefaultTriggerReader
     return result;
   }
 
-  public TriggerDefinition createTriggerDefinition(DataStore triggers, int row, String catalog, String schema)
+  public TriggerDefinition createTriggerDefinition(TriggerListDataStore triggers, int row, String catalog, String schema)
   {
-    String trgName = triggers.getValueAsString(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME);
-    String trgType = triggers.getValueAsString(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TYPE);
-    String trgEvent = triggers.getValueAsString(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_EVENT);
-    String tableName = triggers.getValueAsString(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE);
-    String comment = triggers.getValueAsString(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_COMMENT);
-    String status = triggers.getValueAsString(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_STATUS);
-    String level = triggers.getValueAsString(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_LEVEL);
+    String trgName = triggers.getTriggerName(row);
+    String trgSchema = triggers.getTriggerSchema(row);
+    String trgType = triggers.getTriggerType(row);
+    String trgEvent = triggers.getEvent(row);
+    String tableName = triggers.getTriggerTable(row);
+    String comment = triggers.getRemarks(row);
+    String status = triggers.getStatus(row);
+    String level = triggers.getLevel(row);
 
-    TriggerDefinition trg = new TriggerDefinition(catalog, schema, trgName);
+    TriggerDefinition trg = new TriggerDefinition(catalog, StringUtil.coalesce(trgSchema, schema), trgName);
     trg.setTriggerType(trgType);
     trg.setTriggerEvent(trgEvent);
     trg.setComment(comment);
@@ -121,15 +123,6 @@ public class DefaultTriggerReader
     TableIdentifier tbl = table.createCopy();
     tbl.adjustCase(this.dbConnection);
     return getTriggers(tbl.getCatalog(), tbl.getSchema(), tbl.getTableName());
-  }
-
-  protected DataStore createResultDataStore()
-  {
-    final int[] types =   {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
-    final int[] sizes =   {30, 30, 20, 20, 20, 10, 10};
-
-    DataStore result = new DataStore(LIST_COLUMNS, types, sizes);
-    return result;
   }
 
   protected String getListTriggerSQL(String catalog, String schema, String tableName)
@@ -157,13 +150,11 @@ public class DefaultTriggerReader
     return sql.getSql();
   }
 
-  protected DataStore getTriggers(String catalog, String schema, String tableName)
+  protected TriggerListDataStore getTriggers(String catalog, String schema, String tableName)
     throws SQLException
   {
-    DataStore result = createResultDataStore();
-
     String query = getListTriggerSQL(catalog, schema, tableName);
-    if (query == null) return result;
+    if (query == null) return new TriggerListDataStore(false);
 
     Statement stmt = this.dbConnection.createStatementForQuery();
 
@@ -173,6 +164,7 @@ public class DefaultTriggerReader
     boolean useSavepoint = dbConnection.getDbSettings().useSavePointForDML();
     Savepoint sp = null;
     ResultSet rs = null;
+    TriggerListDataStore result;
     try
     {
       if (useSavepoint)
@@ -180,50 +172,59 @@ public class DefaultTriggerReader
         sp = dbConnection.setSavepoint();
       }
       rs = stmt.executeQuery(query);
-      int colCount = rs.getMetaData().getColumnCount();
-      boolean hasTableName =  colCount >= 4;
-      boolean hasComment = colCount >= 5;
-      boolean hasStatus = colCount >= 6;
-      boolean hasLevel = colCount >= 7;
+      ResultSetMetaData rsMeta = rs.getMetaData();
+      ResultInfo info = new ResultInfo(rsMeta, dbConnection);
+      boolean hasTableName = info.findColumn("TRIGGER_TABLE") > -1;
+      boolean hasComment = info.findColumn("REMARKS") > -1;
+      boolean hasStatus = info.findColumn("STATUS") > -1;
+      boolean hasLevel = info.findColumn("TRIGGER_LEVEL") > -1;
+      boolean hasSchema = info.findColumn("TRIGGER_SCHEMA") > -1;
+      result = new TriggerListDataStore(hasSchema);
 
       while (rs.next())
       {
         int row = result.addRow();
-        String value = rs.getString(1);
+        String value = rs.getString("TRIGGER_NAME");
         if (trimNames) value = StringUtil.trim(value);
-        result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME, value);
+        result.setTriggerName(row, value);
 
-        value = rs.getString(2);
+        value = rs.getString("TRIGGER_TYPE");
         if (trimNames) value = StringUtil.trim(value);
-        result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TYPE, value);
+        result.setTriggerType(row, value);
 
-        value = rs.getString(3);
+        value = rs.getString("TRIGGER_EVENT");
         if (trimNames) value = StringUtil.trim(value);
-        result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_EVENT, value);
+        result.setEvent(row, value);
 
         if (hasTableName)
         {
-          value = rs.getString(4);
+          value = rs.getString("TRIGGER_TABLE");
           if (trimNames) value = StringUtil.trim(value);
-          result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE, value);
+          result.setTriggerTable(row, value);
         }
 
         if (hasComment)
         {
-          value = rs.getString(5);
-          result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_COMMENT, StringUtil.trim(value));
+          value = rs.getString("REMARKS");
+          result.setRemarks(row, StringUtil.trim(value));
         }
 
         if (hasStatus)
         {
-          value = rs.getString(6);
-          result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_STATUS, StringUtil.trim(value));
+          value = rs.getString("STATUS");
+          result.setStatus(row, StringUtil.trim(value));
         }
 
         if (hasLevel)
         {
-          value = rs.getString(7);
-          result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_LEVEL, StringUtil.trim(value));
+          value = rs.getString("TRIGGER_LEVEL");
+          result.setLevel(row, StringUtil.trim(value));
+        }
+
+        if (hasSchema)
+        {
+          value = rs.getString("TRIGGER_SCHEMA");
+          result.setTriggerSchema(row, StringUtil.trim(value));
         }
         TriggerDefinition trg = createTriggerDefinition(result, row, catalog, schema);
         result.getRow(row).setUserObject(trg);

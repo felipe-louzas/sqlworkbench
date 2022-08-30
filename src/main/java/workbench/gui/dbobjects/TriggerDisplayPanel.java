@@ -36,6 +36,7 @@ import workbench.resource.IconMgr;
 import workbench.resource.Settings;
 
 import workbench.db.TableIdentifier;
+import workbench.db.TriggerDefinition;
 import workbench.db.TriggerReader;
 import workbench.db.TriggerReaderFactory;
 import workbench.db.WbConnection;
@@ -151,12 +152,16 @@ public class TriggerDisplayPanel
     if (e.getValueIsAdjusting()) return;
     int row = this.triggers.getSelectedRow();
     if (row < 0) return;
+    TriggerDefinition def = (TriggerDefinition)this.triggers.getDataStore().getRow(row).getUserObject();
+    if (def == null)
+    {
+      LogMgr.logError(new CallerInfo(){}, "No TriggerDefinition stored in DataStore!", null);
+      return;
+    }
 
     try
     {
-      String triggerName = this.triggers.getValueAsString(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME);
-      String comment = this.triggers.getValueAsString(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_COMMENT);
-      String sql = reader.getTriggerSource(this.triggerCatalog, this.triggerSchema, triggerName, triggerTable, comment, true);
+      String sql = reader.getTriggerSource(def, true);
       this.source.setText(sql);
       this.source.setCaretPosition(0);
     }

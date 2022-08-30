@@ -31,65 +31,58 @@ import workbench.storage.DataStore;
  * @author Thomas Kellerer
  */
 public interface TriggerReader {
-  /**
-   * The column index in the DataStore returned by getTableTriggers which identifies
-   * the name of the trigger.
-   */
-  int COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME = 0;
 
   /**
-   * The column index in the DataStore returned by getTableTriggers which identifies
-   * the type (INSERT, UPDATE etc) of the trigger.
+   * The column name in the DataStore returned by getTableTriggers which identifies
+   * the comment of the trigger.
    */
-  int COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TYPE = 1;
+  String TRIGGER_COMMENT_COLUMN = "REMARKS";
 
   /**
    * The column index in the DataStore returned by getTableTriggers which identifies
    * the event (before, after) of the trigger.
    */
-  int COLUMN_IDX_TABLE_TRIGGERLIST_TRG_EVENT = 2;
+  String TRIGGER_EVENT_COLUMN = "EVENT";
+
+  /**
+   * The column name in the DataStore returned by getTableTriggers which identifies
+   * the name of the trigger.
+   */
+  String TRIGGER_NAME_COLUMN = "TRIGGER";
+
+  /**
+   * The column name in the DataStore returned by getTableTriggers which identifies
+   * the schema in which the trigger is stored.
+   *
+   * This might not apply for all databases.
+   */
+  String TRIGGER_SCHEMA_COLUMN = "SCHEMA";
 
   /**
    * The column index in the DataStore returned by getTableTriggers which identifies
    * the table of the trigger.
+   *
+   * This might contain a fully qualified table name (schema.table_name).
    */
-  int COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE = 3;
+  String TRIGGER_TABLE_COLUMN = "TABLE";
 
   /**
-   * The column index in the DataStore returned by getTableTriggers which identifies
-   * the comment of the trigger.
+   * The column name in the DataStore returned by getTableTriggers which identifies
+   * the type (INSERT, UPDATE etc) of the trigger.
    */
-  int COLUMN_IDX_TABLE_TRIGGERLIST_TRG_COMMENT = 4;
+  String TRIGGER_TYPE_COLUMN = "TYPE";
 
   /**
-   * The column index in the DataStore returned by getTableTriggers which identifies
+   * The column name in the DataStore returned by getTableTriggers which identifies
    * the status of the trigger.
    */
-  int COLUMN_IDX_TABLE_TRIGGERLIST_TRG_STATUS = 5;
+  String TRIGGER_STATUS_COLUMN = "STATUS";
 
   /**
-   * The column index in the DataStore returned by getTableTriggers which identifies
+   * The column name in the DataStore returned by getTableTriggers which identifies
    * the level (row/statement) of the trigger.
    */
-  int COLUMN_IDX_TABLE_TRIGGERLIST_TRG_LEVEL = 6;
-
-  String TRIGGER_COMMENT_COLUMN = "REMARKS";
-  String TRIGGER_EVENT_COLUMN = "EVENT";
-  String TRIGGER_NAME_COLUMN = "TRIGGER";
-  String TRIGGER_TABLE_COLUMN = "TABLE";
-  String TRIGGER_TYPE_COLUMN = "TYPE";
-  String TRIGGER_STATUS_COLUMN = "STATUS";
   String TRIGGER_LEVEL_COLUMN = "LEVEL";
-
-  String[] LIST_COLUMNS = {
-    TRIGGER_NAME_COLUMN,
-    TRIGGER_TYPE_COLUMN,
-    TRIGGER_EVENT_COLUMN,
-    TRIGGER_TABLE_COLUMN,
-    TRIGGER_COMMENT_COLUMN,
-    TRIGGER_STATUS_COLUMN,
-    TRIGGER_LEVEL_COLUMN
-  };
 
   String TYPE_NAME = "TRIGGER";
 
@@ -138,7 +131,7 @@ public interface TriggerReader {
   /**
    * Return a list of triggers available in the given schema.
    */
-  DataStore getTriggers(String catalog, String schema)
+  TriggerListDataStore getTriggers(String catalog, String schema)
     throws SQLException;
 
   /**

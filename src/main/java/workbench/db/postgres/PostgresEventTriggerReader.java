@@ -30,9 +30,10 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.TriggerDefinition;
+import workbench.db.TriggerListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -63,7 +64,16 @@ public class PostgresEventTriggerReader
     if (!DbMetadata.typeIncluded(TYPE, requestedTypes)) return false;
 
     PostgresTriggerReader reader = new PostgresTriggerReader(con);
-    int count = reader.retrieveEventTriggers(result, objectNamePattern);
+    TriggerListDataStore ds = new TriggerListDataStore(false);
+    int count = reader.retrieveEventTriggers(ds, objectNamePattern);
+    for (int tr=0; tr < ds.getRowCount(); tr++)
+    {
+      int row = result.addRow();
+      result.setObjectName(row, ds.getTriggerName(row));
+      result.setType(row, "EVENT TRIGGER");
+      result.setRemarks(row, ds.getRemarks(row));
+      result.getRow(row).setUserObject(ds.getUserObject(row));
+    }
     return count > 0;
   }
 

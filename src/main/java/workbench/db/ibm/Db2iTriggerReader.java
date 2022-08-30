@@ -31,9 +31,8 @@ import workbench.db.DefaultTriggerReader;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.TriggerDefinition;
+import workbench.db.TriggerListDataStore;
 import workbench.db.WbConnection;
-
-import workbench.storage.DataStore;
 
 import workbench.util.StringUtil;
 
@@ -72,7 +71,7 @@ public class Db2iTriggerReader
   }
 
   @Override
-  protected DataStore getTriggers(String catalog, String schema, String tableName)
+  protected TriggerListDataStore getTriggers(String catalog, String schema, String tableName)
     throws SQLException
   {
     String sql =
@@ -86,13 +85,8 @@ public class Db2iTriggerReader
 
     final CallerInfo ci = new CallerInfo(){};
     boolean forTable = false;
-    String type;
-    if (StringUtil.isBlank(tableName))
-    {
-      type = "trigger list";
-      sql += "WHERE trigger_schema = ? \n";
-    }
-    else
+    String type = null;
+    if (StringUtil.isNoneBlank(tableName, schema) && !"*".equals(schema))
     {
       forTable = true;
       type = "table triggers";
@@ -100,17 +94,26 @@ public class Db2iTriggerReader
         "WHERE event_object_schema = ? \n" +
         "  AND event_object_table = ? \n";
     }
+    else if (!"*".equals(schema) && StringUtil.isNonBlank(schema))
+    {
+      type = "trigger list";
+      sql += "WHERE trigger_schema = ? \n";
+    }
+
     sql += "ORDER BY 1,2";
 
     LogMgr.logMetadataSql(ci, type, sql, schema, tableName);
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    DataStore result = createResultDataStore();
+    TriggerListDataStore result = new TriggerListDataStore(true);
     try
     {
       pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
-      pstmt.setString(1, schema);
+      if (StringUtil.isNonBlank(schema) && !"*".equals(schema))
+      {
+        pstmt.setString(1, schema);
+      }
       if (forTable)
       {
         pstmt.setString(2, tableName);
@@ -127,10 +130,11 @@ public class Db2iTriggerReader
 
         TableIdentifier tbl = new TableIdentifier(trgTableSchema, trgTableName);
         int row = result.addRow();
-        result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME, trgName);
-        result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TYPE, trgType);
-        result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_EVENT, event);
-        result.setValue(row, COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE, tbl.getTableExpression(dbConnection));
+        result.setTriggerName(row, trgName);
+        result.setTriggerSchema(row, trgSchema);
+        result.setTriggerType(row, trgType);
+        result.setEvent(row, event);
+        result.setTriggerTable(row, tbl.getTableExpression(dbConnection));
 
         TriggerDefinition trg = new TriggerDefinition(catalog, trgSchema, trgName);
         trg.setRelatedTable(tbl);

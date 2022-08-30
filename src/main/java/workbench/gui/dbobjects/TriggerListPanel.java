@@ -246,7 +246,7 @@ public class TriggerListPanel
         if (triggerList.getSelectedRowCount() == 1)
         {
           int row = triggerList.getSelectedRow();
-          String tableName = triggerList.getValueAsString(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE);
+          String tableName = triggerList.getValueAsString(row, TriggerReader.TRIGGER_TABLE_COLUMN);
           TableIdentifier tbl = new TableIdentifier(tableName);
           tableFinder.selectObject(tbl);
         }
@@ -505,9 +505,12 @@ public class TriggerListPanel
 
     if (row < 0) return;
 
-    final String triggerName = this.triggerList.getValueAsString(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME);
-    final String tableName = this.triggerList.getValueAsString(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE);
-    final String comment = this.triggerList.getValueAsString(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_COMMENT);
+    TriggerDefinition def = (TriggerDefinition)this.triggerList.getDataStore().getRow(row).getUserObject();
+    if (def == null)
+    {
+      LogMgr.logError(new CallerInfo(){}, "No TriggerDefinition stored in DataStore!", null);
+      return;
+    }
 
     Container parent = this.getParent();
     WbSwingUtilities.showWaitCursor(parent);
@@ -522,17 +525,9 @@ public class TriggerListPanel
 
       try
       {
-        TableIdentifier tbl = null;
-        if (tableName != null)
-        {
-          tbl = new TableIdentifier(tableName, dbConnection);
-          if (tbl.getCatalog() == null) tbl.setCatalog(currentCatalog);
-          if (tbl.getSchema() == null) tbl.setSchema(currentSchema);
-        }
-
         DropType dropType = DbExplorerSettings.getDropTypeToGenerate(TriggerDefinition.TRIGGER_TYPE_NAME);
 
-        String sql = reader.getTriggerSource(currentCatalog, currentSchema, triggerName, tbl, comment, true);
+        String sql = reader.getTriggerSource(def, true);
         Object obj = triggerList.getUserObject(row);
 
         boolean isReplace = SqlUtil.isReplaceDDL(sql, dbConnection, dropType);
@@ -550,7 +545,7 @@ public class TriggerListPanel
         final String sourceSql = sql == null ? "" : sql;
         WbSwingUtilities.invoke(() ->
         {
-          source.setText(sourceSql, triggerName, TRG_TYPE_NAME);
+          source.setText(sourceSql, def.getObjectName(), TRG_TYPE_NAME);
         });
 
       }
@@ -629,26 +624,7 @@ public class TriggerListPanel
 
     for (int i=0; i < count; i ++)
     {
-      String name = this.triggerList.getValueAsString(rows[i], TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME);
-
-      // MS SQL Server appends a semicolon at the end of the name...
-      int pos = name.indexOf(';');
-      if (pos > 0)
-      {
-        name = name.substring(0, pos);
-      }
-
-      // To build the correct schema, catalog and trigger name
-      // we use the functionality built into TableIdentifier
-      // The name of a trigger should follow the same rules as a table
-      // name. So it should be safe to apply the same algorithm to
-      // build a correctly qualified name
-      TriggerDefinition trg = new TriggerDefinition(currentCatalog, currentSchema, name);
-      String tableName = triggerList.getValueAsString(rows[i], TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TABLE);
-      if (tableName != null)
-      {
-        trg.setRelatedTable(new TableIdentifier(tableName, dbConnection));
-      }
+      TriggerDefinition trg = (TriggerDefinition)triggerList.getDataStore().getRow(i).getUserObject();
       objects.add(trg);
     }
     return objects;

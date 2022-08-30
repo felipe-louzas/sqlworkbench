@@ -29,13 +29,12 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DefaultTriggerReader;
-import workbench.db.TriggerReader;
+import workbench.db.JdbcUtils;
+import workbench.db.TriggerListDataStore;
 import workbench.db.WbConnection;
 
-import workbench.storage.DataStore;
 import workbench.storage.SortDefinition;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -52,13 +51,13 @@ public class SqlServerTriggerReader
   }
 
   @Override
-  public DataStore getTriggers(String dbName, String schema, String baseTable)
+  public TriggerListDataStore getTriggers(String dbName, String schema, String baseTable)
     throws SQLException
   {
     String currentDb = dbConnection.getCurrentCatalog();
     boolean changeCatalog = StringUtil.stringsAreNotEqual(currentDb, dbName) && StringUtil.isNonBlank(dbName);
 
-    DataStore result = null;
+    TriggerListDataStore result = null;
 
     try
     {
@@ -84,7 +83,7 @@ public class SqlServerTriggerReader
     return result;
   }
 
-  private void readDDLTriggers(DataStore triggers)
+  private void readDDLTriggers(TriggerListDataStore triggers)
   {
     String sql =
       "select tr.name as trigger_name, \n" +
@@ -123,9 +122,9 @@ public class SqlServerTriggerReader
         String type = rs.getString(2);
         String event = rs.getString(3);
         int row = triggers.addRow();
-        triggers.setValue(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME, name);
-        triggers.setValue(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TYPE, type);
-        triggers.setValue(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_EVENT, event);
+        triggers.setTriggerName(row, name);
+        triggers.setTriggerType(row, type);
+        triggers.setRemarks(row, event);
       }
     }
     catch (Exception ex)

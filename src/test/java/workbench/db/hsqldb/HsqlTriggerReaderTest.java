@@ -20,8 +20,6 @@
  */
 package workbench.db.hsqldb;
 
-
-
 import java.util.List;
 
 import workbench.TestUtil;
@@ -29,11 +27,10 @@ import workbench.WbTestCase;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.TriggerDefinition;
+import workbench.db.TriggerListDataStore;
 import workbench.db.TriggerReader;
 import workbench.db.TriggerReaderFactory;
 import workbench.db.WbConnection;
-
-import workbench.storage.DataStore;
 
 import workbench.sql.DelimiterDefinition;
 
@@ -86,10 +83,10 @@ public class HsqlTriggerReaderTest
 
     TriggerReader reader = TriggerReaderFactory.createReader(con);
     assertNotNull(reader);
-    DataStore triggers = reader.getTriggers(null, null);
+    TriggerListDataStore triggers = reader.getTriggers(null, null);
     assertNotNull(triggers);
     assertEquals(1, triggers.getRowCount());
-    assertEquals("PERSON_TRG", triggers.getValueAsString(0, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME));
+    assertEquals("PERSON_TRG", triggers.getTriggerName(0));
 
     List<TriggerDefinition> triggerList = reader.getTriggerList(null, null, "PERSON");
     assertEquals(1, triggerList.size());
@@ -103,7 +100,6 @@ public class HsqlTriggerReaderTest
       "FOR EACH ROW\n" +
       "SET NEWROW.LAST_MODIFIED=CURRENT_TIMESTAMP";
     assertEquals(expected, source.trim());
-
   }
 
 }

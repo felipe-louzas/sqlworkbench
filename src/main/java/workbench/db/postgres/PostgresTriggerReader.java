@@ -38,10 +38,9 @@ import workbench.db.ProcedureReader;
 import workbench.db.RoutineType;
 import workbench.db.TableIdentifier;
 import workbench.db.TriggerDefinition;
-import workbench.db.TriggerReader;
+import workbench.db.TriggerListDataStore;
 import workbench.db.WbConnection;
 
-import workbench.storage.DataStore;
 import workbench.storage.SortDefinition;
 
 import workbench.util.SqlUtil;
@@ -65,10 +64,10 @@ public class PostgresTriggerReader
   }
 
   @Override
-  public DataStore getTriggers(String catalog, String schema)
+  public TriggerListDataStore getTriggers(String catalog, String schema)
     throws SQLException
   {
-    DataStore result = super.getTriggers(catalog, schema);
+    TriggerListDataStore result = super.getTriggers(catalog, schema);
     if (is93)
     {
       retrieveEventTriggers(result, null);
@@ -76,7 +75,7 @@ public class PostgresTriggerReader
     return result;
   }
 
-  public int retrieveEventTriggers(DataStore triggers, String namePattern)
+  public int retrieveEventTriggers(TriggerListDataStore triggers, String namePattern)
   {
     String sql =
       "-- SQL Workbench/J \n" +
@@ -118,10 +117,10 @@ public class PostgresTriggerReader
         String event = rs.getString(2);
         String remarks = rs.getString(3);
         int row = triggers.addRow();
-        triggers.setValue(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_NAME, name);
-        triggers.setValue(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_TYPE, "EVENT");
-        triggers.setValue(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_EVENT, event);
-        triggers.setValue(row, TriggerReader.COLUMN_IDX_TABLE_TRIGGERLIST_TRG_COMMENT, remarks);
+        triggers.setTriggerName(row, name);
+        triggers.setTriggerType(row, "EVENT");
+        triggers.setEvent(row, event);
+        triggers.setRemarks(row, remarks);
         TriggerDefinition trg = new TriggerDefinition(null, null, name);
         trg.setComment(remarks);
         trg.setTriggerType("EVENT TRIGGER");
@@ -362,7 +361,7 @@ public class PostgresTriggerReader
 
     String sql =
       "-- SQL Workbench/J \n" +
-      "select trg.tgname,\n" +
+      "select trg.tgname as trigger_name,\n" +
       "       CASE trg.tgtype::integer & 66 \n" +
       "         WHEN 2 THEN 'BEFORE'\n" +
       "         WHEN 64 THEN 'INSTEAD OF'\n" +
@@ -377,7 +376,7 @@ public class PostgresTriggerReader
       "         when 28 then 'INSERT, UPDATE, DELETE' \n" +
       "         when 24 then 'UPDATE, DELETE' \n" +
       "       end as trigger_event, \n" +
-      "       ns.nspname||'.'||tbl.relname as trigger_table, \n" +
+      "       concat_ws('.', ns.nspname, tbl.relname) as trigger_table, \n" +
       "       obj_description(trg.oid) as remarks, \n" +
               enabled + ", \n" +
       "       case trg.tgtype::integer & 1 \n" +
