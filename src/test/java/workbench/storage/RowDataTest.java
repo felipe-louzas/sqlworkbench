@@ -294,4 +294,34 @@ public class RowDataTest
     assertTrue(copy.equals(one));
     assertTrue(Arrays.equals(one.getData(), copy.getData()));
   }
+
+  @Test
+  public void testRemoveColumn()
+  {
+    RowData one = new RowData(3);
+    one.setValue(0, "One");
+    one.setValue(1, "Two");
+    one.setValue(2, "Three");
+    one.removeColumn(1);
+    assertEquals(2, one.getColumnCount());
+    assertEquals("One", one.getValue(0));
+    assertEquals("Three", one.getValue(1));
+
+    one = new RowData(2);
+    one.setValue(0,10);
+    one.setValue(1,20);
+    one.removeColumn(1);
+    assertEquals(1, one.getColumnCount());
+    assertEquals(10, one.getValue(0));
+
+    one = new RowData(4);
+    one.setValue(0,10);
+    one.setValue(1,20);
+    one.setValue(2,30);
+    one.setValue(3,40);
+
+    one.removeColumn(0);
+    assertEquals(3, one.getColumnCount());
+    assertEquals(20, one.getValue(0));
+  }
 }

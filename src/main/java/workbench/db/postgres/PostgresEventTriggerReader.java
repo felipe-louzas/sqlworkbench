@@ -34,6 +34,7 @@ import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectListExtender;
 import workbench.db.TriggerDefinition;
 import workbench.db.TriggerListDataStore;
+import workbench.db.TriggerReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -64,7 +65,8 @@ public class PostgresEventTriggerReader
     if (!DbMetadata.typeIncluded(TYPE, requestedTypes)) return false;
 
     PostgresTriggerReader reader = new PostgresTriggerReader(con);
-    TriggerListDataStore ds = new TriggerListDataStore(false);
+    TriggerListDataStore ds = new TriggerListDataStore();
+    ds.removeColumn(TriggerReader.TRIGGER_SCHEMA_COLUMN);
     int count = reader.retrieveEventTriggers(ds, objectNamePattern);
     for (int tr=0; tr < ds.getRowCount(); tr++)
     {

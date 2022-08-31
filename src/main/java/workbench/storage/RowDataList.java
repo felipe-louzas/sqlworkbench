@@ -72,6 +72,19 @@ public class RowDataList
     }
   }
 
+  public void removeColumn(int index)
+  {
+    if (data == null) return;
+
+    for (RowData row : data)
+    {
+      if (row != null)
+      {
+        row.removeColumn(index);
+      }
+    }
+  }
+  
   /**
    * Increase the storage to be able to contain one more column.
    *

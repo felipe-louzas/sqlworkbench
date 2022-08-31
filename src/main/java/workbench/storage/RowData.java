@@ -581,4 +581,15 @@ public class RowData
     colData = newData;
     resetStatus();
   }
+
+  public void removeColumn(int index)
+  {
+    int size = this.colData.length;
+    if (size <= 1) return;
+    Object[] newData = new Object[size - 1];
+    System.arraycopy(this.colData, 0, newData, 0, index);
+    System.arraycopy(this.colData, index + 1, newData, index, (size - index - 1));
+    colData = newData;
+    resetStatus();
+  }
 }

@@ -342,7 +342,8 @@ SELECT owner as trigger_schema,
          else trigger_type
        end as trigger_type,
        triggering_event as trigger_event,
-       table_name,
+       table_owner as trigger_table_schema,
+       table_name as trigger_table,
        '' as remarks,
        status,
        case
@@ -391,28 +392,6 @@ WHERE trigger_name not like 'BIN$%'
   </void>
 
   <void method="put">
-   <string>FirstSQL/J</string>
-   <object class="workbench.db.GetMetaDataSql">
-    <void property="baseSql">
-     <string>select class_name||'.'||class_method as trigger_name,
-             mode as trigger_type,
-             command as event
-    from definition_schema.systriggers</string>
-    </void>
-    <void property="objectNameField">
-     <string>table_name</string>
-    </void>
-    <void property="schemaField">
-     <string>table_schema</string>
-    </void>
-    <void property="orderBy">
-     <string>ORDER BY 1</string>
-    </void>
-   </object>
-  </void>
-
-
-  <void method="put">
    <string>Microsoft SQL Server</string>
    <object class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
@@ -428,7 +407,8 @@ WHERE trigger_name not like 'BIN$%'
                 when ObjectProperty(tr.object_id, 'ExecIsDeleteTrigger') = 1 then 'DELETE'
                 when ObjectProperty(tr.object_id, 'ExecIsInsertTrigger') = 1then 'INSERT'
              end as trigger_event,
-             sh.name + '.' + tab.name as  table_name,
+             sh.name as trigger_table_schema,
+             tab.name as trigger_table,
              null as remarks,
              null as status
       from sys.triggers tr with (nolock)
@@ -465,7 +445,8 @@ WHERE trigger_name not like 'BIN$%'
              when ObjectProperty(tr.id, 'ExecIsDeleteTrigger') = 1 then 'DELETE'
              when ObjectProperty(tr.id, 'ExecIsInsertTrigger') = 1 then 'INSERT'
           end as trigger_event,
-       tab.name as table_name,
+       null as trigger_table_schema,
+       tab.name as trigger_table,
        null as remarks,
        null as status
 	from sysobjects tr with (nolock)
@@ -546,12 +527,14 @@ WHERE trigger_name not like 'BIN$%'
    <object class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
-        SELECT trigger_schema,
-               trigger_name,
-               event_manipulation as trigger_type,
-               action_timing as trigger_event,
-               event_object_table as trigger_table
-        FROM information_schema.triggers
+SELECT trigger_schema,
+       trigger_name,
+       event_manipulation as trigger_type,
+       action_timing as trigger_event,
+       event_object_schema as trigger_table_schema,
+       event_object_table as trigger_table,
+       remarks
+FROM information_schema.triggers
       </string>
     </void>
     <void property="objectNameField">
@@ -595,6 +578,7 @@ WHERE trigger_name not like 'BIN$%'
               trigger_name,
               action_timing as trigger_type,
               event_manipulation as trigger_event,
+              event_object_schema as trigger_table_schema,
               event_object_table as trigger_table,
               null as remarks,
               null as status,
@@ -709,45 +693,6 @@ where rdef.rule_name = rlist.rule_name
     </void>
     <void property="orderBy">
      <string>order by rlist.rule_name</string>
-    </void>
-   </object>
-  </void>
-
-  <void method="put">
-   <string>CUBRID</string>
-   <object class="workbench.db.GetMetaDataSql">
-    <void property="baseSql">
-     <string>
-select trg.trigger_name,
-       case
-          when trg.action_time = 1 then 'BEFORE'
-          when trg.action_time = 2 then 'AFTER'
-          else 'DEFERRED'
-       end as trigger_type,
-       case
-         when tdef.event = 0 then 'UPDATE'
-         when tdef.event = 1 then 'UPDATE STATEMENT'
-         when tdef.event = 2 then 'DELETE'
-         when tdef.event = 3 then 'DELETE STATEMENT'
-         when tdef.event = 4 then 'INSERT'
-         when tdef.event = 5 then 'INSERT STATEMENT'
-         when tdef.event = 8 then 'COMMIT'
-         when tdef.event = 9 then 'ROLLBACK'
-         else 'unknown'
-       end as trigger_event,
-       trg.target_class_name as table_name,
-       null as remarks,
-       case
-          when tdef.status = 1 then 'INACTIVE'
-          else 'ACTIVE'
-       end as status
-from db_trig trg
-  join db_trigger tdef on tdef.name = trg.trigger_name
-  join db_class t on trg.target_class_name = t.class_name
-     </string>
-    </void>
-    <void property="objectNameField">
-     <string>target_class_name</string>
     </void>
    </object>
   </void>

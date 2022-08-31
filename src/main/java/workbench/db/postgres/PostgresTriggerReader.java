@@ -376,7 +376,8 @@ public class PostgresTriggerReader
       "         when 28 then 'INSERT, UPDATE, DELETE' \n" +
       "         when 24 then 'UPDATE, DELETE' \n" +
       "       end as trigger_event, \n" +
-      "       concat_ws('.', ns.nspname, tbl.relname) as trigger_table, \n" +
+      "       ns.nspname as trigger_table_schema, \n" +
+      "       tbl.relname as trigger_table, \n" +
       "       obj_description(trg.oid) as remarks, \n" +
               enabled + ", \n" +
       "       case trg.tgtype::integer & 1 \n" +

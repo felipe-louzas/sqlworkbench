@@ -51,6 +51,19 @@ public class ResultInfoTest
   }
 
   @Test
+  public void testRemoveColumn()
+  {
+    ColumnIdentifier col1 = new ColumnIdentifier("id", java.sql.Types.INTEGER, true);
+    ColumnIdentifier col2 = new ColumnIdentifier("lastname", java.sql.Types.VARCHAR, false);
+    ColumnIdentifier col3 = new ColumnIdentifier("firstname", java.sql.Types.VARCHAR, false);
+    ResultInfo info = new ResultInfo(new ColumnIdentifier[] { col1, col2, col3} );
+    info.removeColumn("id");
+    assertEquals(2, info.getColumnCount());
+    assertEquals("lastname", info.getColumnName(0));
+    assertEquals("firstname", info.getColumnName(1));
+  }
+
+  @Test
   public void testFindColumn()
     throws Exception
   {

@@ -33,37 +33,19 @@ import static workbench.db.TriggerReader.*;
 public class TriggerListDataStore
   extends DataStore
 {
-  private boolean showSchema = true;
-
-  public TriggerListDataStore(boolean includeSchema)
+  public TriggerListDataStore()
   {
-    this.showSchema = includeSchema;
-
-    String[] columns;
-    int[] sizes;
-    if (showSchema)
-    {
-      sizes = new int[]{30, 30, 30, 20, 20, 20, 10, 10};
-      columns = new String[]{TRIGGER_NAME_COLUMN,
-                             TRIGGER_SCHEMA_COLUMN,
-                             TRIGGER_TYPE_COLUMN,
-                             TRIGGER_EVENT_COLUMN,
-                             TRIGGER_TABLE_COLUMN,
-                             TRIGGER_COMMENT_COLUMN,
-                             TRIGGER_STATUS_COLUMN,
-                             TRIGGER_LEVEL_COLUMN};
-    }
-    else
-    {
-      sizes = new int[]{30, 30, 20, 20, 20, 10, 10};
-      columns = new String[]{TRIGGER_NAME_COLUMN,
-                             TRIGGER_TYPE_COLUMN,
-                             TRIGGER_EVENT_COLUMN,
-                             TRIGGER_TABLE_COLUMN,
-                             TRIGGER_COMMENT_COLUMN,
-                             TRIGGER_STATUS_COLUMN,
-                             TRIGGER_LEVEL_COLUMN};
-    }
+    int[] sizes = new int[]{30, 30, 30, 20, 20, 20, 20, 10, 10};
+    String[] columns = new String[]{
+                TRIGGER_NAME_COLUMN,
+                TRIGGER_SCHEMA_COLUMN,
+                TRIGGER_TYPE_COLUMN,
+                TRIGGER_EVENT_COLUMN,
+                TRIGGER_TABLE_SCHEMA_COLUMN,
+                TRIGGER_TABLE_COLUMN,
+                TRIGGER_STATUS_COLUMN,
+                TRIGGER_LEVEL_COLUMN,
+                TRIGGER_COMMENT_COLUMN};
     int[] types = new int[columns.length];
     Arrays.fill(types, Types.VARCHAR);
     initializeStructure(columns, types, sizes);
@@ -71,39 +53,38 @@ public class TriggerListDataStore
 
   public void setTriggerSchema(int row, String schema)
   {
-    if (showSchema)
-    {
-      setValue(row, TRIGGER_SCHEMA_COLUMN, schema);
-    }
+    setColumnValue(row, TRIGGER_SCHEMA_COLUMN, schema);
   }
-
   public String getTriggerSchema(int row)
   {
-    if (showSchema)
-    {
-      return getValueAsString(row, TRIGGER_SCHEMA_COLUMN);
-    }
-    return null;
+    return getColumnValue(row, TRIGGER_SCHEMA_COLUMN);
   }
 
   public void setTriggerName(int row, String name)
   {
-    setValue(row, TRIGGER_NAME_COLUMN, name);
+    setColumnValue(row, TRIGGER_NAME_COLUMN, name);
   }
-
   public String getTriggerName(int row)
   {
-    return getValueAsString(row, TRIGGER_NAME_COLUMN);
+    return getColumnValue(row, TRIGGER_NAME_COLUMN);
   }
 
   public void setTriggerTable(int row, String name)
   {
-    setValue(row, TRIGGER_TABLE_COLUMN, name);
+    setColumnValue(row, TRIGGER_TABLE_COLUMN, name);
   }
-
   public String getTriggerTable(int row)
   {
-    return getValueAsString(row, TRIGGER_TABLE_COLUMN);
+    return getColumnValue(row, TRIGGER_TABLE_COLUMN);
+  }
+
+  public void setTriggerTableSchema(int row, String name)
+  {
+    setColumnValue(row, TRIGGER_TABLE_SCHEMA_COLUMN, name);
+  }
+  public String getTriggerTableSchema(int row)
+  {
+    return getColumnValue(row, TRIGGER_TABLE_SCHEMA_COLUMN);
   }
 
   public String getStatus(int row)
@@ -112,43 +93,62 @@ public class TriggerListDataStore
   }
   public void setStatus(int row, String status)
   {
-    setValue(row, TRIGGER_STATUS_COLUMN, status);
+    setColumnValue(row, TRIGGER_STATUS_COLUMN, status);
   }
 
   public String getLevel(int row)
   {
-    return getValueAsString(row, TRIGGER_LEVEL_COLUMN);
+    return getColumnValue(row, TRIGGER_LEVEL_COLUMN);
   }
   public void setLevel(int row, String level)
   {
-    setValue(row, TRIGGER_LEVEL_COLUMN, level);
+    setColumnValue(row, TRIGGER_LEVEL_COLUMN, level);
   }
 
   public String getTriggerType(int row)
   {
-    return getValueAsString(row, TRIGGER_TYPE_COLUMN);
+    return getColumnValue(row, TRIGGER_TYPE_COLUMN);
   }
   public void setTriggerType(int row, String type)
   {
-    setValue(row, TRIGGER_TYPE_COLUMN, type);
+    setColumnValue(row, TRIGGER_TYPE_COLUMN, type);
   }
 
   public String getRemarks(int row)
   {
-    return getValueAsString(row, TRIGGER_COMMENT_COLUMN);
+    return getColumnValue(row, TRIGGER_COMMENT_COLUMN);
   }
   public void setRemarks(int row, String remarks)
   {
-    setValue(row, TRIGGER_COMMENT_COLUMN, remarks);
+    setColumnValue(row, TRIGGER_COMMENT_COLUMN, remarks);
   }
 
   public String getEvent(int row)
   {
-    return getValueAsString(row, TRIGGER_EVENT_COLUMN);
+    return getColumnValue(row, TRIGGER_EVENT_COLUMN);
   }
   public void setEvent(int row, String event)
   {
-    setValue(row, TRIGGER_EVENT_COLUMN, event);
+    setColumnValue(row, TRIGGER_EVENT_COLUMN, event);
+  }
+
+  private String getColumnValue(int row, String columnName)
+  {
+    int index = getColumnIndex(columnName);
+    if (index > -1)
+    {
+      return super.getValueAsString(row, index);
+    }
+    return null;
+  }
+
+  private void setColumnValue(int row, String columnName, String value)
+  {
+    int index = getColumnIndex(columnName);
+    if (index > -1)
+    {
+      super.setValue(row, index, value);
+    }
   }
 
 }

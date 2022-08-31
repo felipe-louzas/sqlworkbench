@@ -106,7 +106,7 @@ public class Db2iTriggerReader
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    TriggerListDataStore result = new TriggerListDataStore(true);
+    TriggerListDataStore result = new TriggerListDataStore();
     try
     {
       pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
@@ -134,7 +134,8 @@ public class Db2iTriggerReader
         result.setTriggerSchema(row, trgSchema);
         result.setTriggerType(row, trgType);
         result.setEvent(row, event);
-        result.setTriggerTable(row, tbl.getTableExpression(dbConnection));
+        result.setTriggerTable(row, trgTableName);
+        result.setTriggerTableSchema(row, trgTableSchema);
 
         TriggerDefinition trg = new TriggerDefinition(catalog, trgSchema, trgName);
         trg.setRelatedTable(tbl);

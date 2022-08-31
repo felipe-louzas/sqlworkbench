@@ -1742,6 +1742,8 @@ public class DbMetadata
       }
     }
 
+    long start = System.currentTimeMillis();
+
     if (synReader != null && synonymsRequested && dbSettings.getBoolProperty("retrieve_synonyms", false) && !synRetrieved)
     {
       List<TableIdentifier> syns = synReader.getSynonymList(dbConnection, catalogPattern, schemaPattern, namePattern);
@@ -1781,7 +1783,14 @@ public class DbMetadata
       cleaner.cleanupObjectList(dbConnection, result, catalogPattern, schemaPattern, namePattern, types);
     }
 
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Processing appenders and extenders took: " + duration + "ms");
+
+    start = System.currentTimeMillis();
     applyRetrievalFilters(result);
+    duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, getConnId() + ": Applying retrieval filters: " + duration + "ms");
+
     result.resetStatus();
 
     return result;

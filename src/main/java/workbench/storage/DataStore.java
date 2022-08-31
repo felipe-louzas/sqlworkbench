@@ -320,6 +320,34 @@ public class DataStore
     }
   }
 
+  public void removeColumn(String name)
+  {
+    int index = findColumn(name);
+    if (index > -1)
+    {
+      removeColumn(index);
+    }
+  }
+  
+  public void removeColumn(int index)
+  {
+    if (index < 0 || index >= getColumnCount()) return;
+
+    this.resultInfo.removeColumn(index);
+    removeColumn(index, data, filteredRows, deletedRows);
+  }
+
+  private void removeColumn(int index, RowDataList... storage)
+  {
+    if (storage == null) return;
+
+    for (RowDataList rd : storage)
+    {
+      if (rd == null) continue;
+      rd.addColumn(index);
+    }
+  }
+
   public void addColumn(ColumnIdentifier newColumn)
   {
     this.resultInfo.addColumn(newColumn);

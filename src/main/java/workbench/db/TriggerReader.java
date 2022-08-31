@@ -59,12 +59,21 @@ public interface TriggerReader {
   String TRIGGER_SCHEMA_COLUMN = "SCHEMA";
 
   /**
-   * The column index in the DataStore returned by getTableTriggers which identifies
+   * The column name in the DataStore returned by getTableTriggers which identifies
    * the table of the trigger.
    *
    * This might contain a fully qualified table name (schema.table_name).
    */
   String TRIGGER_TABLE_COLUMN = "TABLE";
+
+  /**
+   * The column name in the DataStore returned by getTableTriggers which identifies
+   * the table of the trigger.
+   *
+   * If this column contains a value, the table name column {@link TRIGGER_TABLE_COLUMN}
+   * should not contain a full qualified name.
+   */
+  String TRIGGER_TABLE_SCHEMA_COLUMN = "TABLE_SCHEMA";
 
   /**
    * The column name in the DataStore returned by getTableTriggers which identifies

@@ -107,7 +107,16 @@ public class DefaultTriggerReader
 
     if (tableName != null)
     {
-      TableIdentifier tbl = new TableIdentifier(tableName);
+      String tableSchema = triggers.getTriggerTableSchema(row);
+      TableIdentifier tbl;
+      if (StringUtil.isNoneBlank(tableName, tableSchema))
+      {
+        tbl = new TableIdentifier(tableSchema, tableName);
+      }
+      else
+      {
+        tbl = new TableIdentifier(tableName);
+      }
       trg.setRelatedTable(tbl);
     }
     return trg;
@@ -153,8 +162,9 @@ public class DefaultTriggerReader
   protected TriggerListDataStore getTriggers(String catalog, String schema, String tableName)
     throws SQLException
   {
+    final TriggerListDataStore result = new TriggerListDataStore();
     String query = getListTriggerSQL(catalog, schema, tableName);
-    if (query == null) return new TriggerListDataStore(false);
+    if (query == null) return result;
 
     Statement stmt = this.dbConnection.createStatementForQuery();
 
@@ -164,7 +174,6 @@ public class DefaultTriggerReader
     boolean useSavepoint = dbConnection.getDbSettings().useSavePointForDML();
     Savepoint sp = null;
     ResultSet rs = null;
-    TriggerListDataStore result;
     try
     {
       if (useSavepoint)
@@ -179,7 +188,15 @@ public class DefaultTriggerReader
       boolean hasStatus = info.findColumn("STATUS") > -1;
       boolean hasLevel = info.findColumn("TRIGGER_LEVEL") > -1;
       boolean hasSchema = info.findColumn("TRIGGER_SCHEMA") > -1;
-      result = new TriggerListDataStore(hasSchema);
+      boolean hasTableSchema = info.findColumn("TRIGGER_TABLE_SCHEMA") > -1;
+      if (!hasSchema)
+      {
+        result.removeColumn(TriggerReader.TRIGGER_SCHEMA_COLUMN);
+      }
+      if (!hasTableSchema)
+      {
+        result.removeColumn(TriggerReader.TRIGGER_TABLE_SCHEMA_COLUMN);
+      }
 
       while (rs.next())
       {
@@ -201,6 +218,13 @@ public class DefaultTriggerReader
           value = rs.getString("TRIGGER_TABLE");
           if (trimNames) value = StringUtil.trim(value);
           result.setTriggerTable(row, value);
+        }
+
+        if (hasTableSchema)
+        {
+          value = rs.getString("TRIGGER_TABLE_SCHEMA");
+          if (trimNames) value = StringUtil.trim(value);
+          result.setTriggerTableSchema(row, value);
         }
 
         if (hasComment)

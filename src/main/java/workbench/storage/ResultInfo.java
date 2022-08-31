@@ -618,6 +618,11 @@ public class ResultInfo
       {
         return i;
       }
+      String alias = handler.removeQuotes(getColumnDisplayName(i));
+      if (plain.equalsIgnoreCase(alias))
+      {
+        return i;
+      }
     }
     return -1;
   }
@@ -660,6 +665,20 @@ public class ResultInfo
     }
     copy.isUserDefinedPK = this.isUserDefinedPK;
     return copy;
+  }
+
+  public void removeColumn(String name)
+  {
+    int index = findColumn(name);
+    if (index > -1)
+    {
+      removeColumn(index);
+    }
+  }
+  
+  public void removeColumn(int index)
+  {
+    columns.remove(index);
   }
 
   public void addColumn(ColumnIdentifier newColumn)
