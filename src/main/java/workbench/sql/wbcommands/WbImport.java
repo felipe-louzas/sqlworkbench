@@ -112,6 +112,7 @@ public class WbImport
   public static final String ARG_INSERT_START = "insertSQL";
   public static final String ARG_ILLEGAL_DATE_NULL = "illegalDateIsNull";
   public static final String ARG_READ_DATES_AS_STRINGS = "stringDates";
+  public static final String ARG_READ_NUMBERS_AS_STRINGS = "stringNumbers";
   public static final String ARG_EMPTY_FILE = "emptyFile";
   public static final String ARG_PG_COPY = "usePgCopy";
   public static final String ARG_SHEET_NR = "sheetNumber";
@@ -124,7 +125,6 @@ public class WbImport
   public static final String ARG_XML_COL_TAGS = "xmlTagCol";
   public static final String ARG_COLUMN_EXPR = "columnExpression";
   public static final String ARG_OVERRIDE_IDENTITY = "overrideIdentity";
-
 
   private DataImporter imp;
 
@@ -212,6 +212,7 @@ public class WbImport
     cmdLine.addArgument(ARG_ADJUST_SEQ, ArgumentType.BoolSwitch);
     cmdLine.addArgument(WbCopy.PARAM_SKIP_TARGET_CHECK, ArgumentType.BoolSwitch);
     cmdLine.addArgument(ARG_READ_DATES_AS_STRINGS, ArgumentType.BoolArgument);
+    cmdLine.addArgument(ARG_READ_NUMBERS_AS_STRINGS, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_RECALC_FORMULAS, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_XML_ROW_TAG);
     cmdLine.addArgument(ARG_XML_ATT_MAPPING, ArgumentType.Repeatable);
@@ -733,6 +734,7 @@ public class WbImport
       spreadSheetParser.setContainsHeader(cmdLine.getBoolean(WbExport.ARG_HEADER, true));
       spreadSheetParser.setNullString(cmdLine.getValue(WbExport.ARG_NULL_STRING, null));
       spreadSheetParser.setReadDatesAsStrings(cmdLine.getBoolean(ARG_READ_DATES_AS_STRINGS, false));
+      spreadSheetParser.setReadNumbersAsStrings(cmdLine.getBoolean(ARG_READ_NUMBERS_AS_STRINGS, false));
       spreadSheetParser.setIllegalDateIsNull(cmdLine.getBoolean(ARG_ILLEGAL_DATE_NULL, false));
       spreadSheetParser.setEmptyStringIsNull(cmdLine.getBoolean(ARG_EMPTY_STRING_IS_NULL, true));
       spreadSheetParser.setCheckDependencies(cmdLine.getBoolean(CommonArgs.ARG_CHECK_FK_DEPS, false));

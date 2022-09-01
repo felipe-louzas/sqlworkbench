@@ -2611,6 +2611,11 @@ public class Settings
     return getBoolProperty("workbench.copy.clipboard.html.enabled", true);
   }
 
+  public boolean getUseFormattedExcelNumbers()
+  {
+    return getBoolProperty("workbench.import.excel.numeric.check.format", true);
+  }
+
   public void setClipboardDelimiter(String delim)
   {
     setDelimiter("workbench.import.clipboard.fielddelimiter", delim);

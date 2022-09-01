@@ -42,8 +42,9 @@ public interface SpreadsheetReader
   void setNullString(String nullString);
   void setEmptyStringIsNull(boolean flag);
   void setReturnDatesAsString(boolean flag);
+  void setReturnNumbersAsString(boolean flag);
   void enableRecalcOnLoad(boolean flag);
-  
+
   /**
    * Return the total row count in the spreadsheet including a possible header row.
    *
@@ -66,17 +67,15 @@ public interface SpreadsheetReader
 
       ext = ext.toLowerCase();
 
-      SpreadsheetReader reader = null;
-
       if (ext.startsWith("xls"))
       {
-        reader = new ExcelReader(inputFile, sheetIndex, sheetName);
+        return new ExcelReader(inputFile, sheetIndex, sheetName);
       }
       else if (ext.equals("ods"))
       {
-        reader = new OdsReader(inputFile, sheetIndex, sheetName);
+        return new OdsReader(inputFile, sheetIndex, sheetName);
       }
-      return reader;
+      return null;
     }
   }
 }

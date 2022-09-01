@@ -68,6 +68,7 @@ public class SpreadsheetFileParser
   private boolean checkDependencies;
   private boolean ignoreOwner;
   private boolean readDatesAsStrings;
+  private boolean readNumbersAsStrings;
   private boolean recalcFormulas = true;
   private String nullString;
   private int currentRow;
@@ -100,6 +101,11 @@ public class SpreadsheetFileParser
   public void setReadDatesAsStrings(boolean flag)
   {
     this.readDatesAsStrings = flag;
+  }
+
+  public void setReadNumbersAsStrings(boolean flag)
+  {
+    this.readNumbersAsStrings = flag;
   }
 
   public void setIgnoreOwner(boolean flag)
@@ -373,6 +379,7 @@ public class SpreadsheetFileParser
       reader = SpreadsheetReader.Factory.createReader(inputFile, sheetIndex, sheetName);
       reader.setEmptyStringIsNull(emptyStringIsNull);
       reader.setReturnDatesAsString(readDatesAsStrings);
+      reader.setReturnNumbersAsString(readNumbersAsStrings);
       reader.enableRecalcOnLoad(recalcFormulas);
       if (sheetIndex < 0 && StringUtil.isNonBlank(sheetName))
       {

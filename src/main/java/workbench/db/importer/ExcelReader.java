@@ -50,6 +50,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -92,9 +93,11 @@ public class ExcelReader
   private MessageBuffer messages = new MessageBuffer();
   private boolean emptyStringIsNull;
   private boolean useStringDates;
+  private boolean useStringNumbers;
   private DataFormatter dataFormatter = new DataFormatter(true);
   private boolean recalcOnLoad = true;
   private boolean useSAXReader;
+  private boolean checkNumericFormat = true;
 
   public ExcelReader(File excelFile, int sheetNumber, String name)
   {
@@ -110,6 +113,7 @@ public class ExcelReader
     }
     useXLSX = inputFile.getExtension().equalsIgnoreCase("xlsx");
     useSAXReader = useXLSX && Settings.getInstance().getUseXLSXSaxReader();
+    checkNumericFormat = Settings.getInstance().getUseFormattedExcelNumbers();
   }
 
   @Override
@@ -121,6 +125,12 @@ public class ExcelReader
       LogMgr.logDebug(new CallerInfo(){}, "Disabling streaming SAX reader to support recalculation of formulas.");
       useSAXReader = false;
     }
+  }
+
+  @Override
+  public void setReturnNumbersAsString(boolean flag)
+  {
+    useStringNumbers = flag;
   }
 
   @Override
@@ -542,6 +552,9 @@ public class ExcelReader
         break;
       case NUMERIC:
         boolean isDate = DateUtil.isCellDateFormatted(cell);
+        CellStyle style = cell.getCellStyle();
+        String fmt = style != null ? style.getDataFormatString() : "";
+
         if (isDate)
         {
           if (useStringDates)
@@ -552,6 +565,10 @@ public class ExcelReader
           {
             value = getDateValue(cell);
           }
+        }
+        else if (useStringNumbers || (checkNumericFormat && isTextFormat(fmt)))
+        {
+          value = dataFormatter.formatCellValue(cell);
         }
         else
         {
@@ -571,6 +588,12 @@ public class ExcelReader
         }
     }
     return value;
+  }
+
+  private boolean isTextFormat(String fmt)
+  {
+    if (fmt == null) return false;
+    return "@".equals(fmt) || "text".equals(fmt);
   }
 
   private java.util.Date getDateValue(Cell cell)

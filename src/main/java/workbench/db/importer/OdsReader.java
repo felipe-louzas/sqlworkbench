@@ -64,7 +64,7 @@ public class OdsReader
   private MessageBuffer messages = new MessageBuffer();
   private final ValueConverter converter = new ValueConverter();
   private boolean emptyStringIsNull;
-
+  private boolean numbersAsString;
   public OdsReader(File odsFile, int sheetIndex, String name)
   {
     inputFile = odsFile;
@@ -86,6 +86,12 @@ public class OdsReader
   @Override
   public void enableRecalcOnLoad(boolean flag)
   {
+  }
+
+  @Override
+  public void setReturnNumbersAsString(boolean flag)
+  {
+    numbersAsString = flag;
   }
 
   @Override
@@ -283,7 +289,7 @@ public class OdsReader
       {
         value = getDate(cell);
       }
-      else if ("float".equals(type))
+      else if (!numbersAsString && "float".equals(type))
       {
         value = cell.getDoubleValue();
       }
