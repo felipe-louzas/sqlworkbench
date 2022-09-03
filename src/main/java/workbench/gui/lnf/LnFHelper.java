@@ -111,6 +111,7 @@ public class LnFHelper
   private static boolean isFlatLaf;
   private static boolean isJGoodies;
   private static boolean isWindowsLnF;
+  private static boolean isMetalLNF;
 
   public static boolean isJGoodies()
   {
@@ -187,6 +188,11 @@ public class LnFHelper
       adjustWindowsLnF();
     }
 
+    if (isMetalLNF)
+    {
+      adjustMetalLNF();
+    }
+
     Font dataFont = settings.getDataFont();
     if (dataFont != null)
     {
@@ -198,16 +204,38 @@ public class LnFHelper
     UIManager.put("Synthetica.extendedFileChooser.rememberLastDirectory", false);
   }
 
+  private void adjustMetalLNF()
+  {
+    if (Settings.getInstance().getBoolProperty("workbench.gui.adjust.metal.gridcolor", true))
+    {
+      adjustTableGridColor();
+    }
+
+    if (Settings.getInstance().getBoolProperty("workbench.gui.adjust.metal.borders", true))
+    {
+      adjustBorders();
+    }
+  }
+
   private void adjustWindowsLnF()
   {
     if (!Settings.getInstance().getBoolProperty("workbench.gui.adjust.windows.theme", true)) return;
+    adjustBorders();
+    adjustTableGridColor();
+  }
 
+  private void adjustBorders()
+  {
     UIDefaults def = UIManager.getDefaults();
     Border b = new CompoundBorder(new LineBorder(ColorUtils.brighter(Color.LIGHT_GRAY, 0.90), 1), new EmptyBorder(2, 1, 1, 1));
     def.put("TextField.border", b);
     def.put("TextArea.border", b);
     def.put("PasswordField.border", b);
+  }
 
+  private void adjustTableGridColor()
+  {
+    UIDefaults def = UIManager.getDefaults();
     Color c = Settings.getInstance().getColor("workbench.table.gridcolor", new Color(215,215,215));
     def.put("Table.gridColor", c);
   }
@@ -306,6 +334,10 @@ public class LnFHelper
         else if (className.startsWith("com.jgoodies.looks.plastic"))
         {
           isJGoodies = true;
+        }
+        else if (className.endsWith("MetalLookAndFeel"))
+        {
+          isMetalLNF = true;
         }
 
         LookAndFeel lnf = null;

@@ -88,8 +88,7 @@ public class SortHeaderRenderer
     if (insets != null)
     {
       // This honors the configuration from FlatLaf
-      Border outer = displayLabel.getBorder();
-      margin = new CompoundBorder(outer, new EmptyBorder(insets));
+      margin = new EmptyBorder(insets);
     }
   }
 
@@ -174,8 +173,13 @@ public class SortHeaderRenderer
 
     if (margin != null)
     {
-      display.setBorder(margin);
+      Border b = display.getBorder();
+      if (b != null)
+      {
+        display.setBorder(new CompoundBorder(b, margin));
+      }
     }
+
     display.setHorizontalTextPosition(SwingConstants.LEFT);
     display.setHorizontalAlignment(SwingConstants.LEFT);
 
