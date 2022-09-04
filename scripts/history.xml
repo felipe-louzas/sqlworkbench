@@ -17,6 +17,7 @@
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
     <entry dev-build="1" type="enh">It's now possible to jump to the corresponding table from within the trigger list.</entry>
     <entry dev-build="1" type="enh">In the DbTree, table nodes for "Uses", Used by", "References" and "Referenced by" can now be expanded to show the table details.</entry>
+    <entry dev-build="4" type="fix">When importing from Excel sheet, make sure numbers formatted as strings are read as strings</entry>
     <entry dev-build="4" type="fix">For PostgreSQL, WbDataDiff didn't compare array columns correctly.</entry>
     <entry dev-build="4" type="fix">When copying data as text to the clipboard, columns with NULL or empty values were not copied correctly.</entry>
     <entry dev-build="4" type="fix">WbImport failed when using -quoteCharEscaping=duplicate and the first column of the input file contained a quoted empty string (e.g. "")</entry>
