@@ -83,7 +83,7 @@ public class ColumnSelectorPanel
   {
     super();
     this.setLayout(new GridBagLayout());
-    this.columnTable = new WbTable();
+    this.columnTable = new JTable();
     this.columnTable.setRowSelectionAllowed(false);
     this.columnTable.setColumnSelectionAllowed(false);
     this.model = new ColumnSelectTableModel(columns);
@@ -245,6 +245,8 @@ public class ColumnSelectorPanel
     colWidth = (int)(calculateColumnWidths(1, min, max, addWidth, fm, false) * 1.15);
     col = colMod.getColumn(1);
     col.setPreferredWidth(colWidth);
+    int height = fm.getHeight();
+    columnTable.setRowHeight(height);
 
     columnTable.getTableHeader().setReorderingAllowed(false);
   }
