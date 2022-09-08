@@ -159,7 +159,7 @@ public class TableColumnsDatastore
     List<ColumnIdentifier> result = new ArrayList<>(count);
     for (int i=0; i < count; i++)
     {
-      ColumnIdentifier ci = (ColumnIdentifier)ds.getRow(i).getUserObject();
+      ColumnIdentifier ci = ds.getUserObject(i, ColumnIdentifier.class);
       if (ci == null)
       {
         String col = ds.getValueAsString(i, COLUMN_NAME_COL_NAME);

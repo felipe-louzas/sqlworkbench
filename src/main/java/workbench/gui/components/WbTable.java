@@ -1679,7 +1679,13 @@ public class WbTable
   public Object getUserObject(int row)
   {
     if (dwModel == null) return null;
-    return dwModel.getDataStore().getRow(row).getUserObject();
+    return dwModel.getDataStore().getUserObject(row);
+  }
+
+  public <E> E getUserObject(int row, Class<E> clz)
+  {
+    if (dwModel == null) return null;
+    return dwModel.getDataStore().getUserObject(row, clz);
   }
 
   public boolean isStatusColumnVisible()

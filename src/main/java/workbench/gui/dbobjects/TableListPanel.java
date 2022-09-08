@@ -1602,11 +1602,7 @@ public class TableListPanel
     int row = this.tableList.getSelectedRow();
     if (count == 1 && row > -1)
     {
-      Object uo = tableList.getDataStore().getRow(row).getUserObject();
-      if (uo instanceof DbObject)
-      {
-        return (DbObject)uo;
-      }
+      return tableList.getUserObject(row, DbObject.class);
     }
     return null;
   }
@@ -2454,10 +2450,10 @@ public class TableListPanel
 
   private DbObject getDbObject(int row)
   {
-    Object uo = tableList.getDataStore().getRow(row).getUserObject();
-    if (uo instanceof DbObject)
+    DbObject dbo = tableList.getUserObject(row, DbObject.class);
+    if (dbo != null)
     {
-      return (DbObject)uo;
+      return dbo;
     }
     else
     {

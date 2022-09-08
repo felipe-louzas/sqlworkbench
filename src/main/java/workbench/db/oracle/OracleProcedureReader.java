@@ -751,7 +751,7 @@ public class OracleProcedureReader
       // we need to "swap" catalog and owner in order to properly find the procedure
       DataStore procs = getProcedures(objSchema, objCat, toFind.getObjectName());
       if (procs.getRowCount() == 0) return null;
-      if (procs.getRowCount() > 0) return (ProcedureDefinition)procs.getRow(0).getUserObject();
+      if (procs.getRowCount() > 0) return procs.getUserObject(0, ProcedureDefinition.class);
     }
 
     String user = connection.getMetadata().adjustObjectnameCase(connection.getCurrentUser());
@@ -762,19 +762,19 @@ public class OracleProcedureReader
       // first we check for package.procedure for the current user:
 
       DataStore procs = getProcedures(objSchema, user, toFind.getObjectName());
-      if (procs.getRowCount() > 0) return (ProcedureDefinition)procs.getRow(0).getUserObject();
+      if (procs.getRowCount() > 0) return procs.getUserObject(0, ProcedureDefinition.class);
 
       // not a package procedure for the current user, check regular procedures assuming this is for a different user
       procs = getProcedures(null, objSchema, toFind.getObjectName());
-      if (procs.getRowCount() > 0) return (ProcedureDefinition)procs.getRow(0).getUserObject();
+      if (procs.getRowCount() > 0) return procs.getUserObject(0, ProcedureDefinition.class);
     }
 
     // no schema, no user specified, try the current user
     DataStore procs = getProcedures(null, user, toFind.getObjectName());
-    if (procs.getRowCount() > 0) return (ProcedureDefinition)procs.getRow(0).getUserObject();
+    if (procs.getRowCount() > 0) return procs.getUserObject(0, ProcedureDefinition.class);
 
     procs = getProcedures(null, null, toFind.getObjectName());
-    if (procs.getRowCount() > 0) return (ProcedureDefinition)procs.getRow(0).getUserObject();
+    if (procs.getRowCount() > 0) return procs.getUserObject(0, ProcedureDefinition.class);
 
     return null;
   }

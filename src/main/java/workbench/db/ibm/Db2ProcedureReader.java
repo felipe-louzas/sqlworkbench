@@ -144,7 +144,7 @@ public class Db2ProcedureReader
   {
     for (int row=0; row < procs.getRowCount(); row ++)
     {
-      ProcedureDefinition def  = (ProcedureDefinition)procs.getRow(row).getUserObject();
+      ProcedureDefinition def  = procs.getUserObject(row, ProcedureDefinition.class);
       def.readParameters(connection);
       updateDisplayName(def);
       if (def.getDisplayName() != null)

@@ -81,7 +81,7 @@ public class DefaultTriggerReader
     List<TriggerDefinition> result = new ArrayList<>(triggers.getRowCount());
     for (int row = 0; row < triggers.getRowCount(); row ++)
     {
-      TriggerDefinition trg = (TriggerDefinition)triggers.getRow(row).getUserObject();
+      TriggerDefinition trg = triggers.getUserObject(row, TriggerDefinition.class);
       result.add(trg);
     }
     return result;

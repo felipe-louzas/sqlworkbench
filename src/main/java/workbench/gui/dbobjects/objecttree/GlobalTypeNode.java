@@ -61,7 +61,7 @@ public class GlobalTypeNode
       DataStore ds = meta.getObjects(null, null, new String[]{getName()});
       for (int row=0; row < ds.getRowCount(); row ++)
       {
-        DbObject dbo = (DbObject)ds.getRow(row).getUserObject();
+        DbObject dbo = ds.getUserObject(row, DbObject.class);
         if (dbo != null)
         {
           ObjectTreeNode node = new ObjectTreeNode(dbo);

@@ -454,7 +454,7 @@ public class GlobalSearch
   {
     int row = searchResult.getSelectedRow();
     if (row < 0) return null;
-    return (SearchResult)searchResult.getDataStore().getRow(row).getUserObject();
+    return searchResult.getUserObject(row, SearchResult.class);
   }
 
   public void selectValueAndClose()

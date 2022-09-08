@@ -246,8 +246,12 @@ public class TriggerListPanel
         if (triggerList.getSelectedRowCount() == 1)
         {
           int row = triggerList.getSelectedRow();
-          String tableName = triggerList.getValueAsString(row, TriggerReader.TRIGGER_TABLE_COLUMN);
-          TableIdentifier tbl = new TableIdentifier(tableName);
+          TableIdentifier tbl = null;
+          TriggerDefinition def = triggerList.getUserObject(row, TriggerDefinition.class);
+          if (def != null)
+          {
+            tbl = def.getRelatedTable();
+          }
           tableFinder.selectObject(tbl);
         }
       }
@@ -505,7 +509,7 @@ public class TriggerListPanel
 
     if (row < 0) return;
 
-    TriggerDefinition def = (TriggerDefinition)this.triggerList.getDataStore().getRow(row).getUserObject();
+    TriggerDefinition def = this.triggerList.getUserObject(row, TriggerDefinition.class);
     if (def == null)
     {
       LogMgr.logError(new CallerInfo(){}, "No TriggerDefinition stored in DataStore!", null);
@@ -528,14 +532,11 @@ public class TriggerListPanel
         DropType dropType = DbExplorerSettings.getDropTypeToGenerate(TriggerDefinition.TRIGGER_TYPE_NAME);
 
         String sql = reader.getTriggerSource(def, true);
-        Object obj = triggerList.getUserObject(row);
-
         boolean isReplace = SqlUtil.isReplaceDDL(sql, dbConnection, dropType);
 
-        if (dropType != DropType.none && obj instanceof TriggerDefinition && sql != null && !isReplace)
+        if (dropType != DropType.none && sql != null && !isReplace)
         {
-          TriggerDefinition trg = (TriggerDefinition)obj;
-          String drop = trg.getDropStatement(dbConnection, dropType == DropType.cascaded);
+          String drop = def.getDropStatement(dbConnection, dropType == DropType.cascaded);
           if (StringUtil.isNonBlank(drop))
           {
             sql = drop + getDelimiterForDrop() + "\n\n" + sql;
@@ -624,7 +625,7 @@ public class TriggerListPanel
 
     for (int i=0; i < count; i ++)
     {
-      TriggerDefinition trg = (TriggerDefinition)triggerList.getDataStore().getRow(i).getUserObject();
+      TriggerDefinition trg = triggerList.getUserObject(i, TriggerDefinition.class);
       objects.add(trg);
     }
     return objects;

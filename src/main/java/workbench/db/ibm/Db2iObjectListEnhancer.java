@@ -101,7 +101,7 @@ public class Db2iObjectListEnhancer
         int row = finder.findObject(schema, objectname);
         if (row > -1)
         {
-          DbObject tbl = (DbObject)result.getRow(row).getUserObject();
+          DbObject tbl = result.getUserObject(row, DbObject.class);
           if (readRemarks)
           {
             result.setRemarks(row, remark);

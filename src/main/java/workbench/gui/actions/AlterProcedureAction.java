@@ -98,7 +98,7 @@ public class AlterProcedureAction
     {
       if (ds.isRowModified(row))
       {
-        DbObject oldProc = (DbObject)ds.getRow(row).getUserObject();
+        DbObject oldProc = ds.getUserObject(row, DbObject.class);
         DbObject newProc = ProcedureListPanel.buildDefinitionFromDataStore(dbConnection, ds, row, true);
         changed.put(oldProc, newProc);
       }

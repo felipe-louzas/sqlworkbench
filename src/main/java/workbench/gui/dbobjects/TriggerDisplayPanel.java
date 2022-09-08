@@ -32,7 +32,6 @@ import javax.swing.event.ListSelectionListener;
 import workbench.interfaces.Resettable;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.IconMgr;
 import workbench.resource.Settings;
 
 import workbench.db.TableIdentifier;
@@ -63,9 +62,6 @@ public class TriggerDisplayPanel
   private WbTable triggers;
   private EditorPanel source;
   private WbSplitPane splitPane;
-  private String triggerSchema;
-  private String triggerCatalog;
-  private TableIdentifier triggerTable;
 
   public TriggerDisplayPanel()
   {
@@ -81,8 +77,6 @@ public class TriggerDisplayPanel
     list.add(new WbScrollPane(this.triggers), BorderLayout.CENTER);
 
     splitPane = new WbSplitPane(JSplitPane.VERTICAL_SPLIT, list, this.source);
-    splitPane.setDividerSize((int)(IconMgr.getInstance().getSizeForLabel() / 2));
-    splitPane.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
     add(splitPane, BorderLayout.CENTER);
     triggers.getSelectionModel().addListSelectionListener(this);
     triggers.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -111,31 +105,23 @@ public class TriggerDisplayPanel
   {
     this.triggers.reset();
     this.source.reset();
-    this.triggerSchema = null;
-    this.triggerCatalog = null;
   }
 
   public void readTriggers(final TableIdentifier table)
   {
+    source.setText("");
     try
     {
       if (table == null) return;
-      triggerTable = table;
       DataStore trg = reader.getTableTriggers(table);
       final DataStoreTableModel rs = new DataStoreTableModel(trg);
       WbSwingUtilities.invoke(() ->
       {
         triggers.setModel(rs, true);
         triggers.adjustRowsAndColumns();
-        triggerCatalog = table.getCatalog();
-        triggerSchema = table.getSchema();
         if (triggers.getRowCount() > 0)
         {
           triggers.getSelectionModel().setSelectionInterval(0, 0);
-        }
-        else
-        {
-          source.setText("");
         }
       });
     }
@@ -152,7 +138,7 @@ public class TriggerDisplayPanel
     if (e.getValueIsAdjusting()) return;
     int row = this.triggers.getSelectedRow();
     if (row < 0) return;
-    TriggerDefinition def = (TriggerDefinition)this.triggers.getDataStore().getRow(row).getUserObject();
+    TriggerDefinition def = this.triggers.getUserObject(row, TriggerDefinition.class);
     if (def == null)
     {
       LogMgr.logError(new CallerInfo(){}, "No TriggerDefinition stored in DataStore!", null);

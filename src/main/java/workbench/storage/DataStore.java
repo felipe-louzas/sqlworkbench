@@ -328,7 +328,7 @@ public class DataStore
       removeColumn(index);
     }
   }
-  
+
   public void removeColumn(int index)
   {
     if (index < 0 || index >= getColumnCount()) return;
@@ -1417,7 +1417,14 @@ public class DataStore
 
   public <T extends Object> T getUserObject(int row, Class<T> type)
   {
-    return (T)getUserObject(row);
+    try
+    {
+      return (T)getUserObject(row);
+    }
+    catch (ClassCastException cce)
+    {
+      return null;
+    }
   }
 
   public Object getUserObject(int row)

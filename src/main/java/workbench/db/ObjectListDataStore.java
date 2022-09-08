@@ -194,7 +194,7 @@ public class ObjectListDataStore
 
   public TableIdentifier getTableIdentifier(int row)
   {
-    Object uo = getRow(row).getUserObject();
+    Object uo = getUserObject(row);
     if (uo instanceof TableIdentifier)
     {
       return (TableIdentifier)uo;

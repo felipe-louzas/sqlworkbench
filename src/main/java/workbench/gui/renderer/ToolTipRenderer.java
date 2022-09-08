@@ -164,10 +164,10 @@ public class ToolTipRenderer
     {
       try
       {
-        int top = Integer.valueOf(values.get(0));
-        int left = Integer.valueOf(values.get(1));
-        int bottom = Integer.valueOf(values.get(2));
-        int right = Integer.valueOf(values.get(3));
+        int top = Integer.parseInt(values.get(0));
+        int left = Integer.parseInt(values.get(1));
+        int bottom = Integer.parseInt(values.get(2));
+        int right = Integer.parseInt(values.get(3));
         result = new Insets(top,left,bottom,right);
       }
       catch (Exception e)

@@ -819,13 +819,8 @@ public class ProcedureListPanel
 
   private ProcedureDefinition getDefinition(int row)
   {
-    ProcedureDefinition def = null;
-    Object obj = procList.getDataStore().getRow(row).getUserObject();
-    if (obj instanceof ProcedureDefinition)
-    {
-      def = (ProcedureDefinition)obj;
-    }
-    else
+    ProcedureDefinition def = procList.getUserObject(row, ProcedureDefinition.class);
+    if (def == null)
     {
       def = buildDefinitionFromDataStore(dbConnection, procList.getDataStore(), row, true);
     }

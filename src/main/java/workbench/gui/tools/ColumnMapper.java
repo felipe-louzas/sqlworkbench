@@ -45,7 +45,6 @@ import workbench.db.importer.RowDataProducer;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.WbScrollPane;
-import workbench.gui.components.WbTable;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -97,7 +96,7 @@ public class ColumnMapper
     int addWidth = fm.stringWidth("WWWW");
     col.setMinWidth(width + addWidth);
     col.setMaxWidth(width + addWidth);
-    //col.setPreferredWidth(width);
+    this.columnDisplay.setRowHeight(fm.getHeight());
   }
 
 
@@ -115,7 +114,7 @@ public class ColumnMapper
     // disables the editing of the sourceDropDown based on the
     // current value of the column (if the value is set to "Skip column"
     // then it may not be edited even if source editing is allowed
-    JTable t = new WbTable()
+    JTable t = new JTable()
     {
       @Override
       public TableCellEditor getCellEditor(int row, int column)
@@ -196,7 +195,6 @@ public class ColumnMapper
     col.setCellEditor(edit);
 
     this.adjustKeyColumn();
-    this.columnDisplay.setRowHeight(20);
   }
 
   public ColumnIdentifier findSourceColumnByName(String aName)

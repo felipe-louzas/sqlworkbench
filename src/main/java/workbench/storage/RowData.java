@@ -139,6 +139,18 @@ public class RowData
     Arrays.fill(originalData, NO_CHANGE_MARKER);
   }
 
+  public <E> E getUserObject(int row, Class<E> clz)
+  {
+    try
+    {
+      return (E)userObject;
+    }
+    catch (Throwable th)
+    {
+      return null;
+    }
+  }
+
   public Object getUserObject()
   {
     return userObject;

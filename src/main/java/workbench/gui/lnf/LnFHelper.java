@@ -408,6 +408,15 @@ public class LnFHelper
       registerPackage.invoke(null, "workbench.resource", getClass().getClassLoader());
 
       Method registerDir = flatLaf.getMethod("registerCustomDefaultsSource", File.class);
+
+      // This can be used when SQL Workbench is started from within an IDE
+      String props = Settings.getInstance().getProperty("workbench.flatlaf.propdir", null);
+      if (StringUtil.isNonBlank(props))
+      {
+        File propdir = new File(props);
+        registerDir.invoke(null, propdir);
+      }
+
       ClasspathUtil util = new ClasspathUtil();
       File extDir = util.getExtDir();
       File jarDir = util.getJarDir();
