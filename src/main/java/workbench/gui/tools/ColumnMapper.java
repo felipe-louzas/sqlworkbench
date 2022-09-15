@@ -79,6 +79,9 @@ public class ColumnMapper
     this.columnDisplay = this.createMappingTable();
     this.columnDisplay.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     this.columnDisplay.setRowSelectionAllowed(false);
+    Font dataFont = Settings.getInstance().getDataFont();
+    this.columnDisplay.setFont(dataFont);
+
     WbScrollPane scroll = new WbScrollPane(this.columnDisplay);
     this.add(scroll, BorderLayout.CENTER);
     this.columnDisplay.setModel(EMPTY_DATA_MODEL);

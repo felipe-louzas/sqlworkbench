@@ -35,7 +35,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.text.StyleContext;
+
+import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 
@@ -54,23 +55,26 @@ public class HexPanel
   {
     super();
     setBorder(WbSwingUtilities.EMPTY_BORDER);
-    dataTable = new WbTable();
+    dataTable = new JTable();
     dataTable.setAutoCreateColumnsFromModel(true);
     dataTable.setCellSelectionEnabled(false);
     dataTable.setShowGrid(false);
     dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-    Font dataFont = StyleContext.getDefaultStyleContext().getFont("Monospaced", 0, 12);
+    Font dataFont = Settings.getInstance().getDataFont();
     dataTable.setFont(dataFont);
     setLayout(new BorderLayout());
     lines = new LineNumberTable(dataTable);
     WbScrollPane scroll = new WbScrollPane(dataTable);
     scroll.setRowHeaderView(lines);
     JTableHeader header = dataTable.getTableHeader();
+    header.setReorderingAllowed(false);
     DefaultTableCellRenderer rend = new DefaultTableCellRenderer();
     rend.setBackground(new Color(238,240,238));
     header.setDefaultRenderer(rend);
     this.add(header, BorderLayout.NORTH);
     this.add(scroll, BorderLayout.CENTER);
+    
+    WbSwingUtilities.adjustRowHeight(dataTable);
   }
 
   public HexPanel(byte[] buffer)

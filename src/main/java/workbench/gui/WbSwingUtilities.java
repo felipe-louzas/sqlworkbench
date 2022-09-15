@@ -63,6 +63,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.KeyStroke;
@@ -1774,6 +1775,20 @@ public class WbSwingUtilities
     }
     Border lb = createLineBorder(reference);
     return BorderFactory.createTitledBorder(lb, label);
+  }
+
+  public static void adjustRowHeight(JTable table)
+  {
+    if (table == null) return;
+    
+    Font f = table.getFont();
+    if (f == null) return;
+
+    FontMetrics fm = table.getFontMetrics(f);
+    if (fm == null) return;
+
+    int height = fm.getHeight();
+    table.setRowHeight(height);
   }
 
 }
