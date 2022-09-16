@@ -420,6 +420,12 @@ public class SqlUtilTest
                 "SELECT 42\n from dual";
     clean = SqlUtil.makeCleanSql(sql, true, false);
     assertEquals("SELECT 42\n from dual", clean);
+
+    sql = "/* ' first quote */\n" +
+          "-- ' antother quote \n" +
+          "select * from person;";
+    clean = SqlUtil.makeCleanSql(sql, true, false);
+    assertEquals("select * from person", clean);
   }
 
   @Test

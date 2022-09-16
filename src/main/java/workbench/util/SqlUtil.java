@@ -1231,7 +1231,7 @@ public class SqlUtil
     {
       char c = sql.charAt(i);
 
-      if (c == '\'' || c == '"' || c == identifierQuote)
+      if (!inComment && (c == '\'' || c == '"' || c == identifierQuote))
       {
         if (!inQuotes)
         {
