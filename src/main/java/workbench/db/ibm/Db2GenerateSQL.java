@@ -58,7 +58,6 @@ public class Db2GenerateSQL
     "DATABASE_OBJECT_TYPE => ?, " +
     "CREATE_OR_REPLACE_OPTION  => ?, " +
     "STATEMENT_FORMATTING_OPTION => ?, " +
-    "TEMPORAL_OPTION => '1', " +
     "HEADER_OPTION => '0')";
 
   private WbConnection conn;
