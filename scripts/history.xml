@@ -17,7 +17,8 @@
     <entry dev-build="1" type="enh">It's now possible to search for tables or procedures from within the source panel of the DbExplorer.</entry>
     <entry dev-build="1" type="enh">It's now possible to jump to the corresponding table from within the trigger list.</entry>
     <entry dev-build="1" type="enh">In the DbTree, table nodes for "Uses", Used by", "References" and "Referenced by" can now be expanded to show the table details.</entry>
-    <entry dev-build="4" type="fix">Sorting results (by clicking on the header) did not work correctly for array columns (e.g. int[] in Postgres)</entry>
+    <entry dev-build="5" type="fix">Some Workbench specific commands did not work if preceded with a comment containing quotes</entry>
+    <entry dev-build="5" type="fix">Sorting results (by clicking on the header) did not work correctly for array columns (e.g. int[] in Postgres)</entry>
     <entry dev-build="4" type="fix">When importing from Excel sheet, make sure numbers formatted as strings are read as strings</entry>
     <entry dev-build="4" type="fix">For PostgreSQL, WbDataDiff didn't compare array columns correctly.</entry>
     <entry dev-build="4" type="fix">When copying data as text to the clipboard, columns with NULL or empty values were not copied correctly.</entry>
