@@ -477,7 +477,7 @@
       <replacefilter token="(DATABASE{wsp}LINK)|" value="(NESTED{wsp}PATH)|(ON{wsp}ERROR)|(IS{wsp}DOCUMENT)|(IS{wsp}NOT{wsp}DOCUMENT)"/>
       <replacefilter token='"SYSDATE"|' value="(EVENT{wsp}TRIGGER)|(TEXT{wsp}SEARCH{wsp}CONFIGURATION)|(TEXT{wsp}SEARCH{wsp}DICTIONARY)|(TEXT{wsp}SEARCH{wsp}PARSER)|(TEXT{wsp}SEARCH{wsp}TEMPLATE)|"/>
       <replacefilter token="(OUTER{wsp}APPLY)|" value="TRANSFORM|(USER{wsp}MAPPING)|"/>
-      <replacefilter token="(CROSS{wsp}APPLY)|"/>
+      <replacefilter token="(CROSS{wsp}APPLY)|" value="(OWNED{wsp}BY)|"/>
       <replacefilter token='"SYSTIMESTAMP"|' value='"LOCALTIMESTAMP"|'/>
       <replacefilter token='"SESSION_USER"|'/>
       <replacefilter>

@@ -174,7 +174,7 @@ keyword=(
 (CROSS{wsp}JOIN)|
 (CROSS{wsp}JOIN{wsp}LATERAL)|
 TRANSFORM|(USER{wsp}MAPPING)|
-
+(OWNED{wsp}BY)|
 (FULL{wsp}JOIN)|
 (FULL{wsp}JOIN{wsp}LATERAL)|
 (FULL{wsp}OUTER{wsp}JOIN)|
