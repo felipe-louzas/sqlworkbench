@@ -225,6 +225,7 @@ import workbench.sql.annotations.AppendResultAnnotation;
 import workbench.sql.annotations.BookmarkAnnotation;
 import workbench.sql.annotations.ResultAsTextAnnotation;
 import workbench.sql.annotations.ResultAsTextMode;
+import workbench.sql.annotations.ResultNameAnnotation;
 import workbench.sql.annotations.UseTabAnnotation;
 import workbench.sql.annotations.WbAnnotation;
 import workbench.sql.commands.TransactionEndCommand;
@@ -251,6 +252,9 @@ import workbench.util.WbThread;
 /**
  * A panel with an SQL editor (EditorPanel), a log panel and
  * a panel for displaying SQL results (DwPanel)
+ *
+ * @see DwPanel
+ * @see LogArea
  *
  * @author Thomas Kellerer
  */
@@ -2372,6 +2376,7 @@ public class SqlPanel
         sql = "select * from " + table.getTableExpression(dbConnection);
       }
     }
+    sql = "-- @" + ResultNameAnnotation.ANNOTATION + " " + table.getTableExpression(dbConnection) + "\n" + sql;
     this.startExecution(sql, 0, false, true, RunType.RunAll);
   }
 
