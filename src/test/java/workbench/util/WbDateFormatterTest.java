@@ -153,6 +153,10 @@ public class WbDateFormatterTest
     formatter = new WbDateFormatter("dd.MM.yyyy HH:mm:ss");
     formatted = formatter.formatTimestamp(zdt);
     assertEquals("01.04.2017 02:00:00", formatted);
+
+    formatter = new WbDateFormatter("''yyyy-MM-dd HH:mm:ss'''::timestamptz'");
+    formatted = formatter.formatTimestamp(zdt);
+    assertEquals("'2017-04-01 02:00:00'::timestamptz", formatted);
   }
 
   @Test

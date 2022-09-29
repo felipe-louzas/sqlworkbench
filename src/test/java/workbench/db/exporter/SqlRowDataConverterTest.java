@@ -24,6 +24,9 @@ package workbench.db.exporter;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -66,6 +69,39 @@ public class SqlRowDataConverterTest
   public SqlRowDataConverterTest()
   {
     super("SqlRowDataConverterTest");
+  }
+
+  @Test
+  public void testTimestampTZ()
+    throws Exception
+  {
+    ColumnIdentifier id = new ColumnIdentifier("id", Types.INTEGER);
+    id.setIsPkColumn(true);
+    ColumnIdentifier created = new ColumnIdentifier("created", Types.TIMESTAMP_WITH_TIMEZONE);
+    ColumnIdentifier dt = new ColumnIdentifier("dt", Types.DATE);
+    ResultInfo info = new ResultInfo(new ColumnIdentifier[] { id, created, dt });
+    TableIdentifier tbl = new TableIdentifier("data");
+    info.setUpdateTable(tbl);
+    DataStore ds = new DataStore(info);
+    ds.forceUpdateTable(tbl);
+    int row = ds.addRow();
+    ds.setValue(row, 0, Integer.valueOf(42));
+    ds.setValue(row, 1, ZonedDateTime.of(2022, 4, 2, 19, 20, 21, 0, ZoneId.of("UTC")));
+    ds.setValue(row, 2, LocalDate.of(2022, 4, 2));
+
+    SqlRowDataConverter converter = new SqlRowDataConverter(null);
+    converter.setResultInfo(info);
+    converter.setCreateInsert();
+    converter.setDateLiteralType("ansi");
+    converter.setApplySQLFormatting(false);
+    StringBuilder sql = converter.convertRowData(ds.getRow(row), row);
+
+    String ansi = "INSERT INTO data (id,created,dt) VALUES (42,TIMESTAMP '2022-04-02 19:20:21.000000 +0000',DATE '2022-04-02');";
+    assertEquals(sql.toString().trim(), ansi);
+    converter.setDateLiteralType("postgresql");
+    sql = converter.convertRowData(ds.getRow(row), row);
+    String pg = "INSERT INTO data (id,created,dt) VALUES (42,'2022-04-02 19:20:21.000000 +0000'::timestamptz,DATE '2022-04-02');";
+    assertEquals(sql.toString().trim(), pg);
   }
 
   @Test
