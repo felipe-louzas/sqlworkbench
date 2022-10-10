@@ -24,6 +24,7 @@ package workbench.gui.components;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -171,6 +172,7 @@ import workbench.util.FileDialogUtil;
 import workbench.util.NumberStringCache;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
+import workbench.util.WbThread;
 
 /**
  *
@@ -2455,10 +2457,17 @@ public class WbTable
   @Override
   public void mouseClicked(final MouseEvent e)
   {
+    if (e.isConsumed()) return;
+
+    boolean isHeaderGridClicked =
+      e.getSource() == getTableHeader() &&
+      getTableHeader().getCursor().getType() == Cursor.E_RESIZE_CURSOR;
+
     if (e.getButton() == MouseEvent.BUTTON3)
     {
-      if (e.getSource() instanceof JTableHeader)
+      if (e.getSource() == getTableHeader())
       {
+        e.consume();
         this.headerPopupX = e.getX();
         EventQueue.invokeLater(() ->
         {
@@ -2468,6 +2477,7 @@ public class WbTable
       }
       else if (this.showPopup && this.popup != null)
       {
+        e.consume();
         final int row = this.rowAtPoint(e.getPoint());
         int selected = this.getSelectedRowCount();
         if (selected <= 1 && row >= 0 && this.selectOnRightButtonClick)
@@ -2491,9 +2501,13 @@ public class WbTable
         });
       }
     }
-    else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1
-             && this.dwModel != null && e.getSource() instanceof JTableHeader)
+    else if (!isHeaderGridClicked
+             && e.getButton() == MouseEvent.BUTTON1
+             && e.getClickCount() == 1
+             && this.dwModel != null
+             && e.getSource() == getTableHeader())
     {
+      e.consume();
       TableColumnModel colMod = this.getColumnModel();
       int viewColumn = colMod.getColumnIndexAtX(e.getX());
       int realColumn = this.convertColumnIndexToModel(viewColumn);
@@ -2510,6 +2524,29 @@ public class WbTable
         {
           dwModel.startBackgroundSort(this, realColumn, addSortColumn, descending);
         }
+      }
+    }
+    else if (isHeaderGridClicked
+             && e.getButton() == MouseEvent.BUTTON1
+             && e.getClickCount() == 2
+             && this.dwModel != null)
+    {
+      e.consume();
+      TableColumnModel colMod = this.getColumnModel();
+      int viewColumn = colMod.getColumnIndexAtX(e.getX());
+      final int realColumn = this.convertColumnIndexToModel(viewColumn);
+      if (realColumn >= 0)
+      {
+        final ColumnWidthOptimizer optimizer = new ColumnWidthOptimizer(this);
+        Thread t = new WbThread("OptimizeCol Thread")
+        {
+          @Override
+          public void run()
+          {
+            optimizer.optimizeColWidth(realColumn, true);
+          }
+        };
+        t.start();
       }
     }
   }
