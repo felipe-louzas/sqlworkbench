@@ -20,7 +20,11 @@
  */
 package workbench.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -40,7 +44,7 @@ import workbench.sql.parser.ParserType;
 public class DdlObjectInfo
 {
   private String objectType;
-  private String objectName;
+  private final List<String> objectNames = new ArrayList<>();
 
   public DdlObjectInfo(CharSequence sql)
   {
@@ -60,7 +64,7 @@ public class DdlObjectInfo
   @Override
   public String toString()
   {
-    return "Type: " + objectType + ", name: " + objectName;
+    return "Type: " + objectType + ", name: " + getObjectName();
   }
 
   public void setObjectType(String newType)
@@ -83,9 +87,16 @@ public class DdlObjectInfo
     return objectType;
   }
 
+  public List<String> getObjectNames()
+  {
+    return Collections.unmodifiableList(objectNames);
+  }
+
   public String getObjectName()
   {
-    return objectName;
+    if (objectNames.isEmpty()) return null;
+    if (objectNames.size() == 1) return objectNames.get(0);
+    return objectNames.stream().collect(Collectors.joining(", "));
   }
 
   private void parseSQL(CharSequence sql, WbConnection conn)
@@ -98,6 +109,7 @@ public class DdlObjectInfo
   {
     SQLLexer lexer = SQLLexerFactory.createLexer(type, sql);
     SQLToken t = lexer.getNextToken(false, false);
+    objectNames.clear();
 
     if (t == null) return;
     String verb = t.getContents();
@@ -144,6 +156,12 @@ public class DdlObjectInfo
           if (name == null) return;
         }
 
+        if (type == ParserType.Postgres && "DROP".equalsIgnoreCase(verb))
+        {
+          parsePgDropNames(lexer, name);
+          return;
+        }
+
         SQLToken next = lexer.getNextToken(false, false);
         if (next != null && next.getContents().equals("."))
         {
@@ -151,21 +169,23 @@ public class DdlObjectInfo
           if (next != null) name = next;
         }
 
-        if (this.objectType.equalsIgnoreCase("index") && name.getContents().equalsIgnoreCase("ON"))
+        if ("CREATE".equalsIgnoreCase(verb) &&
+            this.objectType.equalsIgnoreCase("index") &&
+            name.getContents().equalsIgnoreCase("ON"))
         {
-          // this is for unnamed indexes in Postgres to avoid the message
+          // this is for unnamed CREATE INDEX in Postgres to avoid the message
           // Index "ON" created.
-          this.objectName = null;
+          this.objectNames.clear();
         }
         else
         {
           if (next != null && name.getContents().endsWith("."))
           {
-            this.objectName = SqlUtil.removeObjectQuotes(name.getContents()) + SqlUtil.removeObjectQuotes(next.getContents());
+            this.objectNames.add(SqlUtil.removeObjectQuotes(name.getContents()) + SqlUtil.removeObjectQuotes(next.getContents()));
           }
           else
           {
-            this.objectName = SqlUtil.removeObjectQuotes(name.getContents());
+            this.objectNames.add(SqlUtil.removeObjectQuotes(name.getContents()));
           }
         }
       }
@@ -173,8 +193,36 @@ public class DdlObjectInfo
     catch (Exception e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error finding object info", e);
-      this.objectName = null;
+      this.objectNames.clear();
       this.objectType = null;
+    }
+  }
+
+  private void parsePgDropNames(SQLLexer lexer, SQLToken current)
+  {
+    String currentName = "";
+    Set<String> end = CollectionUtil.caseInsensitiveSet("CASCADE", "RESTRICT", "WITH", ";");
+    while (current != null)
+    {
+      if (current != null && end.contains(current.getText()) )
+      {
+        break;
+      }
+
+      if (",".equals(current.getText()))
+      {
+        this.objectNames.add(currentName);
+        currentName = "";
+      }
+      else
+      {
+        currentName += current.getText();
+      }
+      current = lexer.getNextToken(false, false);
+    }
+    if (!currentName.isBlank())
+    {
+      this.objectNames.add(currentName);
     }
   }
 }

@@ -47,7 +47,6 @@ import workbench.sql.parser.ParserType;
 import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
 import workbench.util.SqlUtil;
-import workbench.util.StringUtil;
 
 /**
  * Run a DDL (CREATE, DROP, ALTER, GRANT, REVOKE) command.
@@ -245,16 +244,22 @@ public class DdlCommand
   private void removeFromCache(DdlObjectInfo info)
   {
     if (info == null) return;
-    if (StringUtil.isEmptyString(info.getObjectName())) return;
+    if (info.getObjectNames().isEmpty()) return;
     if (currentConnection == null) return;
 
     if ("SCHEMA".equalsIgnoreCase(info.getObjectType()))
     {
-      currentConnection.getObjectCache().removeSchema(info.getObjectName());
+      for (String name : info.getObjectNames())
+      {
+        currentConnection.getObjectCache().removeSchema(name);
+      }
     }
     else
     {
-      currentConnection.getObjectCache().removeTable(new TableIdentifier(info.getObjectName(), currentConnection));
+      for (String name : info.getObjectNames())
+      {
+        currentConnection.getObjectCache().removeTable(new TableIdentifier(name, currentConnection));
+      }
     }
   }
 

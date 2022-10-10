@@ -171,6 +171,17 @@ public class DdlObjectInfoTest
     assertEquals("ix_one", info.getObjectName());
     assertEquals("INDEX", info.getObjectType());
   }
+  @Test
+  public void testPostgresMultiple()
+  {
+    DdlObjectInfo info;
+    info = new DdlObjectInfo("drop table a,  b, c cascade", ParserType.Postgres);
+    assertEquals("a, b, c", info.getObjectName());
+    info = new DdlObjectInfo("drop table public.a,  stuff.b, foo.c cascade", ParserType.Postgres);
+    assertEquals("public.a, stuff.b, foo.c", info.getObjectName());
+    info = new DdlObjectInfo("drop table public.a, b;", ParserType.Postgres);
+    assertEquals("public.a, b", info.getObjectName());
+  }
 
   @Test
   public void testSqlServer()
