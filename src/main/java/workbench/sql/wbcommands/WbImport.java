@@ -704,7 +704,8 @@ public class WbImport
         return result;
       }
 
-      if ((type.equals("xlsx") || (inputFile != null && inputFile.getExtension().equalsIgnoreCase("xlsx"))) && !PoiHelper.isXLSXAvailable())
+      if ((type.equals("xlsx") || (inputFile != null && !inputFile.isDirectory() && inputFile.getExtension().equalsIgnoreCase("xlsx")))
+           && !PoiHelper.isXLSXAvailable())
       {
         result.addErrorMessageByKey("ErrNoXLSX");
         return result;
