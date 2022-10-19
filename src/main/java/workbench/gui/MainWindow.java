@@ -2523,7 +2523,7 @@ public class MainWindow
     sqlTab.removeAll();
     WbAction.dispose(
       this.assignWorkspaceAction, this.closeWorkspaceAction, this.reloadWorkspace, this.loadWorkspaceAction, this.saveAsWorkspaceAction, this.saveWorkspaceAction,
-      this.dbExplorerAction, this.disconnectAction, this.reconnectAction, this.disconnectTab, this.createNewConnection,
+      this.dbExplorerAction, this.disconnectAction, this.reconnectAction, this.disconnectTab, this.createNewConnection, this.loadWkspFromBackupAction,
       this.newDbExplorerPanel, this.newDbExplorerWindow, this.showDbTree, this.showFileTree, this.nextTab, this.prevTab, this.showDbmsManual,
       this.manageMacros, this.showMacroPopup, this.createMacro, this.loadMacros, this.saveMacros
     );
@@ -3493,6 +3493,14 @@ public class MainWindow
       }
     }
 
+    if (currentWorkspace != null)
+    {
+      VariablePool.getInstance(getVariablePoolID()).removeVariables(currentWorkspace.getVariables());
+    }
+
+    // This needs to be done before calling checkWorkspaceActions()
+    this.currentWorkspace = null;
+
     WbSwingUtilities.invoke(() ->
     {
       try
@@ -3506,12 +3514,6 @@ public class MainWindow
       updateWindowTitle();
       checkWorkspaceActions();
     });
-
-    if (currentWorkspace != null)
-    {
-      VariablePool.getInstance(getVariablePoolID()).removeVariables(currentWorkspace.getVariables());
-    }
-    this.currentWorkspace = null;
 
     return true;
   }
