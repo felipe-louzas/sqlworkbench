@@ -3343,7 +3343,7 @@ public class Settings
     String sysValue = System.getProperty(property, null);
     if (sysValue != null)
     {
-      return Boolean.valueOf(sysValue);
+      return Boolean.parseBoolean(sysValue);
     }
     return this.props.getBoolProperty(property, defaultValue);
   }

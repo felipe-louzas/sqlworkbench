@@ -49,8 +49,12 @@ import workbench.util.CollectionUtil;
 import workbench.util.WbThread;
 
 /**
+ * A drop down to present a list of available "databases".
+ *
+ * Changing the "current database" is done using a {@link DbSwitcher}.
  *
  * @author Thomas Kellerer
+ * @see DbSwitcher
  */
 public class SwitchDbComboBox
   extends JComboBox<String>
@@ -140,7 +144,7 @@ public class SwitchDbComboBox
     if (dbs != null)
     {
       WbSwingUtilities.invoke(() -> {
-        setModel(new DefaultComboBoxModel<>(dbs.toArray(new String[0])));
+        setModel(new DefaultComboBoxModel<>(dbs.toArray(String[]::new)));
       });
       selectCurrentDatabase(connection);
     }

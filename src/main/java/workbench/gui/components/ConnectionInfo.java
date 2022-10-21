@@ -62,7 +62,14 @@ import workbench.gui.tools.ConnectionInfoPanel;
 import workbench.util.CollectionUtil;
 
 /**
+ * A panel to show information about a database connection.
+ *
+ * For read-only connections an icon will be displayed, that
+ * also handles a double click to temporarily disable the
+ * read-only mode.
+ *
  * @author  Thomas Kellerer
+ * @see SwitchDbComboBox
  */
 public class ConnectionInfo
   extends JPanel
@@ -372,15 +379,15 @@ public class ConnectionInfo
     else
     {
       ConnectionProfile profile = sourceConnection.getProfile();
-      boolean readOnly = profile.isReadOnly();
+      boolean profileReadOnly = profile.isReadOnly();
       boolean sessionReadonly = sourceConnection.isSessionReadOnly();
-      if (readOnly && !sessionReadonly)
+      if (profileReadOnly && !sessionReadonly)
       {
         // the profile is set to read only, but it was changed temporarily
         showIcon("unlocked");
         tooltip = ResourceMgr.getString("TxtConnReadOnlyOff");
       }
-      else if (readOnly || sessionReadonly)
+      else if (profileReadOnly || sessionReadonly)
       {
         showIcon("lock");
         tooltip = ResourceMgr.getString("TxtConnReadOnly");
@@ -402,7 +409,7 @@ public class ConnectionInfo
     if (iconLabel != null)
     {
       iconLabel.removeMouseListener(this);
-      remove(iconLabel);
+      contentPanel.remove(iconLabel);
       iconLabel = null;
     }
   }
@@ -413,9 +420,9 @@ public class ConnectionInfo
     {
       iconLabel = new JLabel();
       iconLabel.setOpaque(false);
-      iconLabel.addMouseListener(this);
       iconLabel.setBackground(getBackground());
     }
+    iconLabel.addMouseListener(this);
     ImageIcon png = IconMgr.getInstance().getPngIcon(name, IconMgr.getInstance().getToolbarIconSize());
     iconLabel.setIcon(png);
     GridBagConstraints gc = new GridBagConstraints();
@@ -431,8 +438,14 @@ public class ConnectionInfo
   @Override
   public void mouseClicked(MouseEvent e)
   {
-    if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && sourceConnection != null)
+    if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
     {
+      if (sourceConnection == null)
+      {
+        // should not happen
+        LogMgr.logWarning(new CallerInfo(){}, "Readonly change requested but no connection available!");
+        return;
+      }
       ConnectionProfile profile = sourceConnection.getProfile();
       boolean profileReadOnly = profile.isReadOnly();
       boolean sessionReadOnly = sourceConnection.isSessionReadOnly();
