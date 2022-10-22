@@ -443,12 +443,15 @@ public class ReplacePanel
 
   public void showReplaceDialog(Component caller, final String selectedText, String title)
   {
+    this.statusLabel.setText("");
+
     if (this.dialog != null)
     {
       this.dialog.setVisible(true);
       this.dialog.requestFocus();
       return;
     }
+
     try
     {
       Window w = WbSwingUtilities.getWindowAncestor(caller);
