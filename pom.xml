@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.sql-workbench</groupId>
   <artifactId>sqlworkbench</artifactId>
-  <version>128-SNAPSHOT</version>
+  <version>130-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
