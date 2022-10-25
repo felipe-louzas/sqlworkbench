@@ -71,10 +71,10 @@ public class PostgresEventTriggerReader
     for (int tr=0; tr < ds.getRowCount(); tr++)
     {
       int row = result.addRow();
-      result.setObjectName(row, ds.getTriggerName(row));
+      result.setObjectName(row, ds.getTriggerName(tr));
       result.setType(row, "EVENT TRIGGER");
-      result.setRemarks(row, ds.getRemarks(row));
-      result.getRow(row).setUserObject(ds.getUserObject(row));
+      result.setRemarks(row, ds.getRemarks(tr));
+      result.getRow(row).setUserObject(ds.getUserObject(tr));
     }
     return count > 0;
   }
