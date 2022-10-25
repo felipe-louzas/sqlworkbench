@@ -2054,11 +2054,11 @@ public class WbTable
    */
   private void initDefaultRenderers()
   {
-    // need to let JTable do some initialization stuff
+    // make sure the defaultRenderers are not null
     // otherwise setDefaultRenderer() bombs out with a NullPointerException
     if (this.defaultRenderersByColumnClass == null)
     {
-      createDefaultRenderers();
+      defaultRenderersByColumnClass = new UIDefaults();
     }
     initDateRenderers();
 

@@ -21,7 +21,10 @@
  */
 package workbench.db.postgres;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.List;
 
 import workbench.log.CallerInfo;
@@ -30,6 +33,7 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectListExtender;
 import workbench.db.TriggerDefinition;
@@ -38,8 +42,10 @@ import workbench.db.TriggerReader;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
+import workbench.storage.SortDefinition;
 
 import workbench.util.CollectionUtil;
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -64,19 +70,93 @@ public class PostgresEventTriggerReader
   {
     if (!DbMetadata.typeIncluded(TYPE, requestedTypes)) return false;
 
-    PostgresTriggerReader reader = new PostgresTriggerReader(con);
     TriggerListDataStore ds = new TriggerListDataStore();
     ds.removeColumn(TriggerReader.TRIGGER_SCHEMA_COLUMN);
-    int count = reader.retrieveEventTriggers(ds, objectNamePattern);
+    int count = retrieveEventTriggers(con, ds, objectNamePattern);
     for (int tr=0; tr < ds.getRowCount(); tr++)
     {
       int row = result.addRow();
       result.setObjectName(row, ds.getTriggerName(tr));
-      result.setType(row, "EVENT TRIGGER");
+      result.setType(row, ds.getTriggerType(tr));
       result.setRemarks(row, ds.getRemarks(tr));
       result.getRow(row).setUserObject(ds.getUserObject(tr));
     }
     return count > 0;
+  }
+
+  public int retrieveEventTriggers(WbConnection dbConnection, TriggerListDataStore triggers, String namePattern)
+  {
+    String sql =
+      "-- SQL Workbench/J \n" +
+      "select evtname as trigger, \n" +
+      "       evtevent as event, \n" +
+      "       pg_catalog.obj_description(oid, 'pg_event_trigger') as remarks \n" +
+      "FROM pg_catalog.pg_event_trigger";
+
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    Savepoint sp = null;
+
+    if (namePattern != null)
+    {
+      sql += " \nWHERE evtname ";
+      if (namePattern.contains("%"))
+      {
+        sql += " LIKE '" + SqlUtil.escapeQuotes(namePattern) + "'";
+      }
+      else
+      {
+        sql += " = '" + SqlUtil.escapeQuotes(namePattern) + "'";
+      }
+    }
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "event triggers", sql);
+
+    int triggerCount = 0;
+    try
+    {
+      sp = dbConnection.setSavepoint();
+      stmt = dbConnection.getSqlConnection().prepareStatement(sql);
+      rs = stmt.executeQuery();
+
+      while (rs.next())
+      {
+        triggerCount ++;
+        String name = rs.getString(1);
+        String event = rs.getString(2);
+        String remarks = rs.getString(3);
+        int row = triggers.addRow();
+        triggers.setTriggerName(row, name);
+        triggers.setTriggerType(row, "EVENT");
+        triggers.setEvent(row, event);
+        triggers.setRemarks(row, remarks);
+        TriggerDefinition trg = new TriggerDefinition(null, null, name);
+        trg.setComment(remarks);
+        trg.setTriggerType(TYPE);
+        triggers.getRow(row).setUserObject(trg);
+      }
+      dbConnection.releaseSavepoint(sp);
+    }
+    catch (Exception ex)
+    {
+      dbConnection.rollback(sp);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "event triggers", sql);
+    }
+    finally
+    {
+      JdbcUtils.closeAll(rs, stmt);
+    }
+
+    if (triggerCount > 0)
+    {
+      // sort the datastore again
+      SortDefinition def = new SortDefinition();
+      def.addSortColumn(0, true);
+      triggers.sort(def);
+    }
+    triggers.resetStatus();
+
+    return triggerCount;
   }
 
   @Override
