@@ -112,10 +112,16 @@ public class CreateDropScriptAction
   @Override
   public void selectionChanged(WbSelectionModel selection)
   {
+    if (source == null) return;
+    if (selection == null) return;
+    
     if (selection.hasSelection())
     {
       List<? extends DbObject> objects = source.getSelectedObjects();
+      if (CollectionUtil.isEmpty(objects)) return;
+
       DbMetadata meta = source.getConnection().getMetadata();
+      if (meta == null) return;
       Set<String> types = CollectionUtil.caseInsensitiveSet();
       types.addAll(meta.getTableTypes());
       for (DbObject dbo : objects)
