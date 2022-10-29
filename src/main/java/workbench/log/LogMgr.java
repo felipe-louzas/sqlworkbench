@@ -28,6 +28,7 @@ import workbench.resource.Settings;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
 /**
@@ -41,9 +42,12 @@ import workbench.util.WbFile;
  * <br>
  * {@link Log4JHelper} is used to check if the Log4J classes are available at
  * runtime (using reflection).
- * The Log4J classes are expected to be in a file called <tt>log4j.jar</tt>
- * that resides in the same directory as <tt>sqlworkbench.jar</tt> (for details
- * see the manifest that is created in build.xml)
+ * The Log4J classes (log4j-api.jar and log4j-core.jar) need to be available through
+ * the class path (for details see the manifest that is created in build.xml).
+ *
+ * @see SimpleLogger
+ * @see Log4JLogger
+ * @see WbLogger
  *
  * @author Thomas Kellerer
  */
@@ -51,11 +55,19 @@ public class LogMgr
 {
   public static final String DEFAULT_ENCODING = "UTF-8";
 
+  private static final String DUMMY_LOG4J_FACTORY = "org.apache.logging.log4j.simple.SimpleLoggerContextFactory";
+  private static final String LOG4J_FACTORY_PROP = "log4j2.loggerContextFactory";
   private static WbLogger logger = null;
   private static boolean useLog4J;
 
   public synchronized static void init(boolean useLog4j)
   {
+    if (!useLog4j && StringUtil.isBlank(System.getProperty(LOG4J_FACTORY_PROP)))
+    {
+      // Avoid an error message when Log4j is initialized and log4j-core is not available
+      System.setProperty(LOG4J_FACTORY_PROP, DUMMY_LOG4J_FACTORY);
+    }
+
     useLog4J = useLog4j && Log4JHelper.isLog4JAvailable();
     if (!useLog4j)
     {

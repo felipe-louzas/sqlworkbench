@@ -2813,8 +2813,13 @@ public class DbMetadata
   public boolean isExtendedTableType(String type)
   {
     if (isTableType(type)) return true;
-    List<String> types = dbSettings.getListProperty("additional.tabletypes");
+    List<String> types = getAdditionalTableTypes();
     return types.contains(type);
+  }
+
+  public List<String> getAdditionalTableTypes()
+  {
+    return dbSettings.getListProperty("additional.tabletypes");
   }
 
   public boolean isViewOrTable(String type)

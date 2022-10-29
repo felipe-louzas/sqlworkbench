@@ -250,8 +250,8 @@ public class GuiSettings
   {
     String value = Settings.getInstance().getProperty(PROPERTY_EXPAND_KEYSTROKE, "32,0");
     String[] elements = value.split(",");
-    int code = Integer.valueOf(elements[0]);
-    int modifier = Integer.valueOf(elements[1]);
+    int code = Integer.parseInt(elements[0]);
+    int modifier = Integer.parseInt(elements[1]);
     return KeyStroke.getKeyStroke(code, modifier);
   }
 
