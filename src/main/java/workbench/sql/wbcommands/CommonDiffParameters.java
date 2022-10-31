@@ -141,6 +141,12 @@ public class CommonDiffParameters
   public TableMapping getTables(WbConnection referenceConn, WbConnection targetCon)
     throws SQLException
   {
+    return getTables(referenceConn, targetCon, null);
+  }
+  
+  public TableMapping getTables(WbConnection referenceConn, WbConnection targetCon, List<String> types)
+    throws SQLException
+  {
     TableMapping mapping = new TableMapping();
     List<TableIdentifier> refTables = null;
     List<TableIdentifier> targetTables = null;
@@ -164,7 +170,16 @@ public class CommonDiffParameters
       refSchema = referenceConn.getMetadata().adjustSchemaNameCase(refSchema);
     }
 
-    String[] tableTypes = referenceConn.getMetadata().getTableTypesArray();
+    String[] tableTypes;
+    if (CollectionUtil.isEmpty(types))
+    {
+      tableTypes = referenceConn.getMetadata().getTableTypesArray();
+    }
+    else
+    {
+      tableTypes = types.toArray(String[]::new);
+    }
+
     SourceTableArgument refArg = new SourceTableArgument(refTableNames, excludedNames, refSchema, tableTypes, referenceConn);
     refTables = refArg.getTables();
     missingRefTables.addAll(refArg.getMissingTables());

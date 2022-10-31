@@ -86,6 +86,7 @@ public class WbDataDiff
   public static final String PARAM_SINGLE_FILE = "singleFile";
   public static final String PARAM_IGNORE_MISSING_TARGET = "ignoreMissingTarget";
   public static final String PARAM_INCLUDE_IDENTITY_COLS = "includeIdentityColumns";
+  public static final String PARAM_TABLE_TYPES = "tableTypes";
 
   private WbFile outputDir;
   private TableDataDiff dataDiff;
@@ -112,6 +113,7 @@ public class WbDataDiff
     cmdLine.addArgument(PARAM_SINGLE_FILE, ArgumentType.BoolArgument);
     cmdLine.addArgument(PARAM_IGNORE_MISSING_TARGET, ArgumentType.BoolSwitch);
     cmdLine.addArgument(PARAM_INCLUDE_IDENTITY_COLS, ArgumentType.BoolArgument);
+    cmdLine.addArgument(PARAM_TABLE_TYPES);
 
     CommonArgs.addCheckDepsParameter(cmdLine);
     CommonArgs.addSqlDateLiteralParameter(cmdLine);
@@ -267,10 +269,11 @@ public class WbDataDiff
     boolean ignoreMissing = cmdLine.getBoolean(PARAM_IGNORE_MISSING_TARGET, false);
     String nl = Settings.getInstance().getExternalEditorLineEnding();
     boolean useCDATA = cmdLine.getBoolean(WbExport.ARG_USE_CDATA, false);
-
+    List<String> types = cmdLine.getListValue(PARAM_TABLE_TYPES);
+    
     params.setIgnoreMissing(ignoreMissing);
 
-    CommonDiffParameters.TableMapping mapping = params.getTables(sourceCon, targetCon);
+    CommonDiffParameters.TableMapping mapping = params.getTables(sourceCon, targetCon, types);
     int tableCount = mapping.referenceTables.size();
     List<String> missing = params.getMissingReferenceTables();
     if (missing.size() > 0)
