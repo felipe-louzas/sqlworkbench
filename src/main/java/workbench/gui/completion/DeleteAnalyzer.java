@@ -28,7 +28,6 @@ import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.objectcache.Namespace;
 
-import workbench.util.SqlParsingUtil;
 import workbench.util.SqlUtil;
 import workbench.util.TableAlias;
 
@@ -51,7 +50,7 @@ public class DeleteAnalyzer
   {
     this.context = -1;
 
-    int wherePos = SqlParsingUtil.getInstance(dbConnection).getKeywordPosition("WHERE", sql);
+    int wherePos = parsingUtil.getKeywordPosition("WHERE", sql);
     checkOverwrite();
 
     if ( wherePos == -1 || wherePos > -1 && cursorPos < wherePos)

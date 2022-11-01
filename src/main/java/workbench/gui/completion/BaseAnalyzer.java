@@ -138,14 +138,15 @@ public abstract class BaseAnalyzer
   protected BaseAnalyzer parentAnalyzer;
   protected char catalogSeparator;
   protected char schemaSeparator;
-
+  protected SqlParsingUtil parsingUtil;
   protected SelectFKValueMarker fkMarker;
 
   public BaseAnalyzer(WbConnection conn, String statement, int cursorPos)
   {
     this.dbConnection = conn;
     this.sql = statement;
-    this.verb = SqlParsingUtil.getInstance(conn).getSqlVerb(sql);
+    this.parsingUtil = SqlParsingUtil.getInstance(conn);
+    this.verb = parsingUtil.getSqlVerb(sql);
     this.cursorPos = cursorPos;
     this.catalogSeparator = SqlUtil.getCatalogSeparator(this.dbConnection);
     this.schemaSeparator = SqlUtil.getSchemaSeparator(this.dbConnection);
@@ -504,7 +505,7 @@ public abstract class BaseAnalyzer
     }
     else if (context == CONTEXT_SYNTAX_COMPLETION || context == CONTEXT_STATEMENT_PARAMETER)
     {
-      this.title = SqlParsingUtil.getInstance(dbConnection).getSqlVerb(sql);
+      this.title = parsingUtil.getSqlVerb(sql);
     }
     else if (elements == null)
     {

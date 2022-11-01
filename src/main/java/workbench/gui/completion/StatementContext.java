@@ -92,7 +92,7 @@ public class StatementContext
 
     CommandTester wbTester = new CommandTester();
 
-    if ("SELECT".equalsIgnoreCase(verb) || WbSelectBlob.VERB.equalsIgnoreCase(verb))
+    if ("SELECT".equalsIgnoreCase(verb) || WbSelectBlob.VERB.equalsIgnoreCase(verb) || "TABLE".equalsIgnoreCase(verb))
     {
       verbAnalyzer = new SelectAnalyzer(conn, sql, pos);
     }

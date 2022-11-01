@@ -43,7 +43,6 @@ import workbench.sql.lexer.SQLToken;
 
 import workbench.util.Alias;
 import workbench.util.CollectionUtil;
-import workbench.util.SqlParsingUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.TableAlias;
@@ -77,29 +76,32 @@ public class SelectAnalyzer
   {
     this.context = NO_CONTEXT;
 
-    String currentWord = getCurrentWord();
+    if ("TABLE".equalsIgnoreCase(this.verb))
+    {
+      this.context = CONTEXT_TABLE_LIST;
+      this.namespaceForTableList = getNamespaceFromCurrentWord();
+      return;
+    }
 
     this.appendDot = false;
     setColumnPrefix(null);
 
-    SqlParsingUtil util = SqlParsingUtil.getInstance(dbConnection);
-
-    int fromPos = util.getFromPosition(this.sql);
+    int fromPos = parsingUtil.getFromPosition(this.sql);
     int wherePos = -1;
     int joinPos = -1;
     if (fromPos > 0)
     {
-      wherePos = util.getWherePosition(sql);
-      joinPos = util.getJoinPosition(sql);
+      wherePos = parsingUtil.getWherePosition(sql);
+      joinPos = parsingUtil.getJoinPosition(sql);
     }
 
-    int groupPos = util.getKeywordPosition("GROUP BY", sql);
-    int havingPos = util.getKeywordPosition("HAVING", sql);
-    int orderPos = util.getKeywordPosition("ORDER BY", sql);
+    int groupPos = parsingUtil.getKeywordPosition("GROUP BY", sql);
+    int havingPos = parsingUtil.getKeywordPosition("HAVING", sql);
+    int orderPos = parsingUtil.getKeywordPosition("ORDER BY", sql);
 
     int connectPos = -1;
-    int connectByPos = util.getKeywordPosition("CONNECT BY", sql);
-    int startWithPos = util.getKeywordPosition("START WITH", sql);
+    int connectByPos = parsingUtil.getKeywordPosition("CONNECT BY", sql);
+    int startWithPos = parsingUtil.getKeywordPosition("START WITH", sql);
 
     if (connectByPos > -1 && startWithPos > -1)
     {
