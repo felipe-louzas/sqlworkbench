@@ -45,6 +45,9 @@ import workbench.storage.ResultInfo;
 import static java.time.temporal.ChronoField.*;
 
 /**
+ * A RowDataReader for Postgres to handle time zones correctly.
+ *
+ * It also implements a workaround for reading numeric infinity values.
  *
  * @author Thomas Kellerer
  */
@@ -99,6 +102,47 @@ class PostgresRowDataReader
       {
         java8InfoLogged = true;
         LogMgr.logInfo(new CallerInfo(){}, "Using ZonedDateTime to read TIMESTAMP WITH TIME ZONE columns");
+      }
+    }
+  }
+
+  /**
+   * Read a BigDecimal handling Postgres' "infinity" values.
+   *
+   * Postgres supports "infinity" for numeric values, but Java's BigDecimal does not.
+   *
+   * This method handles the exception that results from calling getObject()
+   * when an infinity value is returned in the ResulSet and returns a Double value instead.
+   *
+   */
+  @Override
+  protected Object readNumeric(ResultHolder rs, int column)
+    throws SQLException
+  {
+    try
+    {
+      return rs.getObject(column);
+    }
+    catch (SQLException ex)
+    {
+      // SQLState 22003 is numeric_value_out_of_range
+      if ("22003".equals(ex.getSQLState()))
+      {
+        String val = rs.getString(column);
+        // Not sure if this is a good idea...
+        if ("infinity".equalsIgnoreCase(val))
+        {
+          return Double.POSITIVE_INFINITY;
+        }
+        else if ("-infinity".equalsIgnoreCase(val))
+        {
+          return Double.NEGATIVE_INFINITY;
+        }
+        throw ex;
+      }
+      else
+      {
+        throw ex;
       }
     }
   }

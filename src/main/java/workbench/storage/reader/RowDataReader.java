@@ -301,6 +301,10 @@ public class RowDataReader
       {
         value = readTimeTZValue(rs, column);
       }
+      else if (type == Types.NUMERIC)
+      {
+        value = readNumeric(rs, column);
+      }
       else if (useGetStringForBit && type == Types.BIT)
       {
         value = rs.getString(column);
@@ -412,6 +416,12 @@ public class RowDataReader
       throw new SQLException(error, e);
     }
     return value;
+  }
+
+  protected Object readNumeric(ResultHolder rs, int column)
+    throws SQLException
+  {
+    return rs.getObject(column);
   }
 
   protected Object readTimeValue(ResultHolder rs, int column)
