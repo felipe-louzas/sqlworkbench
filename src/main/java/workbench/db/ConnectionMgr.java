@@ -71,19 +71,14 @@ import workbench.util.WbPersistence;
 public class ConnectionMgr
 {
   private final Map<String, WbConnection> activeConnections = Collections.synchronizedMap(new HashMap<>());
-
   private final ProfileManager profileMgr;
   private List<DbDriver> drivers;
-
   private boolean templatesImported;
-
   private List<PropertyChangeListener> driverChangeListener;
+  private final Object driverLock = new Object();
+  private SshManager sshManager;
 
   private final static ConnectionMgr INSTANCE = new ConnectionMgr();
-
-  private final Object driverLock = new Object();
-
-  private SshManager sshManager = new SshManager();
 
   private ConnectionMgr()
   {
@@ -159,8 +154,12 @@ public class ConnectionMgr
     profileMgr.setSourceFile(profile, source);
   }
 
-  public SshManager getSshManager()
+  public synchronized SshManager getSshManager()
   {
+    if (sshManager == null)
+    {
+      sshManager = new SshManager();
+    }
     return sshManager;
   }
 
@@ -329,7 +328,7 @@ public class ConnectionMgr
     {
       return profileUrl;
     }
-    return sshManager.initializeSSHSession(config, profileUrl, key);
+    return getSshManager().initializeSSHSession(config, profileUrl, key);
   }
 
   private void copyPropsToSystem(ConnectionProfile profile)
@@ -364,7 +363,7 @@ public class ConnectionMgr
   {
     DbDriver firstMatch = null;
 
-    if (this.drivers == null) this.readDrivers();
+    this.readDrivers();
 
     if (driverName == null || driverName.length() == 0) return this.findDriver(drvClassName);
 
@@ -405,7 +404,7 @@ public class ConnectionMgr
 
   public DbDriver findDriverByClass(String drvClassName)
   {
-    if (this.drivers == null) this.readDrivers();
+    this.readDrivers();
 
     for (DbDriver driver : this.drivers)
     {
@@ -420,7 +419,7 @@ public class ConnectionMgr
 
   public DbDriver findRegisteredDriver(String drvClassName)
   {
-    if (this.drivers == null) this.readDrivers();
+    this.readDrivers();
 
     for (DbDriver driver : this.drivers)
     {
@@ -482,7 +481,7 @@ public class ConnectionMgr
    */
   public DbDriver registerDriver(String drvClassName, String jarFile)
   {
-    if (this.drivers == null) this.readDrivers();
+    this.readDrivers();
 
     DbDriver drv = new DbDriver("$JdbcDriver$-" + Integer.toString(drivers.size() + 1), drvClassName, jarFile);
     drv.setTemporary();
@@ -506,10 +505,7 @@ public class ConnectionMgr
    */
   public List<DbDriver> getDrivers()
   {
-    if (this.drivers == null)
-    {
-      this.readDrivers();
-    }
+    this.readDrivers();
     return this.drivers;
   }
 
@@ -601,7 +597,10 @@ public class ConnectionMgr
       this.closeConnection(con);
     }
     activeConnections.clear();
-    sshManager.disconnectAll();
+    if (sshManager != null)
+    {
+      sshManager.disconnectAll();
+    }
     DbObjectCacheFactory.getInstance().clear();
   }
 
@@ -699,7 +698,7 @@ public class ConnectionMgr
 
       conn.runPreDisconnectScript();
       removePropsFromSystem(conn.getProfile());
-      
+
       DbShutdownHook hook = DbShutdownFactory.getShutdownHook(conn);
       if (hook != null)
       {
@@ -712,7 +711,10 @@ public class ConnectionMgr
       if (releaseSsh)
       {
         ConnectionProfile profile = conn.getProfile();
-        sshManager.decrementUsage(profile.getSshConfig());
+        if (profile.getSshConfig() != null)
+        {
+          getSshManager().decrementUsage(profile.getSshConfig());
+        }
       }
       long duration = System.currentTimeMillis() - start;
       LogMgr.logDebug(new CallerInfo(){}, "Disconnecting connection with ID=" + conn.toString() + " took " + duration + "ms");
@@ -787,9 +789,11 @@ public class ConnectionMgr
   @SuppressWarnings("unchecked")
   private void readDrivers()
   {
-    LogMgr.logInfo(new CallerInfo(){}, "Using libdir: " + Settings.getInstance().getLibDir());
     synchronized (driverLock)
     {
+      if (this.drivers != null) return;
+
+      LogMgr.logInfo(new CallerInfo(){}, "Using libdir: " + Settings.getInstance().getLibDir());
       try
       {
         WbPersistence reader = new WbPersistence(Settings.getInstance().getDriverConfigFilename());
@@ -853,7 +857,7 @@ public class ConnectionMgr
 
     synchronized (driverLock)
     {
-      if (this.drivers == null) this.readDrivers();
+      this.readDrivers();
 
       List<DbDriver> templates = getDriverTemplates();
       for (DbDriver drv : templates)

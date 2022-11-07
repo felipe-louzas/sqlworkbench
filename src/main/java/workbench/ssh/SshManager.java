@@ -46,7 +46,7 @@ import com.jcraft.jsch.agentproxy.ConnectorFactory;
 public class SshManager
 {
   private final Object lock = new Object();
-  private Map<SshConfig, Entry> activeSessions = new HashMap<>();
+  private final Map<SshConfig, Entry> activeSessions = new HashMap<>();
   private final Map<String, String> passphrases = new ConcurrentHashMap<>(2);
 
   public String initializeSSHSession(ConnectionProfile profile)
