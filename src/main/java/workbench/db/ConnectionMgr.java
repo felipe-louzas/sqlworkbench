@@ -786,7 +786,6 @@ public class ConnectionMgr
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void readDrivers()
   {
     synchronized (driverLock)
@@ -850,13 +849,12 @@ public class ConnectionMgr
     return Settings.getInstance().getBoolProperty(Settings.PROP_READ_DRIVER_TEMPLATES, true);
   }
 
-  @SuppressWarnings("unchecked")
   private void importTemplateDrivers()
   {
-    if (this.templatesImported) return;
-
     synchronized (driverLock)
     {
+      if (this.templatesImported) return;
+
       this.readDrivers();
 
       List<DbDriver> templates = getDriverTemplates();
