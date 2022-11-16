@@ -30,11 +30,10 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -110,7 +109,7 @@ public class OpenEdgeSynonymReader
         String synonym = rs.getString(2);
         if (!rs.wasNull())
         {
-          TableIdentifier tbl = new TableIdentifier(null, schema, synonym, false);
+          TableIdentifier tbl = new TableIdentifier(null, schema, synonym);
           tbl.setType(SYN_TYPE_NAME);
           tbl.setNeverAdjustCase(true);
           result.add(tbl);
@@ -160,7 +159,7 @@ public class OpenEdgeSynonymReader
         String targetSchema = rs.getString(2);
         if (targetTable != null)
         {
-          result = new TableIdentifier(null, targetSchema, targetTable, false);
+          result = new TableIdentifier(null, targetSchema, targetTable);
           result.setNeverAdjustCase(true);
           result.setType(SYN_TYPE_NAME);
         }

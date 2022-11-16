@@ -29,8 +29,8 @@ import workbench.log.LogMgr;
 import workbench.db.DbMetadata;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListAppender;
-import workbench.db.TableIdentifier;
 import workbench.db.ObjectListDataStore;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 /**
@@ -113,7 +113,7 @@ public class DB2TempTableReader
         String tabSchema = rs.getString(1);
         String tabName = rs.getString(2);
         String remarks = rs.getString(3);
-        TableIdentifier tbl = new TableIdentifier(null, tabSchema, tabName, false);
+        TableIdentifier tbl = new TableIdentifier(null, tabSchema, tabName);
         tbl.setType("TABLE");
         tbl.setNeverAdjustCase(true);
         tbl.setComment(remarks);

@@ -31,8 +31,6 @@ import workbench.log.LogMgr;
 
 import workbench.storage.DataStore;
 
-import workbench.db.JdbcUtils;
-
 import static java.sql.DatabaseMetaData.*;
 
 /**
@@ -332,7 +330,7 @@ public class DefaultFKHandler
         String tname = rawList.getValueAsString(rawRow, tableCol);
         String schema = rawList.getValueAsString(rawRow, schemaCol);
         String catalog = rawList.getValueAsString(rawRow, catalogCol);
-        TableIdentifier tid = new TableIdentifier(catalog, schema, tname, false);
+        TableIdentifier tid = new TableIdentifier(catalog, schema, tname);
         tid.setNeverAdjustCase(true);
         String tableName = tid.getTableExpression(dbConnection);
 

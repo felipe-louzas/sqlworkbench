@@ -351,7 +351,7 @@ public class DbSettings
   {
     return getBoolProperty("timestamptz.use.zoneddatetime", false);
   }
-  
+
   public boolean useOffsetDateTimeForTimestampTZ()
   {
     return getBoolProperty("timestamptz.use.offsetdatetime", false);
@@ -2224,7 +2224,7 @@ public class DbSettings
     // Old behaviour where afterconnect.finishtrans was a true/false property
     if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
     {
-      boolean flag = Boolean.valueOf(value);
+      boolean flag = Boolean.parseBoolean(value);
       return flag ? EndReadOnlyTrans.rollback : EndReadOnlyTrans.never;
     }
     return Settings.getInstance().getEnumValue(value, EndReadOnlyTrans.never);
@@ -2420,7 +2420,7 @@ public class DbSettings
   {
     String value = getProperty(prop, null);
     if (value == null) return defaultValue;
-    return Boolean.valueOf(value);
+    return Boolean.parseBoolean(value);
   }
 
   public int getIntProperty(String prop, int defaultValue)

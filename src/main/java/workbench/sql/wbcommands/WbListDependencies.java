@@ -41,6 +41,7 @@ import workbench.sql.StatementRunnerResult;
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
 import workbench.util.CollectionUtil;
+import workbench.util.StringUtil;
 
 /**
  * List dependent or depending objects in the database
@@ -120,7 +121,15 @@ public class WbListDependencies
       objectName = cmdLine.getValue(ARG_OBJECT_NAME);
       objectType = cmdLine.getValue(ARG_OBJECT_TYPE);
       types.addAll(cmdLine.getListValue(ARG_DEPENDENCE_TYPE));
-      base = new TableIdentifier(catalog, schema, objectName);
+      if (StringUtil.isAllBlank(catalog, schema))
+      {
+        // This will parse "objectName" into catalog/schema/tablename
+        base = new TableIdentifier(objectName);
+      }
+      else
+      {
+        base = new TableIdentifier(catalog, schema, objectName);
+      }
     }
     else
     {

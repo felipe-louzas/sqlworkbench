@@ -32,11 +32,10 @@ import workbench.log.LogMgr;
 
 import workbench.db.DbMetadata;
 import workbench.db.DbObjectFinder;
+import workbench.db.JdbcUtils;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -133,7 +132,7 @@ public class SqlServerSynonymReader
 
         if (synName != null)
         {
-          TableIdentifier tbl = new TableIdentifier(synCat, synSchema, synName, false);
+          TableIdentifier tbl = new TableIdentifier(synCat, synSchema, synName);
           tbl.setType(SYN_TYPE_NAME);
           tbl.setNeverAdjustCase(true);
           result.add(tbl);
@@ -180,7 +179,7 @@ public class SqlServerSynonymReader
 
         if (targetTable != null)
         {
-          result = new TableIdentifier(targetCat, targetSchema, meta.removeQuotes(targetTable), false);
+          result = new TableIdentifier(targetCat, targetSchema, meta.removeQuotes(targetTable));
           result.setNeverAdjustCase(false);
         }
       }

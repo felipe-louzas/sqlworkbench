@@ -58,7 +58,6 @@ public class PostgresEnumReader
   implements ObjectListExtender
 {
   final String baseSql =
-    "-- SQL Workbench/J \n" +
     "select current_database() as enum_catalog, \n" +
     "       n.nspname as enum_schema,  \n" +
     "       t.typname as enum_name,  \n" +
@@ -79,6 +78,7 @@ public class PostgresEnumReader
 
     String enumName = obj.getObjectName();
     String sql =
+    "-- SQL Workbench/J \n" +
       "SELECT * \n" +
       "FROM (\n" + baseSql + "\n) ei\n" +
       "WHERE enum_name = '" + enumName + "' ";
@@ -133,9 +133,10 @@ public class PostgresEnumReader
   private String getSql(WbConnection con, String schema, String namePattern)
   {
     StringBuilder sql = new StringBuilder(baseSql.length() + 50);
-    sql.append("SELECT * FROM (");
+    sql.append("-- SQL Workbench/J \n");
+    sql.append("SELECT * FROM (\n");
     sql.append(baseSql);
-    sql.append(") ei ");
+    sql.append("\n) ei ");
 
     boolean whereAdded = false;
 

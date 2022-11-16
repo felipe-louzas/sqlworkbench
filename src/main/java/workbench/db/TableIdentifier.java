@@ -122,28 +122,12 @@ public class TableIdentifier
 
   public TableIdentifier(String aSchema, String aTable)
   {
-    this.setCatalog(null);
-    this.parseTableIdentifier(aTable);
-    this.setSchema(aSchema);
+    this(null, aSchema, aTable);
   }
 
   public TableIdentifier(String aCatalog, String aSchema, String aTable)
   {
-    this.parseTableIdentifier(aTable);
-    this.setCatalog(aCatalog);
-    this.setSchema(aSchema);
-  }
-
-  public TableIdentifier(String aCatalog, String aSchema, String aTable, boolean parseNames)
-  {
-    if (parseNames)
-    {
-      this.parseTableIdentifier(aTable);
-    }
-    else
-    {
-      this.setTablename(aTable);
-    }
+    this.setTablename(aTable);
     this.setCatalog(aCatalog);
     this.setSchema(aSchema);
   }

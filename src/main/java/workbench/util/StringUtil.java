@@ -683,7 +683,7 @@ public class StringUtil
     if (value == null) return false;
     try
     {
-       Double.parseDouble(value);
+       Double.valueOf(value);
        return true;
     }
     catch (Throwable e)
@@ -715,13 +715,26 @@ public class StringUtil
   }
 
   /**
-   * Checks if the given parameter is "empty",
+   * Checks if the given parameter is "empty".
    * i.e: either null, length == 0 or contains only whitespace
    */
   public static boolean isBlank(CharSequence value)
   {
     if (isEmptyString(value)) return true;
     return isWhitespace(value);
+  }
+
+  /**
+   * Checks if all given parameters are "empty".
+   */
+  public static boolean isAllBlank(CharSequence... values)
+  {
+    if (values == null) return true;
+    for (CharSequence value : values)
+    {
+      if (isNonBlank(value)) return false;
+    }
+    return true;
   }
 
   /**

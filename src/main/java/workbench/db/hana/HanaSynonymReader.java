@@ -30,13 +30,11 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 /**
  *
@@ -88,7 +86,7 @@ public class HanaSynonymReader
         String targetSchema = rs.getString(1);
         String targetTable = rs.getString(2);
         String type = rs.getString(3);
-        result = new TableIdentifier(null, targetSchema, targetTable, false);
+        result = new TableIdentifier(null, targetSchema, targetTable);
         result.setNeverAdjustCase(true);
         result.setType(type);
       }

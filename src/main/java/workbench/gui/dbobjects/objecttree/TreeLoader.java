@@ -652,7 +652,7 @@ public class TreeLoader
     ObjectTreeNode parent = node.getParent();
     if (parent == null)
     {
-      return new TableIdentifier(null, null, "$wb-dummy$", false);
+      return new TableIdentifier(null, null, "$wb-dummy$");
     }
     String schema = null;
     String catalog = null;
@@ -683,7 +683,7 @@ public class TreeLoader
         catalog = catNode.getName();
       }
     }
-    return new TableIdentifier(catalog, schema, "$wb-dummy$", false);
+    return new TableIdentifier(catalog, schema, "$wb-dummy$");
   }
 
   public void loadObjectsForTypeNode(ObjectTreeNode typeNode)

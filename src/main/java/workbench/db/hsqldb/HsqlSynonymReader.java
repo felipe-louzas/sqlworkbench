@@ -31,11 +31,11 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -85,7 +85,7 @@ public class HsqlSynonymReader
         String syn = rs.getString(3);
         if (!rs.wasNull())
         {
-          TableIdentifier tbl = new TableIdentifier(synCat, synSchema, syn, false);
+          TableIdentifier tbl = new TableIdentifier(synCat, synSchema, syn);
           tbl.setType(SYN_TYPE_NAME);
           tbl.setNeverAdjustCase(true);
           result.add(tbl);
@@ -135,7 +135,7 @@ public class HsqlSynonymReader
         String targetSchema = rs.getString(2);
         String targetName = rs.getString(3);
         String type = rs.getString(4);
-        result = new TableIdentifier(targetCatalog, targetSchema, targetName, false);
+        result = new TableIdentifier(targetCatalog, targetSchema, targetName);
         result.setType(type);
       }
     }

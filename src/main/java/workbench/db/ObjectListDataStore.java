@@ -202,7 +202,7 @@ public class ObjectListDataStore
     String name = getObjectName(row);
     String schema = getSchema(row);
     String cat = getCatalog(row);
-    TableIdentifier tbl = new TableIdentifier(cat, schema, name, false);
+    TableIdentifier tbl = new TableIdentifier(cat, schema, name);
     tbl.setNeverAdjustCase(true);
     tbl.setType(getType(row));
     tbl.setComment(getValueAsString(row, getRemarksColumnName()));

@@ -83,7 +83,7 @@ public class DerbySynonymReader
         String alias = rs.getString(2);
         if (!rs.wasNull())
         {
-          TableIdentifier tbl = new TableIdentifier(null, synSchema, alias, false);
+          TableIdentifier tbl = new TableIdentifier(null, synSchema, alias);
           tbl.setType(SYN_TYPE_NAME);
           tbl.setNeverAdjustCase(true);
           result.add(tbl);

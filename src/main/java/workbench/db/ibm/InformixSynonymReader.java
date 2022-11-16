@@ -95,7 +95,7 @@ public class InformixSynonymReader
         table = rs.getString(2);
         if (table != null)
         {
-          result = new TableIdentifier(null, owner, table, false);
+          result = new TableIdentifier(null, owner, table);
           result.setNeverAdjustCase(true);
         }
       }

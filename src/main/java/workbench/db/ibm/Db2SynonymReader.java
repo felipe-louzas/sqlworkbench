@@ -32,11 +32,10 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DBID;
+import workbench.db.JdbcUtils;
 import workbench.db.SynonymReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 
@@ -120,7 +119,7 @@ public class Db2SynonymReader
         table = rs.getString(2);
         if (table != null)
         {
-          result = new TableIdentifier(null, owner, table, false);
+          result = new TableIdentifier(null, owner, table);
           result.setNeverAdjustCase(true);
         }
       }
