@@ -4,9 +4,10 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2022-10-23">
-    <entry dev-build="1" type="fix">For PostgreSQL, retrieving event triggers did not work any more.</entry>  
+    <entry dev-build="1" type="fix">Table names that contain a dot (e.g. "some.table") were not handled correctly when generating queries for them.</entry>
+    <entry dev-build="1" type="fix">For PostgreSQL, retrieving event triggers did not work any more.</entry>
   </release>
-  
+
   <release build="129" date="2022-10-23">
     <entry dev-build="5" type="enh">Double clicking on the grid line of a header column now adjusts the column width.</entry>
     <entry dev-build="3" type="enh">For DB2 for i, PostgreSQL and SQL Server additional connection properties are now shown in the "Connection Info"</entry>

@@ -1524,7 +1524,7 @@ public class DataStore
 
     int rowCount = 0;
     final int reportInterval = Settings.getInstance().getIntProperty("workbench.gui.data.reportinterval", 10);
-    final int checkInterval = Settings.getInstance().getLowMemoryCheckInterval();
+    final int checkInterval = calculateMemoryCheckInterval();
 
     if (bufferData && this.data == null)
     {
@@ -1579,7 +1579,7 @@ public class DataStore
         // as we silently want to use the data that has been retrieved so far
         // the Exception should not be passed to the caller
         LogMgr.logInfo(ci, "Retrieve cancelled");
-        // do not resetChangedFlags the cancelRetrieve flag, because this is checked
+        // do not reset the cancelRetrieve flag, because this is checked
         // by the caller!
       }
       else
@@ -1596,6 +1596,7 @@ public class DataStore
     }
     finally
     {
+
       this.modified = false;
     }
 
@@ -1604,6 +1605,30 @@ public class DataStore
       throw new LowMemoryException();
     }
     return rowCount;
+  }
+
+  private int calculateMemoryCheckInterval()
+  {
+    int interval = Settings.getInstance().getLowMemoryCheckInterval();
+    if (this.resultInfo == null) return interval;
+
+    for (int i=0; i < resultInfo.getColumnCount(); i++)
+    {
+      int type = resultInfo.getColumnType(i);
+      String dbmsType = resultInfo.getDbmsTypeName(i);
+
+      if (SqlUtil.isClobType(type, true) ||
+          SqlUtil.isBlobType(type) ||
+          SqlUtil.isXMLType(type, dbmsType) ||
+          dbmsType.toLowerCase().contains("json")
+         )
+      {
+        interval = Settings.getInstance().getLowMemoryCheckIntervalWithLargeColumns();
+        LogMgr.logDebug(new CallerInfo(){}, "Using memory check interval of " + interval + " because of XML, CLOB or JSON columns");
+        break;
+      }
+    }
+    return interval;
   }
 
   /**

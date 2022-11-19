@@ -902,6 +902,11 @@ public class Settings
   {
     return getIntProperty("workbench.gui.data.memcheckinterval", 1000);
   }
+  
+  public int getLowMemoryCheckIntervalWithLargeColumns()
+  {
+    return getIntProperty("workbench.gui.largedata.memcheckinterval", 5);
+  }
 
   public boolean getFixSqlServerTimestampDisplay()
   {
