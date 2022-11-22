@@ -73,7 +73,7 @@ Supported parameters:
           <xsl:text> </xsl:text><xsl:value-of select="@name"/><xsl:text> </xsl:text><xsl:value-of select="@value"/>
         </xsl:otherwise>
       </xsl:choose>
-    </xsl:for-each>
+  </xsl:for-each>
     <xsl:value-of select="$stmt-terminator"/>
     <xsl:value-of select="$newline"/>
   </xsl:for-each>
@@ -132,9 +132,9 @@ Supported parameters:
   </xsl:for-each>
   <xsl:value-of select="$newline"/>
 
-  <xsl:text>-- Add Tables without Foreign Keys</xsl:text>
+  <xsl:text>-- Add Tables without Foreign Keys and Constraints</xsl:text>
   <xsl:value-of select="$newline"/>
-  <!-- Added Tables without Foreign Keys-->
+  <!-- Added Tables without Foreign Keys and Constraints-->
   <xsl:apply-templates select="/schema-diff/add-table"/>
 
   <xsl:text>-- Drop Foreign Keys of Modified Tables</xsl:text>
@@ -240,6 +240,24 @@ Supported parameters:
       <xsl:value-of select="."/>
       <xsl:value-of select="$stmt-terminator"/>
       <xsl:value-of select="$newline"/>
+    </xsl:for-each>
+  </xsl:for-each>
+
+  <xsl:text>-- Create constraints of new tables</xsl:text>
+  <xsl:value-of select="$newline"/>
+  <!-- Constraints of Added Tables -->
+  <xsl:for-each select="/schema-diff/add-table">
+    <xsl:variable name="tableFk">
+      <xsl:call-template name="write-object-name">
+        <xsl:with-param name="objectname" select="@name"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="tableFkSchema" select="table-def/table-schema"/>
+    <xsl:for-each select="table-def/index-def">
+      <xsl:call-template name="create-constraint">
+        <xsl:with-param name="tableschema" select="$tableFkSchema"/>
+        <xsl:with-param name="tablename" select="$tableFk"/>
+      </xsl:call-template>
     </xsl:for-each>
   </xsl:for-each>
 
@@ -727,12 +745,12 @@ Supported parameters:
   <xsl:value-of select="$newline"/>
 </xsl:template>
 
-<!-- Create Table Definition without foreign keys-->
+<!-- Create Table Definition without foreign keys and constraints-->
 <xsl:template match="table-def">
   <xsl:variable name="tablename">
     <xsl:call-template name="write-object-name">
-    <xsl:with-param name="objectname" select="table-name"/>
-  </xsl:call-template>
+      <xsl:with-param name="objectname" select="table-name"/>
+    </xsl:call-template>
   </xsl:variable>
   <xsl:text>CREATE TABLE </xsl:text>
   <xsl:value-of select="concat($target-schema, '.', $tablename)"/>
@@ -754,30 +772,6 @@ Supported parameters:
   <xsl:text>)</xsl:text><xsl:value-of select="$stmt-terminator"/>
   <xsl:value-of select="$newline"/>
   <xsl:value-of select="$newline"/>
-
-  <xsl:variable name="pkcount">
-    <xsl:value-of select="count(column-def[primary-key='true'])"/>
-  </xsl:variable>
-
-  <xsl:if test="$pkcount &gt; 0">
-    <xsl:text>ALTER TABLE </xsl:text>
-    <xsl:value-of select="concat($target-schema,  '.', $tablename)"/>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>  ADD CONSTRAINT </xsl:text>
-    <xsl:value-of select="concat('pk_', $tablename)"/>
-    <xsl:value-of select="$newline"/>
-    <xsl:text>  PRIMARY KEY (</xsl:text>
-    <xsl:for-each select="column-def[primary-key='true']">
-      <xsl:value-of select="column-name"/>
-      <xsl:if test="position() &lt; last()">
-        <xsl:text>, </xsl:text>
-      </xsl:if>
-    </xsl:for-each>
-    <xsl:text>)</xsl:text><xsl:value-of select="$stmt-terminator"/>
-    <xsl:value-of select="$newline"/>
-    <xsl:value-of select="$newline"/>
-  </xsl:if>
-
 </xsl:template>
 
 <xsl:template name="write-column-definition">
@@ -907,6 +901,43 @@ Supported parameters:
       <xsl:text>  DEFERRABLE INITIALLY IMMEDIATE</xsl:text>
     </xsl:when>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template name="create-constraint">
+  <xsl:param name="tableschema"/>
+  <xsl:param name="tablename"/>
+  <xsl:text>ALTER TABLE </xsl:text>
+  <xsl:call-template name="write-object-name">
+    <xsl:with-param name="objectname" select="$tableschema"/>
+  </xsl:call-template>
+  <xsl:text>.</xsl:text>
+  <xsl:call-template name="write-object-name">
+    <xsl:with-param name="objectname" select="$tablename"/>
+  </xsl:call-template>
+  <xsl:value-of select="$newline"/>
+  <xsl:text>  ADD CONSTRAINT </xsl:text>
+  <xsl:call-template name="write-object-name">
+    <xsl:with-param name="objectname" select="name"/>
+  </xsl:call-template>
+  <xsl:value-of select="$newline"/>
+  <xsl:variable name="pk" select="primary-key"/>
+  <xsl:variable name="unique" select="unique"/>
+  <xsl:if test="$pk = 'true'">
+    <xsl:text>  PRIMARY KEY</xsl:text>
+  </xsl:if>
+  <xsl:if test="$pk = 'false' and $unique = 'true'">
+    <xsl:text>  UNIQUE</xsl:text>
+  </xsl:if>
+  <xsl:text> (</xsl:text>
+  <xsl:for-each select="column-list/column">
+    <xsl:value-of select="@name"/>
+    <xsl:if test="position() &lt; last()">
+      <xsl:text>,</xsl:text>
+    </xsl:if>
+  </xsl:for-each>
+  <xsl:text>)</xsl:text>
+  <xsl:value-of select="$stmt-terminator"/>
+  <xsl:value-of select="$newline"/>
 </xsl:template>
 
 <xsl:template name="create-index">
