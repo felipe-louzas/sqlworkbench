@@ -39,9 +39,40 @@ Supported parameters:
       <xsl:with-param name="objectname" select="sequence-name"/>
     </xsl:call-template>
     <xsl:for-each select="sequence-properties/property">
-        <xsl:if test="@name != 'LAST_VALUE'">
+      <xsl:choose>
+        <xsl:when test="@name = 'ACL'">
+        </xsl:when>
+        <xsl:when test="@name = 'CYCLE'">
+          <xsl:choose>
+            <xsl:when test="@value = 'true'">
+              <xsl:text> CYCLE</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text> NO CYCLE</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:when test="@name = 'DATA_TYPE'">
+          <xsl:text> AS </xsl:text><xsl:value-of select="@value"/>
+        </xsl:when>
+        <xsl:when test="@name = 'LAST_VALUE' and @value != ''">
+          <xsl:text> START </xsl:text>
+        </xsl:when>
+        <xsl:when test="@name = 'LAST_VALUE' and @value = ''">
+        </xsl:when>
+        <xsl:when test="@name = 'MAX_VALUE'">
+          <xsl:text> MAXVALUE </xsl:text><xsl:value-of select="@value"/>
+        </xsl:when>
+        <xsl:when test="@name = 'MIN_VALUE'">
+          <xsl:text> MINVALUE </xsl:text><xsl:value-of select="@value"/>
+        </xsl:when>
+        <xsl:when test="@name = 'OWNED_BY'">
+          <xsl:text> OWNED BY </xsl:text><xsl:value-of select="@value"/>
+        </xsl:when>
+        <xsl:otherwise>
           <xsl:text> </xsl:text><xsl:value-of select="@name"/><xsl:text> </xsl:text><xsl:value-of select="@value"/>
-        </xsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:for-each>
     <xsl:value-of select="$stmt-terminator"/>
     <xsl:value-of select="$newline"/>
