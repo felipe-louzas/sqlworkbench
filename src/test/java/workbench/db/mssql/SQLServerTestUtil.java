@@ -62,7 +62,7 @@ public class SQLServerTestUtil
       String host = getProperty("wbjunit.mssql.host", "localhost");
 
       ArgumentParser parser = new AppArguments();
-      parser.parse("-url='jdbc:sqlserver://" + host + ":" + port + ";databaseName=" + dbname + "' -username=" + username + " -password=" + pwd + " -driver=com.microsoft.sqlserver.jdbc.SQLServerDriver");
+      parser.parse("-url='jdbc:sqlserver://" + host + ":" + port + ";databaseName=" + dbname + ";encrypt=false' -username=" + username + " -password=" + pwd + " -driver=com.microsoft.sqlserver.jdbc.SQLServerDriver");
       ConnectionProfile prof = BatchRunner.createCmdLineProfile(parser);
       prof.setName(PROFILE_NAME);
       ConnectionMgr.getInstance().addProfile(prof);

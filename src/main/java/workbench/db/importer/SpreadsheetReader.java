@@ -73,7 +73,7 @@ public interface SpreadsheetReader
       }
       else if (ext.equals("ods"))
       {
-        return new OdsReader(inputFile, sheetIndex, sheetName);
+        return new SODSReader(inputFile, sheetIndex, sheetName);
       }
       return null;
     }

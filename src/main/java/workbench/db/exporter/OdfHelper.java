@@ -22,7 +22,7 @@
 package workbench.db.exporter;
 
 /**
- * Test if ODF Dom and Simple ODF classes are available on the classpath.
+ * Test if ODF classes are available on the classpath.
  *
  * @author Thomas Kellerer
  */
@@ -31,7 +31,7 @@ public class OdfHelper
   private static boolean tested;
   private static boolean available;
 
-  public static boolean isSimpleODFAvailable()
+  public static boolean isODFAvailable()
   {
     if (tested)
     {
@@ -41,7 +41,7 @@ public class OdfHelper
     try
     {
       tested = true;
-      Class.forName("org.odftoolkit.simple.SpreadsheetDocument");
+      Class.forName("com.github.miachm.sods.SpreadSheet");
       available = true;
     }
     catch (Throwable th)

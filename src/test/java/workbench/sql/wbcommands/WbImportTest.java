@@ -165,7 +165,7 @@ public class WbImportTest
         "create table data (id integer, name varchar(100));\n" +
         "commit;\n");
 
-      File input = util.getResourceFile(this.getClass(), "column_expression.xlsx");
+      File input = TestUtil.getResourceFile(this.getClass(), "column_expression.xlsx");
 
       WbImport cmd = new WbImport();
       cmd.setConnection(con);
@@ -308,7 +308,7 @@ public class WbImportTest
     util.dropAll(connection);
     InputStream in = TableDependencySorterTest.class.getResourceAsStream("hr_schema.sql");
     TestUtil.executeScript(connection, in);
-    File input = util.getResourceFile(this, "hr.xlsx");
+    File input = TestUtil.getResourceFile(this, "hr.xlsx");
 
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' -type=xlsx -sheetNumber=* -header=true -continueonerror=false -checkDependencies=true");
@@ -327,10 +327,10 @@ public class WbImportTest
   }
 
   @Test
-  public void testMultiSheetImport()
+  public void testMultiSheetODSImport()
     throws Exception
   {
-    File input = util.getResourceFile(this, "person_orders.ods");
+    File input = TestUtil.getResourceFile(this, "person_orders.ods");
 
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' -type=ods -sheetNumber=* -header=true -continueonerror=false ");
@@ -518,7 +518,7 @@ public class WbImportTest
       "drop table person;\n" +
       "commit;");
 
-    File input = util.getResourceFile(this, "person_orders.ods");
+    File input = TestUtil.getResourceFile(this, "person_orders.ods");
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' " +
       "-type=ods " +
@@ -538,7 +538,7 @@ public class WbImportTest
   public void testSpreadSheetIgnoreColumn()
     throws Exception
   {
-    File input = util.getResourceFile(this, "data-2.ods");
+    File input = TestUtil.getResourceFile(this, "data-2.ods");
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' " +
       "-type=ods " +
@@ -563,7 +563,7 @@ public class WbImportTest
   public void testOdsImport()
     throws Exception
   {
-    File input = util.getResourceFile(this, "data.ods");
+    File input = TestUtil.getResourceFile(this, "data.ods");
 
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + input.getAbsolutePath() + "' " +
@@ -1991,7 +1991,7 @@ public class WbImportTest
   public void testGZIPImport()
     throws Exception
   {
-    File inputFile = util.getResourceFile(getClass(), "gzip_input.txt.gz");
+    File inputFile = TestUtil.getResourceFile(getClass(), "gzip_input.txt.gz");
     StatementRunnerResult result = importCmd.execute(
       "wbimport -file='" + inputFile.getAbsolutePath() + "' -type=text -header=true -continueonerror=false -delimiter=',' -table=junit_test");
     assertTrue(result.getMessages().toString(), result.isSuccess());

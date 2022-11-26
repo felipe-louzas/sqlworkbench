@@ -21,9 +21,13 @@
  */
 package workbench.util;
 
+import java.util.List;
+
 import workbench.WbTestCase;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -45,33 +49,33 @@ public class LobFileParameterParserTest
     String sql = "update bla set col = {$blobfile=c:/temp/test.data} where x=1";
 
     LobFileParameterParser p = new LobFileParameterParser(sql);
-    LobFileParameter[] parms = p.getParameters();
+    List<LobFileParameter> parms = p.getParameters();
     assertNotNull(parms);
-    assertEquals("File not recognized", 1, parms.length);
-    assertEquals("Wrong filename", "c:/temp/test.data", parms[0].getFilename());
+    assertEquals("File not recognized", 1, parms.size());
+    assertEquals("Wrong filename", "c:/temp/test.data", parms.get(0).getFilename());
 
     sql = "update bla set col = {$clobfile=c:/temp/test.data encoding=UTF8} where x=1";
     p = new LobFileParameterParser(sql);
     parms = p.getParameters();
     assertNotNull(parms);
-    assertEquals("File not recognized", 1, parms.length);
-    assertEquals("Wrong filename", "c:/temp/test.data", parms[0].getFilename());
-    assertEquals("Wrong encoding", "UTF8", parms[0].getEncoding());
+    assertEquals("File not recognized", 1, parms.size());
+    assertEquals("Wrong filename", "c:/temp/test.data", parms.get(0).getFilename());
+    assertEquals("Wrong encoding", "UTF8", parms.get(0).getEncoding());
 
     sql = "update bla set col = {$clobfile='c:/my data/test.data' encoding='UTF-8'} where x=1";
     p = new LobFileParameterParser(sql);
     parms = p.getParameters();
     assertNotNull(parms);
-    assertEquals("File not recognized", 1, parms.length);
-    assertEquals("Wrong filename", "c:/my data/test.data", parms[0].getFilename());
-    assertEquals("Wrong encoding", "UTF-8", parms[0].getEncoding());
+    assertEquals("File not recognized", 1, parms.size());
+    assertEquals("Wrong filename", "c:/my data/test.data", parms.get(0).getFilename());
+    assertEquals("Wrong encoding", "UTF-8", parms.get(0).getEncoding());
 
     sql = "{$blobfile=c:/temp/test.data}";
     p = new LobFileParameterParser(sql);
     parms = p.getParameters();
     assertNotNull(parms);
-    assertEquals("File not recognized", 1, parms.length);
-    assertEquals("Wrong filename returned", "c:/temp/test.data", parms[0].getFilename());
+    assertEquals("File not recognized", 1, parms.size());
+    assertEquals("Wrong filename returned", "c:/temp/test.data", parms.get(0).getFilename());
   }
 
 }

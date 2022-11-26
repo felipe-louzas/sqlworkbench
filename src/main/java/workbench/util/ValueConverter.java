@@ -474,38 +474,43 @@ public class ValueConverter
       return null;
     }
 
+    String strValue = makeString(value);
+
     switch (type)
     {
       case Types.BIGINT:
-        return getLong(makeString(value));
+        return getLong(strValue);
 
       case Types.INTEGER:
       case Types.SMALLINT:
       case Types.TINYINT:
-        return getInt(makeString(value), type);
+        return getInt(strValue, type);
 
       case Types.NUMERIC:
       case Types.DECIMAL:
       case Types.DOUBLE:
       case Types.REAL:
       case Types.FLOAT:
-        return getBigDecimal(makeString(value), type);
+        return getBigDecimal(strValue, type);
 
       case Types.CHAR:
+      case Types.NCHAR:
       case Types.VARCHAR:
+      case Types.NVARCHAR:
       case Types.LONGVARCHAR:
+      case Types.LONGNVARCHAR:
         return value.toString();
 
       case Types.DATE:
-        if (value instanceof java.util.Date)
+        if (value instanceof java.util.Date || value instanceof LocalDate)
         {
           return value;
         }
-        if (StringUtil.isBlank(makeString(value))) return null;
+        if (StringUtil.isBlank(strValue)) return null;
 
         try
         {
-          return this.parseDate(makeString(value));
+          return this.parseDate(strValue);
         }
         catch (Exception e)
         {
@@ -517,18 +522,18 @@ public class ValueConverter
         {
           return value;
         }
-        String tzs = makeString(value);
-        if (StringUtil.isBlank(tzs)) return null;
+
+        if (StringUtil.isBlank(strValue)) return null;
         try
         {
           Object tzValue = null;
           if (timestampFormatter.patternContainesTimeZoneInformation())
           {
-            tzValue = this.parseTimestampTZ(tzs);
+            tzValue = this.parseTimestampTZ(strValue);
           }
           else
           {
-            tzValue = this.parseTimestamp(tzs);
+            tzValue = this.parseTimestamp(strValue);
           }
           return tzType.convertTimestampTZ(tzValue);
         }
@@ -538,15 +543,14 @@ public class ValueConverter
         }
 
       case Types.TIMESTAMP:
-        if (value instanceof java.util.Date)
+        if (value instanceof java.util.Date || value instanceof LocalDateTime || value instanceof java.sql.Timestamp)
         {
           return value;
         }
-        String ts = makeString(value);
-        if (StringUtil.isBlank(ts)) return null;
+        if (StringUtil.isBlank(strValue)) return null;
         try
         {
-          return this.parseTimestamp(ts);
+          return this.parseTimestamp(strValue);
         }
         catch (Exception e)
         {
@@ -554,16 +558,15 @@ public class ValueConverter
         }
 
       case Types.TIME:
-        if (value instanceof java.util.Date)
+        if (value instanceof java.util.Date || value instanceof LocalTime)
         {
           return value;
         }
-        String t = makeString(value);
-        if (StringUtil.isBlank(t)) return null;
+        if (StringUtil.isBlank(strValue)) return null;
 
         try
         {
-          return this.parseTime(t);
+          return this.parseTime(strValue);
         }
         catch (Exception e)
         {
@@ -574,24 +577,7 @@ public class ValueConverter
       case Types.BINARY:
       case Types.LONGVARBINARY:
       case Types.VARBINARY:
-        if (value instanceof String)
-        {
-          LobFileParameterParser p = null;
-          try
-          {
-            p = new LobFileParameterParser(value.toString());
-          }
-          catch (Exception e)
-          {
-            throw new ConverterException(value, type, e);
-          }
-          LobFileParameter[] parms = p.getParameters();
-          if (parms == null) return null;
-          String fname = parms[0].getFilename();
-          if (fname == null) return null;
-          return new File(fname);
-        }
-        else if (value instanceof File)
+        if (value instanceof File)
         {
           return value;
         }
@@ -599,7 +585,39 @@ public class ValueConverter
         {
           return value;
         }
+        else if (value instanceof String)
+        {
+          LobFileParameterParser p = new LobFileParameterParser(strValue);
+          if (p.getParameterCount() > 0)
+          {
+            LobFileParameter p1 = p.getParameters().get(0);
+            String fname = p1.getFilename();
+            if (fname == null) return null;
+            return new File(fname);
+          }
+        }
         return null;
+
+      case Types.CLOB:
+      case Types.NCLOB:
+        if (value instanceof String)
+        {
+          LobFileParameterParser p = new LobFileParameterParser(strValue);
+          if (p.getParameterCount() > 0 )
+          {
+            LobFileParameter p1 = p.getParameters().get(0);
+            String fname = p1.getFilename();
+            if (fname != null)
+            {
+              return new File(fname);
+            }
+          }
+        }
+        else if (value instanceof File)
+        {
+          return value;
+        }
+        return strValue;
 
       case Types.BIT:
       case Types.BOOLEAN:

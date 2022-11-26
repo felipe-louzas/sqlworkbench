@@ -1157,9 +1157,9 @@ public class WbExportTest
       LobFileStatement lob = new LobFileStatement(sql, this.basedir);
       assertEquals("No parameter detected", 1, lob.getParameterCount());
 
-      LobFileParameter[] parms = lob.getParameters();
-      assertNotNull("No encoding found in parameter", parms[0].getEncoding());
-      assertEquals("Wrong parameter", "UTF8", parms[0].getEncoding().toUpperCase());
+      List<LobFileParameter> parms = lob.getParameters();
+      assertNotNull("No encoding found in parameter", parms.get(0).getEncoding());
+      assertEquals("Wrong parameter", "UTF8", parms.get(0).getEncoding().toUpperCase());
     }
     finally
     {
@@ -1197,8 +1197,8 @@ public class WbExportTest
       LobFileStatement lob = new LobFileStatement(sql, this.basedir);
       assertEquals("No BLOB parameter detected", 1, lob.getParameterCount());
 
-      LobFileParameter[] parms = lob.getParameters();
-      assertEquals("Wrong parameter", true, parms[0].isBinary());
+      List<LobFileParameter> parms = lob.getParameters();
+      assertEquals("Wrong parameter", true, parms.get(0).isBinary());
     }
     finally
     {

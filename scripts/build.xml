@@ -162,7 +162,7 @@
     <jar compress="true" level="9" jarfile="${distdir}/${jarfile}">
       <manifest>
         <attribute name="Main-Class" value="workbench.WbStarter"/>
-        <attribute name="Class-Path" value=". ext/flatlaf.jar ext/poi.jar ext/poi-ooxml.jar ext/commons-codec.jar ext/commons-collections4.jar ext/commons-io.jar ext/commons-compress.jar ext/commons-logging.jar ext/poi-ooxml-lite.jar ext/simple-odf.jar ext/jna.jar ext/jna-platform.jar ext/xmlbeans.jar ext/poi-ooxml-full.jar ext/log4j-api.jar ext/log4j-core.jar ext/dbunit.jar ext/slf4j-api.jar ext/mail.jar ext/jsch.jar ext/"/>
+        <attribute name="Class-Path" value=". ext/flatlaf.jar ext/poi.jar ext/poi-ooxml.jar ext/commons-codec.jar ext/commons-collections4.jar ext/commons-io.jar ext/commons-compress.jar ext/commons-logging.jar ext/poi-ooxml-lite.jar ext/SODS.jar ext/jna.jar ext/jna-platform.jar ext/xmlbeans.jar ext/poi-ooxml-full.jar ext/log4j-api.jar ext/log4j-core.jar ext/dbunit.jar ext/slf4j-api.jar ext/mail.jar ext/jsch.jar ext/"/>
         <attribute name="Created-By" value="Thomas Kellerer (support@sql-workbench.eu)"/>
         <attribute name="Implementation-Title" value="SQL Workbench/J"/>
         <attribute name="Implementation-URL" value="http://www.sql-workbench.eu"/>

@@ -23,11 +23,15 @@ package workbench.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
+
 import workbench.TestUtil;
 import workbench.WbTestCase;
-import static org.junit.Assert.*;
-import org.junit.Test;
+
 import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -118,8 +122,8 @@ public class LobFileStatementTest
       String sql = "update bla set col = {$blobfile=" + f.getAbsolutePath() + "} where x = 1";
       LobFileStatement stmt = new LobFileStatement(sql);
       assertEquals("Wrong parameter count", 1, stmt.getParameterCount());
-      LobFileParameter[] parms = stmt.getParameters();
-      assertEquals("Wrong parameter type", true, parms[0].isBinary());
+      List<LobFileParameter> parms = stmt.getParameters();
+      assertEquals("Wrong parameter type", true, parms.get(0).isBinary());
 
       f = new File(util.getBaseDir(), "some file.data");
       f.createNewFile();
@@ -128,10 +132,10 @@ public class LobFileStatementTest
       stmt = new LobFileStatement(sql);
       assertEquals("Wrong parameter count", 1, stmt.getParameterCount());
       parms = stmt.getParameters();
-      assertEquals("Wrong parameter type", false, parms[0].isBinary());
-      assertEquals("Wrong encoding", "utf8", parms[0].getEncoding());
+      assertEquals("Wrong parameter type", false, parms.get(0).isBinary());
+      assertEquals("Wrong encoding", "utf8", parms.get(0).getEncoding());
 
-      File target = new File(parms[0].getFilename());
+      File target = new File(parms.get(0).getFilename());
       assertEquals("Wrong filename parsed", "some file.data", f.getName());
     }
     finally
@@ -162,7 +166,6 @@ public class LobFileStatementTest
       sql = "update bla set col = {$clobfile='" +  f.getAbsolutePath() + "' encoding='UTF-8'} where x = 1";
       stmt = new LobFileStatement(sql);
       assertEquals("Wrong SQL generated", "update bla set col =  ?  where x = 1", stmt.getPreparedSql());
-
     }
     finally
     {

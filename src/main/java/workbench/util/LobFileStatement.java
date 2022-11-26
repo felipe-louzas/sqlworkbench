@@ -33,6 +33,9 @@ import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -53,10 +56,9 @@ import workbench.db.WbConnection;
 public class LobFileStatement
   implements AutoCloseable
 {
-  private final String MARKER = "\\{\\$[cb]lobfile=[^\\}]*\\}";
+  public static final String MARKER = "\\{\\$[cb]lobfile=[^\\}]*\\}";
   private String sqlToUse;
-  private LobFileParameter[] parameters;
-  private int parameterCount = 0;
+  private final List<LobFileParameter> parameters = new ArrayList<>();
 
   public LobFileStatement(String sql)
     throws FileNotFoundException
@@ -67,37 +69,34 @@ public class LobFileStatement
   public LobFileStatement(String sql, final String dir)
     throws FileNotFoundException
   {
-
     LobFileParameterParser p = new LobFileParameterParser(sql);
+    this.parameters.addAll(p.getParameters());
 
-    this.parameters = p.getParameters();
-    if (this.parameters == null) return;
-
-    parameterCount = this.parameters.length;
-    for (int index=0; index < parameterCount; index++)
+    if (parameters.isEmpty() && (sql.contains("{$clob") || sql.contains("{$blob")))
     {
-      if (parameters[index] == null)
-      {
-        String msg = ResourceMgr.getString("ErrUpdateBlobSyntax");
-        throw new IllegalArgumentException(msg);
-      }
+      String msg = ResourceMgr.getString("ErrUpdateBlobSyntax");
+      throw new IllegalArgumentException(msg);
+    }
+    if (this.parameters.isEmpty()) return;
 
-      if (parameters[index].getFilename() == null)
+    for (LobFileParameter parameter : this.parameters)
+    {
+      if (parameter.getFilename() == null)
       {
         String msg = ResourceMgr.getString("ErrUpdateBlobNoFileParameter");
         throw new FileNotFoundException(msg);
       }
-      File f = new File(parameters[index].getFilename());
+      File f = new File(parameter.getFilename());
 
       if (!f.isAbsolute() && dir != null)
       {
-        f = new File(dir, parameters[index].getFilename());
-        parameters[index].setFilename(f.getAbsolutePath());
+        f = new File(dir, parameter.getFilename());
+        parameter.setFilename(f.getAbsolutePath());
       }
 
       if (f.isDirectory() || !f.exists())
       {
-        String msg = ResourceMgr.getFormattedString("ErrFileNotFound", parameters[index].getFilename());
+        String msg = ResourceMgr.getFormattedString("ErrFileNotFound", parameter.getFilename());
         throw new FileNotFoundException(msg);
       }
     }
@@ -109,26 +108,25 @@ public class LobFileStatement
     return sqlToUse;
   }
 
-  public LobFileParameter[] getParameters()
+  public List<LobFileParameter> getParameters()
   {
-    return parameters;
+    return Collections.unmodifiableList(parameters);
   }
 
   public int getParameterCount()
   {
-    return parameterCount;
+    return parameters.size();
   }
 
   public boolean containsParameter()
   {
-    return (parameterCount > 0);
+    return (parameters.size() > 0);
   }
 
   public PreparedStatement prepareStatement(WbConnection conn)
     throws SQLException, IOException
   {
-    if (this.parameters == null) return null;
-    if (this.parameters.length == 0) return null;
+    if (this.parameters.isEmpty()) return null;
 
     boolean supportsMeta = conn.getDbSettings().supportsParameterMetaData();
 
@@ -147,11 +145,12 @@ public class LobFileStatement
     }
 
     final int buffSize = 64*1024;
-    for (int i = 0; i < parameters.length; i++)
+    for (int i = 0; i < parameters.size(); i++)
     {
-      File f = new File(parameters[i].getFilename());
+      LobFileParameter param = parameters.get(i);
+      File f = new File(param.getFilename());
       int length = (int)f.length();
-      if (parameters[i].isBinary())
+      if (param.isBinary())
       {
         InputStream in = new BufferedInputStream(new FileInputStream(f), buffSize);
         BlobAccessType method = conn.getDbSettings().getBlobReadMethod();
@@ -168,14 +167,14 @@ public class LobFileStatement
             pstmt.setBlob(i+1, blob);
             break;
           default:
-            parameters[i].setDataStream(in);
+            param.setDataStream(in);
             pstmt.setBinaryStream(i + 1, in, length);
         }
       }
       else
       {
         // createBufferedReader can handle null for the encoding
-        Reader in = EncodingUtil.createBufferedReader(f, parameters[i].getEncoding());
+        Reader in = EncodingUtil.createBufferedReader(f, param.getEncoding());
 
         // The value of the length parameter is actually wrong if
         // a multi-byte encoding is used. So far only Derby seems to choke
@@ -183,7 +182,7 @@ public class LobFileStatement
         // which is probably very slow. So this is not turned on by default.
         if (conn.getDbSettings().needsExactClobLength())
         {
-          length = (int) FileUtil.getCharacterLength(f, parameters[i].getEncoding());
+          length = (int) FileUtil.getCharacterLength(f, param.getEncoding());
         }
 
         if (meta != null && SqlUtil.isXMLType(meta.getParameterType(i+1)))
@@ -194,7 +193,7 @@ public class LobFileStatement
         }
         else
         {
-          parameters[i].setDataStream(in);
+          param.setDataStream(in);
           pstmt.setCharacterStream(i+1, in, length);
         }
       }
@@ -211,7 +210,6 @@ public class LobFileStatement
 
   public void done()
   {
-    if (this.parameters == null) return;
     for (LobFileParameter parameter : parameters)
     {
       if (parameter != null)

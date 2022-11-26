@@ -235,7 +235,7 @@ public class WbImport
       types.add("xlsx");
     }
 
-    if (OdfHelper.isSimpleODFAvailable())
+    if (OdfHelper.isODFAvailable())
     {
       types.add("ods");
     }
@@ -711,7 +711,7 @@ public class WbImport
         return result;
       }
 
-      if (type.equals("ods") && !OdfHelper.isSimpleODFAvailable())
+      if (type.equals("ods") && !OdfHelper.isODFAvailable())
       {
         result.addErrorMessageByKey("ErrNoODS");
         return result;

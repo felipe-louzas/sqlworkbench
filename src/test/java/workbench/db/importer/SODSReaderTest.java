@@ -1,14 +1,14 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2022 Thomas Kellerer.
  *
- * Licensed under a modified Apache License, Version 2.0
+ * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
  * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at.
+ * You may obtain a copy of the License at
  *
- *     https://www.sql-workbench.eu/manual/license.html
+ *      https://www.sql-workbench.eu/manual/license.html
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,13 @@
  * limitations under the License.
  *
  * To contact the author please send an email to: support@sql-workbench.eu
- *
  */
 package workbench.db.importer;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import workbench.TestUtil;
@@ -32,15 +32,15 @@ import workbench.WbTestCase;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
 /**
  *
  * @author Thomas Kellerer
  */
-public class OdsReaderTest
+public class SODSReaderTest
   extends WbTestCase
 {
-  public OdsReaderTest()
+
+  public SODSReaderTest()
   {
     super("OdsReaderTest");
   }
@@ -49,9 +49,8 @@ public class OdsReaderTest
   public void testReadSecondSheet()
     throws Exception
   {
-    TestUtil util = getTestUtil();
-    File input = util.getResourceFile(this, "data.ods");
-    OdsReader reader = new OdsReader(input, 1, null);
+    File input = TestUtil.getResourceFile(this, "data.ods");
+    SODSReader reader = new SODSReader(input, 1, null);
     try
     {
       reader.load();
@@ -68,12 +67,34 @@ public class OdsReaderTest
   }
 
   @Test
+  public void testDateTimeTypes()
+    throws Exception
+  {
+    File input = TestUtil.getResourceFile(this, "date-time-types.ods");
+    SODSReader reader = new SODSReader(input, 0, null);
+    reader.load();
+    List<String> header = reader.getHeaderColumns();
+    assertEquals(3, header.size());
+    assertEquals("date_col", header.get(0));
+    assertEquals("time_col", header.get(1));
+    assertEquals("ts_col", header.get(2));
+
+    List<Object> values = reader.getRowValues(1);
+    assertEquals(3, values.size());
+    LocalDate ld = (LocalDate)values.get(0);
+    assertEquals(LocalDate.of(1980,11,1), ld);
+    LocalTime lt = (LocalTime)values.get(1);
+    assertEquals(LocalTime.of(23,54,14), lt);
+    LocalDateTime ldt = (LocalDateTime)values.get(2);
+    assertEquals(LocalDateTime.of(1990,10,1,17,4,6), ldt);
+  }
+
+  @Test
   public void testReader()
     throws Exception
   {
-    TestUtil util = getTestUtil();
-    File input = util.copyResourceFile(this, "data.ods");
-    OdsReader reader = new OdsReader(input, 0, null);
+    File input = TestUtil.getResourceFile(this, "data.ods");
+    SODSReader reader = new SODSReader(input, 0, null);
 
     try
     {
@@ -98,19 +119,16 @@ public class OdsReaderTest
       assertEquals("Arthur", s);
       s = (String)values.get(2);
       assertEquals("Dent", s);
-      Date hire = (Date)values.get(3);
+      LocalDate hire = (LocalDate)values.get(3);
       assertNotNull(hire);
-      SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-      String dt = fmt.format(hire);
-      assertEquals("2010-06-07", dt);
+      assertEquals(LocalDate.of(2010, 6, 7), hire);
+
       Double sal = (Double)values.get(4);
       assertNotNull(sal);
       assertEquals(4200.24, sal.doubleValue(), 0.01);
 
-      Date ts = (Date)values.get(5);
-      SimpleDateFormat tsFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-      String tsv = tsFmt.format(ts);
-      assertEquals("2012-04-05 16:17:18", tsv);
+      LocalDateTime ts = (LocalDateTime)values.get(5);
+      assertEquals(LocalDateTime.of(2012,4,5,16,17,18), ts);
 
       values = reader.getRowValues(2);
       assertEquals(6, values.size());
@@ -120,23 +138,21 @@ public class OdsReaderTest
       assertEquals("Ford", s);
       s = (String)values.get(2);
       assertEquals("Prefect", s);
-      hire = (Date)values.get(3);
+      hire = (LocalDate)values.get(3);
       assertNotNull(hire);
 
-      dt = fmt.format(hire);
-      assertEquals("1980-07-24", dt);
+      assertEquals(LocalDate.of(1980,7,24), hire);
       sal = (Double)values.get(4);
       assertNotNull(sal);
       assertEquals(1234.56, sal.doubleValue(), 0.01);
 
-      ts = (Date)values.get(5);
-      tsv = tsFmt.format(ts);
-      assertEquals("2012-07-08 15:16:17", tsv);
+      ts = (LocalDateTime)values.get(5);
+      assertEquals(LocalDateTime.of(2012,7,8,15,16,17), ts);
     }
     finally
     {
       reader.done();
     }
-    assertTrue(input.delete());
   }
+
 }
