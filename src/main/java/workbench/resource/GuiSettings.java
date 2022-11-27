@@ -631,6 +631,11 @@ public class GuiSettings
     return Settings.getInstance().getBoolProperty("workbench.gui.display.multiline.renderer.enabled", true);
   }
 
+  public static void setEnableMultilineRenderer(boolean flag)
+  {
+    Settings.getInstance().setProperty("workbench.gui.display.multiline.renderer.enabled", flag);
+  }
+
   public static int getMultiLineThreshold()
   {
     return Settings.getInstance().getIntProperty("workbench.gui.display.multiline.threshold", 250);
