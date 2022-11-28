@@ -90,6 +90,7 @@ public class WbListIndexes
 
     String schema = null;
     String catalog = null;
+    String indexPattern = null;
 
     if (cmdLine.hasUnknownArguments())
     {
@@ -102,18 +103,14 @@ public class WbListIndexes
     {
       schema = cmdLine.getValue(CommonArgs.ARG_SCHEMA);
       catalog = cmdLine.getValue(CommonArgs.ARG_CATALOG);
+      indexPattern = cmdLine.getValue(ARG_INDEX_NAME);
     }
-
-    String currentSchema = currentConnection.getMetadata().getCurrentSchema();
-    String currentCatalog = currentConnection.getMetadata().getCurrentCatalog();
-
-    String indexPattern = cmdLine.getValue(ARG_INDEX_NAME);
 
     List<IndexDefinition> indexes = null;
 
     if (cmdLine.isArgPresent(ARG_TABLE_NAME))
     {
-      SourceTableArgument tableArg = new SourceTableArgument(cmdLine.getValue(ARG_TABLE_NAME), null, StringUtil.coalesce(schema, currentSchema), currentConnection);
+      SourceTableArgument tableArg = new SourceTableArgument(cmdLine.getValue(ARG_TABLE_NAME), null, schema, currentConnection);
 
       List<TableIdentifier> tables = tableArg.getTables();
       indexes = new ArrayList<>();
@@ -131,7 +128,17 @@ public class WbListIndexes
         result.setFailure();
         return result;
       }
-      indexes = reader.getIndexes(StringUtil.coalesce(catalog, currentCatalog), StringUtil.coalesce(schema, currentSchema), null, indexPattern);
+
+      if (StringUtil.isBlank(catalog))
+      {
+        catalog = currentConnection.getMetadata().getCurrentCatalog();
+      }
+      if (StringUtil.isBlank(schema))
+      {
+        schema = currentConnection.getMetadata().getCurrentSchema();
+      }
+
+      indexes = reader.getIndexes(catalog, schema, null, indexPattern);
     }
 
     DataStore ds = reader.fillDataStore(indexes, true);
