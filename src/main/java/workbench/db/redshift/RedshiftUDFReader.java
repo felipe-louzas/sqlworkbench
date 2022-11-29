@@ -27,22 +27,19 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.JdbcProcedureReader;
+import workbench.db.JdbcUtils;
 import workbench.db.NoConfigException;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
 import workbench.db.WbConnection;
 import workbench.db.postgres.PGProcName;
 
-import workbench.log.LogMgr;
-
 import workbench.storage.DataStore;
 
 import workbench.util.ExceptionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -69,7 +66,12 @@ public class RedshiftUDFReader
   public DataStore getProcedures(String catalog, String schemaPattern, String procName)
     throws SQLException
   {
-    DataStore fullDs = super.getProcedures(catalog, procName, procName);
+    DataStore jdbcResult = super.getProcedures(catalog, procName, procName);
+    if (connection.getDbSettings().getBoolProperty("procedurereader.use.jdbc", true))
+    {
+      return jdbcResult;
+    }
+
     DataStore ds = buildProcedureListDataStore(this.connection.getMetadata(), true);
 
     if ("*".equals(schemaPattern) || "%".equals(schemaPattern))
@@ -88,16 +90,16 @@ public class RedshiftUDFReader
       namePattern = pg.getName();
     }
 
-    for (int i = 0; i < fullDs.getRowCount(); i++)
+    for (int i = 0; i < jdbcResult.getRowCount(); i++)
     {
-      String specname = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_SPECIFIC_NAME);
-      String cat = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_CATALOG);
-      String schema = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_SCHEMA);
-      String displayName = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME);
-      String bfDisplayName = i > 0 ? fullDs.getValueAsString(i - 1, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME) : "";
-      Object procType = fullDs.getValue(i, ProcedureReader.COLUMN_IDX_PROC_LIST_TYPE);
-      String remark = fullDs.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_REMARKS);
-      ProcedureDefinition def = (ProcedureDefinition)fullDs.getRow(i).getUserObject();
+      String specname = jdbcResult.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_SPECIFIC_NAME);
+      String cat = jdbcResult.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_CATALOG);
+      String schema = jdbcResult.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_SCHEMA);
+      String displayName = jdbcResult.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME);
+      String bfDisplayName = i > 0 ? jdbcResult.getValueAsString(i - 1, ProcedureReader.COLUMN_IDX_PROC_LIST_NAME) : "";
+      Object procType = jdbcResult.getValue(i, ProcedureReader.COLUMN_IDX_PROC_LIST_TYPE);
+      String remark = jdbcResult.getValueAsString(i, ProcedureReader.COLUMN_IDX_PROC_LIST_REMARKS);
+      ProcedureDefinition def = (ProcedureDefinition)jdbcResult.getRow(i).getUserObject();
 
       if ((namePattern == null || specname.contains(namePattern)) &&
           (schemaPattern == null || StringUtil.equalStringIgnoreCase(schema, schemaPattern)) &&
@@ -120,6 +122,60 @@ public class RedshiftUDFReader
 
   @Override
   public void readProcedureSource(ProcedureDefinition def, String catalogForSource, String schemaForSource)
+    throws NoConfigException
+  {
+    if (connection.getDbSettings().getBoolProperty("procedurereader.use.show", true))
+    {
+      showProcedureSource(def);
+    }
+    else
+    {
+      loadProcedureSource(def);
+    }
+  }
+
+  private void showProcedureSource(ProcedureDefinition def)
+    throws NoConfigException
+  {
+    PGProcName proc = new PGProcName(def);
+    String sql = "show procedure " + def.getObjectExpression(connection) + proc.getSignature();
+
+    LogMgr.logMetadataSql(new CallerInfo(){}, "procedure source", sql);
+    StringBuilder source = new StringBuilder(500);
+
+    ResultSet rs = null;
+    Savepoint sp = null;
+    Statement stmt = null;
+
+    try
+    {
+      if (useSavepoint)
+      {
+        sp = this.connection.setSavepoint();
+      }
+      stmt = connection.createStatementForQuery();
+      rs = stmt.executeQuery(sql);
+
+      while (rs.next())
+      {
+        source.append(rs.getString(1));
+      }
+      connection.releaseSavepoint(sp);
+    }
+    catch (SQLException e)
+    {
+      source = new StringBuilder(ExceptionUtil.getDisplay(e));
+      connection.rollback(sp);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedure source", sql);
+    }
+    finally
+    {
+      JdbcUtils.closeAll(rs, stmt);
+    }
+    def.setSource(source);
+  }
+
+  private void loadProcedureSource(ProcedureDefinition def)
     throws NoConfigException
   {
     PGProcName name = new PGProcName(def);
