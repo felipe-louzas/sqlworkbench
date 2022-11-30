@@ -54,6 +54,10 @@ public class TableSourceBuilderFactory
       case Greenplum:
         return new GreenplumTableSourceBuilder(con);
       case Redshift:
+        if (con.getDbSettings().isTableSourceRetrievalCustomized())
+        {
+          return new TableSourceBuilder(con);
+        }
         return new RedshiftTableSourceBuilder(con);
       case Derby:
         return new DerbyTableSourceBuilder(con);

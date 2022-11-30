@@ -135,8 +135,12 @@ public class TableSourceBuilder
     {
       TableDefinition def = meta.getTableDefinition(tbl);
       cols = def.getColumns();
-      indexDef = getIndexReader().getTableIndexList(def.getTable(), true);
       toShow = def.getTable();
+    }
+    
+    if (shouldIncludeIndexInTableSource())
+    {
+      indexDef = getIndexReader().getTableIndexList(toShow, true);
     }
 
     if (includeFk && dbConnection.getDbSettings().getGenerateTableFKSource())

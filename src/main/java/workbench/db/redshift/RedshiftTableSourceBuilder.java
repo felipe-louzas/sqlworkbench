@@ -62,12 +62,6 @@ public class RedshiftTableSourceBuilder
   public String getTableSource(TableIdentifier table, DropType drop, boolean includeFk, boolean includeGrants)
     throws SQLException
   {
-    String query = dbConnection.getDbSettings().getRetrieveObjectSourceSql(table.getType());
-    if (query != null)
-    {
-      return super.getNativeTableSource(table, drop);
-    }
-
     if ("TABLE".equals(table.getType()))
     {
       String sql = getBaseTableSource(table, drop != DropType.none);
