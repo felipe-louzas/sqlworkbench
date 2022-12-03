@@ -1515,6 +1515,11 @@ public class DbSettings
     return isObjectSourceRetrievalCustomized("table");
   }
 
+  public boolean isViewSourceRetrievalCustomized()
+  {
+    return isObjectSourceRetrievalCustomized("view");
+  }
+
   public boolean isObjectSourceRetrievalCustomized(String type)
   {
     if (DBID.Oracle.isDB(getDbId()))

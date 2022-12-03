@@ -332,15 +332,25 @@ public class ReaderFactory
   public static ViewReader createViewReader(WbConnection con)
   {
     DBID dbid = DBID.fromID(con.getDbId());
+    boolean isCustomized = con.getDbSettings().isViewSourceRetrievalCustomized();
+
     switch (dbid)
     {
       case DB2_ISERIES:
+        if (isCustomized)
+        {
+          return new DefaultViewReader(con);
+        }
         return new Db2ViewReader(con);
       case Postgres:
       case Yugabyte:
         return new PostgresViewReader(con);
       case MySQL:
       case MariaDB:
+        if (isCustomized)
+        {
+          return new DefaultViewReader(con);
+        }
         return new MySQLViewReader(con);
       case Oracle:
         return new OracleViewReader(con);
@@ -349,6 +359,10 @@ public class ReaderFactory
       case HANA:
         return new HanaViewReader(con);
       case Clickhouse:
+        if (isCustomized)
+        {
+          return new DefaultViewReader(con);
+        }
         return new ClickhouseViewReader(con);
     }
     return new DefaultViewReader(con);
