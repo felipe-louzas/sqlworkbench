@@ -169,9 +169,11 @@ percentile_disc
 pg_cancel_backend
 pg_client_encoding
 pg_column_size
+pg_current_wal_lsn
 pg_database_size
 pg_get_serial_sequence
 pg_indexes_size
+pg_ls_waldir
 pg_notify
 pg_partition_ancestors
 pg_partition_root
@@ -250,8 +252,8 @@ translate
 trim
 trim_scale
 trunc
-upper_inf
 unnest
+upper_inf
 var_pop
 var_samp
 variance
