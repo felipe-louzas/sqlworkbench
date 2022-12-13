@@ -272,11 +272,16 @@ public class WbGenerateScript
     List<String> names = null;
 
     String arg = cmdLine.getValue(argName, null);
-    if (StringUtil.isBoolean(arg) && StringUtil.stringToBool(arg))
+    if (StringUtil.isBlank(arg)) return names;
+
+    if (StringUtil.isBoolean(arg))
     {
-      names = CollectionUtil.arrayList("*");
+      if (StringUtil.stringToBool(arg))
+      {
+        names = CollectionUtil.arrayList("*");
+      }
     }
-    else if (arg != null)
+    else
     {
       names = StringUtil.stringToList(arg, ",", true, true, false, false);
     }
