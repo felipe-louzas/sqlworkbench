@@ -283,6 +283,10 @@ public class XlsRowDataConverter
     if (sheet == null)
     {
       String sheetTitle = getPageTitle("SQLExport");
+      if (append)
+      {
+        sheetTitle = getUniqueSheetTitle(sheetTitle);
+      }
       sheet = workbook.createSheet(sheetTitle);
     }
 
@@ -324,6 +328,36 @@ public class XlsRowDataConverter
       }
     }
     return null;
+  }
+
+  private String getUniqueSheetTitle(String title)
+  {
+    int numSheets = workbook.getNumberOfSheets();
+    int maxNr = Integer.MIN_VALUE;
+    String highestName = null;
+
+    for (int i=0; i < numSheets; i++)
+    {
+      String name = workbook.getSheetName(i);
+      if (name.startsWith(title))
+      {
+        int nr = StringUtil.getFirstNumber(name);
+        if (nr > maxNr)
+        {
+          maxNr = nr;
+          highestName = name;
+        }
+      }
+    }
+    if (highestName != null)
+    {
+      String newTitle = StringUtil.incrementCounter(highestName, 2);
+      LogMgr.logInfo(new CallerInfo(){},
+        "Using sheet name \"" + newTitle + "\" instead of \"" + title + "\" for outputfile \"" + getOutputFile().getAbsolutePath() + "\" to make it unique");
+      return newTitle;
+    }
+
+    return title;
   }
 
   @Override

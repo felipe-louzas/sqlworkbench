@@ -844,6 +844,52 @@ public class StringUtil
   }
 
   /**
+   * Returns the first number from a string.
+   *
+   * @param input  the string to test
+   * @return -1 if no number is found, the number otherwise
+   */
+  public static int getFirstNumber(String input)
+  {
+    if (isBlank(input)) return -1;
+    Pattern p = Pattern.compile("[0-9]+");
+    Matcher m = p.matcher(input);
+    if (m.find())
+    {
+      return getIntValue(m.group(), 0);
+    }
+    return -1;
+  }
+
+  /**
+   * Increment the first number in a string.
+   *
+   * @param input  the string to test with a possible counter
+   * @param startValue the value to start the counter from if no number is found
+   * @return -1 if no number is found, the number otherwise
+   */
+  public static String incrementCounter(String input, int startValue)
+  {
+    if (isBlank(input)) return input;
+    String result = input;
+    Pattern p = Pattern.compile("[0-9]+");
+    Matcher m = p.matcher(input);
+    if (m.find())
+    {
+      int nr = getIntValue(m.group(), 0) + 1;
+      int start = m.start();
+      int end = m.end();
+      result = result.substring(0,start) + Integer.toString(nr) + result.substring(end);
+    }
+    else
+    {
+      result = result + " (" + Integer.toString(startValue) + ")";
+    }
+    return result;
+  }
+
+
+  /**
    * Parse the given value as a double.
    * If the value cannot be parsed, the default value will be returned.
    *

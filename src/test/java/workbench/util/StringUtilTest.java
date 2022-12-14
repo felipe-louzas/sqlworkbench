@@ -37,6 +37,17 @@ public class StringUtilTest
 {
 
   @Test
+  public void testIncrementCounter()
+  {
+    String result = StringUtil.incrementCounter("SQLExport", 1);
+    assertEquals("SQLExport (1)", result);
+    result = StringUtil.incrementCounter(result, 1);
+    assertEquals("SQLExport (2)", result);
+    result = StringUtil.incrementCounter(result, 4);
+    assertEquals("SQLExport (6)", result);
+  }
+
+  @Test
   public void testRemoveLeading()
   {
     assertEquals("bla", StringUtil.removeLeading("..bla", '.'));
