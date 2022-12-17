@@ -2823,4 +2823,14 @@ public class DbSettings
     }
     return result;
   }
+
+  public boolean isGetSchemaImplemented()
+  {
+    return getBoolProperty("getschema.implemented", true);
+  }
+  
+  public boolean isGetCatalogImplemented()
+  {
+    return getBoolProperty("getcatalog.implemented", true);
+  }
 }

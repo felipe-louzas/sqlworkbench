@@ -182,7 +182,7 @@ public class ValuesListCreator
         nr ++;
       }
     }
-    
+
     if (addSemicolon)
     {
       result.append(lineEnding);
@@ -214,6 +214,8 @@ public class ValuesListCreator
     for (String line : lines)
     {
       line = line.trim();
+      if (line.isBlank()) continue;
+      
       if (!useRegex && trimDelimiter)
       {
         if (line.startsWith(delimiter))

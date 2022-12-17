@@ -29,8 +29,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
-import workbench.db.JdbcUtils;
-
 /**
  *
  * @author Thomas Kellerer
@@ -49,6 +47,7 @@ public class GenericCatalogInformationReader
   {
     this.dbConnection = conn;
     this.dbSettings = settings;
+    this.supportsGetCatalog = settings.isGetCatalogImplemented();
     this.isCacheable = dbSettings.getBoolProperty("currentcatalog.cacheable", false);
     if (isCacheable)
     {
