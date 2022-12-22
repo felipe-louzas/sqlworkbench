@@ -42,10 +42,12 @@ import workbench.util.StringUtil;
 public class LnFDefinition
   implements Comparable<LnFDefinition>
 {
+  public static final String FLATLAF_MAC_LIGHT_CLASS = "com.formdev.flatlaf.themes.FlatMacLightLaf";
+  public static final String FLATLAF_MAC_DARK_CLASS = "com.formdev.flatlaf.themes.FlatMacDarkLaf";
   public static final String FLATLAF_LIGHT_CLASS = "com.formdev.flatlaf.FlatLightLaf";
   public static final String FLATLAF_DARK_CLASS = "com.formdev.flatlaf.FlatDarkLaf";
   public static final String FLATLAF_THEMED_CLASS = "com.formdev.flatlaf.IntelliJTheme";
-  
+
   private String name;
   private String className;
   private List<String> liblist;

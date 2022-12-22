@@ -142,9 +142,11 @@ public class LnFManager
     lnfList = new ArrayList<>();
     Settings set = Settings.getInstance();
 
-    boolean lightConfigure = false;
+    boolean lightConfigured = false;
     boolean darkConfigured = false;
     boolean themedConfigure = false;
+    boolean macLightConfigured = false;
+    boolean macDarkConfigured = false;
 
     int count = set.getIntProperty("workbench.lnf.count", 0);
     for (int i = 0; i < count; i++)
@@ -152,9 +154,17 @@ public class LnFManager
       String clz = set.getProperty("workbench.lnf." + i + ".class", "");
       if (clz == null) continue;
 
-      if (!lightConfigure && clz.equals(FLATLAF_LIGHT_CLASS))
+      if (!lightConfigured && clz.equals(FLATLAF_LIGHT_CLASS))
       {
-        lightConfigure = true;
+        lightConfigured = true;
+      }
+      if (!macLightConfigured && clz.equals(FLATLAF_MAC_LIGHT_CLASS))
+      {
+        macLightConfigured = true;
+      }
+      if (!macDarkConfigured && clz.equals(FLATLAF_MAC_DARK_CLASS))
+      {
+        macDarkConfigured = true;
       }
       if (!darkConfigured && clz.equals(FLATLAF_DARK_CLASS))
       {
@@ -198,7 +208,7 @@ public class LnFManager
 
     if (isFlatLafLibPresent())
     {
-      if (!lightConfigure)
+      if (!lightConfigured)
       {
         LnFDefinition light = LnFDefinition.newExtLaf("FlatLaf Light", FLATLAF_LIGHT_CLASS);
         lnfList.add(light);
@@ -208,6 +218,20 @@ public class LnFManager
       if (!darkConfigured)
       {
         LnFDefinition dark = LnFDefinition.newExtLaf("FlatLaf Dark", FLATLAF_DARK_CLASS);
+        lnfList.add(dark);
+        LogMgr.logDebug(new CallerInfo(){}, "Added " + dark.debugString());
+      }
+
+      if (!macLightConfigured)
+      {
+        LnFDefinition light = LnFDefinition.newExtLaf("MacOS FlatLaf Light", FLATLAF_MAC_LIGHT_CLASS);
+        lnfList.add(light);
+        LogMgr.logDebug(new CallerInfo(){}, "Added " + light.debugString());
+      }
+
+      if (!macDarkConfigured)
+      {
+        LnFDefinition dark = LnFDefinition.newExtLaf("MacOS FlatLaf Dark", FLATLAF_MAC_DARK_CLASS);
         lnfList.add(dark);
         LogMgr.logDebug(new CallerInfo(){}, "Added " + dark.debugString());
       }
