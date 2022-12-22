@@ -50,5 +50,4 @@ fi
 # might be needed for some combinations of OS and JDK
 
 exec "$JAVACMD"  $OPTS \
-                -Xverify:none \
                 -Dvisualvm.display.name=SQLWorkbench/J -cp "$cp" workbench.WbStarter "$@"

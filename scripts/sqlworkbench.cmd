@@ -32,7 +32,6 @@ start "SQL Workbench/J" "%JAVA_BINPATH%javaw.exe"^
       --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
       --add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
       -Xmx%max_mem%m ^
-      -Xverify:none ^
       -Dvisualvm.display.name=SQLWorkbench/J ^
       -Dsun.java2d.noddraw=true ^
       -cp "%cp%" workbench.WbStarter %*

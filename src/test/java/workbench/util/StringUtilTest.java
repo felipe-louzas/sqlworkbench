@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -39,12 +39,10 @@ public class StringUtilTest
   @Test
   public void testIncrementCounter()
   {
-    String result = StringUtil.incrementCounter("SQLExport", 1);
-    assertEquals("SQLExport (1)", result);
+    String result = StringUtil.incrementCounter("SQLExport", 4);
+    assertEquals("SQLExport (4)", result);
     result = StringUtil.incrementCounter(result, 1);
-    assertEquals("SQLExport (2)", result);
-    result = StringUtil.incrementCounter(result, 4);
-    assertEquals("SQLExport (6)", result);
+    assertEquals("SQLExport (5)", result);
   }
 
   @Test

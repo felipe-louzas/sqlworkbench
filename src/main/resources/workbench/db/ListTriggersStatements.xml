@@ -177,20 +177,23 @@ from DBC.Triggers
    <object id="list_derby_trg" class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
-       SELECT trg.triggername as trigger_name,
-             case
-                  when trg.type ='A' then 'AFTER'
-                  else 'BEFORE'
-             end  as trigger_type ,
-             case
-                when trg.event = 'D' then 'DELETE'
-                when trg.event = 'I' then 'INSERT'
-                when trg.event = 'U' THEN 'UPDATE'
-             end as trigger_event,
-             t.tablename as trigger_table
-       FROM sys.systriggers trg, sys.systables t, sys.sysschemas s
-       WHERE trg.tableid = t.tableid
-         AND t.schemaid = s.schemaid
+      SELECT ts.schemaname as trigger_schema,
+             trg.triggername as trigger_name,
+            case
+                 when trg.type ='A' then 'AFTER'
+                 else 'BEFORE'
+            end  as trigger_type ,
+            case
+               when trg.event = 'D' then 'DELETE'
+               when trg.event = 'I' then 'INSERT'
+               when trg.event = 'U' THEN 'UPDATE'
+            end as trigger_event,
+            s.schemaname as trigger_table_schema,
+            t.tablename as trigger_table
+      FROM sys.systriggers trg
+        JOIN sys.sysschemas ts ON ts.schemaid = trg.schemaid
+        JOIN sys.systables t ON trg.tableid = t.tableid
+        JOIN sys.sysschemas s ON t.schemaid = s.schemaid
      </string>
     </void>
     <void property="objectNameField">
@@ -200,7 +203,7 @@ from DBC.Triggers
      <string>ORDER BY trigger_name</string>
     </void>
     <void property="schemaField">
-     <string>s.schemaname</string>
+     <string>ts.schemaname</string>
     </void>
    </object>
   </void>
@@ -215,7 +218,8 @@ from DBC.Triggers
    <object id="list_informix_trg" class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
-       SELECT trg.trigname as trigger_name,
+       SELECT trg.owner as trigger_schema,
+              trg.trigname as trigger_name,
               '' trigger_type ,
               case
                 when trg.event = 'D' then 'DELETE'
@@ -223,6 +227,7 @@ from DBC.Triggers
                 when trg.event = 'U' THEN 'UPDATE'
                 else trg.event
               end as trigger_event,
+              t.owner as trigger_table_schema,
               t.tabname as trigger_table
        from informix.systriggers trg, informix.systables t
        where trg.tabid = t.tabid
@@ -396,7 +401,8 @@ WHERE trigger_name not like 'BIN$%'
    <object class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
-      select tr.name as trigger_name,
+      select tsh.name as trigger_schema,
+             tr.name as trigger_name,
              case
                 when ObjectProperty(tr.object_id, 'ExecIsAfterTrigger') = 1 then 'AFTER'
                 when ObjectProperty(tr.object_id, 'ExecIsInsteadOfTrigger') = 1 then 'INSTEAD OF'
@@ -414,6 +420,8 @@ WHERE trigger_name not like 'BIN$%'
       from sys.triggers tr with (nolock)
         join sys.objects tab with (nolock) on tab.object_id = tr.parent_id
         join sys.schemas sh with (nolock) on sh.schema_id = tab.schema_id
+        join sys.objects tro with (nolock) on tro.object_id = tr.object_id
+        join sys.schemas tsh with (nolock) on tsh.schema_id = tro.schema_id
       where tr.is_ms_shipped = 0
      </string>
     </void>

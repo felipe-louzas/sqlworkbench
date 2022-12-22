@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -37,11 +37,11 @@ import javax.swing.tree.TreePath;
 class ProfileTreeTransferable
   implements Transferable
 {
-  private TransferableProfileNode node;
+  private TransferableProfileTreeNode node;
 
   ProfileTreeTransferable(TreePath[] tp, ProfileTree source)
   {
-    node = new TransferableProfileNode(tp, source);
+    node = new TransferableProfileTreeNode(tp, source);
   }
 
   @Override
@@ -57,7 +57,7 @@ class ProfileTreeTransferable
   }
 
   @Override
-  public synchronized TransferableProfileNode getTransferData(DataFlavor flavor)
+  public synchronized TransferableProfileTreeNode getTransferData(DataFlavor flavor)
     throws UnsupportedFlavorException, IOException
   {
     if (isDataFlavorSupported(flavor))

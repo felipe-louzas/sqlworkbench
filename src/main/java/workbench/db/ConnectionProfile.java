@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -24,8 +24,10 @@ package workbench.db;
 import java.awt.Color;
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
@@ -75,7 +77,7 @@ public class ConnectionProfile
   private String temporaryUsername;
   private String password;
   private String driverName;
-  private String group;
+  private final List<String> groupPath = new ArrayList<>();
   private String icon;
   private boolean autocommit;
   private boolean storeCacheLocally;
@@ -119,7 +121,6 @@ public class ConnectionProfile
   private DelimiterDefinition alternateDelimiter;
   private ObjectNameFilter schemaFilter;
   private ObjectNameFilter catalogFilter;
-  private String lastSettingsKey;
   private String macroFileName;
   private String defaultDirectory;
   private final Set<String> tags = CollectionUtil.caseInsensitiveSet();
@@ -161,26 +162,22 @@ public class ConnectionProfile
     return internalId;
   }
 
-  private void syncSettingsKey()
-  {
-    if (lastSettingsKey == null) return;
-    String newKey = getSettingsKey();
-    if (newKey == null) return;
-
-    Settings.getInstance().replacePartialKey("." + lastSettingsKey + ".", "."  + newKey + ".");
-    this.lastSettingsKey = newKey;
-  }
-
   public String getSettingsKey()
   {
-    if (name == null || group == null) return null;
+    if (name == null || groupPath.isEmpty()) return null;
     Pattern p = Pattern.compile("[^0-9A-Za-z]+");
-    Matcher gm = p.matcher(group);
-    String cleanGroup = gm.replaceAll("").toLowerCase();
+    String cleanPath = "";
+    for (String group : groupPath)
+    {
+      Matcher gm = p.matcher(group);
+      String cleanGroup = gm.replaceAll("").toLowerCase();
+      if (!cleanPath.isEmpty()) cleanPath += ".";
+      cleanPath += cleanGroup;
+    }
 
     Matcher nm = p.matcher(name);
     String cleanName = nm.replaceAll("").toLowerCase();
-    String key = cleanGroup + "." + cleanName;
+    String key = cleanPath + "." + cleanName;
     return key;
   }
 
@@ -496,19 +493,79 @@ public class ConnectionProfile
     rememberExplorerSchema = value;
   }
 
-  public String getGroup()
+  public String getLastGroupName()
   {
-    if (this.group == null) return ResourceMgr.getString("LblDefGroup");
-    return this.group;
+    if (groupPath.isEmpty()) return "";
+    return groupPath.get(groupPath.size() - 1);
   }
 
-  public void setGroup(String g)
+  /**
+   * Returns the group's path string.
+   * <p>
+   * This returns a delimited string of the groups returned by {@link #getGroups()}.<br>
+   * The path elements are delimited with a <tt>/</tt> and are quoted if needed. This format
+   * is usable for storing the group path information.
+   * </p>
+   * <p>
+   * Quotes inside the path elementes are escaped using a backslash.
+   * </p>
+   * <p>
+   * As the elements of the path might be quoted to enable a safe writing and reading
+   * to persistent storage, the value is not suited for display to the user. Use
+   * {@link getGroupPathString()} instead.
+   * </p>
+   */
+  public String getGroup()
   {
-    if (StringUtil.equalString(this.group, g)) return;
-    this.group = g;
+    return ProfileKey.getGroupPathEscaped(groupPath);
+  }
+
+  /**
+   * Set the profile group path.
+   * <p>
+   * This method is delegated to {@link #setGroupByPathString(String)}.
+   * </p>
+   * @param path the group path, ignored if null or empty
+   */
+  public void setGroup(String path)
+  {
+    setGroupByPathString(path);
+  }
+
+  public String getGroupPathString()
+  {
+    return ProfileKey.getGroupPathAsString(groupPath);
+  }
+
+  /**
+   * Set the profile group path.
+   * <p>
+   * The path string is expected to be escaped if the path
+   * elements contain a forward slash or a double quote.
+   * </p>
+   * @param path the group path, ignored if null or empty
+   * @see ProfileKey#parseGroupPath(String)
+   */
+  public void setGroupByPathString(String path)
+  {
+    if (StringUtil.isBlank(path)) return;
+    List<String> groups = ProfileKey.parseGroupPath(path);
+    setGroups(groups);
+  }
+
+  public List<String> getGroups()
+  {
+    return Collections.unmodifiableList(groupPath);
+  }
+
+  public void setGroups(List<String> newPath)
+  {
+    if (newPath == null) return;
+    if (newPath.equals(groupPath)) return;
+    this.groupPath.clear();
+    this.groupPath.addAll(newPath);
     this.changed = true;
     this.groupChanged = true;
-    syncSettingsKey();
   }
 
   public String getIcon()
@@ -531,7 +588,7 @@ public class ConnectionProfile
 
   public ProfileKey getKey()
   {
-    return new ProfileKey(this.getName(), this.getGroup());
+    return new ProfileKey(this.getName(), this.groupPath);
   }
 
   /**
@@ -810,7 +867,6 @@ public class ConnectionProfile
     if (this.alternateDelimiter != null) this.alternateDelimiter.resetChanged();
     if (this.schemaFilter != null) schemaFilter.resetModified();
     if (this.catalogFilter != null) catalogFilter.resetModified();
-    this.lastSettingsKey = getSettingsKey();
   }
 
   public String debugString()
@@ -1076,7 +1132,6 @@ public class ConnectionProfile
   {
     if (!changed && !StringUtil.equalString(name, aName)) changed = true;
     this.name = aName;
-    syncSettingsKey();
   }
 
   public boolean getStorePassword()
@@ -1130,7 +1185,7 @@ public class ConnectionProfile
     result.setConnectionTimeout(connectionTimeout);
     result.setDriverName(driverName);
     result.setName(name);
-    result.setGroup(group);
+    result.setGroups(groupPath);
     result.setIcon(icon);
     result.setPassword(getPassword());
     result.setOracleSysDBA(oracleSysDBA);
@@ -1166,7 +1221,6 @@ public class ConnectionProfile
     result.setMacroFilename(this.macroFileName);
     result.setSshConfig(sshConfig == null ? null : sshConfig.createCopy());
     result.tags.addAll(tags);
-    result.lastSettingsKey = this.lastSettingsKey;
     result.temporaryUsername = null;
     result.connectionProperties = WbProperties.createCopy(this.connectionProperties);
     result.variables = WbProperties.createCopy(this.variables);

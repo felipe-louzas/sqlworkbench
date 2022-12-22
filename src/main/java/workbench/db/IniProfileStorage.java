@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer.
+ * Copyright 2002-2023 Thomas Kellerer.
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -161,7 +161,7 @@ public class IniProfileStorage
     String driverClass = props.getProperty(PROP_PREFIX + key + PROP_DRIVERCLASS, null);
     String driverJar = props.getProperty(PROP_PREFIX + key + PROP_DRIVERJAR, null);
     String driverName = props.getProperty(PROP_PREFIX + key + PROP_DRIVERNAME, null);
-    String group = props.getProperty(PROP_PREFIX + key + PROP_GROUP, null);
+    String groupPath = props.getProperty(PROP_PREFIX + key + PROP_GROUP, null);
     String user = props.getProperty(PROP_PREFIX + key + PROP_USERNAME, null);
     String pwd = props.getProperty(PROP_PREFIX + key + PROP_PWD, null);
     String icon = props.getProperty(PROP_PREFIX + key + PROP_ICON, null);
@@ -269,7 +269,7 @@ public class IniProfileStorage
     profile.setInputPassword(pwd);
     profile.setDriverclass(driverClass);
     profile.setDriverName(driverName);
-    profile.setGroup(group);
+    profile.setGroupByPathString(groupPath);
     profile.setTagList(tags);
     profile.setDefaultFetchSize(fetchSize);
     profile.setOracleSysDBA(sysDBA);
@@ -402,7 +402,7 @@ public class IniProfileStorage
     setNonDefaultProperty(props, PROP_PREFIX + key + PROP_REMEMEMBER_SCHEMA, profile.getStoreExplorerSchema(), defaultValues.getStoreExplorerSchema());
     setNonDefaultProperty(props, PROP_PREFIX + key + PROP_HIDE_WARNINGS, profile.isHideWarnings(), defaultValues.isHideWarnings());
 
-    if (StringUtil.stringsAreNotEqual(profile.getGroup(), defaultValues.getGroup()))
+    if (profile.getGroups().size() > 0)
     {
       props.setProperty(PROP_PREFIX + key + PROP_GROUP, profile.getGroup());
     }

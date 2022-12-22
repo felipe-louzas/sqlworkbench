@@ -309,14 +309,17 @@
       <string>H2</string>
       <object class="workbench.db.GetMetaDataSql">
         <void property="baseSql">
-          <string>SELECT 'CREATE TRIGGER '||trigger_name||
-            case before when 'true' then ' BEFORE ' else ' AFTER ' end||
-            trigger_type||' ON '||table_name||char(10)||'  FOR EACH ROW CALL "'||java_class||'";'
-            from information_schema.triggers
+          <string>
+SELECT 'CREATE TRIGGER '||trigger_schema||'.'||trigger_name||' '||action_timing||' '||
+       event_manipulation||' ON '||event_object_schema||'.'||event_object_table||char(10)||'  FOR EACH ROW CALL "'||java_class||'";'
+from information_schema.triggers
           </string>
         </void>
         <void property="objectNameField">
           <string>trigger_name</string>
+        </void>
+        <void property="schemaField">
+          <string>trigger_schema</string>
         </void>
       </object>
     </void>
@@ -486,9 +489,10 @@
             else '  FOR EACH ROW' end
             || '\n'
             || trg.triggerdefinition
-            from sys.systriggers trg
-            join sys.systables t on trg.tableid = t.tableid
-            join sys.sysschemas s on t.schemaid = s.schemaid
+          FROM sys.systriggers trg
+            JOIN sys.sysschemas ts ON ts.schemaid = trg.schemaid
+            JOIN sys.systables t ON trg.tableid = t.tableid
+            JOIN sys.sysschemas s ON t.schemaid = s.schemaid
           </string>
         </void>
         <void property="objectNameField">
@@ -498,7 +502,7 @@
           <boolean>true</boolean>
         </void>
         <void property="schemaField">
-          <string>s.schemaname</string>
+          <string>ts.schemaname</string>
         </void>
       </object>
     </void>

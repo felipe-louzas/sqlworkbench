@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -49,6 +49,18 @@ public class ConnectionProfileTest
   }
 
   @Test
+  public void testSetGroupPathByString()
+    throws Exception
+  {
+    ConnectionProfile profile = new ConnectionProfile();
+    profile.setAutocommit(true);
+    profile.setDriverName("Postgres");
+    profile.setName("Test Group Path");
+    profile.setGroupByPathString("/Production/Shops/Postgres");
+    assertEquals(List.of("Production", "Shops", "Postgres"), profile.getGroups());
+  }
+
+  @Test
   public void testCreateCopy()
     throws Exception
   {
@@ -77,12 +89,16 @@ public class ConnectionProfileTest
     old.setRemoveComments(true);
     old.setPromptForUsername(true);
     old.setTagList("pg,ora");
+    List<String> groups = List.of("Production", "Postgres", "DWH");
+    old.setGroups(groups);
     ObjectNameFilter filter = new ObjectNameFilter();
     filter.addExpression("^pg_toast.*");
     filter.resetModified();
     old.setCatalogFilter(filter);
 
     ConnectionProfile copy = old.createCopy();
+    // Make sure the groups of the copy are not modified if the old ones change
+    old.setGroups(List.of("Production", "Postgres", "Shop"));
     assertFalse(copy.getAutocommit());
     assertTrue(copy.getConfirmUpdates());
     assertTrue(copy.getDetectOpenTransaction());
@@ -104,7 +120,9 @@ public class ConnectionProfileTest
     assertEquals(Integer.valueOf(42), copy.getConnectionTimeout());
 
     Set<String> tags = CollectionUtil.caseInsensitiveSet("ORA","pg");
+
     assertEquals(tags, copy.getTags());
+    assertEquals(groups, copy.getGroups());
 
     assertEquals("select 12 from dual", old.getIdleScript());
     assertEquals("jdbc:some:database", copy.getUrl());
@@ -270,7 +288,7 @@ public class ConnectionProfileTest
     profile.setEmptyStringIsNull(true);
     profile.setIgnoreDropErrors(true);
     profile.setName("First");
-    profile.setGroup("Primary");
+    profile.setGroups(List.of("Primary"));
     profile.setStorePassword(true);
 
     List<ConnectionProfile> profiles = new ArrayList<>();
@@ -282,7 +300,7 @@ public class ConnectionProfileTest
     profile2.setEmptyStringIsNull(false);
     profile2.setIgnoreDropErrors(false);
     profile2.setName("First");
-    profile2.setGroup("Primary");
+    profile2.setGroups(List.of("Primary"));
     profile2.setStorePassword(false);
 
     profiles.remove(profile2);
@@ -307,7 +325,7 @@ public class ConnectionProfileTest
   {
     ConnectionProfile profile = new ConnectionProfile();
     profile.setName("Some/Connection");
-    profile.setGroup("Default==Group");
+    profile.setGroups(List.of("Default==Group"));
     String key = profile.getSettingsKey();
     assertEquals("defaultgroup.someconnection", key);
   }

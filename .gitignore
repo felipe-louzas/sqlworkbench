@@ -11,3 +11,4 @@
 **/nbactions*.xml
 /nbproject/
 **/RunMe.java
+derby.log

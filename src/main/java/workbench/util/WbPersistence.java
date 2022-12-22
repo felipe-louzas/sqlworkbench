@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -57,25 +57,23 @@ public class WbPersistence
 
   /**
    * Makes a property of the given class transient, so that it won't be written
-   * into the XML file when saved using WbPersistence
-   * @param clazz
-   * @param property
+   * into the XML file when saved using WbPersistence.
    */
   public static void makeTransient(Class clazz, String property)
   {
     try
     {
-      BeanInfo info = Introspector.getBeanInfo( clazz );
+      BeanInfo info = Introspector.getBeanInfo(clazz);
       PropertyDescriptor[] propertyDescriptors = info.getPropertyDescriptors();
       for (PropertyDescriptor pd : propertyDescriptors)
       {
-        if ( pd.getName().equals(property) )
+        if (pd.getName().equals(property))
         {
-          pd.setValue( "transient", Boolean.TRUE );
+          pd.setValue("transient", Boolean.TRUE);
         }
       }
     }
-    catch ( IntrospectionException e )
+    catch (IntrospectionException e)
     {
     }
   }

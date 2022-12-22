@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2016 Thomas Kellerer.
+ * Copyright 2002-2023 Thomas Kellerer.
  *
  * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
@@ -417,7 +417,7 @@ public class ProfileManager
     if (list == null) return null;
 
     String name = key.getName();
-    String group = key.getGroup();
+    List<String> group = key.getGroups();
 
     ConnectionProfile firstMatch = null;
     for (ConnectionProfile prof : list)
@@ -429,7 +429,7 @@ public class ProfileManager
         {
           return prof;
         }
-        else if (group.equalsIgnoreCase(prof.getGroup().trim()))
+        else if (group.equals(prof.getGroups()))
         {
           return prof;
         }

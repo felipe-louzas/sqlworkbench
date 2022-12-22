@@ -87,7 +87,7 @@ public class DefaultTriggerReader
     return result;
   }
 
-  public TriggerDefinition createTriggerDefinition(TriggerListDataStore triggers, int row, String catalog, String schema)
+  public TriggerDefinition createTriggerDefinition(TriggerListDataStore triggers, int row)
   {
     String trgName = triggers.getTriggerName(row);
     String trgSchema = triggers.getTriggerSchema(row);
@@ -97,8 +97,9 @@ public class DefaultTriggerReader
     String comment = triggers.getRemarks(row);
     String status = triggers.getStatus(row);
     String level = triggers.getLevel(row);
+    String trgCatalog = triggers.getTriggerCatalog(row);
 
-    TriggerDefinition trg = new TriggerDefinition(catalog, StringUtil.coalesce(trgSchema, schema), trgName);
+    TriggerDefinition trg = new TriggerDefinition(trgCatalog, trgSchema, trgName);
     trg.setTriggerType(trgType);
     trg.setTriggerEvent(trgEvent);
     trg.setComment(comment);
@@ -183,74 +184,112 @@ public class DefaultTriggerReader
       rs = stmt.executeQuery(query);
       ResultSetMetaData rsMeta = rs.getMetaData();
       ResultInfo info = new ResultInfo(rsMeta, dbConnection);
-      boolean hasTableName = info.findColumn("TRIGGER_TABLE") > -1;
-      boolean hasComment = info.findColumn("REMARKS") > -1;
-      boolean hasStatus = info.findColumn("STATUS") > -1;
-      boolean hasLevel = info.findColumn("TRIGGER_LEVEL") > -1;
-      boolean hasSchema = info.findColumn("TRIGGER_SCHEMA") > -1;
-      boolean hasTableSchema = info.findColumn("TRIGGER_TABLE_SCHEMA") > -1;
-      if (!hasSchema)
+      // Some JDBC drivers don't properly deal with the column names
+      // so we use the column index in all cases
+      int triggerNameIndex = info.findColumn("TRIGGER_NAME");
+      int triggerCatalogIndex = info.findColumn("TRIGGER_CATALOG");
+      int triggerSchemaIndex = info.findColumn("TRIGGER_SCHEMA");
+      int typeIndex = info.findColumn("TRIGGER_TYPE");
+      int eventIndex = info.findColumn("TRIGGER_EVENT");
+      int tableNameIndex = info.findColumn("TRIGGER_TABLE");
+      int tableSchemaIndex = info.findColumn("TRIGGER_TABLE_SCHEMA");
+      int tableCatalogIndex = info.findColumn("TRIGGER_TABLE_CATALOG");
+      int remarksIndex = info.findColumn("REMARKS");
+      int statusIndex = info.findColumn("STATUS");
+      int levelIndex = info.findColumn("TRIGGER_LEVEL");
+
+      if (triggerSchemaIndex < 0)
       {
         result.removeColumn(TriggerReader.TRIGGER_SCHEMA_COLUMN);
       }
-      if (!hasTableSchema)
+      if (triggerCatalogIndex < 0)
+      {
+        result.removeColumn(TriggerReader.TRIGGER_CATALOG_COLUMN);
+      }
+      if (tableSchemaIndex < 0)
       {
         result.removeColumn(TriggerReader.TRIGGER_TABLE_SCHEMA_COLUMN);
       }
-
+      if (tableCatalogIndex < 0)
+      {
+        result.removeColumn(TriggerReader.TRIGGER_TABLE_CATALOG_COLUMN);
+      }
       while (rs.next())
       {
         int row = result.addRow();
-        String value = rs.getString("TRIGGER_NAME");
+        String value = rs.getString(triggerNameIndex + 1);
         if (trimNames) value = StringUtil.trim(value);
         result.setTriggerName(row, value);
 
-        value = rs.getString("TRIGGER_TYPE");
+        value = rs.getString(typeIndex + 1);
         if (trimNames) value = StringUtil.trim(value);
         result.setTriggerType(row, value);
 
-        value = rs.getString("TRIGGER_EVENT");
+        value = rs.getString(eventIndex + 1);
         if (trimNames) value = StringUtil.trim(value);
         result.setEvent(row, value);
 
-        if (hasTableName)
+        if (tableNameIndex > -1)
         {
-          value = rs.getString("TRIGGER_TABLE");
+          value = rs.getString(tableNameIndex + 1);
           if (trimNames) value = StringUtil.trim(value);
           result.setTriggerTable(row, value);
         }
 
-        if (hasTableSchema)
+        if (tableSchemaIndex > -1)
         {
-          value = rs.getString("TRIGGER_TABLE_SCHEMA");
+          value = rs.getString(tableSchemaIndex + 1);
           if (trimNames) value = StringUtil.trim(value);
           result.setTriggerTableSchema(row, value);
         }
 
-        if (hasComment)
+        if (tableCatalogIndex > -1)
         {
-          value = rs.getString("REMARKS");
+          value = rs.getString(tableCatalogIndex + 1);
+          if (trimNames) value = StringUtil.trim(value);
+          result.setTriggerTableCatalog(row, value);
+        }
+
+        if (remarksIndex > -1)
+        {
+          value = rs.getString(remarksIndex + 1);
           result.setRemarks(row, StringUtil.trim(value));
         }
 
-        if (hasStatus)
+        if (statusIndex > -1)
         {
-          value = rs.getString("STATUS");
+          value = rs.getString(statusIndex + 1);
           result.setStatus(row, StringUtil.trim(value));
         }
 
-        if (hasLevel)
+        if (levelIndex > -1)
         {
-          value = rs.getString("TRIGGER_LEVEL");
+          value = rs.getString(levelIndex + 1);
           result.setLevel(row, StringUtil.trim(value));
         }
 
-        if (hasSchema)
+        if (triggerSchemaIndex > - 1)
         {
-          value = rs.getString("TRIGGER_SCHEMA");
-          result.setTriggerSchema(row, StringUtil.trim(value));
+          value = rs.getString(triggerSchemaIndex + 1);
+          if (trimNames) value = StringUtil.trim(value);
+          result.setTriggerSchema(row, value);
         }
-        TriggerDefinition trg = createTriggerDefinition(result, row, catalog, schema);
+        else if (!"*".equals(schema) && !"%".equals(schema))
+        {
+          result.setTriggerSchema(row, schema);
+        }
+
+        if (triggerCatalogIndex > -1)
+        {
+          value = rs.getString(triggerCatalogIndex + 1);
+          if (trimNames) value = StringUtil.trim(value);
+          result.setTriggerCatalog(row, value);
+        }
+        else if (!"*".equals(catalog) && !"%".equals(catalog))
+        {
+          result.setTriggerCatalog(row, catalog);
+        }
+        TriggerDefinition trg = createTriggerDefinition(result, row);
         result.getRow(row).setUserObject(trg);
       }
       result.resetStatus();

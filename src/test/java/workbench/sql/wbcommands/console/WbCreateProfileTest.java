@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2017 Thomas Kellerer.
+ * Copyright 2002-2023 Thomas Kellerer.
  *
  * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
@@ -84,7 +84,7 @@ public class WbCreateProfileTest
     assertEquals(1, profiles.size());
     ConnectionProfile p = profiles.get(0);
     assertEquals("newprofile", p.getName());
-    assertEquals("postgres", p.getGroup());
+    assertEquals("postgres", p.getLastGroupName());
     assertEquals("thomas", p.getUsername());
     Properties props = p.getConnectionProperties();
     assertNotNull(props);

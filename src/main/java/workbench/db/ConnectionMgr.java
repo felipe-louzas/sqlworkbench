@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -64,7 +64,7 @@ import workbench.util.WbFile;
 import workbench.util.WbPersistence;
 
 /**
- * A connection factory for the application.
+ * A connection factory for SQL Workbench/J.
  *
  * @author  Thomas Kellerer
  */
@@ -84,10 +84,12 @@ public class ConnectionMgr
   {
     profileMgr = new ProfileManager(Settings.getInstance().getProfileStorage());
 
-    // make sure the inputPassword is not stored, only the password property should be stored
-    // because that might be encrypted
+    // make sure the inputPassword is not stored.
+    // Only the password property should be stored because that might be encrypted
     WbPersistence.makeTransient(ConnectionProfile.class, "inputPassword");
+
     WbPersistence.makeTransient(ConnectionProfile.class, "alternateDelimiterString");
+    WbPersistence.makeTransient(ConnectionProfile.class, "groups");
   }
 
   public static ConnectionMgr getInstance()

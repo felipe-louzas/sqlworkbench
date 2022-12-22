@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2016 Thomas Kellerer.
+ * Copyright 2002-2023 Thomas Kellerer.
  *
  * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
@@ -28,13 +28,13 @@ import javax.swing.tree.TreePath;
  *
  * @author Thomas Kellerer
  */
-public class TransferableProfileNode
+public class TransferableProfileTreeNode
   implements Serializable
 {
   private final TreePath[] path;
   private final String sourceName;
 
-  public TransferableProfileNode(TreePath[] tp, ProfileTree source)
+  public TransferableProfileTreeNode(TreePath[] tp, ProfileTree source)
   {
     path = tp;
     sourceName = source.getName();

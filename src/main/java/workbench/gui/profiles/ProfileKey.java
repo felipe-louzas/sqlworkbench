@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -21,6 +21,14 @@
  */
 package workbench.gui.profiles;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import workbench.util.CsvLineParser;
+import workbench.util.QuoteEscapeType;
+import workbench.util.StringUtil;
+
 /**
  * A class to uniquely identify a {@link workbench.db.ConnectionProfile}
  *
@@ -28,8 +36,11 @@ package workbench.gui.profiles;
  */
 public class ProfileKey
 {
-  private String name; // the name of the profile
-  private String group; // the profile group
+  // the name of the profile
+  private String name;
+
+  // the path of the profile group
+  private final List<String> groupPath = new ArrayList<>();
 
   /**
    * Create a new ProfileKey.
@@ -38,36 +49,37 @@ public class ProfileKey
    * <tt>{MainGroup}/HR Database</tt><br/>
    * The divividing slash is optional.
    *
-   * @param pname the name (can include the profile group) of the profile
+   * @param pname the name (can include the profile group path) of the profile
    */
   public ProfileKey(String pname)
   {
-    if (pname == null) throw new NullPointerException("Name cannot be null!");
-    setName(pname);
+    if (StringUtil.isBlank(pname)) throw new IllegalArgumentException("Name cannot be empty!");
+    parseNameAndGroup(pname);
+  }
+
+  public ProfileKey(String pname, String path)
+  {
+    if (StringUtil.isBlank(pname)) throw new IllegalArgumentException("Name cannot be empty!");
+
+    this.name = pname.trim();
+    this.groupPath.addAll(parseGroupPath(path));
   }
 
   /**
    * Create a new key based on a profile name and a group name.
    *
    * @param pname the name of the profile
-   * @param pgroup the group to which the profile belongs
+   * @param groupPath the group path to which the profile belongs
    */
-  public ProfileKey(String pname, String pgroup)
+  public ProfileKey(String pname, List<String> groupPath)
   {
-    if (pname == null) throw new NullPointerException("Name cannot be null!");
+    if (StringUtil.isBlank(pname)) throw new IllegalArgumentException("Name cannot be empty!");
 
-    if (pgroup != null)
-    {
-      this.group = pgroup.trim();
-      this.name = pname.trim();
-    }
-    else
-    {
-      setName(pname);
-    }
+    this.groupPath.addAll(groupPath);
+    this.name = pname.trim();
   }
 
-  private void setName(String pname)
+  private void parseNameAndGroup(String pname)
   {
     if (pname == null) return;
 
@@ -79,13 +91,15 @@ public class ProfileKey
       int slashPos = tname.indexOf('/', pos + 1);
       if (slashPos < 0) slashPos = pos;
       this.name = tname.substring(slashPos + 1).trim();
-      this.group = tname.substring(1,pos).trim();
+      String path = tname.substring(1,pos).trim();
+      this.groupPath.addAll(parseGroupPath(path));
     }
     else if (tname.length() > 0 && tname.indexOf('/') > -1)
     {
       int slashPos = tname.indexOf('/');
       this.name = tname.substring(slashPos + 1).trim();
-      this.group = tname.substring(0,slashPos).trim();
+      String path = tname.substring(0,slashPos).trim();
+      this.groupPath.addAll(parseGroupPath(path));
     }
     else
     {
@@ -93,21 +107,62 @@ public class ProfileKey
     }
   }
 
+  public static String getGroupPathAsString(List<String> path)
+  {
+    return StringUtil.listToString(path, '/');
+  }
+
+  public static String getGroupPathEscaped(List<String> path)
+  {
+    if (path == null || path.isEmpty()) return "";
+
+    StringBuilder result = new StringBuilder(path.size() * 10);
+    for (String item : path)
+    {
+      if (result.length() > 0) result.append("/");
+      boolean needsQuote = item.contains("/");
+      if (needsQuote) result.append('"');
+      if (item.contains("\""))
+      {
+        item = item.replace("\"", "\\\"");
+      }
+      result.append(item);
+      if (needsQuote) result.append('"');
+    }
+    return result.toString();
+  }
+
+  public static List<String> parseGroupPath(String path)
+  {
+    if (StringUtil.isBlank(path)) return Collections.emptyList();
+    CsvLineParser parser = new CsvLineParser('/', '"');
+    parser.setQuoteEscaping(QuoteEscapeType.escape);
+    path = StringUtil.removeLeading(path, '/');
+    path = StringUtil.removeTrailing(path, '/');
+    parser.setLine(path);
+    return parser.getAllElements();
+  }
+
   public String getName()
   {
     return name;
   }
 
-  public String getGroup()
+  public List<String> getGroups()
   {
-    return group;
+    return Collections.unmodifiableList(groupPath);
+  }
+
+  public String getGroupPath()
+  {
+    return getGroupPathAsString(groupPath);
   }
 
   @Override
   public String toString()
   {
-    if (group == null) return name;
-    return "{" + group + "}/" + name;
+    if (groupPath.isEmpty()) return name;
+    return "{" + getGroupPath() + "}/" + name;
   }
 
   @Override
@@ -126,8 +181,8 @@ public class ProfileKey
       if (key.getName() == null) return false;
       if (this.name.equals(key.getName()))
       {
-        if (key.getGroup() == null || this.group == null) return true;
-        return this.getGroup().equals(key.getGroup());
+        if (key.groupPath.isEmpty() || this.groupPath.isEmpty()) return true;
+        return this.groupPath.equals(key.groupPath);
       }
     }
     return false;

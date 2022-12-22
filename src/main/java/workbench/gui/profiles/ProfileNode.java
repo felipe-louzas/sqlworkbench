@@ -20,20 +20,36 @@
  */
 package workbench.gui.profiles;
 
-import java.awt.datatransfer.DataFlavor;
+import javax.swing.tree.DefaultMutableTreeNode;
 
+import workbench.db.ConnectionProfile;
 /**
  *
  * @author Thomas Kellerer
  */
-public class ProfileFlavor
-  extends DataFlavor
+public class ProfileNode
+  extends DefaultMutableTreeNode
 {
-  public static ProfileFlavor FLAVOR = new ProfileFlavor();
 
-  public ProfileFlavor()
+  public ProfileNode(ConnectionProfile profile)
   {
-    super(TransferableProfileTreeNode.class, "ProfileTreeElement");
+    super(profile, false);
+  }
+
+  public void setProfile(ConnectionProfile profile)
+  {
+    setUserObject(profile);
+  }
+
+  public ConnectionProfile getProfile()
+  {
+    return (ConnectionProfile)getUserObject();
+  }
+
+  @Override
+  public String toString()
+  {
+    return getProfile().getName();
   }
 
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -607,7 +607,7 @@ public class ProfileSelectionPanel
     if (cp == null)
     {
       cp = ConnectionProfile.createEmptyProfile();
-      cp.setGroup(getCurrentGroup());
+      cp.setGroups(getCurrentGroupPath());
       if (Settings.getInstance().getDefaultAutoCommit())
       {
         cp.setAutocommit(true);
@@ -623,7 +623,7 @@ public class ProfileSelectionPanel
     ((ProfileTree)profileTree).selectPath(newPath);
   }
 
-  private String getCurrentGroup()
+  private List<String> getCurrentGroupPath()
   {
     TreePath path = profileTree.getSelectionPath();
     if (path == null)
@@ -631,27 +631,19 @@ public class ProfileSelectionPanel
       return null;
     }
 
-
-    DefaultMutableTreeNode node = null;
-    if (path.getPathCount() == 2)
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
+    GroupNode currentGroup = null;
+    if (node instanceof GroupNode)
     {
-      // group node selected
-      node = (DefaultMutableTreeNode)path.getLastPathComponent();
+      currentGroup = (GroupNode)node;
     }
-    if (path.getPathCount() > 2)
+    else if (node instanceof ProfileNode)
     {
-      // Get the group of the currently selected profile;
-      node = (DefaultMutableTreeNode)path.getPathComponent(1);
+      currentGroup = (GroupNode)node.getParent();
     }
-    if (node == null)
+    if (currentGroup != null)
     {
-      return null;
-    }
-
-    if (node.getAllowsChildren())
-    {
-      String g = (String)node.getUserObject();
-      return g;
+      return currentGroup.getGroupPath();
     }
     return null;
   }
@@ -797,7 +789,8 @@ public class ProfileSelectionPanel
       // Ignore double clicks if nothing is selected.
       if (selected == null) return;
 
-      TreePath path = profileTree.getClosestPathForLocation((int)p.getX(), (int)p.getY());
+      TreePath path = profileTree.getPathForLocation((int)p.getX(), (int)p.getY());
+      if (path == null) return;
 
       // ignore double clicks outside of the selected profile
       if (!path.isDescendant(selected)) return;

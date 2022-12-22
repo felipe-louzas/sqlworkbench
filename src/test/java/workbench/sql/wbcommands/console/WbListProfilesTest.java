@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023, Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -20,6 +20,8 @@
  *
  */
 package workbench.sql.wbcommands.console;
+
+import java.util.List;
 
 import workbench.WbTestCase;
 
@@ -64,6 +66,7 @@ public class WbListProfilesTest
     assertTrue(result.isSuccess());
 
     ConnectionProfile prof = new ConnectionProfile("TestProfile", "dummy.class", "jdbc:test", "user", "pwd");
+    prof.setGroups(List.of("Production", "Postgres"));
     ConnectionMgr.getInstance().clearProfiles();
     ConnectionMgr.getInstance().addProfile(prof);
     result = list.execute(sql);
@@ -73,7 +76,7 @@ public class WbListProfilesTest
 //    System.out.println("****\n" + msg);
     String[] lines = msg.split(StringUtil.REGEX_CRLF);
     assertEquals(2, lines.length);
-    assertEquals("Default group", lines[0]);
+    assertEquals("Production/Postgres", lines[0]);
     assertEquals("  TestProfile, Username=user, URL=jdbc:test", lines[1]);
   }
 }

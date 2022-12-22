@@ -35,12 +35,14 @@ public class TriggerListDataStore
 {
   public TriggerListDataStore()
   {
-    int[] sizes = new int[]{30, 30, 30, 20, 20, 20, 20, 10, 10};
+    int[] sizes = new int[]{30, 30, 30, 20, 20, 30, 30, 30, 10, 10, 20};
     String[] columns = new String[]{
                 TRIGGER_NAME_COLUMN,
+                TRIGGER_CATALOG_COLUMN,
                 TRIGGER_SCHEMA_COLUMN,
                 TRIGGER_TYPE_COLUMN,
                 TRIGGER_EVENT_COLUMN,
+                TRIGGER_TABLE_CATALOG_COLUMN,
                 TRIGGER_TABLE_SCHEMA_COLUMN,
                 TRIGGER_TABLE_COLUMN,
                 TRIGGER_STATUS_COLUMN,
@@ -51,10 +53,21 @@ public class TriggerListDataStore
     initializeStructure(columns, types, sizes);
   }
 
+  public void setTriggerCatalog(int row, String catalog)
+  {
+    setColumnValue(row, TRIGGER_CATALOG_COLUMN, catalog);
+  }
+
+  public String getTriggerCatalog(int row)
+  {
+    return getColumnValue(row, TRIGGER_CATALOG_COLUMN);
+  }
+
   public void setTriggerSchema(int row, String schema)
   {
     setColumnValue(row, TRIGGER_SCHEMA_COLUMN, schema);
   }
+
   public String getTriggerSchema(int row)
   {
     return getColumnValue(row, TRIGGER_SCHEMA_COLUMN);
@@ -85,6 +98,15 @@ public class TriggerListDataStore
   public String getTriggerTableSchema(int row)
   {
     return getColumnValue(row, TRIGGER_TABLE_SCHEMA_COLUMN);
+  }
+
+  public void setTriggerTableCatalog(int row, String name)
+  {
+    setColumnValue(row, TRIGGER_TABLE_CATALOG_COLUMN, name);
+  }
+  public String getTriggerTableCatalog(int row)
+  {
+    return getColumnValue(row, TRIGGER_TABLE_CATALOG_COLUMN);
   }
 
   public String getStatus(int row)

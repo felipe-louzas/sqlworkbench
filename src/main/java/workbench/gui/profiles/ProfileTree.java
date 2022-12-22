@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -93,7 +93,6 @@ public class ProfileTree
   private WbAction pasteToFolderAction;
   private WbAction renameGroup;
   private Insets autoscrollInsets = new Insets(20, 20, 20, 20);
-  private boolean allowDirectChange = true;
   private ProfileTreeTransferHandler transferHandler = new ProfileTreeTransferHandler(this);
   private NewGroupAction newGroupAction;
   private DeleteListEntryAction deleteAction;
@@ -170,6 +169,11 @@ public class ProfileTree
     setBorder(WbSwingUtilities.EMPTY_BORDER);
   }
 
+  public NewGroupAction getNewGroupAction()
+  {
+    return newGroupAction;
+  }
+
   public DeleteListEntryAction getDeleteAction()
   {
     return deleteAction;
@@ -182,44 +186,40 @@ public class ProfileTree
     if (path == null) return;
     if (path.length == 0) return;
 
-    if (onlyProfilesSelected())
+    DefaultMutableTreeNode group = (DefaultMutableTreeNode)path[0].getPathComponent(1);
+    DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode)path[0].getLastPathComponent();
+    int newIndex = getModel().getIndexOfChild(group, firstNode);
+    if (newIndex > 0)
     {
-      DefaultMutableTreeNode group = (DefaultMutableTreeNode)path[0].getPathComponent(1);
-      DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode)path[0].getLastPathComponent();
-      int newIndex = getModel().getIndexOfChild(group, firstNode);
-      if (newIndex > 0)
-      {
-        newIndex--;
-      }
-
-      for (TreePath element : path)
-      {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) element.getLastPathComponent();
-        ConnectionProfile prof = (ConnectionProfile)node.getUserObject();
-        getModel().deleteProfile(prof);
-      }
-      if (group.getChildCount() > 0)
-      {
-        Object newChild = getModel().getChild(group, newIndex);
-        TreePath newPath = new TreePath(new Object[]{getModel().getRoot(), group, newChild});
-        selectPath(newPath);
-      }
+      newIndex--;
     }
-    else // delete a group
+
+    for (TreePath element : path)
     {
-      DefaultMutableTreeNode node = (DefaultMutableTreeNode)path[0].getLastPathComponent();
-      if (node.getChildCount() > 0)
+      TreeNode node = (TreeNode) element.getLastPathComponent();
+      if (node instanceof ProfileNode)
       {
-        if (!checkGroupWithProfiles(node))
+        getModel().deleteProfile((ProfileNode)node);
+      }
+      else if (node instanceof GroupNode)
+      {
+        if (!checkGroupWithProfiles((GroupNode)node))
         {
           return;
         }
+        getModel().removeGroupNode((GroupNode)node);
       }
-      getModel().removeGroupNode(node);
+    }
+
+    if (group.getChildCount() > 0)
+    {
+      Object newChild = getModel().getChild(group, newIndex);
+      TreePath newPath = new TreePath(new Object[]{getModel().getRoot(), group, newChild});
+      selectPath(newPath);
     }
   }
 
-  private boolean checkGroupWithProfiles(DefaultMutableTreeNode groupNode)
+  private boolean checkGroupWithProfiles(GroupNode groupNode)
   {
     List<String> groups = getModel().getGroups();
     JPanel p = new JPanel();
@@ -253,7 +253,7 @@ public class ProfileTree
         return false;
       }
 
-      getModel().moveProfilesToGroup(groupNode, group);
+      //getModel().moveProfilesToGroup(groupNode, group);
       return true;
     }
     else if (result == 1)
@@ -304,10 +304,10 @@ public class ProfileTree
     DefaultMutableTreeNode group = (DefaultMutableTreeNode)changed[0];
     Object data = group.getUserObject();
 
-    if (group.getAllowsChildren())
+    if (group instanceof GroupNode)
     {
       String newGroupName = (String)data;
-      renameGroup(group, newGroupName);
+      ((GroupNode)group).setName(newGroupName);
     }
     else if (data instanceof ConnectionProfile)
     {
@@ -435,36 +435,39 @@ public class ProfileTree
     boolean groupSelected = onlyGroupSelected();
     boolean canPaste = canPaste();
     boolean canCopy = onlyProfilesSelected();
+    boolean profileSelected = getSelectedProfile() != null;
 
     pasteToFolderAction.setEnabled(canPaste);
 
     WbAction a = popup.getPasteAction();
-    a.setEnabled(allowDirectChange && canPaste);
+    a.setEnabled(canPaste);
 
     a = popup.getCopyAction();
-    a.setEnabled(allowDirectChange && canCopy);
+    a.setEnabled(canCopy);
 
     a = popup.getCutAction();
-    a.setEnabled(allowDirectChange && canCopy);
+    a.setEnabled(canCopy);
 
-    renameGroup.setEnabled(allowDirectChange && groupSelected);
+    renameGroup.setEnabled(groupSelected);
+    newGroupAction.setEnabled(!profileSelected);
   }
 
   @Override
   public void mouseClicked(MouseEvent e)
   {
-    if (!allowDirectChange) return;
-
     if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1)
     {
-      TreePath p = this.getClosestPathForLocation(e.getX(), e.getY());
-      if (p == null) return;
-
-      if (this.getSelectionCount() == 1 || isGroup(p))
-      {
-        setSelectionPath(p);
-      }
+      TreePath p = this.getPathForLocation(e.getX(), e.getY());
       checkActions();
+      if (p == null)
+      {
+        newGroupAction.setEnabled(true);
+      }
+      else if (p.getLastPathComponent() instanceof TreeNode)
+      {
+        TreeNode node = (TreeNode)p.getLastPathComponent();
+        newGroupAction.setEnabled(node.getAllowsChildren());
+      }
       popup.show(this, e.getX(), e.getY());
     }
   }
@@ -529,14 +532,17 @@ public class ProfileTree
     return true;
   }
 
-  protected DefaultMutableTreeNode getSelectedGroupNode()
+  protected GroupNode getSelectedGroupNode()
   {
     TreePath[] selection = getSelectionPaths();
     if (selection == null) return null;
     if (selection.length != 1) return null;
 
-    DefaultMutableTreeNode node = (DefaultMutableTreeNode)getLastSelectedPathComponent();
-    if (node != null && node.getAllowsChildren()) return node;
+    TreeNode node = (TreeNode)getLastSelectedPathComponent();
+    if (node instanceof GroupNode)
+    {
+      return (GroupNode)node;
+    }
     return null;
   }
 
@@ -656,19 +662,37 @@ public class ProfileTree
     }
   }
 
-  public void handleDroppedNodes(List<ConnectionProfile> profiles, DefaultMutableTreeNode newParent, int action)
+  public void handleDroppedNodes(List<DefaultMutableTreeNode> nodes, GroupNode newParent, int action)
   {
-    if (CollectionUtil.isEmpty(profiles)) return;
+    if (CollectionUtil.isEmpty(nodes)) return;
     if (newParent == null) return;
 
     DefaultMutableTreeNode firstNode = null;
-    if (action == DnDConstants.ACTION_MOVE)
+    for (DefaultMutableTreeNode node : nodes)
     {
-      firstNode = profileModel.moveProfilesToGroup(profiles, newParent);
-    }
-    else if (action == DnDConstants.ACTION_COPY)
-    {
-      firstNode = profileModel.copyProfilesToGroup(profiles, newParent);
+      DefaultMutableTreeNode newNode = null;
+      if (node instanceof ProfileNode)
+      {
+        ProfileNode pnode = (ProfileNode)node;
+        if (action == DnDConstants.ACTION_MOVE)
+        {
+          newNode = profileModel.moveProfilesToGroup(List.of(pnode.getProfile()), newParent);
+        }
+        else if (action == DnDConstants.ACTION_COPY)
+        {
+          newNode = profileModel.copyProfilesToGroup(List.of(pnode.getProfile()), newParent);
+        }
+      }
+      else if (node instanceof GroupNode)
+      {
+        GroupNode gnode = (GroupNode)node;
+        newNode = profileModel.moveOrCopyGroups(List.of(gnode), newParent, action);
+      }
+
+      if (firstNode == null)
+      {
+        firstNode = newNode;
+      }
     }
     selectNode(firstNode);
   }
@@ -677,7 +701,7 @@ public class ProfileTree
   public void actionPerformed(ActionEvent e)
   {
     // invoked from the "paste into new folder" action
-    String group = addGroup();
+    String group = addGroup(true);
     if (group != null)
     {
       paste();
@@ -690,45 +714,44 @@ public class ProfileTree
    */
   public void renameGroup()
   {
-    DefaultMutableTreeNode group = this.getSelectedGroupNode();
+    GroupNode group = this.getSelectedGroupNode();
     if (group == null) return;
     String oldName = (String)group.getUserObject();
     String newName = WbSwingUtilities.getUserInput(SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("LblRenameProfileGroup"), oldName);
     if (StringUtil.isEmptyString(newName)) return;
     group.setUserObject(newName);
-    renameGroup(group, newName);
-  }
-
-  private void renameGroup(DefaultMutableTreeNode group, String newGroupName)
-  {
-    if (StringUtil.isEmptyString(newGroupName)) return;
-    int count = profileModel.getChildCount(group);
-    for (int i = 0; i < count; i++)
-    {
-      DefaultMutableTreeNode node = (DefaultMutableTreeNode)profileModel.getChild(group,i);
-      ConnectionProfile prof = (ConnectionProfile)node.getUserObject();
-      prof.setGroup(newGroupName);
-    }
+    group.setName(newName);
   }
 
   /**
    * Prompts the user for a group name and creates a new group
-   * with the provided name. The new group node is automatically
-   * after creation.
+   * with the provided name.
+   * <p>
+   * The new group node is automatically selected after creation.
+   * </p>
    * @return the name of the new group or null if the user cancelled the name input
    */
   @Override
-  public String addGroup()
+  public String addGroup(boolean isCtrlPressed)
   {
     String group = WbSwingUtilities.getUserInput(SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("LblNewProfileGroup"), "");
+    // user cancelled input
     if (StringUtil.isEmptyString(group)) return null;
-    List groups = this.profileModel.getGroups();
-    if (groups.contains(group))
+
+    group = group.trim();
+    if (group.contains("/"))
+    {
+      WbSwingUtilities.showErrorMessage(SwingUtilities.getWindowAncestor(this), "The character / is not allowed in a group name");
+      return null;
+    }
+
+    GroupNode currentGroup = isCtrlPressed ? null : getSelectedGroupNode();
+    if (profileModel.containsGroup(currentGroup, group))
     {
       WbSwingUtilities.showErrorMessageKey(SwingUtilities.getWindowAncestor(this), "ErrGroupNotUnique");
       return null;
     }
-    TreePath path = this.profileModel.addGroup(group);
+    TreePath path = this.profileModel.addGroup(currentGroup, group);
     selectPath(path);
     return group;
   }

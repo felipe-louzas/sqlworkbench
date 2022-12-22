@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -23,12 +23,16 @@ package workbench.sql.wbcommands.console;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.ProfileGroupMap;
+
+import workbench.gui.profiles.ProfileKey;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
@@ -85,22 +89,21 @@ public class WbListProfiles
 
     boolean groupsOnly = cmdLine.getBoolean(ARG_GROUPS_ONLY);
 
-    // getProfiles() returns an unmodifiable List, but ProfileGroupMap
-    // will sort the list - which is not possible with an unmodifieable List
-    // so we need to create a shallow copy of the list from getProfiles()
-    List<ConnectionProfile> prof = CollectionUtil.arrayList();
-    prof.addAll(ConnectionMgr.getInstance().getProfiles());
-    ProfileGroupMap map = new ProfileGroupMap(prof);
+    ProfileGroupMap map = new ProfileGroupMap(ConnectionMgr.getInstance().getProfiles());
 
     String userTxt = ResourceMgr.getString("TxtUsername");
-    for (String group : map.keySet())
+
+    for (Map.Entry<List<String>, List<ConnectionProfile>> group : map.entrySet())
     {
-      if (groupToShow == null || groupToShow.equalsIgnoreCase(group))
+      List<String> path = group.getKey();
+
+      if (groupToShow == null || containsGroupName(path, groupToShow))
       {
-        result.addMessage(group);
+        result.addMessage(ProfileKey.getGroupPathAsString(path));
         if (groupsOnly) continue;
 
-        List<ConnectionProfile> profiles = map.get(group);
+        List<ConnectionProfile> profiles = group.getValue();
+        profiles.sort(ConnectionProfile.getNameComparator());
         for (ConnectionProfile profile : profiles)
         {
           String msg = "  " + profile.getName();
@@ -115,6 +118,13 @@ public class WbListProfiles
     }
     result.setSuccess();
     return result;
+  }
+
+  private boolean containsGroupName(List<String> path, String name)
+  {
+    if (CollectionUtil.isEmpty(path)) return false;
+    Optional<String> found = path.stream().filter(s -> s.equalsIgnoreCase(name)).findAny();
+    return found.isPresent();
   }
 
   @Override

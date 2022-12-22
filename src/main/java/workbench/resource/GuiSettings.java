@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -77,6 +77,7 @@ public class GuiSettings
   public static final String PROP_TITLE_SHOW_URL_CLEANUP = "workbench.gui.display.showurl.cleanup";
   public static final String PROP_TITLE_REMOVE_URL_PRODUCT = "workbench.gui.display.showurl.removeproduct";
   public static final String PROP_TITLE_SHOW_PROF_GROUP = "workbench.gui.display.showprofilegroup";
+  public static final String PROP_TITLE_SHOW_LAST_GROUP = "workbench.gui.display.showlastgroup";
   public static final String PROP_TITLE_APP_AT_END = "workbench.gui.display.name_at_end";
   public static final String PROP_TITLE_TEMPLATE = "workbench.gui.display.title.template";
   public static final String PROP_TITLE_SHOW_EDITOR_FILE = "workbench.gui.display.showfilename";
@@ -923,6 +924,11 @@ public class GuiSettings
   public static boolean getShowProfileGroupInWindowTitle()
   {
     return Settings.getInstance().getBoolProperty(PROP_TITLE_SHOW_PROF_GROUP, false);
+  }
+
+  public static boolean getShowLastGroupInWindowTitle()
+  {
+    return Settings.getInstance().getBoolProperty(PROP_TITLE_SHOW_LAST_GROUP, false);
   }
 
   public static String getTitleTemplate()

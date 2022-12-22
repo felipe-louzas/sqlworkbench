@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023, Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -22,6 +22,7 @@
 package workbench.db;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -30,26 +31,33 @@ import java.util.TreeMap;
  * @author Thomas Kellerer
  */
 public class ProfileGroupMap
-  extends TreeMap<String, List<ConnectionProfile>>
+  extends TreeMap<List<String>, List<ConnectionProfile>>
 {
   public ProfileGroupMap(List<ConnectionProfile> profiles)
   {
-    super();
-
-    // If the complete list is sorted by name at the beginning
-    // the sublists per group will be sorted automatically.
-    profiles.sort(ConnectionProfile.getNameComparator());
-
+    super(createComparator());
     for (ConnectionProfile profile : profiles)
     {
-      String group = profile.getGroup();
-      List<ConnectionProfile> l = get(group);
-      if (l == null)
-      {
-        l = new ArrayList<>();
-        put(group, l);
-      }
+      List<String> groups = profile.getGroups();
+      List<ConnectionProfile> l = computeIfAbsent(groups, s -> new ArrayList<ConnectionProfile>());
       l.add(profile);
     }
   }
+
+  private static Comparator<List<String>> createComparator()
+  {
+    return (List<String> o1, List<String> o2) ->
+    {
+      for (int i = 0; i < Math.min(o1.size(), o2.size()); i++)
+      {
+        int c = o1.get(i).compareToIgnoreCase(o2.get(i));
+        if (c != 0)
+        {
+          return c;
+        }
+      }
+      return Integer.compare(o1.size(), o2.size());
+    };
+  }
+
 }

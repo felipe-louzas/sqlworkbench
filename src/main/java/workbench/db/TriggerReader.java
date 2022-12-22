@@ -60,6 +60,14 @@ public interface TriggerReader {
 
   /**
    * The column name in the DataStore returned by getTableTriggers which identifies
+   * the catalog in which the trigger is stored.
+   *
+   * This might not apply for all databases.
+   */
+  String TRIGGER_CATALOG_COLUMN = "CATALOG";
+
+  /**
+   * The column name in the DataStore returned by getTableTriggers which identifies
    * the table of the trigger.
    *
    * This might contain a fully qualified table name (schema.table_name).
@@ -68,12 +76,21 @@ public interface TriggerReader {
 
   /**
    * The column name in the DataStore returned by getTableTriggers which identifies
-   * the table of the trigger.
+   * the schema of the trigger table.
    *
    * If this column contains a value, the table name column {@link TRIGGER_TABLE_COLUMN}
    * should not contain a full qualified name.
    */
   String TRIGGER_TABLE_SCHEMA_COLUMN = "TABLE_SCHEMA";
+
+  /**
+   * The column name in the DataStore returned by getTableTriggers which identifies
+   * the catalog of the trigger table.
+   *
+   * If this column contains a value, the table name column {@link TRIGGER_TABLE_COLUMN}
+   * should not contain a full qualified name.
+   */
+  String TRIGGER_TABLE_CATALOG_COLUMN = "TABLE_CATALOG";
 
   /**
    * The column name in the DataStore returned by getTableTriggers which identifies

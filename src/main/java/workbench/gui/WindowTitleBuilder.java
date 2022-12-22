@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -22,6 +22,7 @@
 package workbench.gui;
 
 import java.io.File;
+import java.util.List;
 
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -44,6 +45,7 @@ public class WindowTitleBuilder
   public static final String DELIM = " - ";
 
   private boolean showProfileGroup = GuiSettings.getShowProfileGroupInWindowTitle();
+  private boolean showLastGroupName = GuiSettings.getShowLastGroupInWindowTitle();
   private boolean showURL = GuiSettings.getShowURLinWindowTitle();
   private boolean includeUser = GuiSettings.getIncludeUserInTitleURL();
   private boolean showWorkspace = GuiSettings.getShowWorkspaceInWindowTitle();
@@ -66,6 +68,11 @@ public class WindowTitleBuilder
   public void setShowProfileGroup(boolean flag)
   {
     this.showProfileGroup = flag;
+  }
+
+  public void setShowLastGroup(boolean flag)
+  {
+    this.showLastGroupName = flag;
   }
 
   public void setShowURL(boolean flag)
@@ -197,7 +204,15 @@ public class WindowTitleBuilder
       {
         name += open;
       }
-      name += profile.getGroup();
+      if (showLastGroupName)
+      {
+        List<String> groups = profile.getGroups();
+        name += groups.get(groups.size() - 1);
+      }
+      else
+      {
+        name += profile.getGroupPathString();
+      }
       if (open != 0 && close != 0)
       {
         name += close;

@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -118,7 +118,7 @@ public class WbCommandAnalyzer
     if (this.isParameter) return 0;
     if (context == CONTEXT_STATEMENT_PARAMETER) return 0;
 
-    if (value.indexOf('-') > -1 || value.indexOf(' ') > -1)
+    if (value.contains("-") || value.contains(" ") || value.contains("{"))
     {
       if (value.indexOf('\'') > -1) return '"';
       else return '\'';

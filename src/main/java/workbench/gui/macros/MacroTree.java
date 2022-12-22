@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023, Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -625,7 +625,7 @@ public class MacroTree
     if (e.getActionCommand().equals(pasteCmd))
     {
       // invoked from the "paste into new folder" action
-      String group = addGroup();
+      String group = addGroup(false);
       if (group != null)
       {
         paste();
@@ -668,7 +668,7 @@ public class MacroTree
     MacroGroup group = getCurrentGroup();
     if (group == null)
     {
-      String newName = addGroup();
+      String newName = addGroup(false);
       if (newName == null) return false;
       group = getCurrentGroup();
     }
@@ -692,12 +692,15 @@ public class MacroTree
 
   /**
    * Prompts the user for a group name and creates a new group
-   * with the provided name. The new group node is automatically
-   * selected after creation.
+   * with the provided name.
+   * <p>
+   * The new group node is automatically selected after creation.
+   * </p>
+   * @param isCtrlPressed  not used in this tree
    * @return the name of the new group or null if the user cancelled the name input
    */
   @Override
-  public String addGroup()
+  public String addGroup(boolean isCtrlPressed)
   {
     String group = WbSwingUtilities.getUserInput(SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("LblNewProfileGroup"), "");
     if (StringUtil.isEmptyString(group)) return null;

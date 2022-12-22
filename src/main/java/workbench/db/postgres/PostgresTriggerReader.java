@@ -285,7 +285,8 @@ public class PostgresTriggerReader
 
     String sql =
       "-- SQL Workbench/J \n" +
-      "select trg.tgname as trigger_name,\n" +
+      "select ns.nspname as trigger_schema,\n" +
+      "       trg.tgname as trigger_name,\n" +
       "       CASE trg.tgtype::integer & 66 \n" +
       "         WHEN 2 THEN 'BEFORE'\n" +
       "         WHEN 64 THEN 'INSTEAD OF'\n" +

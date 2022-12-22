@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -97,7 +97,7 @@ public class WbStoreProfile
 
     ConnectionProfile profile = this.currentConnection.getProfile().createCopy();
     profile.setName(key.getName());
-    profile.setGroup(key.getGroup());
+    profile.setGroups(key.getGroups());
     if (storePwd)
     {
       profile.setStorePassword(true);

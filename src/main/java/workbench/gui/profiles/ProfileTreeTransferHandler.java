@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2016 Thomas Kellerer.
+ * Copyright 2002-2023 Thomas Kellerer.
  *
  * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
@@ -23,7 +23,6 @@ package workbench.gui.profiles;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +36,6 @@ import javax.swing.tree.TreePath;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-
-import workbench.db.ConnectionProfile;
 
 import workbench.gui.WbSwingUtilities;
 
@@ -86,7 +83,7 @@ public class ProfileTreeTransferHandler
 
     try
     {
-      TransferableProfileNode profileNode = (TransferableProfileNode)transferable.getTransferData(ProfileFlavor.FLAVOR);
+      TransferableProfileTreeNode profileNode = (TransferableProfileTreeNode)transferable.getTransferData(ProfileFlavor.FLAVOR);
       TreePath[] dropPath = profileNode.getPath();
       if (dropPath == null) return;
 
@@ -110,9 +107,15 @@ public class ProfileTreeTransferHandler
     if (lastCutNodes == null) return;
     for (TreePath treePath : lastCutNodes)
     {
-      DefaultMutableTreeNode node = (DefaultMutableTreeNode)treePath.getLastPathComponent();
-      ConnectionProfile profile = (ConnectionProfile)node.getUserObject();
-      myTree.getModel().deleteProfile(profile);
+      TreeNode node = (TreeNode)treePath.getLastPathComponent();
+      if (node instanceof ProfileNode)
+      {
+        myTree.getModel().deleteProfile((ProfileNode)node);
+      }
+      else if (node instanceof GroupNode)
+      {
+        myTree.getModel().deleteGroup((GroupNode)node);
+      }
     }
   }
 
@@ -156,9 +159,11 @@ public class ProfileTreeTransferHandler
     }
 
     if (parentNode == null) return false;
-    if (!parentNode.getAllowsChildren()) return false;
+    if (!(parentNode instanceof GroupNode)) return false;
 
-    int action = DnDConstants.ACTION_COPY;
+    GroupNode targetGroup = (GroupNode)parentNode;
+
+    int action = COPY;
 
     if (support.isDrop())
     {
@@ -170,25 +175,37 @@ public class ProfileTreeTransferHandler
       Transferable transferable = support.getTransferable();
       if (transferable == null) return false;
 
-      TransferableProfileNode transferNode = (TransferableProfileNode)transferable.getTransferData(ProfileFlavor.FLAVOR);
-      List<ConnectionProfile> profiles = getProfiles(transferable);
+      TransferableProfileTreeNode transferNode = (TransferableProfileTreeNode)transferable.getTransferData(ProfileFlavor.FLAVOR);
+      List<DefaultMutableTreeNode> nodes = getTransferNodes(transferable);
 
       Window parent = SwingUtilities.getWindowAncestor(tree);
       ProfileTree sourceTree = (ProfileTree)WbSwingUtilities.findComponentByName(ProfileTree.class, transferNode.getSourceName(), parent);
 
-      // as the Transferable contains a copy of the profiles we need to delete the original ones
-      // before we add the dropped profiles. Merely changing the group name does not work.
-      if (support.isDrop() && action == MOVE && sourceTree != null)
+      int targetAction = action;
+      if (sourceTree != null && sourceTree != myTree)
       {
-        for (ConnectionProfile profile : profiles)
-        {
-          sourceTree.getModel().deleteProfile(profile);
-        }
+        // If this is a move between two trees, we need to use COPY
+        // in order to not change the original group path of the dropped node
+        // so that we can delete the profile from the source
+        targetAction = COPY;
       }
 
-      // action == MOVE would not add the profiles to the TreeModel
-      // it only changes the group name of the profile
-      tree.handleDroppedNodes(profiles, parentNode, COPY);
+      tree.handleDroppedNodes(nodes, targetGroup, targetAction);
+
+      if (support.isDrop() && action == MOVE && sourceTree != null)
+      {
+        for (DefaultMutableTreeNode node : nodes)
+        {
+          if (node instanceof ProfileNode)
+          {
+            sourceTree.getModel().deleteProfile((ProfileNode)node);
+          }
+          else if (node instanceof GroupNode && sourceTree != myTree)
+          {
+            sourceTree.getModel().deleteGroup((GroupNode)node);
+          }
+        }
+      }
 
       // for a Cut & Paste action we need to remove the stored nodes in the source tree
       if (!support.isDrop() && sourceTree != null)
@@ -206,30 +223,30 @@ public class ProfileTreeTransferHandler
     }
   }
 
-  private List<ConnectionProfile> getProfiles(Transferable transferable)
+  private List<DefaultMutableTreeNode> getTransferNodes(Transferable transferable)
   {
-    List<ConnectionProfile> profiles = new ArrayList<>();
-    TransferableProfileNode transferNode = null;
+    List<DefaultMutableTreeNode> nodes = new ArrayList<>();
+    TransferableProfileTreeNode transferNode = null;
 
     try
     {
-      transferNode = (TransferableProfileNode)transferable.getTransferData(ProfileFlavor.FLAVOR);
+      transferNode = (TransferableProfileTreeNode)transferable.getTransferData(ProfileFlavor.FLAVOR);
     }
     catch (Exception ex)
     {
-      return profiles;
+      LogMgr.logError(new CallerInfo(){}, "Could not obtain transferdata", ex);
+      return nodes;
     }
 
     TreePath[] dropPath = transferNode.getPath();
-    if (dropPath == null) return profiles;
+    if (dropPath == null) return nodes;
 
     for (TreePath treePath : dropPath)
     {
       DefaultMutableTreeNode node = (DefaultMutableTreeNode)treePath.getLastPathComponent();
-      ConnectionProfile profile = (ConnectionProfile)node.getUserObject();
-      profiles.add(profile);
+      nodes.add(node);
     }
-    return profiles;
+    return nodes;
   }
 
   @Override
