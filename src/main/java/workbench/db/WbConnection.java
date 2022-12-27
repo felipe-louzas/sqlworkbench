@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -1059,13 +1059,13 @@ public class WbConnection
 
   /**
    * Disconnect this connection.
-   * This is delegated to the Connection Manager because for certain DBMS some cleanup works needs to be done.
+   * <p>This is delegated to the Connection Manager because for certain DBMS some cleanup works needs to be done.</p>
    *
    * The ConnectionMgr is the only one who knows if there are more connections
    * around, which might influence what needs to be cleaned up and it also knows if any scripts
    * should be run before closing the connection.
-   *  <br/>
-   * The ConnectionMgr will in turn call shutdown() once the connection should really be closed.
+   * <br/>
+   * The ConnectionMgr will in turn call {@link shutdown()} once the connection should really be closed.
    * <br/>
    * This will also fire a connectionStateChanged event.
    */
@@ -1079,26 +1079,27 @@ public class WbConnection
 
   /**
    * This will physically close the connection to the DBMS.
-   * <br/>
-   * Calling disconnect() is the preferred method to close a connection.
-   * <br/>
-   * It will also free an resources from the DbMetadata object and
-   * shutdown the keep alive thread.
-   * <br/>
-   * Normally {@link #disconnect()} should be used.
-   * <br/>
-   * This is <b>only</b> public to allow cross-package calls in the workbench.db
-   * package (basically for the shutdown hooks)
    *
-   * This will <b>not</b> notify the ConnectionMgr that this connection has been closed.
-   * a connectionStateChanged event will <b>not</b> be fired.
+   * <p>Calling disconnect() is the preferred method to close a connection.</p>
+   * <p>
+   * It will also free any resources from the DbMetadata object and
+   * shutdown the keep alive thread.
+   * </p>
+   * <p>Normally {@link #disconnect()} should be used.</p>
+   *
+   * <p>This is only public to allow cross-package calls in the workbench.db
+   * package (basically for the shutdown hooks)</p>
+   *
+   * <p>This will <b>not</b> notify the ConnectionMgr that this connection has been closed.
+   * a connectionStateChanged event will <b>not</b> be fired.</p>
    *
    * @see #disconnect()
    */
   public void shutdown()
   {
     sessionProps.clear();
-    shutdown(true);
+    boolean doRollback = this.profile != null && this.profile.getRollbackBeforeDisconnect();
+    doShutdown(doRollback);
   }
 
   public void shutdownInBackround()
@@ -1109,7 +1110,7 @@ public class WbConnection
       public void run()
       {
         long start = System.currentTimeMillis();
-        shutdown(false);
+        doShutdown(true);
         long duration = System.currentTimeMillis() - start;
         LogMgr.logInfo(new CallerInfo(){}, "Connection closed after " + duration + "ms");
       }
@@ -1117,7 +1118,7 @@ public class WbConnection
     disconnect.start();
   }
 
-  private synchronized void shutdown(boolean withRollback)
+  private synchronized void doShutdown(boolean doRollback)
   {
     if (this.keepAlive != null)
     {
@@ -1131,7 +1132,7 @@ public class WbConnection
       this.preparedStatementPool.done();
     }
 
-    if (withRollback && this.profile != null && this.profile.getRollbackBeforeDisconnect())
+    if (doRollback)
     {
       try
       {
@@ -1193,9 +1194,9 @@ public class WbConnection
 
   /**
    * Return the fetch size to be used.
-   * <br/>
-   * If a fetch size has been defined using {@link #setFetchSize(int)} that size
-   * is used, otherwise the fetch size defined on the connection profile is used.
+   *
+   * <p>If a fetch size has been defined using {@link #setFetchSize(int)} that size
+   * is used, otherwise the fetch size defined on the connection profile is used.</p>
    *
    * @return the defined fetch size, or -1 if no fetch size was defined
    */
@@ -1215,11 +1216,11 @@ public class WbConnection
 
   /**
    * Create a statement that produces ResultSets that
-   * are read only and forward only (for performance reasons)
-   * <br/>
+   * are read only and forward only (for performance reasons).
+   * <p>
    * If the profile defined a default fetch size, this
    * will be set as well.
-   *
+   * </p>
    * @throws java.sql.SQLException
    * @see #getFetchSize()
    */
@@ -1901,7 +1902,7 @@ public class WbConnection
 
   /**
    * Calls Oracle's own cancel() method on the current connection.
-   * 
+   *
    * This seems to make cancelling statements much more reliable.
    * If this is not an Oracle connection, nothing happens.
    */

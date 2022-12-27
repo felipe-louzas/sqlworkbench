@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2022, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.
@@ -410,7 +410,7 @@ public class ObjectDropperUI
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(0, 5, 3, 0);
     buttonPanel.add(showScriptButton, gridBagConstraints);
 
@@ -425,9 +425,9 @@ public class ObjectDropperUI
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
+    gridBagConstraints.insets = new java.awt.Insets(0, 24, 3, 6);
     buttonPanel.add(dropButton, gridBagConstraints);
 
     cancelButton.setText(ResourceMgr.getString("LblCancel")); // NOI18N
@@ -441,8 +441,8 @@ public class ObjectDropperUI
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 5);
     buttonPanel.add(cancelButton, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
