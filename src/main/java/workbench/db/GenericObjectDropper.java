@@ -166,9 +166,9 @@ public class GenericObjectDropper
       {
         result.append(";");
       }
-      result.append("\n\n");
+      result.append("\n");
     }
-    if (needCommit) result.append("COMMIT;\n");
+    if (needCommit) result.append("\nCOMMIT;\n");
     return result;
   }
 
