@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2013, Thomas Kellerer
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0
  * that restricts the use for certain governments.

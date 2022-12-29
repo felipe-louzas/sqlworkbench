@@ -1,7 +1,7 @@
 /*
  * This file is part of SQL Workbench/J, https://www.sql-workbench.eu
  *
- * Copyright 2002-2016 Thomas Kellerer.
+ * Copyright 2002-2023 Thomas Kellerer
  *
  * Licensed under a modified Apache License, Version 2.0 (the "License")
  * that restricts the use for certain governments.
