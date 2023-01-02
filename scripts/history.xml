@@ -4,6 +4,9 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2022-10-23">
+    <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
+    <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
+    <entry dev-build="1" type="fix">The statements in the script from "Show script" when using the DROP dialog in the DbExplorer were not terminated with a semicolon.</entry>
     <entry dev-build="1" type="fix">Table names that contain a dot (e.g. "some.table") were not handled correctly when generating queries for them.</entry>
     <entry dev-build="1" type="fix">For PostgreSQL, retrieving event triggers did not work any more.</entry>
   </release>

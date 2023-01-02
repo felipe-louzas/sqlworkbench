@@ -46,12 +46,21 @@ public class ProfileKeyTest
     assertEquals("Wrong group detected", "Group", key.getGroupPath());
     assertEquals("Wrong name detected", "ProfileName", key.getName());
 
+    key = new ProfileKey("{Group}/ProfileName ", (String)null);
+    assertEquals("Wrong group detected", "Group", key.getGroupPath());
+    assertEquals("Wrong name detected", "ProfileName", key.getName());
+
     // Allow group definition without a slash
     key = new ProfileKey("{Group}ProfileName ");
     assertEquals("Wrong group detected", "Group", key.getGroupPath());
     assertEquals("Wrong name detected", "ProfileName", key.getName());
 
     key = new ProfileKey("{One/Two/Three}ProfileName ");
+    assertEquals("Wrong group detected", List.of("One", "Two", "Three"), key.getGroups());
+    assertEquals("Wrong group detected", "One/Two/Three", key.getGroupPath());
+    assertEquals("Wrong name detected", "ProfileName", key.getName());
+
+    key = new ProfileKey("{One/Two/Three}ProfileName ", "");
     assertEquals("Wrong group detected", List.of("One", "Two", "Three"), key.getGroups());
     assertEquals("Wrong group detected", "One/Two/Three", key.getGroupPath());
     assertEquals("Wrong name detected", "ProfileName", key.getName());

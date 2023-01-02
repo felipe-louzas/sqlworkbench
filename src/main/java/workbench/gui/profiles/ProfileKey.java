@@ -44,6 +44,7 @@ public class ProfileKey
 
   /**
    * Create a new ProfileKey.
+   *
    * The passed name can consist of the profile group and the profile name
    * the group needs to be enclosed in curly brackets, e.g:
    * <tt>{MainGroup}/HR Database</tt><br/>
@@ -61,8 +62,24 @@ public class ProfileKey
   {
     if (StringUtil.isBlank(pname)) throw new IllegalArgumentException("Name cannot be empty!");
 
-    this.name = pname.trim();
-    this.groupPath.addAll(parseGroupPath(path));
+    parseNameAndGroup(pname);
+
+    // only parse the path if the name did not contain one
+    if (StringUtil.isNonBlank(path))
+    {
+      List<String> newPath = parseGroupPath(path);
+      if (groupPath.isEmpty())
+      {
+        groupPath.addAll(newPath);
+      }
+      else
+      {
+        if (!newPath.equals(groupPath))
+        {
+          throw new IllegalArgumentException("The profile name contained a different group path than the path parameter");
+        }
+      }
+    }
   }
 
   /**
