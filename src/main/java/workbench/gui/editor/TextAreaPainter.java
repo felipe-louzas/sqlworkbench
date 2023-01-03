@@ -639,11 +639,9 @@ public class TextAreaPainter
   }
 
   /**
-   * Implementation of TabExpander interface. Returns next tab stop after
-   * a specified point.
-   * @param x The x co-ordinate
-   * @param tabOffset Ignored
-   * @return The next tab stop after <i>x</i>
+   * Implementation of TabExpander interface.
+   *
+   * Returns next tab stop after a specified point.
    */
   @Override
   public float nextTabStop(float x, int tabOffset)
@@ -653,7 +651,7 @@ public class TextAreaPainter
       this.calculateTabSize();
     }
     int offset = textArea.getHorizontalOffset();
-    float ntabs = (x - offset) / tabSize;
+    int ntabs = (int) ((x - offset) / tabSize);
     return ((ntabs + 1) * tabSize) + offset;
   }
 
