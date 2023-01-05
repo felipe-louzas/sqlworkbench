@@ -675,7 +675,7 @@ public final class WbManager
       String profilename = cmdLine.getValue(AppArguments.ARG_PROFILE);
       String group = cmdLine.getValue(AppArguments.ARG_PROFILE_GROUP);
       ConnectionProfile prof;
-      if (!StringUtil.isEmptyString(profilename))
+      if (StringUtil.isNonBlank(profilename))
       {
         ProfileKey def = new ProfileKey(profilename, group);
         prof = ConnectionMgr.getInstance().getProfile(def);

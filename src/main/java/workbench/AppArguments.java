@@ -160,14 +160,14 @@ public class AppArguments
     addArgument(ARG_CONN_CHECK_OPEN_TRANS, ArgumentType.BoolArgument);
     addArgument(ARG_CONN_ROLLBACK, ArgumentType.BoolArgument);
 
-		addArgument(ARG_CONN_SSH_HOST);
-		addArgument(ARG_CONN_SSH_KEYFILE, ArgumentType.Filename);
-		addArgument(ARG_CONN_SSH_PWD);
-		addArgument(ARG_CONN_SSH_USER);
-		addArgument(ARG_CONN_SSH_LOCAL_PORT);
-		addArgument(ARG_CONN_SSH_DB_PORT);
-		addArgument(ARG_CONN_SSH_DB_HOST);
-		addArgument(ARG_CONN_SSH_PORT);
+    addArgument(ARG_CONN_SSH_HOST);
+    addArgument(ARG_CONN_SSH_KEYFILE, ArgumentType.Filename);
+    addArgument(ARG_CONN_SSH_PWD);
+    addArgument(ARG_CONN_SSH_USER);
+    addArgument(ARG_CONN_SSH_LOCAL_PORT);
+    addArgument(ARG_CONN_SSH_DB_PORT);
+    addArgument(ARG_CONN_SSH_DB_HOST);
+    addArgument(ARG_CONN_SSH_PORT);
 
     addArgument(ARG_SHOW_PUMPER, ArgumentType.BoolArgument);
     addArgument(ARG_IGNORE_DROP, ArgumentType.BoolArgument);
