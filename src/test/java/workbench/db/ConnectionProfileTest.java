@@ -49,6 +49,13 @@ public class ConnectionProfileTest
   }
 
   @Test
+  public void testNonEmptyGroup()
+  {
+    ConnectionProfile profile = new ConnectionProfile();
+    assertFalse(profile.getGroups().isEmpty());
+  }
+
+  @Test
   public void testSetGroupPathByString()
     throws Exception
   {
