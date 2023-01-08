@@ -7,6 +7,7 @@
   <release build="-1" date="2023-01-08">
     <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
     <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
+    <entry dev-build="2" type="fix">Loading of old profiles didn't work if some (or all) were still using the "Default Group"</entry>
     <entry dev-build="1" type="fix">When using real tabs in the editor, the position of the following characters wasn't calculated correctly</entry>
     <entry dev-build="1" type="fix">The statements in the script from "Show script" when using the DROP dialog in the DbExplorer were not terminated with a semicolon.</entry>
     <entry dev-build="1" type="fix">Table names that contain a dot (e.g. "some.table") were not handled correctly when generating queries for them.</entry>
