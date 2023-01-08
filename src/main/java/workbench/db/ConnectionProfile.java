@@ -167,7 +167,7 @@ public class ConnectionProfile
     if (name == null || groupPath.isEmpty()) return null;
     Pattern p = Pattern.compile("[^0-9A-Za-z]+");
     String cleanPath = "";
-    for (String group : groupPath)
+    for (String group : getGroups())
     {
       Matcher gm = p.matcher(group);
       String cleanGroup = gm.replaceAll("").toLowerCase();
@@ -177,8 +177,7 @@ public class ConnectionProfile
 
     Matcher nm = p.matcher(name);
     String cleanName = nm.replaceAll("").toLowerCase();
-    String key = cleanPath + "." + cleanName;
-    return key;
+    return cleanPath + "." + cleanName;
   }
 
   public String getDefaultDirectory()
@@ -495,8 +494,8 @@ public class ConnectionProfile
 
   public String getLastGroupName()
   {
-    if (groupPath.isEmpty()) return "";
-    return groupPath.get(groupPath.size() - 1);
+    List<String> groups = getGroups();
+    return groups.get(groups.size() - 1);
   }
 
   /**
@@ -517,7 +516,7 @@ public class ConnectionProfile
    */
   public String getGroup()
   {
-    return ProfileKey.getGroupPathEscaped(groupPath);
+    return ProfileKey.getGroupPathEscaped(getGroups());
   }
 
   /**
@@ -534,7 +533,7 @@ public class ConnectionProfile
 
   public String getGroupPathString()
   {
-    return ProfileKey.getGroupPathAsString(groupPath);
+    return ProfileKey.getGroupPathAsString(getGroups());
   }
 
   /**
@@ -555,6 +554,7 @@ public class ConnectionProfile
 
   public List<String> getGroups()
   {
+    if (groupPath.isEmpty()) return List.of(ResourceMgr.getString("LblDefGroup"));
     return Collections.unmodifiableList(groupPath);
   }
 
@@ -588,7 +588,7 @@ public class ConnectionProfile
 
   public ProfileKey getKey()
   {
-    return new ProfileKey(this.getName(), this.groupPath);
+    return new ProfileKey(this.getName(), getGroups());
   }
 
   /**
