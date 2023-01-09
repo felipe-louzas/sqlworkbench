@@ -87,6 +87,30 @@ public class GroupNode
     }
   }
 
+  public ProfileNode findFirstProfile()
+  {
+    return findFirstProfile(this);
+  }
+
+  private ProfileNode findFirstProfile(GroupNode node)
+  {
+    if (node == null) return null;
+    int count = node.getChildCount();
+    for (int i = 0; i < count; i++)
+    {
+      DefaultMutableTreeNode child = (DefaultMutableTreeNode)node.getChildAt(i);
+      if (child instanceof ProfileNode)
+      {
+        return (ProfileNode)child;
+      }
+      else if (child instanceof GroupNode)
+      {
+        return findFirstProfile((GroupNode)child);
+      }
+    }
+    return null;
+  }
+
   public boolean containsGroup(String group)
   {
     if (group == null) return false;

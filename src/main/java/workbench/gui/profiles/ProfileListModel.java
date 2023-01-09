@@ -386,22 +386,9 @@ public class ProfileListModel
   public TreePath getFirstProfile()
   {
     if (this.rootNode.getChildCount() == 0) return null;
-    int count = rootNode.getChildCount();
-    for (int i=0; i < count; i++)
-    {
-      TreeNode node = this.rootNode.getChildAt(i);
-      if (node instanceof GroupNode)
-      {
-        GroupNode groupNode = (GroupNode)node;
-        int index = groupNode.getFirstProfileIndex();
-        if (index > -1)
-        {
-          ProfileNode pnode = (ProfileNode)groupNode.getChildAt(index);
-          return new TreePath(pnode.getPath());
-        }
-      }
-    }
-    return null;
+    ProfileNode pnode = rootNode.findFirstProfile();
+    if (pnode  == null) return null;
+    return new TreePath(pnode.getPath());
   }
 
   public TreePath getPath(ProfileKey def)
