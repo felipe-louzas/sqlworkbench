@@ -33,8 +33,8 @@ import workbench.resource.Settings;
 import workbench.db.DbMetadata;
 import workbench.db.JdbcUtils;
 import workbench.db.ObjectListCleaner;
-import workbench.db.TableIdentifier;
 import workbench.db.ObjectListDataStore;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.postgres.PostgresObjectListCleaner;
 
@@ -120,10 +120,7 @@ public class GreenplumObjectListCleaner
       stmt = conn.createStatementForQuery();
       rs = stmt.executeQuery(sql.toString());
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logInfo(ci, "Retrieving all partitions using:\n" + sql);
-      }
+      LogMgr.logMetadataSql(ci, "partitions", sql);
 
       while (rs.next())
       {
@@ -137,7 +134,7 @@ public class GreenplumObjectListCleaner
     catch (Exception ex)
     {
       conn.rollback(sp);
-      LogMgr.logError(ci, "Error retrieving all partitions using:\n" + sql, ex);
+      LogMgr.logMetadataError(ci, ex, "partitions", sql);
     }
     finally
     {

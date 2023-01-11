@@ -31,7 +31,6 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
@@ -115,10 +114,7 @@ public class FirebirdDomainReader
 
     sql.append(" ORDER BY 1 ");
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug(new CallerInfo(){}, "Query to retrieve domains:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "domain list", sql);
 
     return sql.toString();
   }
@@ -156,7 +152,7 @@ public class FirebirdDomainReader
     catch (SQLException e)
     {
       connection.rollback(sp);
-      LogMgr.logError(new CallerInfo(){}, "Could not read domains using query:\n" + sql, e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "domain list", sql);
     }
     finally
     {

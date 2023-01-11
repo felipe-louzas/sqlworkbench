@@ -138,10 +138,10 @@ public class LogMgr
 
   public static void logMetadataSql(CallerInfo caller, String type, CharSequence sql, Object... parameters)
   {
-    if (isDebugEnabled() || Settings.getInstance().getDebugMetadataSql())
+    if (isInfoEnabled()|| Settings.getInstance().getDebugMetadataSql())
     {
       String msg = "Retrieving "  + type + " using:\n" + SqlUtil.replaceParameters(sql, parameters);
-      getLogger().logMessage(LogLevel.debug, caller, msg, null);
+      getLogger().logMessage(LogLevel.info, caller, msg, null);
     }
   }
 

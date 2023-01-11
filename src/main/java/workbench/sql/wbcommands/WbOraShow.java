@@ -35,6 +35,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.oracle.OracleErrorInformationReader;
 import workbench.db.oracle.OracleUtils;
 
@@ -50,9 +51,6 @@ import workbench.sql.lexer.SQLToken;
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -555,7 +553,7 @@ public class WbOraShow
     if (unit == null) return null;
     try
     {
-      long lvalue = Long.valueOf(value);
+      long lvalue = Long.parseLong(value);
       if (lvalue == 0) return null;
 
       if ("kb".equals(unit))
@@ -585,10 +583,7 @@ public class WbOraShow
     Statement stmt = null;
     ResultSet rs = null;
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug(new CallerInfo(){}, "Retrieving log source information using:\n" + sql);
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "log source", sql);
 
     try
     {
@@ -614,7 +609,7 @@ public class WbOraShow
     }
     catch (SQLException ex)
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not retrieve log information using: " + sql, ex);
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "log source", sql);
       result.addErrorMessage(ex.getMessage());
     }
     finally

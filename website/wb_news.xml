@@ -14,6 +14,17 @@
     <category>Database</category>
     <category>SQL</category>
     <item>
+      <title>New development build (129.2) released</title>
+      <description>        <![CDATA[<p>Changes from build 129.1 to build 129.2</p><p>Bug Fixes</p><ul>
+    <li>Loading of old profiles didn't work if some (or all) were still using the "Default Group"</li>
+</ul>]]>
+</description>
+      <link>https://www.sql-workbench.eu/dev-download.html</link>
+      <guid>sql-workbench-build-129.2</guid>
+      <author>support@sql-workbench.eu (Thomas Kellerer)</author>
+      <pubDate>Sun, 08 Jan 2023 18:20:39 +0200</pubDate>
+    </item>
+    <item>
       <title>New stable build (129) released</title>
       <description>        <![CDATA[<p>Changes from build 128 to build 129</p><p>Enhancements</p><ul>
     <li>Double clicking on the grid line of a header column now adjusts the column width.</li>
@@ -58,7 +69,8 @@
     <li>Removed the hard-coded alternate shortcut F9 for "Execute selected".</li>
     <li>In the "Copy data to clipboard" dialog, the "Selected rows" option wasn't always enabled correctly.</li>
     <li>If no backup directory was defined, opening of the "Backup" options wasn't possible.</li>
-</ul>]]>
+</ul>
+]]>
 </description>
       <link>https://www.sql-workbench.eu/downloads.html</link>
       <guid>sql-workbench-build-129</guid>
@@ -82,6 +94,7 @@
     <li>In the "Copy data to clipboard" dialog, the "Selected rows" option wasn't always enabled correctly.</li>
     <li>If no backup directory was defined, opening of the "Backup" options wasn't possible.</li>
 </ul>
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -148,6 +161,7 @@
     <li>When using "Separate connection per tab", the window title wasn't updated correctly when switching tabs</li>
 </ul>
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/downloads.html</link>
@@ -165,6 +179,7 @@
     <li>Improved the performance for retrieving the list of procedures and functions in Oracle</li>
     <li>For SQL Server, the DROP statements for multiple sequences wasn't generated correctly.</li>
 </ul>
+
 
 
 ]]>
@@ -187,6 +202,7 @@
     <li>Fixed cursor positioning problem on HiDPI displays for Windows</li>
     <li>When using the properties based profiles, passwords that end with a backslash weren't loaded properly</li>
 </ul>
+
 
 
 
@@ -213,6 +229,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -230,6 +247,7 @@
     <li>Resetting a "separate connection" in a panel of the main window did not longer work if the DbTree was enabled.</li>
     <li>When using "Save Data As" to generate MERGE statements, the column selection wasn't used.</li>
 </ul>
+
 
 
 
@@ -254,6 +272,7 @@
     <li>Depending on the configuration, reading a NULL value for BLOB columns could result in an NullPointerException.</li>
     <li>For Oracle, identifiers with leading underscores were not quoted correctly.</li>
 </ul>
+
 
 
 
@@ -286,6 +305,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -306,6 +326,7 @@
     <li>When using "Show PDF Manual" the manual was expected in the wrong location.</li>
     <li>When using "Separate connection per tab", the window title wasn't updated correctly when switching tabs</li>
 </ul>
+
 
 
 
@@ -412,6 +433,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/downloads.html</link>
@@ -429,6 +451,7 @@
 <li>When selecting a global SSH configuration for a connection profile, it was no longer possible to revert to a "non-global" configuration</li>
 <li>When specifying a SSH Tunnel without a password and no keyfile, SQL Workbench did not prompt for the password</li>
 </ul>
+
 
 
 
@@ -467,6 +490,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -482,6 +506,7 @@
 <li>Fixed an issue when loading the SQL Server JDBC driver with certain versions of OpenJDK</li>
 <li>For SQL Server, when including the CREATE TABLE statement in the output when exporting data as SQL the export failed</li>
 </ul>
+
 
 
 
@@ -526,6 +551,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -543,6 +569,7 @@
 <li>For Oracle 18c and later, DDL for identity columns wasn't generated correctly.</li>
 <li>For Oracle, the generated IGNORE_DUP_KEY hint was incorrect if the order of the PK columns was different to the column order of the table.</li>
 </ul>
+
 
 
 
@@ -596,6 +623,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -615,6 +643,7 @@
 <li>For PostgreSQL, the dependency display of trigger functions wasn't working any more.</li>
 <li>When using Page Down when the editor text was shorter than the number of lines, the display was corrupted.</li>
 </ul>
+
 
 
 
@@ -673,6 +702,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -690,6 +720,7 @@
 <li>Filtering the list of macros did no longer work correctly.</li>
 <li>For SQLite, all values are now retrieved as strings to workaround problems with the lack of explicit data types.</li>
 </ul>
+
 
 
 
@@ -756,6 +787,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -774,6 +806,7 @@
 <li>For Postgres, infinity values for timestamp with time zone could not be read from the database.</li>
 <li>If the JDBC driver returned LocalDateTime or LocalDate values, those weren't formatted properly in SQL statements or text files.</li>
 </ul>
+
 
 
 
@@ -866,6 +899,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/downloads.html</link>
@@ -880,6 +914,7 @@
 <li>For Oracle the source of materialized views using ON PREBUILT TABLE was incorrect.</li>
 <li>Relative file names were treated differently by the SQL Workbench commands and the ifFileExists check.</li>
 </ul>
+
 
 
 
@@ -952,6 +987,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -973,6 +1009,7 @@
 <li>Numbers that can't be stored in Excel's file format are now exported as strings rather than numbers</li>
 <li>For Oracle, certain timestamp values were incorrectly exported.</li>
 </ul>
+
 
 
 
@@ -1049,6 +1086,7 @@
 
 
 
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -1074,6 +1112,7 @@
 <li>When using -profileStorage wih a filename without a path, files located in the config directory where not found</li>
 <li>Generating a SQL script using WbDataDiff on tables with timestamptz columns in Postgres did not work</li>
 </ul>
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -1127,6 +1166,7 @@
 <li>Showing rowcounts in the DbExplorer did not work.</li>
 <li>For Oracle, the result of functions returning a refcursor was not displayed correctly.</li>
 </ul>
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/downloads.html</link>
@@ -1146,6 +1186,7 @@
 </ul><p>Bug Fixes</p><ul>
 <li>"Execute Selected"</li>
 </ul>
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -1164,6 +1205,7 @@
 <li>When a result was locked ("Keep result") subsequent new result tabs were not always activated automatically.</li>
 <li>When connecting to a profile with a corrupted workspace, the main window was not usable any more.</li>
 </ul>
+
 ]]>
 </description>
       <link>https://www.sql-workbench.eu/dev-download.html</link>
@@ -1183,6 +1225,7 @@
 <li>When using "Check foreign keys" in the dialog to drop multiple objects, non-table objects were removed.</li>
 <li>"Save As" did not use the profile's default directory</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1201,6 +1244,7 @@
 <li>When using "quoteCharEscaping=duplicate" with WbImport, empty strings or strings that only contained a single (escaped) quote character were not imported correctly.</li>
 <li>In case of an error, the cursor in the editor was no longer moved to the error position.</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1223,6 +1267,7 @@
 <li>Showing rowcounts in the DbExplorer did not work.</li>
 <li>For Oracle, the result of functions returning a refcursor was not displayed correctly.</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1278,6 +1323,7 @@
 <li>For Oracle, the "realplan" option for autotrace did not work for queries starting with a common table expression (WITH)</li>
 <li>For Oracle, NUMBER columns with a negative scale e.g. NUMBER(10,-2) were not displayed correctly</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/downloads.html</link>
@@ -1292,6 +1338,7 @@
 </ul><p>Bug Fixes</p><ul>
 <li>Replacing variables inside other variables did not always work</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1307,6 +1354,7 @@
 <li>WbSchemaDiff did not handle multiple indexes on the same column list correctly</li>
 <li>It was no longer possible to connect to a SAP DB</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1328,6 +1376,7 @@
 <li>It was not possible to change the statement/query timeout in GUI mode using SET TIMEOUT</li>
 <li>Detaching a result was longer possible in build 122.2</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1341,6 +1390,7 @@
 <li>For Firebird, DOMAINs are now included in the dependency display</li>
 <li>WbImport now also supports the -skipTargetCheck option</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1368,6 +1418,7 @@
 <li>For Oracle, the "realplan" option for autotrace did not work for queries starting with a common table expression (WITH)</li>
 <li>For Oracle, NUMBER columns with a negative scale e.g. NUMBER(10,-2) were not displayed correctly</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1418,6 +1469,7 @@
 <li>When using -configDir in console mode the connection profiles were still loaded from the default location.</li>
 <li>For Postgres, when generating scripts for tables and sequences the owner column for a sequence was not correctly generated.</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/downloads.html</link>
@@ -1438,6 +1490,7 @@
 <li>When using a profile specific macro file, opening a new window did not always work.</li>
 <li>When using an Oracle 12.x JDBC driver, materialized views were always reported as missing with WbSchemaDiff</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1458,6 +1511,7 @@
 <li>Error messages were not shown for errors that occurred in connect scripts</li>
 </ul>
 
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1476,6 +1530,7 @@
 <li>For Postgres, the source of a table was not shown when an old (unsupported) version of Postgres was used</li>
 <li>For SQL Server (and other DBMS supporting schemas and catalogs) the list of schemas was not properly refreshed when the database was changed in the DbExplorer's dropdowns</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1491,6 +1546,7 @@
 <li>For Oracle, value literals for RAW columns where not created correctly</li>
 <li>For Oracle, -clobAsFile for WbExport was not working for XML columns</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1511,6 +1567,7 @@
 <li>When using -configDir in console mode the connection profiles were still loaded from the default location.</li>
 <li>For Postgres, when generating scripts for tables and sequences the owner column for a sequence was not correctly generated.</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/dev-download.html</link>
@@ -1526,6 +1583,7 @@
 <li>It was no longer possible to use a timestamp format without time for WbImport</li>
 <li>When loading a new macro file, the macro menu was not updated.</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/downloads.html</link>
@@ -1585,6 +1643,7 @@
 <li>With SQL Server, it was not possible to drop indexes from within the DbTree</li>
 <li>Passwords are no longer trimmed</li>
 </ul>
+
 ]]>
 </description>
       <link>http://www.sql-workbench.eu/downloads.html</link>

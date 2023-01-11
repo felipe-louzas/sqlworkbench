@@ -27,7 +27,6 @@ import java.sql.Statement;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 /**
  *
@@ -99,10 +98,7 @@ public class GenericCatalogInformationReader
       Statement stmt = null;
       ResultSet rs = null;
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(new CallerInfo(){}, dbConnection.getId() + ": Retrieving current catalog using: " + query);
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "current catalog", query);
 
       try
       {

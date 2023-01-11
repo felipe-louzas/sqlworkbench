@@ -21,8 +21,6 @@
  */
 package workbench.db.greenplum;
 
-import workbench.db.postgres.*;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,22 +29,18 @@ import java.sql.Statement;
 import java.util.List;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DependencyNode;
+import workbench.db.DropType;
 import workbench.db.IndexDefinition;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+import workbench.db.postgres.*;
 
-import workbench.log.LogMgr;
-import workbench.resource.Settings;
-
-import workbench.db.DependencyNode;
-import workbench.db.DropType;
-
-import workbench.db.JdbcUtils;
-
-import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -127,10 +121,7 @@ public class GreenplumTableSourceBuilder
       pstmt.setString(1, tbl.getRawSchema());
       pstmt.setString(2, tbl.getRawTableName());
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(ci, "Retrieving table options using:\n" + SqlUtil.replaceParameters(sql, tbl.getSchema(), tbl.getTableName()));
-      }
+      LogMgr.logMetadataSql(ci, "table options", sql, tbl.getSchema(), tbl.getTableName());
 
       rs = pstmt.executeQuery();
 
@@ -170,7 +161,7 @@ public class GreenplumTableSourceBuilder
     catch (SQLException e)
     {
       dbConnection.rollback(sp);
-      LogMgr.logError(ci, "Error retrieving table options using:\n" + SqlUtil.replaceParameters(sql, tbl.getSchema(), tbl.getTableName()), e);
+      LogMgr.logMetadataError(ci, e, "table options", sql, tbl.getSchema(), tbl.getTableName());
     }
     finally
     {

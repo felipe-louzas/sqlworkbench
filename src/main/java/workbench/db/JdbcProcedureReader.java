@@ -103,7 +103,7 @@ public class JdbcProcedureReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug(new CallerInfo(){}, "Calling getProcedures() using: catalog="+ catalog + ", schema=" + schema + ", name=" + name);
+        LogMgr.logInfo(new CallerInfo(){}, "Calling getProcedures() using: catalog="+ catalog + ", schema=" + schema + ", name=" + name);
       }
 
       ResultSet rs = this.connection.getSqlConnection().getMetaData().getProcedures(catalog, schema, name);
@@ -638,7 +638,7 @@ public class JdbcProcedureReader
     Statement stmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
-
+    String query = null;
     try
     {
       if (useSavepoint)
@@ -651,12 +651,9 @@ public class JdbcProcedureReader
       sql.setSpecificName(def.getSpecificName());
       sql.setInternalId(def.getInternalIdentifier());
 
-      String query = sql.getSql();
+      query = sql.getSql();
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logInfo(new CallerInfo(){}, "Retrieving procedure source using query:\n" + query);
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "procedure source", query);
 
       stmt = this.connection.createStatementForQuery();
       rs = stmt.executeQuery(query);
@@ -673,7 +670,7 @@ public class JdbcProcedureReader
     catch (SQLException e)
     {
       if (sp != null) this.connection.rollback(sp);
-      LogMgr.logError(new CallerInfo(){}, "Error retrieving procedure source", e);
+      LogMgr.logMetadataError(new CallerInfo(){}, e, "procedure source", query);
       source = new StringBuilder(ExceptionUtil.getDisplay(e));
       this.connection.rollback(sp);
     }
@@ -705,7 +702,7 @@ public class JdbcProcedureReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug(new CallerInfo(){}, "Calling getFunctions() using: catalog="+ catalogPattern + ", schema=" + schemaPattern + ", name=" + namePattern);
+        LogMgr.logInfo(new CallerInfo(){}, "Calling getFunctions() using: catalog="+ catalogPattern + ", schema=" + schemaPattern + ", name=" + namePattern);
       }
 
       ResultSet rs = this.connection.getSqlConnection().getMetaData().getFunctions(catalogPattern, schemaPattern, namePattern);

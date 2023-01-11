@@ -128,7 +128,7 @@ public class JdbcTableDefinitionReader
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug(ci, "Calling getColumns() using: catalog="+ catalog + ", schema=" + schema + ", table=" + tablename);
+        LogMgr.logInfo(ci, "Calling getColumns() using: catalog="+ catalog + ", schema=" + schema + ", table=" + tablename);
       }
 
       long start = System.currentTimeMillis();

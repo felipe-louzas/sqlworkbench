@@ -37,6 +37,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -53,9 +54,6 @@ import workbench.sql.parser.ParserType;
 import workbench.sql.wbcommands.CommandTester;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -772,10 +770,7 @@ public class OracleStatementHook
     String level = null;
     String call = "{? = call dbms_utility.get_parameter_value('STATISTICS_LEVEL', ?, ?)}";
     CallerInfo ci = new CallerInfo(){};
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug(ci, "Retrieving statistics level using:\n" + call);
-    }
+    LogMgr.logMetadataSql(ci, "statistics level", call);
 
     try
     {
@@ -789,7 +784,7 @@ public class OracleStatementHook
     }
     catch (SQLException sql)
     {
-      LogMgr.logError(ci, "Could not retrieve STATISTICS_LEVEL", sql);
+      LogMgr.logMetadataError(ci, sql, "statistics level", call);
     }
     return level;
   }

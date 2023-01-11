@@ -1635,7 +1635,7 @@ public class DbMetadata
 
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug(ci, getConnId() + ": Calling getTables() using: catalog="+ escapedCatalog +
+        LogMgr.logInfo(ci, getConnId() + ": Calling getTables() using: catalog="+ escapedCatalog +
           ", schema=" + escapedSchema +
           ", name=" + escapedNamePattern +
           ", types=" + (typesToUse == null ? "null" : Arrays.asList(typesToUse).toString()));

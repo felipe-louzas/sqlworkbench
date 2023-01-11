@@ -99,10 +99,8 @@ public class HanaSequenceReader
       SqlUtil.appendExpression(query, "schema_name", StringUtil.trimQuotes(schema), null);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logInfo(ci, "Using query=" + query);
-    }
+
+    LogMgr.logMetadataSql(ci, "sequence definition", query);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -115,7 +113,7 @@ public class HanaSequenceReader
     }
     catch (Throwable e)
     {
-      LogMgr.logError(ci, "Error when retrieving sequence definition", e);
+      LogMgr.logMetadataError(ci, e, "sequence definition", query);
     }
     finally
     {

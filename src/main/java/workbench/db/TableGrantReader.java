@@ -34,11 +34,10 @@ import java.util.Set;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import workbench.db.oracle.OracleTableGrantReader;
 import workbench.db.redshift.RedshiftTableGrantReader;
-
-import workbench.resource.Settings;
 
 import workbench.util.StringUtil;
 
@@ -85,7 +84,7 @@ public class TableGrantReader
       tbl.adjustCase(dbConnection);
       if (Settings.getInstance().getDebugMetadataSql())
       {
-        LogMgr.logDebug(new CallerInfo(){}, "Calling DatabaseMetaData.getTablePrivileges() using: " + tbl.getRawCatalog() + ", " + tbl.getRawSchema() + ", " + tbl.getRawTableName());
+        LogMgr.logInfo(new CallerInfo(){}, "Calling DatabaseMetaData.getTablePrivileges() using: " + tbl.getRawCatalog() + ", " + tbl.getRawSchema() + ", " + tbl.getRawTableName());
       }
       rs = dbConnection.getSqlConnection().getMetaData().getTablePrivileges(tbl.getRawCatalog(), tbl.getRawSchema(), tbl.getRawTableName());
       boolean useColumnNames = dbConnection.getDbSettings().useColumnNameForMetadata();

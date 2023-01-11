@@ -32,17 +32,14 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectSourceOptions;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.util.CharacterRange;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbStringTokenizer;
@@ -99,10 +96,7 @@ public class GreenplumExternalTableReader
       SqlUtil.appendExpression(sql, "c.relname", namePattern, connection);
     }
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug(ci, "Retrieving external tables using:\n" + sql);
-    }
+    LogMgr.logMetadataSql(ci, "external tables", sql);
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -125,7 +119,7 @@ public class GreenplumExternalTableReader
     catch (Exception e)
     {
       connection.rollback(sp);
-      LogMgr.logWarning(ci, "Error retrieving external tables using:\n" + sql, e);
+      LogMgr.logMetadataError(ci, e, "external tables", sql);
     }
     finally
     {
@@ -169,10 +163,7 @@ public class GreenplumExternalTableReader
     }
 
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug(ci, "Retrieving external tables definition using :\n" + SqlUtil.replaceParameters(sql, tbl.getTableName(), tbl.getSchema()));
-    }
+    LogMgr.logMetadataSql(ci, "external table definition", sql, tbl.getTableName(), tbl.getSchema());
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -295,7 +286,7 @@ public class GreenplumExternalTableReader
     catch (Exception e)
     {
       conn.rollback(sp);
-      LogMgr.logWarning(ci, "Error retrieving external table definition using:\n" +  SqlUtil.replaceParameters(sql, tbl.getTableName(), tbl.getSchema()), e);
+      LogMgr.logMetadataError(ci, e, "external table definition", sql, tbl.getTableName(), tbl.getSchema());
     }
     finally
     {

@@ -27,7 +27,6 @@ import java.sql.Statement;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.DefaultViewReader;
 import workbench.db.DropType;
@@ -67,10 +66,7 @@ public class ClickhouseViewReader
       stmt = connection.createStatementForQuery();
       String sql = "show create table " + viewName;
 
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logInfo(new CallerInfo(){}, "Retrieving view source using using:\n" + sql);
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "view source", sql);
 
       rs = stmt.executeQuery(sql);
 

@@ -28,7 +28,6 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
@@ -38,7 +37,6 @@ import workbench.db.WbConnection;
 
 import workbench.db.JdbcUtils;
 
-import workbench.util.SqlUtil;
 
 /**
  * A class to retrieve the column information for a table in the HANA database.
@@ -172,10 +170,7 @@ public class HanaTableDefinitionReader
     columnsStatement.setString(1, tableNamePattern);
     columnsStatement.setString(2, schemaPattern);
 
-    if (Settings.getInstance().getDebugMetadataSql())
-    {
-      LogMgr.logDebug(new CallerInfo(){}, "Query to retrieve column information: " + SqlUtil.replaceParameters(sql, tableNamePattern, schemaPattern));
-    }
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column information", sql, tableNamePattern, schemaPattern);
 
     return columnsStatement.executeQuery();
   }

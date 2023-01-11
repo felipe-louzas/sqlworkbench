@@ -132,7 +132,7 @@ public class JdbcIndexReader
   {
     if (Settings.getInstance().getDebugMetadataSql())
     {
-      LogMgr.logDebug(new CallerInfo(){},
+      LogMgr.logInfo(new CallerInfo(){},
         "Calling getIndexInfo() using: catalog="+ table.getCatalog() +
         ", schema=" + table.getSchema() +
         ", name=" + table.getTableName() +

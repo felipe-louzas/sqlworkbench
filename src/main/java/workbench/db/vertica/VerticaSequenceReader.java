@@ -30,7 +30,6 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.db.GenerationOptions;
 import workbench.db.JdbcUtils;
@@ -258,10 +257,7 @@ public class VerticaSequenceReader
         SqlUtil.appendExpression(sql, "sequence_schema", schema, dbConnection);
         needAnd = true;
       }
-      if (Settings.getInstance().getDebugMetadataSql())
-      {
-        LogMgr.logDebug(new CallerInfo(){}, "Using SQL=\n" + sql);
-      }
+      LogMgr.logMetadataSql(new CallerInfo(){}, "read sequence source", sql);
     }
     return sql.toString();
   }
