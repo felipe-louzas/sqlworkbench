@@ -80,18 +80,7 @@ public class GenericObjectDropper
   @Override
   public boolean supportsFKSorting()
   {
-    if (objects == null) return false;
-
-    int numTypes = this.objects.size();
-    for (int i=0; i < numTypes; i++)
-    {
-      DbObject obj = this.objects.get(i);
-      if (!(obj instanceof TableIdentifier))
-      {
-        return false;
-      }
-    }
-    return true;
+    return objects != null && this.objects.stream().anyMatch(TableIdentifier.class::isInstance);
   }
 
   @Override

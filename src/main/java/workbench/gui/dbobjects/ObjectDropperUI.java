@@ -80,6 +80,13 @@ public class ObjectDropperUI
     initComponents();
     Color lineColor = WbSwingUtilities.getLineBorderColor(this);
     statusLabel.setBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, lineColor));
+    if (!dropper.supportsFKSorting())
+    {
+      checkFKButton.setEnabled(false);
+      addMissingTables.setEnabled(false);
+      addMissingTables.setSelected(false);
+      optionPanel.remove(checkPanel);
+    }
   }
 
   private boolean isConnectionBusy()
