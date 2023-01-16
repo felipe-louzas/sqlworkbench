@@ -28,6 +28,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -540,6 +541,7 @@ private void checkFKButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     public void run()
     {
       List<DbObject> sorted = new ArrayList<>();
+      Set<String> typesWithFKS = conn.getDbSettings().getTypesSupportingFKS();
       try
       {
         conn.setBusy(true);
@@ -555,7 +557,7 @@ private void checkFKButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         {
           // the TableDependencySorter will remove non-table objects while processing the list
           // in order to not lose the user selection, we need to keep those objects separately
-          if (dbo instanceof TableIdentifier && conn.getMetadata().isTableType(dbo.getObjectType()))
+          if (dbo instanceof TableIdentifier && typesWithFKS.contains(dbo.getObjectType()))
           {
             tables.add((TableIdentifier) dbo);
           }

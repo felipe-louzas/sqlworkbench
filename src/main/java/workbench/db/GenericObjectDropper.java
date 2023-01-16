@@ -24,7 +24,9 @@ package workbench.db;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import workbench.interfaces.ObjectDropper;
 import workbench.log.CallerInfo;
@@ -47,7 +49,7 @@ import workbench.util.StringUtil;
 public class GenericObjectDropper
   implements ObjectDropper
 {
-  private List<? extends DbObject> objects;
+  private final List<? extends DbObject> objects = new ArrayList<>();
   private WbConnection connection;
   private Statement currentStatement;
   private boolean cascadeConstraints;
@@ -80,7 +82,10 @@ public class GenericObjectDropper
   @Override
   public boolean supportsFKSorting()
   {
-    return objects != null && this.objects.stream().anyMatch(TableIdentifier.class::isInstance);
+    if (objects == null) return false;
+
+    Set<String> typesWithFKS = connection.getDbSettings().getTypesSupportingFKS();
+    return this.objects.stream().anyMatch(dbo -> typesWithFKS.contains(dbo.getObjectType()));
   }
 
   @Override
@@ -110,13 +115,10 @@ public class GenericObjectDropper
   @Override
   public void setObjects(List<? extends DbObject> toDrop)
   {
-    if (toDrop == null)
+    objects.clear();
+    if (toDrop != null)
     {
-      objects = null;
-    }
-    else
-    {
-      objects = new ArrayList<>(toDrop);
+      objects.addAll((Collection)toDrop);
     }
   }
 
@@ -142,14 +144,14 @@ public class GenericObjectDropper
   public CharSequence getScript()
   {
     if (this.connection == null) throw new NullPointerException("No connection!");
-    if (this.objects == null || this.objects.isEmpty()) return null;
+    if (this.objects.isEmpty()) return null;
 
     boolean needCommit = transactional && this.connection.generateCommitForDDL();
     int count = this.objects.size();
     StringBuffer result = new StringBuffer(count * 40);
-    for (int i=0; i < count; i++)
+    for (DbObject dbo : objects)
     {
-      CharSequence sql = getDropStatement(i);
+      CharSequence sql = getDropForObject(dbo);
       result.append(sql);
       if (!StringUtil.endsWith(sql, ';'))
       {
@@ -159,12 +161,6 @@ public class GenericObjectDropper
     }
     if (needCommit) result.append("\nCOMMIT;\n");
     return result;
-  }
-
-  private CharSequence getDropStatement(int index)
-  {
-    DbObject toDrop = this.objects.get(index);
-    return getDropForObject(toDrop, cascadeConstraints);
   }
 
   @Override
@@ -216,7 +212,7 @@ public class GenericObjectDropper
     throws SQLException
   {
     if (this.connection == null) throw new NullPointerException("No connection!");
-    if (this.objects == null || this.objects.isEmpty()) return;
+    if (this.objects.isEmpty()) return;
 
     cancel = false;
     try
@@ -229,7 +225,7 @@ public class GenericObjectDropper
       {
         DbObject object = objects.get(i);
 
-        String sql = SqlUtil.trimSemicolon(getDropStatement(i).toString());
+        String sql = SqlUtil.trimSemicolon(getDropForObject(object).toString());
         LogMgr.logDebug(new CallerInfo(){}, "Dropping object using: " + sql);
         if (monitor != null)
         {

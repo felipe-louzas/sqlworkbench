@@ -1841,6 +1841,12 @@ public class DbSettings
     return getProperty("alter." + getKeyValue(type) + ".drop.constraint", null);
   }
 
+  public Set<String> getTypesSupportingFKS()
+  {
+    List<String> dbTypes = getListProperty("types.with.foreignkeys", "TABLE");
+    return CollectionUtil.caseInsensitiveSet(dbTypes);
+  }
+
   /**
    * Returns the SQL to drop a foreign key constraint from a data object
    *
@@ -2828,7 +2834,7 @@ public class DbSettings
   {
     return getBoolProperty("getschema.implemented", true);
   }
-  
+
   public boolean isGetCatalogImplemented()
   {
     return getBoolProperty("getcatalog.implemented", true);
