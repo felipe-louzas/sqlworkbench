@@ -82,8 +82,6 @@ public class GenericObjectDropper
   @Override
   public boolean supportsFKSorting()
   {
-    if (objects == null) return false;
-
     Set<String> typesWithFKS = connection.getDbSettings().getTypesSupportingFKS();
     return this.objects.stream().anyMatch(dbo -> typesWithFKS.contains(dbo.getObjectType()));
   }
