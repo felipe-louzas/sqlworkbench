@@ -1808,24 +1808,47 @@ public class DbMetadata
   }
 
   /**
-   * Checks if the given type is contained in the passed array.
-   * If at least one entry in the types array is * then this
-   * method will always return true
-   * @param type the type to check for
-   * @param types the list of types to be checked
-   * @return true, if type is contained in types
+   * Check if any of the type in <tt>toCheck</tt> match the requested types.
+   *
+   * @param toCheck  the types to check
+   * @param requestedTypes the requested object types
+   *
+   * @see #typeIncluded(String, String[])
    */
-  public static boolean typeIncluded(String type, String[] types)
+  public static boolean typesIncluded(String[] toCheck, String[] requestedTypes)
   {
-    if (types == null) return true;
-    if (type == null) return false;
-    int l = types.length;
-    for (int i=0; i < l; i++)
+    if (requestedTypes == null) return true;
+    if (toCheck == null) return false;
+    for (String type : toCheck)
     {
-      if (types[i] == null) continue;
-      if (types[i].equals("*")) return true;
-      if (types[i].equals("%")) return true;
-      if (type.equalsIgnoreCase(types[i])) return true;
+      if (typeIncluded(type, requestedTypes)) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Checks if the given type is contained in the passed array of "requested types".
+   *
+   * <p>If at least one entry in the types array is * then this
+   * method will always return true</p>
+   *
+   * @param type the type to check for
+   * @param requestedTypes the list of types to be checked
+   * @return true, if type is contained in requestedTypes
+   *
+   * @see #typesIncluded(String[], String[])
+   * @see #getObjectList(String, String[])
+   */
+  public static boolean typeIncluded(String type, String[] requestedTypes)
+  {
+    if (requestedTypes == null) return true;
+    if (type == null) return false;
+    for (String rtype : requestedTypes)
+    {
+      if (rtype == null) continue;
+      if (rtype.equals("*")) return true;
+      if (rtype.equals("%")) return true;
+      if (type.equalsIgnoreCase(rtype)) return true;
     }
     return false;
   }
@@ -1833,10 +1856,12 @@ public class DbMetadata
   /**
    * Returns true if the server stores identifiers in mixed case.
    *
+   * <p>
    * Usually this is delegated to the JDBC driver, but as some drivers
-   * (e.g. Frontbase) implement this incorrectly, this can be overriden
-   * in workbench.settings with the property:
-   * workbench.db.[dbid].objectname.case
+   * implement this incorrectly, this can be overriden in workbench.settings
+   * with the property:<br/>
+   * <tt>workbench.db.[dbid].objectname.case</tt>
+   * </p>
    */
   public boolean storesMixedCaseIdentifiers()
   {

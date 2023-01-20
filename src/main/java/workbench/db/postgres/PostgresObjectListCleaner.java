@@ -51,6 +51,7 @@ public class PostgresObjectListCleaner
 {
 
   public static final String CLEANUP_PARTITIONS_PROP = "partitions.tablelist.remove";
+  private static final String[] BASE_TYPES = new String[] {"TABLE", "PARTITIONED TABLE"};
 
   public boolean removePartitions()
   {
@@ -61,7 +62,7 @@ public class PostgresObjectListCleaner
   public void cleanupObjectList(WbConnection con, ObjectListDataStore result,
                                 String catalogPattern, String schemaPattern, String objectNamePattern, String[] requestedTypes)
   {
-    if (DbMetadata.typeIncluded("TABLE", requestedTypes) && removePartitions())
+    if (DbMetadata.typesIncluded(BASE_TYPES, requestedTypes) && removePartitions())
     {
       removePartitions(con, result);
     }
