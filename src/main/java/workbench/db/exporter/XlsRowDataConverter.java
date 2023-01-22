@@ -554,9 +554,24 @@ public class XlsRowDataConverter
       info = workbook.createSheet(INFO_SHEETNAME);
       Row headRow = info.createRow(0);
       Cell cell = headRow.createCell(0);
-      setCellValueAndStyle(cell, ResourceMgr.getString("TxtSheet"), true, false, 0);
+      cell.setCellStyle(excelFormat.headerCellStyle);
+      cell.setCellValue(ResourceMgr.getString("TxtSheet"));
+
       cell = headRow.createCell(1);
-      setCellValueAndStyle(cell, "SQL", true, false, 1);
+      cell.setCellStyle(excelFormat.headerCellStyle);
+      cell.setCellValue("Export date");
+
+      cell = headRow.createCell(2);
+      cell.setCellStyle(excelFormat.headerCellStyle);
+      cell.setCellValue("JDBC URL");
+
+      cell = headRow.createCell(3);
+      cell.setCellStyle(excelFormat.headerCellStyle);
+      cell.setCellValue("Database user");
+
+      cell = headRow.createCell(4);
+      cell.setCellStyle(excelFormat.headerCellStyle);
+      cell.setCellValue("SQL");
     }
     else
     {
@@ -583,7 +598,37 @@ public class XlsRowDataConverter
     name.setCellStyle(nameStyle);
     info.autoSizeColumn(0);
 
-    Cell sqlCell = infoRow.createCell(1);
+    if (this.originalConnection != null)
+    {
+      Cell dateCell = infoRow.createCell(1);
+      CellStyle dateStyle = workbook.createCellStyle();
+      dateStyle.setAlignment(HorizontalAlignment.LEFT);
+      dateStyle.setVerticalAlignment(VerticalAlignment.TOP);
+      dateStyle.setWrapText(false);
+      dateCell.setCellValue(StringUtil.getCurrentTimestampWithTZString());
+
+      Cell urlCell = infoRow.createCell(2);
+      CellStyle urlStyle = workbook.createCellStyle();
+      urlStyle.setAlignment(HorizontalAlignment.LEFT);
+      urlStyle.setVerticalAlignment(VerticalAlignment.TOP);
+      urlStyle.setWrapText(false);
+      urlCell.setCellValue(this.originalConnection.getUrl());
+      urlCell.setCellStyle(urlStyle);
+
+      Cell userCell = infoRow.createCell(3);
+      CellStyle userStyle = workbook.createCellStyle();
+      userStyle.setAlignment(HorizontalAlignment.LEFT);
+      userStyle.setVerticalAlignment(VerticalAlignment.TOP);
+      userStyle.setWrapText(false);
+      userCell.setCellValue(this.originalConnection.getCurrentUser());
+      userCell.setCellStyle(userStyle);
+
+      info.autoSizeColumn(1);
+      info.autoSizeColumn(2);
+      info.autoSizeColumn(3);
+    }
+
+    Cell sqlCell = infoRow.createCell(4);
     CellStyle sqlStyle = workbook.createCellStyle();
     sqlStyle.setAlignment(HorizontalAlignment.LEFT);
     sqlStyle.setVerticalAlignment(VerticalAlignment.TOP);
@@ -592,7 +637,7 @@ public class XlsRowDataConverter
     RichTextString s = workbook.getCreationHelper().createRichTextString(generatingSql.trim());
     sqlCell.setCellValue(s);
     sqlCell.setCellStyle(sqlStyle);
-    info.autoSizeColumn(1);
+    info.autoSizeColumn(4);
   }
 
   @Override
@@ -679,7 +724,7 @@ public class XlsRowDataConverter
         useFormat = useFormat || applyDateFormat();
       }
     }
-    else if (isFormulaColumn(column) && !isHead)
+    else if (!isHead && isFormulaColumn(column))
     {
       try
       {

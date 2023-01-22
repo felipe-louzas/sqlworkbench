@@ -378,6 +378,10 @@ public class XmlRowDataConverter
     StringBuilder result = new StringBuilder(colCount * 50);
     tagWriter.appendOpenTag(result, indent, "meta-data");
     result.append(this.lineEnding);
+    result.append(indent2);
+    result.append("<created-at>");
+    result.append(StringUtil.getCurrentTimestampWithTZString());
+    result.append("</created-at>");
 
     if (this.generatingSql != null)
     {
