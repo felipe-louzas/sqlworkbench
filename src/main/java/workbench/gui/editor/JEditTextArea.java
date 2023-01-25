@@ -803,6 +803,18 @@ public class JEditTextArea
     invalidate();
   }
 
+  private void startUpdateScrollbars()
+  {
+    if (isVisible())
+    {
+      WbSwingUtilities.invokeLater(() ->
+      {
+        updateScrollBars();
+        validate();
+      });
+    }
+  }
+
   /**
    * Updates the state of the scroll bars.
    *
@@ -1557,6 +1569,7 @@ public class JEditTextArea
     {
       document.endCompoundEdit();
     }
+    startUpdateScrollbars();
   }
 
   public void reset()
@@ -1595,14 +1608,7 @@ public class JEditTextArea
       document.tokenizeLines();
     }
 
-    if (isVisible())
-    {
-      EventQueue.invokeLater(() ->
-      {
-        updateScrollBars();
-        validate();
-      });
-    }
+    startUpdateScrollbars();
   }
 
   public boolean isReallyVisible()
@@ -2233,7 +2239,6 @@ public class JEditTextArea
       int newEndline = getLineOfOffset(newCaret);
       painter.invalidateLineRange(line, newEndline);
       setCaretPosition(newCaret);
-      updateScrollBars();
     }
     catch (BadLocationException bl)
     {
@@ -2244,6 +2249,7 @@ public class JEditTextArea
     {
       document.endCompoundEdit();
     }
+    startUpdateScrollbars();
   }
 
   public void replaceText(int startPos, int endPos, String newText)
@@ -2263,11 +2269,11 @@ public class JEditTextArea
     {
       document.endCompoundEdit();
     }
-    updateScrollBars();
     setCaretPosition(startPos);
     int startLine = getLineOfOffset(selectionStart);
     int endLine = getLineOfOffset(selectionStart + newText.length());
     painter.invalidateLineRange(startLine, endLine);
+    startUpdateScrollbars();
   }
 
   /**
@@ -2420,6 +2426,7 @@ public class JEditTextArea
     {
       document.endCompoundEdit();
     }
+    startUpdateScrollbars();
   }
 
   public void setAutoIndent(boolean aFlag)
