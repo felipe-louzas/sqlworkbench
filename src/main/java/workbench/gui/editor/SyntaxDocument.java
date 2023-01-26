@@ -30,7 +30,6 @@ public class SyntaxDocument
   private WbCompoundEdit undoItem = new WbCompoundEdit();
   private boolean undoSuspended;
   private int maxLineLength;
-  private int longestLine;
   private int maxCompoundEditDelay = Settings.getInstance().getIntProperty("workbench.gui.editor.compoundedit.delay", 150);
 
   public SyntaxDocument()
@@ -165,7 +164,6 @@ public class SyntaxDocument
   {
     if (tokenMarker == null) return;
     maxLineLength = 0;
-    longestLine = -1;
     tokenizeLines(0, getDefaultRootElement().getElementCount());
   }
 
@@ -197,7 +195,6 @@ public class SyntaxDocument
         if (lineSegment.count > this.maxLineLength)
         {
           maxLineLength = lineSegment.count;
-          longestLine = i;
         }
         tokenMarker.markTokens(lineSegment, i);
       }
@@ -216,7 +213,6 @@ public class SyntaxDocument
     int len = getDefaultRootElement().getElementCount();
 
     this.maxLineLength = 0;
-    this.longestLine = -1;
 
     try
     {
@@ -228,7 +224,6 @@ public class SyntaxDocument
         if (lineSegment.count > this.maxLineLength)
         {
           this.maxLineLength = lineSegment.count;
-          this.longestLine = i;
         }
       }
     }
@@ -309,11 +304,7 @@ public class SyntaxDocument
         int firstLine = ch.getIndex() + 1;
         int lines = ch.getChildrenAdded().length - ch.getChildrenRemoved().length;
         tokenMarker.insertLines(firstLine, lines);
-        if (longestLine >= (firstLine - 1) && longestLine <= firstLine + lines)
-        {
-          longestLine = -1;
-          maxLineLength = 0;
-        }
+        tokenizeLines(firstLine, lines);
       }
     }
     lastChangePosition = evt.getOffset();
@@ -336,11 +327,6 @@ public class SyntaxDocument
         int firstLine = ch.getIndex() + 1;
         int lines = ch.getChildrenRemoved().length - ch.getChildrenAdded().length;
         tokenMarker.deleteLines(firstLine, lines);
-        if (longestLine >= (firstLine - 1) && longestLine <= firstLine + lines)
-        {
-          longestLine = -1;
-          maxLineLength = 0;
-        }
       }
     }
     lastChangePosition = evt.getOffset();

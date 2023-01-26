@@ -2394,6 +2394,7 @@ public class JEditTextArea
     int startLine = getLineOfOffset(selectionStart);
     int endLine = getLineOfOffset(selectionStart + selectedText.length());
 
+    document.tokenizeLines();
     painter.invalidateLineRange(startLine, endLine);
     updateScrollBars();
   }
