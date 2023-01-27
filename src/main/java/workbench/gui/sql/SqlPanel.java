@@ -2320,6 +2320,7 @@ public class SqlPanel
     setBusy(true);
 
     fireDbExecStart();
+    statusBar.executionStart();
     setCancelState(true);
     setStatusMessage(ResourceMgr.getString("MsgExecutingSql"));
 
@@ -2338,6 +2339,8 @@ public class SqlPanel
     }
     finally
     {
+      // This will also stop the timer
+      statusBar.setExecutionTime(dataPanel.getLastExecutionTime());
       clearStatusMessage();
       setCancelState(false);
       updateResultInfos();
@@ -3281,8 +3284,6 @@ public class SqlPanel
     stmtRunner.setExecutionController(this);
     stmtRunner.setParameterPrompter(this);
 
-    DurationFormatter df = new DurationFormatter();
-
     // If a file is loaded in the editor, make sure the StatementRunner
     // is using the file's directory as the base directory
     // Thanks to Christian d'Heureuse for this fix!
@@ -3706,7 +3707,8 @@ public class SqlPanel
         this.showLogPanel();
       }
 
-      String duration = df.formatDuration(lastScriptExecTime, Settings.getInstance().getDurationFormat(), (lastScriptExecTime < DurationFormatter.ONE_MINUTE));
+      DurationFormatter df = new DurationFormatter();
+      String duration = df.formatDuration(lastScriptExecTime, Settings.getInstance().getDurationFormat());
 
       boolean showScriptProgress = count > 1 && GuiSettings.showScriptProgress();
 

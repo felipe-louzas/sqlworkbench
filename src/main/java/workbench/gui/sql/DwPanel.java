@@ -106,6 +106,7 @@ import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
 
 import workbench.util.CollectionUtil;
+import workbench.util.DurationFormatter;
 import workbench.util.ExceptionUtil;
 import workbench.util.HtmlUtil;
 import workbench.util.LowMemoryException;
@@ -829,7 +830,7 @@ public class DwPanel
   }
 
   /**
-   * Displays the last execution duration in the status bar
+   * Displays the last execution duration in the status bar.
    */
   public void showLastExecutionDuration()
   {
@@ -1116,14 +1117,20 @@ public class DwPanel
     if (ds == null) return;
 
     String timeString  = StringUtil.formatIsoTimestamp(ds.getLoadedAt());
-
     String msg = ResourceMgr.getFormattedString("TxtLastExec", timeString);
+    if (lastExecutionDuration > 0)
+    {
+      DurationFormatter df = new DurationFormatter();
+      String duration = df.formatDuration(lastExecutionDuration, Settings.getInstance().getDurationFormat());
+      msg += " (" + duration + ")";
+    }
+    
     String tip = "<html>";
     if (includeMaxRowsWarning)
     {
       tip += "<b>" + ResourceMgr.getString("MsgRetrieveAbort") + "</b><br>";
     }
-    tip += "(" + msg + ")";
+    tip += msg;
 
     if (tooltipType == DataTooltipType.full)
     {

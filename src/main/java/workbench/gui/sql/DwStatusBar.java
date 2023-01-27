@@ -254,6 +254,9 @@ public class DwStatusBar
     executionTimer.stop();
   }
 
+  /**
+   * Callback from the timer that is used to display the execution time.
+   */
   @Override
   public void actionPerformed(ActionEvent e)
   {

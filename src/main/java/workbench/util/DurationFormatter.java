@@ -57,7 +57,7 @@ public class DurationFormatter
   {
     return createTimingFormatter(decimalSep, Settings.getInstance().getIntProperty(Settings.PROP_DURATION_DIGITS, 2));
   }
-  
+
   public static DecimalFormat createTimingFormatter(char decimalSep, int digits)
   {
     DecimalFormatSymbols symb = new DecimalFormatSymbols();
@@ -94,10 +94,29 @@ public class DurationFormatter
    * @param millis the duration to format
    * @return the formatted duration
    * @see DurationFormat#dynamic
+   * @see #formatDuration(long, workbench.util.DurationFormat, boolean, boolean, int)
    */
   public String formatDuration(long millis)
   {
     return formatDuration(millis, DurationFormat.dynamic, (millis < ONE_MINUTE), true);
+  }
+
+  /**
+   * Formats the number of milliseconds according to the given DurationFormat.
+   *
+   * When using {@link DurationFormat#dynamic} <tt>includeFractionalSeconds</tt> controls if
+   * fractional seconds should be included.
+   *
+   * @param millis                   the duration to format
+   * @param format                   the format to use
+   *
+   * @return the formatted duration
+   * @see Settings#getDurationFormat()
+   * @see #formatDuration(long, workbench.util.DurationFormat, boolean, boolean, int)
+   */
+  public String formatDuration(long millis, DurationFormat format)
+  {
+    return formatDuration(millis, format, (millis < ONE_MINUTE), true);
   }
 
   /**
