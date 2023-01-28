@@ -2326,7 +2326,7 @@ public class SqlPanel
 
     try
     {
-      dataPanel.runCurrentSql(true);
+      dataPanel.runCurrentSql(true, this);
       TableAnnotationProcessor processor = new TableAnnotationProcessor();
       processor.handleAnnotations(this, dataPanel, null);
       checkAutoRefreshIndicator(dataPanel);

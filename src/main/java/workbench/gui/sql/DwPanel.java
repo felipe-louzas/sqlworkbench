@@ -60,6 +60,7 @@ import workbench.interfaces.DbData;
 import workbench.interfaces.DbUpdater;
 import workbench.interfaces.Interruptable;
 import workbench.interfaces.JobErrorHandler;
+import workbench.interfaces.ResultLogger;
 import workbench.interfaces.ResultReceiver;
 import workbench.interfaces.StatusBar;
 import workbench.log.CallerInfo;
@@ -869,13 +870,19 @@ public class DwPanel
   public void runCurrentSql(boolean respectMaxRows)
     throws SQLException, Exception
   {
+    runCurrentSql(respectMaxRows, null);
+  }
+
+  public void runCurrentSql(boolean respectMaxRows, ResultLogger logger)
+    throws SQLException, Exception
+  {
     DataStore ds = getDataStore();
     if (ds == null) return;
     String generatingSql = ds.getGeneratingSql();
     if (generatingSql == null) return;
 
     NamedSortDefinition sort = this.dataTable.getCurrentSort();
-    runQuery(generatingSql, respectMaxRows);
+    runQuery(generatingSql, respectMaxRows, logger);
     if (sort != null)
     {
       dataTable.getDataStoreTableModel().setSortDefinition(sort);
@@ -896,6 +903,12 @@ public class DwPanel
    *  Execute the given SQL statement and display the result.
    */
   public boolean runQuery(String aSql, boolean respectMaxRows)
+    throws SQLException, Exception
+  {
+    return runQuery(aSql, respectMaxRows, null);
+  }
+
+  public boolean runQuery(String aSql, boolean respectMaxRows, ResultLogger logger)
     throws SQLException, Exception
   {
     if (this.stmtRunner == null) this.createStatementRunner();
@@ -924,12 +937,32 @@ public class DwPanel
         {
           success = true;
           showData(result);
+
+          if (logger != null)
+          {
+            if (result.hasMessages())
+            {
+              logger.appendToLog("\n");
+              result.appendMessages(logger);
+            }
+            String msg = "\n" + result.getTimingMessage();
+            logger.appendToLog(msg);
+          }
         }
         else if (result.hasMessages())
         {
           String err = result.getMessages().toString();
+          if (logger != null)
+          {
+            logger.appendToLog(err);
+          }
           showError(err);
           WbSwingUtilities.showErrorMessage(SwingUtilities.getWindowAncestor(this), err);
+        }
+
+        if (logger != null && GuiSettings.showScriptStmtFinishTime())
+        {
+          logger.appendToLog("\n(" + StringUtil.getCurrentTimestamp() + ")");
         }
       }
     }
@@ -1124,7 +1157,7 @@ public class DwPanel
       String duration = df.formatDuration(lastExecutionDuration, Settings.getInstance().getDurationFormat());
       msg += " (" + duration + ")";
     }
-    
+
     String tip = "<html>";
     if (includeMaxRowsWarning)
     {

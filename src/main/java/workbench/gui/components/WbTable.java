@@ -2199,6 +2199,7 @@ public class WbTable
   {
     WbConnection conn = getOriginalConnection();
     if (conn == null) return false;
+    if (conn.getMetadata() == null) return false;
     if (!conn.getMetadata().isPostgres()) return false;
 
     ColumnIdentifier column = getColumnDefinition(col);
