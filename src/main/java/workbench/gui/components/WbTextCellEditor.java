@@ -38,13 +38,17 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
+import workbench.interfaces.NullableEditor;
+import workbench.resource.ResourceMgr;
+
+import workbench.db.TableIdentifier;
+
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.RestoreDataAction;
 import workbench.gui.actions.SelectFkValueAction;
 import workbench.gui.actions.SetNullAction;
 import workbench.gui.actions.WbAction;
-import workbench.interfaces.NullableEditor;
-import workbench.resource.ResourceMgr;
+
 import workbench.util.WbDateFormatter;
 
 /**
@@ -298,7 +302,16 @@ public class WbTextCellEditor
     if (this.parentTable == null)
     {
       Frame owner = (Frame) SwingUtilities.getWindowAncestor(this.textField);
-      String title = ResourceMgr.getString("TxtEditWindowTitle");
+
+      int col = parentTable.getEditingColumn();
+      String columnName = parentTable.getColumnName(col);
+      TableIdentifier updateTable = parentTable.getDataStore().getUpdateTable();
+      if (updateTable != null)
+      {
+        columnName = updateTable.getTableExpression() + "." + columnName;
+      }
+
+      String title = ResourceMgr.getString("TxtEditWindowTitle") + " - " + columnName;
       String value = textField.getText();
       EditWindow w = new EditWindow(owner, title, value);
 

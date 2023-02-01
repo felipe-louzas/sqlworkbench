@@ -29,6 +29,8 @@ import javax.swing.table.TableCellEditor;
 
 import workbench.resource.ResourceMgr;
 
+import workbench.db.TableIdentifier;
+
 /**
  *
  * @author Thomas Kellerer
@@ -75,7 +77,14 @@ public class CellWindowEdit
       ownerFrame = (Frame)owner;
     }
 
-    String title = ResourceMgr.getString("TxtEditWindowTitle");
+    String column = table.getColumnName(col);
+    TableIdentifier updateTable = table.getDataStore().getUpdateTable();
+    if (updateTable != null)
+    {
+      column = updateTable.getTableExpression() + "." + column;
+    }
+    
+    String title = ResourceMgr.getString("TxtEditWindowTitle") + " - " + column;
     EditWindow w = new EditWindow(ownerFrame, title, data);
     try
     {

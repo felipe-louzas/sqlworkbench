@@ -29,6 +29,7 @@ import java.util.TreeMap;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
+import workbench.db.DbObjectFinder;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -77,12 +78,13 @@ public class ResultColumnMetaData
     DbMetadata meta = connection.getMetadata();
 
     Map<String, TableDefinition> tableDefs = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
+    DbObjectFinder finder = new DbObjectFinder(meta);
     for (Alias alias : tables)
     {
-      if (StringUtil.isBlank(alias.getNameToUse())) continue;
+      if (StringUtil.isBlank(alias.getObjectName())) continue;
 
       TableIdentifier tbl = new TableIdentifier(alias.getObjectName(), connection);
-      TableDefinition def = meta.getTableDefinition(tbl);
+      TableDefinition def = finder.findTableDefinition(tbl);
       tableDefs.put(alias.getNameToUse().toLowerCase(), def);
     }
 
