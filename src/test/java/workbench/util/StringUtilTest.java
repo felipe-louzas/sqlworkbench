@@ -123,6 +123,14 @@ public class StringUtilTest
   }
 
   @Test
+  public void testFindFirstWhitespace()
+  {
+    String text = "This is a long comment with multiple words";
+    int pos = StringUtil.findFirstWhiteSpace(text, (char)0, 10);
+    assertEquals("This is a long", text.substring(0,pos));
+  }
+
+  @Test
   public void testRemove()
   {
     StringBuilder b = new StringBuilder("12345");

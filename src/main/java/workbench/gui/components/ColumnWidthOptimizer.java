@@ -31,7 +31,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -49,19 +48,27 @@ import workbench.util.StringUtil;
 
 /**
  * A class to adjust the column width of a WbTable to the displayed values.
- *
+ * <p>
  * In order for this to calculate string width's correctly, the table must have been added
  * to the Swing component tree.
+ * <p>
+ * All  methods should be called on AWT's EDT thread!
  *
  * @author Thomas Kellerer
  */
 public class ColumnWidthOptimizer
 {
   private WbTable table;
+  private int maxLines;
+  private int remarksMinLength;
+  private int remarksMaxLength;
 
   public ColumnWidthOptimizer(WbTable client)
   {
     this.table = client;
+    this.maxLines = GuiSettings.getAutRowHeightMaxLines();
+    this.remarksMinLength = GuiSettings.remarksHeaderMinLength();
+    this.remarksMaxLength = GuiSettings.remarksHeaderMaxLength();
   }
 
   public void optimizeAllColWidth()
@@ -76,13 +83,32 @@ public class ColumnWidthOptimizer
 
   public void optimizeAllColWidth(int minWidth, int maxWidth, boolean respectColName)
   {
-    int count = this.table.getColumnCount();
-    for (int i = 0; i < count; i++)
+    if (table == null) return;
+    final int count = this.table.getColumnCount();
+    if (count <= 0) return;
+
+    final int[] widths = new int[count];
+
+    TableCellRenderer realRenderer = table.getTableHeader().getDefaultRenderer();
+    JComponent c = (JComponent)realRenderer.getTableCellRendererComponent(table, "", false, false, -1, 0);
+    Insets insets = c.getInsets();
+    FontMetrics fm = c.getFontMetrics(c.getFont());
+
+    for (int col = 0; col < count; col++)
     {
-      this.optimizeColWidth(i, minWidth, maxWidth, respectColName);
+      widths[col] =  calculateOptimalColumnWidth(col, minWidth, maxWidth, respectColName, fm, insets);
     }
-    WbSwingUtilities.repaintLater(table);
-    WbSwingUtilities.repaintLater(table.getTableHeader());
+
+    TableColumnModel colMod = this.table.getColumnModel();
+    for (int col = 0; col < count; col++)
+    {
+      if (widths[col] > 0)
+      {
+        TableColumn column = colMod.getColumn(col);
+        column.setPreferredWidth(widths[col]);
+      }
+    }
+    table.validate();
   }
 
   public void optimizeColWidth(int aColumn, boolean respectColName)
@@ -107,6 +133,12 @@ public class ColumnWidthOptimizer
 
   public int calculateOptimalColumnWidth(int col, int minWidth, int maxWidth, boolean respectColumnName, FontMetrics fontInfo)
   {
+    return calculateOptimalColumnWidth(col, minWidth, maxWidth, respectColumnName, fontInfo, getHeaderInsets());
+  }
+
+  public int calculateOptimalColumnWidth(int col, int minWidth, int maxWidth, boolean respectColumnName,
+                                         FontMetrics fontInfo, Insets headerInsets)
+  {
     if (table == null || col < 0 || col > table.getColumnCount() - 1)
     {
       return -1;
@@ -116,11 +148,10 @@ public class ColumnWidthOptimizer
 
     if (respectColumnName)
     {
-      optWidth = optimizeHeaderColumn(col, fontInfo);
+      optWidth = calculateOptimalHeaderWidth(col, fontInfo, headerInsets);
     }
 
     int rowCount = this.table.getRowCount();
-    int maxLines = GuiSettings.getAutRowHeightMaxLines();
     int addWidth = getAdditionalColumnSpace();
 
     for (int row = 0; row < rowCount; row++)
@@ -223,6 +254,7 @@ public class ColumnWidthOptimizer
     if (table == null) return;
     TableColumnModel colMod = this.table.getColumnModel();
     if (colMod == null) return;
+    Insets insets = getHeaderInsets();
     for (int col = 0; col < table.getColumnCount(); col ++)
     {
       TableColumn column = colMod.getColumn(col);
@@ -231,7 +263,7 @@ public class ColumnWidthOptimizer
       // As the current width is most probably already adjusted (and reflects the size of the data in this column)
       // the new width should not be smaller than the old width (because the row data is not evaluated here!)
       int oldWidth = column.getWidth();
-      int width = optimizeHeaderColumn(col, null);
+      int width = calculateOptimalHeaderWidth(col, null, insets);
 
       if (width > oldWidth)
       {
@@ -240,25 +272,28 @@ public class ColumnWidthOptimizer
     }
   }
 
-  public int optimizeHeaderColumn(int col, FontMetrics fm)
+  private Insets getHeaderInsets()
+  {
+    TableCellRenderer realRenderer = table.getTableHeader().getDefaultRenderer();
+    JComponent c = (JComponent)realRenderer.getTableCellRendererComponent(table, "", false, false, -1, 0);
+    if (c != null)
+    {
+      return c.getInsets();
+    }
+    return new Insets(1,1,1,1);
+  }
+
+  public int calculateOptimalHeaderWidth(int col, FontMetrics fm, Insets headerInsets)
   {
     if (table == null || col < 0 || col > table.getColumnCount() - 1)
     {
       return -1;
     }
 
-    // JTableHeader.getDefaultRenderer() does not return our own sort renderer
-    // therefor we use the "cached" instance directly
-    // Only if that is not initialized for some reason, the default renderer is used
-    TableCellRenderer rend = table.getHeaderRenderer();
-    if (rend == null)
-    {
-      JTableHeader th = table.getTableHeader();
-      rend = th.getDefaultRenderer();
-    }
-    String colName = table.getColumnName(col);
+    SortHeaderRenderer renderer = table.getHeaderRenderer();
+    if (renderer == null) return -1;
 
-    JComponent c = (JComponent)rend.getTableCellRendererComponent(table, colName, false, false, -1, col);
+    String colName = table.getColumnName(col);
 
     int iconWidth = 0;
     if (table.isViewColumnSorted(col))
@@ -270,7 +305,6 @@ public class ColumnWidthOptimizer
     boolean remarksVisible = false;
     boolean tableNameVisible = false;
 
-    SortHeaderRenderer renderer = table.getHeaderRenderer();
     DataStoreTableModel model = table.getDataStoreTableModel();
 
     if (renderer != null)
@@ -292,12 +326,12 @@ public class ColumnWidthOptimizer
     FontMetrics hfm = fm;
     if (hfm == null)
     {
-      Font headerFont = c.getFont();
-      hfm = c.getFontMetrics(headerFont);
+      JComponent c = (JComponent)renderer.getTableCellRendererComponent(table, colName, false, false, -1, col);
+      hfm = c.getFontMetrics(c.getFont());
     }
-    Insets ins = c.getInsets();
+    if (hfm == null) return -1;
 
-    int addHeaderSpace = getAdditionalColumnSpace() + ins.left + ins.right;
+    int addHeaderSpace = getAdditionalColumnSpace() + headerInsets.left + headerInsets.right;
     int headerWidth = hfm.stringWidth(colName) + addHeaderSpace;
 
     if (renderer == null || model == null) return headerWidth + iconWidth;
@@ -320,7 +354,16 @@ public class ColumnWidthOptimizer
       String remarks = model.getColumnRemarks(col);
       if (StringUtil.isNonBlank(remarks))
       {
-        String word = StringUtil.getFirstWord(remarks);
+        int pos = StringUtil.findFirstWhiteSpace(remarks, (char)0, remarksMinLength);
+        String word;
+        if (pos > -1)
+        {
+          word = remarks.substring(0, pos);
+        }
+        else
+        {
+          word = StringUtil.getMaxSubstring(remarks, remarksMaxLength, null);
+        }
         int commentWidth = hfm.stringWidth(word) + addHeaderSpace;
         if (commentWidth > headerWidth)
         {

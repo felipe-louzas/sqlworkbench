@@ -107,7 +107,7 @@ public class ResultColumnMetaData
         ColumnIdentifier resultCol = findResultColumn(info, c);
         if (resultCol != null)
         {
-          resultCol.setComment(tcol.getComment());
+          resultCol.setComment(StringUtil.trimToNull(tcol.getComment()));
           resultCol.setSourceTableName(def.getTable().getRawTableName());
         }
       }
@@ -165,6 +165,7 @@ public class ResultColumnMetaData
     }
     return null;
   }
+  
   /**
    * Try to expand wildcard "columns" to the real columns.
    */

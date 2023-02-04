@@ -1965,7 +1965,7 @@ public class SqlPanel
     if (this.isCancelling())
     {
       // if we are already trying to cancel the statement, there is not much
-      // hope that it will succeed (otherwise the user wouldn't have closed the windw)
+      // hope that it will succeed (otherwise the user wouldn't have closed the window)
       forceAbort();
       return;
     }
@@ -2055,8 +2055,8 @@ public class SqlPanel
     if (this.executionThread != null)
     {
       // Wait for the execution thread to finish because of the cancel() call.
-      // but wait at most 2.5 seconds (configurable) for the statement to respond
-      // to the cancel() call. Depending on the sate of the statement, calling Statement.cancel()
+      // but wait at most 5 seconds (configurable) for the statement to respond to the cancel() call.
+      // Depending on the sate of the statement, calling Statement.cancel()
       // might not have any effect.
       try
       {
@@ -3538,6 +3538,14 @@ public class SqlPanel
           continue;
         }
 
+        // If the column remarks should be shown in the table header, retrieve them now,
+        // so that optimizing column headers can be done including the remarks
+        if (statementResult.isSuccess() && shouldRetrieveCommentsImmediately())
+        {
+          QueryCommentsRetriever retriever = new QueryCommentsRetriever(statementResult, statusBar);
+          retriever.retrieveComments();
+        }
+
         resultSets += this.addResult(statementResult);
         stmtTotal += statementResult.getExecutionDuration();
 
@@ -3772,6 +3780,11 @@ public class SqlPanel
       stmtRunner.done();
       ignoreStateChange = false;
     }
+  }
+
+  private boolean shouldRetrieveCommentsImmediately()
+  {
+    return GuiSettings.getRetrieveQueryComments() && GuiSettings.showRemarksInTableHeader();
   }
 
   private boolean shouldAsk(int cmdIndex, int count)
@@ -4323,14 +4336,12 @@ public class SqlPanel
         }
       });
 
-      // The retrieval of column comments should not be done on the AWT Thread!
-      if (GuiSettings.getRetrieveQueryComments())
+      if (!shouldRetrieveCommentsImmediately())
       {
-        for (DwPanel p : panels)
-        {
-          p.readColumnComments();
-        }
+        QueryCommentsRetriever retriever = new QueryCommentsRetriever(result, statusBar);
+        retriever.retrieveComments();
       }
+
     }
 
     if (result.hasResultSets())

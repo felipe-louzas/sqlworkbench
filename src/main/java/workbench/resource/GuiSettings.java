@@ -1235,6 +1235,16 @@ public class GuiSettings
     Settings.getInstance().setProperty(PROP_TABLE_HEADER_DATATYPE, flag);
   }
 
+  public static int remarksHeaderMinLength()
+  {
+    return Settings.getInstance().getIntProperty("workbench.gui.table.header.remarks.minlength", 10);
+  }
+
+  public static int remarksHeaderMaxLength()
+  {
+    return Settings.getInstance().getIntProperty("workbench.gui.table.header.remarks.maxlength", 30);
+  }
+
   public static boolean showRemarksInTableHeader()
   {
     return Settings.getInstance().getBoolProperty(PROP_TABLE_HEADER_REMARKS, false);

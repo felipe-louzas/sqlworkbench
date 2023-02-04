@@ -1366,16 +1366,22 @@ public class StringUtil
    */
   public static int findFirstWhiteSpace(CharSequence data)
   {
-    return findFirstWhiteSpace(data, '"');
+    return findFirstWhiteSpace(data, '"', 0);
   }
 
   public static int findFirstWhiteSpace(CharSequence data, char quote)
   {
+    return findFirstWhiteSpace(data, quote, 0);
+  }
+  
+  public static int findFirstWhiteSpace(CharSequence data, char quote, int startPos)
+  {
     if (data == null) return -1;
     int count = data.length();
     if (count == 0) return -1;
+    if (startPos >= count) return -1;
     boolean inQuotes = false;
-    for (int i=0; i < count; i++)
+    for (int i=startPos; i < count; i++)
     {
       char c = data.charAt(i);
       if (c == quote)

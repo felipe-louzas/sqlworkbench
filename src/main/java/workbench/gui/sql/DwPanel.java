@@ -99,7 +99,6 @@ import workbench.gui.renderer.RendererSetup;
 
 import workbench.storage.DataStore;
 import workbench.storage.NamedSortDefinition;
-import workbench.storage.ResultColumnMetaData;
 import workbench.storage.RowActionMonitor;
 import workbench.storage.SourceTableDetector;
 
@@ -1207,27 +1206,6 @@ public class DwPanel
   private ImageIcon getWarningIcon()
   {
     return IconMgr.getInstance().getLabelIcon("alert");
-  }
-
-  public void readColumnComments()
-  {
-    DataStore ds = getDataStore();
-    if (ds == null) return;
-    try
-    {
-      setStatusMessage(ResourceMgr.getString("MsgRetrievingColComments"));
-      ResultColumnMetaData meta = new ResultColumnMetaData(ds);
-      meta.retrieveColumnRemarks(ds.getResultInfo());
-      dataTable.adjustColumns();
-    }
-    catch (Exception e)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Error reading comments", e);
-    }
-    finally
-    {
-      clearStatusMessage();
-    }
   }
 
   private void checkResultSetActions()
