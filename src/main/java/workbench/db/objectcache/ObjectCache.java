@@ -48,6 +48,7 @@ import workbench.db.DbSwitcher;
 import workbench.db.DependencyNode;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
+import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectNameFilter;
 import workbench.db.ObjectNameSorter;
 import workbench.db.PkDefinition;
@@ -56,7 +57,6 @@ import workbench.db.ReaderFactory;
 import workbench.db.TableDefinition;
 import workbench.db.TableDependency;
 import workbench.db.TableIdentifier;
-import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -164,7 +164,7 @@ class ObjectCache
     {
       if (supportsSchemas)
       {
-        return CollectionUtil.arrayList((Namespace)null);
+        return CollectionUtil.arrayList(Namespace.NULL_NSP);
       }
       else
       {
