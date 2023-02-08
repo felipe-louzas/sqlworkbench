@@ -487,7 +487,7 @@ public class StatementRunner
 
     final CallerInfo ci = new CallerInfo(){};
     this.currentCommand.setVariablePoolID(variablePoolID);
-    
+
     if (!this.currentCommand.isModeSupported(WbManager.getInstance().getRunMode()))
     {
       result = new StatementRunnerResult();
@@ -524,6 +524,10 @@ public class StatementRunner
     this.currentCommand.setStatementRunner(this);
     this.currentCommand.setRowMonitor(this.rowMonitor);
     this.currentCommand.setMessageLogger(this.resultLogger);
+    if (currentConsumer != null)
+    {
+      this.currentCommand.enableMessageBuffering();
+    }
     this.currentCommand.setUseMessageLoggerForResults(this.useMessageLoggerForResult);
     if (currentConsumer != null && currentConsumer.ignoreMaxRows())
     {
@@ -629,7 +633,7 @@ public class StatementRunner
       processCrossTab(result, statementAnnotations.get(crosstabIndex));
     }
 
-    if (this.currentConsumer != null && currentCommand != currentConsumer && result.isSuccess())
+    if (this.currentConsumer != null && currentCommand != currentConsumer)
     {
       this.currentConsumer.consumeResult(result);
     }

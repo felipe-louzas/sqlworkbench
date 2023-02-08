@@ -96,6 +96,14 @@ public class StatementRunnerResult
     this.sourceCommand = aCmd;
   }
 
+  public void enableMessageBuffering()
+  {
+    if (this.messages == null)
+    {
+      this.messages = new MessageBuffer();
+    }
+  }
+
   public MessagePriority getMessagePriority()
   {
     return messagePrio;
@@ -369,7 +377,7 @@ public class StatementRunnerResult
       messageLogger.appendToLog("\n");
       buffer.appendTo(messageLogger);
     }
-    else if (this.messages != null)
+    if (this.messages != null)
     {
       this.messages.append(buffer);
     }
@@ -381,7 +389,7 @@ public class StatementRunnerResult
     {
       messageLogger.appendToLog("\n");
     }
-    else if (this.messages != null)
+    if (this.messages != null)
     {
       this.messages.appendNewLine();
     }

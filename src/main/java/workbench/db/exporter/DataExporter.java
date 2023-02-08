@@ -143,6 +143,7 @@ public class DataExporter
 
   private boolean includeIdentityCols;
   private boolean includeReadOnlyCols;
+  private boolean writeErrorToOutput;
 
   private InfinityLiterals infinityLiterals = InfinityLiterals.PG_LITERALS;
 
@@ -266,6 +267,16 @@ public class DataExporter
   public void setLocale(Locale locale)
   {
     this.localeToUse = locale;
+  }
+
+  public boolean getWriteErrorToOutput()
+  {
+    return writeErrorToOutput;
+  }
+
+  public void setWriteErrorToOutput(boolean flag)
+  {
+    this.writeErrorToOutput = flag;
   }
 
   @Override
@@ -1423,9 +1434,11 @@ public class DataExporter
     }
     catch (Exception e)
     {
+      String error = ExceptionUtil.getDisplay(e);
       this.addError(ResourceMgr.getString("ErrExportExecute"));
-      this.addError(ExceptionUtil.getDisplay(e));
-      LogMgr.logError(new CallerInfo(){}, "Could not execute SQL statement: " + job.getQuerySql() + ", Error: " + ExceptionUtil.getDisplay(e), e);
+      this.addError(error);
+      exportErrorMessage(error);
+      LogMgr.logError(new CallerInfo(){}, "Could not execute SQL statement: " + job.getQuerySql() + ", Error: " + error, e);
 
       if (!this.dbConn.getAutoCommit() && dbConn.selectStartsTransaction())
       {
@@ -1444,6 +1457,22 @@ public class DataExporter
     return rows;
   }
 
+  private void exportErrorMessage(String error)
+  {
+    if (!writeErrorToOutput) return;
+    if (outputfile == null) return;
+
+    try
+    {
+      ErrorDataStore ds = new ErrorDataStore(error);
+      startExport(outputfile, ds, null);
+    }
+    catch (Exception ex)
+    {
+      // ignore, already logged
+    }
+  }
+  
   public boolean isSuccess()
   {
     return this.errors.getLength() == 0;
@@ -1510,7 +1539,6 @@ public class DataExporter
         }
       }
       configureExportWriter();
-      this.exportWriter.exportStarting();
       this.exportWriter.writeExport(rs, info == null ? rsInfo : info, generatingSql);
     }
     finally
@@ -1538,7 +1566,6 @@ public class DataExporter
       this.exportWriter.setOutputWriter(output);
       this.exportWriter.configureConverter();
 
-      this.exportWriter.exportStarting();
       this.exportWriter.writeExport(ds, columnsToExport, selectedRows);
     }
     catch (Exception e)
@@ -1561,7 +1588,6 @@ public class DataExporter
     {
       this.outputfile = output;
       configureExportWriter();
-      this.exportWriter.exportStarting();
       this.exportWriter.writeExport(ds, columnsToExport, null);
     }
     catch (Exception e)

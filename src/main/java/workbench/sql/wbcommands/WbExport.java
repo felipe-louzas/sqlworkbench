@@ -43,6 +43,7 @@ import workbench.db.TableIdentifier;
 import workbench.db.exporter.BlobMode;
 import workbench.db.exporter.ControlFileFormat;
 import workbench.db.exporter.DataExporter;
+import workbench.db.exporter.ErrorDataStore;
 import workbench.db.exporter.ExportDataModifier;
 import workbench.db.exporter.ExportType;
 import workbench.db.exporter.InfinityLiterals;
@@ -64,6 +65,7 @@ import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.MemoryWatcher;
+import workbench.util.MessageBuffer;
 import workbench.util.QuoteEscapeType;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -150,6 +152,7 @@ public class WbExport
   public static final String ARG_MULTI_ROW_INSERTS = "useMultiRowInserts";
   public static final String ARG_INCLUDE_IDENTITY = "includeAutoIncColumns";
   public static final String ARG_INCLUDE_READONLY = "includeReadOnlyColumns";
+  public static final String ARG_WRITE_ERROR_TO_OUTPUT = "writeErrorToOutput";
 
   public static final String ARG_FALSE_LITERAL = "literalFalse";
   public static final String ARG_TRUE_LITERAL = "literalTrue";
@@ -259,6 +262,7 @@ public class WbExport
     cmdLine.addArgument(ARG_INCLUDE_READONLY, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_FALSE_LITERAL);
     cmdLine.addArgument(ARG_TRUE_LITERAL);
+    cmdLine.addArgument(ARG_WRITE_ERROR_TO_OUTPUT, ArgumentType.BoolArgument);
     RegexModifierParameter.addArguments(cmdLine);
     ConditionCheck.addParameters(cmdLine);
   }
@@ -494,6 +498,7 @@ public class WbExport
       exporter.setBooleanLiterals(trueLiteral, falseLiteral);
     }
     exporter.setWriteEmptyResults(cmdLine.getBoolean(ARG_EMPTY_RESULTS, true));
+    exporter.setWriteErrorToOutput(cmdLine.getBoolean(ARG_WRITE_ERROR_TO_OUTPUT, false));
     int threshold = cmdLine.getIntValue(ARG_CLOB_THRESHOLD, -1);
     exporter.setWriteClobAsFile(cmdLine.getBoolean(ARG_CLOB_AS_FILE, false), threshold);
     boolean includeIdentityDefault = !Settings.getInstance().getGenerateInsertIgnoreIdentity();
@@ -1226,44 +1231,56 @@ public class WbExport
   @Override
   public void consumeResult(StatementRunnerResult toConsume)
   {
-    if (!toConsume.isSuccess()) return;
-
     // Run an export that is defined by a SQL Statement
     // i.e. no sourcetable given in the initial wbexport command
     try
     {
-      long rowCount = 0;
-      if (toConsume.hasResultSets())
+      if (toConsume.isSuccess())
       {
-        String sql = toConsume.getSourceCommand();
+        long rowCount = 0;
+        if (toConsume.hasResultSets())
+        {
+          String sql = toConsume.getSourceCommand();
 
-        ResultSet toExport = toConsume.getResultSets().get(0);
-        // The exporter will close the resultSet that it exported
-        // so we can remove it from the list of ResultSets in the StatementRunnerResult object.
-        // Thus the later call to clearResultSets() will only free any not used ResultSet
-        toConsume.getResultSets().remove(0);
-        rowCount = this.exporter.exportResultSet(pendingOutput, toExport, sql);
-      }
-      else if (toConsume.hasDataStores() && pendingOutput != null)
-      {
-        rowCount = exportDataStores(toConsume.getDataStores());
-      }
+          ResultSet toExport = toConsume.getResultSets().get(0);
+          // The exporter will close the resultSet that it exported
+          // so we can remove it from the list of ResultSets in the StatementRunnerResult object.
+          // Thus the later call to clearResultSets() will only free any not used ResultSet
+          toConsume.getResultSets().remove(0);
+          rowCount = this.exporter.exportResultSet(pendingOutput, toExport, sql);
+        }
+        else if (toConsume.hasDataStores() && pendingOutput != null)
+        {
+          rowCount = exportDataStores(toConsume.getDataStores());
+        }
 
-      if (exporter.isSuccess())
-      {
-        toConsume.addMessageNewLine(); // force new line in output
-        toConsume.addMessage(ResourceMgr.getFormattedString("MsgSpoolOk", Long.toString(rowCount)));
-        toConsume.addMessage(ResourceMgr.getString("MsgSpoolTarget") + " " + this.exporter.getFullOutputFilename());
-      }
-      addMessages(toConsume);
+        if (exporter.isSuccess())
+        {
+          toConsume.addMessageNewLine(); // force new line in output
+          toConsume.addMessage(ResourceMgr.getFormattedString("MsgSpoolOk", Long.toString(rowCount)));
+          toConsume.addMessage(ResourceMgr.getString("MsgSpoolTarget") + " " + this.exporter.getFullOutputFilename());
+        }
+        addMessages(toConsume);
 
-      if (exporter.isSuccess())
-      {
-        toConsume.setSuccess();
+        if (exporter.isSuccess())
+        {
+          toConsume.setSuccess();
+        }
+        else
+        {
+          toConsume.setFailure();
+        }
       }
-      else
+      else if (exporter.getWriteErrorToOutput())
       {
-        toConsume.setFailure();
+        MessageBuffer buffer = toConsume.getMessageBuffer();
+        if (buffer != null)
+        {
+          String error = buffer.getMessage().toString();
+          DataStore ds = new ErrorDataStore(error);
+          addMessages(toConsume);
+          exportDataStores(List.of(ds));
+        }
       }
     }
     catch (Exception e)

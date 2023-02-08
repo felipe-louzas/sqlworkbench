@@ -327,12 +327,6 @@ public abstract class ExportWriter
     }
   }
 
-  public void exportStarting()
-    throws IOException
-  {
-
-  }
-
   public long exportFinished()
   {
     FileUtil.closeQuietely(outputWriter);

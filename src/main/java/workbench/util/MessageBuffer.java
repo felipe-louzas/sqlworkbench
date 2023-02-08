@@ -23,6 +23,7 @@ package workbench.util;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 
 import workbench.interfaces.ResultLogger;
 import workbench.resource.ResourceMgr;
@@ -95,7 +96,25 @@ public class MessageBuffer
   }
 
   /**
+   * Returns the current messages without clearing the buffer.
+   *
+   */
+  public synchronized CharSequence getMessage()
+  {
+    StringBuilder result = new StringBuilder(this.length + 50);
+    if (trimmed) result.append("(...)\n");
+
+    Iterator<CharSequence> itr = messages.iterator();
+    while (itr.hasNext())
+    {
+      result.append(itr.next());
+    }
+    return result;
+  }
+
+  /**
    * Create a StringBuilder that contains the collected messages.
+   *
    * Once the result is returned, the internal list is emptied.
    * This means the second call to this method returns an empty
    * buffer if no messages have been added between the calls.

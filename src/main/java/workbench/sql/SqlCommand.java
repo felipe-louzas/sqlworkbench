@@ -101,6 +101,7 @@ public class SqlCommand
   protected boolean alwaysBufferResults;
   protected boolean useMessageLoggerForResults = true;
   protected String variablePoolID = null;
+  protected boolean bufferMessages;
 
   public void setRowMonitor(RowActionMonitor monitor)
   {
@@ -117,6 +118,11 @@ public class SqlCommand
     return this.cmdLine;
   }
 
+  public void enableMessageBuffering()
+  {
+    this.bufferMessages = true;
+  }
+
   public void setUseMessageLoggerForResults(boolean flag)
   {
     this.useMessageLoggerForResults = flag;
@@ -129,11 +135,17 @@ public class SqlCommand
 
   protected StatementRunnerResult createResult(String sql)
   {
+    StatementRunnerResult result;
     if (useMessageLoggerForResults)
     {
-      return new StatementRunnerResult(sql, messageLogger);
+      result = new StatementRunnerResult(sql, messageLogger);
     }
-    return new StatementRunnerResult(sql);
+    result = new StatementRunnerResult(sql);
+    if (bufferMessages)
+    {
+      result.enableMessageBuffering();
+    }
+    return result;
   }
 
   public String getVariablePoolID()

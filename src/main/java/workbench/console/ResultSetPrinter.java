@@ -158,6 +158,8 @@ public class ResultSetPrinter
   public void consumeResult(StatementRunnerResult toConsume)
   {
     if (toConsume == null) return;
+    if (!toConsume.isSuccess()) return;
+
     List<ResultSet> results = toConsume.getResultSets();
     if (CollectionUtil.isEmpty(results)) return;
 

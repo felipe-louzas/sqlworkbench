@@ -40,15 +40,13 @@ import workbench.db.WbConnection;
 
 import workbench.storage.BlobLiteralType;
 import workbench.storage.DmlStatement;
-
-import workbench.sql.generator.merge.MergeGenerator;
-
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 import workbench.storage.RowDataContainer;
 import workbench.storage.SqlLiteralFormatter;
 import workbench.storage.StatementFactory;
 
+import workbench.sql.generator.merge.MergeGenerator;
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
 import workbench.sql.lexer.SQLToken;
@@ -303,6 +301,13 @@ public class SqlRowDataConverter
   @Override
   public StringBuilder convertRowData(RowData row, long rowIndex)
   {
+    if (ErrorDataStore.ERROR_MARKER.equals(row.getUserObject()))
+    {
+      StringBuilder result = new StringBuilder();
+      result.append(row.getValue(0));
+      return result;
+    }
+
     if (sqlTypeToUse == ExportType.SQL_MERGE)
     {
       return appendMergeRow(row, rowIndex);
