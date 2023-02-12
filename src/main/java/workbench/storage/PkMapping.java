@@ -36,14 +36,13 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
@@ -141,10 +140,8 @@ public class PkMapping
 
     LogMgr.logInfo(new CallerInfo(){}, "Using PK mappings from " + f.getAbsolutePath());
 
-    Iterator<Entry<Object, Object>> itr = props.entrySet().iterator();
-    while (itr.hasNext())
+    for (Entry<Object, Object> entry : props.entrySet())
     {
-      Entry<Object, Object> entry = itr.next();
       String table = (String)entry.getKey();
       String columns = (String)entry.getValue();
       if (!StringUtil.isEmptyString(columns))

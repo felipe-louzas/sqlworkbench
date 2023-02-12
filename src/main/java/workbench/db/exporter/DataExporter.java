@@ -105,7 +105,7 @@ public class DataExporter
              ExportOptions, TextOptions
 {
 
-  private WbConnection dbConn;
+  private final WbConnection dbConn;
   private String pageTitle;
 
   // When compressing the output this holds the name of the archive.
@@ -182,15 +182,15 @@ public class DataExporter
   // The columns to be used for generating blob file names
   private List<String> blobIdCols;
 
-  private MessageBuffer warnings = new MessageBuffer();
-  private MessageBuffer errors = new MessageBuffer();
-  private List<ExportJobEntry> jobQueue;
+  private final MessageBuffer warnings = new MessageBuffer();
+  private final MessageBuffer errors = new MessageBuffer();
+  private final List<ExportJobEntry> jobQueue = new ArrayList<>();
   private ExportWriter exportWriter;
   private int tablesExported;
   private long totalRows;
-  private Set<ControlFileFormat> controlFiles = EnumSet.noneOf(ControlFileFormat.class);
+  private final Set<ControlFileFormat> controlFiles = EnumSet.noneOf(ControlFileFormat.class);
   private boolean compressOutput;
-  private List<DbExecutionListener> listener = new ArrayList<>();
+  private final List<DbExecutionListener> listener = new ArrayList<>();
   private ExportDataModifier modifier;
   private boolean includeColumnComments;
   private String nullString;
@@ -249,7 +249,6 @@ public class DataExporter
   public DataExporter(WbConnection con)
   {
     this.dbConn = con;
-    this.jobQueue = new ArrayList<>();
     this.useSchemaInSql = Settings.getInstance().getIncludeOwnerInSqlExport();
     this.numberFormatter = Settings.getInstance().createDefaultDecimalFormatter(0);
     this.setExportHeaders(Settings.getInstance().getBoolProperty("workbench.export.text.default.header", false));
@@ -1472,7 +1471,7 @@ public class DataExporter
       // ignore, already logged
     }
   }
-  
+
   public boolean isSuccess()
   {
     return this.errors.getLength() == 0;

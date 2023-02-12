@@ -33,6 +33,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DependencyNode;
+import workbench.db.JdbcUtils;
 import workbench.db.PkDefinition;
 import workbench.db.QuoteHandler;
 import workbench.db.ReferenceTableNavigation;
@@ -43,9 +44,6 @@ import workbench.db.WbConnection;
 import workbench.db.search.ServerSideTableSearcher;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 
 /**
@@ -64,8 +62,8 @@ public class LookupDataLoader
 {
   private TableDefinition lookupTable;
   private boolean retrieved;
-  private TableIdentifier baseTable;
-  private String referencingColumn;
+  private final TableIdentifier baseTable;
+  private final String referencingColumn;
   private Map<String, String> columnMap;
 
   /**

@@ -23,8 +23,6 @@ package workbench.db.postgres;
 import java.util.ArrayList;
 import java.util.List;
 
-import workbench.db.ColumnIdentifier;
-
 import workbench.util.StringUtil;
 
 /**
@@ -94,7 +92,7 @@ public class ArgInfo
   {
     return getJDBCArgMode(getArgMode(i));
   }
-  
+
   public String getJDBCArgMode(String pgMode)
   {
     if (pgMode == null) return null;

@@ -88,7 +88,7 @@ public class VariablePool
   private final Pattern validNamePattern = Pattern.compile("[\\w\\.]*");
   private Pattern promptPattern;
   private Pattern variablePattern;
-  private String poolID;
+  private final String poolID;
 
   /**
    * Returns the global VariablePool.

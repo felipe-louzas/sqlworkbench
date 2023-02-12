@@ -44,8 +44,8 @@ import workbench.util.ValueConverter;
 public class ParameterDefinition
 {
   private final ValueConverter converter = new ValueConverter();
-  private int dataType;
-  private int parameterIndex;
+  private final int dataType;
+  private final int parameterIndex;
   private String parameterName;
 
   /**

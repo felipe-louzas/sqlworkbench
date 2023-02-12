@@ -77,7 +77,7 @@ public class DdlCommand
       new DdlCommand("REVOKE"));
   }
 
-  private String verb;
+  private final String verb;
   private final Set<String> typesToRemember = CollectionUtil.caseInsensitiveSet("procedure", "function", "trigger", "package", "package body", "type");
   private Pattern alterDropPattern;
   private Pattern pgDropOwned;

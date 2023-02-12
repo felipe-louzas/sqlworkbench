@@ -24,10 +24,10 @@ package workbench.sql.annotations;
 import java.util.ArrayList;
 import java.util.List;
 
+import workbench.resource.GuiSettings;
+
 import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.bookmarks.ProcedureBookmarks;
-
-import workbench.resource.GuiSettings;
 
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
@@ -45,7 +45,7 @@ public class BookmarkAnnotation
 {
   public static final String ANNOTATION = "WbTag";
 
-  private List<String> validTags = new ArrayList<>(3);
+  private final List<String> validTags = new ArrayList<>(3);
 
   public BookmarkAnnotation()
   {

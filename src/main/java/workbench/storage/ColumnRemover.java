@@ -24,6 +24,7 @@
 package workbench.storage;
 import java.util.ArrayList;
 import java.util.List;
+
 import workbench.db.ColumnIdentifier;
 
 /**
@@ -33,7 +34,7 @@ import workbench.db.ColumnIdentifier;
  */
 public class ColumnRemover
 {
-  private DataStore original;
+  private final DataStore original;
 
   public ColumnRemover(DataStore ds)
   {

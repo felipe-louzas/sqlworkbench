@@ -44,7 +44,7 @@ import workbench.resource.Settings;
  */
 public class MessageBuffer
 {
-  private Deque<CharSequence> messages = new ArrayDeque<>();
+  private final Deque<CharSequence> messages = new ArrayDeque<>();
   private int length = 0;
   private final String newLine = "\n";
   private final int maxSize;

@@ -80,7 +80,7 @@ public class SqlRowDataConverter
   private String concatFunction;
   private StatementFactory statementFactory;
   private String lineTerminator = "\n";
-  private String doubleLineTerminator = "\n\n";
+  private final String doubleLineTerminator = "\n\n";
   private boolean includeOwner = true;
   private boolean doFormatting = true;
   private SqlLiteralFormatter literalFormatter;

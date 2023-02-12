@@ -42,7 +42,7 @@ public class SelectExtractor
   private final int cursorPos;
   private int startPos = -1;
   private int endPos = -1;
-  private SQLLexer lexer;
+  private final SQLLexer lexer;
 
   public SelectExtractor(SQLLexer lexer, String sql, int pos)
   {

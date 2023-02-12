@@ -81,9 +81,9 @@ public class WbWorkspace
   private int tabCount = -1;
 
   private WbProperties tabInfo = new WbProperties(0);
-  private Map<String, WbProperties> toolProperties = new HashMap<>();
-  private WbProperties variables = new WbProperties(0);
-  private Map<Integer, SqlHistory> historyEntries = new HashMap<>();
+  private final Map<String, WbProperties> toolProperties = new HashMap<>();
+  private final WbProperties variables = new WbProperties(0);
+  private final Map<Integer, SqlHistory> historyEntries = new HashMap<>();
   private String filename;
   private String loadError;
 

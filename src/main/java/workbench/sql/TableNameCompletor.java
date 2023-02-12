@@ -22,21 +22,20 @@
 package workbench.sql;
 
 import java.util.ArrayList;
-
-import jline.Completor;
-
-import workbench.db.WbConnection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import workbench.db.WbConnection;
 
 import workbench.gui.completion.SelectAllMarker;
 import workbench.gui.completion.StatementContext;
 
 import workbench.util.StringUtil;
+
+import jline.Completor;
 
 /**
  * A JLine Completor that loads up the tables and columns in the DB
@@ -49,7 +48,7 @@ public class TableNameCompletor
   /**
    * The connection for which this completor works.
    */
-  private WbConnection connection;
+  private final WbConnection connection;
 
   private String currentPrefix;
   private List<String> currentList;

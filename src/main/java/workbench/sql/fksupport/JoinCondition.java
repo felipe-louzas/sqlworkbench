@@ -35,10 +35,10 @@ import workbench.util.TableAlias;
  */
 public class JoinCondition
 {
-  private TableAlias fromTable;
-  private TableAlias toTable;
-  private String fkName;
-  private Map<String, String> joinColumns;
+  private final TableAlias fromTable;
+  private final TableAlias toTable;
+  private final String fkName;
+  private final Map<String, String> joinColumns;
   private boolean preferUsingOperator = false;
   private boolean useParentheses = false;
   private GeneratedIdentifierCase keywordCase = GeneratedIdentifierCase.upper;

@@ -61,7 +61,7 @@ public class MacroStorage
 
   private boolean modified = false;
   private String currentFilter;
-  private List<MacroChangeListener> changeListeners = new ArrayList<>(1);
+  private final List<MacroChangeListener> changeListeners = new ArrayList<>(1);
   private WbFile sourceFile;
 
   public MacroStorage(WbFile toLoad)

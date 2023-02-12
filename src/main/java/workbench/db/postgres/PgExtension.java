@@ -38,10 +38,10 @@ public class PgExtension
   implements DbObject, Serializable
 {
   public static final String TYPE_NAME = "EXTENSION";
-  private String name;
+  private final String name;
   private String remarks;
   private String version;
-  private String schema;
+  private final String schema;
 
   public PgExtension(String schema, String name)
   {

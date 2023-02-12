@@ -44,8 +44,8 @@ public class MacroGroup
   implements Sortable
 {
   private String name;
-  private List<MacroDefinition> macros = new ArrayList<>();
-  private List<MacroDefinition> filtered = new ArrayList<>();
+  private final List<MacroDefinition> macros = new ArrayList<>();
+  private final List<MacroDefinition> filtered = new ArrayList<>();
   private int sortOrder;
   private String tooltip;
   private boolean modified = false;

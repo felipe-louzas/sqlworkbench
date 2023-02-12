@@ -43,7 +43,7 @@ import workbench.sql.StatementRunnerResult;
 public class IgnoredCommand
   extends SqlCommand
 {
-  private String verb;
+  private final String verb;
   private boolean silent;
 
   public IgnoredCommand(String aVerb)

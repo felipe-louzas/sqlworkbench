@@ -56,7 +56,7 @@ public class TransactionEndCommand
     return new TransactionEndCommand(ROLLBACK_VERB);
   }
 
-  private String verb;
+  private final String verb;
 
   private TransactionEndCommand(String sqlVerb)
   {

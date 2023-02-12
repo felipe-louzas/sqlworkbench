@@ -36,7 +36,7 @@ import workbench.interfaces.ValueProvider;
 public class DataStoreValueProvider
   implements ValueProvider
 {
-  private DataStore data;
+  private final DataStore data;
 
   public DataStoreValueProvider(DataStore data)
   {

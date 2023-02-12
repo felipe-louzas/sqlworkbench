@@ -50,7 +50,7 @@ public class UpdateTableDetector
 {
   private TableIdentifier updateTable;
   private List<ColumnIdentifier> missingPkcolumns;
-  private WbConnection conn;
+  private final WbConnection conn;
   private boolean checkPkOnly;
 
   public UpdateTableDetector(WbConnection db)

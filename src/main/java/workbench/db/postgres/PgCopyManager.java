@@ -58,12 +58,12 @@ public class PgCopyManager
   implements StreamImporter
 {
   private final Object lock = new Object();
-  private WbConnection connection;
+  private final WbConnection connection;
   private String sql;
   private Reader data;
   private Object copyManager;
   private Method copyIn;
-  private boolean useDefaultClassloader;
+  private final boolean useDefaultClassloader;
   boolean is90;
 
   public PgCopyManager(WbConnection conn)

@@ -41,7 +41,7 @@ import workbench.util.StringUtil;
  */
 public class DatastoreTransposer
 {
-  private DataStore source;
+  private final DataStore source;
   private boolean useTableNameForResultName;
   private final Set<String> excludeColumns = CollectionUtil.caseInsensitiveSet();
 

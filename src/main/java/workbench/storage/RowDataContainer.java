@@ -66,9 +66,9 @@ public interface RowDataContainer
 class SingleRowDataContainer
   implements RowDataContainer
 {
-  private RowData row;
-  private ResultInfo info;
-  private WbConnection connection;
+  private final RowData row;
+  private final ResultInfo info;
+  private final WbConnection connection;
 
   SingleRowDataContainer(WbConnection conn, RowData row, ResultInfo info)
   {
@@ -112,8 +112,8 @@ class SingleRowDataContainer
 class SelectionRowDataContainer
   implements RowDataContainer
 {
-  private DataStore data;
-  private int[] selection;
+  private final DataStore data;
+  private final int[] selection;
 
   SelectionRowDataContainer(DataStore data, int[] rows)
   {

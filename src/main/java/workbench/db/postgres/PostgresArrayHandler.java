@@ -26,14 +26,13 @@ import java.sql.SQLException;
 
 import workbench.WbManager;
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
+import workbench.db.ArrayValueHandler;
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
 import workbench.db.WbConnection;
 import workbench.db.compare.BatchedStatement;
-import workbench.db.ArrayValueHandler;
-
-import workbench.log.LogMgr;
 
 import workbench.util.StringUtil;
 
@@ -47,7 +46,7 @@ public class PostgresArrayHandler
   private Class pgObjectClass;
   private Method setValue;
   private Method setType;
-  private boolean useDefaultClassloader;
+  private final boolean useDefaultClassloader;
 
   public PostgresArrayHandler(WbConnection connection)
   {

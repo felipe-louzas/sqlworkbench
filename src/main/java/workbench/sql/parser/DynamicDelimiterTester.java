@@ -36,7 +36,7 @@ public class DynamicDelimiterTester
   implements DelimiterTester
 {
 
-  private DelimiterDefinition currentDelimiter = new DelimiterDefinition(";");
+  private final DelimiterDefinition currentDelimiter = new DelimiterDefinition(";");
   private DelimiterDefinition alternateDelimiter;
   private boolean isDelimiterCommand;
   private final Set<String> delimiterCommands = CollectionUtil.caseInsensitiveSet(WbDelimiter.ALTERNATE_VERB, WbDelimiter.VERB, "SET TERM");

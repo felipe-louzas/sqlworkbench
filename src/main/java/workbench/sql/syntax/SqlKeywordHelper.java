@@ -67,7 +67,7 @@ public class SqlKeywordHelper
   private String aliasId;
   private static class LazyHolder
   {
-    private static Set<String> keywords = new SqlKeywordHelper().getReservedWords();
+    private static final Set<String> keywords = new SqlKeywordHelper().getReservedWords();
   }
 
   public static Set<String> getDefaultReservedWords()

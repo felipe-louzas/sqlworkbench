@@ -63,10 +63,10 @@ import workbench.util.TableAlias;
 public class JoinCreator
 {
   private String sql;
-  private WbConnection connection;
+  private final WbConnection connection;
   private int cursorPos;
   private Map<Integer, TableAlias> tablePositions;
-  private Set<String> keywords;
+  private final Set<String> keywords;
   private boolean preferUsingOperator;
   private boolean alwaysUseParenthesis;
   private GeneratedIdentifierCase keywordCase;

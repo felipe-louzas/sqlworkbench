@@ -46,7 +46,7 @@ public class PgSubscription
   private boolean enabled;
   private boolean syncCommit;
   private String slotName;
-  private List<String> publications = new ArrayList<>();
+  private final List<String> publications = new ArrayList<>();
 
   public PgSubscription(String name)
   {

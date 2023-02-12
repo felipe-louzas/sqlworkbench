@@ -38,9 +38,9 @@ public class PgCollation
   implements DbObject
 {
   public static final String TYPE_NAME = "COLLATION";
-  private String name;
+  private final String name;
   private String remarks;
-  private String schema;
+  private final String schema;
   private String provider;
   private String collate;
   private String cType;

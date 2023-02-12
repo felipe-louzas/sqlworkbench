@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionProfile;
@@ -34,9 +36,6 @@ import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.sql.formatter.FormatterUtil;
 
@@ -50,7 +49,7 @@ import workbench.util.SqlUtil;
  */
 public class StatementFactory
 {
-  private ResultInfo resultInfo;
+  private final ResultInfo resultInfo;
   private TableIdentifier tableToUse;
   private boolean includeTableOwner = true;
   private WbConnection dbConnection;
@@ -59,7 +58,7 @@ public class StatementFactory
   private boolean useColumnLabel;
   private boolean includeReadOnlyColumns;
   private boolean includeIdentityColumns;
-  private DmlExpressionBuilder expressionBuilder;
+  private final DmlExpressionBuilder expressionBuilder;
 
   /**
    * @param metaData the description of the resultSet for which the statements are generated

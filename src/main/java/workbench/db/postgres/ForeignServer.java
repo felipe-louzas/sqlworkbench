@@ -39,7 +39,7 @@ public class ForeignServer
   implements DbObject, Serializable
 {
   public static final String TYPE_NAME = "FOREIGN SERVER";
-  private String serverName;
+  private final String serverName;
   private String remarks;
   private Map<String, String> options = Collections.emptyMap();
   private String version;
