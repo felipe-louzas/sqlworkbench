@@ -438,6 +438,16 @@ public class GuiSettings
     return Settings.getInstance().getBoolProperty("workbench.gui.autocompletion.show.datatype", true);
   }
 
+  public static boolean showRemarksInCompletion()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.autocompletion.show.remarks", true);
+  }
+
+  public static int maxRemarksLengthInCompletion()
+  {
+    return Settings.getInstance().getIntProperty("workbench.gui.autocompletion.remarks.maxlength", 40);
+  }
+
   public static void setShowColumnDataTypesInCompletion(boolean flag)
   {
     Settings.getInstance().setProperty("workbench.gui.autocompletion.show.datatype", flag);

@@ -35,11 +35,12 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
- * A ListCellRenderer for the completion popup.
+ * A ListCellRenderer for the completion popup that assembles the information depending on the element type.
  *
- * If a ColumnIdentifier is displayed, and that is a PK column, the name will be displayed in bold face.
+ * For columns, primary keys are shown in bold. The datatype is shown next to the column name.
  *
- * For instances of DbObject, the object's comment (remark) is shown as a tooltip.
+ * For DbObjects the remarks are shown next to the object name, but are limited to {@link GuiSettings#maxRemarksLengthInCompletion()}
+ * characters.
  *
  * @author Thomas Kellerer
  */
@@ -48,12 +49,21 @@ public class CompletionListRenderer
 {
   private boolean showNotNulls;
   private boolean showColumnDataTypes = true;
+  private boolean showRemarks = true;
+  private int maxRemarksLength = 40;
 
   public CompletionListRenderer()
   {
     this.showColumnDataTypes = GuiSettings.showColumnDataTypesInCompletion();
+    this.showRemarks = GuiSettings.showRemarksInCompletion();
+    this.maxRemarksLength = GuiSettings.maxRemarksLengthInCompletion();
   }
 
+  /**
+   * If enabled, NOT NULL columns are highlighted painting the column name in red.
+   *
+   * @param flag
+   */
   public void setShowNotNulls(boolean flag)
   {
     this.showNotNulls = flag;
@@ -79,9 +89,28 @@ public class CompletionListRenderer
 
       if (showColumnDataTypes && col.getDbmsType() != null)
       {
-        colname = colname + " - <tt>" + col.getDbmsType() + "</tt>";
+        String type = col.getDbmsType();
+        colname = colname + " - <tt>" + type + "</tt>";
+        if (!col.isNullable())
+        {
+          colname += " (NN)";
+        }
+      }
+      if (showRemarks && StringUtil.isNonBlank(col.getComment()))
+      {
+        colname = colname + " (" + StringUtil.getMaxSubstring(col.getComment(), maxRemarksLength) + ")";
       }
       setText("<html>" + colname + "</html>");
+    }
+    else if (value instanceof DbObject && showRemarks)
+    {
+      DbObject dbo = (DbObject)value;
+      String name = dbo.toString();
+      if (showRemarks && StringUtil.isNonBlank(dbo.getComment()))
+      {
+        name = name + " (" + StringUtil.getMaxSubstring(dbo.getComment(), maxRemarksLength) + ")";
+      }
+      setText(name);
     }
 
     if (value instanceof DbObject)

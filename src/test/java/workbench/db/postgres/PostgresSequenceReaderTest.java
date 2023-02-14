@@ -90,7 +90,7 @@ public class PostgresSequenceReaderTest
     assertEquals("SEQUENCE", seq.getObjectType());
     String sql = seq.getSource(con).toString();
     String expected =
-      "CREATE SEQUENCE seq_one\n" +
+      "CREATE SEQUENCE IF NOT EXISTS seq_one\n" +
       "       INCREMENT BY 1\n" +
       "       MINVALUE 1\n" +
       "       CACHE 1\n" +
@@ -103,7 +103,7 @@ public class PostgresSequenceReaderTest
     seq = objects.get(1);
     sql = seq.getSource(con).toString();
 //    System.out.println(sql);
-    expected = "CREATE SEQUENCE seq_two\n" +
+    expected = "CREATE SEQUENCE IF NOT EXISTS seq_two\n" +
              "       INCREMENT BY 10\n" +
              "       MINVALUE 100\n" +
              "       CACHE 25\n" +

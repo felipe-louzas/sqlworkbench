@@ -49,7 +49,7 @@ import workbench.util.StringUtil;
 public class PostgresSequenceReader
   implements SequenceReader
 {
-  private WbConnection dbConnection;
+  private final WbConnection dbConnection;
   public static final String PROP_ACL = "acl";
   private static final String NAME_PLACEHOLDER = "%sequence_name%";
 
@@ -127,6 +127,10 @@ public class PostgresSequenceReader
       String dataType = (String)def.getSequenceProperty(PROP_DATA_TYPE);
 
       buf.append("CREATE SEQUENCE ");
+      if (dbConnection == null || JdbcUtils.hasMinimumServerVersion(dbConnection, "9.5"))
+      {
+        buf.append("IF NOT EXISTS ");
+      }
       buf.append(name);
       if (StringUtil.isNonBlank(dataType) && StringUtil.stringsAreNotEqual("bigint", dataType))
       {
