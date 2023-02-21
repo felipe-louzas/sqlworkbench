@@ -49,6 +49,7 @@ import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
+import org.apache.poi.openxml4j.util.ZipInputStreamZipEntrySource;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -58,6 +59,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -90,11 +92,11 @@ public class ExcelReader
   private final Set<String> tsFormats = CollectionUtil.treeSet("HH", "mm", "ss", "SSS", "KK", "kk");
 
   private final boolean useXLSX;
-  private MessageBuffer messages = new MessageBuffer();
+  private final MessageBuffer messages = new MessageBuffer();
   private boolean emptyStringIsNull;
   private boolean useStringDates;
   private boolean useStringNumbers;
-  private DataFormatter dataFormatter = new DataFormatter(true);
+  private final DataFormatter dataFormatter = new DataFormatter(true);
   private boolean recalcOnLoad = true;
   private boolean useSAXReader;
   private boolean checkNumericFormat = true;
@@ -232,10 +234,40 @@ public class ExcelReader
     return sheetName != null || sheetIndex > -1;
   }
 
+  /**
+   * This applies memory thresholds for loading Excel files.
+   *
+   * @see IOUtils#setByteArrayMaxOverride(int)
+   * @see ZipInputStreamZipEntrySource#setThresholdBytesForTempFiles(int)
+   */
+  private void setMemoryThresholds()
+  {
+    int maxArraySize = Settings.getInstance().getIntProperty("workbench.import.xlsx.zipstream.maxsize", -1);
+    try
+    {
+      IOUtils.setByteArrayMaxOverride(maxArraySize);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not set byteArrayMaxOverride to " + maxArraySize, th);
+    }
+    int tempFileThreshold = Settings.getInstance().getIntProperty("workbench.import.xlsx.tempfile.threshold", -1);
+    try
+    {
+      ZipInputStreamZipEntrySource.setThresholdBytesForTempFiles(tempFileThreshold);
+    }
+    catch (Throwable th)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not set thresholdBytesForTempFiles to " + tempFileThreshold, th);
+    }
+  }
+
   @Override
   public void load()
     throws IOException
   {
+    setMemoryThresholds();
+
     if (useSAXReader)
     {
       if (sheetNames.isEmpty())
