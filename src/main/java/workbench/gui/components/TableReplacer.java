@@ -60,11 +60,11 @@ import workbench.util.ExceptionUtil;
 public class TableReplacer
   implements Searchable, Replaceable, TableModelListener
 {
-  private WbTable client;
-  private FindDataAction findAction;
-  private FindDataAgainAction findAgainAction;
-  private ReplaceDataAction replaceAction;
-  private DataStoreReplacer replacer;
+  private final WbTable client;
+  private final FindDataAction findAction;
+  private final FindDataAgainAction findAgainAction;
+  private final ReplaceDataAction replaceAction;
+  private final DataStoreReplacer replacer;
   private boolean tableChanging;
 
   public TableReplacer(WbTable table)
@@ -204,6 +204,7 @@ public class TableReplacer
       client.scrollToRow(row);
     });
   }
+
   protected void highlightPosition(final Position pos)
   {
     final int row = pos.getRow();
@@ -224,6 +225,7 @@ public class TableReplacer
   {
     Position pos = this.replacer.findNext();
     highlightPosition(pos);
+    findAgainAction.setEnabled(pos.isValid());
     return pos.getRow();
   }
 

@@ -149,7 +149,7 @@ public class ProcedureListPanel
   private boolean isRetrieving;
   protected ProcStatusRenderer statusRenderer;
 
-  private MainWindow parentWindow;
+  private final MainWindow parentWindow;
   private boolean initialized;
   private FilteredProperties workspaceSettings;
 
@@ -157,8 +157,8 @@ public class ProcedureListPanel
   private SourceCache cache;
 
   private FilterDefinitionManager filterMgr;
-  private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
-  private ProcedureChangeValidator validator = new ProcedureChangeValidator();
+  private final IsolationLevelChanger levelChanger = new IsolationLevelChanger();
+  private final ProcedureChangeValidator validator = new ProcedureChangeValidator();
   private AlterProcedureAction renameAction;
   private DbObject objectToSelect;
   private ObjectFinder tableFinder;

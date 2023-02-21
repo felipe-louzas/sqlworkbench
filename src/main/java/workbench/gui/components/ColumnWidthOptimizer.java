@@ -58,10 +58,10 @@ import workbench.util.StringUtil;
  */
 public class ColumnWidthOptimizer
 {
-  private WbTable table;
-  private int maxLines;
-  private int remarksMinLength;
-  private int remarksMaxLength;
+  private final WbTable table;
+  private final int maxLines;
+  private final int remarksMinLength;
+  private final int remarksMaxLength;
 
   public ColumnWidthOptimizer(WbTable client)
   {

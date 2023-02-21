@@ -72,7 +72,7 @@ public class ProcedureDefinition
    *   <li>DatabaseMetaData.functionNoTable</li>
    * </ul>
    */
-  private int resultType;
+  private final int resultType;
 
   private ProcType procType;
   private String oracleOverloadIndex;

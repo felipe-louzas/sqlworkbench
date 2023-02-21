@@ -374,7 +374,7 @@ public class SqlPanel
   private final int macroClientId;
   private final AutomaticRefreshMgr refreshMgr;
   private final Highlighter highlighter;
-  private ResultTabDropHandler tabDropHandler;
+  private final ResultTabDropHandler tabDropHandler;
   private boolean macroExecution = false;
   private String variablePoolID = null;
   private final Object toolbarLock = new Object();
@@ -4444,7 +4444,6 @@ public class SqlPanel
     final boolean hasResult = currentData != null ? currentData.hasResultSet() : false;
     final boolean hasRows = (hasResult && currentData.getTable().getRowCount() > 0);
     final boolean mayEdit = !readOnly && hasResult && currentData.hasUpdateableColumns();
-    final boolean findNext = hasResult && (currentData.getTable().canSearchAgain());
     setActionState(hasResult, dataToClipboard,
                               exportDataAction,
                               optimizeAllCol,
@@ -4456,7 +4455,6 @@ public class SqlPanel
     {
       importFileAction.setEnabled(mayEdit);
       importClipAction.setEnabled(mayEdit);
-      findDataAgainAction.setEnabled(findNext);
       copySelectedMenu.setEnabled(hasResult);
       reloadAction.checkEnabled();
       showFormAction.setEnabled(hasRows);

@@ -49,7 +49,7 @@ import workbench.util.StringUtil;
  */
 public class RowHeightOptimizer
 {
-  private WbTable table;
+  private final WbTable table;
 
   public RowHeightOptimizer(WbTable client)
   {
@@ -156,8 +156,7 @@ public class RowHeightOptimizer
   {
     int colCount = this.table.getColumnCount();
 
-    int defaultHeight = table.getRowHeight();
-    int optHeight = defaultHeight;
+    int optHeight = table.getRowHeight();
 
     for (int col = 0; col < colCount; col++)
     {

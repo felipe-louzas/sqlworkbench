@@ -101,8 +101,8 @@ public class MySqlProcedureReaderTest
 //    System.out.println(source);
     ScriptParser p = new ScriptParser(source, ParserType.MySQL);
     p.setAlternateDelimiter(Settings.getInstance().getAlternateDelimiter(con, DelimiterDefinition.DEFAULT_ORA_DELIMITER));
-    assertEquals(2, p.getSize());
-    String create = p.getCommand(1);
+    assertEquals(1, p.getSize());
+    String create = p.getCommand(0);
     String expected =
       "CREATE PROCEDURE simpleproc (OUT param1 INT)\n"+
       "BEGIN \n" +

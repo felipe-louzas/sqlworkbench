@@ -187,7 +187,6 @@ public class WbTable
   protected WbPopupMenu popup;
 
   private DataStoreTableModel dwModel;
-  private int lastFoundRow = -1;
 
   protected WbTextCellEditor defaultEditor;
   private WbCellEditor multiLineEditor;
@@ -240,7 +239,7 @@ public class WbTable
   private Map<String, Integer> savedColumnSizes;
 
   private RowHeightResizer rowResizer;
-  private List<TableModelListener> changeListener = new ArrayList<>();
+  private final List<TableModelListener> changeListener = new ArrayList<>();
   private JScrollPane scrollPane;
 
   private DwStatusBar statusBar;
@@ -1904,11 +1903,6 @@ public class WbTable
       // display the new sort icon if
       getTableHeader().repaint();
     });
-  }
-
-  public boolean canSearchAgain()
-  {
-    return this.lastFoundRow >= 0;
   }
 
   public void saveColumnSizes()

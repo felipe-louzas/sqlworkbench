@@ -39,7 +39,7 @@ import workbench.resource.ResourceMgr;
 public class FindDataAction
   extends WbAction
 {
-  private Searchable client;
+  private final Searchable client;
 
   public FindDataAction(Searchable aClient)
   {

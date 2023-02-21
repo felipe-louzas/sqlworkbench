@@ -78,7 +78,7 @@ public class SortHeaderRenderer
   private boolean showRemarks;
   private boolean showColumnTable;
   private boolean showTableAsPrefix;
-  private boolean showTableInComment;
+  private boolean showTableInTooltip;
 
   public SortHeaderRenderer()
   {
@@ -103,7 +103,7 @@ public class SortHeaderRenderer
     showFullTypeInfo = Settings.getInstance().getBoolProperty(GuiSettings.PROP_TABLE_HEADER_FULL_TYPE_INFO, false);
     showColumnTable = GuiSettings.showTableNameInColumnHeader();
     showTableAsPrefix = GuiSettings.showTableNameAsColumnPrefix();
-    showTableInComment = GuiSettings.showTableNameInColumnTooltip();
+    showTableInTooltip = GuiSettings.showTableNameInColumnTooltip();
   }
 
   public void setShowRemarks(boolean flag)
@@ -290,7 +290,7 @@ public class SortHeaderRenderer
       StringBuilder tip = new StringBuilder(text.length() + 20);
       tip.append("<html><code>");
       if (showBoldHeader) tip.append("<b>");
-      if (showTableInComment && tableName != null)
+      if (showTableInTooltip && tableName != null)
       {
         tip.append(tableName);
         tip.append('.');

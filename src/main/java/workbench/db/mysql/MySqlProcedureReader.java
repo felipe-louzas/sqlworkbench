@@ -36,8 +36,6 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
-import workbench.sql.DelimiterDefinition;
-
 import workbench.util.StringUtil;
 
 /**
@@ -82,18 +80,6 @@ public class MySqlProcedureReader
         proctype = rs.getString(1);
         returntype = rs.getString(2);
       }
-      source.append("DROP ");
-      source.append(proctype);
-      source.append(' ');
-      source.append(def.getProcedureName());
-      DelimiterDefinition delim = Settings.getInstance().getAlternateDelimiter(connection, DelimiterDefinition.STANDARD_DELIMITER);
-      if (delim != null)
-      {
-        if (delim.isSingleLine()) source.append(nl);
-        source.append(delim.toString());
-      }
-      source.append(nl);
-      source.append(nl);
       source.append("CREATE ");
       source.append(proctype);
       source.append(' ');

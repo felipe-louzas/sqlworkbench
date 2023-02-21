@@ -1538,7 +1538,7 @@ public class SqlUtil
 
       case Types.DECIMAL:
       case Types.NUMERIC:
-        // SQL Server
+        // SQL Server and Postgres
         if ("money".equalsIgnoreCase(typeName)) return typeName;
 
         if ((typeName.indexOf('(') == -1))
@@ -1572,6 +1572,15 @@ public class SqlUtil
           display = typeName + "(" + size + ")";
         }
         else if ("RAW".equalsIgnoreCase(typeName))
+        {
+          display = typeName + "(" + size + ")";
+        }
+        break;
+
+      case Types.BINARY:
+      case Types.VARBINARY:
+      case Types.LONGVARBINARY:
+        if (size > 0 && size < Integer.MAX_VALUE && typeName.indexOf('(') == -1)
         {
           display = typeName + "(" + size + ")";
         }
