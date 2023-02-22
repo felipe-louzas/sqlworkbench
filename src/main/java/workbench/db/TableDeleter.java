@@ -47,7 +47,7 @@ import workbench.util.ExceptionUtil;
  */
 public class TableDeleter
 {
-  private WbConnection connection;
+  private final WbConnection connection;
   private boolean cancelExecution;
   private Statement currentStatement;
   private JobErrorHandler errorHandler;
@@ -162,12 +162,7 @@ public class TableDeleter
     boolean autoCommitChanged = false;
     boolean autoCommit = connection.getAutoCommit();
 
-    // this is essentially here for the DbTree, because the DbTree sets its own connection
-    // to autocommit regardless of the profile to reduce locking when retrieving the data
-    // from the database. If the profile was not set to autocommit the deletion of the
-    // rows should be done in a transaction. When everything is done the
-    // auto commit will be restored
-    if (autoCommit && !connection.getProfile().getAutocommit())
+    if (autoCommit)
     {
       connection.setAutoCommit(false);
       autoCommitChanged = true;

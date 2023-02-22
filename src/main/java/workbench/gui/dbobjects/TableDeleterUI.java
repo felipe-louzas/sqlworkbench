@@ -211,7 +211,6 @@ public class TableDeleterUI
     commitOptionsPanel.setLayout(new GridBagLayout());
 
     buttonGroup1.add(commitEach);
-    commitEach.setSelected(true);
     commitEach.setText(ResourceMgr.getString("LblCommitEachTableDelete")); // NOI18N
     commitEach.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
@@ -222,6 +221,7 @@ public class TableDeleterUI
     commitOptionsPanel.add(commitEach, gridBagConstraints);
 
     buttonGroup1.add(commitAtEnd);
+    commitAtEnd.setSelected(true);
     commitAtEnd.setText(ResourceMgr.getString("LblCommitTableDeleteAtEnd")); // NOI18N
     commitAtEnd.setBorder(null);
     gridBagConstraints = new GridBagConstraints();
@@ -467,24 +467,7 @@ public class TableDeleterUI
 
   protected void checkState()
   {
-    boolean autoCommit = connection == null ? true : connection.getAutoCommit();
     boolean useTruncate = useTruncateCheckBox.isSelected() && useTruncateCheckBox.isEnabled();
-    if (autoCommit)
-    {
-      commitAtEnd.setEnabled(false);
-      commitEach.setEnabled(false);
-    }
-    else if (useTruncate)
-    {
-      commitAtEnd.setEnabled(connection.getDbSettings().truncateNeedsCommit());
-      commitEach.setEnabled(connection.getDbSettings().truncateNeedsCommit());
-    }
-    else
-    {
-      commitAtEnd.setEnabled(true);
-      commitEach.setEnabled(true);
-    }
-
     boolean canCascade = connection == null ? false : connection.getDbSettings().supportsCascadedTruncate();
     cascadeTruncate.setEnabled(canCascade && useTruncate);
     if (!canCascade)
@@ -512,7 +495,7 @@ public class TableDeleterUI
   {
     this.cancelled = false;
 
-    boolean doCommitEach = commitEach.isEnabled() && this.commitEach.isSelected();
+    boolean doCommitEach = this.commitEach.isSelected();
     boolean useTruncate = useTruncateCheckBox.isSelected();
     boolean cascadedTruncate = useTruncate ? cascadeTruncate.isSelected() : false;
 
