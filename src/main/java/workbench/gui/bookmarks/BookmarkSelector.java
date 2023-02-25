@@ -21,8 +21,6 @@
  */
 package workbench.gui.bookmarks;
 
-import workbench.sql.annotations.BookmarkAnnotation;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -71,6 +69,7 @@ import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.CheckBoxAction;
 import workbench.gui.actions.ReloadAction;
+import workbench.gui.actions.WbAction;
 import workbench.gui.components.ColumnWidthOptimizer;
 import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.FlatButton;
@@ -92,6 +91,7 @@ import workbench.storage.filter.DataRowExpression;
 import workbench.storage.filter.ExpressionValue;
 import workbench.storage.filter.FilterExpression;
 
+import workbench.sql.annotations.BookmarkAnnotation;
 import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.StringUtil;
@@ -110,19 +110,19 @@ public class BookmarkSelector
 
   private final JTextField filterValue;
   private final JComboBox tabSelector;
-  private JLabel info;
+  private final JLabel info;
   private WbTable bookmarks;
-  private WbScrollPane scroll;
+  private final WbScrollPane scroll;
   private final MainWindow window;
   private ValidatingDialog dialog;
   private NamedScriptLocation selectedBookmark;
   private SortDefinition savedSort;
-  private WbCheckBox searchNameCbx;
-  private WbCheckBox useCurrentEditorCbx;
+  private final WbCheckBox searchNameCbx;
+  private final WbCheckBox useCurrentEditorCbx;
   private int[] initialColumnWidths;
   private CheckBoxAction rememberColumnWidths;
   private CheckBoxAction rememberSort;
-  private SelectionHandler keyHandler;
+  private final SelectionHandler keyHandler;
 
   public BookmarkSelector(MainWindow win)
   {
@@ -557,7 +557,7 @@ public class BookmarkSelector
   @Override
   public void keyPressed(KeyEvent e)
   {
-    if (e.getSource() == this.filterValue && e.getModifiers() == 0)
+    if (e.getSource() == this.filterValue && e.getModifiersEx() == 0)
     {
       if (e.getKeyCode() == KeyEvent.VK_ESCAPE && StringUtil.isNonBlank(filterValue.getText()))
       {
@@ -578,8 +578,7 @@ public class BookmarkSelector
 
   private boolean isAltPressed(KeyEvent e)
   {
-    // TODO: does this work with MacOS?
-    return ((e.getModifiers() & KeyEvent.ALT_MASK) == KeyEvent.ALT_MASK);
+    return WbAction.isAltPressed(e);
   }
 
   @Override

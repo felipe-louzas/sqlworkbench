@@ -87,12 +87,12 @@ public class FileTreePanel
   public static final String PROP_DIVIDER = "filetree.divider.location";
   public static final String PROP_ROOT_DIR = "filetree.rootdir";
 
-  private FileTree tree;
+  private final FileTree tree;
   private JPanel toolPanel;
   public ReloadAction reload;
   private WbToolbarButton closeButton;
   public DbObjectSourcePanel source;
-  private MainWindow window;
+  private final MainWindow window;
   private JTextField filterText;
   private JButton addDirectoryButton;
   private JButton removeDirectoryButton;

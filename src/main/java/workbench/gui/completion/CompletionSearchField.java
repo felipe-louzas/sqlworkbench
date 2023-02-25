@@ -39,7 +39,7 @@ public class CompletionSearchField
   extends JTextField
   implements KeyListener, DocumentListener
 {
-  private QuickSearchList parent;
+  private final QuickSearchList parent;
 
   public CompletionSearchField(QuickSearchList popup, String text)
   {

@@ -29,7 +29,7 @@ import java.awt.event.KeyEvent;
  */
 public class SelectionHandler
 {
-  private WbTable dataList;
+  private final WbTable dataList;
 
   public SelectionHandler(WbTable list)
   {

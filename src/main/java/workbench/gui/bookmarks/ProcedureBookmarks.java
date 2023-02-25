@@ -62,16 +62,16 @@ public class ProcedureBookmarks
     defaultValue;
   }
 
-  private Set<String> modeKeywords = CollectionUtil.caseInsensitiveSet("OUT", "IN", "INOUT");
-  private Set<String> typeKeywords = CollectionUtil.caseInsensitiveSet("PROCEDURE", "FUNCTION");
-  private Set<String> createKeywords = CollectionUtil.caseInsensitiveSet("CREATE", "ALTER", "CREATE OR REPLACE");
-  private Set<String> noParse = CollectionUtil.caseInsensitiveSet("DROP", "GRANT", "REVOKE", "RENAME");
-  private Set<String> parameterStart = CollectionUtil.caseInsensitiveSet("(");
-  private Set<String> parameterEnd = CollectionUtil.caseInsensitiveSet(")", "COLLATE", "NOT NULL");
-  private Set<String> parameterDefault = CollectionUtil.caseInsensitiveSet("DEFAULT");
-  private Set<String> createTerminal = CollectionUtil.caseInsensitiveSet("AS", "RETURN", "IS", "BEGIN", ";", "DECLARE", "RETURNS");
+  private final Set<String> modeKeywords = CollectionUtil.caseInsensitiveSet("OUT", "IN", "INOUT");
+  private final Set<String> typeKeywords = CollectionUtil.caseInsensitiveSet("PROCEDURE", "FUNCTION");
+  private final Set<String> createKeywords = CollectionUtil.caseInsensitiveSet("CREATE", "ALTER", "CREATE OR REPLACE");
+  private final Set<String> noParse = CollectionUtil.caseInsensitiveSet("DROP", "GRANT", "REVOKE", "RENAME");
+  private final Set<String> parameterStart = CollectionUtil.caseInsensitiveSet("(");
+  private final Set<String> parameterEnd = CollectionUtil.caseInsensitiveSet(")", "COLLATE", "NOT NULL");
+  private final Set<String> parameterDefault = CollectionUtil.caseInsensitiveSet("DEFAULT");
+  private final Set<String> createTerminal = CollectionUtil.caseInsensitiveSet("AS", "RETURN", "IS", "BEGIN", ";", "DECLARE", "RETURNS");
 
-  private List<NamedScriptLocation> procedures = new ArrayList<>();
+  private final List<NamedScriptLocation> procedures = new ArrayList<>();
 
   private final String id;
 

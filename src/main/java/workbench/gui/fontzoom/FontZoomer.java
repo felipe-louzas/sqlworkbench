@@ -38,7 +38,7 @@ import workbench.gui.actions.WbAction;
 public class FontZoomer
   implements MouseWheelListener
 {
-  private JComponent client;
+  private final JComponent client;
   private Font originalFont;
   private final double increasePercent;
 

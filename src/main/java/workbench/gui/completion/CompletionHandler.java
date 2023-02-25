@@ -63,7 +63,7 @@ public class CompletionHandler
   protected List filteredElements;
 
   protected WbConnection dbConnection;
-  private JLabel header;
+  private final JLabel header;
   private List<ListDataListener> listeners;
   private CompletionPopup window;
   protected StatusBar statusBar;

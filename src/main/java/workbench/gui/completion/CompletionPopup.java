@@ -87,18 +87,18 @@ public class CompletionPopup
   implements FocusListener, MouseListener, KeyListener, WindowListener, QuickSearchList
 {
   protected JEditTextArea editor;
-  private JScrollPane scroll;
+  private final JScrollPane scroll;
   private JWindow window;
-  private JPanel content;
+  private final JPanel content;
   protected JList elementList;
-  private ListModel data;
-  private JComponent headerComponent;
+  private final ListModel data;
+  private final JComponent headerComponent;
 
   private StatementContext context;
   private boolean selectCurrentWordInEditor;
   protected CompletionSearchField searchField;
   private boolean ignoreSearchChange;
-  private CompletionListRenderer listRenderer;
+  private final CompletionListRenderer listRenderer;
 
   public CompletionPopup(JEditTextArea ed, JComponent header, ListModel listData)
   {

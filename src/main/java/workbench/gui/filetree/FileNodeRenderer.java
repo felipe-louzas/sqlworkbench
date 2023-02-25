@@ -34,7 +34,7 @@ public class FileNodeRenderer
   extends DefaultTreeCellRenderer
 {
   private final FileSystemView fsv = FileSystemView.getFileSystemView();
-  private boolean showSystemIcons = false;
+  private final boolean showSystemIcons = false;
 
   public FileNodeRenderer()
   {
