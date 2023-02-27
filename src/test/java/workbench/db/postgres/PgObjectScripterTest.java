@@ -89,9 +89,9 @@ public class PgObjectScripterTest
     String script = scripter.getScript();
     ScriptParser parser = new ScriptParser(ParserType.Postgres);
     parser.setScript(script);
-    // System.out.println("****\n" + script);
+//    System.out.println("****\n" + script);
     assertEquals(4, parser.getSize()); // three statements and a COMMIT
-    assertTrue(parser.getCommand(0).startsWith("CREATE SEQUENCE code_seq"));
+    assertTrue(parser.getCommand(0).startsWith("CREATE SEQUENCE IF NOT EXISTS code_seq"));
     assertTrue(parser.getCommand(1).contains("nextval('code_seq'"));
     String seq = SqlUtil.makeCleanSql(parser.getCommand(2), true, false);
     assertTrue(seq.equals("ALTER SEQUENCE code_seq OWNED BY base_table.code"));
