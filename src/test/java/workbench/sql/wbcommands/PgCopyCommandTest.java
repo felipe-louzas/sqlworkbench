@@ -69,6 +69,36 @@ public class PgCopyCommandTest
   }
 
   @Test
+  public void testEmptyCopy()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+
+    TestUtil.executeScript(conn,
+      "create table person (id integer, firstname text, lastname text);\n" +
+      "commit;");
+
+    String copy =
+      "copy person (id, firstname, lastname) from stdin with (format csv, delimiter ',');\n" +
+      "\\.\n" +
+      "commit;";
+
+    ScriptParser parser = new ScriptParser(ParserType.Postgres);
+    parser.setScript(copy);
+    String copySQL = parser.getCommand(0);
+    
+    StatementRunner runner = new StatementRunner();
+    runner.setConnection(conn);
+    StatementRunnerResult result = runner.runStatement(copySQL);
+    assertTrue(result.isSuccess());
+
+    int count = TestUtil.getNumberValue(conn, "select count(*) from person");
+    assertEquals(0,count);
+  }
+
+
+  @Test
   public void testCopyFrom()
     throws Exception
   {
@@ -90,6 +120,7 @@ public class PgCopyCommandTest
     ScriptParser parser = new ScriptParser(ParserType.Postgres);
     parser.setScript(copy);
     String parsedSql = parser.getCommand(0);
+    assertTrue(parsedSql.endsWith("Prefect"));
 
     assertEquals("commit", parser.getCommand(1));
 

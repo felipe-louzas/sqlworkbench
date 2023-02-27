@@ -1373,7 +1373,7 @@ public class StringUtil
   {
     return findFirstWhiteSpace(data, quote, 0);
   }
-  
+
   public static int findFirstWhiteSpace(CharSequence data, char quote, int startPos)
   {
     if (data == null) return -1;
@@ -2039,9 +2039,10 @@ public class StringUtil
   {
     int pos = getLineEnd(text, position);
     if (pos <= 0) return 0;
+    int count = text.length();
+    if (pos >= text.length()) return pos;
 
     char c = text.charAt(pos);
-    int count = text.length();
 
     while (pos < count - 1 && (c == '\r' || c == '\n'))
     {
