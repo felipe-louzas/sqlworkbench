@@ -58,14 +58,14 @@ public class ObjectTreeNode
   extends DefaultMutableTreeNode
   implements Serializable
 {
-  private Set<String> typesWithChildren = CollectionUtil.caseInsensitiveSet(
+  private final Set<String> typesWithChildren = CollectionUtil.caseInsensitiveSet(
     "database", "catalog", "schema", "table", "view", "materialized view", "type", "package", "enum", "index", "procedure");
   private String nodeType;
   private String nodeName;
   private boolean isLoaded;
   private Long rowCount;
   private int originalIndex;
-  private List<ObjectTreeNode> filteredNodes = new ArrayList<>();
+  private final List<ObjectTreeNode> filteredNodes = new ArrayList<>();
   private DbObject originalObject;
   private String display;
   private String tooltip;

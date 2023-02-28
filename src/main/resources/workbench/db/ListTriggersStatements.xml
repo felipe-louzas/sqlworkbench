@@ -324,7 +324,16 @@ from DBC.Triggers
           when 'D' then 'DELETE'
         end as trigger_event,
        tabname as trigger_table,
-       tabschema as trigger_table_schema
+       tabschema as trigger_table_schema,
+       case
+         when enabled = 'Y' then 'ENABLED'
+         else 'DISABLED'
+       end as status,
+       remarks,
+       case
+         when granularity = 'R' then 'ROW'
+         else 'STATEMENT'
+       end as TRIGGER_LEVEL
 from syscat.triggers</string>
     </void>
     <void property="objectNameField">

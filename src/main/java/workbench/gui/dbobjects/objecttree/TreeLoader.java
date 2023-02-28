@@ -183,15 +183,15 @@ public class TreeLoader
   public static final String TYPE_PROJECTION_BUDDY = "projection-buddy";
 
   private WbConnection connection;
-  private DbObjectTreeModel model;
-  private ObjectTreeNode root;
+  private final DbObjectTreeModel model;
+  private final ObjectTreeNode root;
   private GlobalTreeNode globalNode;
   private Collection<String> availableTypes;
   private ProcedureTreeLoader procLoader;
   private DependencyReader dependencyLoader;
   private PartitionLister partitionLister;
   private final Set<String> typesToShow = CollectionUtil.caseInsensitiveSet();
-  private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
+  private final IsolationLevelChanger levelChanger = new IsolationLevelChanger();
 
   public TreeLoader()
   {
@@ -934,9 +934,22 @@ public class TreeLoader
     {
       ObjectTreeNode node = new ObjectTreeNode(trg);
       boolean supportsDeps = supportsIsUsingDependencies(node) || supportsUsedByDependencies(node);
-      node.setAllowsChildren(supportsDeps);
-      addDependencyNodes(node);
-      node.setChildrenLoaded(!supportsDeps);
+      if (trg.getRelatedTable() != null)
+      {
+        node.setAllowsChildren(true);
+        TableIdentifier tbl = trg.getRelatedTable();
+        ObjectTreeNode tableNode = new ObjectTreeNode(tbl);
+        node.add(tableNode);
+        tableNode.setAllowsChildren(true);
+        addColumnsNode(tableNode);
+        addTableSubNodes(tableNode);
+      }
+      if (supportsDeps)
+      {
+        node.setAllowsChildren(true);
+        addDependencyNodes(node);
+      }
+      node.setChildrenLoaded(true);
       trgNode.add(node);
     }
     model.nodeStructureChanged(trgNode);

@@ -214,6 +214,10 @@ public class DefaultTriggerReader
       {
         result.removeColumn(TriggerReader.TRIGGER_TABLE_CATALOG_COLUMN);
       }
+      if (levelIndex < 0)
+      {
+        result.removeColumn(TriggerReader.TRIGGER_LEVEL_COLUMN);
+      }
       while (rs.next())
       {
         int row = result.addRow();
