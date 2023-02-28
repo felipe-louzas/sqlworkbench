@@ -190,9 +190,8 @@ public class HtmlRowDataConverter
       String comment = metaData.getColumn(c).getComment();
       if (includeColumnComments && StringUtil.isNonBlank(comment))
       {
-        result.append("<br/>(");
+        result.append("<br/>");
         result.append(comment);
-        result.append(")");
       }
       result.append("      </th>\n");
     }

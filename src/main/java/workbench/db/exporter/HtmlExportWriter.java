@@ -52,5 +52,6 @@ public class HtmlExportWriter
     conv.setHeading(exporter.getHtmlHeading());
     conv.setTrailer(exporter.getHtmlTrailer());
     conv.setNullString(exporter.getNullString());
+    conv.setIncludeColumnComments(exporter.getIncludeColumnComments());
   }
 }

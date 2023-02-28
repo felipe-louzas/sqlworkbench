@@ -290,8 +290,10 @@ from DBC.Triggers
           when 'I' then 'INSERT'
           when 'U' then 'UPDATE'
           when 'D' then 'DELETE'
-        END AS trigger_event
-        FROM sysibm.systriggers</string>
+        END AS trigger_event,
+        tbname as trigger_table,
+        tbowner as trigger_table_schema
+     FROM sysibm.systriggers</string>
     </void>
     <void property="objectNameField">
      <string>tbname</string>
@@ -305,6 +307,7 @@ from DBC.Triggers
    </object>
   </void>
 
+  <!-- db2 LUW -->
   <void method="put">
    <string>$dbid:db2</string>
    <object id="db2_lst_trg" class="workbench.db.GetMetaDataSql">
@@ -319,7 +322,9 @@ from DBC.Triggers
           when 'I' then 'INSERT'
           when 'U' then 'UPDATE'
           when 'D' then 'DELETE'
-        end as trigger_event
+        end as trigger_event,
+       tabname as trigger_table,
+       tabschema as trigger_table_schema
 from syscat.triggers</string>
     </void>
     <void property="objectNameField">

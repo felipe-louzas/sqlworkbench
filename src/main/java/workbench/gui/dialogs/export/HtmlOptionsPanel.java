@@ -21,15 +21,6 @@
  */
 package workbench.gui.dialogs.export;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -61,6 +52,18 @@ public class HtmlOptionsPanel
     this.setCreateFullPage(s.getBoolProperty("workbench." + type + ".html.createfullpage"));
     this.setEscapeHtml(s.getBoolProperty("workbench." + type + ".html.escape"));
     this.setPageTitle(s.getProperty("workbench." + type + ".html.pagetitle", ""));
+  }
+
+  @Override
+  public boolean getIncludeColumnComments()
+  {
+    return this.includeComments.isSelected();
+  }
+
+  @Override
+  public void setIncludeColumnComments(boolean flag)
+  {
+    this.includeComments.setSelected(flag);
   }
 
   @Override
@@ -107,59 +110,70 @@ public class HtmlOptionsPanel
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents()
   {
-    GridBagConstraints gridBagConstraints;
+    java.awt.GridBagConstraints gridBagConstraints;
 
-    pageTitleLabel = new JLabel();
-    pageTitle = new JTextField();
-    fullPage = new JCheckBox();
-    escapeHtml = new JCheckBox();
+    pageTitleLabel = new javax.swing.JLabel();
+    pageTitle = new javax.swing.JTextField();
+    fullPage = new javax.swing.JCheckBox();
+    escapeHtml = new javax.swing.JCheckBox();
+    includeComments = new javax.swing.JCheckBox();
 
-    setLayout(new GridBagLayout());
+    setLayout(new java.awt.GridBagLayout());
 
     pageTitleLabel.setText(ResourceMgr.getString("LblExportHtmlPageTitle")); // NOI18N
-    pageTitleLabel.setHorizontalTextPosition(SwingConstants.LEADING);
-    gridBagConstraints = new GridBagConstraints();
+    pageTitleLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+    gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(0, 4, 0, 0);
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
     add(pageTitleLabel, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(3, 3, 0, 4);
+    gridBagConstraints.insets = new java.awt.Insets(3, 3, 0, 4);
     add(pageTitle, gridBagConstraints);
 
     fullPage.setText(ResourceMgr.getString("LblExportFullHtml")); // NOI18N
     fullPage.setBorder(null);
-    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new Insets(6, 3, 0, 0);
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new java.awt.Insets(6, 3, 0, 0);
     add(fullPage, gridBagConstraints);
 
     escapeHtml.setText(ResourceMgr.getString("LblExportEscapeHtml")); // NOI18N
     escapeHtml.setBorder(null);
-    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(4, 3, 0, 0);
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new java.awt.Insets(4, 3, 0, 0);
     add(escapeHtml, gridBagConstraints);
+
+    includeComments.setText(ResourceMgr.getString("LblExportIncludeComments")); // NOI18N
+    includeComments.setBorder(null);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(4, 3, 0, 0);
+    add(includeComments, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private JCheckBox escapeHtml;
-  private JCheckBox fullPage;
-  private JTextField pageTitle;
-  private JLabel pageTitleLabel;
+  private javax.swing.JCheckBox escapeHtml;
+  private javax.swing.JCheckBox fullPage;
+  private javax.swing.JCheckBox includeComments;
+  private javax.swing.JTextField pageTitle;
+  private javax.swing.JLabel pageTitleLabel;
   // End of variables declaration//GEN-END:variables
 
 }

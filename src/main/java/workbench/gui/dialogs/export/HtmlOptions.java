@@ -33,4 +33,6 @@ public interface HtmlOptions
   void setCreateFullPage(boolean flag);
   boolean getEscapeHtml();
   void setEscapeHtml(boolean flag);
+  boolean getIncludeColumnComments();
+  void setIncludeColumnComments(boolean flag);
 }

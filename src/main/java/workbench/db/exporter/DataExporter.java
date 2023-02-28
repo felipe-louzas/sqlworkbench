@@ -1747,6 +1747,7 @@ public class DataExporter
     this.setCreateFullHtmlPage(html.getCreateFullPage());
     this.setPageTitle(html.getPageTitle());
     this.setEscapeHtml(html.getEscapeHtml());
+    this.setIncludeColumnComments(html.getIncludeColumnComments());
     this.exportWriter.configureConverter();
   }
 
