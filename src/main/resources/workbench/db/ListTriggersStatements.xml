@@ -322,12 +322,14 @@ from DBC.Triggers
           when 'I' then 'INSERT'
           when 'U' then 'UPDATE'
           when 'D' then 'DELETE'
+          when 'M' then 'MULTIPLE'
         end as trigger_event,
        tabname as trigger_table,
        tabschema as trigger_table_schema,
        case
-         when enabled = 'Y' then 'ENABLED'
-         else 'DISABLED'
+         when valid = 'N' then 'INVALID'
+         when valid = 'X' then 'INOPERATIVE'
+         else 'VALID'
        end as status,
        remarks,
        case
@@ -363,6 +365,7 @@ SELECT owner as trigger_schema,
        triggering_event as trigger_event,
        table_owner as trigger_table_schema,
        table_name as trigger_table,
+       base_object_type as trigger_table_type,
        '' as remarks,
        status,
        case
@@ -429,8 +432,15 @@ WHERE trigger_name not like 'BIN$%'
              end as trigger_event,
              sh.name as trigger_table_schema,
              tab.name as trigger_table,
+             case
+                when tab.type = 'U' then 'TABLE'
+                when tab.type = 'V' then 'VIEW'
+             end as trigger_table_type,
              null as remarks,
-             null as status
+             case
+                when is_disabled = 1 then 'DISABLED'
+                else 'ENABLED'
+             end  as status
       from sys.triggers tr with (nolock)
         join sys.objects tab with (nolock) on tab.object_id = tr.parent_id
         join sys.schemas sh with (nolock) on sh.schema_id = tab.schema_id
@@ -626,13 +636,13 @@ FROM information_schema.triggers
      <string>
 SELECT *
 FROM (
-  SELECT rdb$trigger_name AS TRIGGER_NAME,
+  SELECT trg.rdb$trigger_name AS TRIGGER_NAME,
          case
-           when rdb$trigger_type = 0 then 'UNKNOWN'
-           when mod(rdb$trigger_type, 2) = 0 then 'AFTER'
+           when trg.rdb$trigger_type = 0 then 'UNKNOWN'
+           when mod(trg.rdb$trigger_type, 2) = 0 then 'AFTER'
          else 'BEFORE'
          END AS trigger_type,
-         case bin_and(rdb$trigger_type + 1, 254)
+         case bin_and(trg.rdb$trigger_type + 1, 254)
             when  2 then 'INSERT'
             when  4 THEN 'UPDATE'
             when  6 then 'DELETE'
@@ -646,15 +656,20 @@ FROM (
             when  60 then 'UPDATE OR DELETE OR INSERT'
             when  78 then 'DELETE OR INSERT OR UPDATE'
          end as trigger_event,
-         trim(rdb$relation_name) as trigger_table,
+         trim(trg.rdb$relation_name) as trigger_table,
          null as remarks,
-         case rdb$trigger_inactive
+         case trg.rdb$trigger_inactive
            when 1 then 'DISABLED'
            else 'ENABLED'
-         end as status
-  FROM rdb$triggers
-  WHERE rdb$system_flag = 0
-    AND rdb$relation_name is not null
+         end as status,
+         case
+            when rel.rdb$relation_type = 0 then 'TABLE'
+            when rel.rdb$relation_type = 1 then 'VIEW'
+         end as trigger_table_type
+  FROM rdb$triggers trg
+     JOIN rdb$relations rel on rel.rdb$relation_name = trg.rdb$relation_name
+  WHERE trg.rdb$system_flag = 0
+    AND trg.rdb$relation_name is not null
 
   UNION ALL
 
@@ -662,7 +677,7 @@ FROM (
          case
            when rdb$trigger_type = 0 then 'UNKNOWN'
            when mod(rdb$trigger_type, 2) = 1 then 'AFTER'
-         else 'BEFORE'
+           else 'BEFORE'
          END AS trigger_type,
          'DDL' as trigger_event,
          null as trigger_table,
@@ -670,7 +685,8 @@ FROM (
          case rdb$trigger_inactive
            when 1 then 'DISABLED'
            else 'ENABLED'
-         end as status
+         end as status,
+         null as trigger_table_type
   FROM rdb$triggers
   WHERE rdb$system_flag = 0
    AND rdb$relation_name IS NULL

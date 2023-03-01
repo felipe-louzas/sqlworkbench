@@ -94,6 +94,7 @@ public class DefaultTriggerReader
     String trgType = triggers.getTriggerType(row);
     String trgEvent = triggers.getEvent(row);
     String tableName = triggers.getTriggerTable(row);
+    String tableType = triggers.getTriggerTableType(row);
     String comment = triggers.getRemarks(row);
     String status = triggers.getStatus(row);
     String level = triggers.getLevel(row);
@@ -118,6 +119,7 @@ public class DefaultTriggerReader
       {
         tbl = new TableIdentifier(tableName);
       }
+      tbl.setType(StringUtil.coalesce(tableType, "TABLE"));
       trg.setRelatedTable(tbl);
     }
     return trg;
@@ -194,6 +196,7 @@ public class DefaultTriggerReader
       int tableNameIndex = info.findColumn("TRIGGER_TABLE");
       int tableSchemaIndex = info.findColumn("TRIGGER_TABLE_SCHEMA");
       int tableCatalogIndex = info.findColumn("TRIGGER_TABLE_CATALOG");
+      int tableTypeIndex = info.findColumn("TRIGGER_TABLE_TYPE");
       int remarksIndex = info.findColumn("REMARKS");
       int statusIndex = info.findColumn("STATUS");
       int levelIndex = info.findColumn("TRIGGER_LEVEL");
@@ -217,6 +220,10 @@ public class DefaultTriggerReader
       if (levelIndex < 0)
       {
         result.removeColumn(TriggerReader.TRIGGER_LEVEL_COLUMN);
+      }
+      if (tableTypeIndex < 0)
+      {
+        result.removeColumn(TriggerReader.TRIGGER_TABLE_TYPE_COLUMN);
       }
       while (rs.next())
       {
@@ -270,6 +277,12 @@ public class DefaultTriggerReader
         {
           value = rs.getString(levelIndex + 1);
           result.setLevel(row, StringUtil.trim(value));
+        }
+
+        if (tableTypeIndex > -1)
+        {
+          value = rs.getString(tableTypeIndex + 1);
+          result.setTriggerTableType(row, StringUtil.trim(value));
         }
 
         if (triggerSchemaIndex > - 1)

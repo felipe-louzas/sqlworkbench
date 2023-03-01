@@ -63,7 +63,7 @@ public class TableSourceBuilder
   public static final String NAME_PLACEHOLDER = "%name%";
 
   protected WbConnection dbConnection;
-  private ConstraintNameTester nameTester;
+  private final ConstraintNameTester nameTester;
   protected boolean includePartitions = true;
   protected Boolean createInlineFK;
 
@@ -137,7 +137,7 @@ public class TableSourceBuilder
       cols = def.getColumns();
       toShow = def.getTable();
     }
-    
+
     if (shouldIncludeIndexInTableSource())
     {
       indexDef = getIndexReader().getTableIndexList(toShow, true);

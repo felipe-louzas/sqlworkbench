@@ -43,8 +43,6 @@ import workbench.db.postgres.PgSubscription;
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 
-
-
 /**
  *
  * @author Thomas Kellerer
@@ -52,8 +50,8 @@ import workbench.util.CollectionUtil;
 public class DbObjectNodeRenderer
   extends DefaultTreeCellRenderer
 {
-  private Map<String, String> iconMap = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
-  private Map<String, String> iconMapOpen = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
+  private final Map<String, String> iconMap = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
+  private final Map<String, String> iconMapOpen = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
   private List<String> tableTypes = new ArrayList<>();
   private List<String> viewTypes = new ArrayList<>();
 

@@ -80,7 +80,11 @@ public class Db2iTriggerReader
       "       event_object_schema, \n" +
       "       event_object_table,\n" +
       "       action_timing as trigger_type,\n" +
-      "       event_manipulation as trigger_event  \n" +
+      "       event_manipulation as trigger_event, " +
+      "       case \n" +
+      "         when enabled = 'Y' then 'ENABLED' \n" +
+      "         else 'DISABLED' \n" +
+      "       end as status  \n" +
       "FROM qsys2" + catalogSeparator +"systriggers \n";
 
     final CallerInfo ci = new CallerInfo(){};

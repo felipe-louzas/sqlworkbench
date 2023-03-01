@@ -26,6 +26,7 @@ import java.util.Arrays;
 import workbench.storage.DataStore;
 
 import static workbench.db.TriggerReader.*;
+
 /**
  *
  * @author Thomas Kellerer
@@ -35,7 +36,7 @@ public class TriggerListDataStore
 {
   public TriggerListDataStore()
   {
-    int[] sizes = new int[]{30, 30, 30, 20, 20, 30, 30, 30, 10, 10, 20};
+    int[] sizes = new int[]{30, 30, 30, 20, 20, 30, 30, 30, 10, 10, 10, 20};
     String[] columns = new String[]{
                 TRIGGER_NAME_COLUMN,
                 TRIGGER_CATALOG_COLUMN,
@@ -45,6 +46,7 @@ public class TriggerListDataStore
                 TRIGGER_TABLE_CATALOG_COLUMN,
                 TRIGGER_TABLE_SCHEMA_COLUMN,
                 TRIGGER_TABLE_COLUMN,
+                TRIGGER_TABLE_TYPE_COLUMN,
                 TRIGGER_STATUS_COLUMN,
                 TRIGGER_LEVEL_COLUMN,
                 TRIGGER_COMMENT_COLUMN};
@@ -89,6 +91,15 @@ public class TriggerListDataStore
   public String getTriggerTable(int row)
   {
     return getColumnValue(row, TRIGGER_TABLE_COLUMN);
+  }
+
+  public void setTriggerTableType(int row, String type)
+  {
+    setColumnValue(row, TRIGGER_TABLE_TYPE_COLUMN, type);
+  }
+  public String getTriggerTableType(int row)
+  {
+    return getColumnValue(row, TRIGGER_TABLE_TYPE_COLUMN);
   }
 
   public void setTriggerTableSchema(int row, String name)

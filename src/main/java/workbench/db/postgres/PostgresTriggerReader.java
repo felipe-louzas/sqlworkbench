@@ -308,7 +308,14 @@ public class PostgresTriggerReader
       "       case trg.tgtype::integer & 1 \n" +
       "         when 1 then 'ROW'::text \n" +
       "         else 'STATEMENT'::text \n" +
-      "       end as trigger_level \n" +
+      "       end as trigger_level, \n" +
+      "       case tbl.relkind \n" +
+      "         when 'r' then 'TABLE' \n" +
+      "         when 'p' then 'TABLE' \n" +
+      "         when 'f' then 'FOREIGN TABLE' \n" +
+      "         when 'v' then 'VIEW' \n" +
+      "         when 'm' then 'MATERIALIZED VIEW' \n" +
+      "       end as trigger_table_type \n" +
       "FROM pg_catalog.pg_trigger trg \n" +
       "  JOIN pg_catalog.pg_class tbl on trg.tgrelid = tbl.oid \n" +
       "  JOIN pg_catalog.pg_namespace ns ON ns.oid = tbl.relnamespace \n";

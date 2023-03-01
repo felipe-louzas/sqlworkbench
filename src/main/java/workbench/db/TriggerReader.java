@@ -94,6 +94,14 @@ public interface TriggerReader {
 
   /**
    * The column name in the DataStore returned by getTableTriggers which identifies
+   * the type of the object for which the trigger is defined.
+   *
+   * This is needed for DBMS that support triggers on other object types like views
+   */
+  String TRIGGER_TABLE_TYPE_COLUMN = "TABLE_TYPE";
+
+  /**
+   * The column name in the DataStore returned by getTableTriggers which identifies
    * the type (INSERT, UPDATE etc) of the trigger.
    */
   String TRIGGER_TYPE_COLUMN = "TYPE";
