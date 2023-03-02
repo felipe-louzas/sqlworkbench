@@ -331,7 +331,7 @@ public class ReaderFactory
 
   public static ViewReader createViewReader(WbConnection con)
   {
-    DBID dbid = DBID.fromID(con.getDbId());
+    DBID dbid = DBID.fromConnection(con);
     boolean isCustomized = con.getDbSettings().isViewSourceRetrievalCustomized();
 
     switch (dbid)
@@ -370,8 +370,7 @@ public class ReaderFactory
 
   public static SynonymReader getSynonymReader(WbConnection conn)
   {
-    if (conn == null) return null;
-    DBID dbid = DBID.fromID(conn.getDbId());
+    DBID dbid = DBID.fromConnection(conn);
     switch (dbid)
     {
       case Oracle:
@@ -406,10 +405,10 @@ public class ReaderFactory
 
   public static ErrorInformationReader getErrorInformationReader(WbConnection conn)
   {
-    if (conn == null) return null;
-    if (conn.getMetadata().isOracle())
+    switch (DBID.fromConnection(conn))
     {
-      return new OracleErrorInformationReader(conn);
+      case Oracle:
+        return new OracleErrorInformationReader(conn);
     }
     return null;
   }

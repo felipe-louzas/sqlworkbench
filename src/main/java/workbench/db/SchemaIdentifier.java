@@ -38,6 +38,7 @@ public class SchemaIdentifier
     schemaName = name;
   }
 
+  @Override
   public void setCatalog(String catalog)
   {
     this.catalog = catalog;
@@ -119,7 +120,7 @@ public class SchemaIdentifier
   public String getDropStatement(WbConnection con, boolean cascade)
   {
     if (con == null) return null;
-    if (con.getMetadata().isSqlServer() && this.catalog != null)
+    if (DBID.SQL_Server.isDB(con) && this.catalog != null)
     {
       return
         "use " + con.getMetadata().quoteObjectname(this.catalog)  + ";\n" +

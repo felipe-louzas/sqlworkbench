@@ -46,7 +46,6 @@ import workbench.resource.Settings;
 import workbench.db.BlobAccessType;
 import workbench.db.ClobAccessType;
 import workbench.db.DBID;
-import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 import workbench.db.mssql.SqlServerDataConverter;
@@ -111,7 +110,7 @@ public class RowDataReader
   {
     ignoreReadErrors = Settings.getInstance().getBoolProperty("workbench.db.ignore.readerror", false);
     converter = getConverterInstance(conn);
-    isOracle = conn == null ? false : conn.getMetadata().isOracle();
+    isOracle = DBID.Oracle.isDB(conn);
     resultInfo = info;
     DbSettings dbs = conn == null ? null : conn.getDbSettings();
     if (dbs != null)
@@ -702,24 +701,22 @@ public class RowDataReader
   {
     if (conn == null) return null;
 
-    DbMetadata meta = conn.getMetadata();
-    if (meta == null) return null;
-
-    if (meta.isPostgres())
+    switch (DBID.fromConnection(conn))
     {
-      return PostgresDataConverter.getInstance();
-    }
-    if (meta.isOracle() && Settings.getInstance().getConvertOracleTypes())
-    {
-      return OracleDataConverter.getInstance();
-    }
-    if (meta.isSqlServer() && Settings.getInstance().getFixSqlServerTimestampDisplay())
-    {
-      return SqlServerDataConverter.getInstance();
-    }
-    if (DBID.UCanAccess.isDB(conn))
-    {
-      return UCanAccessDataConverter.getInstance();
+      case Postgres:
+        return PostgresDataConverter.getInstance();
+      case Oracle:
+        if (Settings.getInstance().getConvertOracleTypes())
+        {
+          return OracleDataConverter.getInstance();
+        }
+      case SQL_Server:
+        if (Settings.getInstance().getFixSqlServerTimestampDisplay())
+        {
+          return SqlServerDataConverter.getInstance();
+        }
+      case UCanAccess:
+        return UCanAccessDataConverter.getInstance();
     }
     return null;
   }

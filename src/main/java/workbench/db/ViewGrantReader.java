@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,35 +54,33 @@ public abstract class ViewGrantReader
   public static ViewGrantReader createViewGrantReader(WbConnection conn)
   {
     DbMetadata meta = conn.getMetadata();
-    String dbid = meta.getDbId();
+    DBID dbid = DBID.fromConnection(conn);
 
-    if (meta.isOracle())
+    switch (dbid)
     {
-      return new OracleViewGrantReader();
-    }
-    else if (meta.isPostgres() || "h2".equals(dbid) || meta.isMySql() )
-    {
-      return new PostgresViewGrantReader();
-    }
-    else if (meta.isHsql())
-    {
-      return new HsqlViewGrantReader(conn);
-    }
-    else if (meta.isSqlServer() && JdbcUtils.hasMinimumServerVersion(conn, "8.0"))
-    {
-      return new PostgresViewGrantReader();
-    }
-    else if (meta.isFirebird())
-    {
-      return new FirebirdViewGrantReader();
-    }
-    else if (dbid.startsWith("db2"))
-    {
-      return new Db2ViewGrantReader(conn);
-    }
-    else if (meta.isApacheDerby())
-    {
-      return new DerbyViewGrantReader();
+      case Oracle:
+        return new OracleViewGrantReader();
+      case Postgres:
+      case H2:
+      case MySQL:
+      case MariaDB:
+        return new PostgresViewGrantReader();
+      case HSQLDB:
+        return new HsqlViewGrantReader(conn);
+
+      case SQL_Server:
+        if (JdbcUtils.hasMinimumServerVersion(conn, "8.0"))
+        {
+          return new PostgresViewGrantReader();
+        }
+      case Firebird:
+        return new FirebirdViewGrantReader();
+      case DB2_LUW:
+      case DB2_ISERIES:
+      case DB2_ZOS:
+        return new Db2ViewGrantReader(conn);
+      case Derby:
+        return new DerbyViewGrantReader();
     }
     return null;
   }
@@ -187,11 +184,8 @@ public abstract class ViewGrantReader
       }
       privs.add(priv.trim());
     }
-    Iterator<Entry<String, List<String>>> itr = grants.entrySet().iterator();
-
-    while (itr.hasNext())
+    for (Entry<String, List<String>> entry : grants.entrySet())
     {
-      Entry<String, List<String>> entry = itr.next();
       String grantee = entry.getKey();
 
       List<String> privs = entry.getValue();

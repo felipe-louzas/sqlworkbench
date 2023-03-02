@@ -37,6 +37,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.WbConnection;
 import workbench.db.exporter.BlobMode;
 import workbench.db.exporter.OdfHelper;
@@ -602,7 +603,7 @@ public class WbImport
         }
       }
 
-      if (cmdLine.isArgPresent(ARG_PG_COPY) && currentConnection.getMetadata().isPostgres())
+      if (cmdLine.isArgPresent(ARG_PG_COPY) && DBID.Postgres.isDB(currentConnection))
       {
         if ("insert".equalsIgnoreCase(importMode) == false)
         {

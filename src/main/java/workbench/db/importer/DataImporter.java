@@ -55,6 +55,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ArrayValueHandler;
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
@@ -128,7 +129,7 @@ public class DataImporter
   private boolean hasErrors;
   private boolean hasWarnings;
   private int reportInterval = 10;
-  private MessageBuffer messages;
+  private final MessageBuffer messages;
 
   private int totalTables = -1;
   private int currentTable = -1;
@@ -217,7 +218,7 @@ public class DataImporter
     if (dbConn == null) return;
 
     this.checkRealClobLength = this.dbConn.getDbSettings().needsExactClobLength();
-    this.isOracle = this.dbConn.getMetadata().isOracle();
+    this.isOracle = DBID.Oracle.isDB(dbConn);
     this.useSetNull = this.dbConn.getDbSettings().useSetNull();
     this.useSetStringForClobs = this.dbConn.getDbSettings().sendClobsAsStrings();
     this.useSetClob = this.dbConn.getDbSettings().sendClobAsClob();
@@ -227,7 +228,7 @@ public class DataImporter
     this.useSetObjectWithType = this.dbConn.getDbSettings().getUseTypeWithSetObject();
     this.typeMapping = this.dbConn.getDbSettings().getTypeMappingForPreparedStatement();
     this.arrayHandler = ArrayValueHandler.Factory.getInstance(aConn);
-    if (dbConn.getMetadata().isOracle())
+    if (this.isOracle)
     {
       blobDecoder = new BlobDecoder();
     }

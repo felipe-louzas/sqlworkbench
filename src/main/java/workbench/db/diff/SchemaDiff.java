@@ -37,6 +37,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ConnectionInfoBuilder;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObjectFinder;
 import workbench.db.DbSettings;
@@ -856,7 +857,7 @@ public class SchemaDiff
         {
           // keep track of processed packages as they are returned once for each procedure
           refPackages.add(pkg);
-          if (targetMeta.isOracle())
+          if (DBID.Oracle.isDB(targetMeta))
           {
             OracleProcedureReader ora = (OracleProcedureReader)targetMeta.getProcedureReader();
             boolean exists = ora.packageExists(targetSchema, refProc.getPackageName());
@@ -912,7 +913,7 @@ public class SchemaDiff
       }
     }
 
-    if (targetMeta.isOracle())
+    if (DBID.Oracle.isDB(targetMeta))
     {
       Set<ReportPackage> deleted = new HashSet<>();
       for (ProcedureDefinition tProc : targetProcs)

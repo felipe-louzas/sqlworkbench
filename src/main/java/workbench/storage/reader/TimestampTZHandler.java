@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import workbench.db.DBID;
-import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
 import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
@@ -125,22 +124,14 @@ public interface TimestampTZHandler
 
       if (!supportsJava8Time(conn)) return DUMMY_HANDLER;
 
-      DbMetadata meta = conn.getMetadata();
-      if (meta == null) return DUMMY_HANDLER;
-
-      if (meta.isPostgres())
+      switch (DBID.fromConnection(conn))
       {
-        return OFFSET_HANDLER;
-      }
-
-      if (meta.isOracle())
-      {
-        return new OracleTZHandler(conn, false);
-      }
-
-      if (meta.isSqlServer())
-      {
-        return new SqlServerTZHandler(conn);
+        case Postgres:
+          return OFFSET_HANDLER;
+        case Oracle:
+          return new OracleTZHandler(conn, false);
+        case SQL_Server:
+          return new SqlServerTZHandler(conn);
       }
       return DUMMY_HANDLER;
     }

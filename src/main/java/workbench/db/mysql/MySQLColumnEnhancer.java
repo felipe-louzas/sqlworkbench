@@ -30,10 +30,10 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.StringUtil;
 
@@ -66,7 +66,7 @@ public class MySQLColumnEnhancer
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
-    boolean supportGeneratedColumns = JdbcUtils.hasMinimumServerVersion(connection, "5.7") && !connection.getMetadata().isMariaDB();
+    boolean supportGeneratedColumns = JdbcUtils.hasMinimumServerVersion(connection, "5.7") && !DBID.MariaDB.isDB(connection);
 
     String sql =
       "select column_name, " +

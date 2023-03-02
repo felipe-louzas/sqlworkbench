@@ -22,6 +22,7 @@ package workbench.gui.dbobjects;
 
 import workbench.log.CallerInfo;
 
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
@@ -80,7 +81,7 @@ public class ExplorerUtils
     // as there won't be a way to view the output anyway
     connection.getMetadata().disableOutput();
 
-    if (connection.getMetadata().isSqlServer())
+    if (DBID.SQL_Server.isDB(connection))
     {
       // we rather want an error message than the DbExplorer or DbTree waiting indefinitely
       int timeout = connection.getDbSettings().getLockTimoutForSqlServer();

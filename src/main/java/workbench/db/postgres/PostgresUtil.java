@@ -31,6 +31,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
 import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
@@ -60,7 +61,7 @@ public class PostgresUtil
   public static boolean supportsPartitioning(WbConnection conn)
   {
     if (conn == null) return false;
-    return conn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(conn, "10");
+    return DBID.Postgres.isDB(conn) && JdbcUtils.hasMinimumServerVersion(conn, "10");
   }
 
   /**

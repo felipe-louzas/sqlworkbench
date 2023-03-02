@@ -29,6 +29,8 @@ import workbench.console.ConsoleSettings;
 import workbench.console.RowDisplay;
 import workbench.resource.ResourceMgr;
 
+import workbench.db.DBID;
+
 import workbench.storage.DataStore;
 
 import workbench.sql.SqlCommand;
@@ -68,7 +70,7 @@ public class WbListSchemas
     List<String> schemas = currentConnection.getMetadata().getSchemas();
 
     DataStore ds = null;
-    if (currentConnection.getMetadata().isPostgres())
+    if (DBID.fromConnection(currentConnection).isAny(DBID.Postgres, DBID.Greenplum, DBID.Redshift))
     {
       ds = listPgSchemas();
     }

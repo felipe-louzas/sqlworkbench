@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.DBID;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.IndexReader;
@@ -65,14 +66,14 @@ public class IndexReporter
   public static final String TAG_INDEX_COMMENT = "comment";
   public static final String TAG_INDEX_FILTER = "filter-expression";
 
-  private List<IndexDefinition> indexList;
-  private TagWriter tagWriter = new TagWriter();
+  private final List<IndexDefinition> indexList = new ArrayList<>();
+  private final TagWriter tagWriter = new TagWriter();
   private String mainTagToUse;
-  private Map<IndexDefinition, List<ObjectOption>> indexOptions = new TreeMap<>(IndexDefinition.getNameSorter());
+  private final Map<IndexDefinition, List<ObjectOption>> indexOptions = new TreeMap<>(IndexDefinition.getNameSorter());
 
   public IndexReporter(TableIdentifier tbl, WbConnection conn, boolean includePartitions)
   {
-    indexList  = conn.getMetadata().getIndexReader().getTableIndexList(tbl, true);
+    indexList.addAll(conn.getMetadata().getIndexReader().getTableIndexList(tbl, true));
     Collections.sort(indexList, IndexDefinition.getNameSorter());
     removeEmptyIndexes();
     if (includePartitions)
@@ -84,7 +85,6 @@ public class IndexReporter
 
   public IndexReporter(IndexDefinition index)
   {
-    indexList = new ArrayList<>(1);
     indexList.add(index);
   }
 
@@ -196,7 +196,7 @@ public class IndexReporter
 
   private void retrieveOracleOptions(WbConnection conn)
   {
-    if (!conn.getMetadata().isOracle()) return;
+    if (!DBID.Oracle.isDB(conn)) return;
 
     try
     {

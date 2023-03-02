@@ -121,7 +121,6 @@ public class IniProfileStorage
   {
     LogMgr.logDebug(new CallerInfo(){}, "Loading connection profiles from " + inifile.getFullPath());
     WbProperties props = new WbProperties(1);
-    props.setCheckContinuationLines(false);
     BufferedReader reader = null;
     List<ConnectionProfile> profiles = new ArrayList<>(25);
 

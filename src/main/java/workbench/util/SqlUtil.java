@@ -47,6 +47,7 @@ import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DbSettings;
@@ -1188,7 +1189,7 @@ public class SqlUtil
 
   public static String makeCleanSql(String sql, boolean keepNewlines, boolean keepComments, boolean removeSemicolon, WbConnection connection)
   {
-    boolean isMySQL = (connection != null ? connection.getMetadata().isMySql() : false);
+    boolean isMySQL = DBID.fromConnection(connection).isAny(DBID.MySQL, DBID.MariaDB);
     char quoteChar = (connection != null ? connection.getMetadata().getIdentifierQuoteChar() : '\"');
     return makeCleanSql(sql, keepNewlines, keepComments, isMySQL, removeSemicolon, quoteChar);
   }
@@ -2293,7 +2294,7 @@ public class SqlUtil
       // now add the quote character used by the DBMS
       wordChars += conn.getMetadata().getIdentifierQuoteCharacter();
 
-      if (conn.getMetadata().isSqlServer())
+      if (DBID.SQL_Server.isDB(conn))
       {
         // add the stupid Microsoft quoting stuff
         wordChars += "[]";

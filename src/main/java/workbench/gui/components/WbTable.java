@@ -97,6 +97,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.postgres.HstoreSupport;
@@ -2194,7 +2195,7 @@ public class WbTable
     WbConnection conn = getOriginalConnection();
     if (conn == null) return false;
     if (conn.getMetadata() == null) return false;
-    if (!conn.getMetadata().isPostgres()) return false;
+    if (!DBID.Postgres.isDB(conn)) return false;
 
     ColumnIdentifier column = getColumnDefinition(col);
     if (column == null) return false;

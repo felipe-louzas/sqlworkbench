@@ -75,11 +75,6 @@ public class JdbcProcedureReader
   }
 
   @Override
-  public void clearCache()
-  {
-  }
-
-  @Override
   public StringBuilder getProcedureHeader(ProcedureDefinition def)
   {
     return StringUtil.emptyBuilder();
@@ -761,7 +756,7 @@ public class JdbcProcedureReader
       ProcedureDefinition def = procs.getUserObject(i, ProcedureDefinition.class);
       if (def == null)
       {
-        if (this.connection.getMetadata().isOracle() && cat != null)
+        if (DBID.Oracle.isDB(connection) && cat != null)
         {
           def = ProcedureDefinition.createOracleDefinition(schema, procName, cat, type, remarks);
         }

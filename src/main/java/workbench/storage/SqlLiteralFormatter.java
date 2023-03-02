@@ -123,7 +123,7 @@ public class SqlLiteralFormatter
       dbid = con.getMetadata().getDbId();
       isDbId = true;
       dbSettings = con.getDbSettings();
-      isOracle = con.getMetadata().isOracle();
+      isOracle = DBID.Oracle.isDB(con);
       quotedTypes.addAll(dbSettings.getTypesNeedingQuotes());
       structLiteralNeedsQuotes = dbSettings.structLiteralNeedsQuotes();
     }
@@ -153,7 +153,7 @@ public class SqlLiteralFormatter
     {
       String dbid = con.getMetadata().getDbId();
       isDbId = true;
-      isOracle = con.getMetadata().isOracle();
+      isOracle = DBID.Oracle.isDB(con);
       dbSettings = con.getDbSettings();
       quotedTypes.addAll(dbSettings.getTypesNeedingQuotes());
       structLiteralNeedsQuotes = dbSettings.structLiteralNeedsQuotes();

@@ -201,20 +201,19 @@ public class JdbcUtils
   public static boolean driverMightBufferResults(WbConnection con)
   {
     if (con == null) return false;
-    if (con.getMetadata().isPostgres())
+    switch (DBID.fromConnection(con))
     {
-      return checkPostgresBuffering(con);
-    }
-    else if (con.getMetadata().isSqlServer())
-    {
-      return checkSqlServerBuffering(con);
+      case Postgres:
+        return checkPostgresBuffering(con);
+      case SQL_Server:
+        return checkSqlServerBuffering(con);
     }
     return false;
   }
 
   public static boolean checkPostgresBuffering(WbConnection con)
   {
-    if (!con.getMetadata().isPostgres()) return false;
+    if (!DBID.Postgres.isDB(con)) return false;
 
     // Postgres driver always buffers in Autocommit mode
     if (con.getAutoCommit()) return true;

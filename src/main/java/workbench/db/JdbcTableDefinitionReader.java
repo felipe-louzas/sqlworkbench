@@ -211,7 +211,7 @@ public class JdbcTableDefinitionReader
 
         String display = typeResolver.getSqlTypeDisplay(typeName, sqlType, size, digits);
 
-        if (dbConnection.getMetadata().isSqlServer() && dbSettings.fixSqlServerAutoincrement())
+        if (DBID.SQL_Server.isDB(dbConnection) && dbSettings.fixSqlServerAutoincrement())
         {
           // The Microsoft JDBC Driver does not return the autoincrement attribute correctly for identity columns.
           // (And they refuse to fix this: https://social.msdn.microsoft.com/Forums/en/sqldataaccess/thread/20df12f3-d1bf-4526-9daa-239a83a8e435)
@@ -383,57 +383,41 @@ public class JdbcTableDefinitionReader
     DbMetadata meta = con.getMetadata();
     if (meta == null) return null;
 
-    if (meta.isPostgres())
+    switch (DBID.fromConnection(con))
     {
-      return new PostgresColumnEnhancer();
-    }
-    if (meta.isH2())
-    {
-      return new H2ColumnEnhancer();
-    }
-    if (meta.isApacheDerby())
-    {
-      return new DerbyColumnEnhancer();
-    }
-    if (meta.isMySql() || meta.isMariaDB())
-    {
-      return new MySQLColumnEnhancer();
-    }
-    if (DBID.DB2_LUW.isDB(con))
-    {
-      return new Db2ColumnEnhancer();
-    }
-    if (DBID.DB2_ISERIES.isDB(con))
-    {
-      return new Db2iColumnEnhancer();
-    }
-    if (DBID.Informix.isDB(con))
-    {
-      return new InformixColumnEnhancer();
-    }
-    if (meta.isSqlServer() && SqlServerUtil.isSqlServer2000(con))
-    {
-      return new SqlServerColumnEnhancer();
-    }
-    if (meta.isFirebird())
-    {
-      return new FirebirdColumnEnhancer();
-    }
-    if (con.getDbId().equals("nuodb"))
-    {
-      return new NuoDbColumnEnhancer();
-    }
-    if (meta.isHsql() && JdbcUtils.hasMinimumServerVersion(con, "2.0"))
-    {
-      return new HsqlColumnEnhancer();
-    }
-    if (DBID.OPENEDGE.isDB(con))
-    {
-      return new OpenEdgeColumnEnhancer();
-    }
-    if (DBID.HANA.isDB(con))
-    {
-      return new HanaColumnEnhancer();
+      case Postgres:
+        return new PostgresColumnEnhancer();
+      case H2:
+        return new H2ColumnEnhancer();
+      case Derby:
+        return new DerbyColumnEnhancer();
+      case MySQL:
+      case MariaDB:
+        return new MySQLColumnEnhancer();
+      case DB2_LUW:
+        return new Db2ColumnEnhancer();
+      case DB2_ISERIES:
+        return new Db2iColumnEnhancer();
+      case Informix:
+        return new InformixColumnEnhancer();
+      case SQL_Server:
+        if (SqlServerUtil.isSqlServer2000(con))
+        {
+          return new SqlServerColumnEnhancer();
+        }
+      case Firebird:
+        return new FirebirdColumnEnhancer();
+      case HSQLDB:
+        if (JdbcUtils.hasMinimumServerVersion(con, "2.0"))
+        {
+          return new HsqlColumnEnhancer();
+        }
+      case OPENEDGE:
+        return new OpenEdgeColumnEnhancer();
+      case HANA:
+        return new HanaColumnEnhancer();
+      case NuoDB:
+        return new NuoDbColumnEnhancer();
     }
     return null;
   }

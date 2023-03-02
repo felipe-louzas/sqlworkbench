@@ -32,13 +32,14 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.DbObjectFinder;
+import workbench.db.DbSearchPath;
 import workbench.db.DependencyNode;
 import workbench.db.IndexDefinition;
+import workbench.db.ObjectListDataStore;
 import workbench.db.PkDefinition;
 import workbench.db.ProcedureDefinition;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
-import workbench.db.ObjectListDataStore;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -186,7 +187,8 @@ public class DbObjectCache
 
   public boolean supportsSearchPath()
   {
-    return (dbConnection != null && dbConnection.getMetadata().isPostgres());
+    DbSearchPath handler = DbSearchPath.Factory.getSearchPathHandler(dbConnection);
+    return handler.isRealSearchPath();
   }
 
   public List<Namespace> getSearchPath(Namespace defaultNsp)

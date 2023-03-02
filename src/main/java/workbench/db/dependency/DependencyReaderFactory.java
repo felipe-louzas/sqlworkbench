@@ -40,37 +40,28 @@ public class DependencyReaderFactory
   public static DependencyReader getReader(WbConnection connection)
   {
     if (connection == null) return null;
-
-    if (connection.getMetadata().isOracle())
+    
+    switch (DBID.fromConnection(connection))
     {
-      return new OracleDependencyReader();
+      case Oracle:
+        return new OracleDependencyReader();
+      case Postgres:
+        if (JdbcUtils.hasMinimumServerVersion(connection, "8.4"))
+        {
+          return new PostgresDependencyReader(connection);
+        }
+      case Firebird:
+        return new FirebirdDependencyReader();
+      case SQL_Server:
+        if (SqlServerUtil.isSqlServer2008(connection))
+        {
+          return new SqlServerDependencyReader();
+        }
+      case HSQLDB:
+        return new HsqlDependencyReader();
+      case HANA:
+        return new HanaDependencyReader();
     }
-
-    if (connection.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(connection, "8.4"))
-    {
-      return new PostgresDependencyReader(connection);
-    }
-
-    if (connection.getMetadata().isSqlServer() && SqlServerUtil.isSqlServer2008(connection))
-    {
-      return new SqlServerDependencyReader();
-    }
-
-    if (connection.getMetadata().isFirebird())
-    {
-      return new FirebirdDependencyReader();
-    }
-
-    if (connection.getMetadata().isHsql())
-    {
-      return new HsqlDependencyReader();
-    }
-
-    if (connection.getDbId().equals(DBID.HANA.getId()))
-    {
-      return new HanaDependencyReader();
-    }
-
     return null;
   }
 }

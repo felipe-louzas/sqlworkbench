@@ -99,7 +99,7 @@ public class WbConnection
   private StringBuilder scriptError;
   private Connection sqlConnection;
   private DbMetadata metaData;
-  private ConnectionProfile profile;
+  private final ConnectionProfile profile;
   private PreparedStatementPool preparedStatementPool;
   private final List<PropertyChangeListener> listeners = Collections.synchronizedList(new ArrayList<>(1));
 
@@ -643,7 +643,7 @@ public class WbConnection
     this.sqlConnection = aConn;
     this.metaData = new DbMetadata(this);
 
-    if (this.metaData.isOracle())
+    if (DBID.Oracle.isDB(this))
     {
       if (!JdbcUtils.hasMiniumDriverVersion(this.getSqlConnection(), "10.0"))
       {
@@ -1385,7 +1385,7 @@ public class WbConnection
   {
     if (metaData != null)
     {
-      return metaData.isSqlServer();
+      return DBID.SQL_Server.isDB(this);
     }
     String url = this.getUrl();
     if (StringUtil.isEmptyString(url)) return false;
@@ -1480,7 +1480,7 @@ public class WbConnection
 
   private boolean appendCatalog(StringBuilder buff, boolean hasUser, boolean isBusy)
   {
-    if (metaData.isOracle())
+    if (DBID.Oracle.isDB(this))
     {
       return appendOracleContainer(buff, hasUser, isBusy);
     }
@@ -1539,7 +1539,7 @@ public class WbConnection
     {
       try
       {
-        if (metaData != null && metaData.isSqlServer() && getDbSettings().getBoolProperty("useversionfunction", true))
+        if (DBID.SQL_Server.isDB(this) && getDbSettings().getBoolProperty("useversionfunction", true))
         {
           dbProductVersion = SqlServerUtil.getVersion(this);
         }
@@ -1817,7 +1817,7 @@ public class WbConnection
 
   public void containerChanged(String oldContainer, String newContainer)
   {
-    if (metaData.isOracle())
+    if (DBID.Oracle.isDB(this))
     {
       fireConnectionStateChanged(PROP_CATALOG, oldContainer, newContainer);
     }
@@ -1908,8 +1908,7 @@ public class WbConnection
    */
   public void oracleCancel()
   {
-    if (this.metaData == null) return;
-    if (!metaData.isOracle()) return;
+    if (!DBID.Oracle.isDB(this)) return;
 
     try
     {

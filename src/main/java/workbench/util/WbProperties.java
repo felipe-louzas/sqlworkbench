@@ -61,8 +61,6 @@ public class WbProperties
 
   private Object changeNotificationSource = null;
   private boolean changed = false;
-  private boolean checkContinuationLines = true;
-
   private Comparator<String> sortComparator = null;
 
   protected WbProperties()
@@ -85,11 +83,6 @@ public class WbProperties
     super();
     this.changeNotificationSource = (notificationSource == null ? this : notificationSource);
     this.distinctSections = num;
-  }
-
-  public void setCheckContinuationLines(boolean flag)
-  {
-    this.checkContinuationLines = flag;
   }
 
   public boolean isModified()
@@ -228,7 +221,7 @@ public class WbProperties
     String value = this.getProperty(property, null);
     if (value == null) return defaultValue;
     //return StringUtil.stringToBool(value);
-    return Boolean.valueOf(value);
+    return Boolean.parseBoolean(value);
   }
 
   @Override
@@ -424,7 +417,7 @@ public class WbProperties
    */
   public void addPropertyDefinition(String line, String comment)
   {
-    if (line == null) return;
+    if (StringUtil.isBlank(line)) return;
     if (line.charAt(0) == '#') return;
     int pos = line.indexOf('=');
     if (pos == -1) return;

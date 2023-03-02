@@ -58,7 +58,6 @@ public interface ErrorPositionReader
   String enhanceErrorMessage(String sql, String errorMessage, ErrorDescriptor errorPosition);
 
   // <editor-fold defaultstate="collapsed" desc="Factory">
-
   public class Factory
   {
     private static final ErrorPositionReader dummyReader = new ErrorPositionReader()
@@ -91,7 +90,7 @@ public interface ErrorPositionReader
       if (dbs == null) return dummyReader;
       if (meta == null) return dummyReader;
 
-      if (meta.isOracle())
+      if (DBID.Oracle.isDB(conn))
       {
         return new OracleErrorPositionReader();
       }

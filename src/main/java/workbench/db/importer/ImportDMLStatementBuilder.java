@@ -45,6 +45,8 @@ import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
+import static workbench.db.DBID.*;
+
 /**
  * A class to build the INSERT, "Upsert" or Insert/Ignore statements for a DataImporter.
  *
@@ -96,18 +98,24 @@ public class ImportDMLStatementBuilder
    */
   boolean hasNativeInsertIgnore()
   {
-    if (dbConn.getMetadata().isOracle() && JdbcUtils.hasMinimumServerVersion(dbConn, "11.2") ) return true;
-    if (dbConn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(dbConn, "9.5")) return true;
-    if (DBID.SQLite.isDB(dbConn)) return true;
-    if (DBID.SQL_Anywhere.isDB(dbConn) && JdbcUtils.hasMinimumServerVersion(dbConn, "10.0")) return true;
-
+    switch (DBID.fromConnection(dbConn))
+    {
+      case Oracle:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "11.2");
+      case Postgres:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "9.5");
+      case SQLite:
+        return true;
+      case SQL_Anywhere:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "10.0");
+    }
     return false;
   }
 
   public static boolean supportsOverrideIdentity(WbConnection dbConn)
   {
     if (dbConn == null) return false;
-    return (dbConn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(dbConn, "9.5"));
+    return (DBID.Postgres.isDB(dbConn) && JdbcUtils.hasMinimumServerVersion(dbConn, "9.5"));
   }
 
   /**
@@ -124,16 +132,27 @@ public class ImportDMLStatementBuilder
   {
     if (dbConn == null) return false;
 
-    if (dbConn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(dbConn, "9.5")) return true;
-    if (dbConn.getMetadata().isOracle() && JdbcUtils.hasMinimumServerVersion(dbConn, "11.2") ) return true;
-    if (dbConn.getMetadata().isDB2LuW()) return true;
-    if (dbConn.getMetadata().isSqlServer() && SqlServerUtil.isSqlServer2008(dbConn)) return true;
-    if (DBID.DB2_ZOS.isDB(dbConn) && JdbcUtils.hasMinimumServerVersion(dbConn, "10.0")) return true;
-    if (DBID.Cubrid.isDB(dbConn)) return true;
-    if (dbConn.getMetadata().isHsql() && JdbcUtils.hasMinimumServerVersion(dbConn, "2.0")) return true;
-    if (dbConn.getMetadata().isMySql()) return true;
-    if (DBID.SQLite.isDB(dbConn)) return true;
-    if (DBID.SQL_Anywhere.isDB(dbConn) && JdbcUtils.hasMinimumServerVersion(dbConn, "10.0")) return true;
+    switch (DBID.fromConnection(dbConn))
+    {
+      case Postgres:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "9.5");
+      case Oracle:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "11.2");
+      case SQL_Server:
+        return SqlServerUtil.isSqlServer2008(dbConn);
+      case DB2_LUW:
+      case Cubrid:
+      case MySQL:
+      case MariaDB:
+      case SQLite:
+        return true;
+      case HSQLDB:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "2.0");
+      case DB2_ZOS:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "10.0");
+      case SQL_Anywhere:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "10.0");
+    }
 
     return false;
   }
@@ -147,24 +166,34 @@ public class ImportDMLStatementBuilder
    * @param dbConn the DBMS to check
    * @return true if the DBMS supports some kine of "upsert" statement.
    */
-  public static boolean supportsUpsert(WbConnection connection)
+  public static boolean supportsUpsert(WbConnection dbConn)
   {
-    if (connection == null) return false;
+    if (dbConn == null) return false;
 
-    if (connection.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(connection, "9.5")) return true;
-    if (connection.getMetadata().isFirebird() && JdbcUtils.hasMinimumServerVersion(connection, "2.1")) return true;
-    if (connection.getMetadata().isOracle()) return true;
-    if (connection.getMetadata().isDB2LuW()) return true;
-    if (connection.getMetadata().isSqlServer() && SqlServerUtil.isSqlServer2008(connection)) return true;
-    if (DBID.DB2_ZOS.isDB(connection) && JdbcUtils.hasMinimumServerVersion(connection, "10.0")) return true;
-    if (DBID.HANA.isDB(connection)) return true;
-    if (DBID.Cubrid.isDB(connection)) return true;
-    if (connection.getMetadata().isHsql() && JdbcUtils.hasMinimumServerVersion(connection, "2.0")) return true;
-    if (connection.getMetadata().isH2()) return true;
-    if (connection.getMetadata().isMySql()) return true;
-    if (DBID.SQLite.isDB(connection)) return true;
-    if (DBID.SQL_Anywhere.isDB(connection) && JdbcUtils.hasMinimumServerVersion(connection, "10.0")) return true;
-
+    switch (DBID.fromConnection(dbConn))
+    {
+      case Oracle:
+      case DB2_LUW:
+      case Cubrid:
+      case HANA:
+      case SQLite:
+      case H2:
+      case MySQL:
+      case MariaDB:
+        return true;
+      case Postgres:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "9.5");
+      case Firebird:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "2.1");
+      case DB2_ZOS:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "10.0");
+      case SQL_Server:
+        return SqlServerUtil.isSqlServer2008(dbConn);
+      case HSQLDB:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "2.0");
+      case SQL_Anywhere:
+        return JdbcUtils.hasMinimumServerVersion(dbConn, "10.0");
+    }
     return false;
   }
 
@@ -355,102 +384,70 @@ public class ImportDMLStatementBuilder
 
   String createInsertIgnore(ConstantColumnValues columnConstants, String insertSqlStart)
   {
-    if (dbConn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(dbConn, "9.5"))
+    switch (DBID.fromConnection(dbConn))
     {
-      return createPostgresUpsert(columnConstants, insertSqlStart, true);
-    }
-    if (dbConn.getMetadata().isMySql())
-    {
-      return createMySQLUpsert(columnConstants, insertSqlStart, true);
-    }
-    if (DBID.Cubrid.isDB(dbConn))
-    {
-      return createMySQLUpsert(columnConstants, insertSqlStart, true);
-    }
-    if (dbConn.getMetadata().isOracle())
-    {
-      return createOracleInsertIgnore(columnConstants);
-    }
-    if (dbConn.getMetadata().isHsql())
-    {
-      return createHSQLUpsert(columnConstants, true);
-    }
-    if (dbConn.getMetadata().isDB2LuW())
-    {
-      return createDB2LuWUpsert(columnConstants, true);
-    }
-    if (DBID.DB2_ZOS.isDB(dbConn))
-    {
-      return createDB2zOSUpsert(columnConstants, true);
-    }
-    if (dbConn.getMetadata().isSqlServer())
-    {
-      return createSqlServerUpsert(columnConstants, true);
-    }
-    if (DBID.SQLite.isDB(dbConn))
-    {
-      return createInsertStatement(columnConstants, "INSERT OR IGNORE ");
-    }
-    if (DBID.SQL_Anywhere.isDB(dbConn))
-    {
-      return createSQLAnywhereStatement(columnConstants, true);
+      case Postgres:
+        if (JdbcUtils.hasMinimumServerVersion(dbConn, "9.5"))
+        {
+          return createPostgresUpsert(columnConstants, insertSqlStart, true);
+        }
+      case MySQL:
+      case MariaDB:
+        return createMySQLUpsert(columnConstants, insertSqlStart, true);
+      case Cubrid:
+        return createMySQLUpsert(columnConstants, insertSqlStart, true);
+      case Oracle:
+        return createOracleInsertIgnore(columnConstants);
+      case HSQLDB:
+        return createHSQLUpsert(columnConstants, true);
+      case DB2_LUW:
+        return createDB2LuWUpsert(columnConstants, true);
+      case DB2_ZOS:
+        return createDB2zOSUpsert(columnConstants, true);
+      case SQL_Server:
+        return createSqlServerUpsert(columnConstants, true);
+      case SQLite:
+        return createInsertStatement(columnConstants, "INSERT OR IGNORE ");
+      case SQL_Anywhere:
+        return createSQLAnywhereStatement(columnConstants, true);
     }
     return null;
   }
 
   String createUpsertStatement(ConstantColumnValues columnConstants, String insertSqlStart)
   {
-    if (dbConn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(dbConn, "9.5"))
+    switch (DBID.fromConnection(dbConn))
     {
-      return createPostgresUpsert(columnConstants, insertSqlStart, false);
-    }
-    if (dbConn.getMetadata().isMySql())
-    {
-      return createMySQLUpsert(columnConstants, insertSqlStart, false);
-    }
-    if (dbConn.getMetadata().isH2())
-    {
-      return createH2Upsert(columnConstants);
-    }
-    if (dbConn.getMetadata().isHsql())
-    {
-      return createHSQLUpsert(columnConstants, false);
-    }
-    if (dbConn.getMetadata().isFirebird())
-    {
-      return createFirebirdUpsert(columnConstants);
-    }
-    if (dbConn.getMetadata().isDB2LuW())
-    {
-      return createDB2LuWUpsert(columnConstants, false);
-    }
-    if (DBID.DB2_ZOS.isDB(dbConn))
-    {
-      return createDB2zOSUpsert(columnConstants, false);
-    }
-    if (DBID.HANA.isDB(dbConn))
-    {
-      return createHanaUpsert(columnConstants);
-    }
-    if (DBID.Cubrid.isDB(dbConn))
-    {
-      return createMySQLUpsert(columnConstants, null, false);
-    }
-    if (dbConn.getMetadata().isSqlServer())
-    {
-      return createSqlServerUpsert(columnConstants, false);
-    }
-    if (dbConn.getMetadata().isOracle())
-    {
-      return createOracleMerge(columnConstants);
-    }
-    if (DBID.SQLite.isDB(dbConn))
-    {
-      return createInsertStatement(columnConstants, "INSERT OR REPLACE ");
-    }
-    if (DBID.SQL_Anywhere.isDB(dbConn))
-    {
-      return createSQLAnywhereStatement(columnConstants, false);
+      case Postgres:
+        if (JdbcUtils.hasMinimumServerVersion(dbConn, "9.5"))
+        {
+          return createPostgresUpsert(columnConstants, insertSqlStart, false);
+        }
+      case MySQL:
+      case MariaDB:
+        return createMySQLUpsert(columnConstants, insertSqlStart, false);
+      case H2:
+        return createH2Upsert(columnConstants);
+      case HSQLDB:
+        return createHSQLUpsert(columnConstants, false);
+      case Firebird:
+        return createFirebirdUpsert(columnConstants);
+      case DB2_LUW:
+        return createDB2LuWUpsert(columnConstants, false);
+      case DB2_ZOS:
+        return createDB2zOSUpsert(columnConstants, false);
+      case HANA:
+        return createHanaUpsert(columnConstants);
+      case Cubrid:
+        return createMySQLUpsert(columnConstants, null, false);
+      case Oracle:
+        return createOracleMerge(columnConstants);
+      case SQL_Server:
+        return createSqlServerUpsert(columnConstants, false);
+      case SQLite:
+        return createInsertStatement(columnConstants, "INSERT OR REPLACE ");
+      case SQL_Anywhere:
+        return createSQLAnywhereStatement(columnConstants, false);
     }
     return null;
   }

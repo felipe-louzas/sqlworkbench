@@ -100,5 +100,4 @@ public interface ProcedureReader
 
   boolean supportsPackages();
 
-  void clearCache();
 }

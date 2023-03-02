@@ -34,6 +34,7 @@ import workbench.resource.ResourceMgr;
 import workbench.db.CatalogChanger;
 import workbench.db.CatalogIdentifier;
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DbSettings;
@@ -536,7 +537,7 @@ public class TreeLoader
     if (typesToShow.isEmpty() || typesToShow.contains(ProcedureReader.TYPE_NAME_PROC))
     {
       String label = ResourceMgr.getString("TxtDbExplorerProcs");
-      if (connection.getMetadata().isPostgres() && !JdbcUtils.hasMinimumServerVersion(connection, "11.0"))
+      if (DBID.Postgres.isDB(connection) && !JdbcUtils.hasMinimumServerVersion(connection, "11.0"))
       {
         label = ResourceMgr.getString("TxtDbExplorerFuncs");
       }
@@ -839,7 +840,7 @@ public class TreeLoader
   private void addIndexNode(ObjectTreeNode node)
   {
     ObjectTreeNode idx = null;
-    if (connection.getMetadata().isVertica())
+    if (DBID.Vertica.isDB(connection))
     {
       idx = new ProjectionListNode();
     }

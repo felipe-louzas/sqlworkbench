@@ -135,7 +135,7 @@ public class DbMetadata
   private TableDefinitionReader definitionReader;
   private DataTypeResolver dataTypeResolver;
   private SchemaInformationReader schemaInfoReader;
-  private CatalogInformationReader catalogInfoReader;
+  private final CatalogInformationReader catalogInfoReader;
   private IndexReader indexReader;
   private List<ObjectListExtender> extenders = new ArrayList<>();
   private List<ObjectListAppender> appenders = new ArrayList<>();
@@ -143,17 +143,8 @@ public class DbMetadata
 
   private DbmsOutput oraOutput;
 
-  private boolean isOracle;
-  private boolean isPostgres;
-  private boolean isHsql;
-  private boolean isFirebird;
-  private boolean isSqlServer;
-  private boolean isMySql;
-  private boolean isMariaDB;
-  private boolean isApacheDerby;
   private boolean isExcel;
   private boolean isAccess;
-  private boolean isH2;
 
   private String quoteCharacter;
   private final Set<String> keywords = CollectionUtil.caseInsensitiveSet();
@@ -247,14 +238,11 @@ public class DbMetadata
     }
     else if (productLower.contains("redshift") || (productLower.contains("postgres") && PostgresUtil.isRedshift(dbConnection)))
     {
-      this.isPostgres = true;
       PostgresDataTypeResolver resolver = new PostgresDataTypeResolver();
       resolver.setFixTimestampTZ(JdbcUtils.hasMiniumDriverVersion(dbConnection, "1.0"));
       this.dataTypeResolver = resolver;
 
       mviewTypeName = MVIEW_NAME;
-      extenders.add(new PostgresDomainReader());
-      extenders.add(new PostgresRuleReader());
       PostgresTypeReader typeReader = new PostgresTypeReader();
       objectListEnhancer = typeReader;
       extenders.add(typeReader);
@@ -265,11 +253,9 @@ public class DbMetadata
              && PostgresUtil.isCockroachDB(dbConnection.getSqlConnection()))
     {
       this.dbId = DBID.CockroachDB.getId();
-      this.isPostgres = false;
     }
     else if (productLower.contains("postgres"))
     {
-      this.isPostgres = true;
       if (PostgresUtil.isYugabyte(aConnection.getSqlConnection()))
       {
         this.dbId = DBID.Yugabyte.getId();
@@ -319,7 +305,6 @@ public class DbMetadata
     }
     else if (productLower.contains("oracle") && !productLower.contains("lite ordbms"))
     {
-      isOracle = true;
       dbId = DBID.Oracle.getId();
       mviewTypeName = MVIEW_NAME;
       dataTypeResolver = new OracleDataTypeResolver(aConnection);
@@ -329,7 +314,6 @@ public class DbMetadata
     }
     else if (productLower.contains("hsql") && !productLower.startsWith("ucanaccess"))
     {
-      this.isHsql = true;
       this.dbId = DBID.HSQLDB.getId();
       this.dataTypeResolver = new HsqlDataTypeResolver();
       if (JdbcUtils.hasMinimumServerVersion(dbConnection, "2.2"))
@@ -339,7 +323,6 @@ public class DbMetadata
     }
     else if (productLower.contains("firebird"))
     {
-      this.isFirebird = true;
       this.dbId = DBID.Firebird.getId();
       dataTypeResolver = new FirebirdTypeResolver();
       extenders.add(new FirebirdDomainReader());
@@ -348,7 +331,6 @@ public class DbMetadata
     {
       // checking for "microsoft" is important, because apparently the jTDS driver
       // confusingly identifies a Sybase server as "SQL Server"
-      isSqlServer = true;
       dbId = DBID.SQL_Server.getId();
 
       if (SqlServerTypeReader.versionSupportsTypes(dbConnection))
@@ -389,25 +371,20 @@ public class DbMetadata
     else if (productLower.contains("mysql"))
     {
       this.objectListEnhancer = new MySQLTableCommentReader();
-      this.isMySql = true;
       this.dbId = DBID.MySQL.getId();
       String versionString = dbConnection.getDatabaseProductVersion();
       if (versionString.toLowerCase().contains("mariadb"))
       {
         this.dbId = DBID.MariaDB.getId();
-        this.isMariaDB = true;
       }
     }
     else if (productLower.contains("mariadb"))
     {
       this.objectListEnhancer = new MySQLTableCommentReader();
-      this.isMySql = true;
       this.dbId = DBID.MariaDB.getId();
-      this.isMariaDB = true;
     }
     else if (productLower.contains("derby"))
     {
-      this.isApacheDerby = true;
       dbId = DBID.Derby.getId();
       if (JdbcUtils.hasMinimumServerVersion(dbConnection, "10.6"))
       {
@@ -416,6 +393,7 @@ public class DbMetadata
     }
     else if (productLower.equals("nuodb"))
     {
+      dbId = DBID.NuoDB.getId();
       extenders.add(new NuoDBDomainReader());
     }
     else if (productLower.contains("sqlite"))
@@ -433,7 +411,6 @@ public class DbMetadata
     }
     else if (productLower.equals("h2"))
     {
-      isH2 = true;
       dbId = DBID.H2.getId();
       extenders.add(new H2DomainReader());
       extenders.add(new H2ConstantReader());
@@ -903,17 +880,7 @@ public class DbMetadata
     return selectIntoVerifier != null && selectIntoVerifier.supportsSelectIntoNewTable();
   }
 
-  public boolean isMySql() { return this.isMySql; }
-  public boolean isMariaDB() { return this.isMariaDB; }
-  public boolean isPostgres() { return this.isPostgres; }
-  public boolean isVertica() { return dbId.equals(DBID.Vertica.getId()); }
-  public boolean isOracle() { return this.isOracle; }
-  public boolean isHsql() { return this.isHsql; }
-  public boolean isFirebird() { return this.isFirebird; }
-  public boolean isSqlServer() { return this.isSqlServer; }
-  public boolean isApacheDerby() { return this.isApacheDerby; }
-  public boolean isH2() { return this.isH2; }
-  public boolean isDB2LuW() { return dbId.equals(DBID.DB2_LUW.getId()); }
+  private boolean isOracle() { return DBID.Oracle.isDB(dbId); }
 
   /**
    * Clears the cached list of catalogs to ignore.
@@ -1016,7 +983,7 @@ public class DbMetadata
       String tblSchema = table.getSchema();
 
       // Object names may never be prefixed with PUBLIC in Oracle
-      if (this.isOracle && "PUBLIC".equalsIgnoreCase(tblSchema)) return false;
+      if (this.isOracle() && "PUBLIC".equalsIgnoreCase(tblSchema)) return false;
 
       if (!dbSettings.supportsSchemas()) return false;
       if (dbSettings.alwaysUseSchema()) return true;
@@ -1240,7 +1207,7 @@ public class DbMetadata
 
     // SQL Server driver claims that a " is the quote character but still
     // accepts those iditotic brackets as quote characters...
-    if (this.isSqlServer)
+    if (DBID.SQL_Server.isDB(dbId))
     {
       if (name.charAt(0) == '[' && name.charAt(name.length() - 1) == ']') return true;
     }
@@ -1254,7 +1221,7 @@ public class DbMetadata
 
     name = name.trim();
 
-    if (this.isSqlServer && name.startsWith("[") && name.endsWith("]"))
+    if (DBID.SQL_Server.isDB(dbId) && name.startsWith("[") && name.endsWith("]"))
     {
       return name.substring(1, name.length() - 1);
     }
@@ -1557,7 +1524,7 @@ public class DbMetadata
 
   public ObjectListDataStore createObjectListDataStore()
   {
-    boolean sortMViewAsTable = isOracle && Settings.getInstance().getBoolProperty("workbench.db.oracle.sortmviewsastable", true);
+    boolean sortMViewAsTable = isOracle() && Settings.getInstance().getBoolProperty("workbench.db.oracle.sortmviewsastable", true);
 
     ObjectListDataStore result = new ObjectListDataStore(catalogTerm.toUpperCase(), schemaTerm.toUpperCase());
     result.setSortMviewsAsTables(sortMViewAsTable);
@@ -1580,7 +1547,7 @@ public class DbMetadata
 
     ObjectListFilter filter = new ObjectListFilter(dbId);
 
-    if (isOracle)
+    if (isOracle())
     {
       types = OracleUtils.adjustTableTypes(dbConnection, types);
     }
@@ -1968,7 +1935,7 @@ public class DbMetadata
    */
   public void enableOutput(long aLimit)
   {
-    if (!this.isOracle)
+    if (!this.isOracle())
     {
       return;
     }
@@ -2001,7 +1968,7 @@ public class DbMetadata
 
   public boolean isDbmsOutputEnabled()
   {
-    if (!this.isOracle) return false;
+    if (!this.isOracle()) return false;
     if (oraOutput == null) return false;
     return oraOutput.isEnabled();
   }
@@ -2012,7 +1979,7 @@ public class DbMetadata
    */
   public void disableOutput()
   {
-    if (!this.isOracle) return;
+    if (!this.isOracle()) return;
 
     if (this.oraOutput != null)
     {
@@ -2475,7 +2442,7 @@ public class DbMetadata
 
   public List<String> getAllCatalogs()
   {
-    if (this.isPostgres)
+    if (DBID.Postgres.isDB(dbConnection))
     {
       return PostgresUtil.getAllDatabases(dbConnection);
     }
@@ -2484,7 +2451,7 @@ public class DbMetadata
 
   public boolean supportsCatalogLevelObjects()
   {
-    return this.isSqlServer && SqlServerUtil.supportsPartitioning(dbConnection);
+    return DBID.SQL_Server.isDB(dbConnection) && SqlServerUtil.supportsPartitioning(dbConnection);
   }
 
   /**
@@ -2551,7 +2518,7 @@ public class DbMetadata
 
   public boolean supportsCatalogForGetSchemas()
   {
-    if (this.isSqlServer)
+    if (DBID.SQL_Server.isDB(dbConnection))
     {
       // only the Microsoft driver supports this, but not the jTDS driver
       return SqlServerUtil.isMicrosoftDriver(dbConnection);

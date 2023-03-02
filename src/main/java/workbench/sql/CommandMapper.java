@@ -338,7 +338,8 @@ public class CommandMapper
       return;
     }
 
-    if (metaData.isOracle())
+    DBID id = DBID.fromConnection(aConn);
+    if (id == DBID.Oracle)
     {
       SqlCommand wbcall = this.cmdDispatch.get(WbCall.VERB);
 
@@ -359,13 +360,13 @@ public class CommandMapper
       addDBMSCommand("pause", confirm);
     }
 
-    if (metaData.isSqlServer() || metaData.isMySql())
+    if (id.isAny(DBID.SQL_Server, DBID.MySQL, DBID.MariaDB))
     {
       UseCommand cmd = new UseCommand();
       addDBMSCommand(cmd.getVerb(), cmd);
     }
 
-    if (metaData.isFirebird())
+    if (id == DBID.Firebird)
     {
       DdlCommand recreate = DdlCommand.getRecreateCommand();
       addDBMSCommand(recreate.getVerb(), recreate);
@@ -373,7 +374,7 @@ public class CommandMapper
       addDBMSCommand(delim.getVerb(), delim);
     }
 
-    if (metaData.isPostgres())
+    if (id == DBID.Postgres)
     {
       PgCopyCommand copy = new PgCopyCommand();
 
@@ -381,7 +382,7 @@ public class CommandMapper
       this.dbSpecificCommands.add(copy.getVerb());
     }
 
-    if (metaData.isPostgres() || DBID.Greenplum.isDB(metaData.getDbId()) || DBID.Redshift.isDB(metaData.getDbId()))
+    if (id.isAny(DBID.Postgres, DBID.Greenplum, DBID.Redshift))
     {
       // support manual transactions in auto commit mode
       addDBMSCommand(TransactionStartCommand.BEGIN.getVerb(), TransactionStartCommand.BEGIN);
@@ -390,20 +391,20 @@ public class CommandMapper
       addDBMSCommand(TransactionStartCommand.BEGIN_WORK.getVerb(), TransactionStartCommand.BEGIN_WORK);
     }
 
-    if (metaData.isSqlServer())
+    if (id == DBID.SQL_Server)
     {
       addDBMSCommand(TransactionStartCommand.BEGIN_TRANSACTION.getVerb(), TransactionStartCommand.BEGIN_TRANSACTION);
       addDBMSCommand(TransactionStartCommand.BEGIN_TRAN.getVerb(), TransactionStartCommand.BEGIN_TRAN);
     }
 
-    if (metaData.isVertica())
+    if (id == DBID.Vertica)
     {
       addDBMSCommand(TransactionStartCommand.BEGIN_TRANSACTION.getVerb(), TransactionStartCommand.BEGIN_TRANSACTION);
       addDBMSCommand(TransactionStartCommand.BEGIN_WORK.getVerb(), TransactionStartCommand.BEGIN_WORK);
       addDBMSCommand(TransactionStartCommand.START_TRANSACTION.getVerb(), TransactionStartCommand.START_TRANSACTION);
     }
 
-    if (metaData.isMySql())
+    if (id.isAny(DBID.MariaDB, DBID.MySQL))
     {
       MySQLShow show = new MySQLShow();
       addDBMSCommand(show.getVerb(), show);

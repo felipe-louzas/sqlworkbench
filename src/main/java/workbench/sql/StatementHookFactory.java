@@ -23,6 +23,7 @@ package workbench.sql;
 
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
 import workbench.db.WbConnection;
 import workbench.db.firebird.FirebirdStatementHook;
 import workbench.db.mssql.SqlServerStatementHook;
@@ -44,22 +45,23 @@ public class StatementHookFactory
     if (conn == null) return DEFAULT_HOOK;
     if (conn.getMetadata() == null) return DEFAULT_HOOK;
 
-    if (conn.getMetadata().isOracle())
+    switch (DBID.fromConnection(conn))
     {
-      return new OracleStatementHook();
-    }
-    if (conn.getMetadata().isSqlServer() && SqlServerUtil.isSqlServer2008(conn))
-    {
-      // The hack for the MERGE statement is only necessary for SQL Server 2008 and above
-      return new SqlServerStatementHook();
-    }
-    if (conn.getMetadata().isFirebird())
-    {
-      return new FirebirdStatementHook(conn);
-    }
-    if (conn.getMetadata().isPostgres() && Settings.getInstance().getBoolProperty("workbench.db.postgresql.enable.listen", true))
-    {
-      return new PostgresStatementHook(conn);
+      case Oracle:
+        return new OracleStatementHook();
+      case SQL_Server:
+        if (SqlServerUtil.isSqlServer2008(conn))
+        {
+          // The hack for the MERGE statement is only necessary for SQL Server 2008 and above
+          return new SqlServerStatementHook();
+        }
+      case Firebird:
+        return new FirebirdStatementHook(conn);
+      case Postgres:
+        if (Settings.getInstance().getBoolProperty("workbench.db.postgresql.enable.listen", true))
+        {
+          return new PostgresStatementHook(conn);
+        }
     }
     return DEFAULT_HOOK;
   }

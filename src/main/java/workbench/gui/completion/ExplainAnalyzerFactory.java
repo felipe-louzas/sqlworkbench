@@ -21,6 +21,7 @@
  */
 package workbench.gui.completion;
 
+import workbench.db.DBID;
 import workbench.db.WbConnection;
 
 /**
@@ -43,22 +44,20 @@ public class ExplainAnalyzerFactory
   {
     ExplainAnalyzer explain = null;
 
-    if (con.getMetadata().isOracle())
+    switch (DBID.fromConnection(con))
     {
-      explain = new OracleExplainAnalyzer(con, sql, cursorPos);
+      case Oracle:
+        explain = new OracleExplainAnalyzer(con, sql, cursorPos);
+        break;
+      case Postgres:
+        explain = new PostgresExplainAnalyzer(con, sql, cursorPos);
+        break;
+      case MySQL:
+        explain = new MySQLExplainAnalyzer(con, sql, cursorPos);
+        break;
     }
-    else if (con.getMetadata().isPostgres())
-    {
-      explain = new PostgresExplainAnalyzer(con, sql, cursorPos);
-    }
-    else if (con.getMetadata().isMySql())
-    {
-      explain = new MySQLExplainAnalyzer(con, sql, cursorPos);
-    }
-    else
-    {
-      return null;
-    }
+
+    if (explain == null) return null;
 
     int start = explain.getStatementStart(sql);
 

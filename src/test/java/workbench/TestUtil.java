@@ -57,6 +57,7 @@ import workbench.ssh.SshException;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
+import workbench.db.DBID;
 import workbench.db.ErrorInformationReader;
 import workbench.db.JdbcUtils;
 import workbench.db.ReaderFactory;
@@ -155,10 +156,7 @@ public class TestUtil
     {
       cmdline.add("-notemplates");
     }
-
-    return cmdline.toArray(new String[]
-    {
-    });
+    return cmdline.toArray(String[]::new);
   }
 
   public void prepareBaseDir()
@@ -281,11 +279,11 @@ public class TestUtil
     try
     {
       stmt = con.createStatement();
-      if (con.getMetadata().isH2())
+      if (DBID.H2.isDB(con))
       {
         stmt.executeUpdate("DROP ALL OBJECTS");
       }
-      else if (con.getMetadata().isHsql())
+      else if (DBID.HSQLDB.isDB(con))
       {
         stmt.executeUpdate("DROP SCHEMA PUBLIC CASCADE");
       }

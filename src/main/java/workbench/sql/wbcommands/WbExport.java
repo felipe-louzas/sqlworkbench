@@ -38,6 +38,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
 import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.exporter.BlobMode;
@@ -693,7 +694,7 @@ public class WbExport
       String mergeType = cmdLine.getValue(ARG_MERGE_TYPE);
       if (StringUtil.isBlank(mergeType))
       {
-        if (currentConnection.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(currentConnection, "9.5"))
+        if (DBID.Postgres.isDB(currentConnection) && JdbcUtils.hasMinimumServerVersion(currentConnection, "9.5"))
         {
           mergeType = "postgres-9.5";
         }

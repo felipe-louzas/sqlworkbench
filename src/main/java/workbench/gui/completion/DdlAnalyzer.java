@@ -21,6 +21,7 @@
  */
 package workbench.gui.completion;
 
+import workbench.db.DBID;
 import workbench.db.GenericObjectDropper;
 import workbench.db.IndexDefinition;
 import workbench.db.TableIdentifier;
@@ -178,7 +179,7 @@ public class DdlAnalyzer
   private boolean isDropSchema(String type)
   {
     return "SCHEMA".equalsIgnoreCase(type) ||
-           dbConnection.getMetadata().isOracle() && "USER".equalsIgnoreCase(type);
+           (DBID.Oracle.isDB(dbConnection) && "USER".equalsIgnoreCase(type));
 
   }
 

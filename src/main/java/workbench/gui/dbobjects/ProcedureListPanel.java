@@ -459,11 +459,6 @@ public class ProcedureListPanel
       this.cache.clear();
     }
 
-    if (dbConnection != null)
-    {
-      dbConnection.getMetadata().getProcedureReader().clearCache();
-    }
-
     WbSwingUtilities.invoke(() ->
     {
       procList.reset();
@@ -866,7 +861,7 @@ public class ProcedureListPanel
       }
     }
     ProcedureDefinition def = null;
-    if (conn.getMetadata().isOracle() && catalog != null)
+    if (DBID.Oracle.isDB(conn) && catalog != null)
     {
       def = ProcedureDefinition.createOracleDefinition(schema, proc, catalog, type, comment);
     }
@@ -1057,7 +1052,7 @@ public class ProcedureListPanel
   {
     if (sql == null) return 0;
     if (this.dbConnection == null) return 0;
-    if (!this.dbConnection.getMetadata().isOracle()) return 0;
+    if (!DBID.Oracle.isDB(dbConnection)) return 0;
 
     if (StringUtil.isEmptyString(def.getPackageName())) return 0;
     int pos = OraclePackageParser.findProcedurePosition(sql, def, getParameterNames());

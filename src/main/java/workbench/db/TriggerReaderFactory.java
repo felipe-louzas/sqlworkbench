@@ -25,7 +25,6 @@ import workbench.db.ibm.Db2iTriggerReader;
 import workbench.db.mssql.SqlServerTriggerReader;
 import workbench.db.oracle.OracleTriggerReader;
 import workbench.db.postgres.PostgresTriggerReader;
-import workbench.db.postgres.PostgresUtil;
 
 /**
  * A factory to create instances of TriggerReader.
@@ -39,21 +38,16 @@ public class TriggerReaderFactory
     if (con == null) return null;
     if (con.getMetadata() == null) return null;
 
-    if (con.getMetadata().isPostgres() && !PostgresUtil.isRedshift(con))
+    switch (DBID.fromConnection(con))
     {
-      return new PostgresTriggerReader(con);
-    }
-    if (con.getMetadata().isOracle())
-    {
-      return new OracleTriggerReader(con);
-    }
-    if (con.getMetadata().isSqlServer())
-    {
-      return new SqlServerTriggerReader(con);
-    }
-    if (DBID.fromConnection(con) == DBID.DB2_ISERIES)
-    {
-      return new Db2iTriggerReader(con);
+      case Postgres:
+        return new PostgresTriggerReader(con);
+      case Oracle:
+        return new OracleTriggerReader(con);
+      case SQL_Server:
+        return new SqlServerTriggerReader(con);
+      case DB2_ISERIES:
+        return new Db2iTriggerReader(con);
     }
     return new DefaultTriggerReader(con);
   }

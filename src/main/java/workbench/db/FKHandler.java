@@ -78,7 +78,7 @@ public interface FKHandler
 
   final String COLUMN_NAME_MATCH_TYPE = "MATCH_TYPE";
   final ColumnIdentifier MATCH_TYPE_COLUMN = new ColumnIdentifier(COLUMN_NAME_MATCH_TYPE, Types.VARCHAR, 10);
-  
+
   boolean supportsStatus();
   boolean containsStatusColumn();
 
@@ -175,17 +175,20 @@ public interface FKHandler
 
   static FKHandler createInstance(WbConnection conn)
   {
-    if (conn.getMetadata().isPostgres())
+    switch (DBID.fromConnection(conn))
     {
-      return new PostgresFKHandler(conn);
-    }
-    if (conn.getMetadata().isOracle() && conn.getDbSettings().fixFKRetrieval())
-    {
-      return new OracleFKHandler(conn);
-    }
-    if (conn.getMetadata().isSqlServer() && SqlServerUtil.isSqlServer2005(conn))
-    {
-      return new SqlServerFKHandler(conn);
+      case Postgres:
+        return new PostgresFKHandler(conn);
+      case Oracle:
+        if (conn.getDbSettings().fixFKRetrieval())
+        {
+          return new OracleFKHandler(conn);
+        }
+      case SQL_Server:
+        if (SqlServerUtil.isSqlServer2005(conn))
+        {
+          return new SqlServerFKHandler(conn);
+        }
     }
     return new DefaultFKHandler(conn);
   }

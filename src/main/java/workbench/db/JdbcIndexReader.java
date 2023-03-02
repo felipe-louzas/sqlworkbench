@@ -412,7 +412,7 @@ public class JdbcIndexReader
       sql = TemplateHandler.replacePlaceholder(sql, MetaDataSqlManager.CONS_ENABLED, constraint.isEnabled() ? "" : disabled, true);
       sql = TemplateHandler.replacePlaceholder(sql, MetaDataSqlManager.CONS_VALIDATED, constraint.isValid() ? "" : novalidate, true);
 
-      if (metaData.isOracle())
+      if (DBID.Oracle.isDB(metaData))
       {
         // deal with the "using index" part of a unique constraint
         if (!constraint.getConstraintName().equals(indexDefinition.getName()))

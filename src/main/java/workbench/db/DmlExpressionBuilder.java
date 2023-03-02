@@ -36,9 +36,10 @@ public interface DmlExpressionBuilder
   {
     public static DmlExpressionBuilder getBuilder(WbConnection conn)
     {
-      if (conn != null && conn.getMetadata().isPostgres())
+      switch (DBID.fromConnection(conn))
       {
-        return new PostgresExpressionBuilder(conn);
+        case Postgres:
+          return new PostgresExpressionBuilder(conn);
       }
       return new DefaultExpressionBuilder(conn);
     }

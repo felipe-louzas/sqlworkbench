@@ -40,6 +40,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
@@ -88,7 +89,7 @@ public class WbCall
   private Map<Integer, ParameterDefinition> refCursor = null;
 
   // Stores all parameters that need an input
-  private List<ParameterDefinition> inputParameters = new ArrayList<>(5);
+  private final List<ParameterDefinition> inputParameters = new ArrayList<>(5);
   private String sqlUsed = null;
 
   private StatementParameterPrompter parameterPrompter;
@@ -394,8 +395,7 @@ public class WbCall
 
   private boolean retrieveDbmsOutput()
   {
-    if (currentConnection == null) return false;
-    if (currentConnection.getMetadata().isOracle() == false) return false;
+    if (!DBID.Oracle.isDB(currentConnection)) return false;
     if (currentConnection.getMetadata().isDbmsOutputEnabled()) return false;
     return Settings.getInstance().retrieveDbmsOutputAfterExec();
   }
@@ -469,7 +469,7 @@ public class WbCall
     if (procname == null) return null;
 
     String[] items = procname.split("\\.");
-    if (meta.isOracle())
+    if (DBID.Oracle.isDB(currentConnection))
     {
       if (items.length == 3)
       {
@@ -591,8 +591,8 @@ public class WbCall
     }
 
     sqlUsed = getSqlToPrepare(sql, needFuncCall);
-
-    if (meta.isOracle() && !needFuncCall && !hasPlaceHolder(sqlParams))
+    boolean isOracle = DBID.Oracle.isDB(currentConnection);
+    if (isOracle && !needFuncCall && !hasPlaceHolder(sqlParams))
     {
       // Workaround for Oracle packages that define optional OUT parameters.
       // If no ? is specified, and this is not a function call, there is no need
@@ -610,7 +610,7 @@ public class WbCall
 
     int definedParamCount = params.getRowCount();
 
-    if (meta.isOracle() && definedParamCount != sqlParams.size() && !needFuncCall)
+    if (isOracle && definedParamCount != sqlParams.size() && !needFuncCall)
     {
       // if not all parameters are specified, and this is not a function returning a refCursor
       // there is no way to find the correct parameters or register them
@@ -732,7 +732,7 @@ public class WbCall
 
   private boolean isFunction(ProcedureDefinition def, DataStore params)
   {
-    if (currentConnection.getMetadata().isPostgres())
+    if (DBID.Postgres.isDB(currentConnection))
     {
       // for Postgres only functions that do _really_ return something
       // should be prepared with the "{? = call function_name(...)}" syntax

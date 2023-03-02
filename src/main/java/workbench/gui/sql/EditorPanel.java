@@ -67,6 +67,7 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
 import workbench.db.QuoteHandler;
 import workbench.db.WbConnection;
 
@@ -284,7 +285,7 @@ public class EditorPanel
     {
       quoteHandler = aConnection.getMetadata();
       // Support MySQL's non-standard line comment
-      boolean isMySQL = aConnection.getMetadata().isMySql();
+      boolean isMySQL = DBID.MySQL.isDB(aConnection);
       token.setIsMySQL(isMySQL);
       if (isMySQL && Settings.getInstance().getBoolProperty("workbench.editor.mysql.usehashcomment", false))
       {
@@ -292,7 +293,7 @@ public class EditorPanel
       }
 
       // Support Microsoft's broken object quoting using square brackets (e.g. [wrong_table])
-      token.setIsMicrosoft(aConnection.getMetadata().isSqlServer());
+      token.setIsMicrosoft(DBID.SQL_Server.isDB(aConnection));
       this.dbId = aConnection.getDbSettings().getDbId();
     }
     else

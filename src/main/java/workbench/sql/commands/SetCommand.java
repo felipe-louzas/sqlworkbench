@@ -30,6 +30,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DBID;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 import workbench.db.firebird.FirebirdStatementHook;
@@ -166,13 +167,13 @@ public class SetCommand
         WbFetchSize.setFetchSize(value, result, currentConnection);
         execSql = false;
       }
-      else if (command.equalsIgnoreCase("TERM") && currentConnection.getMetadata().isFirebird())
+      else if (command.equalsIgnoreCase("TERM") && DBID.Firebird.isDB(currentConnection))
       {
         result = new StatementRunnerResult(userSql);
         result.setSuccess();
         execSql = false;
       }
-      else if (currentConnection.getMetadata().isOracle())
+      else if (DBID.Oracle.isDB(currentConnection))
       {
         Set<String> allowed = CollectionUtil.caseInsensitiveSet("constraints","constraint","transaction","role");
         List<String> options = Settings.getInstance().getListProperty("workbench.db.oracle.set.options", true, "");
@@ -205,7 +206,7 @@ public class SetCommand
           result.setSuccess();
         }
       }
-      else if (currentConnection.getMetadata().isFirebird())
+      else if (DBID.Firebird.isDB(currentConnection))
       {
         result = new StatementRunnerResult(userSql);
         boolean handled = handleFirebird(result, userSql);
@@ -254,7 +255,7 @@ public class SetCommand
     {
       result = new StatementRunnerResult();
       result.clear();
-      if (currentConnection.getMetadata().isOracle())
+      if (DBID.Oracle.isDB(currentConnection))
       {
         // for oracle we'll simply ignore the error as the SET command is a SQL*Plus command
         result.setSuccess();

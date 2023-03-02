@@ -21,6 +21,7 @@
  */
 package workbench.db.shutdown;
 
+import workbench.db.DBID;
 import workbench.db.WbConnection;
 
 /**
@@ -37,16 +38,12 @@ public class DbShutdownFactory
    */
   public static DbShutdownHook getShutdownHook(WbConnection con)
   {
-    if (con == null) return null;
-    if (con.getMetadata() == null) return null;
-
-    if (con.getMetadata().isHsql())
+    switch (DBID.fromConnection(con))
     {
-      return new HsqlShutdownHook();
-    }
-    else if (con.getMetadata().isApacheDerby())
-    {
-      return new DerbyShutdownHook();
+      case HSQLDB:
+        return new HsqlShutdownHook();
+      case Derby:
+        return new DerbyShutdownHook();
     }
     return null;
   }

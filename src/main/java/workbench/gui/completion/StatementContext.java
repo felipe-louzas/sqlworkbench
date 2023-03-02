@@ -151,11 +151,11 @@ public class StatementContext
     }
     else if ("SHOW".equalsIgnoreCase(verb) || "SET".equalsIgnoreCase(verb) || "RESET".equalsIgnoreCase(verb))
     {
-      if (conn.getMetadata().isPostgres() || DBID.Greenplum.isDB(conn))
+      if (DBID.fromConnection(conn).isAny(DBID.Postgres, DBID.Greenplum))
       {
         verbAnalyzer = new PgShowAnalyzer(conn, sql, pos);
       }
-      else if (conn.getMetadata().isOracle())
+      else if (DBID.Oracle.isDB(conn))
       {
         verbAnalyzer = new OraShowAnalyzer(conn, sql, pos);
       }

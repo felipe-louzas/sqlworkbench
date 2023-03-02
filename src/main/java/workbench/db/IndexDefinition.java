@@ -47,7 +47,7 @@ public class IndexDefinition
   private String catalog;
   private String indexName;
   private String indexType;
-  private TableIdentifier baseTable;
+  private final TableIdentifier baseTable;
   private List<IndexColumn> columns = new ArrayList<>();
   private String comment;
   private ConstraintDefinition uniqueConstraint;
@@ -261,7 +261,7 @@ public class IndexDefinition
   {
     this.includeIndexForUniqueConstraint = flag;
   }
-  
+
   public boolean includeIndexForUniqueConstraint()
   {
     return includeIndexForUniqueConstraint;
@@ -315,7 +315,7 @@ public class IndexDefinition
   @Override
   public String getObjectNameForDrop(WbConnection con)
   {
-    if (con != null && con.getMetadata().isSqlServer())
+    if (DBID.SQL_Server.isDB(con))
     {
       // SQL Server does not support fully qualified names when dropping an index
       return this.indexName;

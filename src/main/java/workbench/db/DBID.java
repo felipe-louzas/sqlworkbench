@@ -56,9 +56,10 @@ public enum DBID
   CockroachDB("cockroachdb"),
   Yugabyte("yugabyte"),
   UCanAccess("ucanaccess"),
+  NuoDB("nuodb"),
   Unknown("_$unknown$_");
 
-  private String dbid;
+  private final String dbid;
 
   private DBID(String id)
   {
@@ -81,9 +82,25 @@ public enum DBID
     return this.dbid.equalsIgnoreCase(conn.getDbId());
   }
 
+  public boolean isDB(DbMetadata meta)
+  {
+    if (meta == null) return false;
+    return this.dbid.equalsIgnoreCase(meta.getDbId());
+  }
+
   public String getProductName()
   {
     return this.toString().replace('_', ' ');
+  }
+
+  public boolean isAny(DBID ... idlist)
+  {
+    if (idlist == null) return false;
+    for (DBID id : idlist)
+    {
+      if (id == this) return true;
+    }
+    return false;
   }
 
   public static DBID fromConnection(WbConnection conn)

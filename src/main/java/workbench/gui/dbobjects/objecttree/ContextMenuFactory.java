@@ -34,6 +34,7 @@ import workbench.interfaces.WbSelectionModel;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.IndexDefinition;
@@ -186,7 +187,7 @@ class ContextMenuFactory
     script.setShowSinglePackageProcedure(true);
     menu.add(script);
 
-    if (dbTree.getConnection().getMetadata().isOracle())
+    if (DBID.Oracle.isDB(dbTree.getConnection()))
     {
       CompileDbObjectAction compile = new CompileDbObjectAction(dbTree, selection);
       menu.add(compile);

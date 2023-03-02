@@ -40,6 +40,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DbObjectFinder;
@@ -71,7 +72,7 @@ import workbench.util.StringUtil;
  */
 class ObjectCache
 {
-  private boolean retrieveOraclePublicSynonyms;
+  private final boolean retrieveOraclePublicSynonyms;
 
   public static final Namespace DUMMY_NSP_KEY = new Namespace("-$$wb-null-schema$$-", "-$$wb-null-catalog$$-");
   private final Set<Namespace> schemasInCache = new HashSet<>();
@@ -83,10 +84,10 @@ class ObjectCache
   private final Map<TableIdentifier, PkDefinition> pkMap = new HashMap<>();
   private final Map<Namespace, List<ProcedureDefinition>> procedureCache = new HashMap<>();
   private final Map<Namespace, List<ProcedureDefinition>> tableFunctionsCache = new HashMap<>();
-  private ObjectNameFilter schemaFilter;
-  private ObjectNameFilter catalogFilter;
-  private boolean supportsSchemas;
-  private boolean supportsCatalogs;
+  private final ObjectNameFilter schemaFilter;
+  private final ObjectNameFilter catalogFilter;
+  private final boolean supportsSchemas;
+  private final boolean supportsCatalogs;
   private boolean databasesCached;
   private final List<String> availableDatabases = new ArrayList<>();
   private final DbObjectFinder finder;
@@ -94,7 +95,7 @@ class ObjectCache
 
   ObjectCache(WbConnection conn)
   {
-    retrieveOraclePublicSynonyms = conn.getMetadata().isOracle() && Settings.getInstance().getBoolProperty("workbench.editor.autocompletion.oracle.public_synonyms", false);
+    retrieveOraclePublicSynonyms = DBID.Oracle.isDB(conn) && Settings.getInstance().getBoolProperty("workbench.editor.autocompletion.oracle.public_synonyms", false);
     schemaFilter = conn.getProfile().getSchemaFilter();
     catalogFilter = conn.getProfile().getCatalogFilter();
     supportsSchemas = conn.getDbSettings().supportsSchemas();

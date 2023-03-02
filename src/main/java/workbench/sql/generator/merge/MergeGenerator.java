@@ -107,7 +107,7 @@ public interface MergeGenerator
   void setQuoteHandler(QuoteHandler handler);
 
   /**
-   * The factory go create MergeGenerator instances depending on the DBMS.
+   * The factory to create MergeGenerator instances depending on the DBMS.
    */
   class Factory
   {
@@ -131,7 +131,7 @@ public interface MergeGenerator
     public static MergeGenerator createGenerator(WbConnection conn)
     {
       if (conn == null) return new AnsiSQLMergeGenerator();
-      if (conn.getMetadata().isPostgres() && JdbcUtils.hasMinimumServerVersion(conn, "9.5"))
+      if (DBID.Postgres.isDB(conn) && JdbcUtils.hasMinimumServerVersion(conn, "9.5"))
       {
         return new Postgres95MergeGenerator();
       }

@@ -34,6 +34,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionProfile;
+import workbench.db.DBID;
 import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
@@ -156,7 +157,7 @@ public class OracleUtils
   public static boolean supportsPartitioning(WbConnection conn)
   {
     if (conn == null) return false;
-    if (!conn.getMetadata().isOracle()) return false;
+    if (!DBID.Oracle.isDB(conn)) return false;
     String info = conn.getDatabaseProductVersion();
     if (StringUtil.isBlank(info)) return false;
     return !info.toLowerCase().contains("express edition");
@@ -338,8 +339,7 @@ public class OracleUtils
 
   public static boolean shouldTrimContinuationCharacter(WbConnection conn)
   {
-    if (conn == null) return false;
-    if (conn.getMetadata().isOracle())
+    if (DBID.Oracle.isDB(conn))
     {
       return Settings.getInstance().getBoolProperty("workbench.db.oracle.trim.sqlplus.continuation", false);
     }

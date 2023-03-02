@@ -26,6 +26,7 @@ package workbench.storage;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
 
@@ -101,27 +102,23 @@ public class BlobFormatterFactory
     }
 
     // No user-defined formatter definition found, use the built-in settings
-    if (meta.isPostgres())
+    switch (DBID.fromID(meta.getDbId()))
     {
-      return new PostgresBlobFormatter();
+      case Postgres:
+        return new PostgresBlobFormatter();
+      case Oracle:
+        // This will fail with BLOBs > 4KB
+        // But there is no way of specifying longer literals anyway
+        DefaultBlobFormatter ora = new DefaultBlobFormatter();
+        ora.setUseUpperCase(true);
+        ora.setPrefix("'");
+        ora.setSuffix("'");
+        return ora;
+      case SQL_Server:
+        DefaultBlobFormatter ms = new DefaultBlobFormatter();
+        ms.setPrefix("0x");
+        return ms;
     }
-    else if (meta.isOracle())
-    {
-      // This will fail with BLOBs > 4KB
-      // But there is no way of specifying longer literals anyway
-      DefaultBlobFormatter f = new DefaultBlobFormatter();
-      f.setUseUpperCase(true);
-      f.setPrefix("'");
-      f.setSuffix("'");
-      return f;
-    }
-    else if (meta.isSqlServer())
-    {
-      DefaultBlobFormatter f = new DefaultBlobFormatter();
-      f.setPrefix("0x");
-      return f;
-    }
-
     // Use the ANSI format for all others (e.g.: DB2, H2, HSQLDB
     return createAnsiFormatter();
   }

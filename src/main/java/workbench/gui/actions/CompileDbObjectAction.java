@@ -36,6 +36,7 @@ import workbench.interfaces.WbSelectionModel;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.DBID;
 import workbench.db.DbObject;
 import workbench.db.ProcedureDefinition;
 import workbench.db.WbConnection;
@@ -55,8 +56,8 @@ public class CompileDbObjectAction
   implements WbSelectionListener
 {
   private JMenuItem menuItem;
-  private DbObjectList source;
-  private WbSelectionModel selection;
+  private final DbObjectList source;
+  private final WbSelectionModel selection;
 
   public CompileDbObjectAction(DbObjectList client, WbSelectionModel list)
   {
@@ -79,7 +80,7 @@ public class CompileDbObjectAction
 
   public void setConnection(WbConnection conn)
   {
-    if (conn != null && conn.getMetadata().isOracle())
+    if (DBID.Oracle.isDB(conn))
     {
       setVisible(true);
       selection.addSelectionListener(this);

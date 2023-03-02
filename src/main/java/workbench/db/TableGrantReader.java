@@ -49,15 +49,12 @@ public class TableGrantReader
 
   public static TableGrantReader createReader(WbConnection conn)
   {
-    DbMetadata meta = conn.getMetadata();
-
-    if (meta.isOracle())
+    switch (DBID.fromConnection(conn))
     {
-      return new OracleTableGrantReader();
-    }
-    if (DBID.fromConnection(conn).equals(DBID.Redshift))
-    {
-      return new RedshiftTableGrantReader();
+      case Oracle:
+        return new OracleTableGrantReader();
+      case Redshift:
+        return new RedshiftTableGrantReader();
     }
     return new TableGrantReader();
   }

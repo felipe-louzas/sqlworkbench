@@ -33,6 +33,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
+import workbench.db.DBID;
 import workbench.db.SequenceReader;
 import workbench.db.TableIdentifier;
 import workbench.db.oracle.OracleUtils;
@@ -274,12 +275,12 @@ public class WbSchemaReport
 
     if (currentConnection != null)
     {
-      if (currentConnection.getMetadata().isOracle() && !OracleUtils.remarksEnabled(currentConnection))
+      if (DBID.Oracle.isDB(currentConnection) && !OracleUtils.remarksEnabled(currentConnection))
       {
         result.addMessageByKey("MsgSchemaReporterOracleRemarksWarning");
         result.addMessageNewLine();
       }
-      if (currentConnection.getMetadata().isMySql() && !OracleUtils.remarksEnabledMySQL(currentConnection))
+      if (DBID.MySQL.isDB(currentConnection) && !OracleUtils.remarksEnabledMySQL(currentConnection))
       {
         result.addMessageByKey("MsgSchemaReporterMySQLRemarksWarning");
         result.addMessageNewLine();

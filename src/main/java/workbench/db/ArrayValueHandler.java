@@ -44,14 +44,12 @@ public interface ArrayValueHandler
     public static ArrayValueHandler getInstance(WbConnection conn)
     {
       if (conn == null) return null;
-
-      if (conn.getMetadata().isPostgres())
+      switch (DBID.fromConnection(conn))
       {
-        return new PostgresArrayHandler(conn);
-      }
-      if (conn.getMetadata().isHsql())
-      {
-        return new HsqlArrayHandler(conn);
+        case Postgres:
+          return new PostgresArrayHandler(conn);
+        case HSQLDB:
+          return new HsqlArrayHandler(conn);
       }
       return null;
     }

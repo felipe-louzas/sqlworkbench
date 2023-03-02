@@ -496,7 +496,6 @@ public class DefaultTriggerReader
     {
       dbConnection.rollback(sp);
       LogMgr.logMetadataError(new CallerInfo(){}, e, "trigger source", query);
-      if (this.dbMeta.isPostgres()) try { this.dbConnection.rollback(); } catch (Throwable th) {}
       result.append(ExceptionUtil.getDisplay(e));
       JdbcUtils.closeAll(rs, stmt);
       return result.toString();

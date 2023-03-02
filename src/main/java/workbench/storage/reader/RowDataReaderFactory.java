@@ -24,7 +24,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DBID;
-import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 
@@ -38,42 +37,31 @@ public class RowDataReaderFactory
 {
   public static RowDataReader createReader(ResultInfo info, WbConnection conn)
   {
-    DbMetadata meta = conn == null ? null : conn.getMetadata();
-
-    if (conn != null && meta != null && meta.isOracle())
+    DBID id = DBID.fromConnection(conn);
+    switch (id)
     {
-      try
-      {
-        return new OracleRowDataReader(info, conn);
-      }
-      catch (Exception cnf)
-      {
-        if (LogMgr.isDebugEnabled())
+      case Oracle:
+        try
         {
-          LogMgr.logDebug(new CallerInfo(){}, "Could not instantiate OracleRowDataReader", cnf);
+          return new OracleRowDataReader(info, conn);
         }
-        else
+        catch (Exception cnf)
         {
-          LogMgr.logWarning(new CallerInfo(){}, "Could not instantiate OracleRowDataReader. Probably the Oracle specific classes are not available");
+          LogMgr.logWarning(new CallerInfo(){}, "Could not create OracleRowDataReader. Probably the Oracle specific classes are not available", cnf);
         }
-      }
-    }
-    else if (meta != null && meta.isPostgres())
-    {
-      return new PostgresRowDataReader(info, conn);
-    }
-    else if (meta != null && meta.isSqlServer())
-    {
-      return new SqlServerRowDataReader(info, conn);
-    }
-    else if (DBID.SQLite.isDB(conn))
-    {
-      DbSettings dbs = conn.getDbSettings();
-      if (dbs != null && dbs.useSQLiteDataReader())
-      {
-        LogMgr.logDebug(new CallerInfo(){}, "Using SQLiteDataReader that returns columns with errors as a string");
-        return new SQLiteRowDataReader(info, conn);
-      }
+      case Postgres:
+        return new PostgresRowDataReader(info, conn);
+      case SQL_Server:
+        return new SqlServerRowDataReader(info, conn);
+      case SQLite:
+        DbSettings dbs = conn.getDbSettings();
+        if (dbs != null && dbs.useSQLiteDataReader())
+        {
+          LogMgr.logDebug(new CallerInfo()
+          {
+          }, "Using SQLiteDataReader that returns columns with errors as a string");
+          return new SQLiteRowDataReader(info, conn);
+        }
     }
     return new RowDataReader(info, conn);
   }

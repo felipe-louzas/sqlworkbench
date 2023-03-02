@@ -70,7 +70,7 @@ public class OracleProcedureReader
 {
   public static final int COLUMN_IDX_PROC_LIST_ORA_STATUS = 5;
 
-  private OracleTypeReader typeReader = new OracleTypeReader();
+  private final OracleTypeReader typeReader = new OracleTypeReader();
   private final StringBuilder procHeader = new StringBuilder("CREATE OR REPLACE ");
 
   // ALL_PROCEDURES does not return invalid procedures

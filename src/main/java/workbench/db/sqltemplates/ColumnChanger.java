@@ -28,6 +28,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.CommentSqlManager;
+import workbench.db.DBID;
 import workbench.db.DbObject;
 import workbench.db.DbSettings;
 import workbench.db.MetaDataSqlManager;
@@ -66,13 +67,12 @@ public class ColumnChanger
    */
   public static final String PARAM_DEFAULT_VALUE = "%default_value%";
 
-
   // I'm storing connection and DbSettings in two different
   // variables so that I can initialize a ColumnChanger in the
   // Unit test without a connection.
-  private WbConnection dbConn;
-  private DbSettings dbSettings;
-  private CommentSqlManager commentMgr;
+  private final WbConnection dbConn;
+  private final DbSettings dbSettings;
+  private final CommentSqlManager commentMgr;
 
   public ColumnChanger(WbConnection con)
   {
@@ -99,7 +99,7 @@ public class ColumnChanger
 
     StringBuilder result = new  StringBuilder(statements.size() * 50);
 
-    if (dbConn != null && dbConn.getMetadata().isOracle() && oldDefinition != null)
+    if (DBID.Oracle.isDB(dbConn) && oldDefinition != null)
     {
       String oldComment = oldDefinition.getComment();
       String newComment = newDefinition.getComment();

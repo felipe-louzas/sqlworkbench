@@ -41,6 +41,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionProfile;
+import workbench.db.DBID;
 import workbench.db.DbSettings;
 import workbench.db.ErrorPositionReader;
 import workbench.db.JdbcUtils;
@@ -658,7 +659,7 @@ public class SqlCommand
   {
     if (verb == null) return false;
     if (currentConnection == null) return false;
-    if (currentConnection.getMetadata().isOracle() && OracleUtils.fixPLSQLResultSetBug())
+    if (DBID.Oracle.isDB(currentConnection) && OracleUtils.fixPLSQLResultSetBug())
     {
       // this is only necessary for anonymous PL/SQL blocks
       return (verb.equalsIgnoreCase("begin") || verb.equalsIgnoreCase("declare"));

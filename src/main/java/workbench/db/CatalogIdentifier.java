@@ -40,6 +40,7 @@ public class CatalogIdentifier
     catalogName = name;
   }
 
+  @Override
   public void setCatalog(String catalog)
   {
     this.catalogName = catalog;
@@ -129,7 +130,7 @@ public class CatalogIdentifier
   public String getDropStatement(WbConnection con, boolean cascade)
   {
     if (con == null) return null;
-    if (con.getMetadata().isSqlServer() && this.catalogName != null)
+    if (DBID.SQL_Server.isDB(con) && this.catalogName != null)
     {
       return
         "use master;\n" +

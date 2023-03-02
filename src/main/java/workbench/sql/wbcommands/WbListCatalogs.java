@@ -28,6 +28,7 @@ import java.util.List;
 import workbench.console.ConsoleSettings;
 import workbench.console.RowDisplay;
 
+import workbench.db.DBID;
 import workbench.db.postgres.PostgresUtil;
 
 import workbench.storage.DataStore;
@@ -79,7 +80,7 @@ public class WbListCatalogs
     DataStore ds = null;
     String catName = StringUtil.capitalize(currentConnection.getMetadata().getCatalogTerm());
 
-    if (currentConnection.getMetadata().isPostgres())
+    if (DBID.Postgres.isDB(currentConnection))
     {
       cmdLine.parse(getCommandLine(sql));
       boolean verbose = cmdLine.getBoolean(CommonArgs.ARG_VERBOSE, false);

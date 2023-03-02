@@ -32,8 +32,6 @@ import workbench.storage.filter.StringEqualsComparator;
 
 import workbench.util.StringUtil;
 
-
-
 /**
  *
  * @author Thomas Kellerer
@@ -104,7 +102,7 @@ public class DbObjectFinder
       }
       ObjectListDataStore ds = meta.getObjects(catalog, schema, tablename, types);
 
-      if (ds.getRowCount() == 0 && meta.isOracle())
+      if (ds.getRowCount() == 0 && DBID.Oracle.isDB(meta))
       {
         // try again with PUBLIC, maybe it's a public synonym
         ds = meta.getObjects(null, "PUBLIC", tablename, null);
