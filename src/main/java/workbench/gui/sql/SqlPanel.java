@@ -675,23 +675,39 @@ public class SqlPanel
     return readFile(f, encoding);
   }
 
-  public boolean readFile(File aFile, String encoding)
+  public boolean readFile(File toLoad, String encoding)
   {
-    if (aFile == null) return false;
+    if (toLoad == null) return false;
+    if (!toLoad.exists())
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Requested file " + toLoad.getAbsolutePath() + " does not exist. Not loaded");
+      return false;
+    }
 
-    boolean result = false;
-    if (this.editor.readFile(aFile, encoding))
+    boolean loaded = false;
+    try
+    {
+      loaded = this.editor.readFile(toLoad, encoding);
+    }
+    catch (Exception ex)
+    {
+      loaded = false;
+      LogMgr.logError(new CallerInfo(){}, "Could not load file " + toLoad.getAbsolutePath(), ex);
+      String msg = ResourceMgr.getFormattedString("ErrFileNotLoaded", toLoad.getAbsolutePath(), ex.getLocalizedMessage());
+      WbSwingUtilities.showErrorMessage(this, msg);
+    }
+
+    if (loaded)
     {
       this.historyStatements.clear();
-      this.selectEditor();
-      result = true;
+      this.selectEditorLater();
     }
     else
     {
       iconHandler.removeIcon();
-      result = false;
     }
-    return result;
+
+    return loaded;
   }
 
   public boolean hasFileLoaded()

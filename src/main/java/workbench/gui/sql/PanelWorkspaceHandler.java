@@ -26,12 +26,11 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+import workbench.workspace.WbWorkspace;
 
 import workbench.gui.settings.ExternalFileHandling;
 
 import workbench.util.WbProperties;
-
-import workbench.workspace.WbWorkspace;
 
 /**
  *
@@ -39,7 +38,7 @@ import workbench.workspace.WbWorkspace;
  */
 public class PanelWorkspaceHandler
 {
-  private SqlPanel client;
+  private final SqlPanel client;
 
   public PanelWorkspaceHandler(SqlPanel panel)
   {
