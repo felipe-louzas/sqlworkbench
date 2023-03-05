@@ -30,6 +30,7 @@ import workbench.workspace.WbWorkspace;
 
 import workbench.gui.settings.ExternalFileHandling;
 
+import workbench.util.WbFile;
 import workbench.util.WbProperties;
 
 /**
@@ -85,7 +86,16 @@ public class PanelWorkspaceHandler
     if (filename != null)
     {
       String encoding = w.getExternalFileEncoding(index);
-      fileLoaded = client.readFile(filename, encoding);
+      WbFile f = new WbFile(filename);
+      if (f.exists())
+      {
+        fileLoaded = client.readFile(f, encoding, false);
+      }
+      else
+      {
+        LogMgr.logWarning(new CallerInfo(){},
+          "File \"" + f.getFullpathForLogging() + "\" referenced in workspace \"" + w.getFilename() + "\" does not exist!");
+      }
     }
 
     if (fileLoaded)

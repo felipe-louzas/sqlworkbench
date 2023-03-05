@@ -677,6 +677,11 @@ public class SqlPanel
 
   public boolean readFile(File toLoad, String encoding)
   {
+    return readFile(toLoad, encoding, true);
+  }
+
+  public boolean readFile(File toLoad, String encoding, boolean requestEditorFocus)
+  {
     if (toLoad == null) return false;
     if (!toLoad.exists())
     {
@@ -700,7 +705,7 @@ public class SqlPanel
     if (loaded)
     {
       this.historyStatements.clear();
-      this.selectEditorLater();
+      if (requestEditorFocus) this.selectEditorLater();
     }
     else
     {
