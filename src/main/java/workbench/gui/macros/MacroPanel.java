@@ -89,10 +89,10 @@ public class MacroPanel
   public static final String LAYOUT_NAME = "macrolist";
   public static final String PROP_VISIBLE = "list.visible";
   private MacroTree tree;
-  private MainWindow mainWindow;
-  private RunMacroAction runAction;
-  private EditMacroAction editAction;
-  private WbAction copyTextAction;
+  private final MainWindow mainWindow;
+  private final RunMacroAction runAction;
+  private final EditMacroAction editAction;
+  private final WbAction copyTextAction;
   private JButton closeButton;
   private final String propkey = getClass().getName() + ".expandedgroups";
   public static final String TOOLKEY = "macropopup";

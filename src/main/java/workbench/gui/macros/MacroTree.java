@@ -81,11 +81,11 @@ public class MacroTree
   private static final int CLIP_COPY = 1;
   private static final int CLIP_CUT = 2;
   private int clipboardType;
-  private CutCopyPastePopup popup;
-  private WbAction pasteToFolderAction;
-  private WbAction sortMacrosAction;
+  private final CutCopyPastePopup popup;
+  private final WbAction pasteToFolderAction;
+  private final WbAction sortMacrosAction;
 
-  private Insets autoscrollInsets = new Insets(20, 20, 20, 20);
+  private final Insets autoscrollInsets = new Insets(20, 20, 20, 20);
   private final int macroClientId;
 
   public MacroTree(int clientId, boolean forPopup)

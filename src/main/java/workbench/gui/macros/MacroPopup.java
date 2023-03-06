@@ -49,7 +49,7 @@ public class MacroPopup
   extends JDialog
   implements WindowListener, ActionListener
 {
-  private MacroPanel panel;
+  private final MacroPanel panel;
   private EscAction closeAction;
   private boolean isClosing;
 
@@ -57,6 +57,7 @@ public class MacroPopup
   {
     super(parent, false);
     this.panel = new MacroPanel(parent, GuiSettings.getShowToolbarInMacroPopup(), false);
+    this.getContentPane().add(panel);
     setTitle(ResourceMgr.getString("TxtMacroManagerWindowTitle"));
     if (!Settings.getInstance().restoreWindowPosition(this))
     {
@@ -65,6 +66,11 @@ public class MacroPopup
     if (!Settings.getInstance().restoreWindowSize(this))
     {
       setSize(200,400);
+    }
+
+    if (GuiSettings.getCloseMacroPopupWithEsc())
+    {
+      closeAction = new EscAction(this, this);
     }
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     addWindowListener(this);

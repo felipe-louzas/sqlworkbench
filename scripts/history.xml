@@ -5,14 +5,15 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2023-01-08">
-    <entry dev-build="3" type="enh">It's now possible to include column comments in the HTML output of "Save Data As" and "Copy data to clipboad".</entry>
-    <entry dev-build="3" type="enh">Code completion now shows comments for tables and columns.</entry>
-    <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
-    <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
     <entry dev-build="3" type="enh">Errors during loading of external files of a workspace are not handled more gracefully.</entry>
     <entry dev-build="3" type="enh">For DB2 LUW, the table for a trigger was not shown in the DbExplorer's trigger list</entry>
     <entry dev-build="3" type="enh">For PostgreSQL, COPY ... FROM STDIN did not work if no row data was provided</entry>
     <entry dev-build="3" type="enh">POI 5.2 introduced new memory limits when reading XLSX. The built-in limits have been increased and can now be configured.</entry>
+    <entry dev-build="3" type="enh">It's now possible to include column comments in the HTML output of "Save Data As" and "Copy data to clipboad".</entry>
+    <entry dev-build="3" type="enh">Code completion now shows comments for tables and columns.</entry>
+    <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
+    <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
+    <entry dev-build="3" type="fix">The macro popup window did not show the macros any more.</entry>
     <entry dev-build="3" type="fix">For MySQL, the DDL for columns with the data type binary(n) was not generated correctly</entry>
     <entry dev-build="3" type="fix">For PostgreSQL, partitioned tables could not be dropped through the DbExplorer or DbTree</entry>
     <entry dev-build="2" type="fix">Loading of old profiles didn't work if some (or all) were still using the "Default Group"</entry>

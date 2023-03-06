@@ -44,7 +44,7 @@ public class MacroListModel
 {
   private final MacroTreeNode rootNode = new MacroTreeNode("Macros", true);
   private MacroStorage macros;
-  private boolean isPopupTree;
+  private final boolean isPopupTree;
 
   public MacroListModel(MacroStorage original, boolean forPopup)
   {
@@ -226,7 +226,7 @@ public class MacroListModel
     Collection<MacroGroup> groups = macros.getGroups();
 
     rootNode.removeAllChildren();
-    
+
     for (MacroGroup group : groups)
     {
       if (isPopupTree && !group.isVisibleInPopup()) continue;
