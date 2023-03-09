@@ -16,7 +16,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.font.FontRenderContext;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
@@ -71,7 +70,7 @@ public class TextAreaPainter
   protected boolean selectionHighlightIgnoreCase;
 
   private final int cursorWidth = GuiSettings.getCaretWidth();
-  protected float tabSize = -1;
+  protected int tabSize = -1;
   protected boolean showLineNumbers;
   protected int gutterWidth = 0;
 
@@ -459,11 +458,7 @@ public class TextAreaPainter
     if (textArea == null) return;
     FontMetrics cfm = getFontMetrics();
     if (cfm == null) return;
-
-    FontRenderContext frc = cfm.getFontRenderContext();
-    Font font = getFont();
-    float tabWidth = (float) font.getStringBounds("m", frc).getWidth();
-    this.tabSize = tabWidth * textArea.getTabSize();
+    this.tabSize = cfm.charWidth(' ') * textArea.getTabSize();
   }
 
   @Override
