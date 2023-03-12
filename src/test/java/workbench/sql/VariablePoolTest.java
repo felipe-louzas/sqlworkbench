@@ -70,6 +70,17 @@ public class VariablePoolTest
   }
 
   @Test
+  public void testEndlessLoop()
+  {
+    VariablePool pool = VariablePool.getInstance();
+
+    pool.setParameterValue("foo.bar", "else");
+    pool.setParameterValue("foo", "one$[foo]");
+    String replaced = pool.replaceAllParameters("Some $[foo] $[foo.bar]");
+    assertEquals("Some one else", replaced);
+  }
+
+  @Test
   public void testNoSuffix()
   {
     VariablePool pool = VariablePool.getInstance();
@@ -289,6 +300,6 @@ public class VariablePoolTest
     pool.setParameterValue("ZOO_PARAM", "tiger");
     sql = "select '" + prefix + "FOO_PARAM" + suffix + "' as TEST, '" + prefix + "ZOO_PARAM" + suffix + "' as TEST2;";
     replaced = pool.replaceAllParameters(sql);
-    assertEquals("select '" + prefix + "FOO_PARAM" + suffix + "' as TEST, 'tiger' as TEST2;", replaced);
+    assertEquals("select '' as TEST, 'tiger' as TEST2;", replaced);
   }
 }

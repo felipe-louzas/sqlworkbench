@@ -226,7 +226,7 @@ public class Settings
 
   private long fileTime;
   private boolean createBackup;
-  private List<WbFile> profileStorage = new ArrayList<>(1);
+  private final List<WbFile> profileStorage = new ArrayList<>(1);
 
   /**
    * Thread safe singleton-instance
@@ -902,7 +902,7 @@ public class Settings
   {
     return getIntProperty("workbench.gui.data.memcheckinterval", 1000);
   }
-  
+
   public int getLowMemoryCheckIntervalWithLargeColumns()
   {
     return getIntProperty("workbench.gui.largedata.memcheckinterval", 5);

@@ -34,10 +34,11 @@ import workbench.gui.profiles.ProfileKey;
 
 import workbench.util.WbFile;
 
+import com.jcraft.jsch.AgentIdentityRepository;
+import com.jcraft.jsch.IdentityRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
-import com.jcraft.jsch.agentproxy.Connector;
-import com.jcraft.jsch.agentproxy.ConnectorFactory;
+import com.jcraft.jsch.SSHAgentConnector;
 
 /**
  *
@@ -271,7 +272,7 @@ public class SshManager
     }
   }
 
-  public static boolean canUseAgent()
+  public static boolean canUseJSchAgent()
   {
     final CallerInfo ci = new CallerInfo(){};
     long start = System.currentTimeMillis();
@@ -279,28 +280,31 @@ public class SshManager
     boolean available = false;
     try
     {
-      Connector connector = ConnectorFactory.getDefault().createConnector();
-      if (connector != null)
+      IdentityRepository irepo = new AgentIdentityRepository(new SSHAgentConnector());
+      if (irepo != null)
       {
-        LogMgr.logInfo(ci, "SSH agent connector " + connector.getName() + " available: " + connector.isAvailable());
+        LogMgr.logInfo(ci, "SSH agent connector " + irepo.getName() + " status: " + irepo.getStatus());
       }
       else
       {
         LogMgr.logInfo(ci, "No agent connector available");
       }
-      available = connector != null;
+      if (irepo != null)
+      {
+        available = irepo.getStatus() == IdentityRepository.RUNNING;
+      }
     }
     catch (Throwable th)
     {
       LogMgr.logWarning(ci, "Can not create agent connector (" + th.getClass().getName() + " " + th.getMessage() + ")");
+      available = false;
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(ci, "Checking for SSH agent connector took: " + duration + "ms");
+    LogMgr.logDebug(ci, "Checking for JSch agent connector took: " + duration + "ms");
 
     return available;
   }
-
 
 }
 

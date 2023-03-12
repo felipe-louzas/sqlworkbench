@@ -85,7 +85,7 @@ public class VariablePool
   private String prefix;
   private String suffix;
 
-  private final Pattern validNamePattern = Pattern.compile("[\\w\\.]*");
+  private final Pattern validNamePattern = Pattern.compile("[\\w\\.]+");
   private Pattern promptPattern;
   private Pattern variablePattern;
   private final String poolID;
@@ -483,6 +483,12 @@ public class VariablePool
       {
         String value = variables.get(name);
         Pattern p = patterns.get(name);
+        Matcher m = p.matcher(value);
+        // Avoid endless loops if a value contains the variable name again
+        if (m.find())
+        {
+          value = m.replaceAll("");
+        }
         replaceVarValue(newSql, p, value);
       }
     }
@@ -548,7 +554,7 @@ public class VariablePool
     {
       result.append("[\\?\\&]?");
     }
-    result.append(varName);
+    result.append(StringUtil.quoteRegexMeta(varName));
     result.append(StringUtil.quoteRegexMeta(getSuffix()));
     return result.toString();
   }

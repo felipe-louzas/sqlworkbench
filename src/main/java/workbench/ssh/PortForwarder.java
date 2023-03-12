@@ -36,15 +36,14 @@ import workbench.gui.WbSwingUtilities;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
+import com.jcraft.jsch.AgentIdentityRepository;
 import com.jcraft.jsch.Identity;
 import com.jcraft.jsch.IdentityRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SSHAgentConnector;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
-import com.jcraft.jsch.agentproxy.Connector;
-import com.jcraft.jsch.agentproxy.ConnectorFactory;
-import com.jcraft.jsch.agentproxy.RemoteIdentityRepository;
 
 /**
  *
@@ -55,8 +54,8 @@ public class PortForwarder
 {
   public static final int DEFAULT_SSH_PORT = 22;
 
-  private String sshHost;
-  private String sshUser;
+  private final String sshHost;
+  private final String sshUser;
   private String password;
   private String passphrase;
   private String privateKeyFile;
@@ -64,7 +63,7 @@ public class PortForwarder
   private Session session;
   private int localPort;
 
-  private boolean tryAgent;
+  private final boolean tryAgent;
 
   public PortForwarder(SshHostConfig config)
   {
@@ -134,7 +133,11 @@ public class PortForwarder
     session = jsch.getSession(sshUser, sshHost, sshPort);
     session.setUserInfo(this);
 
-    if (!useAgent && privateKeyFile == null)
+    if (useAgent)
+    {
+      props.put("PreferredAuthentications", "publickey");
+    }
+    else if (privateKeyFile == null)
     {
       props.put("PreferredAuthentications", "password,keyboard-interactive");
       session.setPassword(password);
@@ -191,14 +194,11 @@ public class PortForwarder
   {
     try
     {
-      Connector connector = ConnectorFactory.getDefault().createConnector();
-      if (connector == null) return false;
-
-      IdentityRepository irepo = new RemoteIdentityRepository(connector);
+      IdentityRepository irepo = new AgentIdentityRepository(new SSHAgentConnector());
       Vector<Identity> identities = irepo.getIdentities();
       if (identities.size() > 0)
       {
-        LogMgr.logInfo(new CallerInfo(){}, "Using " + identities.size() + " identities from agent: " + connector.getName());
+        LogMgr.logInfo(new CallerInfo(){}, "Using " + identities.size() + " identities from agent: " + irepo.getName());
         jsh.setIdentityRepository(irepo);
         return true;
       }

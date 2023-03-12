@@ -5,7 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2023-01-08">
-    <entry dev-build="3" type="enh">Errors during loading of external files of a workspace are not handled more gracefully.</entry>
+    <entry dev-build="3" type="enh">Errors during loading of external files of a workspace are now handled more gracefully.</entry>
     <entry dev-build="3" type="enh">For DB2 LUW, the table for a trigger was not shown in the DbExplorer's trigger list</entry>
     <entry dev-build="3" type="enh">For PostgreSQL, COPY ... FROM STDIN did not work if no row data was provided</entry>
     <entry dev-build="3" type="enh">POI 5.2 introduced new memory limits when reading XLSX. The built-in limits have been increased and can now be configured.</entry>
