@@ -105,7 +105,7 @@
     <mvn:resolve>
       <dependencies pomRef="wb-pom"/>
       <!-- this copies all libraries so that we can package them later -->
-      <files dir="${distdir}/libs" layout="{artifactId}.{extension}" scopes="compile"/>
+      <files dir="${distdir}/libs" layout="{artifactId}.{extension}" scopes="compile,runtime"/>
     </mvn:resolve>
   </target>
 

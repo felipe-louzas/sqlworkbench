@@ -199,7 +199,7 @@ public class SshHostConfig
 
   public void setPrivateKeyFile(String privateKeyFile)
   {
-    this.privateKeyFile = privateKeyFile;
+    this.privateKeyFile = StringUtil.trimToNull(privateKeyFile);
   }
 
   public String getConfigName()

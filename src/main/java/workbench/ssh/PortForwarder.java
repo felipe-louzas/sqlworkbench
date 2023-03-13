@@ -41,7 +41,6 @@ import com.jcraft.jsch.Identity;
 import com.jcraft.jsch.IdentityRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SSHAgentConnector;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
@@ -194,7 +193,7 @@ public class PortForwarder
   {
     try
     {
-      IdentityRepository irepo = new AgentIdentityRepository(new SSHAgentConnector());
+      IdentityRepository irepo = new AgentIdentityRepository(SshManager.createAgentConnector());
       Vector<Identity> identities = irepo.getIdentities();
       if (identities.size() > 0)
       {

@@ -164,7 +164,7 @@ public class SshHostConfigPanel
       @Override
       public void run()
       {
-        canUseAgent = SshManager.canUseJSchAgent();
+        canUseAgent = SshManager.canUseAgent();
         WbSwingUtilities.invoke(SshHostConfigPanel.this::setTryAgentState);
       }
     };

@@ -32,12 +32,16 @@ import workbench.db.ConnectionProfile;
 
 import workbench.gui.profiles.ProfileKey;
 
+import workbench.util.PlatformHelper;
 import workbench.util.WbFile;
 
+import com.jcraft.jsch.AgentConnector;
 import com.jcraft.jsch.AgentIdentityRepository;
+import com.jcraft.jsch.AgentProxyException;
 import com.jcraft.jsch.IdentityRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
+import com.jcraft.jsch.PageantConnector;
 import com.jcraft.jsch.SSHAgentConnector;
 
 /**
@@ -272,7 +276,17 @@ public class SshManager
     }
   }
 
-  public static boolean canUseJSchAgent()
+  public static AgentConnector createAgentConnector()
+    throws AgentProxyException
+  {
+    if (PlatformHelper.isWindows())
+    {
+      return new PageantConnector();
+    }
+    return new SSHAgentConnector();
+  }
+
+  public static boolean canUseAgent()
   {
     final CallerInfo ci = new CallerInfo(){};
     long start = System.currentTimeMillis();
@@ -280,23 +294,41 @@ public class SshManager
     boolean available = false;
     try
     {
-      IdentityRepository irepo = new AgentIdentityRepository(new SSHAgentConnector());
+      IdentityRepository irepo = new AgentIdentityRepository(createAgentConnector());
       if (irepo != null)
       {
-        LogMgr.logInfo(ci, "SSH agent connector " + irepo.getName() + " status: " + irepo.getStatus());
+        int status = irepo.getStatus();
+        String statusName;
+        switch (status)
+        {
+          case IdentityRepository.UNAVAILABLE:
+            statusName = "UNAVAILABLE";
+            break;
+          case IdentityRepository.NOTRUNNING:
+            statusName = "NOTRUNNING";
+            break;
+          case IdentityRepository.RUNNING:
+            statusName = "RUNNING";
+            break;
+          default:
+            statusName = Integer.toString(status);
+        }
+
+        LogMgr.logInfo(ci, "SSH agent connector " + irepo.getName() + " status: " + statusName);
       }
       else
       {
         LogMgr.logInfo(ci, "No agent connector available");
       }
+
       if (irepo != null)
       {
-        available = irepo.getStatus() == IdentityRepository.RUNNING;
+        available = irepo.getStatus() != IdentityRepository.UNAVAILABLE;
       }
     }
     catch (Throwable th)
     {
-      LogMgr.logWarning(ci, "Can not create agent connector (" + th.getClass().getName() + " " + th.getMessage() + ")");
+      LogMgr.logWarning(ci, "Can not create agent connector (" + th.getClass().getName() + ": " + th.getMessage() + ")");
       available = false;
     }
 
