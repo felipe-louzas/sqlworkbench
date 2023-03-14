@@ -3214,7 +3214,7 @@ public class Settings
     String name = getProperty(key, null);
     if (name == null) return null;
     String group = getProperty(key + ".group", null);
-    return new ProfileKey(name, group);
+    return new ProfileKey(name, ProfileKey.parseGroupPath(group));
   }
 
   public void setLastConnection(ConnectionProfile prof)

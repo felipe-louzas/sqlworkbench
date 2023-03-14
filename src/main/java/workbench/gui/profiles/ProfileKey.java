@@ -92,8 +92,11 @@ public class ProfileKey
   {
     if (StringUtil.isBlank(pname)) throw new IllegalArgumentException("Name cannot be empty!");
 
-    this.groupPath.addAll(groupPath);
     this.name = pname.trim();
+    if (groupPath != null)
+    {
+      this.groupPath.addAll(groupPath);
+    }
   }
 
   private void parseNameAndGroup(String pname)
@@ -111,9 +114,9 @@ public class ProfileKey
       String path = tname.substring(1,pos).trim();
       this.groupPath.addAll(parseGroupPath(path));
     }
-    else if (tname.length() > 0 && tname.indexOf('/') > -1)
+    else if (tname.indexOf('/') > -1)
     {
-      int slashPos = tname.indexOf('/');
+      int slashPos = tname.lastIndexOf('/');
       this.name = tname.substring(slashPos + 1).trim();
       String path = tname.substring(0,slashPos).trim();
       this.groupPath.addAll(parseGroupPath(path));
