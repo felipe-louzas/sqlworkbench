@@ -85,7 +85,10 @@ public class ResultColumnMetaData
 
       TableIdentifier tbl = new TableIdentifier(alias.getObjectName(), connection);
       TableDefinition def = finder.findTableDefinition(tbl);
-      tableDefs.put(alias.getNameToUse().toLowerCase(), def);
+      if (def != null)
+      {
+        tableDefs.put(alias.getNameToUse().toLowerCase(), def);
+      }
     }
 
     updateFromQueryColumns(info, tableDefs);
@@ -95,6 +98,7 @@ public class ResultColumnMetaData
   private void updateFromQueryColumns(ResultInfo info, Map<String, TableDefinition> tableDefs)
   {
     if (CollectionUtil.isEmpty(queryColumns)) return;
+    if (CollectionUtil.isEmpty(tableDefs)) return;
 
     List<SelectColumn> columns = expandQueryColumns(tableDefs);
 
@@ -165,7 +169,7 @@ public class ResultColumnMetaData
     }
     return null;
   }
-  
+
   /**
    * Try to expand wildcard "columns" to the real columns.
    */
@@ -246,6 +250,8 @@ public class ResultColumnMetaData
   {
     for (TableDefinition def : tableDefs.values())
     {
+      if (def == null) continue;
+      
       String colTable = getTableNameForAlias(connection.getMetadata().removeQuotes(column.getColumnTable()));
       if (colTable == null || StringUtil.equalStringIgnoreCase(colTable, def.getTable().getRawTableName()))
       {
