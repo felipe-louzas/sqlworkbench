@@ -22,14 +22,13 @@ package workbench.sql.wbcommands;
 
 import workbench.WbManager;
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
 import workbench.db.WbConnection;
 
 import workbench.gui.profiles.ProfileKey;
-
-import workbench.log.LogMgr;
 
 import workbench.sql.StatementRunnerResult;
 
@@ -43,10 +42,10 @@ import workbench.util.StringUtil;
  */
 public class CommandLineConnectionHandler
 {
-  private ArgumentParser cmdLine;
-  private String profileNameArgument;
-  private String profileGroupArgument;
-  private String connectionArgument;
+  private final ArgumentParser cmdLine;
+  private final String profileNameArgument;
+  private final String profileGroupArgument;
+  private final String connectionArgument;
 
   public CommandLineConnectionHandler(ArgumentParser cmdLine, String profileNameArgument, String profileGroupArgument, String connectionArgument)
   {

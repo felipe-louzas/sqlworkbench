@@ -99,12 +99,12 @@ public class SQLConsole
   private final StatementHistory history;
   private BatchRunner runner;
   private WbThread cancelThread;
-  private ConsoleRefresh refreshHandler = new ConsoleRefresh();
+  private final ConsoleRefresh refreshHandler = new ConsoleRefresh();
 
   private final boolean changeTerminalTitle;
   private final String titlePrefix = "\033]0;";
   private final String titleSuffix = "\007";
-  private WindowTitleBuilder titleBuilder = new WindowTitleBuilder();
+  private final WindowTitleBuilder titleBuilder = new WindowTitleBuilder();
 
   public SQLConsole()
   {
