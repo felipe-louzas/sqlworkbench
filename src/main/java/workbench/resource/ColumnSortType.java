@@ -35,7 +35,8 @@ public enum ColumnSortType
   name("LblSortPastColName"),
   position("LblSortPastColPos");
 
-  private String label;
+  private final String label;
+
   private ColumnSortType(String key)
   {
     this.label = ResourceMgr.getString(key);

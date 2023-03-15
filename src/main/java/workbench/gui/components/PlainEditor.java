@@ -27,6 +27,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -59,7 +61,7 @@ import workbench.gui.editor.SearchAndReplace;
  */
 public class PlainEditor
   extends JPanel
-  implements ActionListener, TextContainer, Restoreable
+  implements ActionListener, TextContainer, Restoreable, PropertyChangeListener
 {
   private JTextArea editor;
   private JCheckBox wordWrap;
@@ -81,6 +83,7 @@ public class PlainEditor
     editor = new JTextArea();
     enabledBackground = editor.getBackground();
     editor.putClientProperty("JTextArea.infoBackground", Boolean.TRUE);
+    editor.addPropertyChangeListener("document", this);
     editMenu = new TextComponentMouseListener(editor);
 
     scroll = new WbScrollPane(editor, WbSwingUtilities.EMPTY_BORDER);
@@ -105,14 +108,7 @@ public class PlainEditor
 
     this.add(scroll, BorderLayout.CENTER);
     this.setFocusable(false);
-
-    Document d = editor.getDocument();
-    if (d != null)
-    {
-      int tabSize = Settings.getInstance().getEditorTabWidth();
-      d.putProperty(PlainDocument.tabSizeAttribute, Integer.valueOf(tabSize));
-    }
-
+    setTabSize();
     if (allowEdit)
     {
       SearchAndReplace replacer = new SearchAndReplace(this, this);
@@ -121,6 +117,16 @@ public class PlainEditor
       editMenu.addAction(replacer.getReplaceAction());
     }
     setEditable(allowEdit);
+  }
+
+  private void setTabSize()
+  {
+    Document d = editor.getDocument();
+    if (d != null)
+    {
+      int tabSize = Settings.getInstance().getEditorTabWidth();
+      d.putProperty(PlainDocument.tabSizeAttribute, Integer.valueOf(tabSize));
+    }
   }
 
   @Override
@@ -365,4 +371,14 @@ public class PlainEditor
       return null;
     }
   }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    if (evt.getSource() == editor && "document".equals(evt.getPropertyName()))
+    {
+      setTabSize();
+    }
+  }
+
 }

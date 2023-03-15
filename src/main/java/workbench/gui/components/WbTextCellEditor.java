@@ -65,15 +65,15 @@ public class WbTextCellEditor
   extends DefaultCellEditor
   implements MouseListener, DocumentListener, NullableEditor
 {
-  private JTextField textField;
-  private WbTable parentTable;
-  private Color defaultBackground;
+  private final JTextField textField;
+  private final WbTable parentTable;
+  private final Color defaultBackground;
   private boolean changed;
   private boolean isNull;
-  private RestoreDataAction restoreValue;
-  private SetNullAction setNull;
-  private SelectFkValueAction selectFk;
-  private TextComponentMouseListener contextMenu;
+  private final RestoreDataAction restoreValue;
+  private final SetNullAction setNull;
+  private final SelectFkValueAction selectFk;
+  private final TextComponentMouseListener contextMenu;
 
   public static WbTextCellEditor createInstance()
   {

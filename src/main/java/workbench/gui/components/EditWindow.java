@@ -59,8 +59,8 @@ public class EditWindow
   private TextContainer textContainer;
   private JComponent editor;
   private Restoreable componentSettings;
-  private JButton okButton = new WbButton(ResourceMgr.getString("LblOK"));
-  private JButton cancelButton = new WbButton(ResourceMgr.getString("LblCancel"));
+  private final JButton okButton = new WbButton(ResourceMgr.getString("LblOK"));
+  private final JButton cancelButton = new WbButton(ResourceMgr.getString("LblCancel"));
   private boolean isCancelled = true;
   private String settingsId;
 

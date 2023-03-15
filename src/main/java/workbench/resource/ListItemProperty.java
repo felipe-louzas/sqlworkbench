@@ -26,6 +26,7 @@ package workbench.resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import workbench.util.StringUtil;
 
 /**
@@ -36,7 +37,7 @@ import workbench.util.StringUtil;
  */
 public class ListItemProperty
 {
-  private String propName;
+  private final String propName;
 
   public ListItemProperty(String itemName)
   {

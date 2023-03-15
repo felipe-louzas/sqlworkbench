@@ -34,7 +34,7 @@ public enum GeneratedIdentifierCase
   upper("LblUppercase"),
   asIs("LblAsIs");
 
-  private String label;
+  private final String label;
 
   private GeneratedIdentifierCase(String resourceKey)
   {

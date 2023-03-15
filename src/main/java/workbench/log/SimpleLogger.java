@@ -47,7 +47,7 @@ public class SimpleLogger
   private boolean logSystemErr = false;
   private String messageFormat;
   private File currentFile;
-  private List<LogListener> listenerList = new ArrayList<>(1);
+  private final List<LogListener> listenerList = new ArrayList<>(1);
 
   public SimpleLogger()
   {
