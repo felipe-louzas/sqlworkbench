@@ -96,6 +96,8 @@ public class WbSqlFormatter
     "UNIQUE", "BITMAP", "HASH", "CLUSTERED", "NONCLUSTERED", "FULLTEXT", "SPATIAL",
     "ONLINE", "OFFLINE");
 
+  private static final Set<String> CREATE_VERBS = CollectionUtil.unmodifiableSet("CREATE OR REPLACE", "CREATE OR ALTER");
+
   private CharSequence sql;
   private SQLLexer lexer;
   private StringBuilder result;
@@ -105,10 +107,10 @@ public class WbSqlFormatter
   private int maxSubselectLength = 60;
 
   private Set<String> dbFunctions = CollectionUtil.caseInsensitiveSet();
-  private Set<String> dataTypes = CollectionUtil.caseInsensitiveSet();
-  private Set<String> keywords = CollectionUtil.caseInsensitiveSet();
-  private Set<String> createTableTypes = CollectionUtil.caseInsensitiveSet();
-  private Set<String> createViewTypes = CollectionUtil.caseInsensitiveSet();
+  private final Set<String> dataTypes = CollectionUtil.caseInsensitiveSet();
+  private final Set<String> keywords = CollectionUtil.caseInsensitiveSet();
+  private final Set<String> createTableTypes = CollectionUtil.caseInsensitiveSet();
+  private final Set<String> createViewTypes = CollectionUtil.caseInsensitiveSet();
 
   private String lineEnding = "\n";
   private boolean addColumnCommentForInsert;
@@ -310,6 +312,7 @@ public class WbSqlFormatter
     createTableTypes.clear();
     createViewTypes.clear();
     keywords.addAll(helper.getKeywords());
+    keywords.addAll(CREATE_VERBS);
     dataTypes.addAll(helper.getDataTypes());
     dbFunctions.addAll(helper.getSqlFunctions());
     createTableTypes.addAll(helper.getCreateTableTypes());
@@ -2469,22 +2472,6 @@ public class WbSqlFormatter
       this.appendTokenText(t);
       this.appendText(' ');
       return this.processCreateIndex();
-    }
-    else if (verb.equals("OR"))
-    {
-      // Check for Oracle's CREATE OR REPLACE
-      this.appendText(' ');
-      this.appendText(verb);
-      t = this.lexer.getNextToken(true, false);
-      if (t == null) return t;
-      verb = t.getContents();
-      if (verb.equals("REPLACE"))
-      {
-        this.appendText(' ');
-        this.appendText(verb);
-        this.appendText(' ');
-        return this.processCreateView(t);
-      }
     }
 
     return t;
