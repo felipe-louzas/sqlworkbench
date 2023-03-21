@@ -55,7 +55,7 @@ public class WbSqlFormatterTest
     WbSqlFormatter f = new WbSqlFormatter(sql, 150, DBID.Postgres.getId());
     f.setKeywordCase(GeneratedIdentifierCase.upper);
     String formatted = f.getFormattedSql();
-    System.out.println(formatted);
+//    System.out.println(formatted);
     String expected = "SET search_path = one,two;";
 //    System.out.println("***** formatted ***** \n" + formatted + "\n----------- expected --------- \n" + expected + "\n*****************");
     assertEquals(expected, formatted);
@@ -2360,6 +2360,38 @@ public class WbSqlFormatterTest
     List<String> lines = StringUtil.getLines(formatted);
     assertFalse(lines.isEmpty());
     assertEquals("CREATE TABLE IF NOT EXISTS person", lines.get(0).trim());
+  }
+
+  @Test
+  public void testCreateOrReplaceTable()
+    throws Exception
+  {
+    String sql = "create or replace table public.some_table_name (column_1 varchar(1),column_2 int,column_3 date)";
+    WbSqlFormatter f = new WbSqlFormatter(sql, 100, "snowflake");
+    String formatted = f.getFormattedSql();
+    String expected =
+      "CREATE OR REPLACE TABLE public.some_table_name \n" +
+      "(\n" +
+      "  column_1   VARCHAR(1),\n" +
+      "  column_2   INT,\n" +
+      "  column_3   DATE\n" +
+      ")";
+    assertEquals(expected, formatted);
+  }
+
+  @Test
+  public void testCreateOrReplaceView()
+    throws Exception
+  {
+    String sql = "create or replace view some_view as select * from person";
+    WbSqlFormatter f = new WbSqlFormatter(sql, 100, "snowflake");
+    String formatted = f.getFormattedSql();
+    String expected =
+      "CREATE OR REPLACE VIEW some_view \n" +
+      "AS\n" +
+      "SELECT *\n" +
+      "FROM person";
+    assertEquals(expected, formatted);
   }
 
   @Test

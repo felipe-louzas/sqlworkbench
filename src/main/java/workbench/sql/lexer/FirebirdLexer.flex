@@ -151,7 +151,7 @@ import workbench.util.CharSequenceReader;
 wsp = [ \r\n\t\f]+
 
 keyword=(
-"DELIMITER"|(SET{wsp}TERM)|
+"DELIMITER"|(SET{wsp}TERM)|"EXCEPTION"|"SHADOW"|"FILTER"|(EXTERNAL{wsp}FUNCTION)|
 (ALTER{wsp}SESSION)|
 (CONNECT{wsp}BY)|
 (PRIMARY{wsp}KEY)|
@@ -289,6 +289,7 @@ keyword=(
 "EVERY"|
 "EXCEPT"|
 "EXISTS"|
+"EXTERNAL"|
 "EXTRACT"|
 "FALSE"|
 "FIRST"|

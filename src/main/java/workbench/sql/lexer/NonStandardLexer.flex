@@ -289,6 +289,7 @@ keyword=(
 "EVERY"|
 "EXCEPT"|
 "EXISTS"|
+"EXTERNAL"|
 "EXTRACT"|
 "FALSE"|
 "FIRST"|

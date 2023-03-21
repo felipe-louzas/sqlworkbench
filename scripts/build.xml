@@ -448,7 +448,7 @@
         <replacevalue>FirebirdLexer</replacevalue>
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|"
-                     value='"DELIMITER"|(SET{wsp}TERM)|'/>
+                     value='"DELIMITER"|(SET{wsp}TERM)|"EXCEPTION"|"SHADOW"|"FILTER"|(EXTERNAL{wsp}FUNCTION)|'/>
       <replacefilter token="(FOREIGN{wsp}DATA{wsp}WRAPPER)|"/>
       <replacefilter token='"VARCHAR2"|'/>
       <replacefilter token="(SNAPSHOT{wsp}LOG)|"/>
