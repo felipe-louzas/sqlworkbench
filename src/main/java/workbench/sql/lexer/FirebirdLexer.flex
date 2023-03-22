@@ -166,7 +166,8 @@ keyword=(
 (CREATE{wsp}OR{wsp}REPLACE)|
 (CREATE{wsp}OR{wsp}ALTER)|
 (IS{wsp}NOT{wsp}NULL)|
-(FLASHBACK{wsp}ARCHIVE)|
+(IMMUTABLE{wsp}NOT{wsp}BLOCKCHAIN)|
+
 (MATERIALIZED{wsp}VIEW)|
 (MATERIALIZED{wsp}VIEW{wsp}LOG)|
 (START{wsp}WITH)|

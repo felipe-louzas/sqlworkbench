@@ -457,6 +457,7 @@
       <replacefilter token="(DISTINCT{wsp}ON)|"/>
       <replacefilter token="(OUTER{wsp}APPLY)|"/>
       <replacefilter token="(CROSS{wsp}APPLY)|"/>
+      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
     </replace>
 
     <replace file="../src/main/java/workbench/sql/lexer/PostgresLexer.flex">
@@ -480,6 +481,7 @@
       <replacefilter token="(CROSS{wsp}APPLY)|" value="(OWNED{wsp}BY)|"/>
       <replacefilter token='"SYSTIMESTAMP"|' value='"LOCALTIMESTAMP"|'/>
       <replacefilter token='"SESSION_USER"|'/>
+      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
       <replacefilter>
         <replacetoken><![CDATA[operator=([\+\-\*\/\<\>\=\~\!\%\^\&\?]|"||"|"!="|"<>"|"<="|">="|"=>"|"(+)")]]></replacetoken>
         <replacevalue><![CDATA[operator=([\+\-\*\/\<\>\=\~\!\%\^\&\?]|"~>~"|"~>=~"|"~<~"|"~<=~"|"!~~*"|"||"|"|/"|"||/"|"!!"|"<<"|">>"|"##"|"~"|"~*"|"!~"|"!~*"|"@?"|"^@"|"@-@"|"@@"|"@@@"|"?&"|"#-"|"#>"|"#>>"|"->"|"->>"|"<->"|"&<"|"&>"|"<<|"|"|>>"|"&<|"|"|&>"|"<^"|">^"|"?#"|"?-"|"?|"|"?-|"|"?|"|"~="|"!="|"<>"|"<="|">="|"=>"|"@>"|"<@")|" @?"|"<<="|">>="]]></replacevalue>
@@ -545,6 +547,7 @@
       <replacefilter token="(CREATE{wsp}OR{wsp}REPLACE)|"/>
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
       <replacefilter token="(DATABASE{wsp}LINK)|"/>
+      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
       <replacefilter>
         <replacetoken><![CDATA[identifier=([^ \"\r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\~\?\(\)\[\]\,\;\:\.0-9][^ \r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\"\~\?\(\)\]\[\,\;\:\*]*)|(\"[^\r\n\t\f\"]*\")]]></replacetoken>
         <replacevalue><![CDATA[identifier=([^ \"\r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\~\?\(\)\[\]\,\;\:\.0-9][^ \r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\"\~\?\(\)\]\[\,\;\:\*]*)|(\"[^\r\n\t\f\"]*\")|(\[[^\r\n\t\f\[]*\]) ]]></replacevalue>

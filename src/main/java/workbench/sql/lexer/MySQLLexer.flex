@@ -166,6 +166,7 @@ keyword=(
 
 
 (IS{wsp}NOT{wsp}NULL)|
+(IMMUTABLE{wsp}NOT{wsp}BLOCKCHAIN)|
 
 
 

@@ -2377,6 +2377,30 @@ public class WbSqlFormatterTest
       "  column_3   DATE\n" +
       ")";
     assertEquals(expected, formatted);
+
+    String sql2 = "create or replace temp table public.some_table_name (column_1 varchar(1),column_2 int,column_3 date)";
+    WbSqlFormatter f2 = new WbSqlFormatter(sql2, 100, "snowflake");
+    String formatted2 = f2.getFormattedSql();
+    String expected2 =
+      "CREATE OR REPLACE TEMP TABLE public.some_table_name \n" +
+      "(\n" +
+      "  column_1   VARCHAR(1),\n" +
+      "  column_2   INT,\n" +
+      "  column_3   DATE\n" +
+      ")";
+    assertEquals(expected2, formatted2);
+
+    String sql3 = "create global temporary table public.some_table_name (column_1 varchar(1),column_2 int,column_3 date)";
+    WbSqlFormatter f3 = new WbSqlFormatter(sql3, 100, "snowflake");
+    String formatted3 = f3.getFormattedSql();
+    String expected3 =
+      "CREATE GLOBAL TEMPORARY TABLE public.some_table_name \n" +
+      "(\n" +
+      "  column_1   VARCHAR(1),\n" +
+      "  column_2   INT,\n" +
+      "  column_3   DATE\n" +
+      ")";
+    assertEquals(expected3, formatted3);
   }
 
   @Test
