@@ -13,6 +13,7 @@
     <entry dev-build="3" type="enh">Code completion now shows comments for tables and columns.</entry>
     <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
     <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
+    <entry dev-build="3" type="fix">Formatting statements using CREATE OR REPLACE TABLE was not correct</entry>
     <entry dev-build="3" type="fix">Loading of profiles did not work if the last profile selected contained a / in its name.</entry>
     <entry dev-build="3" type="fix">The macro popup window did not show the macros any more.</entry>
     <entry dev-build="3" type="fix">For MySQL, the DDL for columns with the data type binary(n) was not generated correctly</entry>

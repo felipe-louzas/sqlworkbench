@@ -498,14 +498,12 @@ public class StatementRunner
 
     if (this.currentConnection == null && this.currentCommand.isConnectionRequired())
     {
-      final String verb = SqlParsingUtil.getInstance(null).getSqlVerb(aSql);
-
-      SQLException ex = new SQLException("Cannot execute command '" + verb + "' without a connection!")
+      SQLException ex = new SQLException("Cannot execute command '" + currentSqlVerb + "' without a connection!")
       {
         @Override
         public String getLocalizedMessage()
         {
-          return ResourceMgr.getFormattedString("ErrConnRequired", verb);
+          return ResourceMgr.getFormattedString("ErrConnRequired", currentSqlVerb);
         }
       };
       throw ex;
@@ -516,9 +514,8 @@ public class StatementRunner
     {
       // We only need to check additional "transaction commands" for generic commands.
       // see endReadonlyTransaction()
-      final String verb = SqlParsingUtil.getInstance(currentConnection).getSqlVerb(aSql);
       Set<String> commands = currentConnection.getDbSettings().getAdditionalTransactionCommands();
-      this.isTransactionCommand = commands.contains(verb);
+      this.isTransactionCommand = commands.contains(currentSqlVerb);
     }
 
     this.currentCommand.setStatementRunner(this);
