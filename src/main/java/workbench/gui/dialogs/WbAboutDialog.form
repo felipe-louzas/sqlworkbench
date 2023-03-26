@@ -142,7 +142,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="builtWithNbLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;Built with NetBeans (&lt;u&gt;netbeans.apache.org&lt;/u&gt;)&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Built with Apache NetBeans (&lt;u&gt;netbeans.apache.org&lt;/u&gt;)&lt;/html&gt;"/>
           </Properties>
           <Events>
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="builtWithNbLabelMouseClicked"/>

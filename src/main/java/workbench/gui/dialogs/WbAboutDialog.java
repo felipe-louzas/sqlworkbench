@@ -72,7 +72,7 @@ public class WbAboutDialog
   extends JDialog
   implements ActionListener
 {
-  private EscAction escAction;
+  private final EscAction escAction;
 
   public WbAboutDialog(Frame parent)
   {
@@ -224,7 +224,7 @@ public class WbAboutDialog
     gridBagConstraints.insets = new Insets(12, 8, 0, 5);
     contentPanel.add(labelCopyright, gridBagConstraints);
 
-    builtWithNbLabel.setText("<html>Built with NetBeans (<u>netbeans.apache.org</u>)</html>");
+    builtWithNbLabel.setText("<html>Built with Apache NetBeans (<u>netbeans.apache.org</u>)</html>");
     builtWithNbLabel.addMouseListener(new MouseAdapter()
     {
       public void mouseClicked(MouseEvent evt)
@@ -242,7 +242,7 @@ public class WbAboutDialog
     contentPanel.add(builtWithNbLabel, gridBagConstraints);
 
     jeditLabel.setText("<html>The editor is based on jEdit's 2.2.2 <u>syntax highlighting package</u></html>");
-    jeditLabel.setToolTipText("https://syntax.jedit.org/");
+    jeditLabel.setToolTipText("http://syntax.jedit.org/");
     jeditLabel.addMouseListener(new MouseAdapter()
     {
       public void mouseClicked(MouseEvent evt)
