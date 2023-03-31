@@ -4357,7 +4357,7 @@ public class SqlPanel
         }
       });
 
-      if (!shouldRetrieveCommentsImmediately())
+      if (!shouldRetrieveCommentsImmediately() && GuiSettings.getRetrieveQueryComments())
       {
         QueryCommentsRetriever retriever = new QueryCommentsRetriever(result, statusBar);
         retriever.retrieveComments();
