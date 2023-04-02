@@ -115,6 +115,12 @@ public class SQLTokenMarker
             literalChar = '[';
             lastOffset = i;
           }
+          else if (token == Token.NULL)
+          {
+            searchBack(lineIndex, line, i, true);
+            addToken(lineIndex, 1, Token.NULL);
+            lastOffset = i + 1;
+          }
           break;
         case ']':
           if (isMicrosoft && token == Token.LITERAL2 && literalChar == '[')
