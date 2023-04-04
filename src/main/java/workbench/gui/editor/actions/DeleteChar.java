@@ -23,8 +23,9 @@ package workbench.gui.editor.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+
 import javax.swing.text.BadLocationException;
-import workbench.gui.editor.InputHandler;
+
 import workbench.gui.editor.JEditTextArea;
 
 /**

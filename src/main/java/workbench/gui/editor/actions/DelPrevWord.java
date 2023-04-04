@@ -38,7 +38,7 @@ public class DelPrevWord
 {
   public DelPrevWord()
   {
-    super("TxtEdDelPrvWord", KeyEvent.VK_BACK_SPACE, KeyEvent.CTRL_MASK);
+    super("TxtEdDelPrvWord", KeyEvent.VK_BACK_SPACE, KeyEvent.CTRL_DOWN_MASK);
   }
 
   @Override

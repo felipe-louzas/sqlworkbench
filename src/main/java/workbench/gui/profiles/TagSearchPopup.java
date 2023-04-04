@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -35,6 +34,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Set;
 
@@ -180,8 +180,8 @@ public class TagSearchPopup
         Insets insets = border.getBorderInsets(inputField);
         p.y -= insets.top;
       }
-      Rectangle r = inputField.modelToView(inputField.getCaretPosition());
-      p.x += r.x;
+      Rectangle2D r = inputField.modelToView2D(inputField.getCaretPosition());
+      p.x += r.getX();
 
       EventQueue.invokeLater(() ->
       {
@@ -423,7 +423,7 @@ public class TagSearchPopup
   {
     int currentIndex = elementList.getSelectedIndex();
     int nextIndex = -1;
-    boolean shiftPressed = WbAction.isShiftPressed(evt.getModifiers());
+    boolean shiftPressed = WbAction.isShiftPressed(evt);
     boolean syncEntry = false;
 
     switch (evt.getKeyCode())

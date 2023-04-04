@@ -37,6 +37,7 @@ import workbench.storage.ResultInfo;
 
 import workbench.sql.ErrorDescriptor;
 import workbench.sql.lexer.SQLToken;
+import workbench.sql.parser.ParserType;
 
 import org.junit.Test;
 
@@ -301,11 +302,11 @@ public class SqlUtilTest
       assertEquals("Wrong type returned", "VIEW", type);
 
       sql = "/* blubber */\ncreate package blub;";
-      type = SqlUtil.getCreateType(sql);
+      type = SqlUtil.getCreateType(sql, ParserType.Oracle);
       assertEquals("Wrong type returned", "PACKAGE", type);
 
       sql = "--- do something\ncreate\n or replace\n package body blub;";
-      type = SqlUtil.getCreateType(sql);
+      type = SqlUtil.getCreateType(sql, ParserType.Oracle);
       assertEquals("Wrong type returned", "PACKAGE BODY", type);
     }
     catch (Exception e)
@@ -513,64 +514,64 @@ public class SqlUtilTest
   public void testGetSelectColumns()
   {
     String sql = "select x,y,z from bla";
-    List<String> l = SqlUtil.getSelectColumns(sql,true,null);
+    List<String> l = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals("Not enough columns", 3, l.size());
     assertEquals("x", l.get(0));
     assertEquals("z", l.get(2));
 
     sql = "select x,y,z";
-    l = SqlUtil.getSelectColumns(sql,true,null);
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals("Not enough columns", 3, l.size());
     assertEquals("x", l.get(0));
     assertEquals("z", l.get(2));
 
     sql = "select x\n     ,y\n     ,z FROM bla";
-    l = SqlUtil.getSelectColumns(sql,true,null);
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals("Not enough columns", 3, l.size());
     assertEquals("x", l.get(0));
     assertEquals("z", l.get(2));
 
     sql = "SELECT a.att1\n      ,a.att2\nFROM   adam   a";
-    l = SqlUtil.getSelectColumns(sql,true,null);
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals("Not enough columns", 2, l.size());
     assertEquals("a.att1", l.get(0));
     assertEquals("a.att2", l.get(1));
 
     sql = "SELECT to_char(date_col, 'YYYY-MM-DD'), col2 as \"Comma, column\", func('bla,blub')\nFROM   adam   a";
-    l = SqlUtil.getSelectColumns(sql,false,null);
+    l = SqlUtil.getSelectColumns(sql, false, ParserType.Standard);
     assertEquals("Not enough columns", 3, l.size());
     assertEquals("Wrong first column", "to_char(date_col, 'YYYY-MM-DD')", l.get(0));
     assertEquals("Wrong third column", "func('bla,blub')", l.get(2));
 
     sql = "SELECT extract(year from rec_date) FROM mytable";
-    l = SqlUtil.getSelectColumns(sql,false,null);
+    l = SqlUtil.getSelectColumns(sql, false, ParserType.Standard);
     assertEquals("Not enough columns", 1, l.size());
     assertEquals("Wrong first column", "extract(year from rec_date)", l.get(0));
 
     sql = "SELECT extract(year from rec_date) FROM mytable";
-    l = SqlUtil.getSelectColumns(sql,true,null);
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals("Not enough columns", 1, l.size());
     assertEquals("Wrong first column", "extract(year from rec_date)", l.get(0));
 
     sql = "SELECT extract(year from rec_date) as rec_year FROM mytable";
-    l = SqlUtil.getSelectColumns(sql,true,null);
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals("Not enough columns", 1, l.size());
     assertEquals("Wrong first column", "extract(year from rec_date) as rec_year", l.get(0));
 
     sql = "SELECT distinct col1, col2 from mytable";
-    l = SqlUtil.getSelectColumns(sql, true,null);
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals("Not enough columns", 2, l.size());
     assertEquals("Wrong first column", "col1", l.get(0));
 
     sql = "SELECT distinct on (col1, col2) col1, col2, col3 from mytable";
-    l = SqlUtil.getSelectColumns(sql, true, null);
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.Postgres);
     assertEquals("Not enough columns", 3, l.size());
     assertEquals("Wrong first column", "col1", l.get(0));
     assertEquals("Wrong first column", "col2", l.get(1));
     assertEquals("Wrong first column", "col3", l.get(2));
 
     sql = "with cte1 (x,y,z) as (select a,b,c from foo) select x,y,z from cte1";
-    List<String> cols = SqlUtil.getSelectColumns(sql, false, null);
+    List<String> cols = SqlUtil.getSelectColumns(sql, false, ParserType.Standard);
     assertEquals(3, cols.size());
     assertEquals("x", cols.get(0));
     assertEquals("y", cols.get(1));
@@ -585,21 +586,21 @@ public class SqlUtilTest
       "select t1.x as x1, t1.y as y1, t1.z, t2.col1 as tcol\n" +
       "from cte1 t1 \n" +
       "  join cte2 t2 on t1.z = t2.c2";
-    cols = SqlUtil.getSelectColumns(sql, false, null);
+    cols = SqlUtil.getSelectColumns(sql, false, ParserType.Standard);
     assertEquals(4, cols.size());
     assertEquals("t1.x", cols.get(0));
     assertEquals("t1.y", cols.get(1));
     assertEquals("t1.z", cols.get(2));
     assertEquals("t2.col1", cols.get(3));
 
-    cols = SqlUtil.getSelectColumns(sql, true, null);
+    cols = SqlUtil.getSelectColumns(sql, true, ParserType.Standard);
     assertEquals(4, cols.size());
     assertEquals("t1.x as x1", cols.get(0));
     assertEquals("t1.y as y1", cols.get(1));
     assertEquals("t1.z", cols.get(2));
     assertEquals("t2.col1 as tcol", cols.get(3));
 
-    cols = SqlUtil.getSelectColumns("select \"Foo-Bar\", count(*) from bla", false, null);
+    cols = SqlUtil.getSelectColumns("select \"Foo-Bar\", count(*) from bla", false, ParserType.Standard);
     assertEquals(2, cols.size());
     assertEquals("\"Foo-Bar\"", cols.get(0));
     assertEquals("count(*)", cols.get(1));

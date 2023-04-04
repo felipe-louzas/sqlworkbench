@@ -138,8 +138,8 @@ public class RowHeightOptimizer
     int lineCount;
     try
     {
-      int height = edit.modelToView(content.length() - 1).y;
-      lineCount = height / fontHeight + 1;
+      double height = edit.modelToView2D(content.length() - 1).getY();
+      lineCount = (int)height / fontHeight + 1;
     }
     catch (Throwable th)
     {

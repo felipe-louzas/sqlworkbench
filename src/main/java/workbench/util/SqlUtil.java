@@ -332,9 +332,21 @@ public class SqlUtil
    */
   public static DdlObjectInfo getDDLObjectInfo(CharSequence sql)
   {
-    return getDDLObjectInfo(sql, null);
+    return getDDLObjectInfo(sql, ParserType.Standard);
   }
 
+  public static DdlObjectInfo getDDLObjectInfo(CharSequence sql, ParserType type)
+  {
+    if (StringUtil.isEmptyString(sql)) return null;
+
+    DdlObjectInfo info = new DdlObjectInfo(sql, type);
+    if (info.isValid())
+    {
+      return info;
+    }
+    return null;
+
+  }
   public static DdlObjectInfo getDDLObjectInfo(CharSequence sql, WbConnection conn)
   {
     if (StringUtil.isEmptyString(sql)) return null;
@@ -490,7 +502,12 @@ public class SqlUtil
    */
   public static String getCreateType(CharSequence sql)
   {
-    DdlObjectInfo info = getDDLObjectInfo(sql);
+    return getCreateType(sql, ParserType.Standard);
+  }
+
+  public static String getCreateType(CharSequence sql, ParserType type)
+  {
+    DdlObjectInfo info = getDDLObjectInfo(sql, type);
     if (info == null) return null;
     return info.getObjectType();
   }
@@ -848,7 +865,12 @@ public class SqlUtil
    */
   public static List<String> getSelectColumns(String select, boolean includeAlias, WbConnection conn)
   {
-    List<ElementInfo> entries = getColumnEntries(select, includeAlias, conn);
+    return getSelectColumns(select, includeAlias, ParserType.getTypeFromConnection(conn));
+  }
+  
+  public static List<String> getSelectColumns(String select, boolean includeAlias, ParserType type)
+  {
+    List<ElementInfo> entries = getColumnEntries(select, includeAlias, type);
     List<String> result = new ArrayList<>(entries.size());
     for (ElementInfo entry : entries)
     {
@@ -873,10 +895,15 @@ public class SqlUtil
    */
   public static List<ElementInfo> getColumnEntries(String select, boolean includeAlias, WbConnection conn)
   {
+    return getColumnEntries(select, includeAlias, ParserType.getTypeFromConnection(conn));
+  }
+
+  public static List<ElementInfo> getColumnEntries(String select, boolean includeAlias, ParserType type)
+  {
     List<ElementInfo> result = new ArrayList<>();
     try
     {
-      SQLLexer lexer = SQLLexerFactory.createLexer(conn, select);
+      SQLLexer lexer = SQLLexerFactory.createLexer(type, select);
       SQLToken t = lexer.getNextToken(false, false);
 
       if (t == null) return Collections.emptyList();

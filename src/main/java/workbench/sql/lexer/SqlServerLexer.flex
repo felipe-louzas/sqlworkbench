@@ -151,9 +151,9 @@ import workbench.util.CharSequenceReader;
 wsp = [ \r\n\t\f]+
 
 keyword=(
-(BEGIN{wsp}TRANSACTION)|(BEGIN{wsp}TRAN)
-(ALTER{wsp}SESSION)|
+(BEGIN{wsp}TRAN)|(UPDATE{wsp}STATISTICS)|
 
+(ALTER{wsp}SESSION)|
 (PRIMARY{wsp}KEY)|
 (FOREIGN{wsp}KEY)|
 (UNION{wsp}ALL)|
@@ -163,14 +163,8 @@ keyword=(
 (ORDER{wsp}BY)|
 
 
-
-
 (IS{wsp}NOT{wsp}NULL)|
-(IMMUTABLE{wsp}NOT{wsp}BLOCKCHAIN)|
-
-(MATERIALIZED{wsp}VIEW)|
-(MATERIALIZED{wsp}VIEW{wsp}LOG)|
-
+(INDEXED{wsp}VIEW)|
 (OUTER{wsp}JOIN)|
 (CROSS{wsp}JOIN)|
 (CROSS{wsp}JOIN{wsp}LATERAL)|
@@ -196,15 +190,15 @@ keyword=(
 (IF{wsp}EXISTS)|
 (IS{wsp}NULL)|
 (IS{wsp}NOT{wsp}NULL)|
+(IS{wsp}JSON)|
+(IS{wsp}NOT{wsp}JSON)|
 (CHARACTER{wsp}VARYING)|
-
 (PRIMARY{wsp}KEY)|
-
+(SNAPSHOT{wsp}LOG)|
 (IF{wsp}EXISTS)|
 (IF{wsp}NOT{wsp}EXISTS)|
 (WITHIN{wsp}GROUP)|
 (GROUPING{wsp}SETS)|
-
 (OWNED{wsp}BY)|
 (FETCH{wsp}FIRST)|(FETCH{wsp}NEXT)|
 (NEXT{wsp}VALUE{wsp}FOR)|
@@ -262,7 +256,7 @@ keyword=(
 "CURRENT_USER"|
 "CURSOR"|
 "CURSOR_NAME"|
-
+"CYCLE"|
 "DATABASE"|
 "DATE"|
 "DAY"|
@@ -425,7 +419,7 @@ keyword=(
 "SET"|
 "SHARE"|
 
-
+(SIMILAR{wsp}TO)|
 "SMALLINT"|
 "SNAPSHOT"|
 (START{wsp}TRANSACTION)|
@@ -453,7 +447,7 @@ keyword=(
 "UNION"|
 "UNIQUE"|
 "UNTIL"|
-"UPDATE"|"(UPDATE{wsp}STATISTICS)"|
+"UPDATE"|
 "UPPER"|
 "USAGE"|
 "USER"|
@@ -461,7 +455,6 @@ keyword=(
 "VALID"|
 "VALUES"|
 "VARCHAR"|
-
 "VARIABLE"|
 "VERBOSE"|
 "VERSION"|

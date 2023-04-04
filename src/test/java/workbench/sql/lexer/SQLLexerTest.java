@@ -48,9 +48,13 @@ public class SQLLexerTest
 
   private List<SQLToken> getTokenList(String sql)
   {
+    return getTokenList(new StandardLexer(sql));
+  }
+
+  private List<SQLToken> getTokenList(SQLLexer l)
+  {
     ArrayList<SQLToken> result = new ArrayList<>();
 
-    SQLLexer l = new StandardLexer(sql);
     SQLToken t = l.getNextToken(false, false);
     while (t != null)
     {
@@ -371,7 +375,7 @@ public class SQLLexerTest
           "right \nouter\n\n join\njoin\n" +
           "like";
 
-    List<SQLToken> tokens = getTokenList(sql);
+    List<SQLToken> tokens = getTokenList(new OracleLexer(sql));
     for (int i = 0; i < tokens.size(); i++)
     {
       SQLToken t = tokens.get(i);

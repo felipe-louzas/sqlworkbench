@@ -32,7 +32,7 @@ public class SelectPreviousChar
 {
   public SelectPreviousChar()
   {
-    super("TxtEdPrevCharSel", KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK);
+    super("TxtEdPrevCharSel", KeyEvent.VK_LEFT, KeyEvent.SHIFT_DOWN_MASK);
     select = true;
   }
 }

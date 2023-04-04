@@ -62,7 +62,7 @@ import workbench.gui.renderer.WrapEnabledEditor;
 import workbench.util.WbDateFormatter;
 
 /**
- * A TableCellEditor that displays multiple lines
+ * A TableCellEditor that displays multiple lines.
  *
  * @author Thomas Kellerer
  */
@@ -70,16 +70,16 @@ public class WbCellEditor
   extends AbstractCellEditor
   implements TableCellEditor, MouseListener, NullableEditor, DocumentListener, WrapEnabledEditor
 {
-  private TextAreaEditor editor;
-  private WbTable parentTable;
-  private JScrollPane scroll;
-  private Color defaultBackground;
+  private final TextAreaEditor editor;
+  private final WbTable parentTable;
+  private final JScrollPane scroll;
+  private final Color defaultBackground;
   private boolean isNull;
-  private RestoreDataAction restoreValue;
-  private SetNullAction setNull;
-  private MultilineWrapAction multilineWrapAction;
-  private TextComponentMouseListener contextMenu;
-  private SelectFkValueAction selectFk;
+  private final RestoreDataAction restoreValue;
+  private final SetNullAction setNull;
+  private final MultilineWrapAction multilineWrapAction;
+  private final TextComponentMouseListener contextMenu;
+  private final SelectFkValueAction selectFk;
 
   public WbCellEditor(WbTable parent)
   {
@@ -393,12 +393,6 @@ public class WbCellEditor
     }
 
     @Override
-    public boolean isManagingFocus()
-    {
-      return false;
-    }
-
-    @Override
     public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed)
     {
       return super.processKeyBinding(ks, e, condition, pressed);
@@ -423,12 +417,6 @@ public class WbCellEditor
     public Insets getInsets()
     {
       return new Insets(0, 0, 0, 0);
-    }
-
-    @Override
-    public boolean isManagingFocus()
-    {
-      return false;
     }
 
     @Override

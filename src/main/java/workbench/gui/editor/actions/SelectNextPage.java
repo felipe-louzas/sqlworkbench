@@ -33,7 +33,7 @@ public class SelectNextPage
 
   public SelectNextPage()
   {
-    super("TxtEdNxtPageSel", KeyEvent.VK_PAGE_DOWN, KeyEvent.SHIFT_MASK);
+    super("TxtEdNxtPageSel", KeyEvent.VK_PAGE_DOWN, KeyEvent.SHIFT_DOWN_MASK);
     select = true;
   }
 

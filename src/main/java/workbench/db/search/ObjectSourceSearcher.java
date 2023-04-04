@@ -55,18 +55,18 @@ import workbench.util.StringUtil;
 public class ObjectSourceSearcher
 {
   private List<String> schemas;
-  private Set<String> types;
+  private final Set<String> types;
   private List<String> names;
-  private WbConnection connection;
+  private final WbConnection connection;
 
   private List<DbObject> searchResult;
   private RowActionMonitor monitor;
   private boolean cancelSearch;
   private boolean isRunning;
   private int numSearched;
-  private Set<String> searchedObjects;
+  private final Set<String> searchedObjects;
   private String catalog;
-  private CatalogChanger catalogChanger = new CatalogChanger();
+  private final CatalogChanger catalogChanger = new CatalogChanger();
 
   public ObjectSourceSearcher(WbConnection con)
   {
@@ -280,15 +280,11 @@ public class ObjectSourceSearcher
       try
       {
         CharSequence source = null;
-        if (connection.getMetadata().isTableType(object.getObjectType()))
+        if (object instanceof TableIdentifier)
         {
-          ((TableIdentifier)object).setRetrieveFkSource(true);
-        }
-
-        ProcedureDefinition def = null;
-        if (object instanceof ProcedureDefinition)
-        {
-          def = (ProcedureDefinition)object;
+          TableIdentifier tbl = (TableIdentifier)object;
+          tbl.setCacheSource(true);
+          tbl.setRetrieveFkSource(true);
         }
 
         String key = getObjectKey(object);

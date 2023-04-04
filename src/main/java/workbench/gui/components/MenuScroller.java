@@ -5,7 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -478,20 +478,6 @@ public class MenuScroller
     }
   }
 
-  /**
-   * Ensures that the <code>dispose</code> method of this MenuScroller is
-   * called when there are no more refrences to it.
-   *
-   * @exception  Throwable if an error occurs.
-   * @see MenuScroller#dispose()
-   */
-  @Override
-  public void finalize()
-    throws Throwable
-  {
-    dispose();
-  }
-
  private void refreshMenu()
   {
     if (menuItems != null && menuItems.length > 0)
@@ -596,14 +582,10 @@ public class MenuScroller
   {
     MenuScrollTimer(final int increment, int interval)
     {
-      super(interval, new ActionListener()
+      super(interval, (ActionEvent e) ->
       {
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-          firstIndex += increment;
-          refreshMenu();
-        }
+        firstIndex += increment;
+        refreshMenu();
       });
     }
   }
@@ -612,7 +594,7 @@ public class MenuScroller
     extends JMenuItem
     implements ChangeListener
   {
-    private MenuScrollTimer timer;
+    private final MenuScrollTimer timer;
     MenuScrollItem(MenuIcon icon, int increment)
     {
       setIcon(icon);

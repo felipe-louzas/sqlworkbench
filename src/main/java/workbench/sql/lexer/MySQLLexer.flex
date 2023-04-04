@@ -151,26 +151,20 @@ import workbench.util.CharSequenceReader;
 wsp = [ \r\n\t\f]+
 
 keyword=(
+(LOGFILE{wsp}GROUP)|
 
 (ALTER{wsp}SESSION)|
-
 (PRIMARY{wsp}KEY)|
 (FOREIGN{wsp}KEY)|
 (UNION{wsp}ALL)|
 (EXCEPT{wsp}ALL)|
-
+(PARTITION{wsp}BY)|
 (GROUP{wsp}BY)|
 (ORDER{wsp}BY)|
 
 
-
-
 (IS{wsp}NOT{wsp}NULL)|
-(IMMUTABLE{wsp}NOT{wsp}BLOCKCHAIN)|
-
-
-
-
+(MATERIALIZED{wsp}VIEW)|
 (OUTER{wsp}JOIN)|
 (CROSS{wsp}JOIN)|
 (CROSS{wsp}JOIN{wsp}LATERAL)|
@@ -196,15 +190,15 @@ keyword=(
 (IF{wsp}EXISTS)|
 (IS{wsp}NULL)|
 (IS{wsp}NOT{wsp}NULL)|
+(IS{wsp}JSON)|
+(IS{wsp}NOT{wsp}JSON)|
 (CHARACTER{wsp}VARYING)|
-
 (PRIMARY{wsp}KEY)|
-
+(SNAPSHOT{wsp}LOG)|
 (IF{wsp}EXISTS)|
 (IF{wsp}NOT{wsp}EXISTS)|
 (WITHIN{wsp}GROUP)|
 (GROUPING{wsp}SETS)|
-
 (OWNED{wsp}BY)|
 (FETCH{wsp}FIRST)|(FETCH{wsp}NEXT)|
 (NEXT{wsp}VALUE{wsp}FOR)|
@@ -262,7 +256,7 @@ keyword=(
 "CURRENT_USER"|
 "CURSOR"|
 "CURSOR_NAME"|
-
+"CYCLE"|
 "DATABASE"|
 "DATE"|
 "DAY"|
@@ -273,7 +267,7 @@ keyword=(
 
 "DELIMITER"|
 "DELETE"|
-
+"DEPTH"|
 "DENSE_RANK"|
 "DESCRIBE"|
 "DISCONNECT"|
@@ -326,7 +320,7 @@ keyword=(
 "JOIN"|
 "KEY"|
 "LANGUAGE"|
-
+"LATERAL"|
 "LAST"|
 "LEFT"|
 "LENGTH"|
@@ -379,7 +373,7 @@ keyword=(
 "OR"|
 "OUT"|
 "OUTPUT"|
-
+"OVER"|
 
 "OVERLAY"|
 "OVERRIDING"|
@@ -424,11 +418,11 @@ keyword=(
 "SESSION_USER"|
 "SET"|
 "SHARE"|
-
+"SIMILAR"|
 
 "SMALLINT"|
 "SNAPSHOT"|
-
+(START{wsp}TRANSACTION)|
 (BEGIN{wsp}TRANSACTION)|
 (BEGIN{wsp}WORK)|
 
@@ -461,7 +455,6 @@ keyword=(
 "VALID"|
 "VALUES"|
 "VARCHAR"|
-
 "VARIABLE"|
 "VERBOSE"|
 "VERSION"|

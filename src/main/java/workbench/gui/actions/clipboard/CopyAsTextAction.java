@@ -167,7 +167,6 @@ public class CopyAsTextAction
       if (worker != null)
       {
         worker.interrupt();
-        worker.stop();
       }
     }
     catch (Throwable th)

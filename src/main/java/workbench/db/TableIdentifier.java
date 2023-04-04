@@ -69,6 +69,9 @@ public class TableIdentifier
   private boolean isPartitioned;
   private String quoteChar = QuoteHandler.STANDARD_QUOTE_CHARACTER;
 
+  private boolean cacheSource = false;
+  private CharSequence cachedSourceCode;
+  
   // for Synonyms
   private TableIdentifier realTable;
 
@@ -252,6 +255,11 @@ public class TableIdentifier
   public void setPkInitialized(boolean flag)
   {
     pkInitialized = flag;
+  }
+
+  public void setCacheSource(boolean flag)
+  {
+    cacheSource = flag;
   }
 
   @Override
@@ -964,6 +972,10 @@ public class TableIdentifier
   public CharSequence getSource(WbConnection con, boolean includeFk, boolean includeGrants)
     throws SQLException
   {
+    if (cacheSource && cachedSourceCode != null)
+    {
+      return cachedSourceCode;
+    }
     CharSequence source = null;
     DbMetadata meta = con.getMetadata();
     if (meta.isExtendedObject(this))
@@ -995,6 +1007,10 @@ public class TableIdentifier
     {
       TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
       source = builder.getTableSource(this, DropType.none, includeFk, includeGrants);
+    }
+    if (cacheSource)
+    {
+      cachedSourceCode = source;
     }
     return source;
   }

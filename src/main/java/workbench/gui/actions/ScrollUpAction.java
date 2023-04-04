@@ -35,13 +35,13 @@ import workbench.gui.editor.LineScroller;
 public class ScrollUpAction
   extends WbAction
 {
-  private LineScroller client;
+  private final LineScroller client;
 
   public ScrollUpAction(LineScroller scroller)
   {
     super();
     client = scroller;
-    initMenuDefinition("MnuTxtScrollUp", KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_MASK));
+    initMenuDefinition("MnuTxtScrollUp", KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK));
   }
 
   @Override

@@ -86,7 +86,7 @@ public class CommandRegistry
     {
       try
       {
-        SqlCommand cmd = (SqlCommand)clz.newInstance();
+        SqlCommand cmd = (SqlCommand)clz.getDeclaredConstructor().newInstance();
         result.add(cmd);
       }
       catch (Throwable th)
@@ -116,7 +116,7 @@ public class CommandRegistry
         {
           LogMgr.logDebug(ci, "Calling init() on class " + cls.getName());
           // call init class
-          InitHook iw = (InitHook)cls.newInstance();
+          InitHook iw = (InitHook)cls.getDeclaredConstructor().newInstance();
           iw.init();
         }
       }
@@ -147,7 +147,7 @@ public class CommandRegistry
       {
         if (name.equals(clz.getCanonicalName()))
         {
-          gui = (ToolWindow)clz.newInstance();
+          gui = (ToolWindow)clz.getDeclaredConstructor().newInstance();
           break;
         }
       }

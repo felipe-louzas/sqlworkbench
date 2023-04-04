@@ -152,8 +152,8 @@ wsp = [ \r\n\t\f]+
 
 keyword=(
 
+
 (ALTER{wsp}SESSION)|
-(CONNECT{wsp}BY)|
 (PRIMARY{wsp}KEY)|
 (FOREIGN{wsp}KEY)|
 (UNION{wsp}ALL)|
@@ -161,16 +161,10 @@ keyword=(
 (PARTITION{wsp}BY)|
 (GROUP{wsp}BY)|
 (ORDER{wsp}BY)|
-(PACKAGE{wsp}BODY)|
-(TYPE{wsp}BODY)|
 (CREATE{wsp}OR{wsp}REPLACE)|
 (CREATE{wsp}OR{wsp}ALTER)|
 (IS{wsp}NOT{wsp}NULL)|
-(IMMUTABLE{wsp}NOT{wsp}BLOCKCHAIN)|
-(FLASHBACK{wsp}ARCHIVE)|
 (MATERIALIZED{wsp}VIEW)|
-(MATERIALIZED{wsp}VIEW{wsp}LOG)|
-(START{wsp}WITH)|
 (OUTER{wsp}JOIN)|
 (CROSS{wsp}JOIN)|
 (CROSS{wsp}JOIN{wsp}LATERAL)|
@@ -196,15 +190,15 @@ keyword=(
 (IF{wsp}EXISTS)|
 (IS{wsp}NULL)|
 (IS{wsp}NOT{wsp}NULL)|
+(IS{wsp}JSON)|
+(IS{wsp}NOT{wsp}JSON)|
 (CHARACTER{wsp}VARYING)|
-(DISTINCT{wsp}ON)|
 (PRIMARY{wsp}KEY)|
 (SNAPSHOT{wsp}LOG)|
 (IF{wsp}EXISTS)|
 (IF{wsp}NOT{wsp}EXISTS)|
 (WITHIN{wsp}GROUP)|
 (GROUPING{wsp}SETS)|
-(DATABASE{wsp}LINK)|
 (OWNED{wsp}BY)|
 (FETCH{wsp}FIRST)|(FETCH{wsp}NEXT)|
 (NEXT{wsp}VALUE{wsp}FOR)|
@@ -461,7 +455,6 @@ keyword=(
 "VALID"|
 "VALUES"|
 "VARCHAR"|
-"VARCHAR2"|
 "VARIABLE"|
 "VERBOSE"|
 "VERSION"|

@@ -27,6 +27,7 @@ import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -43,9 +44,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
 import workbench.WbManager;
 import workbench.interfaces.ToolWindow;
@@ -101,10 +99,10 @@ public class ObjectSourceSearchPanel
   private ObjectSourceSearcher searcher;
   private JFrame window;
 
-  private WbTable results;
-  private DbObjectSourcePanel objectSource;
+  private final WbTable results;
+  private final DbObjectSourcePanel objectSource;
   private WbThread searchThread;
-  private int instanceId;
+  private final int instanceId;
   private static int instanceCount;
 
   public ObjectSourceSearchPanel()
@@ -169,7 +167,7 @@ public class ObjectSourceSearchPanel
   protected void clearSearch()
   {
     objectSource.reset();
-    setModel(new ObjectResultListDataStore());
+    setModel(new ObjectResultListDataStore(false));
   }
 
   protected void startSearch()
@@ -250,21 +248,13 @@ public class ObjectSourceSearchPanel
   {
     try
     {
-      ObjectResultListDataStore ds = new ObjectResultListDataStore();
-      ds.setResultList(connection, result, searcher.getSearchSchemaCount() > 1);
+      ObjectResultListDataStore ds = new ObjectResultListDataStore(connection, result, false);
       setModel(ds);
     }
     finally
     {
       checkButtons();
     }
-  }
-
-  protected void removeSourceColumn()
-  {
-    TableColumnModel tmodel = results.getColumnModel();
-    TableColumn source = tmodel.getColumn(ObjectResultListDataStore.COL_IDX_SOURCE);
-    tmodel.removeColumn(source);
   }
 
   protected void setModel(final DataStore data)
@@ -274,7 +264,6 @@ public class ObjectSourceSearchPanel
       DataStoreTableModel model = new DataStoreTableModel(data);
       results.setModel(model, true);
       results.adjustRowsAndColumns();
-      removeSourceColumn();
     });
   }
 
@@ -593,12 +582,9 @@ public class ObjectSourceSearchPanel
 
   private String selectFromList(Collection<String> elements, List<String> selected)
   {
-    DefaultListModel model = new DefaultListModel();
-    for (String type : elements)
-    {
-      model.addElement(type);
-    }
-    final JList elementList = new JList(model);
+    DefaultListModel<String> model = new DefaultListModel<>();
+    model.addAll(elements);
+    final JList<String> elementList = new JList(model);
 
     if (CollectionUtil.isNonEmpty(selected))
     {
@@ -630,16 +616,10 @@ public class ObjectSourceSearchPanel
     JScrollPane pane = new JScrollPane(elementList);
     if (WbSwingUtilities.getOKCancel("Select type", this, pane))
     {
-      Object[] sel = elementList.getSelectedValues();
+      List<String> sel = elementList.getSelectedValuesList();
       if (sel != null)
       {
-        StringBuilder result = new StringBuilder(sel.length * 5);
-        for (int i=0; i < sel.length; i++ )
-        {
-          if (i > 0) result.append(',');
-          result.append(sel[i].toString());
-        }
-        return result.toString();
+        return sel.stream().collect(Collectors.joining(","));
       }
     }
     return null;
@@ -651,14 +631,10 @@ public class ObjectSourceSearchPanel
     int row = results.getSelectedRow();
     if (row < 0) return;
 
-    TableModel model = results.getModel();
-    if (model.getRowCount() == 0) return;
-
-    // As the source column has been removed from the view, the source
-    // has to be retrieved directly from the underlying table model
-    final CharSequence source = (CharSequence)model.getValueAt(row, ObjectResultListDataStore.COL_IDX_SOURCE);
-    final String name = (String)model.getValueAt(row, ObjectResultListDataStore.COL_IDX_OBJECT_NAME);
-    final String type = (String)model.getValueAt(row, ObjectResultListDataStore.COL_IDX_OBJECT_TYPE);
+    ObjectResultListDataStore ds = (ObjectResultListDataStore)results.getDataStore();
+    final CharSequence source = ds.getSource(row, this.connection);
+    final String name = ds.getName(row);
+    final String type = ds.getType(row);
 
     EventQueue.invokeLater(() ->
     {

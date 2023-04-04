@@ -420,6 +420,10 @@
 
     <copy quiet="true" overwrite="true"
           file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
+          tofile="../src/main/java/workbench/sql/lexer/OracleLexer.flex"/>
+
+    <copy quiet="true" overwrite="true"
+          file="../src/main/java/workbench/sql/lexer/BaseLexer.flex"
           tofile="../src/main/java/workbench/sql/lexer/NonStandardLexer.flex"/>
 
     <copy quiet="true" overwrite="true"
@@ -440,6 +444,7 @@
 
     <replace file="../src/main/java/workbench/sql/lexer/StandardLexer.flex">
       <replacefilter token="XXXX_DBMS_XXXX|"/>
+      <replacefilter token="XXXX_DBMS2_XXXX|"/>
     </replace>
 
     <replace file="../src/main/java/workbench/sql/lexer/FirebirdLexer.flex">
@@ -449,15 +454,20 @@
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|"
                      value='"DELIMITER"|(SET{wsp}TERM)|"EXCEPTION"|"SHADOW"|"FILTER"|(EXTERNAL{wsp}FUNCTION)|'/>
-      <replacefilter token="(FOREIGN{wsp}DATA{wsp}WRAPPER)|"/>
-      <replacefilter token='"VARCHAR2"|'/>
-      <replacefilter token="(SNAPSHOT{wsp}LOG)|"/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
-      <replacefilter token="(DATABASE{wsp}LINK)|"/>
-      <replacefilter token="(DISTINCT{wsp}ON)|"/>
+      <replacefilter token="XXXX_DBMS2_XXXX|"/>
       <replacefilter token="(OUTER{wsp}APPLY)|"/>
       <replacefilter token="(CROSS{wsp}APPLY)|"/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
+    </replace>
+
+    <replace file="../src/main/java/workbench/sql/lexer/OracleLexer.flex">
+      <replacefilter>
+        <replacetoken>StandardLexer</replacetoken>
+        <replacevalue>OracleLexer</replacevalue>
+      </replacefilter>
+      <replacefilter token="XXXX_DBMS_XXXX|"
+                     value='"VARCHAR2"|"NVARCHAR2"|"FORCE"|(NO{wsp}FORCE)|(LOCKDOWN{wsp}PROFILE)|(JSON{wsp}DUALITY)|(JSON{wsp}RELATIONAL{wsp}DUALITY)|(IMMUTABLE{wsp}NOT{wsp}BLOCKCHAIN)|'/>
+      <replacefilter token="XXXX_DBMS2_XXXX|"
+                     value='(PACKAGE{wsp}BODY)|(TYPE{wsp}BODY)|(SNAPSHOT{wsp}LOG)|(DATABASE{wsp}LINK)|(AUDIT{wsp}POLICY)|(FLASHBACK{wsp}ARCHIVE)|(CONNECT{wsp}BY)|(START{wsp}WITH)|(MATERIALIZED{wsp}VIEW{wsp}LOG)|(MATERIALIZED{wsp}ZONEMAP)|(RESTORE{wsp}POINT)|'/>
     </replace>
 
     <replace file="../src/main/java/workbench/sql/lexer/PostgresLexer.flex">
@@ -466,22 +476,15 @@
         <replacevalue>PostgresLexer</replacevalue>
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|"
-                     value='"PASSING"|"PLAN"|"LIMIT"|"OFFSET"|"CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|(DEFAULT{wsp}PRIVILEGES)|'/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|" value="(USER{wsp}MAPPING)"/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|(EVENT{wsp}TRIGGER)"/>
-      <replacefilter token="(PACKAGE{wsp}BODY)|" value="(OPERATOR{wsp}CLASS)|(OPERATOR{wsp}FAMILY)|(ACCESS{wsp}METHOD)|"/>
-      <replacefilter token="(TYPE{wsp}BODY)|" value="(FOREIGN{wsp}TABLE)|(TIME{wsp}ZONE)|"/>
-      <replacefilter token="(SNAPSHOT{wsp}LOG)|" value="(ACCESS{wsp}METHOD)|"/>
-      <replacefilter token="(CONNECT{wsp}BY)|" value='"TRANSFORM"|'/>
-      <replacefilter token='"VARCHAR2"|' value='"STATISTICS"|"FORMAT"|"ABSENT"|'/>
-      <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
-      <replacefilter token="(DATABASE{wsp}LINK)|" value="(NESTED{wsp}PATH)|(ON{wsp}ERROR)|(IS{wsp}DOCUMENT)|(IS{wsp}NOT{wsp}DOCUMENT)"/>
-      <replacefilter token='"SYSDATE"|' value="(EVENT{wsp}TRIGGER)|(TEXT{wsp}SEARCH{wsp}CONFIGURATION)|(TEXT{wsp}SEARCH{wsp}DICTIONARY)|(TEXT{wsp}SEARCH{wsp}PARSER)|(TEXT{wsp}SEARCH{wsp}TEMPLATE)|"/>
-      <replacefilter token="(OUTER{wsp}APPLY)|" value="TRANSFORM|(USER{wsp}MAPPING)|"/>
+                     value='(NESTED{wsp}PATH)|(ON{wsp}ERROR)|(IS{wsp}DOCUMENT)|(IS{wsp}NOT{wsp}DOCUMENT)|(ACCESS{wsp}METHOD)|(FOREIGN{wsp}TABLE)|(TIME{wsp}ZONE)|(OPERATOR{wsp}CLASS)|(OPERATOR{wsp}FAMILY)|(ACCESS{wsp}METHOD)|(EVENT{wsp}TRIGGER)|(USER{wsp}MAPPING)|"TRANSFORM"|"PASSING"|"PLAN"|"LIMIT"|"OFFSET"|"CLUSTER"|"DISCARD"|"DEALLOCATE"|"DO"|"(IMPORT{wsp}FOREIGN{wsp}SCHEMA)"|"VACUUM"|(FOREIGN{wsp}DATA{wsp}WRAPPER)|(SKIP{wsp}LOCKED)|(NO{wsp}KEY{wsp}UPDATE)|(KEY{wsp}SHARE)|(MATCH{wsp}FULL)|(MATCH{wsp}PARTIAL)|(MATCH{wsp}SIMPLE)|(DEFAULT{wsp}PRIVILEGES)|'/>
+      <replacefilter token="XXXX_DBMS2_XXXX|"
+                     value="(DISTINCT{wsp}ON)|(EVENT{wsp}TRIGGER)|(TEXT{wsp}SEARCH{wsp}CONFIGURATION)|(TEXT{wsp}SEARCH{wsp}DICTIONARY)|(TEXT{wsp}SEARCH{wsp}PARSER)|(TEXT{wsp}SEARCH{wsp}TEMPLATE)|"/>
+      <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|" value='"STATISTICS"|"FORMAT"|"ABSENT"|'/>
+      <replacefilter token='"SYSDATE"|' />
+      <replacefilter token="(OUTER{wsp}APPLY)|" value='"TRANSFORM"|(USER{wsp}MAPPING)|'/>
       <replacefilter token="(CROSS{wsp}APPLY)|" value="(OWNED{wsp}BY)|"/>
       <replacefilter token='"SYSTIMESTAMP"|' value='"LOCALTIMESTAMP"|'/>
       <replacefilter token='"SESSION_USER"|'/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
       <replacefilter>
         <replacetoken><![CDATA[operator=([\+\-\*\/\<\>\=\~\!\%\^\&\?]|"||"|"!="|"<>"|"<="|">="|"=>"|"(+)")]]></replacetoken>
         <replacevalue><![CDATA[operator=([\+\-\*\/\<\>\=\~\!\%\^\&\?]|"~>~"|"~>=~"|"~<~"|"~<=~"|"!~~*"|"||"|"|/"|"||/"|"!!"|"<<"|">>"|"##"|"~"|"~*"|"!~"|"!~*"|"@?"|"^@"|"@-@"|"@@"|"@@@"|"?&"|"#-"|"#>"|"#>>"|"->"|"->>"|"<->"|"&<"|"&>"|"<<|"|"|>>"|"&<|"|"|&>"|"<^"|">^"|"?#"|"?-"|"?|"|"?-|"|"?|"|"~="|"!="|"<>"|"<="|">="|"=>"|"@>"|"<@")|" @?"|"<<="|">>="]]></replacevalue>
@@ -517,37 +520,20 @@
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>SqlServerLexer</replacevalue>
       </replacefilter>
-      <replacefilter>
-        <replacetoken>"UPDATE"|</replacetoken>
-        <replacevalue>"UPDATE"|"(UPDATE{wsp}STATISTICS)"|</replacevalue>
-      </replacefilter>
-      <replacefilter token="XXXX_DBMS_XXXX|" value="(BEGIN{wsp}TRANSACTION)|(BEGIN{wsp}TRAN)"/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW)|(PARTITION{wsp}FUNCTION)"/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|(PARTITION{wsp}SCHEME)"/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
-      <replacefilter token="(PACKAGE{wsp}BODY)|"/>
-      <replacefilter token="(TYPE{wsp}BODY)|"/>
-      <replacefilter token="(SIMILAR{wsp}TO)|"/>
-      <replacefilter token="(SNAPSHOT{wsp}LOG)|"/>
-      <replacefilter token="(DISTINCT{wsp}ON)|"/>
-      <replacefilter token="(CONNECT{wsp}BY)|"/>
-      <replacefilter token="(START{wsp}WITH)|"/>
+      <replacefilter token="XXXX_DBMS_XXXX|" value="(BEGIN{wsp}TRAN)|(UPDATE{wsp}STATISTICS)|"/>
+      <replacefilter token="XXXX_DBMS2_XXXX|"/>
+      <replacefilter token='(MATERIALIZED{wsp}VIEW)|' value='(INDEXED{wsp}VIEW)|'/>
       <replacefilter token='"SIMILAR"|'/>
-      <replacefilter token='"CYCLE"|'/>
       <replacefilter token='"OVERLAPS"|'/>
       <replacefilter token='"VARCHAR2"|'/>
       <replacefilter token='"DEPTH"|'/>
-      <replacefilter token='"CYCLE"|'/>
       <replacefilter token='"DEPTH"|'/>
       <replacefilter token='"DEFERRABLE"|'/>
       <replacefilter token='"DEFERRED"|'/>
       <replacefilter token='"WHENEVER"|'/>
       <replacefilter token='"SYSTIMESTAMP"|'/>
-      <replacefilter token="(FOREIGN{wsp}DATA{wsp}WRAPPER)|"/>
       <replacefilter token="(CREATE{wsp}OR{wsp}REPLACE)|"/>
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
-      <replacefilter token="(DATABASE{wsp}LINK)|"/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
       <replacefilter>
         <replacetoken><![CDATA[identifier=([^ \"\r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\~\?\(\)\[\]\,\;\:\.0-9][^ \r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\"\~\?\(\)\]\[\,\;\:\*]*)|(\"[^\r\n\t\f\"]*\")]]></replacetoken>
         <replacevalue><![CDATA[identifier=([^ \"\r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\~\?\(\)\[\]\,\;\:\.0-9][^ \r\n\t\f\+\-\*\/\<\>\=\~\!\%\^\&\'\"\~\?\(\)\]\[\,\;\:\*]*)|(\"[^\r\n\t\f\"]*\")|(\[[^\r\n\t\f\[]*\]) ]]></replacevalue>
@@ -569,6 +555,7 @@
         <replacevalue>NonStandardLexer</replacevalue>
       </replacefilter>
       <replacefilter token="XXXX_DBMS_XXXX|"/>
+      <replacefilter token="XXXX_DBMS2_XXXX|"/>
       <replacefilter>
         <replacetoken>string=([\'](([^\']|\'\')*)[\']|[Nn][\'](([^\']|\'\')*)[\'])</replacetoken>
         <replacevalue>string=([\'](([^\']|\'\'|\\\')*)[\'])</replacevalue>
@@ -584,32 +571,14 @@
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>MySQLLexer</replacevalue>
       </replacefilter>
-      <replacefilter token="XXXX_DBMS_XXXX|"/>
+      <replacefilter token="XXXX_DBMS_XXXX|" value="(LOGFILE{wsp}GROUP)|"/>
+      <replacefilter token="XXXX_DBMS2_XXXX|"/>
       <replacefilter token="(BEGIN{wsp}ATOMIC)|"/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW)|"/>
-      <replacefilter token="(MATERIALIZED{wsp}VIEW{wsp}LOG)|"/>
-      <replacefilter token="(SNAPSHOT{wsp}LOG)|"/>
-      <replacefilter token="(FLASHBACK{wsp}ARCHIVE)|"/>
-      <replacefilter token="(START{wsp}WITH)|"/>
-      <replacefilter token="(PACKAGE{wsp}BODY)|"/>
-      <replacefilter token="(TYPE{wsp}BODY)|"/>
-      <replacefilter token="(DISTINCT{wsp}ON)|"/>
-      <replacefilter token="(CONNECT{wsp}BY)|"/>
-      <replacefilter token="(START{wsp}TRANSACTION)|"/>
       <replacefilter token="(SIMILAR{wsp}TO)|"/>
-      <replacefilter token="(PARTITION{wsp}BY)|"/>
       <replacefilter token='"OVERLAPS"|'/>
-      <replacefilter token='"OVER"|'/>
-      <replacefilter token='"LATERAL"|'/>
       <replacefilter token='"VARCHAR2"|'/>
-      <replacefilter token='"SIMILAR"|'/>
-      <replacefilter token='"CYCLE"|'/>
-      <replacefilter token='"DEPTH"|'/>
       <replacefilter token='"DEFERRABLE"|'/>
       <replacefilter token='"DEFERRED"|'/>
-      <replacefilter token='(DATABASE{wsp}LINK)|'/>
-      <replacefilter token="(START{wsp}WITH)|"/>
-      <replacefilter token="(FOREIGN{wsp}DATA{wsp}WRAPPER)|"/>
       <replacefilter token="(CREATE{wsp}OR{wsp}REPLACE)|"/>
       <replacefilter token="(CREATE{wsp}OR{wsp}ALTER)|"/>
       <replacefilter token="(FULL{wsp}JOIN)|"/>
@@ -677,6 +646,13 @@
       <arg value="-q"/>
       <arg value="-nobak"/>
       <arg value="../src/main/java/workbench/sql/lexer/PgEscapingLexer.flex"/>
+    </java>
+
+    <java classname="JFlex.Main" classpath="JFlex.jar" fork="true">
+      <jvmarg value="-Xmx256m"/>
+      <arg value="-q"/>
+      <arg value="-nobak"/>
+      <arg value="../src/main/java/workbench/sql/lexer/OracleLexer.flex"/>
     </java>
 
   </target>

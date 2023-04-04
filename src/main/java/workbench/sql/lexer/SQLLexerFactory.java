@@ -89,6 +89,9 @@ public class SQLLexerFactory
       case Postgres:
         lexer = new PostgresLexer(input);
         break;
+      case Oracle:
+        lexer = new OracleLexer(input);
+        break;
       case Firebird:
         lexer = new FirebirdLexer(input);
         break;

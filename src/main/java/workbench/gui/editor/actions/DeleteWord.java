@@ -38,7 +38,7 @@ public class DeleteWord
 {
   public DeleteWord()
   {
-    super("TxtEdDelWord", KeyEvent.VK_DELETE, KeyEvent.CTRL_MASK);
+    super("TxtEdDelWord", KeyEvent.VK_DELETE, KeyEvent.CTRL_DOWN_MASK);
   }
 
   @Override

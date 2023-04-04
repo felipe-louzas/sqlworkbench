@@ -202,7 +202,7 @@ public class OraclePackageParser
   {
     int procPos = -1;
 
-    SQLLexer lexer = SQLLexerFactory.createLexer(source);
+    SQLLexer lexer = SQLLexerFactory.createLexer(ParserType.Oracle, source);
     SQLToken t = lexer.getNextToken(false, false);
     CodeArea result = new CodeArea();
 
@@ -226,7 +226,7 @@ public class OraclePackageParser
     {
       // apparently only the defintion but not the body is available
       // so try to find the procedure in the header
-      lexer = SQLLexerFactory.createLexer(source);
+      lexer = SQLLexerFactory.createLexer(ParserType.Oracle, source);
       t = lexer.getNextToken(false, false);
     }
 

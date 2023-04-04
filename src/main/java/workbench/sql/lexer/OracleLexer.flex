@@ -1,10 +1,10 @@
-/* StandardLexer.java is a generated file.  You probably want to
- * edit StandardLexer.lex to make changes.  Use JFlex to generate it.
- * To generate StandardLexer.java
+/* OracleLexer.java is a generated file.  You probably want to
+ * edit OracleLexer.lex to make changes.  Use JFlex to generate it.
+ * To generate OracleLexer.java
  * Install <a href="http://jflex.de/">JFlex</a> v1.3.2 or later.
  * Once JFlex is in your classpath run<br>
- * <code>java JFlex.Main StandardLexer.lex</code><br>
- * You will then have a file called StandardLexer.java
+ * <code>java JFlex.Main OracleLexer.lex</code><br>
+ * You will then have a file called OracleLexer.java
  */
 
 /*
@@ -32,10 +32,10 @@ import java.io.*;
 import workbench.util.CharSequenceReader;
 
 /**
- * StandardLexer is a SQL language lexer.  Created with JFlex.  An example of how it is used:
+ * OracleLexer is a SQL language lexer.  Created with JFlex.  An example of how it is used:
  *  <CODE>
  *  <PRE>
- *  StandardLexer shredder = new StandardLexer(System.in);
+ *  OracleLexer shredder = new OracleLexer(System.in);
  *  SQLToken t;
  *  while ((t = shredder.getNextToken()) != null){
  *      System.out.println(t);
@@ -50,7 +50,7 @@ import workbench.util.CharSequenceReader;
 
 %public
 %implements SQLLexer
-%class StandardLexer
+%class OracleLexer
 %function getNextToken
 %type SQLToken
 %column
@@ -136,12 +136,12 @@ import workbench.util.CharSequenceReader;
     }
   }
 
-	StandardLexer(String source)
+	OracleLexer(String source)
 	{
 		this(new StringReader(source));
 	}
 
-	StandardLexer(CharSequence source)
+	OracleLexer(CharSequence source)
 	{
 		this(new CharSequenceReader(source));
 	}
@@ -151,8 +151,8 @@ import workbench.util.CharSequenceReader;
 wsp = [ \r\n\t\f]+
 
 keyword=(
-XXXX_DBMS_XXXX|
-XXXX_DBMS2_XXXX|
+"VARCHAR2"|"NVARCHAR2"|"FORCE"|(NO{wsp}FORCE)|(LOCKDOWN{wsp}PROFILE)|(JSON{wsp}DUALITY)|(JSON{wsp}RELATIONAL{wsp}DUALITY)|(IMMUTABLE{wsp}NOT{wsp}BLOCKCHAIN)|
+(PACKAGE{wsp}BODY)|(TYPE{wsp}BODY)|(SNAPSHOT{wsp}LOG)|(DATABASE{wsp}LINK)|(AUDIT{wsp}POLICY)|(FLASHBACK{wsp}ARCHIVE)|(CONNECT{wsp}BY)|(START{wsp}WITH)|(MATERIALIZED{wsp}VIEW{wsp}LOG)|(MATERIALIZED{wsp}ZONEMAP)|(RESTORE{wsp}POINT)|
 (ALTER{wsp}SESSION)|
 (PRIMARY{wsp}KEY)|
 (FOREIGN{wsp}KEY)|

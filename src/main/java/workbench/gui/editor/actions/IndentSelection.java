@@ -41,7 +41,7 @@ public class IndentSelection
   extends WbAction
   implements TextSelectionListener
 {
-  private JEditTextArea area;
+  private final JEditTextArea area;
 
   public IndentSelection(JEditTextArea edit)
   {

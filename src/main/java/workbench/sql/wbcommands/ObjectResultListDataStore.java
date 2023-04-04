@@ -25,6 +25,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+
 import workbench.db.DbObject;
 import workbench.db.ProcedureDefinition;
 import workbench.db.WbConnection;
@@ -39,44 +42,39 @@ public class ObjectResultListDataStore
   extends DataStore
 {
   public static final int COL_IDX_OBJECT_NAME = 0;
-  public static final int COL_IDX_OBJECT_TYPE = 1;
-  public static final int COL_IDX_SOURCE = 2;
+  public static final int COL_IDX_OBJECT_SCHEMA = 1;
+  public static final int COL_IDX_OBJECT_TYPE = 2;
+  public static final int COL_IDX_OBJECT_SOURCE = 3;
 
-  private static final String[] colnames = new String[] { "NAME", "TYPE", "SOURCE" };
-  private static final int[] colTypes = new int[] { Types.VARCHAR, Types.VARCHAR, Types.CLOB };
-  private static final int[] colSizes = new int[] { 30, 30, 50 };
+  private static final String[] colnames = new String[] { "NAME", "SCHEMA", "TYPE", "SOURCE"};
+  private static final int[] colTypes = new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.CLOB };
+  private static final int[] colSizes = new int[] { 30, 30, 30, 50 };
 
-  public ObjectResultListDataStore()
+  public ObjectResultListDataStore(boolean showSource)
   {
     super(colnames, colTypes, colSizes);
+    if (!showSource)
+    {
+      removeColumn(COL_IDX_OBJECT_SOURCE);
+    }
   }
 
-  public ObjectResultListDataStore(WbConnection con, List<DbObject> resultList, boolean showFullname)
+  public ObjectResultListDataStore(WbConnection con, List<DbObject> resultList, boolean showSource)
     throws SQLException
   {
     super(colnames, colTypes, colSizes);
-    setResultList(con, resultList, showFullname);
+    setResultList(con, resultList, showSource);
   }
 
-  public final void setResultList(WbConnection con, List<DbObject> resultList, boolean showFullname)
-    throws SQLException
+  public final void setResultList(WbConnection con, List<DbObject> resultList, boolean showSource)
   {
     if (resultList == null) return;
 
     for (DbObject object : resultList)
     {
       int row = addRow();
-      String name = null;
+      String name = object.getObjectName();
       String type = object.getObjectType();
-
-      if (showFullname)
-      {
-        name = object.getFullyQualifiedName(con);
-      }
-      else
-      {
-        name = object.getObjectName();
-      }
 
       if (object instanceof ProcedureDefinition)
       {
@@ -88,10 +86,50 @@ public class ObjectResultListDataStore
         }
       }
       setValue(row, COL_IDX_OBJECT_NAME, name);
+      setValue(row, COL_IDX_OBJECT_SCHEMA, object.getSchema());
       setValue(row, COL_IDX_OBJECT_TYPE, type);
-      setValue(row, COL_IDX_SOURCE, object.getSource(con));
+      if (showSource)
+      {
+        setValue(row, COL_IDX_OBJECT_SOURCE, getSource(object, con));
+      }
+      getRow(row).setUserObject(object);
+    }
+    
+    if (!showSource)
+    {
+      removeColumn(COL_IDX_OBJECT_SOURCE);
     }
     resetStatus();
+  }
+
+  public String getName(int row)
+  {
+    return getValueAsString(row, COL_IDX_OBJECT_NAME);
+  }
+
+  public String getType(int row)
+  {
+    return getValueAsString(row, COL_IDX_OBJECT_TYPE);
+  }
+
+  public CharSequence getSource(int row, WbConnection con)
+  {
+    DbObject dbo = getUserObject(row, DbObject.class);
+    return getSource(dbo, con);
+  }
+
+  private CharSequence getSource(DbObject dbo, WbConnection con)
+  {
+    try
+    {
+      return dbo.getSource(con);
+    }
+    catch (SQLException ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not retrieve source for object: " +
+        dbo.getFullyQualifiedName(null), ex);
+    }
+    return null;
   }
 
 }
