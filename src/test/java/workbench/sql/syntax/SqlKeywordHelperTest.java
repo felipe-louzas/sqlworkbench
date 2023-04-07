@@ -29,9 +29,11 @@ import java.util.Set;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
-import static org.junit.Assert.*;
+import workbench.util.VersionNumber;
+
 import org.junit.Test;
 
+import static org.junit.Assert.*;
 
 /**
  *
@@ -40,7 +42,7 @@ import org.junit.Test;
 public class SqlKeywordHelperTest
   extends WbTestCase
 {
-  private TestUtil util;
+  private final TestUtil util;
 
   public SqlKeywordHelperTest()
   {
@@ -81,6 +83,20 @@ public class SqlKeywordHelperTest
     assertTrue(functions.contains("nvl"));
     assertTrue(functions.contains("decode"));
     assertTrue(functions.contains("dense_rank"));
+  }
+
+  @Test
+  public void testOracle23Datatypes()
+  {
+    SqlKeywordHelper helper23 = new SqlKeywordHelper("oracle", new VersionNumber(23,0));
+    Collection<String> types23 = helper23.getDataTypes();
+    assertTrue(types23.contains("BOOLEAN"));
+    assertTrue(types23.contains("JSON"));
+
+    SqlKeywordHelper helper = new SqlKeywordHelper("oracle");
+    Collection<String> types = helper.getDataTypes();
+    assertFalse(types.contains("BOOLEAN"));
+    assertFalse(types.contains("JSON"));
   }
 
   @Test

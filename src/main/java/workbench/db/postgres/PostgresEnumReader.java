@@ -235,17 +235,6 @@ public class PostgresEnumReader
   }
 
   @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String type : types)
-    {
-      if (handlesType(type)) return true;
-    }
-    return false;
-  }
-
-  @Override
   public boolean isDerivedType()
   {
     return false;

@@ -70,8 +70,9 @@ public class OracleTableDefinitionReader
 {
   private final OracleDataTypeResolver oraTypes;
   private final boolean is12c;
+  private final boolean is23c;
   private final boolean isOracle8;
-  private String currentUser;
+  private final String currentUser;
 
   public OracleTableDefinitionReader(WbConnection conn, OracleDataTypeResolver resolver)
   {
@@ -79,6 +80,7 @@ public class OracleTableDefinitionReader
 
     currentUser = conn.getCurrentUser();
     is12c = JdbcUtils.hasMinimumServerVersion(dbConnection, "12.1");
+    is23c = JdbcUtils.hasMinimumServerVersion(dbConnection, "23.0");
     isOracle8 = JdbcUtils.hasMinimumServerVersion(dbConnection, "8.0");
 
     // The incorrectly reported search string escape bug was fixed with 11.2
@@ -203,10 +205,17 @@ public class OracleTableDefinitionReader
         else
         {
           String defOnNull = rs.getString("DEFAULT_ON_NULL");
-          if ("YES".equalsIgnoreCase(defOnNull))
+          String defOnNullUpd = rs.getString("DEFAULT_ON_NULL_UPD");
+
+          if (is23c && "YES".equals(defOnNull) && "YES".equals(defOnNullUpd))
+          {
+            col.setDefaultClause("DEFAULT ON NULL FOR INSERT AND UPDATE");
+          }
+          else if ("YES".equalsIgnoreCase(defOnNull))
           {
             col.setDefaultClause("DEFAULT ON NULL");
           }
+
           col.setDefaultValue(defaultValue);
         }
         col.setComment(remarks);
@@ -308,6 +317,29 @@ public class OracleTableDefinitionReader
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving identity column information for " + owner + "." + table + " took " + duration + "ms");
   }
 
+  public static String getSelectForColumnInfo(WbConnection conn, String alias)
+  {
+    String sql =
+            getDecodeForDataType("tttt.data_type", OracleUtils.getMapDateToTimestamp(conn)) + " AS data_type, \n" +
+      "     tttt.data_type AS type_name,  \n" +
+      "     decode(tttt.data_type, 'VARCHAR', tttt.char_length, \n" +
+      "                         'VARCHAR2', tttt.char_length, \n" +
+      "                         'NVARCHAR', tttt.char_length, \n" +
+      "                         'NVARCHAR2', tttt.char_length, \n" +
+      "                         'CHAR', tttt.char_length, \n" +
+      "                         'NCHAR', tttt.char_length, \n" +
+      "                         'NUMBER', tttt.data_precision, \n" +
+      "                         'FLOAT', tttt.data_precision, \n" +
+      "                         'REAL', tttt.data_precision, \n" +
+      "            tttt.data_length) AS column_size,  \n" +
+      "     case \n" +
+      "        when tttt.data_type = 'NUMBER' and tttt.data_precision is null then coalesce(tttt.data_scale,-127) \n" +
+      "        else tttt.data_scale \n" +
+      "     end AS decimal_digits,  \n" +
+      "     DECODE(tttt.nullable, 'N', 0, 1) AS is_nullable";
+    return sql.replace("tttt", alias);
+
+  }
   public static String getDecodeForDataType(String colname, boolean mapDateToTimestamp)
   {
       return
@@ -347,32 +379,16 @@ public class OracleTableDefinitionReader
     final String sql1 =
       "-- SQL Workbench/J \n" +
       "SELECT " + OracleUtils.getCacheHint() + " t.column_name AS column_name,  \n" +
-            getDecodeForDataType("t.data_type", OracleUtils.getMapDateToTimestamp(dbConnection)) + " AS data_type, \n" +
-      "     t.data_type AS type_name,  \n" +
-      "     decode(t.data_type, 'VARCHAR', t.char_length, \n" +
-      "                         'VARCHAR2', t.char_length, \n" +
-      "                         'NVARCHAR', t.char_length, \n" +
-      "                         'NVARCHAR2', t.char_length, \n" +
-      "                         'CHAR', t.char_length, \n" +
-      "                         'NCHAR', t.char_length, \n" +
-      "                         'NUMBER', t.data_precision, \n" +
-      "                         'FLOAT', t.data_precision, \n" +
-      "                         'REAL', t.data_precision, \n" +
-      "            t.data_length) AS column_size,  \n" +
-      "     case \n" +
-      "        when t.data_type = 'NUMBER' and t.data_precision is null then coalesce(t.data_scale,-127) \n" +
-      "        else t.data_scale \n" +
-      "     end AS decimal_digits,  \n" +
+            getSelectForColumnInfo(dbConnection, "t") + ", \n" +
       "     DECODE(t.nullable, 'N', 0, 1) AS nullable, \n" +
       "     " + (is12c ? "t.identity_column" : " 'NO' AS IDENTITY_COLUMN") + ", \n" +
-      "     " + (is12c ? "t.default_on_null" : " 'NO' AS DEFAULT_ON_NULL") + ", \n";
+      "     " + (is12c ? "t.default_on_null" : " 'NO' AS DEFAULT_ON_NULL") + ", \n" +
+      "     " + (is23c ? "t.default_on_null_upd" : " 'N/A' AS DEFAULT_ON_NULL_UPD") + ", \n";
 
     String sql2 =
       "     t.data_default AS column_def,  \n" +
       "     t.char_used, \n" +
-      "     t.column_id AS ordinal_position,   \n" +
-      "     DECODE(t.nullable, 'N', 'NO', 'YES') AS is_nullable, \n";
-
+      "     t.column_id AS ordinal_position,   \n";
 
     boolean includeVirtualColumns = JdbcUtils.hasMinimumServerVersion(dbConnection, "11.0");
     if (includeVirtualColumns)

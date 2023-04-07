@@ -75,17 +75,6 @@ public class PostgresSubscriptionReader
     return PgSubscription.TYPE_NAME.equalsIgnoreCase(type);
   }
 
-  @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String type : types)
-    {
-      if (handlesType(type)) return true;
-    }
-    return false;
-  }
-
   private List<PgSubscription> getSubscriptions(WbConnection connection, String namePattern)
   {
     List<PgSubscription> result = new ArrayList<>();

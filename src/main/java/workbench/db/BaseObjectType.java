@@ -40,9 +40,9 @@ public class BaseObjectType
   implements ComparableDbObject
 {
   private String catalog;
-  private String schema;
+  private final String schema;
   private String typeName;
-  private String objectType = "TYPE";
+  private final String objectType = "TYPE";
   private String remarks;
   private String source;
   private List<ColumnIdentifier> columns;
@@ -53,6 +53,7 @@ public class BaseObjectType
     this.typeName = typeName;
   }
 
+  @Override
   public void setCatalog(String catalogName)
   {
     this.catalog = catalogName;

@@ -124,18 +124,6 @@ public class SqlServerTypeReader
   }
 
   @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String typ : types)
-    {
-      if (handlesType(typ)) return true;
-    }
-    return false;
-  }
-
-
-  @Override
   public boolean isDerivedType()
   {
     return false;

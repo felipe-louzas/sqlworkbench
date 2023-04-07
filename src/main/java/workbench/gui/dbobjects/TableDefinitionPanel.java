@@ -125,7 +125,7 @@ public class TableDefinitionPanel
   private JPanel toolbar;
   private boolean busy;
   private FlatButton alterButton;
-  private ColumnChangeValidator validator = new ColumnChangeValidator();
+  private final ColumnChangeValidator validator = new ColumnChangeValidator();
   private boolean doRestore;
   private boolean initialized;
 

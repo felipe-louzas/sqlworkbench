@@ -242,17 +242,6 @@ public class PostgresRuleReader
   }
 
   @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String type : types)
-    {
-      if (handlesType(type)) return true;
-    }
-    return false;
-  }
-
-  @Override
   public DataStore getObjectDetails(WbConnection con, DbObject object)
   {
     if (object == null) return null;

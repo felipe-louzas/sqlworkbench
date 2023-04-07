@@ -75,17 +75,6 @@ public class PostgresPublicationReader
     return PgPublication.TYPE_NAME.equalsIgnoreCase(type);
   }
 
-  @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String type : types)
-    {
-      if (handlesType(type)) return true;
-    }
-    return false;
-  }
-
   private List<PgPublication> getPublications(WbConnection connection, String namePattern)
   {
     Statement stmt = null;

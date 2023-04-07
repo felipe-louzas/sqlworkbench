@@ -71,6 +71,7 @@ import workbench.db.nuodb.NuoDBDomainReader;
 import workbench.db.objectcache.Namespace;
 import workbench.db.oracle.DbmsOutput;
 import workbench.db.oracle.OracleDataTypeResolver;
+import workbench.db.oracle.OracleDomainReader;
 import workbench.db.oracle.OracleObjectListEnhancer;
 import workbench.db.oracle.OracleTableDefinitionReader;
 import workbench.db.oracle.OracleTypeReader;
@@ -310,6 +311,10 @@ public class DbMetadata
       dataTypeResolver = new OracleDataTypeResolver(aConnection);
       definitionReader = new OracleTableDefinitionReader(aConnection, (OracleDataTypeResolver)dataTypeResolver);
       extenders.add(new OracleTypeReader());
+      if (JdbcUtils.hasMinimumServerVersion(dbConnection, "23.0"))
+      {
+        extenders.add(new OracleDomainReader());
+      }
       objectListEnhancer = new OracleObjectListEnhancer(); // to cleanup MVIEW type information
     }
     else if (productLower.contains("hsql") && !productLower.startsWith("ucanaccess"))
@@ -2101,21 +2106,6 @@ public class DbMetadata
       }
     }
     return null;
-  }
-
-  public DataStore getExtendedObjectDetails(DbObject object)
-  {
-    if (object == null) return null;
-    DataStore def = null;
-    for (ObjectListExtender extender : extenders)
-    {
-      if (extender.handlesType(object.getObjectType()))
-      {
-        def = extender.getObjectDetails(dbConnection, object);
-        break;
-      }
-    }
-    return def;
   }
 
   public boolean isSynonym(TableIdentifier table)

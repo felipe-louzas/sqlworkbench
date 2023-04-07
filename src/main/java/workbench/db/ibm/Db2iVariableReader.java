@@ -33,8 +33,8 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -67,18 +67,6 @@ public class Db2iVariableReader
   public boolean handlesType(String type)
   {
     return TYPE.equalsIgnoreCase(type);
-  }
-
-  @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-
-    for (String type : types)
-    {
-      if (handlesType(type)) return true;
-    }
-    return false;
   }
 
   @Override

@@ -37,6 +37,7 @@ import workbench.resource.Settings;
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
+import workbench.util.VersionNumber;
 
 /**
  * Manage SQL keywords to support built-in keywords and user-defined keywords.
@@ -65,6 +66,9 @@ public class SqlKeywordHelper
 {
   private String dbId;
   private String aliasId;
+  private String majorVersionPrefix;
+  private String fullVersionPrefix;
+
   private static class LazyHolder
   {
     private static final Set<String> keywords = new SqlKeywordHelper().getReservedWords();
@@ -80,21 +84,30 @@ public class SqlKeywordHelper
    */
   public SqlKeywordHelper()
   {
-    this(null);
+    this(null, null);
   }
 
+  public SqlKeywordHelper(String id)
+  {
+    this(id, null);
+  }
   /**
    * Read keywords specific for the DBMS identified by the given DBID.
    * (dbms-independent keywords will be included).
    *
    * @param id the DBID for the DBMS, may be null. In that case only standard keywords are used.
    */
-  public SqlKeywordHelper(String id)
+  public SqlKeywordHelper(String id, VersionNumber dbVersion)
   {
     this.dbId = id;
     if (dbId != null)
     {
       this.aliasId = Settings.getInstance().getProperty("workbench.db." + dbId + ".aliasid", null);
+    }
+    if (dbVersion != null)
+    {
+      this.majorVersionPrefix = dbId + "_" + dbVersion.getMajorVersion() + ".";
+      this.fullVersionPrefix = dbId + "_" + dbVersion.getMajorVersion() + "." + dbVersion.getMinorVersion() + ".";
     }
   }
 
@@ -179,6 +192,27 @@ public class SqlKeywordHelper
       }
     }
     removeItems(result);
+
+    if (this.majorVersionPrefix != null)
+    {
+      Set<String> dbms = readFile(this.majorVersionPrefix + filename);
+      if (dbms != null)
+      {
+        result.addAll(dbms);
+        removeItems(result);
+      }
+    }
+
+    if (this.fullVersionPrefix != null)
+    {
+      Set<String> dbms = readFile(this.fullVersionPrefix + filename);
+      if (dbms != null)
+      {
+        result.addAll(dbms);
+        removeItems(result);
+      }
+    }
+
     return result;
   }
 
@@ -192,7 +226,7 @@ public class SqlKeywordHelper
     Set<String> toRemove = CollectionUtil.caseInsensitiveSet();
     for (String value : items)
     {
-      if (value.charAt(0) == '-' && items.contains(value.substring(1)))
+      if (value.charAt(0) == '-')
       {
         toRemove.add(value.substring(1));
         toRemove.add(value);

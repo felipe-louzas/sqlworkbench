@@ -110,13 +110,24 @@ public class TableColumnsDatastore
   private static final int[] TYPES = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER};
   private static final int[] SIZES = {20, 18, 5, 8, 10, 10, 25, 18, 2, 2, 2, 2};
 
-  private TableIdentifier sourceTable;
+  private final TableIdentifier sourceTable;
+
+  public TableColumnsDatastore(List<ColumnIdentifier> columns)
+  {
+    super(TABLE_DEFINITION_COLS, TYPES, SIZES);
+    this.sourceTable = null;
+    setColumns(columns);
+  }
 
   public TableColumnsDatastore(TableDefinition table)
   {
     super(TABLE_DEFINITION_COLS, TYPES, SIZES);
     this.sourceTable = table.getTable();
-    List<ColumnIdentifier> columns = table.getColumns();
+    setColumns(table.getColumns());
+  }
+
+  private void setColumns(List<ColumnIdentifier> columns)
+  {
     if (columns != null)
     {
       for (ColumnIdentifier col : columns)

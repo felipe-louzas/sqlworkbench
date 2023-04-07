@@ -26,14 +26,12 @@ import java.sql.Statement;
 import java.sql.Types;
 
 import workbench.log.CallerInfo;
-
-import workbench.db.DataTypeResolver;
-import workbench.db.WbConnection;
-
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DataTypeResolver;
 import workbench.db.JdbcUtils;
+import workbench.db.WbConnection;
 
 import workbench.util.SqlUtil;
 
@@ -129,6 +127,10 @@ public class OracleDataTypeResolver
       return Types.TIMESTAMP;
     }
 
+    if (type == Types.OTHER && dbmsType != null && dbmsType.equals("BOOLEAN"))
+    {
+      return Types.BOOLEAN;
+    }
     return type;
   }
 

@@ -27,7 +27,7 @@ import workbench.storage.DataStore;
 
 /**
  * An ObjectListExtender is an ObjectListAppender that also handles retrieving details for the additional objects.
- * 
+ *
  * @author Thomas Kellerer
  */
 public interface ObjectListExtender
@@ -62,7 +62,15 @@ public interface ObjectListExtender
    * @param types
    * @see #handlesType(java.lang.String)
    */
-  boolean handlesType(String[] types);
+  default boolean handlesType(String[] types)
+  {
+    if (types == null) return true;
+    for (String type : types)
+    {
+      if (handlesType(type)) return true;
+    }
+    return false;
+  }
 
   /**
    * Retrieve a definition of the object so that it can be displayed

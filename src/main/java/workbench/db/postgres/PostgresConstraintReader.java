@@ -33,8 +33,8 @@ import workbench.util.CollectionUtil;
 
 
 /**
- * Read table level constraints for Postgres
- * (column constraints are stored on table level...)
+ * Read table level constraints for Postgres.
+ *
  * @author  Thomas Kellerer
  */
 public class PostgresConstraintReader

@@ -37,8 +37,8 @@ import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.DomainIdentifier;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -197,17 +197,6 @@ public class NuoDBDomainReader
   public boolean handlesType(String type)
   {
     return StringUtil.equalStringIgnoreCase("DOMAIN", type);
-  }
-
-  @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String type : types)
-    {
-      if (handlesType(type)) return true;
-    }
-    return false;
   }
 
   @Override

@@ -33,8 +33,8 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectListExtender;
 import workbench.db.ObjectListDataStore;
+import workbench.db.ObjectListExtender;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -49,7 +49,7 @@ import workbench.util.CollectionUtil;
 public class VerticaTableReader
   implements ObjectListExtender
 {
-  private String sql =
+  private final String sql =
       "SELECT table_name as name, \n" +
       "       decode(is_view,true,'SYSTEM VIEW',false,'SYSTEM TABLE') as type, \n" +
       "       'v_internal' as schema, \n" +
@@ -115,20 +115,6 @@ public class VerticaTableReader
   public boolean handlesType(String type)
   {
     return supportedTypes().contains(type);
-  }
-
-  @Override
-  public boolean handlesType(String[] types)
-  {
-    if (types == null) return true;
-    for (String type : types)
-    {
-      if (handlesType(type))
-      {
-        return true;
-      }
-    }
-    return false;
   }
 
   @Override

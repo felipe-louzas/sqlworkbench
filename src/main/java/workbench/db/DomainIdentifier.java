@@ -36,7 +36,7 @@ public class DomainIdentifier
 {
   private String catalog;
   private String schema;
-  private String domainName;
+  private final String domainName;
   private String objectType = "DOMAIN";
   private String remarks;
   private String dataType;
