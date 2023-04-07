@@ -200,21 +200,23 @@ public class OracleTableDefinitionReaderTest
       TestUtil.executeScript(con,
         "create table number_test \n" +
         "(\n" +
-        "  n_plain number, \n" +
+        "  n_plain number not null, \n" +
         "  n_max number(38,2), \n" +
         "  n_star number(*,2), \n" +
         "  n_two number(10,2), \n" +
         "  n_minus number(10,-2), \n" +
-        "  n_int integer\n" +
+        "  n_int integer not null\n" +
         ");");
       List<ColumnIdentifier> columns = con.getMetadata().getTableColumns(new TableIdentifier("NUMBER_TEST"));
       assertNotNull(columns);
       assertEquals(6, columns.size());
       ColumnIdentifier plain = ColumnIdentifier.findColumnInList(columns, "N_PLAIN");
       assertEquals("NUMBER", plain.getDbmsType());
+      assertFalse(plain.isNullable());
 
       ColumnIdentifier max = ColumnIdentifier.findColumnInList(columns, "N_MAX");
       assertEquals("NUMBER(38,2)", max.getDbmsType());
+      assertTrue(max.isNullable());
 
       ColumnIdentifier star = ColumnIdentifier.findColumnInList(columns, "N_STAR");
       assertEquals("NUMBER(*,2)", star.getDbmsType());
@@ -227,10 +229,11 @@ public class OracleTableDefinitionReaderTest
 
       ColumnIdentifier intcol = ColumnIdentifier.findColumnInList(columns, "N_INT");
       assertEquals("NUMBER", intcol.getDbmsType());
+      assertFalse(intcol.isNullable());
     }
     finally
     {
-      TestUtil.executeScript(con, "drop table number_test;");
+      TestUtil.executeScript(con, "drop table number_test purge;");
     }
   }
 
@@ -279,7 +282,7 @@ public class OracleTableDefinitionReaderTest
     }
     finally
     {
-      TestUtil.executeScript(con, "drop table id_test");
+      TestUtil.executeScript(con, "drop table id_test purge");
     }
   }
 
@@ -298,20 +301,30 @@ public class OracleTableDefinitionReaderTest
     try
     {
       String script =
-        "create table virtual_col_test (some_name varchar(100), lower_name generated always as (lower(some_name)));";
+        "create table virtual_col_test (\n" +
+        "  some_name varchar(100), \n" +
+        "  lower_name generated always as (lower(some_name)), \n" +
+        "  c1 number not null, \n" +
+        "  g1 number generated always as (c1 * 2) \n" +
+        ");";
       TestUtil.executeScript(con, script);
       TableDefinition def = con.getMetadata().getTableDefinition(new TableIdentifier("VIRTUAL_COL_TEST"));
       assertNotNull(def);
       List<ColumnIdentifier> columns = def.getColumns();
       assertNotNull(columns);
-      assertEquals(2, columns.size());
-      ColumnIdentifier lower = columns.get(1);
-      assertEquals("LOWER_NAME", lower.getColumnName());
+      assertEquals(4, columns.size());
+      ColumnIdentifier lower = ColumnIdentifier.findColumnInList(columns, "LOWER_NAME");
+      assertTrue(lower.getDbmsType().startsWith("VARCHAR2(100"));
       assertEquals("GENERATED ALWAYS AS (LOWER(\"SOME_NAME\"))", lower.getComputedColumnExpression());
+
+      ColumnIdentifier g1 = ColumnIdentifier.findColumnInList(columns, "G1");
+      assertEquals("GENERATED ALWAYS AS (\"C1\"*2)", g1.getComputedColumnExpression());
+      assertEquals("NUMBER", g1.getDbmsType());
+
     }
     finally
     {
-      TestUtil.executeScript(con, "drop table virtual_col_test");
+      TestUtil.executeScript(con, "drop table virtual_col_test purge");
     }
   }
 }

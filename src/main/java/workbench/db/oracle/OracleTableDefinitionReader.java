@@ -336,7 +336,7 @@ public class OracleTableDefinitionReader
       "        when tttt.data_type = 'NUMBER' and tttt.data_precision is null then coalesce(tttt.data_scale,-127) \n" +
       "        else tttt.data_scale \n" +
       "     end AS decimal_digits,  \n" +
-      "     DECODE(tttt.nullable, 'N', 0, 1) AS is_nullable";
+      "     DECODE(tttt.nullable, 'N', 'NO', 'YES') AS is_nullable ";
     return sql.replace("tttt", alias);
 
   }
@@ -380,8 +380,7 @@ public class OracleTableDefinitionReader
       "-- SQL Workbench/J \n" +
       "SELECT " + OracleUtils.getCacheHint() + " t.column_name AS column_name,  \n" +
             getSelectForColumnInfo(dbConnection, "t") + ", \n" +
-      "     DECODE(t.nullable, 'N', 0, 1) AS nullable, \n" +
-      "     " + (is12c ? "t.identity_column" : " 'NO' AS IDENTITY_COLUMN") + ", \n" +
+            "     " + (is12c ? "t.identity_column" : " 'NO' AS IDENTITY_COLUMN") + ", \n" +
       "     " + (is12c ? "t.default_on_null" : " 'NO' AS DEFAULT_ON_NULL") + ", \n" +
       "     " + (is23c ? "t.default_on_null_upd" : " 'N/A' AS DEFAULT_ON_NULL_UPD") + ", \n";
 
@@ -462,14 +461,23 @@ public class OracleTableDefinitionReader
       }
     }
 
-    PreparedStatement stmt = OracleUtils.prepareQuery(dbConnection, sql);
-    stmt.setString(1, table);
-    if (!useUserTables)
-    {
-      stmt.setString(2, schema);
-    }
     LogMgr.logMetadataSql(new CallerInfo(){}, "table columns", sql, table, schema);
-    return stmt;
+
+    try
+    {
+      PreparedStatement stmt = OracleUtils.prepareQuery(dbConnection, sql);
+      stmt.setString(1, table);
+      if (!useUserTables)
+      {
+        stmt.setString(2, schema);
+      }
+      return stmt;
+    }
+    catch (SQLException ex)
+    {
+      LogMgr.logMetadataError(new CallerInfo(){}, ex, "table columns", sql, table, schema);
+      throw ex;
+    }
   }
 
   private String getDbLinkTargetSchema(String dblink, String owner)

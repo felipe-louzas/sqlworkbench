@@ -319,7 +319,8 @@ public class OracleTableSourceBuilderTest
       TableDefinition def = con.getMetadata().getTableDefinition(new TableIdentifier("SAMPLE"));
 
       String source = builder.getTableSource(def.getTable(), def.getColumns());
-//      System.out.println(source);
+      assertTrue(source.contains("ID   NUMBER              GENERATED ALWAYS AS IDENTITY NOT NULL"));
+      assertTrue(source.contains("SNO  GENERATED ALWAYS AS ('SNO_#'||TO_CHAR(\"ID\",'FM000000'))"));
     }
     finally
     {
