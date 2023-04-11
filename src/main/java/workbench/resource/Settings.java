@@ -208,6 +208,7 @@ public class Settings
 
   public static final String DEFAULT_MACRO_FILENAME = "WbMacros.xml";
   public static final String PK_MAPPING_FILENAME_PROPERTY = "workbench.pkmapping.file";
+  public static final String DEFAULT_PK_MAPPING_FILENAME = "pk_mappings.properties";
   public static final String UNIX_LINE_TERMINATOR_PROP_VALUE = "lf";
   public static final String DOS_LINE_TERMINATOR_PROP_VALUE = "crlf";
   public static final String DEFAULT_LINE_TERMINATOR_PROP_VALUE = "default";
@@ -2449,15 +2450,43 @@ public class Settings
     return getBoolProperty("workbench.db.select.genericexecute", false);
   }
 
+  public File getPKMappingFile()
+  {
+    String fname = getPKMappingFilename();
+    if (StringUtil.isBlank(fname))
+    {
+      return null;
+    }
+
+    fname = StringUtil.replace(fname, FileDialogUtil.CONFIG_DIR_KEY, getConfigDir().getAbsolutePath());
+    File f = new File(fname);
+
+    if (f.getParentFile() == null || !f.isAbsolute())
+    {
+      f = new File(getConfigDir(), fname);
+    }
+    return f;
+  }
+
   public String getPKMappingFilename()
   {
-    String fName = System.getProperty(PK_MAPPING_FILENAME_PROPERTY, getProperty(PK_MAPPING_FILENAME_PROPERTY, null));
-    if (StringUtil.isEmptyString(fName)) return null;
-    return StringUtil.replace(fName, FileDialogUtil.CONFIG_DIR_KEY, getConfigDir().getAbsolutePath());
+    String defaultName = FileDialogUtil.CONFIG_DIR_KEY + "/" + DEFAULT_PK_MAPPING_FILENAME;
+    return StringUtil.trimToNull(getProperty(PK_MAPPING_FILENAME_PROPERTY, defaultName));
   }
-  public void setPKMappingFilename(String file)
+
+  public void setPKMappingFile(File mappingFile)
   {
-    setProperty(PK_MAPPING_FILENAME_PROPERTY,file);
+    if (mappingFile == null)
+    {
+      setPKMappingFilename(null);
+    }
+    String fname = FileDialogUtil.getPathWithPlaceholder(new WbFile(mappingFile));
+    setPKMappingFilename(fname);
+  }
+
+  public void setPKMappingFilename(String fileName)
+  {
+    setProperty(PK_MAPPING_FILENAME_PROPERTY, fileName);
   }
 
   public boolean retrieveDbmsOutputAfterExec()
@@ -4074,9 +4103,9 @@ public class Settings
       LogMgr.logError(new CallerInfo(){}, "Error saving Settings file '" + configfile.getFullpathForLogging()+ "'", th);
     }
 
-    if (this.getPKMappingFilename() != null && PkMapping.isInitialized())
+    if (this.getPKMappingFile() != null && PkMapping.isInitialized())
     {
-      PkMapping.getInstance().saveMapping(this.getPKMappingFilename());
+      PkMapping.getInstance().saveMapping(this.getPKMappingFile());
     }
   }
 

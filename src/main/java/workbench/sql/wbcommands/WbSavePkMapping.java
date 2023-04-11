@@ -34,11 +34,10 @@ import workbench.sql.StatementRunnerResult;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
-import workbench.util.FileDialogUtil;
 import workbench.util.StringUtil;
-import workbench.util.WbFile;
 
 /**
+ * A SQL command to save the current PK mapping to a file.
  *
  * @author Thomas Kellerer
  */
@@ -72,28 +71,27 @@ public class WbSavePkMapping
   {
     StatementRunnerResult result = new StatementRunnerResult();
     cmdLine.parse(getCommandLine(sql));
-    String file = cmdLine.getValue(CommonArgs.ARG_FILE);
-    if (file == null)
+    if (displayHelp(result))
     {
-      file = Settings.getInstance().getPKMappingFilename();
-    }
-    else
-    {
-      WbFile cd = new WbFile(Settings.getInstance().getConfigDir());
-      file = StringUtil.replace(file, FileDialogUtil.CONFIG_DIR_KEY, cd.getFullPath());
+      return result;
     }
 
-    if (file == null)
+    File mappingFile = evaluateFileArgument(cmdLine.getValue(CommonArgs.ARG_FILE), true);
+    if (mappingFile == null)
+    {
+      mappingFile = Settings.getInstance().getPKMappingFile();
+    }
+
+    if (mappingFile == null)
     {
       result.setFailure();
       result.addMessage(ResourceMgr.getString("ErrPkDefNoFile"));
       return result;
     }
 
-    PkMapping.getInstance().saveMapping(file);
+    PkMapping.getInstance().saveMapping(mappingFile);
     String msg = ResourceMgr.getString("MsgPkMappingSaved");
-    File f = new File(file);
-    msg = StringUtil.replace(msg, "%filename%", f.getAbsolutePath());
+    msg = StringUtil.replace(msg, "%filename%", mappingFile.getAbsolutePath());
     result.addMessage(msg);
     result.setSuccess();
     return result;

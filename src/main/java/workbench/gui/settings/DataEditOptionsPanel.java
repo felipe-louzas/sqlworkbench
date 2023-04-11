@@ -21,6 +21,8 @@
  */
 package workbench.gui.settings;
 
+import java.io.File;
+
 import javax.swing.JPanel;
 
 import workbench.interfaces.Restoreable;
@@ -33,6 +35,7 @@ import workbench.gui.components.FlatButton;
 
 import workbench.util.FileDialogUtil;
 import workbench.util.StringUtil;
+import workbench.util.WbFile;
 
 /**
  * A panel to edit the options for data editing, such as the font to be
@@ -275,10 +278,13 @@ public class DataEditOptionsPanel
 
   private void selectMapFile(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectMapFile
   {//GEN-HEADEREND:event_selectMapFile
-    String fileName = FileDialogUtil.selectPkMapFile(this);
-    if (fileName != null) pkMapFile.setText(fileName);
+    File mappingFile = FileDialogUtil.selectPkMapFile(this);
+    if (mappingFile != null)
+    {
+      String fname = FileDialogUtil.getPathWithPlaceholder(new WbFile(mappingFile));
+      pkMapFile.setText(fname);
+    }
   }//GEN-LAST:event_selectMapFile
-
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JCheckBox checkEditable;

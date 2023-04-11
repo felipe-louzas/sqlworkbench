@@ -34,12 +34,10 @@ import workbench.sql.StatementRunnerResult;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
-import workbench.util.FileDialogUtil;
 import workbench.util.StringUtil;
-import workbench.util.WbFile;
 
 /**
- *
+ * A SQL command to load the PK mapping from a (non-default) file.
  * @author Thomas Kellerer
  */
 public class WbLoadPkMapping
@@ -79,28 +77,23 @@ public class WbLoadPkMapping
       return result;
     }
 
-    String file = cmdLine.getValue(CommonArgs.ARG_FILE);
-    if (file == null)
+    File mappingFile = evaluateFileArgument(cmdLine.getValue(CommonArgs.ARG_FILE), true);
+    if (mappingFile == null)
     {
-      file = Settings.getInstance().getPKMappingFilename();
-    }
-    else
-    {
-      WbFile cd = new WbFile(Settings.getInstance().getConfigDir());
-      file = StringUtil.replace(file, FileDialogUtil.CONFIG_DIR_KEY, cd.getFullPath());
+      mappingFile = Settings.getInstance().getPKMappingFile();
     }
 
-    if (file == null)
+    if (mappingFile == null)
     {
       result.setFailure();
       result.addMessageByKey("ErrPkDefNoFile");
       return result;
     }
 
-    PkMapping.getInstance().loadMapping(file);
+    PkMapping.getInstance().loadMapping(mappingFile);
     String msg = ResourceMgr.getString("MsgPkMappingLoaded");
-    File f = new File(file);
-    msg = StringUtil.replace(msg, "%filename%", f.getAbsolutePath());
+
+    msg = StringUtil.replace(msg, "%filename%", mappingFile.getAbsolutePath());
     result.addMessage(msg);
     result.addMessageNewLine();
 

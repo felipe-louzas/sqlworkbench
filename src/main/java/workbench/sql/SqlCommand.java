@@ -65,6 +65,7 @@ import workbench.util.ArgumentValue;
 import workbench.util.CollectionUtil;
 import workbench.util.DdlObjectInfo;
 import workbench.util.ExceptionUtil;
+import workbench.util.FileDialogUtil;
 import workbench.util.FileUtil;
 import workbench.util.SqlParsingUtil;
 import workbench.util.SqlUtil;
@@ -1139,9 +1140,20 @@ public class SqlCommand
    */
   public WbFile evaluateFileArgument(String fileName)
   {
+    return evaluateFileArgument(fileName, false);
+  }
+  
+  public WbFile evaluateFileArgument(String fileName, boolean replaceCommonPlaceholders)
+  {
     if (StringUtil.isEmptyString(fileName)) return null;
 
     String fname = StringUtil.trimQuotes(fileName);
+    if (replaceCommonPlaceholders)
+    {
+      fname = FileDialogUtil.replaceConfigDir(fname);
+      fname = FileDialogUtil.replaceProgramDir(fname);
+    }
+
     WbFile f  = new WbFile(fname);
     if (f.isAbsolute()) return f;
 

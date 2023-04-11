@@ -317,50 +317,48 @@ public class FileDialogUtil
 
   public static void selectPkMapFileIfNecessary(Component parent)
   {
-    String file = Settings.getInstance().getPKMappingFilename();
+    File file = Settings.getInstance().getPKMappingFile();
     if (file != null)
     {
-      File f = new File(file);
-      if (f.exists()) return;
+      if (file.exists()) return;
     }
     boolean doSelectFile = WbSwingUtilities.getYesNo(parent, ResourceMgr.getString("MsgSelectPkMapFile"));
     if (!doSelectFile) return;
     file = selectPkMapFile(parent);
     if (file != null)
     {
-      Settings.getInstance().setPKMappingFilename(file);
+      Settings.getInstance().setPKMappingFile(file);
     }
   }
 
-  public static String selectPkMapFile(Component parent)
+  public static File selectPkMapFile(Component parent)
   {
-    String fileName = Settings.getInstance().getPKMappingFilename();
-    File f = null;
-    if (fileName == null)
+    File mappingFile = Settings.getInstance().getPKMappingFile();
+    File dir = null;
+
+    if (mappingFile == null || mappingFile.getParentFile() == null)
     {
-      f = Settings.getInstance().getConfigDir();
+      dir = Settings.getInstance().getConfigDir();
     }
     else
     {
-      f = new File(fileName).getParentFile();
+      dir = mappingFile.getParentFile();
     }
 
     try
     {
-      JFileChooser dialog = new WbFileChooser(f);
+      JFileChooser dialog = new WbFileChooser(dir);
       dialog.setApproveButtonText(ResourceMgr.getString("LblOK"));
-      if (fileName != null)
+      if (mappingFile != null)
       {
-        dialog.setSelectedFile(new File(fileName));
+        dialog.setSelectedFile(mappingFile);
       }
-      String selectedFile = null;
       int choice = dialog.showSaveDialog(parent);
       if (choice == JFileChooser.APPROVE_OPTION)
       {
-        File target = dialog.getSelectedFile();
-        selectedFile = target.getAbsolutePath();
+        return dialog.getSelectedFile();
       }
-      return selectedFile;
+      return null;
     }
     catch (Throwable e)
     {

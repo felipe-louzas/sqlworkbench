@@ -34,8 +34,9 @@ import workbench.util.StringUtil;
 import workbench.util.WbStringTokenizer;
 
 /**
- * Defines a primary key for a table or view. This is stored in a
- * workbench specific file in order allow updates on tables (or views) that
+ * Defines a primary key for a table or view.
+ *
+ * This is stored in a workbench specific file in order allow updates on tables (or views) that
  * have no defined primary key in the database.
  *
  * @author Thomas Kellerer
@@ -82,7 +83,7 @@ public class WbDefinePk
     String msg = null;
     if (columns == null)
     {
-      PkMapping.getInstance().removeMapping(currentConnection, table);
+      PkMapping.getInstance().removeMapping(table);
       msg = ResourceMgr.getString("MsgPkDefinitionRemoved");
     }
     else

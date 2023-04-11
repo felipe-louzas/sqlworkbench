@@ -62,7 +62,7 @@ public class DataStoreTest
   extends WbTestCase
 {
   private final int rowcount = 10;
-  private TestUtil util;
+  private final TestUtil util;
 
   public DataStoreTest()
     throws Exception
@@ -275,7 +275,7 @@ public class DataStoreTest
       FileWriter w = new FileWriter(f);
       w.write(mapping);
       w.close();
-      PkMapping.getInstance().loadMapping(f.getAbsolutePath());
+      PkMapping.getInstance().loadMapping(f);
 
       rs = stmt.executeQuery(sql);
       ds = new DataStore(rs, con);
@@ -287,6 +287,7 @@ public class DataStoreTest
     }
     finally
     {
+      PkMapping.getInstance().removeMapping("junit_test");
       ConnectionMgr.getInstance().disconnectAll();
     }
   }

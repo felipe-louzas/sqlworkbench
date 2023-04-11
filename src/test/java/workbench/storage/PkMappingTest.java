@@ -22,11 +22,16 @@
 package workbench.storage;
 
 import java.util.List;
+
 import workbench.TestUtil;
+
 import workbench.db.TableIdentifier;
+
 import workbench.util.WbFile;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -40,13 +45,14 @@ public class PkMappingTest
   {
     TestUtil util = new TestUtil("PkMappingTest");
     WbFile f = new WbFile(util.getBaseDir(), "mapping_test.properties");
-    PkMapping map = new PkMapping(f.getFullPath());
+    PkMapping map = new PkMapping(f);
     TableIdentifier tbl = new TableIdentifier("PERSON");
-    map.addMapping(tbl, "id");
+    map.addMapping(tbl, "id1,id2");
 
     TableIdentifier tbl2 = new TableIdentifier("person");
     List<String> col = map.getPKColumns(tbl2);
-    assertEquals(1, col.size());
-    assertEquals("id", col.get(0));
+    assertEquals(2, col.size());
+    assertEquals("id1", col.get(0));
+    assertEquals("id2", col.get(1));
   }
 }

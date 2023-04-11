@@ -42,14 +42,14 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
-import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 
 /**
- * A class to hold user-defined primary key mappings for tables (or views)
+ * A class to hold user-defined primary key mappings for tables (or views).
+ *
  * @author Thomas Kellerer
  */
 public class PkMapping
@@ -72,19 +72,14 @@ public class PkMapping
     return instance;
   }
 
-  /**
-   * For testing purposes only
-   * @param source
-   */
-  PkMapping(String source)
+  PkMapping(File source)
   {
     loadMapping(source);
   }
 
   private PkMapping()
   {
-    String filename = Settings.getInstance().getPKMappingFilename();
-    loadMapping(filename);
+    loadMapping(Settings.getInstance().getPKMappingFile());
   }
 
   public synchronized void clear()
@@ -94,6 +89,7 @@ public class PkMapping
       columnMapping.clear();
     }
   }
+
   public synchronized String getMappingAsText()
   {
     if (CollectionUtil.isEmpty(this.columnMapping)) return null;
@@ -111,26 +107,26 @@ public class PkMapping
     return result.toString();
   }
 
-  public final synchronized void loadMapping(String filename)
+  public final synchronized void loadMapping(File mappingFile)
   {
-    if (filename == null) return;
+    if (mappingFile == null) return;
     Properties props = new Properties();
 
-    File f = new File(filename);
-    if (!f.exists())
+    final CallerInfo ci = new CallerInfo(){};
+    if (!mappingFile.exists())
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Mapping file '" + filename + "' not found! Please check workbench.settings", null);
+      LogMgr.logWarning(ci, "Mapping file '" + mappingFile.getAbsolutePath() + "' not found! Please check workbench.settings", null);
       return;
     }
     InputStream in = null;
     try
     {
-      in = new BufferedInputStream(new FileInputStream(filename));
+      in = new BufferedInputStream(new FileInputStream(mappingFile));
       props.load(in);
     }
     catch (Exception e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Error reading mapping file", e);
+      LogMgr.logError(ci, "Error reading mapping file", e);
       this.columnMapping.clear();
     }
     finally
@@ -138,22 +134,26 @@ public class PkMapping
       FileUtil.closeQuietely(in);
     }
 
-    LogMgr.logInfo(new CallerInfo(){}, "Using PK mappings from " + f.getAbsolutePath());
+    LogMgr.logInfo(new CallerInfo(){}, "Using PK mappings from " + mappingFile.getAbsolutePath());
 
     for (Entry<Object, Object> entry : props.entrySet())
     {
       String table = (String)entry.getKey();
       String columns = (String)entry.getValue();
-      if (!StringUtil.isEmptyString(columns))
+      if (StringUtil.isEmptyString(columns))
+      {
+        LogMgr.logWarning(ci, "Mapping for table \"" + table + "\" ignored because column list is empty");
+      }
+      else
       {
         this.columnMapping.put(table, columns);
       }
     }
   }
 
-  public synchronized void removeMapping(WbConnection con, String table)
+  public synchronized void removeMapping(String table)
   {
-    if (this.columnMapping == null) return;
+    if (this.columnMapping == null || table == null) return;
     this.columnMapping.remove(table);
   }
 
@@ -199,15 +199,20 @@ public class PkMapping
     return Collections.unmodifiableMap(this.columnMapping);
   }
 
-  public synchronized void saveMapping(String filename)
+  public synchronized void saveMapping(File mappingFile)
   {
     if (this.columnMapping == null) return;
+    if (mappingFile == null)
+    {
+      LogMgr.logError(new CallerInfo(){}, "No mapping file provided!", new Exception("Stacktrace"));
+      return;
+    }
+
     BufferedWriter out = null;
     try
     {
       Iterator<Entry<String, String>> itr = this.columnMapping.entrySet().iterator();
-      File f = new File(filename);
-      out = new BufferedWriter(new FileWriter(f));
+      out = new BufferedWriter(new FileWriter(mappingFile));
       out.write("# Primary key mapping for " + ResourceMgr.TXT_PRODUCT_NAME);
       out.newLine();
       while (itr.hasNext())
