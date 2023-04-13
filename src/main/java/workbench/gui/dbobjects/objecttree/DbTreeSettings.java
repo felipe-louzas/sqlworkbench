@@ -22,6 +22,7 @@
 package workbench.gui.dbobjects.objecttree;
 
 
+import workbench.resource.DbExplorerSettings;
 import workbench.resource.Settings;
 
 import workbench.util.StringUtil;
@@ -107,7 +108,7 @@ public class DbTreeSettings
    * SQL will include all columns explicitely. This enables the use of the expression
    * replacement for certain data types.
    *
-   * This can be ovewritten on a per DBMS basis in order to work around JDBC drivers which
+   * This can be overwritten on a per DBMS basis in order to work around JDBC drivers which
    * are slow when retrieving column information.
    *
    * @param dbId the current DBID
@@ -127,27 +128,27 @@ public class DbTreeSettings
 
   public static boolean autoExpandFilteredNodes()
   {
-    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + ".filter.autoexpand", true);
+    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "filter.autoexpand", true);
   }
 
   public static boolean autoLoadSchemasOnFind(String dbid)
   {
-    boolean global = Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + ".findobject.autoload", true);
-    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "." + dbid + ".findobject.autoload", global);
+    boolean global = Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "findobject.autoload", true);
+    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + dbid + ".findobject.autoload", global);
   }
 
   public static boolean useNaturalSort()
   {
-    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + ".tablelist.naturalsort", true);
+    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "naturalsort", DbExplorerSettings.useNaturalSort());
   }
 
   public static boolean useAutocommit(String dbid)
   {
-    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "." + dbid + ".autocommit", true);
+    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + dbid + ".autocommit", true);
   }
 
   public static boolean applyTypeFilterForGlobalObjects()
   {
-    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + ".typefilter.global.enabled", false);
+    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "typefilter.global.enabled", false);
   }
 }

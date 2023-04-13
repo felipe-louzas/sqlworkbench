@@ -2822,7 +2822,7 @@ public class DbSettings
     for (String def : defs)
     {
       String[] elements = def.split(";");
-      if (elements.length == 2 || StringUtil.allNonEmpty(elements))
+      if (elements.length == 2 && StringUtil.allNonEmpty(elements))
       {
         result.put(elements[0].trim(), elements[1].trim());
       }

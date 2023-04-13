@@ -184,13 +184,13 @@ public class TableListPanel
   protected ObjectDependencyPanel dependencyPanel;
   protected TablePartitionsPanel partitionsPanel;
 
-  private TableIndexPanel indexPanel;
+  private final TableIndexPanel indexPanel;
   private final TriggerDisplayPanel triggers;
   protected DbObjectSourcePanel tableSource;
-  private WbTabbedPane displayTab;
+  private final WbTabbedPane displayTab;
   private final WbSplitPane splitPane;
 
-  private MultiSelectComboBox tableTypes;
+  private final MultiSelectComboBox tableTypes;
   private String currentSchema;
   private String currentCatalog;
   private final SpoolDataAction spoolData;
@@ -199,7 +199,7 @@ public class TableListPanel
   private ShowRowCountAction rowCountAction;
   private final AlterObjectAction renameAction;
 
-  private MainWindow parentWindow;
+  private final MainWindow parentWindow;
 
   private TableIdentifier selectedTable;
 
@@ -240,8 +240,8 @@ public class TableListPanel
 
   private final ReentrantLock connectionLock = new ReentrantLock();
 
-  private TableChangeValidator validator = new TableChangeValidator();
-  private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
+  private final TableChangeValidator validator = new TableChangeValidator();
+  private final IsolationLevelChanger levelChanger = new IsolationLevelChanger();
   private FilterDefinitionManager filterMgr;
 
   private final int maxTypeItems = 25;

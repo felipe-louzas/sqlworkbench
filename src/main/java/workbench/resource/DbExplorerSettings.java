@@ -413,7 +413,7 @@ public class DbExplorerSettings
 
   public static boolean useNaturalSort()
   {
-    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.sort.natural", true);
+    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.naturalsort", true);
   }
 
   public static boolean sortIgnoreCase()

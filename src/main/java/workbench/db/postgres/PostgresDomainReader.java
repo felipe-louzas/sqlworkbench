@@ -59,43 +59,48 @@ public class PostgresDomainReader
 {
   private final String sqlTemplate =
     "-- SQL Workbench/J \n" +
-    "SELECT null::text as domain_catalog,  \n" +
-    "       n.nspname as domain_schema, \n" +
-    "       t.typname as domain_name, \n" +
-    "       pg_catalog.format_type(t.typbasetype, t.typtypmod) as data_type, \n" +
-    "       not t.typnotnull as nullable, \n" +
-    "       t.typdefault as default_value, \n" +
-    "       c.constraint_definition, \n" +
-    "       pg_catalog.obj_description(t.oid) as remarks \n" +
-    "FROM pg_catalog.pg_type t \n" +
-    "  LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace \n" +
+    "SELECT * \n" +
+    "FROM ( \n" +
+    "  SELECT null::text as domain_catalog,  \n" +
+    "         n.nspname as domain_schema, \n" +
+    "         t.typname as domain_name, \n" +
+    "         pg_catalog.format_type(t.typbasetype, t.typtypmod) as data_type, \n" +
+    "         not t.typnotnull as nullable, \n" +
+    "         t.typdefault as default_value, \n" +
+    "         c.constraint_definition, \n" +
+    "         pg_catalog.obj_description(t.oid) as remarks \n" +
+    "  FROM pg_catalog.pg_type t \n" +
+    "    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace \n" +
     "__CONSTRAINTS__" +
-    "WHERE t.typtype = 'd' \n" +
-    "  AND n.nspname <> 'pg_catalog' \n" +
-    "  AND n.nspname <> 'information_schema' \n";
+    "  WHERE t.typtype = 'd' \n" +
+    "    AND n.nspname <> 'pg_catalog' \n" +
+    "    AND n.nspname <> 'information_schema' \n" +
+    ") di ";
 
   private final String baseSql_94;
   private final String baseSql_93;
 
   public PostgresDomainReader()
   {
+    String defSource =
+      "string_agg('CONSTRAINT '||quote_ident(ci.conname)||' '||pg_catalog.pg_get_constraintdef(ci.oid, true), E'\\n  ') as constraint_definition \n";
     // In theory the statement for <= 9.3 can be used
     // for later versions as well, but the lateral join
     // makes this more efficient.
     baseSql_94 = sqlTemplate.replace("__CONSTRAINTS__",
-        "  LEFT JOIN LATERAL ( \n" +
-        "    SELECT string_agg(format('CONSTRAINT %I %s', ci.conname, pg_catalog.pg_get_constraintdef(ci.oid, true)), E'\\n  ') as constraint_definition \n" +
-        "    FROM pg_catalog.pg_constraint ci\n" +
-        "    WHERE ci.contypid = t.oid \n" +
-        "  ) c ON true \n");
+        "    LEFT JOIN LATERAL ( \n" +
+        "      SELECT " + defSource +
+        "      FROM pg_catalog.pg_constraint ci\n" +
+        "      WHERE ci.contypid = t.oid \n" +
+        "    ) c ON true \n");
 
     baseSql_93 = sqlTemplate.replace("__CONSTRAINTS__",
-        "  LEFT JOIN ( \n" +
-        "    SELECT ci.contypid,\n" +
-        "           string_agg(format('CONSTRAINT %I %s', ci.conname, pg_catalog.pg_get_constraintdef(ci.oid, true)), E'\\n  ') as constraint_definition \n" +
-        "    FROM pg_catalog.pg_constraint ci\n" +
-        "    GROUP BY ci.contypid \n" +
-        "  ) c ON t.oid = c.contypid \n");
+        "    LEFT JOIN ( \n" +
+        "      SELECT ci.contypid,\n" +
+        "             " + defSource +
+        "      FROM pg_catalog.pg_constraint ci\n" +
+        "      GROUP BY ci.contypid \n" +
+        "    ) c ON t.oid = c.contypid \n");
   }
 
   public Map<String, DomainIdentifier> getDomainInfo(WbConnection connection, String schema)
@@ -123,21 +128,19 @@ public class PostgresDomainReader
     String baseSql = getBaseSql(con);
     StringBuilder sql = new StringBuilder(baseSql.length() + 40);
 
-    sql.append("SELECT * FROM ( ");
     sql.append(baseSql);
-    sql.append(") di \n");
 
     boolean whereAdded = false;
     if (StringUtil.isNonBlank(name))
     {
-      sql.append("\n WHERE ");
+      sql.append("\nWHERE ");
       SqlUtil.appendExpression(sql, "domain_name", name, con);
       whereAdded = true;
     }
 
     if (StringUtil.isNonBlank(schema))
     {
-      sql.append(whereAdded ? " AND " : " WHERE ");
+      sql.append(whereAdded ? "\n  AND " : " WHERE ");
       SqlUtil.appendExpression(sql, "domain_schema", schema, con);
     }
 

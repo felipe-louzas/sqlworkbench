@@ -42,7 +42,6 @@ import workbench.db.DependencyNode;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
 import workbench.db.JdbcUtils;
-import workbench.db.ObjectNameSorter;
 import workbench.db.PartitionLister;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
@@ -709,10 +708,7 @@ public class TreeLoader
 
     boolean loaded = true;
     List<TableIdentifier> objects = connection.getMetadata().getObjectList(null, catalog, schema, new String[] { typeNode.getName() });
-
-    ObjectNameSorter sorter = new ObjectNameSorter();
-    sorter.setUseNaturalSort(DbTreeSettings.useNaturalSort());
-    objects.sort(sorter);
+    DbObjectSorter.sort(objects, DbTreeSettings.useNaturalSort(), false);
 
     for (TableIdentifier tbl : objects)
     {
@@ -929,7 +925,7 @@ public class TreeLoader
     TableIdentifier info = getParentInfo(trgNode);
     TriggerReader reader = TriggerReaderFactory.createReader(connection);
     List<TriggerDefinition> triggers = reader.getTriggerList(info.getRawCatalog(), info.getRawSchema(), null);
-    DbObjectSorter.sort(triggers, DbExplorerSettings.useNaturalSort());
+    DbObjectSorter.sort(triggers, DbTreeSettings.useNaturalSort());
 
     for (TriggerDefinition trg : triggers)
     {
@@ -971,7 +967,7 @@ public class TreeLoader
 
     TableIdentifier tbl = (TableIdentifier)dbo;
     List<TriggerDefinition> triggers = reader.getTriggerList(tbl.getRawCatalog(), tbl.getRawSchema(), tbl.getRawTableName());
-    DbObjectSorter.sort(triggers, DbExplorerSettings.useNaturalSort());
+    DbObjectSorter.sort(triggers, DbTreeSettings.useNaturalSort());
 
     for (TriggerDefinition trg : triggers)
     {
@@ -998,7 +994,7 @@ public class TreeLoader
 
     TableIdentifier tbl = (TableIdentifier)dbo;
     List<IndexDefinition> indexes = meta.getIndexReader().getTableIndexList(tbl, false);
-    DbObjectSorter.sort(indexes, DbExplorerSettings.useNaturalSort());
+    DbObjectSorter.sort(indexes, DbTreeSettings.useNaturalSort());
 
     for (IndexDefinition idx : indexes)
     {
@@ -1037,9 +1033,7 @@ public class TreeLoader
       objects = dependencyLoader.getUsedObjects(connection, dbo);
     }
 
-    ObjectNameSorter sorter = new ObjectNameSorter();
-    sorter.setUseNaturalSort(DbTreeSettings.useNaturalSort());
-    objects.sort(sorter);
+    DbObjectSorter.sort(objects, DbTreeSettings.useNaturalSort(), true);
 
     for (DbObject obj : objects)
     {

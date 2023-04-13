@@ -47,8 +47,8 @@ import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 
-import workbench.db.TableIdentifier;
 import workbench.db.ObjectNameSorter;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
@@ -75,7 +75,7 @@ public class TableSelectorPanel
   private PropertyChangeListener client;
   private String clientPropName;
   private boolean allowNewTable = false;
-  private TableIdentifier newTableId = new TableIdentifier();
+  private final TableIdentifier newTableId = new TableIdentifier();
 
   public TableSelectorPanel()
   {
@@ -124,13 +124,10 @@ public class TableSelectorPanel
 
   public void resetNewTableItem()
   {
-    if (this.newTableId != null)
-    {
-      this.newTableId.setNewTable(true);
-      this.newTableId.parseTableIdentifier(null);
-      this.newTableId.setSchema(null);
-      WbSwingUtilities.repaintNow(this);
-    }
+    this.newTableId.setNewTable(true);
+    this.newTableId.parseTableIdentifier(null);
+    this.newTableId.setSchema(null);
+    WbSwingUtilities.repaintNow(this);
   }
 
   public void allowNewTable(boolean flag)

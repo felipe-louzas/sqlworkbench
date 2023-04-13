@@ -76,13 +76,13 @@ public class ConnectionInfo
   implements PropertyChangeListener, ActionListener, MouseListener
 {
   private WbConnection sourceConnection;
-  private Color defaultBackground;
-  private WbAction showInfoAction;
-  private WbLabelField infoText;
+  private final Color defaultBackground;
+  private final WbAction showInfoAction;
+  private final WbLabelField infoText;
   private JLabel iconLabel;
   private boolean useCachedSchema;
   private SwitchDbComboBox dbSwitcher;
-  private JPanel contentPanel;
+  private final JPanel contentPanel;
 
   public ConnectionInfo(Color aBackground)
   {
