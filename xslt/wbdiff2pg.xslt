@@ -404,6 +404,23 @@ Supported parameters:
      <xsl:value-of select="$newline"/>
   </xsl:if>
 
+  <xsl:text>-- Drop triggers</xsl:text>
+  <xsl:value-of select="$newline"/>
+  <xsl:for-each select="/schema-diff/modify-table">
+    <xsl:variable name="table">
+      <xsl:value-of select="table-name"/>
+    </xsl:variable>
+    <xsl:variable name="schema">
+      <xsl:value-of select="table-schema"/>
+    </xsl:variable>
+    <xsl:for-each select="drop-trigger">
+      <xsl:if test="local-name() = 'drop-trigger'">
+        <xsl:text>DROP TRIGGER </xsl:text><xsl:value-of select="@name"/><xsl:text> ON </xsl:text><xsl:value-of select="concat($schema, '.', $table)"/><xsl:text> CASCADE</xsl:text><xsl:value-of select="$stmt-terminator"/>
+        <xsl:value-of select="$newline"/>
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:for-each>
+
   <xsl:text>-- Drop functions</xsl:text>
   <xsl:value-of select="$newline"/>
   <xsl:for-each select="/schema-diff/drop-procedure/proc-def">
