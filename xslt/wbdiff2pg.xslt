@@ -440,7 +440,7 @@ Supported parameters:
         <xsl:value-of select="trigger-def/trigger-name"/>
       </xsl:variable>
       <xsl:if test="local-name() = 'update-trigger'">
-        <xsl:text>DROP TRIGGER </xsl:text><xsl:value-of select="$trgname"/><xsl:text> ON </xsl:text><xsl:value-of select="concat($table, '.', $schema)"/><xsl:text> CASCADE</xsl:text><xsl:value-of select="$stmt-terminator"/>
+        <xsl:text>DROP TRIGGER </xsl:text><xsl:value-of select="$trgname"/><xsl:text> ON </xsl:text><xsl:value-of select="concat($schema, '.', $table)"/><xsl:text> CASCADE</xsl:text><xsl:value-of select="$stmt-terminator"/>
         <xsl:value-of select="$newline"/>
       </xsl:if>
       <xsl:value-of select="trigger-def/trigger-source"/>
