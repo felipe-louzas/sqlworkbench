@@ -407,7 +407,7 @@ Supported parameters:
   <xsl:text>-- Drop functions</xsl:text>
   <xsl:value-of select="$newline"/>
   <xsl:for-each select="/schema-diff/drop-procedure/proc-def">
-    <xsl:text>DROP FUNCTION </xsl:text><xsl:value-of select="proc-full-name"/><xsl:value-of select="$stmt-terminator"/>
+    <xsl:text>DROP FUNCTION </xsl:text><xsl:value-of select="proc-schema"/>.<xsl:value-of select="proc-full-name"/><xsl:value-of select="$stmt-terminator"/>
     <xsl:value-of select="$newline"/>
   </xsl:for-each>
   <xsl:if test="count(/schema-diff/drop-procedure) &gt; 0">
