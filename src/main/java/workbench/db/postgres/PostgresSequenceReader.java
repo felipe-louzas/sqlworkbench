@@ -52,9 +52,9 @@ public class PostgresSequenceReader
   private final WbConnection dbConnection;
   public static final String PROP_ACL = "acl";
   private static final String NAME_PLACEHOLDER = "%sequence_name%";
+  public static final String PROP_UNLOGGED = "unlogged";
 
   private final String baseSql =
-      "-- SQL Workbench/J \n" +
       "SELECT seq_info.*, \n" +
       "       null::text as data_type, \n" +
       "       pg_catalog.obj_description(seq.oid, 'pg_class') as remarks, \n" +
@@ -62,6 +62,7 @@ public class PostgresSequenceReader
       "       seq.relname as sequence_name, \n" +
       "       sn.nspname as sequence_schema, \n" +
       "       array_to_string(seq.relacl, ',') as acl \n" +
+      "       'p' as relpersistence \n" +
       "FROM pg_catalog.pg_class seq \n" +
       "  JOIN pg_catalog.pg_namespace sn ON sn.oid = seq.relnamespace \n" +
       "  CROSS JOIN (SELECT min_value, max_value, last_value, increment_by, cache_value, is_cycled FROM " + NAME_PLACEHOLDER + ") seq_info \n" +
@@ -71,7 +72,6 @@ public class PostgresSequenceReader
       "WHERE seq.relkind = 'S'";
 
   private final String baseSqlV10 =
-    "-- SQL Workbench/J \n" +
     "select s.min_value,\n" +
     "       s.max_value,\n" +
     "       s.last_value,\n" +
@@ -83,7 +83,8 @@ public class PostgresSequenceReader
     "       pg_catalog.quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by,\n" +
     "       s.sequencename as sequence_name, \n" +
     "       s.schemaname as sequence_schema, \n" +
-    "       array_to_string(cl.relacl, ',') as acl \n" +
+    "       array_to_string(cl.relacl, ',') as acl, \n" +
+    "       cl.relpersistence \n" +
     "FROM pg_catalog.pg_sequences s \n" +
     "  JOIN pg_class cl on cl.relname = s.sequencename and cl.relnamespace = s.schemaname::text::regnamespace " +
     "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = pg_catalog.to_regclass(format('%I.%I', s.schemaname, s.sequencename)) AND deptype in ('a', 'i') \n" +
@@ -126,7 +127,13 @@ public class PostgresSequenceReader
       if (cycle == null) cycle = Boolean.FALSE;
       String dataType = (String)def.getSequenceProperty(PROP_DATA_TYPE);
 
-      buf.append("CREATE SEQUENCE ");
+      Boolean unlogged = (Boolean)def.getSequenceProperty(PROP_UNLOGGED);
+      buf.append("CREATE ");
+      if (unlogged != null && unlogged)
+      {
+        buf.append("UNLOGGED ");
+      }
+      buf.append("SEQUENCE ");
       if (dbConnection == null || JdbcUtils.hasMinimumServerVersion(dbConnection, "9.5"))
       {
         buf.append("IF NOT EXISTS ");
@@ -244,6 +251,11 @@ public class PostgresSequenceReader
     def.setSequenceProperty(PROP_LAST_VALUE, ds.getValue(0, "last_value"));
     def.setSequenceProperty(PROP_DATA_TYPE, ds.getValue(0, "data_type"));
     def.setSequenceProperty(PROP_ACL, ds.getValueAsString(0, "acl"));
+
+    String persistence = ds.getValueAsString(0, "relpersistence");
+    Boolean unlogged = "u".equals(persistence);
+    def.setSequenceProperty(PROP_UNLOGGED, unlogged);
+
     String ownedBy = ds.getValueAsString(0, "owned_by");
     if (StringUtil.isNonEmpty(ownedBy))
     {
@@ -283,7 +295,7 @@ public class PostgresSequenceReader
 
     String sql =
       "-- SQL Workbench/J \n" +
-      "select min_value, max_value, last_value, increment_by, cache_value, is_cycled, data_type, remarks, owned_by, acl \n" +
+      "select min_value, max_value, last_value, increment_by, cache_value, is_cycled, data_type, remarks, owned_by, acl, relpersistence \n" +
       "from ( \n" + seqInfoSql.replace(NAME_PLACEHOLDER, fullname) + "\n) t \n" +
       "where sequence_name = ? ";
 
