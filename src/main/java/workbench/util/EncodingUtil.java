@@ -46,7 +46,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 /**
- * Utility class to handle encoding related stuff
+ * Utility class to handle encoding related stuff.
  *
  * @author  Thomas Kellerer
  */
@@ -169,7 +169,7 @@ public class EncodingUtil
           i++;
         }
       }
-      Arrays.sort(charsets, StringUtil.NATURAL_COMPARATOR);
+      Arrays.sort(charsets, new NaturalOrderComparator(true));
     }
     return charsets;
   }

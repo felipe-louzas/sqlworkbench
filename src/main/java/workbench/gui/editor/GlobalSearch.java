@@ -78,6 +78,7 @@ import workbench.gui.sql.SqlPanel;
 
 import workbench.storage.DataStore;
 
+import workbench.util.NaturalOrderComparator;
 import workbench.util.StringUtil;
 
 /**
@@ -95,17 +96,17 @@ public class GlobalSearch
   private final String contextLinesProperty = settingsKey + "contextlines";
   private final String dialogProperty = settingsKey + "dialog";
 
-  private WbTable searchResult;
+  private final WbTable searchResult;
   private final MainWindow window;
   private ValidatingDialog dialog;
   private SearchResult selectedResult;
-  private JButton startSearch;
+  private final JButton startSearch;
   private JCheckBox ignoreCase;
   private JCheckBox wholeWord;
   private JCheckBox useRegEx;
   private JTextField contextLines;
   private HistoryTextField criteria;
-  private SelectionHandler keyHandler;
+  private final SelectionHandler keyHandler;
   private CheckBoxAction rememberColumnWidths;
 
   public GlobalSearch(MainWindow win)
@@ -241,7 +242,7 @@ public class GlobalSearch
   {
     int count = window.getTabCount();
 
-    SortedMap<String, SearchAndReplace> replacerList = new TreeMap<>(StringUtil.NATURAL_COMPARATOR);
+    SortedMap<String, SearchAndReplace> replacerList = new TreeMap<>(new NaturalOrderComparator(true));
 
     for (int i = 0; i < count; i++)
     {

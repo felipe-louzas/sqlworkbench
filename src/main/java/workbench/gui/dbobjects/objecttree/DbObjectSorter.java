@@ -25,6 +25,7 @@ import java.util.List;
 
 import workbench.db.DbObject;
 
+import workbench.util.NaturalOrderComparator;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -37,6 +38,7 @@ public class DbObjectSorter
 {
   private boolean includeType;
   private boolean useNaturalSort;
+  private final NaturalOrderComparator comparator = new NaturalOrderComparator(true);
 
   public DbObjectSorter(boolean naturalSort)
   {
@@ -75,7 +77,7 @@ public class DbObjectSorter
     String name2 = SqlUtil.removeObjectQuotes(o2.getObjectName());
     if (useNaturalSort)
     {
-      return StringUtil.naturalCompare(name1, name2, true);
+      return comparator.compare(name2, name2);
     }
     return StringUtil.compareStrings(name1, name2, true);
   }

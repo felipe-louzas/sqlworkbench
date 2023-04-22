@@ -23,6 +23,7 @@ package workbench.db;
 
 import java.util.Comparator;
 
+import workbench.util.NaturalOrderComparator;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -38,6 +39,7 @@ public class ObjectNameSorter
 {
   private boolean useExpression = false;
   private boolean useNaturalSort;
+  private final NaturalOrderComparator comparator = new NaturalOrderComparator(true);
 
   public ObjectNameSorter()
   {
@@ -62,7 +64,7 @@ public class ObjectNameSorter
     }
     if (useNaturalSort)
     {
-      return StringUtil.naturalCompare(SqlUtil.removeObjectQuotes(t1.getObjectName()), SqlUtil.removeObjectQuotes(t2.getObjectName()), true);
+      return comparator.compare(SqlUtil.removeObjectQuotes(t1.getObjectName()), SqlUtil.removeObjectQuotes(t2.getObjectName()));
     }
     return StringUtil.compareStrings(SqlUtil.removeObjectQuotes(t1.getObjectName()), SqlUtil.removeObjectQuotes(t2.getObjectName()), true);
   }

@@ -30,10 +30,12 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.util.NaturalOrderComparator;
 import workbench.util.StringUtil;
 
 /**
- * A class to sort a RowDataList
+ * A class to sort a RowDataList.
+ * 
  * @author  Thomas Kellerer
  */
 public class RowDataListSorter
@@ -43,6 +45,7 @@ public class RowDataListSorter
   private Collator defaultCollator;
   private boolean ignoreCase;
   private boolean naturalSort;
+  private final NaturalOrderComparator comparator = new NaturalOrderComparator(true);
 
   public RowDataListSorter(SortDefinition sortDef)
   {
@@ -173,7 +176,7 @@ public class RowDataListSorter
   {
     if (naturalSort)
     {
-      return StringUtil.naturalCompare(v1, v2, ignoreCase);
+      return comparator.compare(v1, v2, ignoreCase);
     }
     return StringUtil.compareStrings(v1, v2, ignoreCase);
   }
