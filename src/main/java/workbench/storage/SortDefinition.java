@@ -26,6 +26,8 @@ package workbench.storage;
 import java.util.Arrays;
 import java.util.List;
 
+import workbench.resource.Settings;
+
 import workbench.db.ObjectListDataStore;
 
 import workbench.util.CollectionUtil;
@@ -364,7 +366,8 @@ public class SortDefinition
     def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_CATALOG, true);
     def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_SCHEMA, true);
     def.addSortColumn(ObjectListDataStore.COLUMN_IDX_TABLE_LIST_NAME, true);
-    def.setIgnoreCase(true);
+    def.setIgnoreCase(Settings.getInstance().sortTableListIgnoreCase());
+    def.setUseNaturalSort(Settings.getInstance().useNaturalSortForTableList());
     return def;
   }
 

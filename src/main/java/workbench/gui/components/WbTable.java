@@ -263,6 +263,7 @@ public class WbTable
 
   private RendererSetup rendererSetup;
   private boolean sortIgnoreCase;
+  private boolean useNaturalSort;
   private boolean honorLNFRowHeight;
 
   // </editor-fold>
@@ -457,6 +458,11 @@ public class WbTable
   public void setSortIgnoreCase(boolean flag)
   {
     this.sortIgnoreCase = flag;
+  }
+
+  public void setUseNaturalSort(boolean flag)
+  {
+    this.useNaturalSort  = flag;
   }
 
   public void configureEnterKeyAction(Action enterAction)
@@ -1474,6 +1480,7 @@ public class WbTable
         header.addMouseListener(this);
       }
       this.dwModel.setSortIgnoreCase(this.sortIgnoreCase);
+      this.dwModel.setUseNaturalSort(this.useNaturalSort);
     }
 
     if (aModel != EmptyTableModel.EMPTY_MODEL)

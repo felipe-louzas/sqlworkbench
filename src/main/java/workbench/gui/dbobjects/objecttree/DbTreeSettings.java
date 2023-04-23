@@ -22,7 +22,6 @@
 package workbench.gui.dbobjects.objecttree;
 
 
-import workbench.resource.DbExplorerSettings;
 import workbench.resource.Settings;
 
 import workbench.util.StringUtil;
@@ -135,11 +134,6 @@ public class DbTreeSettings
   {
     boolean global = Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "findobject.autoload", true);
     return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + dbid + ".findobject.autoload", global);
-  }
-
-  public static boolean useNaturalSort()
-  {
-    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "naturalsort", DbExplorerSettings.useNaturalSort());
   }
 
   public static boolean useAutocommit(String dbid)

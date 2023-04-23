@@ -315,7 +315,8 @@ public class TableListPanel
     this.tableList.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     this.tableList.setAdjustToColumnLabel(true);
     this.tableList.addTableModelListener(this);
-    this.tableList.setSortIgnoreCase(DbExplorerSettings.sortIgnoreCase());
+    this.tableList.setSortIgnoreCase(Settings.getInstance().sortTableListIgnoreCase());
+    this.tableList.setUseNaturalSort(Settings.getInstance().useNaturalSortForTableList());
 
     this.spoolData = new SpoolDataAction(this);
     this.tableList.addPopupAction(spoolData, true);
@@ -1218,11 +1219,11 @@ public class TableListPanel
       {
         ds = dbConnection.getMetadata().getObjects(currentCatalog, currentSchema, types);
       }
-      ds.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
       dbConnection.getObjectCache().addTableList(ds, currentSchema);
       tableList.setOriginalOrder(ds);
       final DataStoreTableModel model = new DataStoreTableModel(ds);
-      model.setSortIgnoreCase(DbExplorerSettings.sortIgnoreCase());
+      model.setSortIgnoreCase(Settings.getInstance().sortTableListIgnoreCase());
+      model.setUseNaturalSort(Settings.getInstance().useNaturalSortForTableList());
 
       // by applying the sort definition to the table model we ensure
       // that the sorting is retained when filtering the objects
@@ -1240,8 +1241,6 @@ public class TableListPanel
       else
       {
         SortDefinition sort = SortDefinition.getTableListSort();
-        sort.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
-        sort.setIgnoreCase(DbExplorerSettings.sortIgnoreCase());
         model.setSortDefinition(sort);
       }
 
@@ -1531,8 +1530,8 @@ public class TableListPanel
       savedSort = parseDefinitionString(sortString);
       if (savedSort != null)
       {
-        savedSort.setUseNaturalSort(DbExplorerSettings.useNaturalSort());
-        savedSort.setIgnoreCase(DbExplorerSettings.sortIgnoreCase());
+        savedSort.setUseNaturalSort(Settings.getInstance().useNaturalSortForTableList());
+        savedSort.setIgnoreCase(Settings.getInstance().sortTableListIgnoreCase());
       }
     }
     if (filterMgr != null)

@@ -411,16 +411,6 @@ public class DbExplorerSettings
     Settings.getInstance().setProperty("workbench.dbexplorer.sqlscript.separator", flag);
   }
 
-  public static boolean useNaturalSort()
-  {
-    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.naturalsort", true);
-  }
-
-  public static boolean sortIgnoreCase()
-  {
-    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.sort.ignorecase", true);
-  }
-
   public static boolean enableExtendedObjectFilter()
   {
     return Settings.getInstance().getBoolProperty("workbench.dbexplorer.extended.objectfilter.enabled", true);

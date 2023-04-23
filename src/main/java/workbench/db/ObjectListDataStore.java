@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import workbench.resource.Settings;
+
 import workbench.storage.DataStore;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowDataListSorter;
@@ -71,6 +73,7 @@ public class ObjectListDataStore
     catColumn.setColumnAlias(catalogTerm.toUpperCase());
     ColumnIdentifier schemaCol = info.getColumn(COLUMN_IDX_TABLE_LIST_SCHEMA);
     schemaCol.setColumnAlias(schemaTerm.toUpperCase());
+    this.useNaturalSort = Settings.getInstance().useNaturalSortForTableList();
   }
 
   public void setSortMviewsAsTables(boolean sortMviewsAsTables)

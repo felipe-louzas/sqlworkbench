@@ -66,7 +66,7 @@ public class DataStoreTableModel
   private boolean showStatusColumn;
   private int columnStartIndex;
 
-  private List<Integer> noneditableColumns = new ArrayList<>();
+  private final List<Integer> noneditableColumns = new ArrayList<>();
 
   private SortDefinition sortDefinition = new SortDefinition();
 
@@ -112,6 +112,11 @@ public class DataStoreTableModel
   public void setSortIgnoreCase(boolean flag)
   {
     sortDefinition.setIgnoreCase(flag);
+  }
+
+  public void setUseNaturalSort(boolean flag)
+  {
+    sortDefinition.setUseNaturalSort(flag);
   }
 
   public boolean isColumnModified(int row, int column)
@@ -705,7 +710,7 @@ public class DataStoreTableModel
 
   public void setSortDefinition(SortDefinition newSort)
   {
-    if (!newSort.equals(this.sortDefinition))
+    if (newSort != null && !newSort.equals(this.sortDefinition))
     {
       sortDefinition = newSort;
       applySortColumns();

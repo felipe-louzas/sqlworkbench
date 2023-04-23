@@ -2445,6 +2445,16 @@ public class Settings
     return getBoolProperty("workbench.db.warnings.ignored.hide", true);
   }
 
+  public boolean sortTableListIgnoreCase()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.db.tablelist.sort.ignorecase", true);
+  }
+
+  public boolean useNaturalSortForTableList()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.db.tablelist.sort.natural", true);
+  }
+
   public boolean getUseGenericExecuteForSelect()
   {
     return getBoolProperty("workbench.db.select.genericexecute", false);
@@ -3830,8 +3840,8 @@ public class Settings
     renameProperty("workbench.datasearch.history", "workbench.data.search.history");
     renameProperty("workbench.datasearch.lastvalue", "workbench.data.search.lastvalue");
     renameProperty("workbench.editor.autocompletion.sql.emptylineseparator", "workbench.editor.sql.emptyline.delimiter");
-    renameProperty("workbench.dbexplorer.sort.natural", "workbench.dbexplorer.naturalsort");
-    renameProperty("workbench.gui.dbtree..tablelist.naturalsort", "workbench.gui.dbtree.naturalsort");
+    renameProperty("workbench.dbexplorer.sort.natural", "workbench.db.tablelist.sort.natural");
+    removeProperty("workbench.gui.dbtree..tablelist.naturalsort");
     removeProperty("workbench.gui.animatedicon.name");
     removeProperty("workbench.gui.animatedicon");
     String value = props.getProperty("workbench.db.postgresql..inlineconstraints", null);
