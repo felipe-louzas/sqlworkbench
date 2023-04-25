@@ -53,7 +53,6 @@ public class LnFDefinition
   private List<String> liblist;
   private LnFType type;
   public static final String LNF_PATH_SEPARATOR = "$|$";
-  private boolean supportsThemes = false;
   private String themeFile;
 
   public LnFDefinition(String desc)
@@ -93,7 +92,7 @@ public class LnFDefinition
 
   public File getThemeFile()
   {
-    if (!supportsThemes) return null;
+    if (!getSupportsThemes()) return null;
     if (StringUtil.isBlank(themeFile)) return null;
     File f = new File(themeFile);
     if (f.exists()) return f;
@@ -184,6 +183,10 @@ public class LnFDefinition
       if (isExtLibs(list))
       {
         this.type = LnFType.ext;
+      }
+      else if (liblist.size() == 1 && "rt.jar".equalsIgnoreCase(liblist.get(0)))
+      {
+        this.type = LnFType.builtIn;
       }
       else
       {
