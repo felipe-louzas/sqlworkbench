@@ -59,11 +59,17 @@ public class ConnectionSelector
   protected Frame parent;
   protected FeedbackWindow connectingInfo;
   private String propertyKey;
+  private String variablePoolId;
 
   public ConnectionSelector(Frame frame, Connectable conn)
   {
     this.client = conn;
     this.parent = frame;
+  }
+
+  public void setVariablePoolId(String variablePoolId)
+  {
+    this.variablePoolId = variablePoolId;
   }
 
   public void setPropertyKey(String key)
@@ -224,7 +230,7 @@ public class ConnectionSelector
       ConnectionMgr mgr = ConnectionMgr.getInstance();
 
       WbSwingUtilities.showWaitCursor(this.parent);
-      conn = mgr.getConnection(aProfile, id);
+      conn = mgr.getConnection(aProfile, id, variablePoolId);
       if (this.propertyKey != null)
       {
         Settings.getInstance().setProperty(this.propertyKey, aProfile.getName());

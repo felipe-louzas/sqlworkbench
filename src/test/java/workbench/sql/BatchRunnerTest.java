@@ -57,7 +57,7 @@ import static org.junit.Assert.*;
 public class BatchRunnerTest
   extends WbTestCase
 {
-  private TestUtil  util;
+  private final TestUtil util;
 
   public BatchRunnerTest()
     throws Exception
@@ -459,13 +459,13 @@ public class BatchRunnerTest
       ConnectionMgr.getInstance().addProfile(sourceProfile);
       ConnectionMgr.getInstance().addProfile(targetProfile);
 
-      WbConnection target = ConnectionMgr.getInstance().getConnection(targetProfile, "TestBatchRunnerTarget");
+      WbConnection target = ConnectionMgr.getInstance().getConnection(targetProfile, "TestBatchRunnerTarget", null);
 
       TestUtil.executeScript(target,
         "CREATE TABLE person (id integer primary key, firstname varchar(50), lastname varchar(50));\n" +
         "commit;");
 
-      WbConnection source = ConnectionMgr.getInstance().getConnection(sourceProfile, "TestBatchRunnerSource");
+      WbConnection source = ConnectionMgr.getInstance().getConnection(sourceProfile, "TestBatchRunnerSource", null);
 
       TestUtil.executeScript(source,
         "CREATE TABLE person (id integer primary key, firstname varchar(50), lastname varchar(50));\n" +

@@ -225,7 +225,7 @@ public class TestUtil
     ConnectionProfile prof = BatchRunner.createCmdLineProfile(parser);
     prof.setName(dbName);
     ConnectionMgr.getInstance().addProfile(prof);
-    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, dbName);
+    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, dbName, null);
     dropAll(con);
     return con;
   }
@@ -238,7 +238,7 @@ public class TestUtil
     ConnectionProfile prof = BatchRunner.createCmdLineProfile(parser);
     prof.setName(dbName);
     ConnectionMgr.getInstance().addProfile(prof);
-    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, dbName);
+    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, dbName, null);
     dropAll(con);
     return con;
   }
@@ -268,7 +268,7 @@ public class TestUtil
     prof.setName(db);
     prof.setStorePassword(true);
     ConnectionMgr.getInstance().addProfile(prof);
-    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, db);
+    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, db, null);
     dropAll(con);
     return con;
   }
@@ -324,7 +324,7 @@ public class TestUtil
     ConnectionProfile prof = BatchRunner.createCmdLineProfile(parser);
     prof.setName(db.getName());
     ConnectionMgr.getInstance().addProfile(prof);
-    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, id);
+    WbConnection con = ConnectionMgr.getInstance().getConnection(prof, id, null);
     return con;
   }
 

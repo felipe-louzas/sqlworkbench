@@ -70,6 +70,28 @@ public class VariablePoolTest
   }
 
   @Test
+  public void testGetAllVariables()
+  {
+    String sql = "select * from person where id = $[id] and name like '$[?name]' and salary > $[&salary]";
+    VariablePool pool = VariablePool.getInstance("test1");
+    pool.setParameterValue("foo", "42");
+    Set<String> vars = pool.getAllUsedVariables(sql);
+    assertEquals(3, vars.size());
+    assertTrue(vars.containsAll(Set.of("id","name","salary")));
+
+    pool.setPrefixSuffix(":", "");
+    String sql2 = "select * from person where id = :id and name like ':?name' and salary > :&salary";
+    Set<String> vars2 = pool.getAllUsedVariables(sql2);
+    assertEquals(3, vars2.size());
+    assertTrue(vars2.containsAll(Set.of("id","name","salary")));
+    pool.setPrefixSuffix(":", "");
+
+    String sql3 = "select * from person where id = 42";
+    Set<String> vars3 = pool.getAllUsedVariables(sql3);
+    assertEquals(0, vars3.size());
+  }
+
+  @Test
   public void testEndlessLoop()
   {
     VariablePool pool = VariablePool.getInstance();

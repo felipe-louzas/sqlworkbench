@@ -64,7 +64,7 @@ public class WbSchemaDiffTest
     setupDatabase();
     Statement stmt = null;
 
-    WbConnection target = ConnectionMgr.getInstance().getConnection(new ProfileKey("target"), "manual");
+    WbConnection target = ConnectionMgr.getInstance().getConnection(new ProfileKey("target"), "manual", null);
     try
     {
       stmt = target.createStatement();

@@ -60,7 +60,7 @@ public class DerbyTestUtil
       WbFile dir = new WbFile(basedir);
       System.setProperty("derby.system.home", dir.getFullPath());
       ConnectionMgr.getInstance().addProfile(prof);
-      con = ConnectionMgr.getInstance().getConnection(prof, PROFILE_NAME);
+      con = ConnectionMgr.getInstance().getConnection(prof, PROFILE_NAME, null);
       return con;
     }
     catch (Throwable th)

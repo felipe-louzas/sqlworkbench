@@ -64,6 +64,7 @@ public class SwitchDbComboBox
   private boolean ignoreItemChange = false;
   private WbConnection connection;
   private DbSwitcher switcher;
+  private String variablePoolId;
 
   public SwitchDbComboBox()
   {
@@ -76,6 +77,11 @@ public class SwitchDbComboBox
     this.addItemListener(this);
   }
 
+  public void setVariablePoolId(String variablePoolId)
+  {
+    this.variablePoolId = variablePoolId;
+  }
+
   public void setConnection(WbConnection conn)
   {
     if (this.connection != null)
@@ -85,6 +91,7 @@ public class SwitchDbComboBox
 
     this.connection = conn;
     this.switcher = DbSwitcher.Factory.createDatabaseSwitcher(conn);
+    this.switcher.setVariablePoolId(variablePoolId);
     if (conn == null)
     {
       this.clear();

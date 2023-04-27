@@ -109,7 +109,7 @@ public class CommandLineConnectionHandler
 
       try
       {
-        return ConnectionMgr.getInstance().getConnection(profileKey, id);
+        return ConnectionMgr.getInstance().getConnection(profileKey, id, null);
       }
       catch (Exception e)
       {

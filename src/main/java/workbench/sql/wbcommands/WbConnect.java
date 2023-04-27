@@ -180,7 +180,7 @@ public class WbConnect
         current = runner.getConnection();
       }
 
-      newConn = ConnectionMgr.getInstance().getConnection(profile, id);
+      newConn = ConnectionMgr.getInstance().getConnection(profile, id, this.variablePoolID);
       LogMgr.logInfo(new CallerInfo(){}, "Connected to: " + newConn.getDisplayString());
 
       if (persistentChange)

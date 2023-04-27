@@ -36,11 +36,21 @@ public class MainToolbar
   extends WbToolbar
 {
   private ConnectionInfo connectionInfo;
+  private String variablePoolId;
 
   public MainToolbar()
   {
     super();
     addDefaultBorder();
+  }
+
+  public void setVariablePoolId(String id)
+  {
+    variablePoolId = id;
+    if (connectionInfo != null)
+    {
+      connectionInfo.setVariablePoolId(id);
+    }
   }
 
   public void addDefaultBorder()
@@ -58,6 +68,7 @@ public class MainToolbar
     if (connectionInfo == null)
     {
       connectionInfo = new ConnectionInfo(getBackground());
+      connectionInfo.setVariablePoolId(variablePoolId);
     }
     add(connectionInfo);
   }

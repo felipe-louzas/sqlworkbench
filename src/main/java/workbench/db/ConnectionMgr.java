@@ -102,21 +102,22 @@ public class ConnectionMgr
    *
    * The profile to be used is searched by the given profile key
    *
-   * @param def the profile to be used
-   * @param anId the id to be assigned to the connection
+   * @param profKey        the key of the connection profile profile to be used
+   * @param anId           the id to be assigned to the connection
+   * @param variablePoolId the ID of the variable pool to be used by the connection scripts
    * @return a new Connection
    *
    * @throws java.lang.ClassNotFoundException
    * @throws java.sql.SQLException
    * @throws java.lang.Exception
    */
-  public WbConnection getConnection(ProfileKey def, String anId)
+  public WbConnection getConnection(ProfileKey profKey, String anId, String variablePoolId)
     throws ClassNotFoundException, SQLException, Exception
   {
-    ConnectionProfile prof = getProfile(def);
+    ConnectionProfile prof = getProfile(profKey);
     if (prof == null) return null;
 
-    return this.getConnection(prof, anId);
+    return this.getConnection(prof, anId, variablePoolId);
   }
 
   /**
@@ -165,18 +166,27 @@ public class ConnectionMgr
     return sshManager;
   }
 
+  @Deprecated
+  public WbConnection getConnection(ConnectionProfile profile, String connId)
+    throws ClassNotFoundException, SQLException, UnsupportedClassVersionError, NoConnectionException, SshException
+  {
+    return getConnection(profile, connId, null);
+  }
+
   /**
    * Create a new connection to the database.
    *
-   * @param profile  the connection profile for which to make the connection
-   * @param connId   the ID for the connection to be created
+   * @param profile        the connection profile for which to make the connection
+   * @param connId         the ID for the connection to be created
+   * @param variablePoolId the ID of the variable pool to be used by the connect scripts
+   *
    * @return a new phyiscal connection to the database
    *
    * @throws ClassNotFoundException        if the driver class was not found
    * @throws SQLException                  if something went wrong during the connect
    * @throws UnsupportedClassVersionError  if the driver is for a different Java version
    */
-  public WbConnection getConnection(ConnectionProfile profile, String connId)
+  public WbConnection getConnection(ConnectionProfile profile, String connId, String variablePoolId)
     throws ClassNotFoundException, SQLException, UnsupportedClassVersionError, NoConnectionException, SshException
   {
     CallerInfo ci = new CallerInfo(){};
@@ -190,7 +200,7 @@ public class ConnectionMgr
 
     LogMgr.logInfo(ci, "Creating new connection for " + profile.debugString());
     WbConnection conn = this.connect(profile, connId);
-    conn.runPostConnectScript();
+    conn.runPostConnectScript(variablePoolId);
     String driverVersion = conn.getDriverVersion();
     String jdbcVersion = conn.getJDBCVersion();
     String dbVersion = conn.getDatabaseProductVersion();
@@ -239,13 +249,13 @@ public class ConnectionMgr
     return props;
   }
 
-  public Connection switchURL(WbConnection toSwitch, String newUrl)
+  public Connection switchURL(WbConnection toSwitch, String newUrl, String variablePoolId)
     throws SQLException, NoConnectionException, SshException
   {
     try
     {
       Connection sqlConn = doConnect(toSwitch.getProfile(), newUrl, toSwitch.getId());
-      closeConnection(toSwitch, false);
+      closeConnection(toSwitch, false, variablePoolId);
       return sqlConn;
     }
     catch (ClassNotFoundException | UnsupportedClassVersionError ex)
@@ -678,10 +688,10 @@ public class ConnectionMgr
    */
   private void closeConnection(WbConnection conn)
   {
-    closeConnection(conn, true);
+    closeConnection(conn, true, null);
   }
 
-  private void closeConnection(WbConnection conn, boolean releaseSsh)
+  private void closeConnection(WbConnection conn, boolean releaseSsh, String variablePoolId)
   {
     if (conn == null) return;
     if (conn.isClosed()) return;
@@ -698,7 +708,7 @@ public class ConnectionMgr
         LogMgr.logInfo(new CallerInfo(){}, "Disconnecting connection with ID=" + conn.toString());
       }
 
-      conn.runPreDisconnectScript();
+      conn.runPreDisconnectScript(variablePoolId);
       removePropsFromSystem(conn.getProfile());
 
       DbShutdownHook hook = DbShutdownFactory.getShutdownHook(conn);

@@ -483,7 +483,7 @@ public class BatchRunner
     try
     {
       ConnectionMgr mgr = ConnectionMgr.getInstance();
-      WbConnection c = mgr.getConnection(this.profile, connectionId);
+      WbConnection c = mgr.getConnection(this.profile, connectionId, variablePoolID);
 
       this.setConnection(c);
       String info = c.getDisplayString();

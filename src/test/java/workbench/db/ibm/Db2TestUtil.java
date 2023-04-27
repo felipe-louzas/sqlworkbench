@@ -97,7 +97,7 @@ public class Db2TestUtil
       prof.setName("WBJUnitDB2");
       prof.addConnectionProperty("retrieveMessagesFromServerOnGetMessage", "true");
       ConnectionMgr.getInstance().addProfile(prof);
-      con = ConnectionMgr.getInstance().getConnection(prof, id);
+      con = ConnectionMgr.getInstance().getConnection(prof, id, null);
       return con;
     }
     catch (Throwable th)

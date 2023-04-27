@@ -83,6 +83,7 @@ public class ConnectionInfo
   private boolean useCachedSchema;
   private SwitchDbComboBox dbSwitcher;
   private final JPanel contentPanel;
+  private String variablePoolId;
 
   public ConnectionInfo(Color aBackground)
   {
@@ -116,6 +117,15 @@ public class ConnectionInfo
     gc.gridy = 0;
     gc.anchor = GridBagConstraints.LINE_START;
     contentPanel.add(infoText, gc);
+  }
+
+  public void setVariablePoolId(String id)
+  {
+    this.variablePoolId = id;
+    if (this.dbSwitcher != null)
+    {
+      this.dbSwitcher.setVariablePoolId(variablePoolId);
+    }
   }
 
   private void removeDbSwitcher()

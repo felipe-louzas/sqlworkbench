@@ -38,6 +38,10 @@ public interface DbSwitcher
   boolean switchDatabase(WbConnection connection, String dbName)
     throws SQLException;
 
+  default void setVariablePoolId(String id)
+  {
+  }
+
   String getUrlForDatabase(String originalUrl, String dbName);
   List<String> getAvailableDatabases(WbConnection connection);
   String getCurrentDatabase(WbConnection connection);

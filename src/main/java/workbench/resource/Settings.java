@@ -184,6 +184,7 @@ public class Settings
   public static final String PROPERTY_CMDLINE_VARS_GLOBAL  = "workbench.sql.parameter.vars.global";
   public static final String PROPERTY_VAR_CLEANUP = "workbench.sql.parameter.values.cleanup";
   public static final String PROPERTY_SORT_VARS = "workbench.sql.parameter.prompt.sort";
+  public static final String PROPERTY_ALWAYS_PROMPT_VARS = "workbench.sql.parameter.prompt.always";
   public static final String PROPERTY_VAR_PREFIX = "workbench.sql.parameter.prefix";
   public static final String PROPERTY_VAR_SUFFIX = "workbench.sql.parameter.suffix";
   public static final String PROPERTY_DECIMAL_DIGITS = "workbench.gui.display.maxfractiondigits";
@@ -3145,6 +3146,11 @@ public class Settings
     return getBoolProperty(PROPERTY_VAR_CLEANUP, false);
   }
 
+  public boolean getAlwaysPromptForVariables()
+  {
+    return getBoolProperty(PROPERTY_ALWAYS_PROMPT_VARS, false);
+  }
+  
   public boolean getSortPromptVariables()
   {
     return getBoolProperty(PROPERTY_SORT_VARS, true);

@@ -489,6 +489,10 @@ public class SqlPanel
   {
     this.variablePoolID = variablePoolID;
     this.stmtRunner.setVariablePoolID(variablePoolID);
+    if (this.toolbar != null)
+    {
+      this.toolbar.setVariablePoolId(variablePoolID);
+    }
   }
 
   public boolean isCmdModeEnabled()
@@ -641,6 +645,7 @@ public class SqlPanel
         }
         ToolbarBuilder builder = new ToolbarBuilder(getAllActions(), globalActions);
         toolbar = builder.createToolbar();
+        toolbar.setVariablePoolId(variablePoolID);
         updateConnectionInfo();
       }
       return this.toolbar;

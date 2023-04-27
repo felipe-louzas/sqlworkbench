@@ -288,6 +288,10 @@ public class VariablePool
    */
   public Set<String> getVariablesNeedingPrompt(String sql)
   {
+    if (Settings.getInstance().getAlwaysPromptForVariables())
+    {
+      return this.getAllUsedVariables(sql);
+    }
     return this.getPromptVariables(sql, false);
   }
 
@@ -356,6 +360,33 @@ public class VariablePool
       }
     }
     return false;
+  }
+
+  public Set<String> getAllUsedVariables(String sql)
+  {
+    if (sql == null) return Collections.emptySet();
+    Matcher m = this.variablePattern.matcher(sql);
+    if (m == null) return Collections.emptySet();
+    Set<String> variables = new TreeSet<>();
+    synchronized (this.data)
+    {
+      while (m.find())
+      {
+        int start = m.start() + this.getPrefix().length();
+        int end = m.end() - this.getSuffix().length();
+        String var = sql.substring(start, end);
+        if (var.startsWith("?") || var.startsWith("&"))
+        {
+          var = var.substring(1);
+        }
+        if (!this.data.containsKey(var))
+        {
+          this.data.put(var, "");
+        }
+        variables.add(var);
+      }
+    }
+    return Collections.unmodifiableSet(variables);
   }
 
   private Set<String> getPromptVariables(String sql, boolean includeConditional)

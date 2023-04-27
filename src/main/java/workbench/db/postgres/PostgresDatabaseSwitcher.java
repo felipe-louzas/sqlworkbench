@@ -35,6 +35,14 @@ import workbench.db.WbConnection;
 public class PostgresDatabaseSwitcher
   implements DbSwitcher
 {
+  private String variablePoolId;
+
+  @Override
+  public void setVariablePoolId(String id)
+  {
+    this.variablePoolId = id;
+  }
+
   @Override
   public boolean supportsSwitching(WbConnection connection)
   {
@@ -64,7 +72,7 @@ public class PostgresDatabaseSwitcher
           {
           }
         };
-    connection.switchURL(newUrl, reader);
+    connection.switchURL(newUrl, reader, variablePoolId);
     return true;
   }
 

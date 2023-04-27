@@ -287,7 +287,7 @@ public class MainWindow
 
   private RunningJobIndicator jobIndicator;
   protected WbThread connectThread;
-  private DropHandler dropHandler;
+  private final DropHandler dropHandler;
   private DbTreePanel treePanel;
   private FileTreePanel fileTreePanel;
   private boolean shouldShowTree;
@@ -1952,6 +1952,7 @@ public class MainWindow
     {
       connectionSelector = new ConnectionSelector(this, this);
     }
+    connectionSelector.setVariablePoolId(getVariablePoolID());
     return connectionSelector;
   }
 
@@ -3042,7 +3043,7 @@ public class MainWindow
     WbConnection conn = null;
     try
     {
-      conn = mgr.getConnection(this.currentProfile, id);
+      conn = mgr.getConnection(this.currentProfile, id, getVariablePoolID());
       conn.setShared(false);
     }
     finally

@@ -172,7 +172,7 @@ public class WbConnection
     }
   }
 
-  public void switchURL(String newURL, CatalogInformationReader catReader)
+  public void switchURL(String newURL, CatalogInformationReader catReader, String variablePoolId)
     throws SQLException
   {
     boolean wasBusy = this.isBusy();
@@ -180,7 +180,7 @@ public class WbConnection
     {
       this.setBusy(false);
       String oldDb = catReader == null ? this.getCurrentCatalog() : catReader.getCurrentCatalog();
-      Connection newConn = ConnectionMgr.getInstance().switchURL(this, newURL);
+      Connection newConn = ConnectionMgr.getInstance().switchURL(this, newURL, variablePoolId);
       setSqlConnection(newConn);
       if (profile != null)
       {
@@ -527,7 +527,7 @@ public class WbConnection
     return this.profile.getTrimCharData();
   }
 
-  void runPreDisconnectScript()
+  void runPreDisconnectScript(String variablePoolId)
   {
     if (this.keepAlive != null)
     {
@@ -536,15 +536,15 @@ public class WbConnection
     if (this.profile == null) return;
     if (this.sqlConnection == null) return;
     String sql = profile.getPreDisconnectScript();
-    runConnectScript(sql, "disconnect");
+    runConnectScript(sql, "disconnect", variablePoolId);
   }
 
-  void runPostConnectScript()
+  void runPostConnectScript(String variablePoolId)
   {
     if (this.profile == null) return;
     if (this.sqlConnection == null) return;
     String sql = profile.getPostConnectScript();
-    runConnectScript(sql, "connect");
+    runConnectScript(sql, "connect", variablePoolId);
     applyFilterReplacements(getSchemaFilter());
     applyFilterReplacements(getCatalogFilter());
   }
@@ -559,7 +559,7 @@ public class WbConnection
     filter.setReplacements(replacements);
   }
 
-  private synchronized void runConnectScript(String sql, String type)
+  private synchronized void runConnectScript(String sql, String type, String variablePoolId)
   {
     if (StringUtil.isBlank(sql)) return;
 
@@ -567,6 +567,7 @@ public class WbConnection
     LogMgr.logInfo(ci, "Executing " + type + " script for connection [" + getDbId() + "]: "+ getDisplayString(true) + " ..." );
 
     StatementRunner runner = new StatementRunner();
+    runner.setVariablePoolID(variablePoolId);
     runner.setConnection(this);
     runner.setErrorReportLevel(ErrorReportLevel.none);
 
