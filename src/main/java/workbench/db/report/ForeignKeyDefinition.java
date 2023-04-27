@@ -44,10 +44,10 @@ public class ForeignKeyDefinition
   public static final String TAG_DELETE_RULE = "delete-rule";
   public static final String TAG_DEFER_RULE = "deferrable";
 
-  private DependencyNode fkDefinition;
+  private final DependencyNode fkDefinition;
 
   private ReportTable foreignTable;
-  private TagWriter tagWriter = new TagWriter();
+  private final TagWriter tagWriter = new TagWriter();
   private boolean compareFKRules;
 
   public ForeignKeyDefinition(DependencyNode node)

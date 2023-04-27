@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.ConstraintDefinition;
 import workbench.db.DBID;
 import workbench.db.IndexColumn;
 import workbench.db.IndexDefinition;
@@ -44,6 +45,8 @@ import workbench.db.oracle.OracleIndexPartition;
 import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
+
+import static workbench.db.report.ReportTable.*;
 
 /**
  * Class to retrieve all index definitions for a table and
@@ -65,6 +68,7 @@ public class IndexReporter
   public static final String TAG_INDEX_OPTION = "index-option";
   public static final String TAG_INDEX_COMMENT = "comment";
   public static final String TAG_INDEX_FILTER = "filter-expression";
+  public static final String TAG_INDEX_CONSTRAINT = "constraint-definition";
 
   private final List<IndexDefinition> indexList = new ArrayList<>();
   private final TagWriter tagWriter = new TagWriter();
@@ -117,6 +121,7 @@ public class IndexReporter
       if (index.isUniqueConstraint())
       {
         tagWriter.appendTag(result, defIndent, ForeignKeyDefinition.TAG_CONSTRAINT_NAME, index.getUniqueConstraintName());
+        writeConstraint(result, defIndent, index);
       }
       tagWriter.appendTag(result, defIndent, TAG_INDEX_PK, index.isPrimaryKeyIndex());
       tagWriter.appendTag(result, defIndent, TAG_INDEX_TYPE, index.getIndexType());
@@ -157,6 +162,47 @@ public class IndexReporter
       }
       writeDbmsOptions(result, defIndent, index);
       tagWriter.appendCloseTag(result, indent, mainTagToUse == null ? TAG_INDEX : mainTagToUse);
+    }
+  }
+
+  private void writeConstraint(StringBuilder line, StringBuilder indent, IndexDefinition index)
+  {
+    if (!index.isUniqueConstraint()) return;
+    ConstraintDefinition constraint = index.getUniqueConstraint();
+    if (constraint == null) return;
+
+    String name = constraint.getConstraintName();
+    String isSystemName = Boolean.toString(constraint.isSystemName());
+
+    Boolean initiallyDeferred = constraint.isInitiallyDeferred();
+    TagAttribute type = new TagAttribute("type", constraint.getConstraintType().name().toLowerCase());
+    TagAttribute sysName = null;
+    TagAttribute nameAttr = null;
+    TagAttribute deferrable = new TagAttribute("deferrable", constraint.isDeferred());
+    TagAttribute initiallyAtt = null;
+    if (initiallyDeferred != null)
+    {
+      initiallyAtt = new TagAttribute("initiallyDeferred", initiallyDeferred);
+    }
+
+    if (name != null)
+    {
+      sysName = new TagAttribute("generated-name", isSystemName);
+    }
+
+    boolean hasComment = StringUtil.isNonBlank(constraint.getComment());
+    tagWriter.appendOpenTag(line, indent, ReportTable.TAG_CONSTRAINT_DEF, hasComment, type, nameAttr, sysName, deferrable, initiallyAtt);
+    if (hasComment)
+    {
+      StringBuilder ci = new StringBuilder(indent);
+      ci.append("  ");
+      line.append("\n");
+      tagWriter.appendTag(line, ci, TAG_CONSTRAINT_COMMENT, constraint.getComment());
+      tagWriter.appendCloseTag(line, indent, ReportTable.TAG_CONSTRAINT_DEF);
+    }
+    else
+    {
+      line.append("/>\n");
     }
   }
 

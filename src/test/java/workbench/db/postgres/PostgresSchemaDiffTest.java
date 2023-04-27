@@ -179,6 +179,86 @@ public class PostgresSchemaDiffTest
     assertEquals("0", value);
   }
 
+  @Test
+  public void testAddUniqueConstraintDiff()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+    if (!JdbcUtils.hasMinimumServerVersion(conn, "9.4")) return;
+
+    String sql =
+      "create schema if not exists " + REFERENCE_SCHEMA + ";\n" +
+      "create schema if not exists " + TARGET_SCHEMA + ";\n" +
+      "CREATE TABLE " + REFERENCE_SCHEMA + ".t1 \n" +
+      "( \n" +
+      "  id integer not null, \n" +
+      "  name text not null, " +
+      "  constraint unique_name unique (name) \n" +
+      ");\n" +
+
+      "\n" +
+      "CREATE TABLE " + TARGET_SCHEMA + ".t1 \n" +
+      "( \n" +
+      "  id integer not null, \n" +
+      "  name text not null \n" +
+      ");\n" +
+      "commit;\n";
+
+    TestUtil.executeScript(conn, sql);
+
+    SchemaDiff diff = new SchemaDiff(conn, conn);
+    diff.setSchemaNames(REFERENCE_SCHEMA, TARGET_SCHEMA);
+    diff.setTableNames(CollectionUtil.arrayList(REFERENCE_SCHEMA + ".t1"), CollectionUtil.arrayList(TARGET_SCHEMA + ".t1"));
+    diff.setIncludeIndex(true);
+    StringWriter result = new StringWriter();
+    diff.writeXml(result);
+    String xml = result.toString();
+    String value = TestUtil.getXPathValue(xml, "/schema-diff/modify-table[@name='t1']/add-index/index-def/constraint-name");
+    assertEquals("unique_name", value);
+  }
+
+  @Test
+  public void testDropUniqueConstraintDiff()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+    if (!JdbcUtils.hasMinimumServerVersion(conn, "9.4")) return;
+
+    String sql =
+      "create schema if not exists " + REFERENCE_SCHEMA + ";\n" +
+      "create schema if not exists " + TARGET_SCHEMA + ";\n" +
+      "CREATE TABLE " + REFERENCE_SCHEMA + ".t1 \n" +
+      "( \n" +
+      "  id integer not null, \n" +
+      "  name text not null " +
+      ");\n" +
+
+      "\n" +
+      "CREATE TABLE " + TARGET_SCHEMA + ".t1 \n" +
+      "( \n" +
+      "  id integer not null, \n" +
+      "  name text not null, \n" +
+      "  constraint unique_name unique (name) \n" +
+      ");\n" +
+      "commit;\n";
+
+    TestUtil.executeScript(conn, sql);
+
+    SchemaDiff diff = new SchemaDiff(conn, conn);
+    diff.setSchemaNames(REFERENCE_SCHEMA, TARGET_SCHEMA);
+    diff.setTableNames(CollectionUtil.arrayList(REFERENCE_SCHEMA + ".t1"), CollectionUtil.arrayList(TARGET_SCHEMA + ".t1"));
+    diff.setIncludeIndex(true);
+    diff.setIncludeTableConstraints(true);
+    StringWriter result = new StringWriter();
+    diff.writeXml(result);
+    String xml = result.toString();
+    System.out.println(xml);
+    String value = TestUtil.getXPathValue(xml, "/schema-diff/modify-table[@name='t1']/drop-index/@constraint-name");
+    assertEquals("unique_name", value);
+  }
+
 
   @Test
   public void testFilteredIndexDiff()

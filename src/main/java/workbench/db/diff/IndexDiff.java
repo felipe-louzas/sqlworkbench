@@ -124,15 +124,15 @@ public class IndexDiff
 
           if (uniqueDiff)
           {
-            TagAttribute oldAtt = new TagAttribute("oldvalue", Boolean.toString(ind.isUnique()));
-            TagAttribute newAtt = new TagAttribute("newvalue", Boolean.toString(refIndex.isUnique()));
+            TagAttribute oldAtt = new TagAttribute("oldvalue", ind.isUnique());
+            TagAttribute newAtt = new TagAttribute("newvalue", refIndex.isUnique());
             writer.appendOpenTag(result, changedIndent, IndexReporter.TAG_INDEX_UNIQUE, false, oldAtt, newAtt);
             result.append("/>\n");
           }
           if (pkDiff)
           {
-            TagAttribute oldAtt = new TagAttribute("oldvalue", Boolean.toString(ind.isPrimaryKeyIndex()));
-            TagAttribute newAtt = new TagAttribute("newvalue", Boolean.toString(refIndex.isPrimaryKeyIndex()));
+            TagAttribute oldAtt = new TagAttribute("oldvalue", ind.isPrimaryKeyIndex());
+            TagAttribute newAtt = new TagAttribute("newvalue", refIndex.isPrimaryKeyIndex());
             writer.appendOpenTag(result, changedIndent, IndexReporter.TAG_INDEX_PK, false, oldAtt, newAtt);
             result.append("/>\n");
           }
@@ -186,7 +186,13 @@ public class IndexDiff
     {
       for (IndexDefinition idx : indexToDrop)
       {
-        writer.appendTag(result, myindent, TAG_DROP_INDEX, idx.getName());
+        TagAttribute constraintName = null;
+        TagAttribute isConstraint = new TagAttribute("is-constraint-index", idx.isUniqueConstraint());
+        if (idx.isUniqueConstraint())
+        {
+          constraintName = new TagAttribute("constraint-name", idx.getUniqueConstraintName());
+        }
+        writer.appendTag(result, myindent, TAG_DROP_INDEX, idx.getName(), isConstraint, constraintName);
       }
     }
     return result;

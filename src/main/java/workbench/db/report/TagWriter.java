@@ -91,15 +91,19 @@ public class TagWriter
 
   public void appendTag(StringBuilder target, StringBuilder indent, String tag, CharSequence value, String attr, String attValue)
   {
-    appendOpenTag(target, indent, tag, attr, attValue);
+    appendTag(target, indent, tag, value, new TagAttribute(attr, attValue));
+  }
+
+  public void appendTag(StringBuilder target, StringBuilder indent, String tag, CharSequence value, TagAttribute... attribs)
+  {
+    appendOpenTag(target, indent, tag, true, attribs);
     target.append(value == null ? "" : value);
     appendCloseTag(target, null, tag);
   }
 
   public void appendCDATATag(StringBuilder target, StringBuilder indent, String tag, CharSequence value, String attr, String attValue)
   {
-    TagAttribute ta = new TagAttribute(attr, attValue);
-    appendCDATATag(target, indent, tag, value, ta);
+    appendCDATATag(target, indent, tag, value, new TagAttribute(attr, attValue));
   }
 
   public void appendCDATATag(StringBuilder target, StringBuilder indent, String tag, CharSequence value, TagAttribute... attrs)

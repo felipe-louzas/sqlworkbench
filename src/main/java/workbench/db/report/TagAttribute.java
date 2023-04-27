@@ -31,6 +31,16 @@ public class TagAttribute
 {
   private final CharSequence tagText;
 
+  public TagAttribute(String name, boolean value)
+  {
+    this(name, Boolean.toString(value));
+  }
+  
+  public TagAttribute(String name, int value)
+  {
+    this(name, Integer.toString(value));
+  }
+
   public TagAttribute(String name, String value)
   {
     int len = name == null ? 0 : name.length();

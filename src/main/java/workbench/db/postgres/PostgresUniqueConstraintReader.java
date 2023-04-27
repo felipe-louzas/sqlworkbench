@@ -64,7 +64,8 @@ public class PostgresUniqueConstraintReader
         "         indschem.nspname as index_schema, \n" +
         "         cons.conname as constraint_name, \n" +
         "         cons.condeferrable as deferrable, \n" +
-        "         cons.condeferred as deferred \n" +
+        "         cons.condeferred as deferred, \n" +
+        "         pg_catalog.obj_description(cons.oid, 'pg_constraint') as remarks \n" +
         "  from pg_catalog.pg_constraint cons \n" +
         "    join pg_catalog.pg_class tbl ON tbl.oid = cons.conrelid \n" +
         "    join pg_catalog.pg_namespace ns ON ns.oid = tbl.relnamespace \n" +
@@ -82,7 +83,8 @@ public class PostgresUniqueConstraintReader
         "         cns.nspname as index_schema, \n" +
         "         cons.conname as constraint_name, \n" +
         "         false as deferrable, \n" +
-        "         false as deferred \n" +
+        "         false as deferred, \n" +
+        "         null::text as remarks \n" +
         "  from pg_catalog.pg_constraint cons  \n" +
         "    join pg_catalog.pg_class tbl ON tbl.oid = cons.conrelid  \n" +
         "    join pg_catalog.pg_namespace cns on cns.oid = cons.connamespace \n" +
@@ -146,12 +148,14 @@ public class PostgresUniqueConstraintReader
         String consName = rs.getString(3);
         boolean deferrable = rs.getBoolean("deferrable");
         boolean deferred = rs.getBoolean("deferred");
+        String remarks = rs.getString("remarks");
         IndexDefinition def = IndexDefinition.findIndex(indexList, idxName, idxSchema);
         if (def != null)
         {
           ConstraintDefinition cons = ConstraintDefinition.createUniqueConstraint(consName);
           cons.setDeferrable(deferrable);
           cons.setInitiallyDeferred(deferred);
+          cons.setComment(remarks);
           def.setUniqueConstraint(cons);
           def.setIncludeIndexForUniqueConstraint(false);
         }
