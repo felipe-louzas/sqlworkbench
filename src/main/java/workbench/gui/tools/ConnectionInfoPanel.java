@@ -78,7 +78,7 @@ public class ConnectionInfoPanel
       infotext.setBorder(WbSwingUtilities.EMPTY_BORDER);
       TextComponentMouseListener.addListener(infotext);
       FontMetrics fm = infotext.getFontMetrics(infotext.getFont());
-      int height = fm.getHeight() * 16;
+      int height = fm.getHeight() * 17;
       int width = fm.getMaxAdvance() * 75;
       Dimension d = new Dimension(width, height);
       jScrollPane1.setSize(d);

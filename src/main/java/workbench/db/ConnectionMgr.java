@@ -166,7 +166,6 @@ public class ConnectionMgr
     return sshManager;
   }
 
-  @Deprecated
   public WbConnection getConnection(ConnectionProfile profile, String connId)
     throws ClassNotFoundException, SQLException, UnsupportedClassVersionError, NoConnectionException, SshException
   {

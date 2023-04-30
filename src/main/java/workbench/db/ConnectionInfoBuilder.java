@@ -84,13 +84,16 @@ public class ConnectionInfoBuilder
       String isolationlevel;
       String productVersion;
       String driverName;
-
+      String autocommit;
+      String fetchsize;
       if (busy)
       {
         username = conn.getDisplayUser();
         isolationlevel = "n/a";
         productVersion = "n/a";
         driverName = "n/a";
+        autocommit = "n/a";
+        fetchsize = "n/a";
       }
       else
       {
@@ -98,6 +101,8 @@ public class ConnectionInfoBuilder
         isolationlevel = conn.getIsolationLevelName();
         productVersion = conn.getDatabaseProductVersion();
         driverName = conn.getSqlConnection().getMetaData().getDriverName();
+        autocommit = Boolean.toString(conn.getAutoCommit());
+        fetchsize = Integer.toString(conn.getFetchSize());
       }
       String dbVersion = conn.getDatabaseVersion().toString();
 
@@ -121,6 +126,8 @@ public class ConnectionInfoBuilder
       }
 
       content.append(space + boldStart + "Isolation Level:" + boldEnd + isolationlevel + newLine);
+      content.append(space + boldStart + "Autocommit:" + boldEnd + autocommit + newLine);
+      content.append(space + boldStart + "Fetch size:" + boldEnd + fetchsize + newLine);
       content.append(space + boldStart + ResourceMgr.getString("LblUsername") + ":" + boldEnd + username + newLine);
 
       String term = wbmeta.getSchemaTerm();
