@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2023-03-25">
+    <entry dev-build="4" type="enh">For PostgreSQL, WbSchemaDiff now marks unique indexes that belong to a constraint properply.</entry>
     <entry dev-build="3" type="enh">Errors during loading of external files of a workspace are now handled more gracefully.</entry>
     <entry dev-build="3" type="enh">For DB2 LUW, the table for a trigger was not shown in the DbExplorer's trigger list</entry>
     <entry dev-build="3" type="enh">For PostgreSQL, COPY ... FROM STDIN did not work if no row data was provided</entry>
@@ -13,6 +14,8 @@
     <entry dev-build="3" type="enh">Code completion now shows comments for tables and columns.</entry>
     <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
     <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
+    <entry dev-build="4" type="fix">Variables defined through WbVarDef in a connection script where not defined when using "Separate variables per window"</entry>
+    <entry dev-build="4" type="fix">The SQL formatter did not treate CREATE OR REPLACE statements properly</entry>
     <entry dev-build="3" type="fix">Formatting statements using CREATE OR REPLACE TABLE was not correct</entry>
     <entry dev-build="3" type="fix">Loading of profiles did not work if the last profile selected contained a / in its name.</entry>
     <entry dev-build="3" type="fix">The macro popup window did not show the macros any more.</entry>
