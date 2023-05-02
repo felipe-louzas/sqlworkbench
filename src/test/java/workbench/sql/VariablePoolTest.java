@@ -70,10 +70,26 @@ public class VariablePoolTest
   }
 
   @Test
-  public void testGetAllVariables()
+  public void testGetAllUndefinedVariables()
   {
     String sql = "select * from person where id = $[id] and name like '$[?name]' and salary > $[&salary]";
     VariablePool pool = VariablePool.getInstance("test1");
+    pool.setParameterValue("foo", "42");
+    Set<String> vars = pool.getAllUndefinedVariables(sql);
+    assertEquals(3, vars.size());
+    assertTrue(vars.containsAll(Set.of("id","name","salary")));
+    pool.setParameterValue("id", "46");
+    
+    Set<String> vars2 = pool.getAllUndefinedVariables(sql);
+    assertEquals(2, vars2.size());
+    assertTrue(vars2.containsAll(Set.of("name","salary")));
+  }
+
+  @Test
+  public void testGetAllVariables()
+  {
+    String sql = "select * from person where id = $[id] and name like '$[?name]' and salary > $[&salary]";
+    VariablePool pool = VariablePool.getInstance("test2");
     pool.setParameterValue("foo", "42");
     Set<String> vars = pool.getAllUsedVariables(sql);
     assertEquals(3, vars.size());

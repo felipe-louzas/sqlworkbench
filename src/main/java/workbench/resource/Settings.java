@@ -79,6 +79,7 @@ import workbench.storage.PkMapping;
 
 import workbench.sql.DelimiterDefinition;
 import workbench.sql.ErrorReportLevel;
+import workbench.sql.VariablePromptStrategy;
 import workbench.sql.formatter.JoinWrapStyle;
 
 import workbench.util.ClasspathUtil;
@@ -184,7 +185,7 @@ public class Settings
   public static final String PROPERTY_CMDLINE_VARS_GLOBAL  = "workbench.sql.parameter.vars.global";
   public static final String PROPERTY_VAR_CLEANUP = "workbench.sql.parameter.values.cleanup";
   public static final String PROPERTY_SORT_VARS = "workbench.sql.parameter.prompt.sort";
-  public static final String PROPERTY_ALWAYS_PROMPT_VARS = "workbench.sql.parameter.prompt.always";
+  public static final String PROPERTY_VARS_PROMPT_STRATEGY = "workbench.sql.parameter.prompt.strategy";
   public static final String PROPERTY_VAR_PREFIX = "workbench.sql.parameter.prefix";
   public static final String PROPERTY_VAR_SUFFIX = "workbench.sql.parameter.suffix";
   public static final String PROPERTY_DECIMAL_DIGITS = "workbench.gui.display.maxfractiondigits";
@@ -3146,11 +3147,11 @@ public class Settings
     return getBoolProperty(PROPERTY_VAR_CLEANUP, false);
   }
 
-  public boolean getAlwaysPromptForVariables()
+  public VariablePromptStrategy getVariablePromptStrategy()
   {
-    return getBoolProperty(PROPERTY_ALWAYS_PROMPT_VARS, false);
+    return getEnumProperty(PROPERTY_VARS_PROMPT_STRATEGY, VariablePromptStrategy.standard);
   }
-  
+
   public boolean getSortPromptVariables()
   {
     return getBoolProperty(PROPERTY_SORT_VARS, true);

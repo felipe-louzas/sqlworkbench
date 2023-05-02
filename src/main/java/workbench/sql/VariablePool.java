@@ -288,11 +288,15 @@ public class VariablePool
    */
   public Set<String> getVariablesNeedingPrompt(String sql)
   {
-    if (Settings.getInstance().getAlwaysPromptForVariables())
+    switch (Settings.getInstance().getVariablePromptStrategy())
     {
-      return this.getAllUsedVariables(sql);
+      case always:
+        return this.getAllUsedVariables(sql);
+      case onlyUndefined:
+        return this.getAllUndefinedVariables(sql);
+      default:
+        return this.getPromptVariables(sql, false);
     }
-    return this.getPromptVariables(sql, false);
   }
 
   public DataStore getParametersToBePrompted(String sql)
@@ -364,6 +368,16 @@ public class VariablePool
 
   public Set<String> getAllUsedVariables(String sql)
   {
+    return getAllPlaceholder(sql, false);
+  }
+
+  public Set<String> getAllUndefinedVariables(String sql)
+  {
+    return getAllPlaceholder(sql, true);
+  }
+
+  private Set<String> getAllPlaceholder(String sql, boolean onlyUndefined)
+  {
     if (sql == null) return Collections.emptySet();
     Matcher m = this.variablePattern.matcher(sql);
     if (m == null) return Collections.emptySet();
@@ -379,11 +393,11 @@ public class VariablePool
         {
           var = var.substring(1);
         }
-        if (!this.data.containsKey(var))
+        boolean defined = this.data.containsKey(var);
+        if (!defined && onlyUndefined || !onlyUndefined)
         {
-          this.data.put(var, "");
+          variables.add(var);
         }
-        variables.add(var);
       }
     }
     return Collections.unmodifiableSet(variables);
