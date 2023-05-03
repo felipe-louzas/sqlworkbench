@@ -90,6 +90,7 @@ public class ShortcutDefinition
   public void clearKeyStroke()
   {
     this.currentKey = null;
+    this.shortcutRemoved = true;
   }
 
   /**

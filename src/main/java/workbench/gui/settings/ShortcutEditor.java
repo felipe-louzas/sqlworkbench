@@ -91,7 +91,7 @@ public class ShortcutEditor
   private DataStore definitions;
   private DataStoreTableModel model;
   private JDialog window;
-  private Frame parent;
+  private final Frame parent;
 
   private JButton okButton;
   private JButton cancelButton;

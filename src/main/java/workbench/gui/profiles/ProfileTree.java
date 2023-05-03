@@ -36,6 +36,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
@@ -89,13 +90,13 @@ public class ProfileTree
              GroupTree, ExpandableTree
 {
   private ProfileListModel profileModel;
-  private CutCopyPastePopup popup;
-  private WbAction pasteToFolderAction;
-  private WbAction renameGroup;
-  private Insets autoscrollInsets = new Insets(20, 20, 20, 20);
-  private ProfileTreeTransferHandler transferHandler = new ProfileTreeTransferHandler(this);
-  private NewGroupAction newGroupAction;
-  private DeleteListEntryAction deleteAction;
+  private final CutCopyPastePopup popup;
+  private final WbAction pasteToFolderAction;
+  private final WbAction renameGroup;
+  private final Insets autoscrollInsets = new Insets(20, 20, 20, 20);
+  private final ProfileTreeTransferHandler transferHandler = new ProfileTreeTransferHandler(this);
+  private final NewGroupAction newGroupAction;
+  private final DeleteListEntryAction deleteAction;
 
   public ProfileTree()
   {
@@ -346,26 +347,19 @@ public class ProfileTree
   }
 
   /**
-   * Expand the groups that are contained in th list.
-   * The list is expected to contain Sting objects that identify
-   * the names of the groups.
+   * Expand the groups that are contained in the list.
+   *
+   * Each element of the list is expected to be a path string to the group.
+   *
+   * @see GroupNode#getGroupPathAsString()
    */
-  public void expandGroups(List groupList)
+  public void expandGroups(List<String> groupList)
   {
     if (groupList == null) return;
-    TreePath[] groupNodes = this.profileModel.getGroupNodes();
-    if (groupNodes == null) return;
-    for (TreePath groupNode : groupNodes)
+    for (String path : groupList)
     {
-      DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupNode.getLastPathComponent();
-      String g = (String)node.getUserObject();
-      if (groupList.contains(g))
-      {
-        if (!isExpanded(groupNode))
-        {
-          expandPath(groupNode);
-        }
-      }
+      TreePath groupPath = toTreePath(path);
+      expandPath(groupPath);
     }
   }
 
@@ -374,18 +368,33 @@ public class ProfileTree
    */
   public List<String> getExpandedGroupNames()
   {
-    ArrayList<String> result = new ArrayList<>();
+    Set<String> result = CollectionUtil.caseInsensitiveSet();
     TreePath[] groupNodes = this.profileModel.getGroupNodes();
     for (TreePath groupNode : groupNodes)
     {
       if (isExpanded(groupNode))
       {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupNode.getLastPathComponent();
-        String g = (String)node.getUserObject();
-        result.add(g);
+        result.add(toPathString(groupNode));
       }
     }
-    return result;
+    return new ArrayList<>(result);
+  }
+
+  private TreePath toTreePath(String path)
+  {
+    List<String> groupPath = ProfileKey.parseGroupPath(path);
+    GroupNode groupNode = profileModel.findGroupNode(groupPath);
+    return new TreePath(groupNode.getPath());
+  }
+
+  private String toPathString(TreePath groupNode)
+  {
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupNode.getLastPathComponent();
+    if (node instanceof GroupNode)
+    {
+      return ((GroupNode)node).getGroupPathAsString();
+    }
+    return node.toString();
   }
 
   @Override

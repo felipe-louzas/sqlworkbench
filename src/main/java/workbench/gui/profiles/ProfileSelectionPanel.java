@@ -98,11 +98,11 @@ public class ProfileSelectionPanel
   implements FileActions, ValidatingComponent, PropertyChangeListener, KeyListener, QuickFilter
 {
   private ProfileListModel model;
-  private WbToolbar toolbar;
+  private final WbToolbar toolbar;
   protected ConnectionEditorPanel connectionEditor;
   private Consumer selectionListener;
-  private NewListEntryAction newItem;
-  private CopyProfileAction copyItem;
+  private final NewListEntryAction newItem;
+  private final CopyProfileAction copyItem;
   private JTextField filterValue;
   protected boolean dummyAdded;
   private List<String> orgExpandedGroups;
