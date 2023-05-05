@@ -28,6 +28,7 @@ import java.util.List;
 
 import workbench.db.IndexDefinition;
 import workbench.db.report.IndexReporter;
+import workbench.db.report.ReportTable;
 import workbench.db.report.TagAttribute;
 import workbench.db.report.TagWriter;
 
@@ -186,13 +187,20 @@ public class IndexDiff
     {
       for (IndexDefinition idx : indexToDrop)
       {
-        TagAttribute constraintName = null;
-        TagAttribute isConstraint = new TagAttribute("is-constraint-index", idx.isUniqueConstraint());
         if (idx.isUniqueConstraint())
         {
-          constraintName = new TagAttribute("constraint-name", idx.getUniqueConstraintName());
+          writer.appendOpenTag(result, myindent, "drop-constraint");
+          result.append("\n");
+          StringBuilder indent2 = new StringBuilder(myindent);
+          indent2.append("  ");
+          writer.appendEmptyTag(result, indent2, ReportTable.TAG_CONSTRAINT_DEF, "name", idx.getUniqueConstraintName());
+          result.append("\n");
+          writer.appendCloseTag(result, myindent, "drop-constraint");
         }
-        writer.appendTag(result, myindent, TAG_DROP_INDEX, idx.getName(), isConstraint, constraintName);
+        else
+        {
+          writer.appendTag(result, myindent, TAG_DROP_INDEX, idx.getName());
+        }
       }
     }
     return result;
