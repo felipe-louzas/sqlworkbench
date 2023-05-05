@@ -31,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -150,7 +149,7 @@ public class DataExporter
   private String dateFormat;
   private String timeFormat;
   private String dateTimeFormat;
-  private SimpleDateFormat timeFormatter;
+  private WbDateFormatter timeFormatter;
   private WbDateFormatter dateFormatter;
   private WbDateFormatter dateTimeFormatter;
 
@@ -1000,7 +999,7 @@ public class DataExporter
     try
     {
       Locale l = localeToUse == null ? Locale.getDefault(Locale.Category.FORMAT) : localeToUse;
-      timeFormatter = new SimpleDateFormat(timeFormat == null ? Settings.getInstance().getDefaultTimeFormat() : timeFormat, l);
+      timeFormatter = new WbDateFormatter(timeFormat == null ? Settings.getInstance().getDefaultTimeFormat() : timeFormat, l);
       timeFormatWasSet = true;
     }
     catch (IllegalArgumentException i)
@@ -1010,7 +1009,7 @@ public class DataExporter
     }
   }
 
-  public SimpleDateFormat getTimeFormatter()
+  public WbDateFormatter getTimeFormatter()
   {
     return timeFormatter;
   }

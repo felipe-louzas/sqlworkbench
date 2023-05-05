@@ -30,7 +30,6 @@ import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,7 +95,7 @@ public abstract class RowDataConverter
   protected ErrorReporter errorReporter;
   protected String nullString;
 
-  protected SimpleDateFormat defaultTimeFormatter;
+  protected WbDateFormatter defaultTimeFormatter;
   protected WbDateFormatter defaultDateFormatter;
   protected WbNumberFormatter defaultNumberFormatter;
   protected WbNumberFormatter defaultIntegerFormatter;
@@ -149,7 +148,7 @@ public abstract class RowDataConverter
   {
     defaultDateFormatter = new WbDateFormatter(Settings.getInstance().getDefaultDateFormat());
     defaultTimestampFormatter = new WbDateFormatter(Settings.getInstance().getDefaultTimestampFormat());
-    defaultTimeFormatter = new SimpleDateFormat(Settings.getInstance().getDefaultTimeFormat());
+    defaultTimeFormatter = new WbDateFormatter(Settings.getInstance().getDefaultTimeFormat());
   }
 
   public void setLocale(Locale locale)
@@ -757,7 +756,7 @@ public abstract class RowDataConverter
     syncInfinityLiterals();
   }
 
-  public void setDefaultTimeFormatter(SimpleDateFormat formatter)
+  public void setDefaultTimeFormatter(WbDateFormatter formatter)
   {
     if (formatter == null) return;
     defaultTimeFormatter = formatter;
@@ -797,14 +796,14 @@ public abstract class RowDataConverter
   public void setDefaultTimeFormat(String format)
   {
     if (StringUtil.isEmptyString(format)) return;
-    SimpleDateFormat formatter;
+    WbDateFormatter formatter;
     if (localeToUse == null)
     {
-      formatter = new SimpleDateFormat(format);
+      formatter = new WbDateFormatter(format);
     }
     else
     {
-      formatter = new SimpleDateFormat(format, localeToUse);
+      formatter = new WbDateFormatter(format, localeToUse);
     }
     setDefaultTimeFormatter(formatter);
   }
@@ -918,11 +917,11 @@ public abstract class RowDataConverter
       }
       else if (value instanceof java.sql.Time && defaultTimeFormatter != null)
       {
-        result = defaultTimeFormatter.format(value);
+        result = defaultTimeFormatter.formatTime((java.sql.Time)value);
       }
       else if (value instanceof LocalTime && defaultTimeFormatter != null)
       {
-        result = defaultTimeFormatter.format((LocalTime)value);
+        result = defaultTimeFormatter.formatTime((LocalTime)value);
       }
       else if (this.defaultDateFormatter != null && WbDateFormatter.isDateValue(value))
       {

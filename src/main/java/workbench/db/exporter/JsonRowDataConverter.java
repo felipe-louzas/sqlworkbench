@@ -21,8 +21,6 @@
  */
 package workbench.db.exporter;
 
-import java.text.SimpleDateFormat;
-
 import workbench.db.TableIdentifier;
 
 import workbench.storage.RowData;
@@ -47,7 +45,7 @@ public class JsonRowDataConverter
     defaultDateFormatter = new WbDateFormatter(StringUtil.ISO_DATE_FORMAT);
     defaultTimestampFormatter = new WbDateFormatter(StringUtil.ISO_TIMESTAMP_FORMAT);
     defaultNumberFormatter = new WbNumberFormatter(-1, '.');
-    defaultTimeFormatter = new SimpleDateFormat("HH:mm:ss");
+    defaultTimeFormatter = new WbDateFormatter("HH:mm:ss");
   }
 
   @Override

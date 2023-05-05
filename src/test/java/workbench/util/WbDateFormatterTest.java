@@ -24,6 +24,7 @@ package workbench.util;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -90,6 +91,14 @@ public class WbDateFormatterTest
     assertEquals(2020, dt.getYear());
     assertEquals(1, dt.getMonthValue());
     assertEquals(19, dt.getDayOfMonth());
+  }
+
+  @Test
+  public void testFormatTime()
+  {
+    WbDateFormatter formatter = new WbDateFormatter("HH:mm");
+    String result = formatter.formatTime(LocalTime.of(23, 42));
+    assertEquals("23:42", result);
   }
 
   @Test

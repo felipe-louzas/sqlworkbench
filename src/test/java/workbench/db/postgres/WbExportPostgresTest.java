@@ -67,10 +67,12 @@ public class WbExportPostgresTest
     if (con == null) return;
 
     TestUtil.executeScript(con,
-      "create table ranges (product_id integer, start_date date, end_date date);\n" +
-      "insert into ranges (product_id, start_date, end_date) values (1, '-infinity', date '2009-12-31'); \n" +
-      "insert into ranges (product_id, start_date, end_date) values (1, date '2010-01-01', date '2011-12-31'); \n" +
-      "insert into ranges (product_id, start_date, end_date) values (1, date '2012-01-01', 'infinity'); \n" +
+      "create table ranges (product_id integer, start_date date, end_date date, start_time time);\n" +
+      "insert into ranges (product_id, start_date, end_date, start_time) " +
+      "values " +
+      " (1, '-infinity', date '2009-12-31', time '20:00'), \n" +
+      " (1, date '2010-01-01', date '2011-12-31', time '19:00'), \n" +
+      " (1, date '2012-01-01', 'infinity', time '18:00'); \n" +
       "commit;\n"
       );
   }
@@ -92,25 +94,28 @@ public class WbExportPostgresTest
     StatementRunner runner = getTestUtil().createConnectedStatementRunner(con);
 
     WbFile output = new WbFile(getTestUtil().getBaseDir(), "ranges.txt");
-    runner.runStatement("WbExport -file='" + output.getAbsolutePath() + "' -type=text -header=false -type=text -dateFormat='yyyy-MM-dd'");
-    runner.runStatement("select start_date, end_date from ranges order by start_date");
+    runner.runStatement("WbExport -file='" + output.getAbsolutePath() + "' -type=text -header=false -type=text -dateFormat='yyyy-MM-dd' -timeFormat='HH:mm'");
+    runner.runStatement("select start_date, end_date, start_time from ranges order by start_date");
     assertTrue(output.exists());
     List<String> lines = TestUtil.readLines(output);
     assertEquals(3, lines.size());
     List<String> elements = StringUtil.stringToList(lines.get(0), "\t");
-    assertEquals(2, elements.size());
+    assertEquals(3, elements.size());
     assertEquals("-infinity", elements.get(0));
     assertEquals("2009-12-31", elements.get(1));
+    assertEquals("20:00", elements.get(2));
 
     elements = StringUtil.stringToList(lines.get(1), "\t");
-    assertEquals(2, elements.size());
+    assertEquals(3, elements.size());
     assertEquals("2010-01-01", elements.get(0));
     assertEquals("2011-12-31", elements.get(1));
+    assertEquals("19:00", elements.get(2));
 
     elements = StringUtil.stringToList(lines.get(2), "\t");
-    assertEquals(2, elements.size());
+    assertEquals(3, elements.size());
     assertEquals("2012-01-01", elements.get(0));
     assertEquals("infinity", elements.get(1));
+    assertEquals("18:00", elements.get(2));
   }
 
 }
