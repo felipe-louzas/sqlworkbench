@@ -254,7 +254,7 @@ public class PostgresSchemaDiffTest
     StringWriter result = new StringWriter();
     diff.writeXml(result);
     String xml = result.toString();
-    System.out.println(xml);
+//    System.out.println(xml);
     String value = TestUtil.getXPathValue(xml, "/schema-diff/modify-table[@name='t1']/drop-constraint/constraint-definition/@name");
     assertEquals("unique_name", value);
   }
