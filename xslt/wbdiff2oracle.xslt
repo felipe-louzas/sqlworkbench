@@ -34,7 +34,7 @@
 
       <xsl:variable name="table" select="@name"/>
 
-      <xsl:for-each select="table-constraints/drop-constraint/constraint-definition">
+      <xsl:for-each select=".//drop-constraint/constraint-definition">
         <xsl:text>ALTER TABLE </xsl:text>
         <xsl:value-of select="$table"/>
         <xsl:text> DROP CONSTRAINT </xsl:text>
@@ -43,7 +43,7 @@
         <xsl:value-of select="$newline"/>
       </xsl:for-each>
       <xsl:value-of select="$newline"/>
-      
+
       <xsl:apply-templates select="add-column">
         <xsl:with-param name="table" select="$table"/>
       </xsl:apply-templates>
@@ -122,7 +122,7 @@
     </xsl:for-each>
 
     <xsl:value-of select="$newline"/>
-    
+
     <xsl:for-each select="/schema-diff/drop-table">
       <xsl:text>DROP TABLE </xsl:text>
       <xsl:value-of select="table-name"/>
