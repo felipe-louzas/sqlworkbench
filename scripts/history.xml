@@ -3,18 +3,18 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-
   <release build="-1" date="2023-03-25">
-    <entry dev-build="4" type="enh">For PostgreSQL, WbSchemaDiff now marks unique indexes that belong to a constraint properply.</entry>
-    <entry dev-build="3" type="enh">Errors during loading of external files of a workspace are now handled more gracefully.</entry>
-    <entry dev-build="3" type="enh">For DB2 LUW, the table for a trigger was not shown in the DbExplorer's trigger list</entry>
+    <entry dev-build="4" type="enh">For DB2 (LUW), tablespace information is now included in the generated DDL for tables.</entry>
+    <entry dev-build="4" type="enh">WbSchemaDiff now writes a drop-constraint tag for indexes supporting unique constraints.</entry>
+    <entry dev-build="3" type="enh">For DB2 (LUW), the table for a trigger was not shown in the DbExplorer's trigger list</entry>
     <entry dev-build="3" type="enh">For PostgreSQL, COPY ... FROM STDIN did not work if no row data was provided</entry>
     <entry dev-build="3" type="enh">POI 5.2 introduced new memory limits when reading XLSX. The built-in limits have been increased and can now be configured.</entry>
     <entry dev-build="3" type="enh">It's now possible to include column comments in the HTML output of "Save Data As" and "Copy data to clipboad".</entry>
     <entry dev-build="3" type="enh">Code completion now shows comments for tables and columns.</entry>
     <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
     <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
-    <entry dev-build="4" type="fix">Variables defined through WbVarDef in a connection script where not defined when using "Separate variables per window"</entry>
+    <entry dev-build="4" type="fix">For PostgreSQL, columns with the data type time could not be exported or copied</entry>
+    <entry dev-build="4" type="fix">Variables defined through WbVarDef in a "after connect" script were not set when using "Separate variables per window"</entry>
     <entry dev-build="4" type="fix">The SQL formatter did not treate CREATE OR REPLACE statements properly</entry>
     <entry dev-build="3" type="fix">Formatting statements using CREATE OR REPLACE TABLE was not correct</entry>
     <entry dev-build="3" type="fix">Loading of profiles did not work if the last profile selected contained a / in its name.</entry>
