@@ -25,7 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import workbench.log.CallerInfo;
@@ -75,14 +74,14 @@ public class FirebirdIndexReader
     "       case \n" +
     "           when ind.RDB$INDEX_TYPE = 1 then 'D'  \n" +
     "           else 'A' \n" +
-    "        end as ASC_OR_DESC, " +
-    "       0 as CARDINALITY, " +
+    "        end as ASC_OR_DESC, \n" +
+    "       0 as CARDINALITY, \n" +
     "       0 as \"PAGES\", \n" +
     "       null as FILTER_CONDITION, \n" +
     "       ind.RDB$FOREIGN_KEY \n" +
-    "FROM rdb$indices ind " +
-    " LEFT JOIN rdb$index_segments ise ON ind.rdb$index_name = ise.rdb$index_name " +
-    "WHERE ind.rdb$relation_name = ? " +
+    "FROM rdb$indices ind \n" +
+    " LEFT JOIN rdb$index_segments ise ON ind.rdb$index_name = ise.rdb$index_name \n" +
+    "WHERE ind.rdb$relation_name = ? \n" +
     "ORDER BY 4, 6, 8";
 
   public FirebirdIndexReader(DbMetadata meta)
@@ -100,13 +99,23 @@ public class FirebirdIndexReader
       indexInfoProcessed();
     }
     WbConnection con = this.metaData.getWbConnection();
+    String query = getSQL();
 
-    LogMgr.logMetadataSql(new CallerInfo(){}, "index info", GET_INDEX_INFO, table.getTableName());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "index info", query, table.getTableName());
 
-    this.indexStatement = con.getSqlConnection().prepareStatement(GET_INDEX_INFO);
+    this.indexStatement = con.getSqlConnection().prepareStatement(query);
     this.indexStatement.setString(1, table.getRawTableName());
     ResultSet rs = this.indexStatement.executeQuery();
     return rs;
+  }
+
+  private String getSQL()
+  {
+    if (JdbcUtils.hasMinimumServerVersion(this.metaData.getWbConnection(), "5.0"))
+    {
+      return GET_INDEX_INFO.replace("null as FILTER_CONDITION", "ind.RDB$CONDITION_SOURCE as FILTER_CONDITION");
+    }
+    return GET_INDEX_INFO;
   }
 
   @Override
@@ -132,10 +141,8 @@ public class FirebirdIndexReader
       index.setDirection(dir);
       index.setIndexExpression(computed);
     }
-    Iterator<IndexDefinition> itr = indexList.iterator();
-    while (itr.hasNext())
+    for (IndexDefinition idx : indexList)
     {
-      IndexDefinition idx = itr.next();
       if (idx.isUnique() && idx.getName().startsWith("RDB$PRIM"))
       {
         idx.setPrimaryKeyIndex(true);

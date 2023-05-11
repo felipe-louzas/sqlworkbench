@@ -54,6 +54,8 @@ public class MetaDataSqlManager
   public static final String SPECIFIC_NAME_PLACEHOLDER = "%specific_name%";
   public static final String INDEX_TYPE_PLACEHOLDER = "%indextype%";
   public static final String INDEX_NAME_PLACEHOLDER = "%indexname%";
+  public static final String INDEX_FILTER_EXPRESSION = "%index_filter_expression%";
+  public static final String INDEX_WHERE_CONDITION = "%index_where%";
   public static final String FQ_INDEX_NAME_PLACEHOLDER = "%fq_index_name%";
   public static final String PK_NAME_PLACEHOLDER = "%pk_name%";
   public static final String PK_INLINE_DEFINITION = "%pk_definition%";

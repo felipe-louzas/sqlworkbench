@@ -181,7 +181,7 @@ public class IndexDefinition
 
   public void setFilterExpression(String expression)
   {
-    this.filterExpression = expression;
+    this.filterExpression = StringUtil.trimToNull(expression);
   }
 
   @Override

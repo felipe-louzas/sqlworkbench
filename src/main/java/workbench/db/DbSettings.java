@@ -1199,11 +1199,6 @@ public class DbSettings
     return getBoolProperty("dml.insert.multirow.supported", true);
   }
 
-  public boolean supportsSortedIndex()
-  {
-    return getBoolProperty("index.sorted", true);
-  }
-
   public boolean ignoreIndexColumnWithOrdinalZero()
   {
     return getBoolProperty("index.ignore.ordinal_zero", true);

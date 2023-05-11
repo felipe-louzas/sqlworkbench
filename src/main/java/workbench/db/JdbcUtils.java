@@ -172,6 +172,22 @@ public class JdbcUtils
       if (rs == null) return -1;
       if (StringUtil.isEmptyString(colname)) return -1;
       ResultSetMetaData meta = rs.getMetaData();
+      return getColumnIndex(meta, colname);
+    }
+    catch (Exception e)
+    {
+      // ignore
+    }
+    return -1;
+
+  }
+  public static int getColumnIndex(ResultSetMetaData meta, String colname)
+  {
+    try
+    {
+      if (meta == null) return -1;
+      if (StringUtil.isEmptyString(colname)) return -1;
+
       int colcount = meta.getColumnCount();
       for (int i=1; i <= colcount; i++)
       {

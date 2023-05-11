@@ -22,6 +22,7 @@
 package workbench.db;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
@@ -563,6 +564,8 @@ public class JdbcIndexReader
 
     sql = StringUtil.replace(sql, MetaDataSqlManager.FQ_INDEX_NAME_PLACEHOLDER, indexDefinition.getObjectExpression(metaData.getWbConnection()));
     sql = StringUtil.replace(sql, MetaDataSqlManager.INDEX_NAME_PLACEHOLDER, indexDefinition.getObjectName());
+    sql = TemplateHandler.replacePlaceholder(sql, MetaDataSqlManager.INDEX_FILTER_EXPRESSION, indexDefinition.getFilterExpression(), true);
+    sql = TemplateHandler.replacePlaceholder(sql, MetaDataSqlManager.INDEX_WHERE_CONDITION, indexDefinition.getFilterExpression(), true);
     idx.append(sql);
 
     if (StringUtil.isNonBlank(options))
@@ -594,7 +597,7 @@ public class JdbcIndexReader
    *         a SQL "fragment" to be appended at the end of the create index statement if an option is available.
    */
   @Override
-  public String getIndexOptions(TableIdentifier table, IndexDefinition type)
+  public String getIndexOptions(TableIdentifier table, IndexDefinition index)
   {
     return null;
   }
@@ -893,12 +896,18 @@ public class JdbcIndexReader
   protected List<IndexDefinition> processIndexResult(ResultSet idxRs, PkDefinition pkIndex, TableIdentifier tbl)
     throws SQLException
   {
+    final CallerInfo ci = new CallerInfo(){};
+    if (idxRs == null)
+    {
+      LogMgr.logWarning(ci, "null ResultSet passed to processIndexResult()");
+      return new ArrayList<>();
+    }
+
     // This will map an indexname to an IndexDefinition object
     // getIndexInfo() returns one row for each column
     // so the columns of the index are collected in the IndexDefinition
     HashMap<String, IndexDefinition> defs = new HashMap<>();
 
-    boolean supportsDirection = metaData.getDbSettings().supportsSortedIndex();
     boolean ignoreZeroOrdinalPos = metaData.getDbSettings().ignoreIndexColumnWithOrdinalZero();
 
     boolean isPartitioned = false;
@@ -908,19 +917,24 @@ public class JdbcIndexReader
 
     Set<String> ignoredIndexes = CollectionUtil.caseInsensitiveSet();
 
-    if (idxRs != null && Settings.getInstance().getDebugMetadataSql())
+    ResultSetMetaData rsMeta = idxRs.getMetaData();
+
+    if (Settings.getInstance().getDebugMetadataSql())
     {
-      SqlUtil.dumpResultSetInfo("DatabaseMetaData.processIndexResult()", idxRs.getMetaData());
+      SqlUtil.dumpResultSetInfo("DatabaseMetaData.processIndexResult()", rsMeta);
     }
-    final CallerInfo ci = new CallerInfo(){};
-    while (idxRs != null && idxRs.next())
+
+    boolean hasFilter = JdbcUtils.getColumnIndex(rsMeta, "FILTER_CONDITION") > -1;
+    boolean supportsDirection = JdbcUtils.getColumnIndex(rsMeta, "ASC_OR_DESC") > -1;
+
+    while (idxRs.next())
     {
       String tableCat = useColumnNames ? idxRs.getString("TABLE_CAT"): idxRs.getString(1);
       String tableSchema = useColumnNames ? idxRs.getString("TABLE_SCHEM"): idxRs.getString(2);
       String tableName = useColumnNames ? idxRs.getString("TABLE_NAME"): idxRs.getString(3);
 
       boolean nonUniqueFlag = useColumnNames ? idxRs.getBoolean("NON_UNIQUE") : idxRs.getBoolean(4);
-      String indexName = useColumnNames ? idxRs.getString("INDEX_NAME"): idxRs.getString(6);
+      String indexName = useColumnNames ? idxRs.getString("INDEX_NAME") : idxRs.getString(6);
 
       if (ignoredIndexes.contains(indexName))
       {
@@ -967,6 +981,13 @@ public class JdbcIndexReader
         def = new IndexDefinition(tbl, indexName);
         def.setUnique(!nonUniqueFlag);
         def.setPartitioned(isPartitioned);
+
+        if (hasFilter)
+        {
+          String filter = idxRs.getString("FILTER_CONDITION");
+          def.setFilterExpression(filter);
+        }
+
         if (metaData.getDbSettings().pkIndexHasTableName())
         {
           def.setPrimaryKeyIndex(indexName.equals(tbl.getRawTableName()));
