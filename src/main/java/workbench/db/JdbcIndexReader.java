@@ -566,7 +566,7 @@ public class JdbcIndexReader
     sql = StringUtil.replace(sql, MetaDataSqlManager.INDEX_NAME_PLACEHOLDER, indexDefinition.getObjectName());
     sql = TemplateHandler.replacePlaceholder(sql, MetaDataSqlManager.INDEX_FILTER_EXPRESSION, indexDefinition.getFilterExpression(), true);
     sql = TemplateHandler.replacePlaceholder(sql, MetaDataSqlManager.INDEX_WHERE_CONDITION, indexDefinition.getFilterExpression(), true);
-    idx.append(sql);
+    idx.append(sql.trim());
 
     if (StringUtil.isNonBlank(options))
     {

@@ -71,8 +71,8 @@ public class WbDateFormatter
   private final String timeFields = "ahKkHmsSAnNVzOXxZ";
   private Locale localeToUse;
 
-  private Pattern timezonePatterns = Pattern.compile("( ){0,1}[zV]+");
-  private Pattern offsetPatterns = Pattern.compile("( ){0,1}[XxZO]+");
+  private final Pattern timezonePatterns = Pattern.compile("( ){0,1}[zV]+");
+  private final Pattern offsetPatterns = Pattern.compile("( ){0,1}[XxZO]+");
 
   // true if the pattern contains an offset pattern (O,x,X,Z)
   private boolean containsTZOffset;

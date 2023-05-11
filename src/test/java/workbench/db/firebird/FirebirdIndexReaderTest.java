@@ -32,6 +32,8 @@ import workbench.db.IndexReader;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
+import workbench.util.SqlUtil;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -73,11 +75,11 @@ public class FirebirdIndexReaderTest
       IndexDefinition index = indexList.get(0);
       assertNotNull(index);
       assertEquals("COMPUTED BY (upper(last_name))", index.getExpression());
-      String create = index.getSource(conn).toString().trim();
-//      System.out.println("********\n" + create);
+      String create = SqlUtil.trimSemicolon(index.getSource(conn).toString().trim());
       String expected =
         "CREATE INDEX IDX_UPPER_NAME\n" +
-        "   ON PERSON COMPUTED BY (upper(last_name));";
+        "   ON PERSON COMPUTED BY (upper(last_name))";
+//      System.out.println("********\n" + create + "\n**********\n" + expected);
       assertEquals(expected, create);
     }
     finally
