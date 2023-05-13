@@ -1148,7 +1148,7 @@ public class DwPanel
     DataStore ds = getDataStore();
     if (ds == null) return;
 
-    String timeString  = StringUtil.formatIsoTimestamp(ds.getLoadedAt());
+    String timeString = StringUtil.ISO_TIMESTAMP_FORMATTER.format(ds.getLoadedAt());
     String msg = ResourceMgr.getFormattedString("TxtLastExec", timeString);
     if (lastExecutionDuration > 0)
     {

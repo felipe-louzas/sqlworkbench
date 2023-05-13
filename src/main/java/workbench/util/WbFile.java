@@ -25,7 +25,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -105,8 +106,8 @@ public class WbFile
    */
   public WbFile makeBackup()
   {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS");
-    String newname = this.getName() + "." + sdf.format(new java.util.Date());
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS");
+    String newname = this.getName() + "." + dtf.format(LocalDateTime.now());
     WbFile newfile = new WbFile(this.getParent(), newname);
     try
     {

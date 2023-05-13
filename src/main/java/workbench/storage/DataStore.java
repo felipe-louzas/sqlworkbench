@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -122,7 +123,7 @@ public class DataStore
 
   private boolean trimCharData;
   private boolean hasGeneratedKeys;
-  private long loadedAt;
+  private LocalDateTime loadedAt;
 
   protected boolean useNaturalSort;
   private SortDefinition lastSort;
@@ -1464,7 +1465,7 @@ public class DataStore
 
   public void setLoadTimeToNow()
   {
-    this.loadedAt = System.currentTimeMillis();
+    this.loadedAt = LocalDateTime.now();
   }
 
   public int fetchOnly(ResultSet rs)
@@ -1632,11 +1633,13 @@ public class DataStore
   }
 
   /**
-   * Return the system time this DataStore was retrieved.
+   * Return the system time when this DataStore was retrieved.
+   *
+   * Never null.
    */
-  public long getLoadedAt()
+  public LocalDateTime getLoadedAt()
   {
-    return loadedAt;
+    return loadedAt == null ? LocalDateTime.MIN : loadedAt;
   }
 
   /**

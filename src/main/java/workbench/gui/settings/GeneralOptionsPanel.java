@@ -62,6 +62,7 @@ import workbench.gui.sql.IconHandler;
 
 import workbench.util.GlobalPasswordManager;
 import workbench.util.MacOSHelper;
+import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbLocale;
 
@@ -93,15 +94,6 @@ public class GeneralOptionsPanel
 
     brushedMetal.setVisible(MacOSHelper.isMacOS());
     brushedMetal.setEnabled(MacOSHelper.isMacOS());
-
-    String[] updTypes = new String[] {
-      ResourceMgr.getString("LblUpdCheckNever"),
-      ResourceMgr.getString("LblUpdCheckDaily"),
-      ResourceMgr.getString("LblUpdCheck7"),
-      ResourceMgr.getString("LblUpdCheck14"),
-      ResourceMgr.getString("LblUpdCheck30")
-    };
-    checkInterval.setModel(new DefaultComboBoxModel(updTypes));
     useSystemTray.setVisible(SystemTray.isSupported());
     WbSwingUtilities.repaintLater(iconCombobox);
     WbSwingUtilities.repaintLater(cancelIconCombo);
@@ -113,25 +105,13 @@ public class GeneralOptionsPanel
   {
     logLevel.setSelectedItem(LogMgr.getLevel());
     int days = Settings.getInstance().getUpdateCheckInterval();
-    if (days == 1)
+    if (days <= 0)
     {
-      checkInterval.setSelectedIndex(1);
-    }
-    else if (days == 7)
-    {
-      checkInterval.setSelectedIndex(2);
-    }
-    else if (days == 14)
-    {
-      checkInterval.setSelectedIndex(3);
-    }
-    else if (days == 30)
-    {
-      checkInterval.setSelectedIndex(4);
+      updateInterval.setText("");
     }
     else
     {
-      checkInterval.setSelectedIndex(0);
+      updateInterval.setText(Integer.toString(days));
     }
     languageDropDown.removeAllItems();
     String currentLang = Settings.getInstance().getLanguage().getLanguage();
@@ -229,25 +209,7 @@ public class GeneralOptionsPanel
     set.setLogAllStatements(logAllStatements.isSelected());
     set.setDebugMetadataSql(logMetaSQL.isSelected());
     set.setObfuscateLogInformation(obfuscateDbInfo.isSelected());
-    int index = checkInterval.getSelectedIndex();
-    switch (index)
-    {
-      case 1:
-        set.setUpdateCheckInterval(1);
-        break;
-      case 2:
-        set.setUpdateCheckInterval(7);
-        break;
-      case 3:
-        set.setUpdateCheckInterval(14);
-        break;
-      case 4:
-        set.setUpdateCheckInterval(30);
-        break;
-      default:
-        set.setUpdateCheckInterval(-1);
-        break;
-    }
+    set.setUpdateCheckInterval(StringUtil.getIntValue(updateInterval.getText(), -1));
     String level = (String)logLevel.getSelectedItem();
     LogMgr.setLevel(level);
     set.setProperty("workbench.log.level", level);
@@ -369,7 +331,8 @@ public class GeneralOptionsPanel
     langLabel = new JLabel();
     languageDropDown = new JComboBox();
     checkUpdatesLabel = new JLabel();
-    checkInterval = new JComboBox();
+    updateInterval = new JTextField();
+    daysLabel = new JLabel();
     logAllStatements = new JCheckBox();
     logMetaSQL = new JCheckBox();
     logfileLabel = new WbLabelField();
@@ -801,13 +764,18 @@ public class GeneralOptionsPanel
     gridBagConstraints.insets = new Insets(0, 7, 0, 1);
     jPanel5.add(checkUpdatesLabel, gridBagConstraints);
 
-    checkInterval.setModel(new DefaultComboBoxModel(new String[] { "never", "daily", "7 days", "14 days", "30 days" }));
+    updateInterval.setColumns(6);
+    updateInterval.setToolTipText(ResourceMgr.getString("d_LblCheckForUpdate")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(1, 7, 0, 1);
-    jPanel5.add(checkInterval, gridBagConstraints);
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 6, 0, 5);
+    jPanel5.add(updateInterval, gridBagConstraints);
+
+    daysLabel.setText(ResourceMgr.getString("LblUpdDays")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    jPanel5.add(daysLabel, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridwidth = 4;
@@ -920,12 +888,12 @@ public class GeneralOptionsPanel
   private JLabel busyIconLabel;
   private JComboBox cancelIconCombo;
   private JLabel cancelIconLabel;
-  private JComboBox checkInterval;
   private JLabel checkUpdatesLabel;
   private JCheckBox closeButtonRightSide;
   private JCheckBox confirmMultiTabClose;
   private JCheckBox confirmTabClose;
   private JCheckBox consolidateLog;
+  private JLabel daysLabel;
   private JCheckBox enableQuickFilter;
   private JCheckBox exitOnConnectCancel;
   private JCheckBox focusToQuickFilter;
@@ -956,6 +924,7 @@ public class GeneralOptionsPanel
   private JCheckBox showTabIndex;
   private JCheckBox singlePageHelp;
   private JCheckBox tabLRUclose;
+  private JTextField updateInterval;
   private JCheckBox useSystemTray;
   private JCheckBox varsPerWindow;
   // End of variables declaration//GEN-END:variables

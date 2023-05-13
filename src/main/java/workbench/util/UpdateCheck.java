@@ -23,8 +23,8 @@ package workbench.util;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -54,9 +54,9 @@ public class UpdateCheck
     }
 
     int interval = Settings.getInstance().getUpdateCheckInterval();
-    Date lastCheck = Settings.getInstance().getLastUpdateCheck();
+    LocalDate lastCheck = Settings.getInstance().getLastUpdateCheck();
 
-    if (needCheck(interval, new java.util.Date(), lastCheck))
+    if (needCheck(interval, LocalDate.now(), lastCheck))
     {
       startRead();
     }
@@ -85,34 +85,14 @@ public class UpdateCheck
   /**
    * This is public so that the method is accessible for Unit-Testing
    */
-  boolean needCheck(int interval, Date today, Date lastCheck)
+  boolean needCheck(int interval, LocalDate today, LocalDate lastCheck)
   {
     if (interval < 1) return false;
+    if (lastCheck == null) return true;
 
-    Calendar next = Calendar.getInstance();
-    long nextCheck = Long.MIN_VALUE;
-    if (lastCheck != null)
-    {
-      next.setLenient(true);
-      next.setTime(lastCheck);
-      next.set(Calendar.HOUR_OF_DAY, 0);
-      next.clear(Calendar.MINUTE);
-      next.clear(Calendar.SECOND);
-      next.clear(Calendar.MILLISECOND);
-      next.add(Calendar.DAY_OF_MONTH, interval);  // this rolls over correctly to the next month because of setLenient(true)
-      nextCheck = next.getTimeInMillis();
-    }
+    LocalDate next = lastCheck.plus(interval, ChronoUnit.DAYS);
 
-    Calendar now = Calendar.getInstance();
-    now.setTimeInMillis(today.getTime());
-    now.set(Calendar.HOUR_OF_DAY, 0);
-    now.clear(Calendar.MINUTE);
-    now.clear(Calendar.SECOND);
-    now.clear(Calendar.MILLISECOND);
-
-    long nowMillis = now.getTimeInMillis();
-
-    return nextCheck <= nowMillis;
+    return next.isBefore(today) || next.isEqual(today);
   }
 
   public void startRead()

@@ -52,7 +52,7 @@ import workbench.util.StringUtil;
 public class ShowSourceQueryAction
   extends WbAction
 {
-  private SqlPanel panel;
+  private final SqlPanel panel;
 
   public ShowSourceQueryAction(SqlPanel handler)
   {
@@ -98,7 +98,7 @@ public class ShowSourceQueryAction
       f = WbManager.getInstance().getCurrentWindow();
     }
 
-    String loadedAt = StringUtil.formatIsoTimestamp(panel.getLoadedAt());
+    String loadedAt = StringUtil.ISO_TIMESTAMP_FORMATTER.format(panel.getLoadedAt());
 
     DwPanel result = panel.getCurrentResult();
     DurationFormatter formatter = new DurationFormatter();

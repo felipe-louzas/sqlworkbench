@@ -38,11 +38,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -839,25 +838,31 @@ public class Settings
   // <editor-fold defaultstate="collapsed" desc="Update Check">
   public boolean checkJavaVersion()
   {
-    return getBoolProperty("workbench.gui.check.java.version", true);
+    return getBoolProperty("workbench.gui.check.java.version", false);
   }
 
-  public Date getLastUpdateCheck()
+  public LocalDate getLastUpdateCheck()
   {
     String dt = getProperty("workbench.gui.updatecheck.lastcheck", null);
-    return StringUtil.parseISODate(dt);
+    if (StringUtil.isBlank(dt)) return null;
+    try
+    {
+      return LocalDate.parse(dt);
+    }
+    catch (Exception e)
+    {
+    }
+    return null;
   }
 
   public void setLastUpdateCheck()
   {
-    Date now = new Date();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    this.props.setProperty("workbench.gui.updatecheck.lastcheck", sdf.format(now), false);
+    this.props.setProperty("workbench.gui.updatecheck.lastcheck", LocalDate.now().toString(), false);
   }
 
   public int getUpdateCheckInterval()
   {
-    return getIntProperty("workbench.gui.updatecheck.interval", 30);
+    return getIntProperty("workbench.gui.updatecheck.interval", 90);
   }
 
   public void setUpdateCheckInterval(int days)

@@ -30,6 +30,7 @@ import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,6 +129,8 @@ public abstract class RowDataConverter
   protected DataExporter exporter;
   private Map<Integer, Boolean> multilineInfo;
   protected Set<String> formulaColumns = CollectionUtil.caseInsensitiveSet();
+
+  private static final SimpleDateFormat ISO_TIMESTAMP_FORMATTER = new SimpleDateFormat(StringUtil.ISO_TIMESTAMP_FORMAT);
 
   /**
    * Spreadsheet option to add an additional sheet with the generating SQL
@@ -904,7 +907,7 @@ public abstract class RowDataConverter
         // this fix in here.
         if (this.defaultTimestampFormatter == null)
         {
-          result = StringUtil.getIsoTimestampFormatter().format(value);
+          result = ISO_TIMESTAMP_FORMATTER.format(value);
         }
         else
         {

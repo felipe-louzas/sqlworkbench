@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -2913,11 +2914,11 @@ public class SqlPanel
     return null;
   }
 
-  public long getLoadedAt()
+  public LocalDateTime getLoadedAt()
   {
-    if (currentData == null) return 0;
+    if (currentData == null) return LocalDateTime.MIN;
     DataStore ds = currentData.getDataStore();
-    if (ds == null) return 0;
+    if (ds == null) return LocalDateTime.MIN;
     return ds.getLoadedAt();
   }
 

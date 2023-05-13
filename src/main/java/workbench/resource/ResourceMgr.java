@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -111,25 +110,6 @@ public class ResourceMgr
     msg = StringUtil.replace(msg, "%shift%", KeyEvent.getModifiersExText(KeyEvent.SHIFT_DOWN_MASK));
     msg = StringUtil.replace(msg, "%control%", KeyEvent.getModifiersExText(PlatformShortcuts.getDefaultModifier()));
     return msg;
-  }
-
-  public static java.util.Date getBuildDate()
-  {
-    String builddate = getString("TxtBuildDate");
-    // running from the dev environment --> build date is now!
-    if ("@BUILD_DATE@".equals(builddate)) return new java.util.Date();
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    java.util.Date result = null;
-    try
-    {
-      result = format.parse(builddate);
-    }
-    catch (Exception e)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Err when parsing build date!", e);
-      result = new java.util.Date();
-    }
-    return result;
   }
 
   public static boolean isDevBuild()

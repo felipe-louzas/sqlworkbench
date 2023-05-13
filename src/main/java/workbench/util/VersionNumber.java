@@ -216,17 +216,17 @@ public class VersionNumber
       {
         if (elements[0].equals("1"))
         {
-          return new VersionNumber(Integer.valueOf(cleanup(elements[1])), 0);
+          return new VersionNumber(Integer.parseInt(cleanup(elements[1])), 0);
         }
-        return new VersionNumber(Integer.valueOf(cleanup(elements[0])), Integer.valueOf(cleanup(elements[1])));
+        return new VersionNumber(Integer.parseInt(cleanup(elements[0])), Integer.parseInt(cleanup(elements[1])));
       }
-      return new VersionNumber(Integer.valueOf(cleanup(elements[0])), 0);
+      return new VersionNumber(Integer.parseInt(cleanup(elements[0])), 0);
     }
     catch (Throwable th)
     {
       LogMgr.logError(new CallerInfo(){}, "Could not retrieve Java version", th);
       // that's the minimum version this application needs
-      return new VersionNumber(1, 8);
+      return new VersionNumber(11, 0);
     }
   }
 }

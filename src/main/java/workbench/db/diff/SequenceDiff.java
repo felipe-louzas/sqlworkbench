@@ -45,12 +45,12 @@ public class SequenceDiff
   public static final String TAG_UPDATE_SEQUENCE = "update-sequence";
   public static final String TAG_ATTRIB_LIST = "modify-properties";
 
-  private ReportSequence reference;
-  private ReportSequence target;
+  private final ReportSequence reference;
+  private final ReportSequence target;
   private final TagWriter writer = new TagWriter();
   private StringBuilder indent = StringUtil.emptyBuilder();
-  private boolean includeSource;
-  private String targetSchema;
+  private final boolean includeSource;
+  private final String targetSchema;
 
   public SequenceDiff(ReportSequence ref, ReportSequence tar, String targetSchema)
   {

@@ -23,7 +23,9 @@ package workbench.util;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,8 +53,8 @@ public class StringUtil
   public static final String ISO_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
   public static final String ISO_TZ_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS z";
 
-  private static final SimpleDateFormat ISO_TIMESTAMP_FORMATTER = new SimpleDateFormat(ISO_TIMESTAMP_FORMAT);
-  private static final SimpleDateFormat ISO_TZ_TIMESTAMP_FORMATTER = new SimpleDateFormat(ISO_TZ_TIMESTAMP_FORMAT);
+  public static final DateTimeFormatter ISO_TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern(ISO_TIMESTAMP_FORMAT);
+  public static final DateTimeFormatter ISO_TZ_TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern(ISO_TZ_TIMESTAMP_FORMAT);
 
   private static final char[] HEX_DIGIT = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
@@ -66,32 +68,14 @@ public class StringUtil
     return new StringBuilder(0);
   }
 
-  public static SimpleDateFormat getIsoTimestampFormatter()
-  {
-    return new SimpleDateFormat(ISO_TIMESTAMP_FORMAT);
-  }
-
-  public static String formatIsoTimestamp(long millis)
-  {
-    synchronized (ISO_TIMESTAMP_FORMAT)
-    {
-      return ISO_TIMESTAMP_FORMATTER.format(new java.util.Date(millis));
-    }
-  }
   public static String getCurrentTimestamp()
   {
-    synchronized (ISO_TIMESTAMP_FORMAT)
-    {
-      return ISO_TIMESTAMP_FORMATTER.format(now());
-    }
+    return ISO_TIMESTAMP_FORMATTER.format(LocalDateTime.now());
   }
 
   public static String getCurrentTimestampWithTZString()
   {
-    synchronized (ISO_TZ_TIMESTAMP_FORMAT)
-    {
-      return ISO_TZ_TIMESTAMP_FORMATTER.format(now());
-    }
+    return ISO_TZ_TIMESTAMP_FORMATTER.format(ZonedDateTime.now());
   }
 
   /**
@@ -113,26 +97,6 @@ public class StringUtil
       return ExceptionUtil.getDisplay(e);
     }
     return null;
-  }
-
-  public static java.util.Date parseISODate(String date)
-  {
-    if (isBlank(date))  return null;
-
-    try
-    {
-      SimpleDateFormat sdf = new SimpleDateFormat(ISO_DATE_FORMAT);
-      return sdf.parse(date);
-    }
-    catch (Exception e)
-    {
-    }
-    return null;
-  }
-
-  public static java.util.Date now()
-  {
-    return new java.util.Date(System.currentTimeMillis());
   }
 
   public static String getPathSeparator()

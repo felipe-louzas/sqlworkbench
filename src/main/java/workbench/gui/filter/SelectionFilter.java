@@ -27,20 +27,15 @@ import workbench.storage.filter.AndExpression;
 import workbench.storage.filter.ColumnComparator;
 import workbench.storage.filter.ComparatorFactory;
 import workbench.storage.filter.ComplexExpression;
-import workbench.storage.filter.DateEqualsComparator;
 import workbench.storage.filter.IsNullComparator;
-import workbench.storage.filter.NumberEqualsComparator;
 import workbench.storage.filter.OrExpression;
-import workbench.storage.filter.StringEqualsComparator;
-
-import workbench.util.SqlUtil;
 
 /**
  * @author Thomas Kellerer
  */
 public class SelectionFilter
 {
-  private WbTable client;
+  private final WbTable client;
 
   public SelectionFilter(WbTable tbl)
   {
@@ -85,24 +80,11 @@ public class SelectionFilter
       {
         String name = client.getColumnName(columns[i]);
         Object value = client.getValueAt(row, columns[i]);
-        int type = client.getDataStore().getColumnType(columns[i]);
         ColumnComparator comparator = null;
 
         if (value == null)
         {
           comparator = new IsNullComparator();
-        }
-        else if (SqlUtil.isCharacterType(type))
-        {
-          comparator = new StringEqualsComparator();
-        }
-        else if (SqlUtil.isNumberType(type) && value instanceof Number)
-        {
-          comparator = new NumberEqualsComparator();
-        }
-        else if (SqlUtil.isDateType(type) && value instanceof java.util.Date)
-        {
-          comparator = new DateEqualsComparator(type);
         }
         else
         {

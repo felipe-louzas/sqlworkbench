@@ -23,6 +23,9 @@
  */
 package workbench.storage.filter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import workbench.resource.ResourceMgr;
 
 import workbench.util.ValueConverter;
@@ -33,7 +36,7 @@ import workbench.util.ValueConverter;
 public class DateEqualsComparator
   implements ColumnComparator
 {
-  private int sqlType;
+  private final int sqlType;
 
   public DateEqualsComparator()
   {
@@ -98,7 +101,9 @@ public class DateEqualsComparator
   @Override
   public boolean supportsType(Class valueClass)
   {
-    return java.util.Date.class.isAssignableFrom(valueClass);
+    return java.util.Date.class.isAssignableFrom(valueClass) ||
+           LocalDate.class.isAssignableFrom(valueClass) ||
+           LocalDateTime.class.isAssignableFrom(valueClass);
   }
 
   @Override
@@ -112,7 +117,9 @@ public class DateEqualsComparator
   {
     if (value == null) return false;
 
-    if (value instanceof java.util.Date) return true;
+    if (value instanceof java.util.Date ||
+        value instanceof LocalDate ||
+        value instanceof LocalDateTime) return true;
 
     ValueConverter converter = new ValueConverter();
     try

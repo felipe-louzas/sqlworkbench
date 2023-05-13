@@ -22,7 +22,7 @@ package workbench.db.exporter;
 
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import workbench.WbTestCase;
 
@@ -31,8 +31,6 @@ import workbench.db.TableIdentifier;
 
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
-
-import workbench.util.StringUtil;
 
 import org.junit.Test;
 
@@ -74,13 +72,13 @@ public class JsonRowDataConverterTest
     JsonRowDataConverter converter = new JsonRowDataConverter();
     converter.setResultInfo(info);
 
-    Date login = StringUtil.getIsoTimestampFormatter().parse("2013-01-12 14:56:12.000");
+    LocalDateTime login = LocalDateTime.of(2013,1,12,14,56,12,000);
 
     RowData data = new RowData(info);
     data.setValue(0, 1);
     data.setValue(1, "Arthur");
     data.setValue(2, "Dent");
-    data.setValue(3, new java.sql.Timestamp(login.getTime()));
+    data.setValue(3, java.sql.Timestamp.valueOf(login));
     data.setValue(4, new BigDecimal("42.24"));
 
     String result = converter.getStart().toString();
