@@ -15,7 +15,7 @@
     <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
     <entry dev-build="4" type="fix">For PostgreSQL, columns with the data type time could not be exported or copied</entry>
     <entry dev-build="4" type="fix">Variables defined through WbVarDef in a "after connect" script were not set when using "Separate variables per window"</entry>
-    <entry dev-build="4" type="fix">The SQL formatter did not treate CREATE OR REPLACE statements properly</entry>
+    <entry dev-build="4" type="fix">The SQL formatter did not treat CREATE OR REPLACE statements properly</entry>
     <entry dev-build="3" type="fix">Formatting statements using CREATE OR REPLACE TABLE was not correct</entry>
     <entry dev-build="3" type="fix">Loading of profiles did not work if the last profile selected contained a / in its name.</entry>
     <entry dev-build="3" type="fix">The macro popup window did not show the macros any more.</entry>
