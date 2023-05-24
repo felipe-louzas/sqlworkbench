@@ -22,12 +22,14 @@
 package workbench.workspace;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,15 +38,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import workbench.interfaces.SqlHistoryProvider;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.gui.sql.EditorHistory;
 import workbench.gui.sql.PanelType;
-import workbench.gui.sql.SqlHistory;
 
 import workbench.util.CharacterRange;
 import workbench.util.CollectionUtil;
+import workbench.util.EncodingUtil;
 import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -83,7 +87,8 @@ public class WbWorkspace
   private WbProperties tabInfo = new WbProperties(0);
   private final Map<String, WbProperties> toolProperties = new HashMap<>();
   private final WbProperties variables = new WbProperties(0);
-  private final Map<Integer, SqlHistory> historyEntries = new HashMap<>();
+  private final Map<Integer, EditorHistory> editorHistories = new HashMap<>();
+  private final Map<Integer, SqlHistoryProvider> executionHistories = new HashMap<>();
   private String filename;
   private String loadError;
 
@@ -163,7 +168,7 @@ public class WbWorkspace
    * If the workspace was already open, it is closed and all internal properties are discarded.
    *
    * @throws IOException
-   * @see #readHistoryData(int, workbench.gui.sql.SqlHistory)
+   * @see #readEditorHistory(int, workbench.gui.sql.SqlHistory)
    */
   public boolean openForReading()
     throws IOException
@@ -229,9 +234,14 @@ public class WbWorkspace
     tabInfo.setProperty("tab.total.count", count);
   }
 
-  public void addHistoryEntry(int index, SqlHistory history)
+  public void addEditorHistory(int index, EditorHistory history)
   {
-    this.historyEntries.put(index, history);
+    this.editorHistories.put(index, history);
+  }
+
+  public void addExecutionHistory(int index, SqlHistoryProvider history)
+  {
+    this.executionHistories.put(index, history);
   }
 
   public WbProperties getVariables()
@@ -281,13 +291,27 @@ public class WbWorkspace
     }
   }
 
+  public void readSQLExecutionHistory(int anIndex, SqlHistoryProvider executionHistory)
+    throws IOException
+  {
+    if (state != WorkspaceState.reading) throw new IllegalStateException("Workspace is not open for reading. Can not read execution history");
+
+    ZipEntry e = this.archive.getEntry("SqlHistory" + (anIndex + 1) + ".txt");
+    if (e != null)
+    {
+      try (BufferedReader reader = new BufferedReader(EncodingUtil.createReader(this.archive.getInputStream(e), "UTF-8"), 2048))
+      {
+        executionHistory.readFrom(reader);
+      }
+    }
+  }
   /**
    *
    * @param anIndex
    * @param history
    * @throws IOException
    */
-  public void readHistoryData(int anIndex, SqlHistory history)
+  public void readEditorHistory(int anIndex, EditorHistory history)
     throws IOException
   {
     if (state != WorkspaceState.reading) throw new IllegalStateException("Workspace is not open for reading. Entry count is not available");
@@ -323,8 +347,10 @@ public class WbWorkspace
       saveTabInfo();
       saveToolProperties();
       saveVariables();
-      saveHistory();
-      historyEntries.clear();
+      saveEditorHistory();
+      saveExecutionHistory();
+      editorHistories.clear();
+      executionHistories.clear();
     }
   }
 
@@ -346,7 +372,7 @@ public class WbWorkspace
   public void prepareForSaving()
   {
     tabInfo.clear();
-    historyEntries.clear();
+    editorHistories.clear();
   }
 
   private void clear()
@@ -354,7 +380,7 @@ public class WbWorkspace
     toolProperties.clear();
     variables.clear();
     tabInfo.clear();
-    historyEntries.clear();
+    editorHistories.clear();
   }
 
   private void readVariables()
@@ -481,10 +507,38 @@ public class WbWorkspace
     }
   }
 
-  private void saveHistory()
+  private void saveExecutionHistory()
     throws IOException
   {
-    for (Map.Entry<Integer, SqlHistory> historyEntry : historyEntries.entrySet())
+    for (Map.Entry<Integer, SqlHistoryProvider> historyEntry : executionHistories.entrySet())
+    {
+      if (historyEntry.getValue() != null && historyEntry.getKey() != null)
+      {
+        try
+        {
+          int index = historyEntry.getKey();
+          ZipEntry entry = new ZipEntry("SqlHistory" + (index + 1) + ".txt");
+          this.zout.putNextEntry(entry);
+          Writer writer = EncodingUtil.createWriter(zout, "UTF-8");
+          historyEntry.getValue().saveTo(writer);
+          writer.flush();
+        }
+        catch (IOException ex)
+        {
+          LogMgr.logError(new CallerInfo(){}, "Could not write SQL history for tab index: " + historyEntry.getKey(), ex);
+        }
+        finally
+        {
+          zout.closeEntry();
+        }
+      }
+    }
+  }
+
+  private void saveEditorHistory()
+    throws IOException
+  {
+    for (Map.Entry<Integer, EditorHistory> historyEntry : editorHistories.entrySet())
     {
       if (historyEntry.getValue() != null && historyEntry.getKey() != null)
       {
@@ -497,7 +551,7 @@ public class WbWorkspace
         }
         catch (IOException ex)
         {
-          LogMgr.logError(new CallerInfo(){}, "Could not history for tab index: " + historyEntry.getKey(), ex);
+          LogMgr.logError(new CallerInfo(){}, "Could not write editor history for tab index: " + historyEntry.getKey(), ex);
           throw ex;
         }
         finally

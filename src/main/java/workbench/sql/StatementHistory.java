@@ -37,7 +37,6 @@ import workbench.sql.wbcommands.WbHistory;
 import workbench.util.CharacterRange;
 import workbench.util.CollectionUtil;
 import workbench.util.EncodingUtil;
-import workbench.util.FileUtil;
 import workbench.util.FixedSizeList;
 import workbench.util.SqlParsingUtil;
 import workbench.util.StringUtil;
@@ -88,53 +87,64 @@ public class StatementHistory
   {
     if (f == null || !f.exists()) return;
 
-    entries.clear();
-    BufferedReader reader = null;
-    try
+    try (BufferedReader reader = EncodingUtil.createBufferedReader(f, "UTF-8");)
     {
-      reader = EncodingUtil.createBufferedReader(f, "UTF-8");
-      String line = reader.readLine();
-      while (line != null)
-      {
-        line = StringUtil.decodeUnicode(line);
-        this.append(line);
-        line = reader.readLine();
-      }
+      readFrom(reader);
       LogMgr.logInfo(new CallerInfo(){}, "Loaded statement history from " + f.getAbsolutePath());
     }
     catch (IOException io)
     {
       LogMgr.logError(new CallerInfo(){}, "Could not save history", io);
     }
-    finally
+  }
+
+  @Override
+  public void readFrom(BufferedReader reader)
+    throws IOException
+  {
+    entries.clear();
+
+    String line = reader.readLine();
+    while (line != null)
     {
-      FileUtil.closeQuietely(reader);
+      line = StringUtil.decodeUnicode(line);
+      this.append(line);
+      line = reader.readLine();
     }
   }
 
   public void saveTo(File f)
   {
+    if (f == null || !f.exists()) return;
     if (CollectionUtil.isEmpty(entries)) return;
 
-    Writer writer = null;
-    try
+    try (Writer writer = EncodingUtil.createWriter(f, "UTF-8", false);)
     {
-      writer = EncodingUtil.createWriter(f, "UTF-8", false);
-      for (String sql : entries)
-      {
-        String line = StringUtil.escapeText(sql, CharacterRange.RANGE_CONTROL);
-        writer.write(line);
-        writer.write('\n');
-      }
+      saveTo(writer);
       LogMgr.logInfo(new CallerInfo(){}, "Saved statement history to " + f.getAbsolutePath());
     }
     catch (IOException io)
     {
       LogMgr.logError(new CallerInfo(){}, "Could not save history", io);
     }
-    finally
+  }
+
+  /**
+   * The caller needs to close the Writer instance.
+   *
+   */
+  @Override
+  public void saveTo(Writer writer)
+    throws IOException
+  {
+    if (CollectionUtil.isEmpty(entries)) return;
+
+    for (String sql : entries)
     {
-      FileUtil.closeQuietely(writer);
+      String line = StringUtil.escapeText(sql, CharacterRange.RANGE_CONTROL);
+      writer.write(line);
+      writer.write('\n');
     }
+
   }
 }

@@ -25,7 +25,7 @@ import java.awt.event.ActionEvent;
 
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.sql.SqlHistory;
+import workbench.gui.sql.EditorHistory;
 
 /**
  * Jump to the first statement in the SQL History.
@@ -35,9 +35,9 @@ import workbench.gui.sql.SqlHistory;
 public class FirstStatementAction
   extends WbAction
 {
-  private SqlHistory history;
+  private final EditorHistory history;
 
-  public FirstStatementAction(SqlHistory aHistory)
+  public FirstStatementAction(EditorHistory aHistory)
   {
     super();
     this.history = aHistory;

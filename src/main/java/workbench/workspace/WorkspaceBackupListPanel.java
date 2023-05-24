@@ -47,10 +47,10 @@ import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
+import workbench.gui.sql.EditorHistory;
 import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.PanelType;
-import workbench.gui.sql.SqlHistory;
-import workbench.gui.sql.SqlHistoryEntry;
+import workbench.gui.sql.EditorHistoryEntry;
 
 import workbench.util.FileDialogUtil;
 
@@ -272,9 +272,9 @@ public class WorkspaceBackupListPanel
     try
     {
       wksp.openForReading();
-      SqlHistory history = new SqlHistory(editor, 10);
-      wksp.readHistoryData(entry.getWorkspaceIndex(), history);
-      SqlHistoryEntry content = history.getTopEntry();
+      EditorHistory history = new EditorHistory(editor, 10);
+      wksp.readEditorHistory(entry.getWorkspaceIndex(), history);
+      EditorHistoryEntry content = history.getTopEntry();
       editor.setText(content == null ? "" : content.getText());
       editor.setCaretPosition(0);
       editor.invalidate();

@@ -35,14 +35,14 @@ import workbench.util.StringUtil;
  *
  * @author Thomas Kellerer
  */
-public class SqlHistoryEntry
+public class EditorHistoryEntry
 {
   private String text;
   private int cursorPos;
   private int selectionStart;
   private int selectionEnd;
 
-  public SqlHistoryEntry(String sql, int pos, int selStart, int selEnd)
+  public EditorHistoryEntry(String sql, int pos, int selStart, int selEnd)
   {
     this.setText(sql);
     int len = this.text.length();
@@ -78,7 +78,7 @@ public class SqlHistoryEntry
     }
   }
 
-  public SqlHistoryEntry(String sql)
+  public EditorHistoryEntry(String sql)
   {
     this.setText(sql);
     this.cursorPos = -1;
@@ -160,8 +160,8 @@ public class SqlHistoryEntry
   @Override
   public boolean equals(Object o)
   {
-    if (!(o instanceof SqlHistoryEntry)) return false;
-    SqlHistoryEntry other = (SqlHistoryEntry)o;
+    if (!(o instanceof EditorHistoryEntry)) return false;
+    EditorHistoryEntry other = (EditorHistoryEntry)o;
     if (this.text.equals(other.text))
     {
       return (this.cursorPos == other.cursorPos &&

@@ -25,21 +25,21 @@ import java.awt.event.ActionEvent;
 
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.sql.SqlHistory;
+import workbench.gui.sql.EditorHistory;
 
 /**
  * Action to remove all entries from the SQL history
  *
- * @see workbench.gui.sql.SqlHistory
+ * @see workbench.gui.sql.EditorHistory
  *
  * @author Thomas Kellerer
  */
 public class ClearStatementHistoryAction
   extends WbAction
 {
-  private SqlHistory history;
+  private final EditorHistory history;
 
-  public ClearStatementHistoryAction(SqlHistory aHistory)
+  public ClearStatementHistoryAction(EditorHistory aHistory)
   {
     super();
     this.history = aHistory;

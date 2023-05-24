@@ -21,6 +21,9 @@
  */
 package workbench.interfaces;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 /**
@@ -31,4 +34,8 @@ public interface SqlHistoryProvider
 {
   List<String> getHistoryEntries();
   String getHistoryEntry(int index);
+  void readFrom(BufferedReader reader)
+    throws IOException;
+  void saveTo(Writer writer)
+    throws IOException;
 }

@@ -23,7 +23,7 @@ package workbench.gui.tabhistory;
 import java.io.File;
 import java.util.List;
 
-import workbench.gui.sql.SqlHistoryEntry;
+import workbench.gui.sql.EditorHistoryEntry;
 
 /**
  *
@@ -32,12 +32,12 @@ import workbench.gui.sql.SqlHistoryEntry;
 public class ClosedTabInfo
 {
   private final String tabName;
-  private final List<SqlHistoryEntry> sqlHistory;
+  private final List<EditorHistoryEntry> sqlHistory;
   private final int tabIndex;
   private File externalFile;
   private String fileEncoding;
 
-  public ClosedTabInfo(String name, List<SqlHistoryEntry> history, int index)
+  public ClosedTabInfo(String name, List<EditorHistoryEntry> history, int index)
   {
     this.tabName = name;
     this.sqlHistory = history;
@@ -70,7 +70,7 @@ public class ClosedTabInfo
     return tabName;
   }
 
-  public List<SqlHistoryEntry> getHistory()
+  public List<EditorHistoryEntry> getHistory()
   {
     return sqlHistory;
   }

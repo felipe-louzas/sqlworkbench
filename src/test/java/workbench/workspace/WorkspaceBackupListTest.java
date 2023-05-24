@@ -27,8 +27,8 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.gui.sql.EditorHistory;
 import workbench.gui.sql.PanelType;
-import workbench.gui.sql.SqlHistory;
 
 import workbench.util.FileVersioner;
 import workbench.util.WbFile;
@@ -99,10 +99,10 @@ public class WorkspaceBackupListTest
 
     for (int i = 0; i < entries; i++)
     {
-      SqlHistory h1 = new SqlHistory(10);
+      EditorHistory h1 = new EditorHistory(10);
       h1.addContent("-- entry one", 1, 0, 0);
       h1.addContent("-- entry two", 1, 0, 0);
-      wksp.addHistoryEntry(i, h1);
+      wksp.addEditorHistory(i, h1);
       wksp.setTabTitle(i, "Tab " + (i + 1));
       props.setProperty(WbWorkspace.TAB_PROP_PREFIX + i + ".type", PanelType.sqlPanel.toString());
     }

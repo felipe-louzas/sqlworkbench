@@ -270,7 +270,7 @@ public class SqlPanel
   //<editor-fold defaultstate="collapsed" desc=" Variables ">
   protected EditorPanel editor;
   protected DwPanel currentData;
-  protected SqlHistory sqlHistory;
+  protected EditorHistory sqlHistory;
   protected StatementHistory historyStatements;
 
   protected LogArea log;
@@ -1474,7 +1474,7 @@ public class SqlPanel
   public final void initStatementHistory()
   {
     int size = Settings.getInstance().getMaxHistorySize();
-    this.sqlHistory = new SqlHistory(editor,size);
+    this.sqlHistory = new EditorHistory(editor,size);
   }
 
   @Override
@@ -1562,7 +1562,7 @@ public class SqlPanel
     handler.saveToWorkspace(w, index);
   }
 
-  public SqlHistory getHistory()
+  public EditorHistory getEditorHistory()
   {
     return sqlHistory;
   }

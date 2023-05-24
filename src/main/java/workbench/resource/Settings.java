@@ -2427,6 +2427,16 @@ public class Settings
     setProperty("workbench.settings.createbackup", flag);
   }
 
+  public boolean getSaveSQLExcecutionHistory()
+  {
+    return getBoolProperty("workbench.workspace.store.sql.exec.history", true);
+  }
+
+  public void setSaveSQLExcecutionHistory(boolean flag)
+  {
+    setProperty("workbench.workspace.store.sql.exec.history", flag);
+  }
+
   public void setFilesInWorkspaceHandling(ExternalFileHandling handling)
   {
     setProperty("workbench.workspace.store.filenames", handling.toString());

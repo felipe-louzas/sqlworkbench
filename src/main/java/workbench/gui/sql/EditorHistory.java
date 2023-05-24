@@ -50,13 +50,13 @@ import workbench.util.StringUtil;
  *
  * @author  Thomas Kellerer
  */
-public class SqlHistory
+public class EditorHistory
 {
   private static final String LIST_DELIMITER = "----------- WbStatement -----------";
 
-  private final List<SqlHistoryEntry> history;
+  private final List<EditorHistoryEntry> history;
   private int currentEntry;
-  private int maxSize;
+  private final int maxSize;
   private boolean changed;
   private EditorPanel editor;
   private NextStatementAction nextStmtAction;
@@ -65,13 +65,13 @@ public class SqlHistory
   private LastStatementAction lastStmtAction;
   private ClearStatementHistoryAction clearAction;
 
-  public SqlHistory(int size)
+  public EditorHistory(int size)
   {
     this.maxSize = size;
     this.history = new ArrayList<>(size + 2);
   }
 
-  public SqlHistory(EditorPanel ed, int size)
+  public EditorHistory(EditorPanel ed, int size)
   {
     this.maxSize = size;
     this.history = new ArrayList<>(size + 2);
@@ -106,7 +106,7 @@ public class SqlHistory
   public WbAction getShowPreviousStatementAction() { return this.prevStmtAction; }
   public WbAction getClearHistoryAction() { return this.clearAction; }
 
-  public synchronized void replaceHistory(List<SqlHistoryEntry> newHistory)
+  public synchronized void replaceHistory(List<EditorHistoryEntry> newHistory)
   {
     clear();
     history.addAll(newHistory);
@@ -137,10 +137,10 @@ public class SqlHistory
 
   public synchronized void addContent(String content, int caretPos, int selectionStart, int selectionEnd)
   {
-    SqlHistoryEntry entry = new SqlHistoryEntry(content, caretPos, selectionStart, selectionEnd);
+    EditorHistoryEntry entry = new EditorHistoryEntry(content, caretPos, selectionStart, selectionEnd);
     try
     {
-      SqlHistoryEntry top = this.getTopEntry();
+      EditorHistoryEntry top = this.getTopEntry();
       if (top != null && top.equals(entry)) return;
       this.addEntry(entry);
     }
@@ -150,7 +150,7 @@ public class SqlHistory
     }
   }
 
-  public void addEntry(SqlHistoryEntry entry)
+  public void addEntry(EditorHistoryEntry entry)
   {
     this.history.add(entry);
     if (this.history.size() > this.maxSize)
@@ -191,7 +191,7 @@ public class SqlHistory
     if (editor == null) return;
     if (!editor.isEditable()) return;
     this.currentEntry = this.history.size() - 1;
-    SqlHistoryEntry entry = this.history.get(this.currentEntry);
+    EditorHistoryEntry entry = this.history.get(this.currentEntry);
     entry.applyTo(editor);
     checkActions();
   }
@@ -202,7 +202,7 @@ public class SqlHistory
     if (editor == null) return;
     if (!editor.isEditable()) return;
     this.currentEntry = 0;
-    SqlHistoryEntry entry = this.history.get(this.currentEntry);
+    EditorHistoryEntry entry = this.history.get(this.currentEntry);
     entry.applyTo(editor);
     checkActions();
   }
@@ -212,7 +212,7 @@ public class SqlHistory
     if (this.currentEntry >= this.history.size()) return;
     if (editor == null) return;
     if (!editor.isEditable()) return;
-    SqlHistoryEntry entry = this.history.get(this.currentEntry);
+    EditorHistoryEntry entry = this.history.get(this.currentEntry);
     entry.applyTo(editor, true);
     checkActions();
   }
@@ -222,7 +222,7 @@ public class SqlHistory
     if (!this.hasPrevious()) return;
     if (editor == null) return;
     if (!editor.isEditable()) return;
-    SqlHistoryEntry entry = this.getPreviousEntry();
+    EditorHistoryEntry entry = this.getPreviousEntry();
     entry.applyTo(editor);
     checkActions();
   }
@@ -231,31 +231,31 @@ public class SqlHistory
   {
     if (!this.hasNext()) return;
     if (editor == null) return;
-    SqlHistoryEntry entry = this.getNextEntry();
+    EditorHistoryEntry entry = this.getNextEntry();
     entry.applyTo(editor);
     checkActions();
   }
 
-  public SqlHistoryEntry getTopEntry()
+  public EditorHistoryEntry getTopEntry()
   {
     if (this.history.size() < 1) return null;
-    SqlHistoryEntry entry = this.history.get(this.history.size() - 1);
+    EditorHistoryEntry entry = this.history.get(this.history.size() - 1);
     return entry;
   }
 
-  private SqlHistoryEntry getPreviousEntry()
+  private EditorHistoryEntry getPreviousEntry()
   {
     if (this.currentEntry <= 0) return null;
     this.currentEntry--;
-    SqlHistoryEntry entry = this.history.get(this.currentEntry);
+    EditorHistoryEntry entry = this.history.get(this.currentEntry);
     return entry;
   }
 
-  private SqlHistoryEntry getNextEntry()
+  private EditorHistoryEntry getNextEntry()
   {
     if (this.currentEntry >= this.history.size() - 1) return null;
     this.currentEntry++;
-    SqlHistoryEntry entry = this.history.get(this.currentEntry);
+    EditorHistoryEntry entry = this.history.get(this.currentEntry);
     return entry;
   }
 
@@ -274,7 +274,7 @@ public class SqlHistory
       int count = this.history.size();
       for (int i=0; i < count; i++)
       {
-        SqlHistoryEntry entry = this.history.get(i);
+        EditorHistoryEntry entry = this.history.get(i);
         writer.write(KEY_POS);
         writer.write(Integer.toString(entry.getCursorPosition()));
         writer.write(lineEnding);
@@ -314,7 +314,7 @@ public class SqlHistory
     }
   }
 
-  public List<SqlHistoryEntry> getEntries()
+  public List<EditorHistoryEntry> getEntries()
   {
     return new ArrayList<>(history);
   }
@@ -341,7 +341,7 @@ public class SqlHistory
         {
           try
           {
-            SqlHistoryEntry entry = new SqlHistoryEntry(content.toString(), pos, start, end);
+            EditorHistoryEntry entry = new EditorHistoryEntry(content.toString(), pos, start, end);
             this.addEntry(entry);
             pos = 0;
             start = -1;
@@ -385,7 +385,7 @@ public class SqlHistory
 
     if (content.length() > 0)
     {
-      SqlHistoryEntry entry = new SqlHistoryEntry(content.toString(), pos, start, end);
+      EditorHistoryEntry entry = new EditorHistoryEntry(content.toString(), pos, start, end);
       this.addEntry(entry);
     }
   }

@@ -26,7 +26,7 @@ import java.awt.event.ActionEvent;
 import workbench.resource.PlatformShortcuts;
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.sql.SqlHistory;
+import workbench.gui.sql.EditorHistory;
 
 /**
  * Display the previous statement from the SQL History
@@ -36,9 +36,9 @@ import workbench.gui.sql.SqlHistory;
 public class PrevStatementAction
   extends WbAction
 {
-  private SqlHistory history;
+  private final EditorHistory history;
 
-  public PrevStatementAction(SqlHistory aHistory)
+  public PrevStatementAction(EditorHistory aHistory)
   {
     super();
     this.history = aHistory;

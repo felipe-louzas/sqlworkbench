@@ -33,7 +33,7 @@ import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 
 import workbench.gui.MainWindow;
-import workbench.gui.sql.SqlHistoryEntry;
+import workbench.gui.sql.EditorHistoryEntry;
 import workbench.gui.sql.SqlPanel;
 
 import workbench.util.FixedSizeList;
@@ -61,7 +61,7 @@ public class ClosedTabManager
     if (panel instanceof SqlPanel)
     {
       SqlPanel sql = (SqlPanel)panel;
-      List<SqlHistoryEntry> entries = sql.getHistory().getEntries();
+      List<EditorHistoryEntry> entries = sql.getEditorHistory().getEntries();
       String title = panel.getTabTitle();
       ClosedTabInfo info = new ClosedTabInfo(title, entries, index);
       info.setExternalFile(sql.getEditor().getCurrentFile(), sql.getEditor().getCurrentFileEncoding());
@@ -106,7 +106,7 @@ public class ClosedTabManager
     if (newTab != null)
     {
       recentTabs.remove(tabInfo);
-      newTab.getHistory().replaceHistory(tabInfo.getHistory());
+      newTab.getEditorHistory().replaceHistory(tabInfo.getHistory());
       newTab.setTabName(tabInfo.getTabName());
       client.updateTabHistoryMenu();
       if (tabInfo.getExternalFile() != null)

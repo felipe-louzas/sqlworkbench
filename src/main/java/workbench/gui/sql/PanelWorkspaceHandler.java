@@ -56,12 +56,22 @@ public class PanelWorkspaceHandler
 
     try
     {
-      w.readHistoryData(index, client.sqlHistory);
+      w.readEditorHistory(index, client.sqlHistory);
     }
     catch (Exception e)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not read history data for index=" + index);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not read editor history for index=" + index);
       client.clearSqlHistory();
+    }
+
+    try
+    {
+      w.readSQLExecutionHistory(index, client.historyStatements);
+    }
+    catch (Exception e)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not read SQL execution history for index=" + index);
+      client.historyStatements.clear();
     }
 
     client.setTabName(w.getTabTitle(index));
@@ -133,8 +143,14 @@ public class PanelWorkspaceHandler
     if (!client.hasFileLoaded() ||
         client.hasFileLoaded() && Settings.getInstance().getFilesInWorkspaceHandling() != ExternalFileHandling.none)
     {
-      client.storeStatementInHistory(); // make sure the current content is stored in the SqlHistory object
-      w.addHistoryEntry(index, client.getHistory());
+      // make sure the current content is stored in the SqlHistory object
+      client.storeStatementInHistory();
+
+      w.addEditorHistory(index, client.getEditorHistory());
+      if (Settings.getInstance().getSaveSQLExcecutionHistory())
+      {
+        w.addExecutionHistory(index, client.historyStatements);
+      }
     }
 
     WbProperties props = w.getSettings();
