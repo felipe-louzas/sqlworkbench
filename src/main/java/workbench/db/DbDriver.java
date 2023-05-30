@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -288,16 +289,17 @@ public class DbDriver
 
   private URLClassLoader createClassLoader(URL[] path)
   {
-    // Use a standard URLClassLoader for everything but SQL Server's driver
-    if (!"com.microsoft.sqlserver.jdbc.SQLServerDriver".equals(this.driverClass))
+    Set<String> driversWithDlls = Settings.getInstance().getDriversLoadingDLLs();
+    if (driversWithDlls.contains(this.driverClass))
     {
-      return new URLClassLoader(path, ClassLoader.getSystemClassLoader());
+      // This is mainly for SQL Server's JDBC driver so that the DLL for integrated security
+      // is found without the need to mess around with java.library.path
+      WbFile jarFile = buildFile(libraryList.get(0));
+      return new SqlServerClassLoader(jarFile, path, ClassLoader.getSystemClassLoader());
     }
 
-    // For SQL Server we create a Classloader that implements findLibrary()
-    // to search for the DLL for integrated security in well known places
-    // This way we can avoid messing around with java.library.path
-    return new SqlServerClassLoader(buildFile(libraryList.get(0)), path, ClassLoader.getSystemClassLoader());
+    // Use a standard URLClassLoader for everything else
+    return new URLClassLoader(path, ClassLoader.getSystemClassLoader());
   }
 
   private synchronized void loadDriverClass()

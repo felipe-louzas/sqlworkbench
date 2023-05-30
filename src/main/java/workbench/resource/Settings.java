@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -4241,6 +4240,20 @@ public class Settings
     return getBoolProperty("workbench.profile.new.autocommit.adjust", true);
   }
 
+  public Set<String> getDriversLoadingDLLs()
+  {
+    Set<String> result = new HashSet<>();
+    String property = "workbench.db.drivers.dll.needed";
+    String defaultList = getProperty(property + ".default", null);
+    List<String> classes = getListProperty(property, false, defaultList);
+    if (classes != null)
+    {
+      result.addAll(classes);
+    }
+    result.removeIf(c -> c.startsWith("-"));
+    return result;
+  }
+
   /**
    * Returns a list of driver classes for which auto commit
    * should be enabled when creating a new connection profile.
@@ -4255,12 +4268,7 @@ public class Settings
     {
       result.addAll(classes);
     }
-    Iterator<String> itr = result.iterator();
-    while (itr.hasNext())
-    {
-      String cls = itr.next();
-      if (cls.startsWith("-")) itr.remove();
-    }
+    result.removeIf(c -> c.startsWith("-"));
     return result;
   }
 

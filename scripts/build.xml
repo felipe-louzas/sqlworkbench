@@ -18,7 +18,7 @@
 
   <taskdef name="xmltask"
            classname="com.oopsconsultancy.xmltask.ant.XmlTask"
-           classpath="../../manual/libs/xmltask-v1.16.jar"/>
+           classpath="xmltask-v1.16.jar"/>
 
   <taskdef uri="antlib:org.apache.maven.resolver.ant"
            classpath="maven-resolver-ant-tasks-1.3.1-uber.jar" />

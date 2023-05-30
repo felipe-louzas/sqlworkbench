@@ -35,20 +35,29 @@ import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
 /**
- * A URL classloader that implements findLibrary() to resolve the DLL name when using integrated security
- * with SQL Server.
+ * A URL classloader that implements findLibrary() to find DLLs needed by the driver.
+ *
+ * This is mainly intended for SQL Servers's DLL that is needed for integreated security,
+ * but can also be used for other drivers that need to load a DLL.
  *
  * @author Thomas Kellerer
  */
 public class SqlServerClassLoader
   extends URLClassLoader
 {
-  private final WbFile jardir;
+  private final File jardir;
 
-  public SqlServerClassLoader(WbFile jardir, URL[] urls, ClassLoader cl)
+  public SqlServerClassLoader(File jardir, URL[] urls, ClassLoader cl)
   {
     super(urls, cl);
-    this.jardir = jardir;
+    if (jardir.isDirectory())
+    {
+      this.jardir = jardir;
+    }
+    else
+    {
+      this.jardir = jardir.getParentFile();
+    }
   }
 
   @Override
@@ -90,7 +99,32 @@ public class SqlServerClassLoader
       dllFile = dllName + ext;
     }
 
-    // First look into the jar file's directory
+    WbFile lib = new WbFile(jardir, dllFile);
+    if (lib.exists())
+    {
+      LogMgr.logInfo(ci, "Found library \"" + dllFile + "\" in: " + jardir);
+      return jardir;
+    }
+
+    // This is the directory layout that is created when extracting the downloaded ZIP file
+    boolean is64Bit = System.getProperty("os.arch").equals("amd64");
+    String archDir = is64Bit ? "x64" : "x86";
+
+    WbFile authDir = new WbFile(jardir, "auth\\" + archDir);
+
+    if (!authDir.exists())
+    {
+      // newer builds of the driver put the jar files into a sub-directory
+      authDir = new WbFile(jardir, "..\\auth\\" + archDir);
+    }
+    WbFile dll = new WbFile(authDir, dllFile);
+    if (dll.exists())
+    {
+      LogMgr.logInfo(ci, "Found library \"" + dllFile + "\" in: " + authDir);
+      return authDir;
+    }
+
+    // Now check the directory where SQL Workbench's JAR file is located
     File f = new File(cp.getJarDir(), dllFile);
     if (f.exists())
     {
@@ -106,27 +140,6 @@ public class SqlServerClassLoader
       return cp.getExtDir();
     }
 
-    // No check the directory where the driver is located.
-    if (jardir != null)
-    {
-      boolean is64Bit = System.getProperty("os.arch").equals("amd64");
-      String archDir = is64Bit ? "x64" : "x86";
-
-      WbFile authDir = new WbFile(jardir, "auth\\" + archDir);
-
-      if (!authDir.exists())
-      {
-        // newer builds of the driver put the jar files into a sub-directory
-        authDir = new WbFile(jardir, "..\\auth\\" + archDir);
-      }
-      WbFile dll = new WbFile(authDir, dllFile);
-      if (dll.exists())
-      {
-        LogMgr.logInfo(ci, "Found library \"" + dllFile + "\" in: " + authDir);
-        return authDir;
-      }
-    }
-
     // Nothing found, search the library path
     String libPath = System.getProperty("java.library.path");
     LogMgr.logDebug(ci, "Searching for \"" + dllFile + "\" on library.path: " + libPath);
@@ -135,7 +148,7 @@ public class SqlServerClassLoader
     for (String dir : pathElements)
     {
       File fdir = new File(dir);
-      if (authDLLExists(fdir, dllName, ext))
+      if (dllExists(fdir, dllName, ext))
       {
         LogMgr.logInfo(ci, "Found library " + dllName + " in: \"" + fdir + "\"");
         return fdir;
@@ -144,7 +157,7 @@ public class SqlServerClassLoader
     return null;
   }
 
-  private boolean authDLLExists(File dir, String dllName, String ext)
+  private boolean dllExists(File dir, String dllName, String ext)
   {
     if (dir == null) return false;
     if (dllName == null) return false;

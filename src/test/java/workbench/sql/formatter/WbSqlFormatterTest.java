@@ -106,6 +106,17 @@ public class WbSqlFormatterTest
   }
 
   @Test
+  public void testDelete()
+  {
+    String sql = "delete from foo where id = 42";
+    WbSqlFormatter f = new WbSqlFormatter(sql, 150, DBID.SQL_Server.getId());
+    f.setKeywordCase(GeneratedIdentifierCase.upper);
+    f.setIdentifierCase(GeneratedIdentifierCase.lower);
+    String formatted = f.getFormattedSql();
+    System.out.println(formatted);
+  }
+
+  @Test
   public void testNVarchar()
   {
     String sql = "INSERT INTO test (id, col1, col2) VALUES (1, N'A', 'B')";

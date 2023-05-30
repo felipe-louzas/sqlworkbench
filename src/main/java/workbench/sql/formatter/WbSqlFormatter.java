@@ -61,6 +61,8 @@ public class WbSqlFormatter
   private final Set<String> LINE_BREAK_AFTER = CollectionUtil.unmodifiableSet(
     "UNION", "UNION ALL", "MINUS", "INTERSECT", "AS", "FOR");
 
+  private final Set<String> NO_LINE_BREAK_AFTER = CollectionUtil.unmodifiableSet("DELETE");
+
   // keywords terminating a HAVING clause
   public static final Set<String> HAVING_TERMINAL = CollectionUtil.unmodifiableSet(
     "ORDER BY", "GROUP BY", "UNION", "UNION ALL", "INTERSECT",
@@ -1767,7 +1769,9 @@ public class WbSqlFormatter
       {
         if (lastToken.isComment() && !isStartOfLine()) this.appendNewline();
 
-        if (!firstToken && LINE_BREAK_BEFORE.contains(word) && !lastToken.getContents().equals("("))
+        if (!firstToken &&
+            LINE_BREAK_BEFORE.contains(word) && !NO_LINE_BREAK_AFTER.contains(lastToken.getContents()) &&
+            !lastToken.getContents().equals("(") )
         {
           if (!isStartOfLine()) this.appendNewline();
 
