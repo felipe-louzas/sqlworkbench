@@ -84,7 +84,7 @@ public class ExternalFormatter
 
   public void setProgram(String executable)
   {
-    program = executable;
+    program = StringUtil.trimQuotes(executable, '"');
   }
 
   public String getCommandLine()
@@ -149,7 +149,7 @@ public class ExternalFormatter
 
     if (args.contains(INPUT_FILE))
     {
-      args = args.replace(INPUT_FILE, '"' + infile.getAbsolutePath() + '"');
+      args = args.replace(INPUT_FILE, quotePath(infile.getAbsolutePath()));
       useSystemIn = false;
     }
 
@@ -158,7 +158,7 @@ public class ExternalFormatter
       // just to be sure that the tool doesn't fail because the file is already there
       FileUtil.deleteSilently(outfile);
 
-      args = args.replace(OUTPUT_FILE, '"' + outfile.getAbsolutePath() + '"');
+      args = args.replace(OUTPUT_FILE, quotePath(outfile.getAbsolutePath()));
       useSystemOut = false;
     }
 
@@ -179,17 +179,17 @@ public class ExternalFormatter
       FileUtil.writeString(infile, sql, inputEncoding, false);
       LogMgr.logDebug(ci, "Input file written to: " + infile.getAbsolutePath());
 
-      WbFile exe = new WbFile(program);
+      WbFile prg = new WbFile(program);
 
       // ProcessBuilder will add quotes around any argument that contains spaces
       // so if "-i foo -o bar" is passed to the constructor of ProcessBuilder it will add
       // quoted around the complete argument. Therefore we need to split the whole
       // args command line into tokens.
       List<String> argList = StringUtil.stringToList(args, " ", false, false, false, true);
-      argList.add(0, '"' + exe.getFullPath() + '"');
+      argList.add(0, quotePath(prg.getFullPath()));
 
       ProcessBuilder pb = new ProcessBuilder(argList);
-      pb.directory(exe.getAbsoluteFile().getParentFile());
+      pb.directory(prg.getAbsoluteFile().getParentFile());
 
       if (useSystemIn)
       {
@@ -257,6 +257,13 @@ public class ExternalFormatter
 
     // something went wrong, return the original SQL statement
     return sql;
+  }
+
+  private String quotePath(String path)
+  {
+    if (StringUtil.isBlank(path) || path.length() < 3) return path;
+    if (path.startsWith("\"") && path.endsWith("\"")) return path;
+    return "\"" + path + "\"";
   }
 
   private String readFile(File errFile)
