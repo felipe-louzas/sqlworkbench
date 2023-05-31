@@ -183,11 +183,10 @@ public class ExternalFormatter
 
       // ProcessBuilder will add quotes around any argument that contains spaces
       // so if "-i foo -o bar" is passed to the constructor of ProcessBuilder it will add
-      // quoted around the complete argument. Therefore we need to split the whole
+      // quotes around the complete argument. Therefore we need to split the whole
       // args command line into tokens.
       List<String> argList = StringUtil.stringToList(args, " ", false, false, false, true);
-      argList.add(0, quotePath(prg.getFullPath()));
-
+      argList.add(0, prg.getFullPath());
       ProcessBuilder pb = new ProcessBuilder(argList);
       pb.directory(prg.getAbsoluteFile().getParentFile());
 
