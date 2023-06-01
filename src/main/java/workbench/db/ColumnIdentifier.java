@@ -507,13 +507,11 @@ public class ColumnIdentifier
     this.dbmsType = dbType;
   }
 
-  public String buildTypeExpression()
-  {
-    return SqlUtil.getSqlTypeDisplay(dbmsType, getDataType(), getColumnSize(), getDecimalDigits());
-  }
-  
   /**
    * Return the DBMS data type as reported by the JDBC driver.
+   *
+   * This usually contains the full type definition, e.g.
+   * <code>varchar(42)</code> or <code>decimal(14,2)</code>.
    *
    * @return the column's data type
    */

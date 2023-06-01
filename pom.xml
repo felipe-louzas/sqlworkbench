@@ -241,7 +241,7 @@
     <dependency>
       <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.2.7</version>
+      <version>0.2.8</version>
       <scope>compile</scope>
     </dependency>
 
@@ -296,7 +296,7 @@
     <dependency>
       <groupId>com.github.miachm.sods</groupId>
       <artifactId>SODS</artifactId>
-      <version>1.5.2</version>
+      <version>1.5.4</version>
       <scope>compile</scope>
     </dependency>
 
@@ -338,7 +338,7 @@
     <dependency>
       <groupId>org.firebirdsql.jdbc</groupId>
       <artifactId>jaybird</artifactId>
-        <version>4.0.9.java11</version>
+      <version>4.0.9.java11</version>
       <scope>test</scope>
     </dependency>
 
@@ -356,32 +356,10 @@
     </dependency>
 
     <dependency>
-      <groupId>com.oracle.ojdbc</groupId>
-      <artifactId>ojdbc8</artifactId>
-      <version>19.3.0.0</version>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc11</artifactId>
+      <version>23.2.0.0</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>com.oracle.ojdbc</groupId>
-          <artifactId>ons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.oracle.ojdbc</groupId>
-          <artifactId>oraclepki</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.oracle.ojdbc</groupId>
-          <artifactId>osdt_cert</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.oracle.ojdbc</groupId>
-          <artifactId>osdt_core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.oracle.ojdbc</groupId>
-          <artifactId>simplefan</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>

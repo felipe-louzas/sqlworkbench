@@ -117,7 +117,7 @@ public class ColumnDefinitionTemplate
     boolean isComputed = StringUtil.isNonBlank(expr);
     String sql = getTemplate(isComputed, column.isAutoincrement());
 
-    String type = StringUtil.padRight(dataTypeOverride == null ? column.buildTypeExpression() : dataTypeOverride, typeLength);
+    String type = StringUtil.padRight(dataTypeOverride == null ? column.getDbmsType() : dataTypeOverride, typeLength);
 
     sql = replaceArg(sql, ColumnChanger.PARAM_DATATYPE, type);
     boolean isDefaultConstraint = false;
