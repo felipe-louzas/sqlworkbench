@@ -867,7 +867,7 @@ public class SqlUtil
   {
     return getSelectColumns(select, includeAlias, ParserType.getTypeFromConnection(conn));
   }
-  
+
   public static List<String> getSelectColumns(String select, boolean includeAlias, ParserType type)
   {
     List<ElementInfo> entries = getColumnEntries(select, includeAlias, type);
@@ -1535,6 +1535,9 @@ public class SqlUtil
   {
     if (typeName == null) return "";
 
+    // If there is already a parameter don't mess with the original type
+    if (typeName.indexOf('(') > -1) return typeName;
+
     String display = typeName;
 
     switch (sqlType)
@@ -1546,7 +1549,7 @@ public class SqlUtil
         // Postgres' text datatype and MySQL's XXXtext types do not have a size parameter
         if (CHAR_TYPES_WITHOUT_LENGTH.contains(typeName)) return typeName;
 
-        if (size > 0 && typeName.indexOf('(') == -1)
+        if (size > 0)
         {
           display = typeName + "(" + size + ")";
         }
@@ -1569,20 +1572,17 @@ public class SqlUtil
         // SQL Server and Postgres
         if ("money".equalsIgnoreCase(typeName)) return typeName;
 
-        if ((typeName.indexOf('(') == -1))
+        if (digits > 0 && size > 0)
         {
-          if (digits > 0 && size > 0)
-          {
-            display = typeName + "(" + size + "," + digits + ")";
-          }
-          else if (size <= 0 && digits > 0)
-          {
-            display = typeName + "(" + digits + ")";
-          }
-          else if (size > 0 && digits <= 0)
-          {
-            display = typeName + "(" + size + ")";
-          }
+          display = typeName + "(" + size + "," + digits + ")";
+        }
+        else if (size <= 0 && digits > 0)
+        {
+          display = typeName + "(" + digits + ")";
+        }
+        else if (size > 0 && digits <= 0)
+        {
+          display = typeName + "(" + size + ")";
         }
         break;
 
@@ -1608,15 +1608,12 @@ public class SqlUtil
       case Types.BINARY:
       case Types.VARBINARY:
       case Types.LONGVARBINARY:
-        if (size > 0 && size < Integer.MAX_VALUE && typeName.indexOf('(') == -1)
+        if (size > 0 && size < Integer.MAX_VALUE)
         {
           display = typeName + "(" + size + ")";
         }
         break;
 
-      default:
-        display = typeName;
-        break;
     }
     return display;
   }
