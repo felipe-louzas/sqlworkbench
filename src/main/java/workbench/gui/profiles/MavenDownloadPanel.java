@@ -33,13 +33,11 @@ import javax.swing.event.ListSelectionListener;
 
 import workbench.interfaces.ValidatingComponent;
 import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbScrollPane;
 
-import workbench.util.ClasspathUtil;
 import workbench.util.WbFile;
 import workbench.util.WbThread;
 import workbench.util.download.MavenArtefact;
@@ -53,9 +51,8 @@ public class MavenDownloadPanel
   extends JPanel
   implements ListSelectionListener, ValidatingComponent
 {
-  private static final String LAST_DIR_PROP = "workbench.driver.download.last.dir";
   private final MavenArtefact artefact;
-  private MavenDownloader downloader = new MavenDownloader();
+  private final MavenDownloader downloader = new MavenDownloader();
   private WbFile downloadedFile;
   private ValidatingDialog dialog;
   private boolean isDownloading;
@@ -75,7 +72,7 @@ public class MavenDownloadPanel
     }
     else
     {
-      File dir = getDefaultDownloadDir();
+      File dir = MavenDownloadSettings.getDefaultDownloadDir();
       if (dir != null)
       {
         downloadDir.setFilename(dir.getAbsolutePath());
@@ -130,52 +127,10 @@ public class MavenDownloadPanel
     }
   }
 
-  private File getDefaultDownloadDir()
-  {
-    String libDir = Settings.getInstance().getProperty(Settings.PROP_LIBDIR, null);
-    String dir = Settings.getInstance().getProperty(LAST_DIR_PROP, libDir);
-    if (dir != null)
-    {
-      File d = new File(dir);
-      if (d.exists()) return d;
-    }
-    ClasspathUtil cp = new ClasspathUtil();
-    File jarDir = cp.getJarDir();
-    String dirName = "JDBCDrivers";
-    WbFile dDir = new WbFile(jarDir, dirName);
-    if (!dDir.exists())
-    {
-      dDir.mkdirs();
-    }
-    if (isWriteable(dDir)) return dDir;
-
-    File configDir = Settings.getInstance().getConfigDir();
-    WbFile fdir = new WbFile(configDir, dirName);
-    if (!fdir.exists())
-    {
-      fdir.mkdirs();
-    }
-    if (isWriteable(fdir)) return fdir;
-
-    WbFile extDir = cp.getExtDir();
-    if (isWriteable(extDir)) return extDir;
-    return null;
-  }
-
-  private boolean isWriteable(File dir)
-  {
-    if (!dir.exists()) return false;
-    WbFile f = new WbFile(dir, "test.wb");
-    return f.canCreate();
-  }
-
   @Override
   public void valueChanged(ListSelectionEvent e)
   {
-    boolean canDownload = false;
-    File f = downloadDir.getSelectedFile();
-    canDownload = f != null && f.exists();
-    downloadSelected.setEnabled(versionList.getSelectedValue() != null && canDownload);
+    downloadSelected.setEnabled(versionList.getSelectedValue() != null);
   }
 
   public void startDownload()
@@ -270,10 +225,7 @@ public class MavenDownloadPanel
   public void componentWillBeClosed()
   {
     File dir = downloadDir.getSelectedFile();
-    if (dir != null)
-    {
-      Settings.getInstance().setProperty(LAST_DIR_PROP, dir.getAbsolutePath());
-    }
+    MavenDownloadSettings.setLastDownloadDir(dir);
   }
 
   public boolean showDialog(JDialog parent)

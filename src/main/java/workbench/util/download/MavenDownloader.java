@@ -125,7 +125,7 @@ public class MavenDownloader
 
   private String retrieveSearchResult(String searchUrl)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "Searching for drivers on Maven Central using: " + searchUrl);
+    LogMgr.logInfo(new CallerInfo(){}, "Searching for drivers on Maven Central using: " + searchUrl);
     try
     {
       if (progressBar != null)
@@ -145,13 +145,18 @@ public class MavenDownloader
       Object body = response.body();
       if (body != null)
       {
-        return body.toString();
+        String result = body.toString();
+        if (LogMgr.isTraceEnabled())
+        {
+          LogMgr.logTrace(new CallerInfo(){}, "Search result for URL=" + searchUrl + ":\n" + result);
+        }
+        return result;
       }
     }
-    catch (Throwable th)
+    catch (Exception ex)
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not search Maven using URL=" + searchUrl, th);
-      lastHttpMsg = th.getMessage();
+      LogMgr.logError(new CallerInfo(){}, "Could not search Maven using URL=" + searchUrl, ex);
+      lastHttpMsg = ex.getMessage();
     }
     finally
     {
@@ -211,6 +216,11 @@ public class MavenDownloader
     this.cancelled = false;
     String downloadUrl = artefact.buildDownloadUrl();
     String fileName = artefact.buildFilename();
+    if (!targetDir.exists())
+    {
+      LogMgr.logInfo(new CallerInfo(){}, "Target directory " + targetDir.getAbsolutePath() + " does not exist. Creating");
+      targetDir.mkdirs();
+    }
     WbFile target = new WbFile(targetDir, fileName);
 
     long bytes = -1;
@@ -253,13 +263,20 @@ public class MavenDownloader
       LogMgr.logInfo(new CallerInfo(){},
         "Downloaded \"" + downloadUrl + "\" to \"" + target.getAbsolutePath() + "\", size=" + bytes + "bytes, duration="+ duration + "ms");
     }
-    catch (Throwable th)
+    catch (Exception ex)
     {
       if (!cancelled)
       {
-        LogMgr.logError(new CallerInfo(){}, "Error saving JAR file to " + target.getFullPath(), th);
+        LogMgr.logError(new CallerInfo(){}, "Error saving JAR file to " + target.getFullPath(), ex);
       }
       bytes = -1;
+      
+      // Make sure we report an error when writing the file as well
+      if (lastHttpCode == HttpURLConnection.HTTP_OK)
+      {
+        lastHttpMsg = ex.getLocalizedMessage();
+        lastHttpCode = 500;
+      }
     }
     finally
     {

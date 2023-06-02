@@ -1,4 +1,3 @@
-# $url = "https://api.adoptium.net/v3/binary/latest/17/ga/windows/x64/jdk/hotspot/normal/adoptium?project=jdk"
 $url = "https://www.sql-workbench.eu/jre/jre_win64.zip"
 
 $filename = "OpenJDK.zip";
@@ -9,6 +8,5 @@ Write-Host "Downloading $filename (approx. 50MB)"
 Invoke-WebRequest -Uri $url -OutFile $filename
 
 Write-Host "Extracting $filename to $PSScriptRoot"
-Add-Type –assembly System.IO.Compression.Filesystem
-[io.compression.zipfile]::ExtractToDirectory($filename, "$PSScriptRoot\jre")
 
+Expand-Archive -Path $filename -DestinationPath $PSScriptRoot\jre -Force

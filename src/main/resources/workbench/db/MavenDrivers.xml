@@ -39,10 +39,10 @@
     <void method="add">
       <object class="workbench.util.download.MavenArtefact">
         <void property="groupId">
-          <string>com.oracle.ojdbc</string>
+          <string>com.oracle.database.jdbc</string>
         </void>
         <void property="artefactId">
-          <string>ojdbc10</string>
+          <string>ojdbc11</string>
         </void>
         <void property="driverClassName">
           <string>oracle.jdbc.OracleDriver</string>
@@ -144,7 +144,7 @@
           <string>net.sf.jt400</string>
         </void>
         <void property="artefactId">
-          <string>jt400-jdk9</string>
+          <string>jt400</string>
         </void>
         <void property="driverClassName">
           <string>com.ibm.as400.access.AS400JDBCDriver</string>

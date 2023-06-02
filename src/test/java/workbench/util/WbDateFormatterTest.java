@@ -97,8 +97,11 @@ public class WbDateFormatterTest
   public void testFormatTime()
   {
     WbDateFormatter formatter = new WbDateFormatter("HH:mm");
-    String result = formatter.formatTime(LocalTime.of(23, 42));
-    assertEquals("23:42", result);
+    LocalTime lt = LocalTime.of(23, 42);
+    String result1 = formatter.formatTime(lt);
+    assertEquals("23:42", result1);
+    String result2 = formatter.formatTime(java.sql.Time.valueOf(lt));
+    assertEquals(result1, result2);
   }
 
   @Test

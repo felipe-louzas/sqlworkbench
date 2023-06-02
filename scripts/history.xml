@@ -13,6 +13,7 @@
     <entry dev-build="3" type="enh">Code completion now shows comments for tables and columns.</entry>
     <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
     <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
+    <entry dev-build="4" type="fix">On Linux, external formatters could not be called due to incorrect quoting of the executable (Issue #39)</entry>
     <entry dev-build="4" type="fix">For PostgreSQL, columns with the data type time could not be exported or copied</entry>
     <entry dev-build="4" type="fix">Variables defined through WbVarDef in a "after connect" script were not set when using "Separate variables per window"</entry>
     <entry dev-build="4" type="fix">The SQL formatter did not treat CREATE OR REPLACE statements properly</entry>

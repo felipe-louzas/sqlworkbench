@@ -58,6 +58,7 @@ import workbench.gui.components.WbStatusLabel;
 
 import workbench.util.ClassFinder;
 import workbench.util.CollectionUtil;
+import workbench.util.StringUtil;
 import workbench.util.download.MavenArtefact;
 import workbench.util.download.MavenDownloader;
 
@@ -71,8 +72,8 @@ public class DriverEditorPanel
 {
   private DbDriver currentDriver;
   private Validator validator;
-  private GridBagConstraints defaultErrorConstraints;
-  private JLabel errorLabel;
+  private final GridBagConstraints defaultErrorConstraints;
+  private final JLabel errorLabel;
   private final MavenDownloader mavenDownloader = new MavenDownloader();
 
   public DriverEditorPanel()
@@ -262,15 +263,32 @@ public class DriverEditorPanel
 
     File targetDir = null;
     List<String> libs = classpathEditor.getLibraries();
-    if (CollectionUtil.isNonEmpty(libs))
+
+    for (String fname : libs)
     {
-      File f = new File(libs.get(0));
+      if (StringUtil.isBlank(fname)) continue;
+      File f = new File(fname);
       File dir = f.getParentFile();
-      if (dir != null && dir.exists())
+      if (dir == null) continue;
+
+      if (dir.exists())
       {
         targetDir = dir;
+        break;
       }
+      else if (dir.getParentFile() != null && dir.getParentFile().exists())
+      {
+        targetDir = dir.getParentFile();
+        break;
+      }
+
     }
+
+    if (targetDir == null)
+    {
+      targetDir = MavenDownloadSettings.getDefaultDownloadDir();
+    }
+
     MavenDownloadPanel panel = new MavenDownloadPanel(tfClassName.getText(), targetDir);
     boolean ok = panel.showDialog(dialog);
     if (ok)
