@@ -3,7 +3,8 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2023-03-25">
+
+  <release build="-1" date="2023-06-04">
     <entry dev-build="4" type="enh">For DB2 (LUW), tablespace information is now included in the generated DDL for tables.</entry>
     <entry dev-build="4" type="enh">WbSchemaDiff now writes a drop-constraint tag for indexes supporting unique constraints.</entry>
     <entry dev-build="3" type="enh">For DB2 (LUW), the table for a trigger was not shown in the DbExplorer's trigger list</entry>
