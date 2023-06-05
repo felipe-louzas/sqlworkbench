@@ -71,9 +71,9 @@ public class ErrorRetryPanel
   private JCheckBox replaceStatement;
   private boolean enableReplace = true;
 
-  public ErrorRetryPanel(WbConnection conn)
+  public ErrorRetryPanel(WbConnection conn, String variablePoolId)
   {
-    super(conn);
+    super(conn, variablePoolId);
   }
 
   public void setEnableReplace(boolean flag)

@@ -114,6 +114,7 @@ public class WbRunResult
     boolean showProgress = cmdLine.getBoolean(AppArguments.ARG_SHOWPROGRESS, true);
     dryRun = cmdLine.getBoolean(ARG_DRY_RUN);
     batchRunner = new BatchRunner();
+    batchRunner.setVariablePoolID(variablePoolID);
     batchRunner.setBaseDir(getBaseDir());
     batchRunner.setConnection(this.currentConnection);
     batchRunner.setMessageLogger(this.messageLogger);

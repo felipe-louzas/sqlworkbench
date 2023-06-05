@@ -73,7 +73,7 @@ public abstract class ExecuteSqlPanel
   private JDialog window;
   private PlainEditor errorDisplay;
   protected EditorPanel sqlEditor;
-  protected BatchRunner runner;
+  protected final BatchRunner runner;
   protected ErrorDescriptor lastError;
   private EscAction escAction;
   private JSplitPane splitPane;
@@ -85,17 +85,12 @@ public abstract class ExecuteSqlPanel
   private WbThread runThread;
   private ExecutionStatus execStatus;
 
-  protected ExecuteSqlPanel(WbConnection conn)
-  {
-    this(conn, null);
-  }
-
-  protected ExecuteSqlPanel(WbConnection con, String sql)
+  public ExecuteSqlPanel(WbConnection conn, String variablePoolId)
   {
     super(new GridBagLayout());
-    sqlToUse = sql;
     runner = new BatchRunner();
-    runner.setConnection(con);
+    runner.setConnection(conn);
+    runner.setVariablePoolID(variablePoolId);
   }
 
   protected void showLastError()

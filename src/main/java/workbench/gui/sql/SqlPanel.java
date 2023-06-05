@@ -3872,7 +3872,7 @@ public class SqlPanel
 
   private int handleRetry(final int cmdIndex, final ErrorDescriptor errorDetails, final ScriptParser parser, int selectionOffset)
   {
-    final ErrorRetryPanel retry = new ErrorRetryPanel(getConnection());
+    final ErrorRetryPanel retry = new ErrorRetryPanel(getConnection(), variablePoolID);
     retry.setEnableReplace(parser != null);
 
     WbSwingUtilities.invoke(() ->

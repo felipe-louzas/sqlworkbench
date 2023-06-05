@@ -103,7 +103,7 @@ public class BatchRunner
 {
   public static final String CMD_LINE_PROFILE_NAME = "$Wb$CommandLineProfile";
   private List<String> filenames;
-  private StatementRunner stmtRunner;
+  private final StatementRunner stmtRunner;
   private WbConnection connection;
   private boolean abortOnError;
   private String successScript;
@@ -182,6 +182,7 @@ public class BatchRunner
   public void setVariablePoolID(String variablePoolID)
   {
     this.variablePoolID = variablePoolID;
+    this.stmtRunner.setVariablePoolID(variablePoolID);
   }
 
   public void setMaxColumnDisplayLength(int maxLength)

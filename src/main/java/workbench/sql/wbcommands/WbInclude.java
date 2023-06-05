@@ -225,6 +225,7 @@ public class WbInclude
     try
     {
       batchRunner = new BatchRunner(allFiles);
+      batchRunner.setVariablePoolID(getVariablePoolID());
       batchRunner.setConnection(currentConnection);
       batchRunner.setDelimiter(delim);
       batchRunner.setMessageLogger(this.messageLogger);
