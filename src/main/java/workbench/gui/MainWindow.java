@@ -82,6 +82,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 import workbench.resource.ShortcutManager;
 import workbench.workspace.WbWorkspace;
+import workbench.workspace.WorkspaceBackupDaemon;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.ConnectionProfile;
@@ -296,6 +297,7 @@ public class MainWindow
 
   private final ClosedTabManager closedTabHistory;
   private final ColumnLayoutPanel panelLayout;
+  private final WorkspaceBackupDaemon worspaceBackupDaemon;
 
   public MainWindow(GraphicsConfiguration graphics)
   {
@@ -371,6 +373,7 @@ public class MainWindow
       GuiSettings.PROP_TITLE_SHOW_URL_USER
     );
     ShortcutManager.getInstance().addChangeListener(this);
+    this.worspaceBackupDaemon = new WorkspaceBackupDaemon(this);
   }
 
   private String getCurrentDeviceID()
@@ -2541,6 +2544,7 @@ public class MainWindow
       this.dropHandler.dispose();
     }
     ShortcutManager.getInstance().removeChangeListener(this);
+    this.worspaceBackupDaemon.shutdown();
     super.dispose();
   }
 
@@ -3555,6 +3559,14 @@ public class MainWindow
       return this.saveWorkspace(currentWorkspace.getFilename(), checkUnsaved);
     }
     return true;
+  }
+
+  public boolean isSavingWorkspace()
+  {
+    synchronized (workspaceLock)
+    {
+      return workspaceIsSaving;
+    }
   }
 
   public boolean saveWorkspace(String filename, boolean checkUnsaved)

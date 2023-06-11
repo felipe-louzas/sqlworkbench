@@ -48,9 +48,9 @@ import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.sql.EditorHistory;
+import workbench.gui.sql.EditorHistoryEntry;
 import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.PanelType;
-import workbench.gui.sql.EditorHistoryEntry;
 
 import workbench.util.FileDialogUtil;
 
@@ -302,9 +302,12 @@ public class WorkspaceBackupListPanel
 
     splitPane = new WbSplitPane();
     listSplitPane = new WbSplitPane();
+    jPanel3 = new javax.swing.JPanel();
+    jLabel2 = new javax.swing.JLabel();
     filesScrollPane = new WbScrollPane();
     jPanel1 = new javax.swing.JPanel();
     tabsScrollPane = new WbScrollPane();
+    jLabel1 = new javax.swing.JLabel();
     jPanel2 = new javax.swing.JPanel();
     headerPanel = new javax.swing.JPanel();
     workspaceFileName = new javax.swing.JLabel();
@@ -315,17 +318,45 @@ public class WorkspaceBackupListPanel
     splitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
     listSplitPane.setDividerLocation(200);
-    listSplitPane.setLeftComponent(filesScrollPane);
+
+    jPanel3.setLayout(new java.awt.GridBagLayout());
+
+    jLabel2.setText(ResourceMgr.getString("TxtFilename")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+    jPanel3.add(jLabel2, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    jPanel3.add(filesScrollPane, gridBagConstraints);
+
+    listSplitPane.setLeftComponent(jPanel3);
 
     jPanel1.setLayout(new java.awt.GridBagLayout());
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     jPanel1.add(tabsScrollPane, gridBagConstraints);
+
+    jLabel1.setText(ResourceMgr.getString("LblWkspContent")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+    jPanel1.add(jLabel1, gridBagConstraints);
 
     listSplitPane.setRightComponent(jPanel1);
 
@@ -360,7 +391,7 @@ public class WorkspaceBackupListPanel
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 0);
+    gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
     jPanel2.add(headerPanel, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -375,8 +406,11 @@ public class WorkspaceBackupListPanel
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane filesScrollPane;
   private javax.swing.JPanel headerPanel;
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
+  private javax.swing.JPanel jPanel3;
   private javax.swing.JSplitPane listSplitPane;
   private javax.swing.JSplitPane splitPane;
   private javax.swing.JScrollPane tabsScrollPane;

@@ -201,6 +201,8 @@ public class Settings
   public static final String PROP_LOGFILE_VIEWER = "workbench.logfile.viewer.program";
   public static final String PROP_READ_DRIVER_TEMPLATES = "workbench.jdbc.read.drivertemplates";
 
+  public static final String PROP_WKSP_SAVE_INTERVAL = "workbench.workspace.autosave.interval";
+
   // </editor-fold>
 
   public static final String TEST_MODE_PROPERTY = "workbench.gui.testmode";
@@ -2320,6 +2322,19 @@ public class Settings
   {
     if (type == null) return;
     setEnumProperty("workbench.editor.autosave", type);
+  }
+
+  /**
+   * Returns the interval (in minutes) for automatically saving the current Workspace.
+   */
+  public int getAutoSaveWorkspaceInterval()
+  {
+    return getIntProperty(PROP_WKSP_SAVE_INTERVAL, 0);
+  }
+
+  public void setAutoSaveWorkspaceInterval(int minutes)
+  {
+    setProperty(PROP_WKSP_SAVE_INTERVAL, minutes);
   }
 
   public boolean getAutoSaveWorkspace()

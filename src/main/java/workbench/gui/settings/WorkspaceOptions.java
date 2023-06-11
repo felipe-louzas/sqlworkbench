@@ -30,11 +30,14 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import workbench.interfaces.Restoreable;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
+
+import workbench.util.StringUtil;
 
 /**
  *
@@ -60,6 +63,15 @@ public class WorkspaceOptions
   public void restoreSettings()
   {
     autoSaveWorkspace.setSelected(Settings.getInstance().getAutoSaveWorkspace());
+    int minutes = Settings.getInstance().getAutoSaveWorkspaceInterval();
+    if (minutes > 0)
+    {
+      autoSaveInterval.setText(Integer.toString(minutes));
+    }
+    else
+    {
+      autoSaveInterval.setText("");
+    }
     ExternalFileHandling handling = Settings.getInstance().getFilesInWorkspaceHandling();
     switch (handling)
     {
@@ -84,6 +96,9 @@ public class WorkspaceOptions
 
     // General settings
     set.setAutoSaveWorkspace(autoSaveWorkspace.isSelected());
+    String minutes = StringUtil.trimToNull(autoSaveInterval.getText());
+    set.setAutoSaveWorkspaceInterval(StringUtil.getIntValue(minutes, 0));
+    
     int index = fileHandling.getSelectedIndex();
     switch (index)
     {
@@ -115,6 +130,8 @@ public class WorkspaceOptions
     jPanel1 = new JPanel();
     jLabel3 = new JLabel();
     fileHandling = new JComboBox();
+    jLabel1 = new JLabel();
+    autoSaveInterval = new JTextField();
 
     setLayout(new GridBagLayout());
 
@@ -128,7 +145,7 @@ public class WorkspaceOptions
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(0, 0, 3, 0);
+    gridBagConstraints.insets = new Insets(0, 3, 3, 0);
     add(autoSaveWorkspace, gridBagConstraints);
 
     jPanel1.setLayout(new GridBagLayout());
@@ -136,8 +153,7 @@ public class WorkspaceOptions
     jLabel3.setText(ResourceMgr.getString("LblRememberFileWksp")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(4, 3, 0, 0);
@@ -145,12 +161,26 @@ public class WorkspaceOptions
 
     fileHandling.setModel(new DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 2;
-    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(0, 8, 0, 0);
     jPanel1.add(fileHandling, gridBagConstraints);
+
+    jLabel1.setText(ResourceMgr.getString("LblAutoSaveWkspInt")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(4, 3, 9, 0);
+    jPanel1.add(jLabel1, gridBagConstraints);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(0, 8, 9, 0);
+    jPanel1.add(autoSaveInterval, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -163,8 +193,10 @@ public class WorkspaceOptions
   }// </editor-fold>//GEN-END:initComponents
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private JTextField autoSaveInterval;
   private JCheckBox autoSaveWorkspace;
   private JComboBox fileHandling;
+  private JLabel jLabel1;
   private JLabel jLabel3;
   private JPanel jPanel1;
   // End of variables declaration//GEN-END:variables
