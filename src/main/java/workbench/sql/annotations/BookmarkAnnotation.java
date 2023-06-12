@@ -56,7 +56,7 @@ public class BookmarkAnnotation
   public void setUseResultTag(boolean useResultTag)
   {
     validTags.clear();
-    validTags.add(ANNOTATION.toLowerCase());
+    validTags.add("@" + ANNOTATION.toLowerCase());
     if (useResultTag)
     {
       validTags.add("@" + ResultNameAnnotation.ANNOTATION.toLowerCase());

@@ -140,6 +140,11 @@ public class WbGenerateScript
       schemas = CollectionUtil.arrayList(currentConnection.getCurrentSchema());
     }
 
+    if (StringUtil.isBlank(names))
+    {
+      names = "%";
+    }
+
     String excluded = cmdLine.getValue(ARG_EXCLUDE);
     if (CollectionUtil.isEmpty(types))
     {

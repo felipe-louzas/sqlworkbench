@@ -41,6 +41,7 @@ import workbench.resource.Settings;
 import workbench.gui.dbobjects.ExplorerUtils;
 
 import workbench.sql.DelimiterDefinition;
+import workbench.sql.annotations.BookmarkAnnotation;
 
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
@@ -485,7 +486,7 @@ public class ObjectScripter
         boolean writeSeparator = useSeparator && !typesWithoutSeparator.contains(type) && this.objectList.size() > 1;
         if (writeSeparator)
         {
-          output.append("-- BEGIN " + type + " " + dbo.getObjectName() + nl);
+          output.append("-- @" + BookmarkAnnotation.ANNOTATION + " " + type + " " + dbo.getObjectName() + nl);
         }
 
         if (includeDrop)
