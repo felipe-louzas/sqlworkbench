@@ -59,7 +59,7 @@ public class ArgumentParser
   private final Map<String, ArgumentType> argTypes = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
 
   private final List<String> unknownParameters = new ArrayList<>();
-  private Set<String> deprecatedParameters = CollectionUtil.caseInsensitiveSet();
+  private final Set<String> deprecatedParameters = CollectionUtil.caseInsensitiveSet();
 
   // Stores the allowed values for a parameter
   private final Map<String, Collection<ArgumentValue>> allowedValues = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);

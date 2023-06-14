@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import workbench.db.objectcache.DbObjectCacheFactory;
 
@@ -233,7 +234,9 @@ public class DependencyNode
   public String getSourceColumnsList()
   {
     if (CollectionUtil.isEmpty(columns)) return "";
-    return StringUtil.listToString(columns.keySet(), ',');
+    return columns.entrySet().stream().
+                   map(e -> e.getKey()).
+                   collect(Collectors.joining(","));
   }
 
   public List<String> getTargetColumns()
@@ -249,18 +252,9 @@ public class DependencyNode
   public String getTargetColumnsList()
   {
     if (CollectionUtil.isEmpty(columns)) return "";
-    StringBuilder result = new StringBuilder(columns.size() * 15);
-    boolean first = true;
-    for (String col : columns.keySet())
-    {
-      if (!first)
-      {
-        result.append(',');
-      }
-      result.append(columns.get(col));
-      first = false;
-    }
-    return result.toString();
+    return columns.entrySet().stream().
+                   map(e -> e.getValue()).
+                   collect(Collectors.joining(","));
   }
 
   public String getFkName()
@@ -272,6 +266,14 @@ public class DependencyNode
   {
     if (parentNode == null) return null;
     return this.parentNode.getTable();
+  }
+
+  public static String getDisplayTableExpression(TableIdentifier tbl, WbConnection conn)
+  {
+    String display = tbl.getTableExpression(conn);
+    String quote = conn.getMetadata().getIdentifierQuoteCharacter();
+    // We don't want quoted identifiers in the tree or the list of FKs
+    return display.replace(quote, "");
   }
 
   public TableIdentifier getTable()

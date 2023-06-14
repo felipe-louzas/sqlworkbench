@@ -23,7 +23,6 @@ package workbench.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,11 +30,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -44,6 +43,8 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -53,16 +54,14 @@ import workbench.resource.Settings;
  * @author Thomas Kellerer
  */
 public class XsltTransformer
-  implements URIResolver
+  implements URIResolver, ErrorListener
 {
   private Exception nestedError;
   private File xsltBasedir;
-  private String sysOut;
-  private String sysErr;
-  private boolean saveSystemOut;
   private File xsltUsed;
 
-  private List<String> ignoredMessages = new ArrayList<>();
+  private final MessageBuffer messages = new MessageBuffer();
+  private final List<String> ignoredMessages = new ArrayList<>();
 
   /**
    * The directory where the initially defined XSLT is stored.
@@ -85,11 +84,6 @@ public class XsltTransformer
   public void setXsltBaseDir(File dir)
   {
     this.xsltBasedir = dir;
-  }
-
-  public void setSaveSystemOutMessages(boolean flag)
-  {
-    saveSystemOut = flag;
   }
 
   public void transform(String inputFileName, String outputFileName, String xslFileName)
@@ -127,41 +121,17 @@ public class XsltTransformer
     InputStream xlsInput = null;
     Transformer transformer = null;
 
-    ByteArrayOutputStream systemOut = null;
-    ByteArrayOutputStream systemErr = null;
-    final PrintStream oldOut = System.out;
-    PrintStream oldErr = System.err;
     try
     {
       xlsInput = new FileInputStream(xslfile);
       sourceDir = xslfile.getAbsoluteFile().getParentFile();
-
-      if (saveSystemOut)
-      {
-        systemOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(systemOut));
-        systemErr = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(systemErr)
-        {
-          @Override
-          public void println(String x)
-          {
-            // if the Xerces parser is in the class path it emits some useless warnings
-            // that are filtered out here
-            if (!ignoreXsltMessage(x))
-            {
-              super.println(x);
-            }
-          }
-        });
-      }
-
       Source sxslt = new StreamSource(xlsInput);
       sxslt.setSystemId(xslfile.getName());
       TransformerFactory factory = TransformerFactory.newInstance();
       factory.setURIResolver(this);
 
       transformer = factory.newTransformer(sxslt);
+      transformer.setErrorListener(this);
       transformer.setURIResolver(this);
 
       if (parameters != null)
@@ -186,26 +156,40 @@ public class XsltTransformer
     }
     finally
     {
-      FileUtil.closeQuietely(xlsInput);
-      FileUtil.closeQuietely(in);
-      FileUtil.closeQuietely(out);
-      if (saveSystemOut)
-      {
-        System.setOut(oldOut);
-        System.setErr(oldErr);
-        sysOut = (systemOut != null ? systemOut.toString() : null);
-        sysErr = (systemErr != null ? systemErr.toString() : null);
-      }
+      FileUtil.closeQuietely(xlsInput, in, out);
     }
   }
 
-  private boolean ignoreXsltMessage(String message)
+  @Override
+  public void warning(TransformerException exception)
+    throws TransformerException
   {
-    for (String msg : ignoredMessages)
+    appendExceptionMessage(exception);
+  }
+
+  @Override
+  public void error(TransformerException exception)
+    throws TransformerException
+  {
+    LogMgr.logError(new CallerInfo(){}, "Error during XSLT processing: " + exception.getMessage(), null);
+    appendExceptionMessage(exception);
+  }
+
+  @Override
+  public void fatalError(TransformerException exception)
+    throws TransformerException
+  {
+    LogMgr.logError(new CallerInfo(){}, "FatalError during XSLT processing", exception);
+    appendExceptionMessage(exception);
+  }
+
+  private void appendExceptionMessage(Exception ex)
+  {
+    if (messages.getLength() > 0)
     {
-      if (message.contains(msg)) return true;
+      messages.appendNewLine();
     }
-    return false;
+    messages.append(ex.getMessage());
   }
 
   public Exception getNestedError()
@@ -218,22 +202,14 @@ public class XsltTransformer
     return getAllOutputs(null);
   }
 
-  private String getSystemErr()
-  {
-    if (StringUtil.isBlank(sysErr)) return "";
-    return sysErr.replace("Compiler warnings:", "").trim();
-  }
-
   public String getAllOutputs(Exception e)
   {
     StringBuilder result = new StringBuilder();
-    result.append(getSystemErr());
-
-    if (StringUtil.isNonBlank(sysOut))
+    if (messages.getLength() > 0)
     {
-      if (result.length() > 0) result.append('\n');
-      result.append(sysOut.trim());
+      result.append(messages.getBuffer());
     }
+
     if (nestedError != null)
     {
       result.append('\n');
@@ -244,6 +220,7 @@ public class XsltTransformer
       }
       result.append(ExceptionUtil.getDisplay(nestedError));
     }
+
     if (result.length() == 0 && e != null)
     {
       result.append(ResourceMgr.getFormattedString("ErrXsltProcessing", xsltUsed.getAbsolutePath(), ExceptionUtil.getDisplay(e)));

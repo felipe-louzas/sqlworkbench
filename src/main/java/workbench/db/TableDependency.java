@@ -714,7 +714,8 @@ public class TableDependency
       int col = 0;
       result.setValue(row, col++, node.getFkName());
       result.setValue(row, col++, node.getTargetColumnsList());
-      result.setValue(row, col++, node.getTable().getTableExpression(connection) + "(" + node.getSourceColumnsList() + ")");
+      String tblDisplay = DependencyNode.getDisplayTableExpression(node.getTable(), connection);
+      result.setValue(row, col++, tblDisplay + "(" + node.getSourceColumnsList() + ")");
       if (handler.supportsRemarks())
       {
       }
@@ -743,6 +744,6 @@ public class TableDependency
     }
     result.resetStatus();
     return result;
-
   }
+
 }

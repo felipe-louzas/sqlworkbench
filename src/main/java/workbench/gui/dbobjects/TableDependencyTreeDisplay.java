@@ -26,10 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -69,7 +67,7 @@ public class TableDependencyTreeDisplay
   private List<TreeNode[]> nodesToExpand;
   private boolean showExported;
   private JTree tree;
-  private TableLister tables;
+  private final TableLister tables;
   private TableDependency dependencyReader;
   private boolean retrieveAll = true;
 
@@ -218,12 +216,10 @@ public class TableDependencyTreeDisplay
 
       int childrenCount = child.getChildren().size();
 
-      Map columns = child.getColumns();
-      Iterator entries = columns.entrySet().iterator();
-      while (entries.hasNext())
+      Map<String, String> columns = child.getColumns();
+      for (Map.Entry<String, String> entry : columns.entrySet())
       {
         table = child.getTable().getTableName();
-        Entry entry = (Entry)entries.next();
         StringBuilder coldef = new StringBuilder(100);
         coldef.append("<html><b>");
         if (this.showExported)

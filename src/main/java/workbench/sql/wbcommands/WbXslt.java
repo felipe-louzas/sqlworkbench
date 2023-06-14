@@ -128,7 +128,6 @@ public class WbXslt
 
     try
     {
-      transformer.setSaveSystemOutMessages(true);
       transformer.setXsltBaseDir(getXsltBaseDir());
 
       transformer.transform(inputFile, outputFile, xsltFile, params);

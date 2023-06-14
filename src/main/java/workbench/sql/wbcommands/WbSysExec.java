@@ -233,8 +233,7 @@ public class WbSysExec
     }
     finally
     {
-      FileUtil.closeQuietely(stdIn);
-      FileUtil.closeQuietely(stdError);
+      FileUtil.closeQuietely(stdIn, stdError);
       this.task = null;
     }
     return result;

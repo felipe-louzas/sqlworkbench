@@ -527,17 +527,21 @@ public class FileUtil
    *
    * @param c the Closeable to close
    */
-  public static void closeQuietely(Closeable c)
+  public static void closeQuietely(Closeable... toClose)
   {
-    if (c == null) return;
+    if (toClose == null) return;
 
-    try
+    for (Closeable c : toClose)
     {
-      c.close();
-    }
-    catch (IOException e)
-    {
-      // ignore
+      if (c == null) continue;
+
+      try
+      {
+        c.close();
+      }
+      catch (IOException e)
+      {
+      }
     }
   }
 

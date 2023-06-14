@@ -2,16 +2,16 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!--
   Cleanup oracle specific code in order to apply it for a PostgreSQL database.
-  
+
   Specifically following issues are handled:
   - convert "sysdate" to "current_date" for default values
   - replace "nvl" to "coalesce" in column definitions
-  
+
   Example Usage:
     /* export Oracle Schema */
 	WbSchemaReport -file=oracle_schema.xml
 				   -types='TABLE';
-	
+
 	/* call this XSLT to cleanup Oracle specific code */
 	WbXslt -inputfile=oracle_schema.xml
 	       -stylesheet=wbreport2pg_cleanupora.xslt
@@ -21,12 +21,12 @@
 	WbXslt -inputfile=oracle_schema_cleaned.xml
 	       -stylesheet=wbreport2pg.xslt
 	       -xsltOutput=pg_schema.sql
-	       -xsltParameters="useJdbcTypes=true";
-       
+	       -xsltParameter="useJdbcTypes=true";
+
   Author: Franz Mayer
 -->
 	<xsl:output method="xml" indent="yes" />
-  
+
 	<xsl:variable name="quote"><xsl:text>"</xsl:text></xsl:variable>
 	<xsl:variable name="newline"><xsl:text>&#10;</xsl:text></xsl:variable>
 	<xsl:variable name="lower_letters">abcdefghijklmnopqrstuvwxyz</xsl:variable>

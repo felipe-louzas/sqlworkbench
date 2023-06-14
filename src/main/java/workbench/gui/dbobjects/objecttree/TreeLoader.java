@@ -1176,15 +1176,17 @@ public class TreeLoader
 
       String colDisplay = "<html><b>" + fk.getFkName() + "</b>: ";
 
+      String fkTableDisplay = DependencyNode.getDisplayTableExpression(fk.getTable(), connection);
+      String tblDisplay = DependencyNode.getDisplayTableExpression(tbl, connection);
       if (showIncoming)
       {
-        colDisplay += fk.getTable().getTableExpression(connection) + "(" + fk.getSourceColumnsList() + ") REFERENCES  " +
-        tbl.getTableExpression(connection) + "(" + fk.getTargetColumnsList();
+        colDisplay += fkTableDisplay + "(" + fk.getSourceColumnsList() + ") REFERENCES  " +
+        tblDisplay + "(" + fk.getTargetColumnsList();
       }
       else
       {
-        colDisplay += tbl.getTableExpression(connection) + "(" + fk.getTargetColumnsList() + ") REFERENCES  " +
-        fk.getTable().getTableExpression(connection) + "(" + fk.getSourceColumnsList();
+        colDisplay += tblDisplay + "(" + fk.getTargetColumnsList() + ") REFERENCES  " +
+        fkTableDisplay + "(" + fk.getSourceColumnsList();
 
       }
       colDisplay += ")</html>";

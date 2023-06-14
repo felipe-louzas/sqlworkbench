@@ -88,7 +88,7 @@ public class FkDisplayPanel
 
   private TableIdentifier currentTable;
   private final JMenuItem selectTableItem;
-  private DropForeignKeyAction dropFK;
+  private final DropForeignKeyAction dropFK;
   private final TableLister tables;
 
   public FkDisplayPanel(TableLister lister, boolean showImported)
