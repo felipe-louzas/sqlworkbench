@@ -239,6 +239,7 @@ public class DataExporter
   private BlobMode blobMode;
   private QuoteEscapeType quoteEscape = QuoteEscapeType.none;
   private CharacterEscapeType escapeType = CharacterEscapeType.unicode;
+  private final Set<String> clobColumns = CollectionUtil.caseInsensitiveSet();
 
   /**
    * Create a DataExporter for the specified connection.
@@ -275,6 +276,20 @@ public class DataExporter
   public void setWriteErrorToOutput(boolean flag)
   {
     this.writeErrorToOutput = flag;
+  }
+
+  public Set<String> getClobColumns()
+  {
+    return clobColumns;
+  }
+
+  public void setClobColumns(Collection<String> columns)
+  {
+    clobColumns.clear();
+    if (columns != null)
+    {
+      clobColumns.addAll(columns);
+    }
   }
 
   @Override

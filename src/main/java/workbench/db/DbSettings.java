@@ -2398,6 +2398,11 @@ public class DbSettings
     return getBoolProperty("sequence.identity.hide", false);
   }
 
+  public boolean useColumnNamesForProcedureResultColumns()
+  {
+    return getBoolProperty("procedurecolumns.retrieval.use.columnnames", true);
+  }
+
   public boolean useColumnNameForMetadata()
   {
     return getBoolProperty("metadata.retrieval.columnnames", true);

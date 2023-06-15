@@ -22,6 +22,8 @@
 package workbench.db.exporter;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Set;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -37,6 +39,7 @@ import workbench.storage.reader.RowDataReader;
 
 import workbench.util.CharacterEscapeType;
 import workbench.util.CharacterRange;
+import workbench.util.CollectionUtil;
 import workbench.util.QuoteEscapeType;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -74,6 +77,7 @@ public class TextRowDataConverter
   private DataConverter converter;
   private CharacterEscapeType escapeType;
   private String escapedQuote;
+  private final Set<String> clobColumns = CollectionUtil.caseInsensitiveSet();
 
   public TextRowDataConverter()
   {
@@ -100,6 +104,15 @@ public class TextRowDataConverter
   {
     super.setOriginalConnection(conn);
     converter = RowDataReader.getConverterInstance(conn);
+  }
+
+  public void setClobColumns(Collection<String> extraColumns)
+  {
+    clobColumns.clear();
+    if (extraColumns != null)
+    {
+      clobColumns.addAll(extraColumns);
+    }
   }
 
   /**
@@ -182,6 +195,7 @@ public class TextRowDataConverter
 
       int colType = this.metaData.getColumnType(colIndex);
       String dbmsType = this.metaData.getDbmsTypeName(colIndex);
+      String colName = this.metaData.getColumnName(colIndex);
       String value = null;
 
       boolean addQuote = quoteAlways;
@@ -210,7 +224,7 @@ public class TextRowDataConverter
           throw new RuntimeException("Error writing BLOB file", e);
         }
       }
-      else if (!isConverted && writeClobFiles && isClob(dbmsType, colType, dbs))
+      else if (!isConverted && writeClobFiles && (clobColumns.contains(colName) || isClob(dbmsType, colType, dbs)))
       {
         Object clobData = row.getValue(colIndex);
         if (clobData != null)

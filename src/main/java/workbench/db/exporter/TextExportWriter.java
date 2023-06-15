@@ -23,6 +23,7 @@ package workbench.db.exporter;
 
 import workbench.db.DbMetadata;
 import workbench.db.WbConnection;
+
 import workbench.storage.BlobFormatterFactory;
 import workbench.storage.BlobLiteralType;
 import workbench.storage.PostgresBlobFormatter;
@@ -60,6 +61,7 @@ public class TextExportWriter
     conv.setWriteClobToFile(exporter.getWriteClobAsFile());
     conv.setQuoteEscaping(exporter.getQuoteEscaping());
     conv.setRowIndexColName(exporter.getRowIndexColumnName());
+    conv.setClobColumns(exporter.getClobColumns());
     conv.setEscapeType(exporter.getEscapeType());
     BlobMode mode = exporter.getBlobMode();
     if (mode == BlobMode.AnsiLiteral)

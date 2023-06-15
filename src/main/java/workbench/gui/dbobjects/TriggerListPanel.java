@@ -115,10 +115,10 @@ public class TriggerListPanel
   private CompileDbObjectAction compileAction;
   private DropDbObjectAction dropAction;
 
-  private MainWindow parentWindow;
+  private final MainWindow parentWindow;
   private boolean initialized;
   private FilteredProperties workspaceProperties;
-  private IsolationLevelChanger levelChanger = new IsolationLevelChanger();
+  private final IsolationLevelChanger levelChanger = new IsolationLevelChanger();
   private ObjectFinder tableFinder;
   private ObjectFinder procFinder;
   private WbAction selectTableAction;

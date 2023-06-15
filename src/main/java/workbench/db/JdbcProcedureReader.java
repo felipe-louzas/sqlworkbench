@@ -375,6 +375,7 @@ public class JdbcProcedureReader
     DataStore ds = createProcColsDataStore();
     ResultSet rs = null;
     Savepoint sp = null;
+    long start = System.currentTimeMillis();
     try
     {
       if (useSavepoint)
@@ -398,6 +399,7 @@ public class JdbcProcedureReader
 
       int specIndex = -1;
       boolean useSpecificName = false;
+      boolean useColumnIndex = connection.getDbSettings().useColumnNamesForProcedureResultColumns() == false;
       if (connection.getDbSettings().useSpecificNameForProcedureColumns())
       {
         String colname = connection.getDbSettings().getSpecificNameColumn();
@@ -414,9 +416,11 @@ public class JdbcProcedureReader
           // if the specific name is relevant, only process columns for the matching specific name
           if (StringUtil.stringsAreNotEqual(procSpecName, specificName)) continue;
         }
-        processProcedureColumnResultRow(ds, rs);
+        processProcedureColumnResultRow(ds, rs, useColumnIndex);
       }
       this.connection.releaseSavepoint(sp);
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logDebug(new CallerInfo(){}, "Retrieving " + (isFunction ? "function" : "procedure") + " parameters for " + aProcname + " took: " + duration + "ms");
     }
     catch (SQLException sql)
     {
@@ -634,6 +638,8 @@ public class JdbcProcedureReader
     ResultSet rs = null;
     Savepoint sp = null;
     String query = null;
+    long start = System.currentTimeMillis();
+
     try
     {
       if (useSavepoint)
@@ -661,6 +667,8 @@ public class JdbcProcedureReader
         }
       }
       this.connection.releaseSavepoint(sp);
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logDebug(new CallerInfo(){}, "Retrieving procedure source for " + def.getProcedureName() + " took: " + duration + "ms");
     }
     catch (SQLException e)
     {
@@ -673,6 +681,7 @@ public class JdbcProcedureReader
     {
       JdbcUtils.closeAll(rs, stmt);
     }
+
     return source;
   }
 

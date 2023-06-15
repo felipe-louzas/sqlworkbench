@@ -108,6 +108,7 @@ public class WbExport
   public static final String ARG_HEADER = "header";
   public static final String ARG_TABLEWHERE = "tableWhere";
   public static final String ARG_LOWERCASE_NAMES = "lowerCaseFilenames";
+  public static final String ARG_TREAT_AS_CLOB = "treatAsClob";
 
   // spreadsheet options
   public static final String ARG_ADD_INFOSHEET = "infoSheet";
@@ -252,6 +253,7 @@ public class WbExport
     cmdLine.addArgument(CommonArgs.ARG_TYPES, ArgumentType.ObjectTypeArgument);
     cmdLine.addArgument(ARG_DISTRIBUTE_LOB_FILES, ArgumentType.IntegerArgument);
     cmdLine.addArgument(ARG_INFINITY_LITERALS, ArgumentType.ListArgument);
+    cmdLine.addArgument(ARG_TREAT_AS_CLOB, ArgumentType.ListArgument);
     cmdLine.addArgument(ARG_MERGE_TYPE, MergeGenerator.Factory.getSupportedTypes());
     cmdLine.addArgument(ARG_NULL_STRING);
     cmdLine.addArgument(ARG_TRIM_CHARDATA, ArgumentType.BoolSwitch);
@@ -505,6 +507,7 @@ public class WbExport
     boolean includeIdentityDefault = !Settings.getInstance().getGenerateInsertIgnoreIdentity();
     exporter.setIncludeIdentityCols(cmdLine.getBoolean(ARG_INCLUDE_IDENTITY, includeIdentityDefault));
     exporter.setIncludeReadOnlyCols(cmdLine.getBoolean(ARG_INCLUDE_READONLY, true));
+    exporter.setClobColumns(cmdLine.getListValue(ARG_TREAT_AS_CLOB));
 
     this.continueOnError = cmdLine.getBoolean(ARG_CONTINUE_ON_ERROR, false);
 

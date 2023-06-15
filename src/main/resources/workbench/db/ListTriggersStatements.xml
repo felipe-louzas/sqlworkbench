@@ -392,7 +392,7 @@ WHERE trigger_name not like 'BIN$%'
    <string>Adaptive Server Enterprise</string>
    <object id="list_asa_trg" class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
-     <string>select trigname as trigger_name, trigtime as trigger_type, event from systriggers</string>
+     <string>select trigname as trigger_name, trigtime as trigger_type, event as trigger_event from systriggers</string>
     </void>
     <void property="objectNameField">
      <string>tname</string>
