@@ -142,7 +142,7 @@ public class SqlRowDataConverter
     includeIdentityCols = flag;
     if (statementFactory != null)
     {
-      statementFactory.setIncludeIdentiyColumns(includeIdentityCols);
+      statementFactory.setIncludeGeneratedColumns(includeIdentityCols);
     }
   }
 
@@ -172,7 +172,7 @@ public class SqlRowDataConverter
     this.needsUpdateTable = meta.getUpdateTable() == null;
     this.statementFactory.setIncludeTableOwner(this.includeOwner);
     this.statementFactory.setTableToUse(this.alternateUpdateTable);
-    this.statementFactory.setIncludeIdentiyColumns(includeIdentityCols);
+    this.statementFactory.setIncludeGeneratedColumns(includeIdentityCols);
     this.statementFactory.setIncludeReadOnlyColumns(includeReadOnlyCols);
 
     boolean keysPresent = this.checkKeyColumns();
@@ -317,7 +317,7 @@ public class SqlRowDataConverter
     DmlStatement dml = null;
 
     this.statementFactory.setIncludeTableOwner(includeOwner);
-    this.statementFactory.setIncludeIdentiyColumns(includeIdentityCols);
+    this.statementFactory.setIncludeGeneratedColumns(includeIdentityCols);
     this.statementFactory.setIncludeReadOnlyColumns(includeReadOnlyCols);
     this.statementFactory.setTableToUse(alternateUpdateTable);
 

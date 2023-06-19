@@ -181,7 +181,7 @@ public class StatementFactoryTest
     data.setValue(1, "Zaphod");
     data.setValue(2, "Beeblebrox");
 
-    factory.setIncludeIdentiyColumns(false);
+    factory.setIncludeGeneratedColumns(false);
     DmlStatement stmt = factory.createInsertStatement(data, false, "\n");
     String sql = stmt.toString();
     assertEquals("Not an INSERT statement", true, sql.startsWith("INSERT"));
@@ -190,10 +190,34 @@ public class StatementFactoryTest
     sql = stmt.getExecutableStatement(formatter).toString();
     assertEquals("Wrong values inserted", true, sql.contains("VALUES ('Zaphod','Beeblebrox')"));
 
-    factory.setIncludeIdentiyColumns(true);
+    factory.setIncludeGeneratedColumns(true);
     stmt = factory.createInsertStatement(data, false, "\n");
     sql = stmt.getExecutableStatement(formatter).toString();
     assertEquals("Wrong values inserted", true, sql.contains("VALUES (42,'Zaphod','Beeblebrox')"));
+  }
+
+  @Test
+  public void testCreateInsertGeneratedColumn()
+  {
+    String[] cols = new String[] { "price", "pieces", "total_price" };
+    int[] types = new int[] { Types.DECIMAL, Types.INTEGER, Types.DECIMAL};
+
+    ResultInfo info = new ResultInfo(cols, types, null);
+    info.getColumn(2).setIsGenerated(true);
+    info.getColumn(2).setGeneratorExpression("(price * pieces)");
+    TableIdentifier table = new TableIdentifier("order_line");
+
+    info.setUpdateTable(table);
+    StatementFactory factory = new StatementFactory(info, null);
+    factory.setIncludeGeneratedColumns(false);
+
+    RowData data = new RowData(3);
+    data.setValue(0, 42.1);
+    data.setValue(1, 100);
+
+    DmlStatement stmt = factory.createInsertStatement(data, false, "\n");
+    String sql = stmt.toString();
+    assertEquals("INSERT INTO order_line (price,pieces) VALUES (?,?)", sql.trim());
   }
 
   @Test

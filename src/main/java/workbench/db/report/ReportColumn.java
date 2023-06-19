@@ -53,11 +53,11 @@ public class ReportColumn
   public static final String TAG_COLUMN_COMPUTED_COL = "computed-column-expression";
 
   private ColumnReference fk;
-  private ColumnIdentifier column;
-  private TagWriter tagWriter = new TagWriter();
+  private final ColumnIdentifier column;
+  private final TagWriter tagWriter = new TagWriter();
   private boolean isRealColumn = true;
   private boolean isReferenced = false;
-  private ColumnDefinitionTemplate template = new ColumnDefinitionTemplate();
+  private final ColumnDefinitionTemplate template = new ColumnDefinitionTemplate();
 
   public ReportColumn(ColumnIdentifier col)
   {
@@ -126,7 +126,7 @@ public class ReportColumn
     if (isRealColumn) tagWriter.appendTag(result, myindent, TAG_COLUMN_NULLABLE, this.column.isNullable());
     if (isRealColumn) tagWriter.appendTag(result, myindent, TAG_COLUMN_DEFAULT, getDefaultValue(), true);
     if (isRealColumn) tagWriter.appendTag(result, myindent, TAG_COLUMN_AUTO_INC, this.column.isAutoincrement());
-    if (isRealColumn && this.column.isGenerated() != null)
+    if (isRealColumn && this.column.isGenerated())
     {
       tagWriter.appendTag(result, myindent, TAG_COLUMN_GENERATED, this.column.isGenerated());
     }
