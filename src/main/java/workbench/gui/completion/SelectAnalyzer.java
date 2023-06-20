@@ -496,8 +496,7 @@ public class SelectAnalyzer
             c.setDbmsType(col.getDbmsType());
             c.setColumnTypeName(col.getColumnTypeName());
             c.setIsNullable(col.isNullable());
-            c.setIsAutoincrement(col.isAutoincrement());
-            c.setIsIdentity(col.isIdentityColumn());
+            c.setGeneratedExpression(col.getGenerationExpression(), col.getGeneratedColumnType());
             allColumns.add(c);
           }
           else

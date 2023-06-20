@@ -30,11 +30,11 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 /**
  * A class to read additional column level information for a table.
@@ -80,8 +80,7 @@ public class NuoDbColumnEnhancer
         ColumnIdentifier col = table.findColumn(colname);
         if (col != null)
         {
-          col.setIsAutoincrement(true);
-          col.setComputedColumnExpression("GENERATED ALWAYS AS IDENTITY");
+          col.setGeneratedExpression("GENERATED ALWAYS AS IDENTITY", GeneratedColumnType.identity);
         }
       }
     }

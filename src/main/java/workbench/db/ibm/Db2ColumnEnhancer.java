@@ -30,6 +30,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
@@ -133,20 +134,19 @@ public class Db2ColumnEnhancer
           if ("A".equals(gentype))
           {
             expr += " ALWAYS";
-            col.setIsIdentity(true);
-            col.setIsAutoincrement(true);
+            col.setGeneratedColumnType(GeneratedColumnType.identity);
           }
           else
           {
             expr += " BY DEFAULT";
-            col.setIsAutoincrement(true);
+            col.setGeneratedColumnType(GeneratedColumnType.identity);
           }
 
           if (computedCol == null && !isHistoryTCol)
           {
             // IDENTITY column
             expr += " AS IDENTITY (" + Db2SequenceReader.buildSequenceDetails(false, start, min, max, inc, cycle, order, cache) + ")";
-            col.setGeneratorExpression(expr);
+            col.setGeneratedExpression(expr, GeneratedColumnType.identity);
           }
           else if (isHistoryTCol)
           {
@@ -162,18 +162,12 @@ public class Db2ColumnEnhancer
             {
               expr += " AS TRANSACTION START ID";
             }
-            col.setGeneratorExpression(expr);
-            col.setIsIdentity(false);
-            col.setIsAutoincrement(false);
-            col.setIsGenerated(true);
+            col.setGeneratedExpression(expr, GeneratedColumnType.generator);
           }
           else
           {
             expr += " " + computedCol;
-            col.setIsGenerated(true);
-            col.setComputedColumnExpression(expr);
-            col.setIsIdentity(false);
-            col.setIsAutoincrement(false);
+            col.setGeneratedExpression(expr, GeneratedColumnType.computed);
           }
         }
 

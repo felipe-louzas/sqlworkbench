@@ -76,6 +76,6 @@ public class H2ColumnEnhancerTest
     assertEquals(2, cols.size());
     ColumnIdentifier col = cols.get(1);
     assertEquals("ID2", col.getColumnName());
-    assertEquals("AS \"ID\" * 2", col.getComputedColumnExpression());
+    assertEquals("AS \"ID\" * 2", col.getGenerationExpression());
   }
 }

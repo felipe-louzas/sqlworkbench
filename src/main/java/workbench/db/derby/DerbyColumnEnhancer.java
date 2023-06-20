@@ -23,8 +23,10 @@ package workbench.db.derby;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
+
 import workbench.util.StringUtil;
 
 /**
@@ -45,11 +47,11 @@ public class DerbyColumnEnhancer
       {
         if (defaultValue.startsWith("GENERATED ALWAYS AS"))
         {
-          col.setComputedColumnExpression(defaultValue);
+          col.setGeneratedExpression(defaultValue, GeneratedColumnType.computed);
         }
         if (defaultValue.startsWith("AUTOINCREMENT:") || defaultValue.equals("GENERATED_BY_DEFAULT"))
         {
-          col.setIsAutoincrement(true);
+          col.setGeneratedColumnType(GeneratedColumnType.autoIncrement);
         }
       }
     }

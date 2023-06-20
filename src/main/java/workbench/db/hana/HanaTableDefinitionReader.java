@@ -31,11 +31,11 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
+import workbench.db.GeneratedColumnType;
 import workbench.db.JdbcTableDefinitionReader;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 
 /**
@@ -86,8 +86,7 @@ public class HanaTableDefinitionReader
       if (generate != null)
       {
         col.setDefaultValue(null);
-        col.setComputedColumnExpression("GENERATED " + generate);
-        col.setIsAutoincrement(true);
+        col.setGeneratedExpression("GENERATED " + generate, GeneratedColumnType.autoIncrement);
       }
     }
   }

@@ -95,7 +95,7 @@ public class FirebirdColumnEnhancerTest
     assertEquals(2, cols.size());
     ColumnIdentifier computed = cols.get(1);
     assertEquals("DOUBLE_ID", computed.getColumnName());
-    assertEquals("COMPUTED BY (id * 2)", computed.getComputedColumnExpression());
+    assertEquals("COMPUTED BY (id * 2)", computed.getGenerationExpression());
   }
 
   @Test
@@ -121,7 +121,7 @@ public class FirebirdColumnEnhancerTest
 
       ColumnIdentifier computed = cols.get(1);
       assertEquals("DOUBLE_ID", computed.getColumnName());
-      assertEquals("COMPUTED BY (id * 2)", computed.getComputedColumnExpression());
+      assertEquals("COMPUTED BY (id * 2)", computed.getGenerationExpression());
 
       TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
       String sql = builder.getTableSource(def.getTable(), def.getColumns());

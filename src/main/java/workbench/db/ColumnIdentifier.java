@@ -54,8 +54,7 @@ public class ColumnIdentifier
   private String alias;
   private int type = Types.OTHER;
   private boolean isPk;
-  private boolean isExpression;
-  private boolean isGenerated;
+  private GeneratedColumnType generatedColumnType = GeneratedColumnType.none;
   private boolean isNullable = true;
   private boolean isUpdateable = true;
   private boolean readOnly;
@@ -66,11 +65,8 @@ public class ColumnIdentifier
   private Class columnClass;
   private String columnTypeName;
   private String sourceTable;
-  private boolean autoincrement;
-  private boolean identity;
   private String collation;
   private String collationExpression;
-  private String generatorExpression;
   private String columnConstraint;
 
   // For procedure columns (=arguments)
@@ -79,8 +75,12 @@ public class ColumnIdentifier
   // an additional "modifier" to be used instead of the "DEFAULT" keyword
   // currently only used for Oracle's "DEFAULT ON NULL"
   private String defaultClause;
+
   /**
-   * Stores the definition of "computed" columns (e.g. Oracle, Firebird, SQL Server, DB2)
+   * Stores the definition of generated columns.
+   * (e.g. Oracle, Firebird, SQL Server, DB2)
+   *
+   * If this is not-null, generatedColumnType is something different than "none".
    */
   private String expression;
 
@@ -187,12 +187,30 @@ public class ColumnIdentifier
    */
   public boolean isGenerated()
   {
-    return isGenerated;
+    return this.generatedColumnType != GeneratedColumnType.none;
   }
 
-  public void setIsGenerated(boolean flag)
+  public void setGeneratedColumnType(GeneratedColumnType type)
   {
-    this.isGenerated = flag;
+    if (type == null)
+    {
+      this.generatedColumnType = GeneratedColumnType.none;
+    }
+    else
+    {
+      this.generatedColumnType = type;
+    }
+  }
+
+  public void setGeneratedExpression(String expression, GeneratedColumnType type)
+  {
+    this.expression = StringUtil.trimToNull(expression);
+    setGeneratedColumnType(type);
+  }
+
+  public GeneratedColumnType getGeneratedColumnType()
+  {
+    return generatedColumnType;
   }
 
   /**
@@ -264,12 +282,7 @@ public class ColumnIdentifier
 
   public boolean isAutoincrement()
   {
-    return autoincrement;
-  }
-
-  public void setIsAutoincrement(boolean flag)
-  {
-    autoincrement = flag;
+    return this.generatedColumnType == GeneratedColumnType.autoIncrement;
   }
 
   /**
@@ -309,24 +322,9 @@ public class ColumnIdentifier
     alias = StringUtil.trimToNull(label);
   }
 
-  public String getComputedColumnExpression()
+  public String getGenerationExpression()
   {
     return expression;
-  }
-
-  public void setComputedColumnExpression(String expr)
-  {
-    this.expression = expr;
-  }
-
-  public String getGeneratorExpression()
-  {
-    return generatorExpression;
-  }
-
-  public void setGeneratorExpression(String expr)
-  {
-    this.generatorExpression = expr;
   }
 
   /**
@@ -533,24 +531,19 @@ public class ColumnIdentifier
     return isAutoincrement() || isIdentityColumn();
   }
 
-  public void setIsIdentity(boolean identity)
-  {
-    this.identity = identity;
-  }
-
   public boolean isIdentityColumn()
   {
     if (!SqlUtil.isNumberType(this.type)) return false;
-    return identity;
+    return this.generatedColumnType == GeneratedColumnType.identity;
   }
 
   /**
-   *  Define this column to be an expression.
+   *  Define this column to be a runtime expression.
    */
-  public void setExpression(String anExpression)
+  public void setRuntimeExpression(String anExpression)
   {
     this.name = anExpression;
-    this.isExpression = true;
+    this.generatedColumnType = GeneratedColumnType.runtime;
     this.isPk = false;
     this.type = Types.OTHER;
   }
@@ -566,7 +559,7 @@ public class ColumnIdentifier
     result.name = this.name;
     result.hashCode = this.hashCode;
     result.digits = this.digits;
-    result.isExpression = this.isExpression;
+    result.generatedColumnType = this.generatedColumnType;
     result.isNullable = this.isNullable;
     result.isPk = this.isPk;
     result.size = this.size;
@@ -588,8 +581,6 @@ public class ColumnIdentifier
     result.columnConstraint = this.columnConstraint;
     result.collation = this.collation;
     result.collationExpression = this.collationExpression;
-    result.generatorExpression = this.generatorExpression;
-    result.isGenerated = this.isGenerated;
     result.sqlOption = this.sqlOption;
     return result;
   }
@@ -623,7 +614,6 @@ public class ColumnIdentifier
   public void setColumnName(String aName)
   {
     this.name = aName;
-    this.isExpression = false;
     this.isPk = false;
     this.isNullable = true;
     this.hashCode = (name == null ? -1 : SqlUtil.removeObjectQuotes(name).toLowerCase().hashCode());
@@ -712,7 +702,7 @@ public class ColumnIdentifier
     // certain DB2 versions
     if (defaultValue != null && defaultValue.toLowerCase().contains("identity"))
     {
-      identity = true;
+      this.generatedColumnType = GeneratedColumnType.identity;
     }
   }
 
@@ -956,7 +946,11 @@ public class ColumnIdentifier
       ColumnIdentifier otherCol = (ColumnIdentifier)other;
       if (!StringUtil.equalStringOrEmpty(this.dbmsType, otherCol.dbmsType, true)) return false;
       if (this.isNullable != otherCol.isNullable) return false;
-      if (this.isExpression != otherCol.isExpression) return false;
+      if (this.generatedColumnType != otherCol.generatedColumnType) return false;
+      if (this.generatedColumnType != GeneratedColumnType.none && !StringUtil.equalStringOrEmpty(this.expression, otherCol.expression))
+      {
+        return false;
+      }
       if (this.isPk != otherCol.isPk) return false;
       if (!StringUtil.equalStringOrEmpty(this.defaultValue, otherCol.defaultValue)) return false;
       return true;

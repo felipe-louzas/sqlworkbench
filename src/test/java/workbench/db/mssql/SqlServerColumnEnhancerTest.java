@@ -103,11 +103,11 @@ public class SqlServerColumnEnhancerTest
     assertEquals(6, cols.size());
     ColumnIdentifier total = cols.get(2);
     assertEquals("total_price", total.getColumnName());
-    assertEquals("AS ([pieces]*[single_price])", total.getComputedColumnExpression());
+    assertEquals("AS ([pieces]*[single_price])", total.getGenerationExpression());
 
     ColumnIdentifier avg = cols.get(3);
     assertEquals("avg_price", avg.getColumnName());
-    assertEquals("AS ([single_price]/[pieces]) PERSISTED", avg.getComputedColumnExpression());
+    assertEquals("AS ([single_price]/[pieces]) PERSISTED", avg.getGenerationExpression());
 
     ColumnIdentifier text = cols.get(4);
     assertEquals("some_text", text.getColumnName());

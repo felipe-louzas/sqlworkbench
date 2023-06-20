@@ -278,7 +278,7 @@ public class OracleTableDefinitionReaderTest
       assertEquals(1, columns.size());
       ColumnIdentifier id = columns.get(0);
       assertEquals("ID", id.getColumnName());
-      assertEquals("GENERATED ALWAYS AS IDENTITY", id.getComputedColumnExpression());
+      assertEquals("GENERATED ALWAYS AS IDENTITY", id.getGenerationExpression());
     }
     finally
     {
@@ -315,10 +315,10 @@ public class OracleTableDefinitionReaderTest
       assertEquals(4, columns.size());
       ColumnIdentifier lower = ColumnIdentifier.findColumnInList(columns, "LOWER_NAME");
       assertTrue(lower.getDbmsType().startsWith("VARCHAR2(100"));
-      assertEquals("GENERATED ALWAYS AS (LOWER(\"SOME_NAME\"))", lower.getComputedColumnExpression());
+      assertEquals("GENERATED ALWAYS AS (LOWER(\"SOME_NAME\"))", lower.getGenerationExpression());
 
       ColumnIdentifier g1 = ColumnIdentifier.findColumnInList(columns, "G1");
-      assertEquals("GENERATED ALWAYS AS (\"C1\"*2)", g1.getComputedColumnExpression());
+      assertEquals("GENERATED ALWAYS AS (\"C1\"*2)", g1.getGenerationExpression());
       assertEquals("NUMBER", g1.getDbmsType());
 
     }

@@ -28,6 +28,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbSettings;
+import workbench.db.GeneratedColumnType;
 import workbench.db.TableIdentifier;
 
 import org.junit.Before;
@@ -171,7 +172,7 @@ public class StatementFactoryTest
 
     ResultInfo info = new ResultInfo(cols, types, null);
     info.setIsPkColumn(0, true);
-    info.getColumn(0).setIsIdentity(true);
+    info.getColumn(0).setGeneratedColumnType(GeneratedColumnType.identity);
     TableIdentifier table = new TableIdentifier("person");
 
     info.setUpdateTable(table);
@@ -203,8 +204,7 @@ public class StatementFactoryTest
     int[] types = new int[] { Types.DECIMAL, Types.INTEGER, Types.DECIMAL};
 
     ResultInfo info = new ResultInfo(cols, types, null);
-    info.getColumn(2).setIsGenerated(true);
-    info.getColumn(2).setGeneratorExpression("(price * pieces)");
+    info.getColumn(2).setGeneratedExpression("(price * pieces)", GeneratedColumnType.computed);
     TableIdentifier table = new TableIdentifier("order_line");
 
     info.setUpdateTable(table);

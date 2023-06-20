@@ -33,12 +33,12 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceDefinition;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.StringUtil;
 
@@ -102,11 +102,12 @@ public class HsqlColumnEnhancer
         if (col == null) continue;
 
         String columnExpression = null;
-
+        GeneratedColumnType genType = GeneratedColumnType.none;
         if (sequences.containsKey(colname))
         {
           SequenceDefinition def = sequences.get(colname);
           columnExpression = "GENERATED " + identityExpr + " AS SEQUENCE " + def.getSequenceName();
+          genType = GeneratedColumnType.autoIncrement;
         }
         else if (StringUtil.equalString(isComputed, "ALWAYS"))
         {
@@ -119,6 +120,7 @@ public class HsqlColumnEnhancer
             computedExpr = computedExpr.substring(pos + 1);
           }
           columnExpression = "GENERATED ALWAYS AS (" + computedExpr + ")";
+          genType = GeneratedColumnType.computed;
         }
         else if (StringUtil.equalString(isIdentity, "YES"))
         {
@@ -129,13 +131,13 @@ public class HsqlColumnEnhancer
           {
             columnExpression += " (START WITH " + start + " INCREMENT BY " + inc + ")";
           }
+          genType = GeneratedColumnType.identity;
         }
 
         if (StringUtil.isNonBlank(columnExpression))
         {
           col.setDefaultValue(null);
-          col.setComputedColumnExpression(columnExpression);
-          col.setIsIdentity(columnExpression.contains("IDENTITY"));
+          col.setGeneratedExpression(columnExpression, genType);
         }
       }
     }

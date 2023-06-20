@@ -24,6 +24,7 @@ package workbench.db.sqltemplates;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -113,9 +114,9 @@ public class ColumnDefinitionTemplate
    */
   public String getColumnDefinitionSQL(ColumnIdentifier column, String colConstraint, int typeLength, String dataTypeOverride)
   {
-    String expr = column.getComputedColumnExpression();
+    String expr = column.getGenerationExpression();
     boolean isComputed = StringUtil.isNonBlank(expr);
-    String sql = getTemplate(isComputed, column.isAutoincrement());
+    String sql = getTemplate(column.getGeneratedColumnType());
 
     String type = StringUtil.padRight(dataTypeOverride == null ? column.getDbmsType() : dataTypeOverride, typeLength);
 
@@ -162,11 +163,11 @@ public class ColumnDefinitionTemplate
     sql = replaceArg(sql, PARAM_COLLATION_NAME, column.getCollationExpression());
     if (isComputed)
     {
-      sql = replaceArg(sql, PARAM_GENERATED, column.getComputedColumnExpression());
+      sql = replaceArg(sql, PARAM_GENERATED, column.getGenerationExpression());
     }
     else
     {
-      sql = replaceArg(sql, PARAM_GENERATED, column.getGeneratorExpression());
+      sql = replaceArg(sql, PARAM_GENERATED, column.getGenerationExpression());
     }
     sql = replaceArg(sql, PARAM_EXTRA_OPTION, column.getSQLOption());
 
@@ -280,31 +281,28 @@ public class ColumnDefinitionTemplate
     return template.replace(placeholder, value);
   }
 
-  private String getTemplate(boolean computedColumn, boolean isAutoincrement)
+  private String getTemplate(GeneratedColumnType type)
   {
     if (template != null) return template;
 
     final String defaultTemplate = ColumnChanger.PARAM_DATATYPE + " " + ColumnChanger.PARAM_DEFAULT_VALUE + " " + PARAM_NOT_NULL + " " + PARAM_COL_CONSTRAINTS;
     String sql;
 
-    if (isAutoincrement)
+    switch (type)
     {
-      sql = getProperty("coldef.autoinc", null);
-      if (sql != null) return sql;
-    }
-
-    if (computedColumn)
-    {
-      if (isAutoincrement)
-      {
-        sql = getProperty("coldef.computed.autoinc", null);
+      case autoIncrement:
+        sql = getProperty("coldef.autoinc", null);
         if (sql != null) return sql;
-      }
-
-      sql = getProperty("coldef.computed", null);
-      if (sql != null) return sql;
+      case identity:
+        sql = getProperty("coldef.identity", null);
+        if (sql != null) return sql;
+      case generator:
+        sql = getProperty("coldef.generator", null);
+        if (sql != null) return sql;
+      case computed:
+        sql = getProperty("coldef.computed", null);
+        if (sql != null) return sql;
     }
-
     return getProperty("coldef", defaultTemplate);
   }
 

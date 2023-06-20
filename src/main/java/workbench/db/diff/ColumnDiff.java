@@ -22,6 +22,7 @@
 package workbench.db.diff;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 import workbench.db.report.ColumnReference;
 import workbench.db.report.ReportColumn;
 import workbench.db.report.TagWriter;
@@ -154,7 +155,15 @@ public class ColumnDiff
     String sdef = sId.getDefaultValue();
     String tdef = tId.getDefaultValue();
     boolean defaultDifferent = StringUtil.stringsAreNotEqual(sdef, tdef);
-    boolean computedColIsDifferent = StringUtil.stringsAreNotEqual(sId.getComputedColumnExpression(), tId.getComputedColumnExpression());
+    boolean computedColIsDifferent = false;
+    if (sId.getGeneratedColumnType() != tId.getGeneratedColumnType())
+    {
+      computedColIsDifferent = true;
+    }
+    else if (sId.getGeneratedColumnType() != GeneratedColumnType.none)
+    {
+      computedColIsDifferent = StringUtil.stringsAreNotEqual(sId.getGenerationExpression(), tId.getGenerationExpression());
+    }
 
     ColumnReference refFk = this.referenceColumn.getForeignKey();
     ColumnReference targetFk = this.targetColumn.getForeignKey();
@@ -261,7 +270,7 @@ public class ColumnDiff
 
       if (computedColIsDifferent)
       {
-        writer.appendTag(result, attIndent, ReportColumn.TAG_COLUMN_COMPUTED_COL, sId.getComputedColumnExpression());
+        writer.appendTag(result, attIndent, ReportColumn.TAG_COLUMN_COMPUTED_COL, sId.getGenerationExpression());
       }
 
       if (collationsDifferent)

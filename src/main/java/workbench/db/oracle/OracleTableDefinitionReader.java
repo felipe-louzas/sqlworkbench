@@ -37,6 +37,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
 import workbench.db.DbMetadata;
 import workbench.db.DbSettings;
+import workbench.db.GeneratedColumnType;
 import workbench.db.JdbcTableDefinitionReader;
 import workbench.db.JdbcUtils;
 import workbench.db.PkDefinition;
@@ -200,7 +201,7 @@ public class OracleTableDefinitionReader
         if (isVirtual && sqlType != Types.OTHER)
         {
           String exp = "GENERATED ALWAYS AS (" + defaultValue + ")";
-          col.setComputedColumnExpression(exp);
+          col.setGeneratedExpression(exp, GeneratedColumnType.computed);
         }
         else
         {
@@ -222,7 +223,10 @@ public class OracleTableDefinitionReader
         col.setColumnSize(size);
         col.setDecimalDigits(digits);
         col.setPosition(position);
-        col.setIsAutoincrement(isIdentity);
+        if (isIdentity)
+        {
+          col.setGeneratedColumnType(GeneratedColumnType.identity);
+        }
         columns.add(col);
       }
     }
@@ -299,7 +303,7 @@ public class OracleTableDefinitionReader
           {
             exp += " " + addOptions;
           }
-          col.setComputedColumnExpression(exp);
+          col.setGeneratedExpression(exp, GeneratedColumnType.identity);
           col.setDefaultValue(null);
         }
       }

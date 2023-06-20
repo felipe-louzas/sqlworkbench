@@ -224,11 +224,17 @@ public class JdbcTableDefinitionReader
         {
           String generated = useColumnNames ? rs.getString("IS_GENERATEDCOLUMN") : rs.getString(24);
           isGenerated = StringUtil.stringToBool(generated);
-          col.setIsGenerated(Boolean.valueOf(isGenerated));
+          if (isGenerated)
+          {
+            col.setGeneratedColumnType(GeneratedColumnType.computed);
+          }
         }
 
         col.setDbmsType(display);
-        col.setIsAutoincrement(autoincrement);
+        if (autoincrement)
+        {
+          col.setGeneratedColumnType(GeneratedColumnType.autoIncrement);
+        }
         col.setIsPkColumn(primaryKeyColumns.contains(colName));
         col.setIsNullable("YES".equalsIgnoreCase(nullable));
         col.setDefaultValue(defaultValue);

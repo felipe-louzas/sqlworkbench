@@ -36,6 +36,7 @@ import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
 import workbench.db.DbMetadata;
 import workbench.db.DbObjectFinder;
+import workbench.db.GeneratedColumnType;
 import workbench.db.IndexReader;
 import workbench.db.PkDefinition;
 import workbench.db.QuoteHandler;
@@ -344,8 +345,10 @@ public class ResultInfo
 
       try
       {
-        boolean autoIncrement = metaData.isAutoIncrement(i + 1);
-        col.setIsAutoincrement(autoIncrement);
+        if (metaData.isAutoIncrement(i + 1))
+        {
+          col.setGeneratedColumnType(GeneratedColumnType.autoIncrement);
+        }
       }
       catch (Throwable th)
       {
@@ -675,7 +678,7 @@ public class ResultInfo
       removeColumn(index);
     }
   }
-  
+
   public void removeColumn(int index)
   {
     columns.remove(index);

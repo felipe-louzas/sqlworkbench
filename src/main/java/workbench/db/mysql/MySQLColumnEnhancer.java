@@ -31,6 +31,7 @@ import workbench.log.LogMgr;
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
 import workbench.db.DBID;
+import workbench.db.GeneratedColumnType;
 import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
@@ -101,7 +102,7 @@ public class MySQLColumnEnhancer
           if (StringUtil.isNonBlank(expression))
           {
             String genSql = "GENERATED ALWAYS AS (" + expression + ") " + extra;
-            col.setComputedColumnExpression(genSql);
+            col.setGeneratedExpression(genSql, GeneratedColumnType.computed);
           }
           else if (extra != null && extra.toLowerCase().startsWith("on update"))
           {

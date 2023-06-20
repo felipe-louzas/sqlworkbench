@@ -31,6 +31,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
@@ -126,13 +127,12 @@ public class FirebirdColumnEnhancer
       String expr = expressions.get(col.getColumnName());
       if (StringUtil.isNonBlank(expr))
       {
-        col.setComputedColumnExpression("COMPUTED BY " + expr.trim());
+        col.setGeneratedExpression("COMPUTED BY " + expr.trim(), GeneratedColumnType.computed);
       }
       String generator = identityCols.get(col.getColumnName());
       if (generator != null)
       {
-        col.setIsAutoincrement(true);
-        col.setGeneratorExpression(generator);
+        col.setGeneratedExpression(generator, GeneratedColumnType.autoIncrement);
       }
     }
   }

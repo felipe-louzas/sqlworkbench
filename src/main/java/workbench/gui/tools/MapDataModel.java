@@ -30,6 +30,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 
 import workbench.util.StringUtil;
 
@@ -41,7 +42,7 @@ class MapDataModel
   extends AbstractTableModel
 {
   private boolean allowTargetEditing = false;
-  private ColumnMapRow[] data;
+  private final ColumnMapRow[] data;
   private final String sourceColName = ResourceMgr.getString("LblSourceColumn");
   private final String targetColName = ResourceMgr.getString("LblTargetColumn");
 
@@ -165,7 +166,7 @@ class MapDataModel
             {
               col = new ColumnIdentifier();
             }
-            col.setExpression(s);
+            col.setGeneratedExpression(s, GeneratedColumnType.runtime);
           }
         }
         else if (aValue instanceof SkipColumnIndicator)

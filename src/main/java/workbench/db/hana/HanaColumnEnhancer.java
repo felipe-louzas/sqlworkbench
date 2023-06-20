@@ -31,6 +31,7 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
@@ -106,8 +107,7 @@ public class HanaColumnEnhancer
       if (StringUtil.isNonBlank(expr))
       {
         col.setDefaultValue(null);
-        col.setComputedColumnExpression(expr);
-        col.setIsAutoincrement(true);
+        col.setGeneratedExpression(expr, GeneratedColumnType.autoIncrement);
       }
     }
   }

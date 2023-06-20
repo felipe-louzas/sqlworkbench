@@ -33,11 +33,12 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DataTypeResolver;
+import workbench.db.GeneratedColumnType;
 import workbench.db.JdbcTableDefinitionReader;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -50,7 +51,7 @@ import workbench.util.StringUtil;
 public class VerticaTableDefinitionReader
   extends JdbcTableDefinitionReader
 {
-  private String retrieveTableColumns =
+  private final String retrieveTableColumns =
       "SELECT attname as name, \n" +
       "       atttypid as typeid, \n" +
       "       typname as type, \n" +
@@ -62,7 +63,7 @@ public class VerticaTableDefinitionReader
       "WHERE relname = ? and nspname = ? \n" +
       "ORDER BY attnum";
 
-  private String retrieveViewColumns =
+  private final String retrieveViewColumns =
       "SELECT column_name as name, \n" +
       "       data_type_id as typeid, \n" +
       "       data_type as type, \n" +
@@ -104,7 +105,7 @@ public class VerticaTableDefinitionReader
     {
       sql = retrieveViewColumns;
     }
-    
+
     try
     {
 
@@ -120,7 +121,10 @@ public class VerticaTableDefinitionReader
         ColumnIdentifier col = new ColumnIdentifier(rs.getString("name"));
         col.setDbmsType(rs.getString("type"));
         col.setIsNullable(!rs.getBoolean("notnullable"));
-        col.setIsAutoincrement(rs.getBoolean("isidentity"));
+        if (rs.getBoolean("isidentity"))
+        {
+          col.setGeneratedColumnType(GeneratedColumnType.autoIncrement);
+        }
         col.setPosition(rs.getInt("position"));
         columns.add(col);
       }

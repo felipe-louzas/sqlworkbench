@@ -22,6 +22,7 @@
 package workbench.db.report;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
 import workbench.db.sqltemplates.ColumnDefinitionTemplate;
 
 import workbench.util.SqlUtil;
@@ -126,9 +127,9 @@ public class ReportColumn
     if (isRealColumn) tagWriter.appendTag(result, myindent, TAG_COLUMN_NULLABLE, this.column.isNullable());
     if (isRealColumn) tagWriter.appendTag(result, myindent, TAG_COLUMN_DEFAULT, getDefaultValue(), true);
     if (isRealColumn) tagWriter.appendTag(result, myindent, TAG_COLUMN_AUTO_INC, this.column.isAutoincrement());
-    if (isRealColumn && this.column.isGenerated())
+    if (isRealColumn && this.column.getGeneratedColumnType() != GeneratedColumnType.none)
     {
-      tagWriter.appendTag(result, myindent, TAG_COLUMN_GENERATED, this.column.isGenerated());
+      tagWriter.appendTag(result, myindent, TAG_COLUMN_GENERATED, this.column.getGeneratedColumnType().toString());
     }
     tagWriter.appendTag(result, myindent, TAG_COLUMN_SIZE, this.column.getColumnSize());
     tagWriter.appendTag(result, myindent, TAG_COLUMN_DIGITS, this.column.getDigitsDisplay());
@@ -136,9 +137,9 @@ public class ReportColumn
     tagWriter.appendTag(result, myindent, TAG_COLUMN_JAVA_TYPE_NAME, SqlUtil.getTypeName(this.column.getDataType()));
     if (isRealColumn)
     {
-      if (StringUtil.isNonBlank(column.getComputedColumnExpression()))
+      if (StringUtil.isNonBlank(column.getGenerationExpression()))
       {
-        tagWriter.appendTag(result, myindent, TAG_COLUMN_COMPUTED_COL, column.getComputedColumnExpression(), true);
+        tagWriter.appendTag(result, myindent, TAG_COLUMN_COMPUTED_COL, column.getGenerationExpression(), true);
       }
       if (StringUtil.isNonBlank(column.getCollation()))
       {

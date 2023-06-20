@@ -36,13 +36,12 @@ import workbench.log.LogMgr;
 
 import workbench.db.ColumnDefinitionEnhancer;
 import workbench.db.ColumnIdentifier;
+import workbench.db.GeneratedColumnType;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -65,7 +64,7 @@ import workbench.util.StringUtil;
 public class SqlServerColumnEnhancer
   implements ColumnDefinitionEnhancer
 {
-  private Map<String, String> defaultCollations = new HashMap<>();
+  private final Map<String, String> defaultCollations = new HashMap<>();
 
   @Override
   public void updateColumnDefinition(TableDefinition table, WbConnection conn)
@@ -157,8 +156,7 @@ public class SqlServerColumnEnhancer
           {
             def = def + " PERSISTED";
           }
-          col.setComputedColumnExpression(def);
-          col.setIsGenerated(true);
+          col.setGeneratedExpression(def, GeneratedColumnType.computed);
         }
 
         if (isNonDefault(collation, defaultCollation))
@@ -182,7 +180,10 @@ public class SqlServerColumnEnhancer
           col.setDbmsType(dataType);
           col.setDataType(Types.OTHER);
         }
-        col.setIsIdentity(col.getDbmsType().toLowerCase().contains("identity"));
+        if (col.getDbmsType().toLowerCase().contains("identity"))
+        {
+          col.setGeneratedColumnType(GeneratedColumnType.identity);
+        }
       }
     }
     catch (Exception e)

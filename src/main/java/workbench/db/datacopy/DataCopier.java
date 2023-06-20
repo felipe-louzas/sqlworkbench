@@ -89,7 +89,7 @@ public class DataCopier
   private TableIdentifier sourceTable;
   private TableIdentifier targetTable;
 
-  private DataImporter importer;
+  private final DataImporter importer;
 
   // columnMap maps columns from the source (table or query) to the target table
   private Map<ColumnIdentifier, ColumnIdentifier> columnMap;
@@ -440,7 +440,7 @@ public class DataCopier
         targetCol.setDecimalDigits(realCol.getDecimalDigits());
         targetCol.setIsNullable(realCol.isNullable());
         targetCol.setIsPkColumn(realCol.isPkColumn());
-        targetCol.setIsAutoincrement(realCol.isAutoincrement());
+        targetCol.setGeneratedColumnType(realCol.getGeneratedColumnType());
       }
     }
   }

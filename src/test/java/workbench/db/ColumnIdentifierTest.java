@@ -153,10 +153,11 @@ public class ColumnIdentifierTest
   public void testCopy()
   {
     ColumnIdentifier col = new ColumnIdentifier("mycol", Types.VARCHAR, true);
-    col.setComputedColumnExpression("other_col * 2");
+    col.setGeneratedExpression("other_col * 2", GeneratedColumnType.computed);
     ColumnIdentifier copy = col.createCopy();
     assertEquals("Copy not equals", true, col.equals(copy));
-    assertEquals("other_col * 2", copy.getComputedColumnExpression());
+    assertEquals("other_col * 2", copy.getGenerationExpression());
+    assertEquals(col.getGeneratedColumnType(), copy.getGeneratedColumnType());
 
     col = new ColumnIdentifier("count(*)", Types.INTEGER, false);
     assertEquals("count(*)", col.getDisplayName());

@@ -886,10 +886,8 @@ public class DataStore
   /**
    * Restore the original column values for all columns that are marked as not modifieable and have been modified.
    *
-   * Because checking the update table might have been initiated by actually editing
- a column value, we need to resetChangedFlags that value if the column(s) in question
- isn't actually updateable.
-   *
+   * Because checking the update table might have been initiated by actually editing a column value,
+   * we need to resetChangedFlags that value if the column(s) in question isn't actually updateable.
    */
   private void restoreModifiedNotUpdateableColumns()
   {
@@ -912,11 +910,10 @@ public class DataStore
 
         if (!canUpdate && isColumnModified(row, col))
         {
-          boolean isComputed = resultInfo.getColumn(col).getComputedColumnExpression() != null;
           LogMgr.logWarning(ci,"Restoring original value for column " + tname + "." + colName + " because column is marked as not updateable. " +
             "(isUpdateable: " + resultInfo.isUpdateable(col) +
             ", isReadonly: " + resultInfo.getColumn(col).isReadonly() +
-            ", isComputed: " + isComputed + ")");
+            ", generationType: " + resultInfo.getColumn(col).getGeneratedColumnType() + ")");
           getRow(row).restoreOriginalValue(col);
         }
         else if (!columnBelongsToUpdateTable(col))
@@ -1217,12 +1214,11 @@ public class DataStore
       String col = resultInfo.getColumnName(colIndex);
       if (!resultInfo.isUpdateable(colIndex) || resultInfo.getColumn(colIndex).isReadonly())
       {
-        boolean isComputed = resultInfo.getColumn(colIndex).getComputedColumnExpression() != null;
         LogMgr.logWarning(new CallerInfo(){},
               "Discarding new value for column " + tname + "." + col + " because column is marked as not updateable. " +
               "(isUpdateable: " + resultInfo.isUpdateable(colIndex) +
               ", isReadonly: " + resultInfo.getColumn(colIndex).isReadonly() +
-              ", isComputed: " + isComputed + ")");
+              ", generationType: " + resultInfo.getColumn(colIndex).getGeneratedColumnType() + ")");
         return;
       }
       else if (!columnBelongsToUpdateTable(colIndex))
