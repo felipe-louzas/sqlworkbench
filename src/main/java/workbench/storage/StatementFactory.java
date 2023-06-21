@@ -34,7 +34,6 @@ import workbench.db.DbSettings;
 import workbench.db.DefaultExpressionBuilder;
 import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
-import workbench.db.GeneratedColumnType;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
@@ -233,25 +232,17 @@ public class StatementFactory
 
   private boolean includeInsertColumn(ColumnIdentifier colId)
   {
-    if (colId.getGeneratedColumnType() == GeneratedColumnType.autoIncrement ||
-        colId.getGeneratedColumnType() == GeneratedColumnType.identity ||
-        colId.getGeneratedColumnType() == GeneratedColumnType.generator)
+    if (colId.isGenerated())
     {
       if (!includeGeneratedColumns)
       {
-        LogMgr.logDebug(new CallerInfo(){}, "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is an auto-increment/identity column");
+        LogMgr.logDebug(new CallerInfo(){}, "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is a generated column");
         return false;
       }
     }
     else
     {
       if (includeReadOnlyColumns) return true;
-
-      if (colId.getGeneratedColumnType() == GeneratedColumnType.computed)
-      {
-        LogMgr.logDebug(new CallerInfo(){}, "Ignoring column " + getTableNameToUse() + "." + colId.getColumnName() + " because it is a computed column");
-        return false;
-      }
 
       if (!colId.isUpdateable() || colId.isReadonly())
       {

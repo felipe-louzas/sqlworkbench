@@ -181,7 +181,10 @@ public class ColumnIdentifier
   }
 
   /**
-   * Returns true if this is some kind of generated column, but not an auto-increment or identity column.
+   * Returns true if this is some kind of generated column.
+   *
+   * If a column is defined as a generated one, it can't be updated directly
+   * or used as the target column in an INSERT statement.
    *
    * Typically {@link #getGeneratorExpression()} is not null if this is true.
    */

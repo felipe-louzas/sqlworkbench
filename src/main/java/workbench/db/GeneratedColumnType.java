@@ -27,6 +27,7 @@ package workbench.db;
 public enum GeneratedColumnType
 {
   none,
+
   /**
    * Identity column as defined in the SQL standard or used by SQL Server
    */
@@ -40,7 +41,12 @@ public enum GeneratedColumnType
   autoIncrement,
 
   /**
-   * Some kind of "generator" column. E.g. DB2's GENERATED AS TRANSACTION START ID
+   * Some kind of "generator" column.
+   *
+   * This is not a "real" computed column, but a
+   * system maintained generation.
+   *
+   * e.g. DB2's GENERATED AS TRANSACTION START ID
    */
   generator,
 
@@ -53,6 +59,8 @@ public enum GeneratedColumnType
 
   /**
    * An expression used in a query at runtime.
+   *
+   * This should never be used for columns of a table definition.
    */
-  runtime
+  runtime;
 }
