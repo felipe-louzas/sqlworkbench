@@ -29,6 +29,7 @@ import workbench.console.ConsoleSettings;
 import workbench.console.RowDisplay;
 
 import workbench.db.DBID;
+import workbench.db.oracle.OracleUtils;
 import workbench.db.postgres.PostgresUtil;
 
 import workbench.storage.DataStore;
@@ -80,11 +81,17 @@ public class WbListCatalogs
     DataStore ds = null;
     String catName = StringUtil.capitalize(currentConnection.getMetadata().getCatalogTerm());
 
-    if (DBID.Postgres.isDB(currentConnection))
+    DBID dbid = DBID.fromConnection(currentConnection);
+    if (dbid == DBID.Postgres)
     {
       cmdLine.parse(getCommandLine(sql));
       boolean verbose = cmdLine.getBoolean(CommonArgs.ARG_VERBOSE, false);
       ds = PostgresUtil.listPgDatabases(currentConnection, verbose);
+    }
+    else if (dbid == DBID.Oracle)
+    {
+      ds = OracleUtils.getPDBs(currentConnection);
+      ds.setResultName("PDBS");
     }
     else
     {
