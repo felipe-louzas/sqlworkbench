@@ -14,6 +14,7 @@
     <entry dev-build="3" type="enh">Code completion now shows comments for tables and columns.</entry>
     <entry dev-build="1" type="enh">Connection profile groups can now be nested.</entry>
     <entry dev-build="1" type="enh">WbExport will now generate a unique sheet name when exporting to an Excel sheet and using -append and no sheet name was specified.</entry>
+    <entry dev-build="5" type="fix">Connection profiles could not be loaded if the stored list of expanded groups contained a non-existing group.</entry>
     <entry dev-build="4" type="fix">Column comments were always retrieved for queries, even if disabled.</entry>
     <entry dev-build="4" type="fix">On Linux, external formatters could not be called due to incorrect quoting of the executable (Issue #39)</entry>
     <entry dev-build="4" type="fix">For PostgreSQL, columns with the data type time could not be exported or copied</entry>

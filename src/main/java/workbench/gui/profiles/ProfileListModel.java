@@ -131,16 +131,10 @@ public class ProfileListModel
     return newPath;
   }
 
-  public DefaultMutableTreeNode findProfileNode(ConnectionProfile profile)
-  {
-    TreePath path = getPath(profile);
-    if (path == null) return null;
-    return (DefaultMutableTreeNode)path.getLastPathComponent();
-  }
-
   public GroupNode findGroupNode(List<String> groupPath)
   {
     if (this.rootNode == null) return null;
+    if (groupPath == null) return null;
     List<GroupNode> nodes = getGroupNodes(rootNode);
     for (GroupNode node : nodes)
     {

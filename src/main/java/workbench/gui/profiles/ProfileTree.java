@@ -359,7 +359,10 @@ public class ProfileTree
     for (String path : groupList)
     {
       TreePath groupPath = toTreePath(path);
-      expandPath(groupPath);
+      if (groupPath != null)
+      {
+        expandPath(groupPath);
+      }
     }
   }
 
@@ -384,6 +387,7 @@ public class ProfileTree
   {
     List<String> groupPath = ProfileKey.parseGroupPath(path);
     GroupNode groupNode = profileModel.findGroupNode(groupPath);
+    if (groupNode == null) return null;
     return new TreePath(groupNode.getPath());
   }
 
