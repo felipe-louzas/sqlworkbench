@@ -50,6 +50,7 @@ import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbDateFormatter;
+import workbench.util.WbNumberFormatter;
 
 /**
  *
@@ -81,6 +82,7 @@ public class SqlLiteralFormatter
   private WbDateFormatter timestampFormatter;
   private WbDateFormatter timestampTZFormatter;
   private WbDateFormatter timeFormatter;
+  private WbNumberFormatter numberFormatter;
   private BlobLiteralFormatter blobFormatter;
   private DataFileWriter blobWriter;
   private DataFileWriter clobWriter;
@@ -89,6 +91,7 @@ public class SqlLiteralFormatter
   private String clobEncoding = Settings.getInstance().getDefaultFileEncoding();
   private boolean isDbId;
   private boolean isOracle;
+  private boolean useNumberFormatter = false;
   private DbSettings dbSettings;
   private boolean checkDBMSTypes;
   private final Set<String> quotedTypes = CollectionUtil.caseInsensitiveSet();
@@ -124,11 +127,17 @@ public class SqlLiteralFormatter
       isDbId = true;
       dbSettings = con.getDbSettings();
       isOracle = DBID.Oracle.isDB(con);
+      useNumberFormatter = dbSettings.useNumberFormatterForLiterals();
       quotedTypes.addAll(dbSettings.getTypesNeedingQuotes());
       structLiteralNeedsQuotes = dbSettings.structLiteralNeedsQuotes();
     }
+    else
+    {
+      useNumberFormatter = Settings.getInstance().getBoolProperty("workbench.sql.literal.number.use.formatter", false);
+    }
     setDateLiteralType(dbid);
     checkDBMSTypes = true;
+    numberFormatter = new WbNumberFormatter(999, '.');
   }
 
   public SqlLiteralFormatter(String dbid)
@@ -156,6 +165,7 @@ public class SqlLiteralFormatter
       isOracle = DBID.Oracle.isDB(con);
       dbSettings = con.getDbSettings();
       quotedTypes.addAll(dbSettings.getTypesNeedingQuotes());
+      useNumberFormatter = dbSettings.useNumberFormatterForLiterals();
       structLiteralNeedsQuotes = dbSettings.structLiteralNeedsQuotes();
       setDateLiteralType(dbid);
     }
@@ -498,6 +508,10 @@ public class SqlLiteralFormatter
 
       // asume the value can be used inside a string literal
       return "'" + value.toString() + "'";
+    }
+    else if (SqlUtil.isNumberType(type) && value instanceof Number && useNumberFormatter)
+    {
+      return numberFormatter.format((Number)value);
     }
     else if (type == Types.OTHER && quotedTypes.contains(dbmsType))
     {

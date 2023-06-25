@@ -2621,6 +2621,11 @@ public class DbSettings
     return getBoolProperty("error.include.warning", true);
   }
 
+  public boolean useNumberFormatterForLiterals()
+  {
+    return getBoolProperty("sql.literal.number.use.formatter", false);
+  }
+
   public boolean supportsFunctionOverloading()
   {
     return getBoolProperty("function.overloading.supported", false);
