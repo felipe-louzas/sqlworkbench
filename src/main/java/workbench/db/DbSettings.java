@@ -879,6 +879,14 @@ public class DbSettings
     return getBoolProperty("indexedviews", false);
   }
 
+  /**
+   * Returns true if {@link DatabaseMetaData#getIndexInfo(String, String, String, boolean, boolean)} is supported.
+   */
+  public boolean indexInfoSupported()
+  {
+    return getBoolProperty("metadata.indexinfo.supported", true);
+  }
+
   public boolean supportsGetPrimaryKeys()
   {
     return getBoolProperty("supportgetpk", true);

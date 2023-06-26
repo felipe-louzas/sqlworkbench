@@ -53,8 +53,8 @@ import workbench.util.StringUtil;
 public class SqlServerSequenceReader
   implements SequenceReader
 {
-  private WbConnection connection;
-  private Set<String> noPrecisionTypes = CollectionUtil.caseInsensitiveSet("tinyint", "smallint", "int", "bigint");
+  private final WbConnection connection;
+  private final Set<String> noPrecisionTypes = CollectionUtil.caseInsensitiveSet("tinyint", "smallint", "int", "bigint");
 
   public SqlServerSequenceReader(WbConnection conn)
   {

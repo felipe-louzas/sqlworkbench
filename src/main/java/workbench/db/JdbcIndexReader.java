@@ -21,6 +21,7 @@
  */
 package workbench.db;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -116,16 +117,20 @@ public class JdbcIndexReader
   }
 
   /**
-   * Return information about the indexes defined for the given table.
+   * Return information about the indexes (and their columns) defined for the given table.
+   *
    * If the TableIdentifier's type is VIEW null will be returned unless
    * the current DBMS supports indexed views.
    * <br/>
    * This is a performance optimization when retrieving a large number
    * of objects (such as for WbSchemaReport or WbGrepSource) in order
    * to minimized the roundtrips to the database.
+   * <br/>
+   * This is a wrapper around {@link DatabaseMetaData#getIndexInfo(String, String, String, boolean, boolean)}
    *
    * @throws java.sql.SQLException
    * @see DbSettings#supportsIndexedViews()
+   * @see DatabaseMetaData#getIndexInfo(String, String, String, boolean, boolean)
   */
   @Override
   public ResultSet getIndexInfo(TableIdentifier table, boolean unique)
@@ -611,14 +616,18 @@ public class JdbcIndexReader
 
 
   /**
-   *  Build the SQL statement to create an Index on the given table.
+   * Build the SQL statement to create an Index on the given table.
    *
-   *  @param aTable      The table name for which the index should be constructed
-   *  @param indexName   The name of the Index
-   *  @param unique      unique index yes/no
-   *  @param columnList  The columns that should build the index
+   * This does not retrieve the source from the database server, but builds the DDL
+   * based on the CREATE INDEX template defined in DbSettings and the passed parameters.
    *
-   *  @return the SQL statement to create the index
+   * @param aTable      The table name for which the index should be constructed
+   * @param indexName   The name of the Index
+   * @param unique      unique index yes/no
+   * @param columnList  The columns that should build the index
+   *
+   * @return the SQL statement to create the index
+   * @see DbSettings#getCreateIndexSQL()
    */
   @Override
   public String buildCreateIndexSql(TableIdentifier aTable, String indexName, boolean unique, List<IndexColumn> columnList)
@@ -828,14 +837,19 @@ public class JdbcIndexReader
   {
     if (table == null) return new ArrayList<>();
 
-    ResultSet idxRs = null;
     TableIdentifier tbl = table.createCopy();
 
     WbConnection conn = metaData.getWbConnection();
     tbl.adjustCase(conn);
 
-    List<IndexDefinition> result = null;
+    if (!metaData.getDbSettings().indexInfoSupported())
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Use of DatabaseMetaData.getIndexInfo() is disabled for DBID=" + metaData.getDbId());
+      return getIndexes(table.getRawCatalog(), table.getRawSchema(), table.getRawTableName(), "%");
+    }
 
+    ResultSet idxRs = null;
+    List<IndexDefinition> result = null;
     Savepoint sp = null;
 
     try
@@ -860,7 +874,7 @@ public class JdbcIndexReader
     catch (Exception e)
     {
       conn.rollback(sp);
-      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve indexes", e);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not retrieve index info", e);
       result = new ArrayList<>(0);
     }
     finally

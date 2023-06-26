@@ -29,6 +29,7 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.db.DbMetadata;
 import workbench.db.DefaultViewReader;
 import workbench.db.DropType;
 import workbench.db.JdbcUtils;
@@ -136,4 +137,12 @@ public class PostgresViewReader
     }
     return result.toString();
   }
+
+  @Override
+  protected boolean supportsIndexesOnView(TableIdentifier view)
+  {
+    if (view == null) return false;
+    return DbMetadata.MVIEW_NAME.equalsIgnoreCase(view.getType());
+  }
+
 }

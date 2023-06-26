@@ -57,6 +57,7 @@ public enum DBID
   Yugabyte("yugabyte"),
   UCanAccess("ucanaccess"),
   NuoDB("nuodb"),
+  DuckDB("duckdb"),
   Unknown("_$unknown$_");
 
   private final String dbid;

@@ -33,6 +33,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -214,10 +215,10 @@ public class DbExplorerPanel
       reloadButton.setMargin(WbToolbarButton.SMALL_MARGIN);
 
       selectorPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
-      selectorPanel.add(schemaLabel);
-      selectorPanel.add(schemaSelector);
       selectorPanel.add(catalogLabel);
       selectorPanel.add(catalogSelector);
+      selectorPanel.add(schemaLabel);
+      selectorPanel.add(schemaSelector);
       selectorPanel.add(reloadButton);
 
       this.add(selectorPanel, BorderLayout.NORTH);
@@ -263,10 +264,6 @@ public class DbExplorerPanel
     if (schemaSelector.isVisible())
     {
       startRetrieveSchemas(false);
-    }
-    else if (catalogSelector.isVisible())
-    {
-      readCatalogs();
     }
   }
 
@@ -427,6 +424,7 @@ public class DbExplorerPanel
       @Override
       public void run()
       {
+        readCatalogs();
         retrieveAndShowSchemas(checkWorkspace);
       }
     };
@@ -464,6 +462,19 @@ public class DbExplorerPanel
 
       String currentSchema = null;
       boolean workspaceSchema = false;
+
+      try
+      {
+        if (this.dbConnection.getDbSettings().supportsCatalogs())
+        {
+          readCatalogs();
+        }
+      }
+      catch (Exception ex)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Could not read catalogs", ex);
+      }
+
       if (checkWorkspace && this.dbConnection.getProfile().getStoreExplorerSchema())
       {
         currentSchema = this.schemaFromWorkspace;
@@ -522,18 +533,6 @@ public class DbExplorerPanel
         this.schemaSelector.setVisible(false);
         this.schemaLabel.setVisible(false);
         currentSchema = null;
-      }
-
-      try
-      {
-        if (this.dbConnection.getDbSettings().supportsCatalogs())
-        {
-          readCatalogs();
-        }
-      }
-      catch (Exception ex)
-      {
-        LogMgr.logError(new CallerInfo(){}, "Could not read catalogs", ex);
       }
 
       String catalog = getSelectedCatalog();
@@ -664,6 +663,7 @@ public class DbExplorerPanel
 
     try
     {
+      catalogSelector.setVisible(dbConnection.getDbSettings().supportsCatalogs());
       if (this.connectionSelector != null)
       {
         // always switch database/catalog if in stand-alone mode
@@ -711,7 +711,16 @@ public class DbExplorerPanel
 
   private void readCatalogs()
   {
-    List<String> catalogs = this.dbConnection.getMetadata().getCatalogInformation(dbConnection.getCatalogFilter());
+    List<String> catalogs;
+    if (dbConnection.getDbSettings().supportsCatalogs())
+    {
+      catalogs = this.dbConnection.getMetadata().getCatalogInformation(dbConnection.getCatalogFilter());
+    }
+    else
+    {
+      catalogs = new ArrayList<>();
+    }
+
     this.catalogSelector.removeActionListener(this);
     if (catalogs.isEmpty())
     {
@@ -923,6 +932,7 @@ public class DbExplorerPanel
 
           if (schemaRetrievePending)
           {
+            readCatalogs();
             retrieveAndShowSchemas(true);
           }
 

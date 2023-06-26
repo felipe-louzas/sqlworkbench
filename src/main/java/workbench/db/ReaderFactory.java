@@ -28,6 +28,7 @@ import workbench.db.cubrid.CubridSequenceReader;
 import workbench.db.derby.DerbyConstraintReader;
 import workbench.db.derby.DerbySequenceReader;
 import workbench.db.derby.DerbySynonymReader;
+import workbench.db.duckdb.DuckDBSequenceReader;
 import workbench.db.firebird.FirebirdConstraintReader;
 import workbench.db.firebird.FirebirdIndexReader;
 import workbench.db.firebird.FirebirdProcedureReader;
@@ -97,6 +98,8 @@ import workbench.db.redshift.RedshiftUDFReader;
 import workbench.db.teradata.TeradataIndexReader;
 import workbench.db.teradata.TeradataProcedureReader;
 import workbench.db.vertica.VerticaSequenceReader;
+
+import static workbench.db.DBID.*;
 
 /**
  * A factory to create instances of the various readers specific for a DBMS.
@@ -202,6 +205,8 @@ public class ReaderFactory
         {
           return new MariaDBSequenceReader(con);
         }
+      case DuckDB:
+        return new DuckDBSequenceReader(con);
     }
     if (con.getDbId().equals("nuodb"))
     {

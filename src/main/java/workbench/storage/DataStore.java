@@ -1130,6 +1130,12 @@ public class DataStore
     }
   }
 
+  public long getValueAsLong(int row, String columnName, long defaultValue)
+  {
+    int colIndex = findColumn(columnName);
+    return getValueAsLong(row, colIndex, defaultValue);
+  }
+  
   /**
    * Return the value of a column as an long value.
    *

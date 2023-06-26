@@ -493,5 +493,39 @@ where tbl.relkind = 'r'
    </object>
   </void>
 
+  <void method="put">
+   <string>DuckDB</string>
+   <object class="workbench.db.GetMetaDataSql">
+    <void property="baseSql">
+     <string>
+SELECT /* SQLWorkbench */ index_name,
+       schema_name as index_schema,
+       schema_name as table_schema,
+       database_name as table_catalog,
+       table_name,
+       null as index_type,
+       case is_unique
+         when true then 'YES'
+         else 'NO'
+       end as is_unique,
+       'NO' as is_pk,
+       null as index_def,
+       null as index_tablespace
+FROM duckdb_indexes()
+     </string>
+    </void>
+    <void property="schemaField">
+     <string>schema_name</string>
+    </void>
+    <void property="baseObjectNameField">
+     <string>table_name</string>
+    </void>
+    <void property="objectNameField">
+     <string>index_name</string>
+    </void>
+   </object>
+  </void>
+
+
  </object>
 </java>

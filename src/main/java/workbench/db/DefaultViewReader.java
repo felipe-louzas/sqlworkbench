@@ -238,18 +238,19 @@ public class DefaultViewReader
       result.append(lineEnding);
     }
 
-    // Oracle and MS SQL Server support materialized views. For those
-    // the index definitions are of interest as well.
-    List<IndexDefinition> indexInfo = connection.getMetadata().getIndexReader().getTableIndexList(viewTable, true);
-    if (indexInfo.size() > 0)
+    if (supportsIndexesOnView(viewTable))
     {
-      StringBuilder idx = this.connection.getMetadata().getIndexReader().getIndexSource(viewTable, indexInfo);
-      if (idx != null && idx.length() > 0)
+      List<IndexDefinition> indexInfo = connection.getMetadata().getIndexReader().getTableIndexList(viewTable, true);
+      if (indexInfo.size() > 0)
       {
-        result.append(lineEnding);
-        result.append(lineEnding);
-        result.append(idx);
-        result.append(lineEnding);
+        StringBuilder idx = this.connection.getMetadata().getIndexReader().getIndexSource(viewTable, indexInfo);
+        if (idx != null && idx.length() > 0)
+        {
+          result.append(lineEnding);
+          result.append(lineEnding);
+          result.append(idx);
+          result.append(lineEnding);
+        }
       }
     }
 
@@ -258,6 +259,11 @@ public class DefaultViewReader
       result.append("COMMIT;");
     }
     return result;
+  }
+
+  protected boolean supportsIndexesOnView(TableIdentifier view)
+  {
+    return connection.getDbSettings().supportsIndexedViews();
   }
 
   /**

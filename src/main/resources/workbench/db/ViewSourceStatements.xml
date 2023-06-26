@@ -586,5 +586,22 @@ FROM _SYSTEM.SYS_TABLES
    </object>
   </void>
 
+  <void method="put">
+    <string>DuckDB</string>
+    <object class="workbench.db.GetMetaDataSql">
+      <void property="baseSql">
+        <string>select sql from duckdb_views()</string>
+      </void>
+      <void property="objectNameField">
+        <string>view_name</string>
+      </void>
+      <void property="catalogField">
+        <string>database_name</string>
+      </void>
+      <void property="schemaField">
+        <string>schema_name</string>
+      </void>
+    </object>
+  </void>
  </object>
 </java>
