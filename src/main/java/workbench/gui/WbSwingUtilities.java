@@ -107,7 +107,7 @@ import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
 /**
- * Some helper functions to deal with Swing stuff
+ * Some helper functions to deal with Swing stuff.
  *
  * @author Thomas Kellerer
  */
@@ -1243,12 +1243,15 @@ public class WbSwingUtilities
     });
   }
 
-  public static void repaintLater(final Component c)
+  public static void repaintLater(final Component... components)
   {
-    if (c == null) return;
+    if (components == null) return;
     EventQueue.invokeLater(() ->
     {
-      callRepaint(c);
+      for (Component c : components)
+      {
+        callRepaint(c);
+      }
     });
   }
 
@@ -1780,7 +1783,7 @@ public class WbSwingUtilities
   public static void adjustRowHeight(JTable table)
   {
     if (table == null) return;
-    
+
     Font f = table.getFont();
     if (f == null) return;
 

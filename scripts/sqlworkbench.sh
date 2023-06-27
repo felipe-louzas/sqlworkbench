@@ -46,8 +46,12 @@ then
 fi
 
 # When running in batch mode on a system with no X11 installed, the option
-#   -Djava.awt.headless=true
+#   OPTS="$OPTS -Djava.awt.headless=true"
 # might be needed for some combinations of OS and JDK
+#
+# For MacOS,
+#   OPTS="$OPTS -Dapple.awt.brushMetalLook=true"
+# might be needed to get a more "native" look and feel
 
 exec "$JAVACMD"  $OPTS \
                 -Dvisualvm.display.name=SQLWorkbench/J -cp "$cp" workbench.WbStarter "$@"

@@ -742,14 +742,14 @@ public class GuiSettings
     Settings.getInstance().setProperty("workbench.gui.dynamiclayout", flag);
   }
 
-  public static boolean getRestoreExpandedProfiles()
+  public static boolean getRestoreExpandedProfileGroups()
   {
-    return Settings.getInstance().getBoolProperty("workbench.gui.profiles.restored.expanded", true);
+    return Settings.getInstance().getBoolProperty("workbench.gui.profiles.restore.expanded", true);
   }
 
-  public static void setRestoreExpandedProfiles(boolean flag)
+  public static void setRestoreExpandedProfileGroups(boolean flag)
   {
-    Settings.getInstance().setProperty("workbench.gui.profiles.restored.expanded", flag);
+    Settings.getInstance().setProperty("workbench.gui.profiles.restore.expanded", flag);
   }
 
   public static int getProfileDividerLocation()
@@ -810,16 +810,6 @@ public class GuiSettings
   public static String getLookAndFeelClass()
   {
     return Settings.getInstance().getProperty("workbench.gui.lookandfeelclass", "");
-  }
-
-  public static Boolean getUseBrushedMetal()
-  {
-    return Boolean.valueOf(Settings.getInstance().getBoolProperty("workbench.gui.macos.brushedmetal", false));
-  }
-
-  public static void setUseBrushedMetal(boolean flag)
-  {
-    Settings.getInstance().setProperty("workbench.gui.macos.brushedmetal", flag);
   }
 
   public static final int SHOW_NO_FILENAME = 0;

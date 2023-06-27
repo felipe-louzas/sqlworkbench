@@ -25,7 +25,6 @@ import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -52,8 +51,6 @@ import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
-import workbench.db.KeepAliveDaemon;
-
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.MasterPasswordDialog;
@@ -61,7 +58,6 @@ import workbench.gui.components.WbLabelField;
 import workbench.gui.sql.IconHandler;
 
 import workbench.util.GlobalPasswordManager;
-import workbench.util.MacOSHelper;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbLocale;
@@ -84,20 +80,12 @@ public class GeneralOptionsPanel
     Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, 4, 0));
     jPanel2.setBorder(b);
     jPanel1.setBorder(b);
-    jPanel4.setBorder(new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, 10, 0)));
 
     if (LogMgr.isTraceEnabled())
     {
       DefaultComboBoxModel model = (DefaultComboBoxModel)logLevel.getModel();
       model.addElement("TRACE");
     }
-
-    brushedMetal.setVisible(MacOSHelper.isMacOS());
-    brushedMetal.setEnabled(MacOSHelper.isMacOS());
-    useSystemTray.setVisible(SystemTray.isSupported());
-    WbSwingUtilities.repaintLater(iconCombobox);
-    WbSwingUtilities.repaintLater(cancelIconCombo);
-    useSystemTray.setEnabled(SystemTray.isSupported());
   }
 
   @Override
@@ -147,19 +135,11 @@ public class GeneralOptionsPanel
     scrollTabs.setSelected(tabPolicy == JTabbedPane.SCROLL_TAB_LAYOUT);
     confirmTabClose.setSelected(GuiSettings.getConfirmTabClose());
     confirmMultiTabClose.setSelected(GuiSettings.getConfirmMultipleTabClose());
-    brushedMetal.setSelected(GuiSettings.getUseBrushedMetal());
     showTabCloseButton.setSelected(GuiSettings.getShowSqlTabCloseButton());
     showResultTabClose.setSelected(GuiSettings.getShowResultTabCloseButton());
     onlyActiveTab.setSelected(GuiSettings.getCloseActiveTabOnly());
     closeButtonRightSide.setSelected(GuiSettings.getShowCloseButtonOnRightSide());
     tabLRUclose.setSelected(GuiSettings.getUseLRUForTabs());
-    showFinishAlert.setSelected(GuiSettings.showScriptFinishedAlert());
-    useSystemTray.setEnabled(SystemTray.isSupported() && GuiSettings.showScriptFinishedAlert());
-    useSystemTray.setSelected(GuiSettings.useSystemTrayForAlert());
-    long duration = GuiSettings.getScriptFinishedAlertDuration();
-    String durationDisplay = KeepAliveDaemon.getTimeDisplay(duration);
-    alertDuration.setText(durationDisplay);
-    alertDuration.setEnabled(showFinishAlert.isSelected());
     logAllStatements.setSelected(Settings.getInstance().getLogAllStatements());
     logMetaSQL.setSelected(Settings.getInstance().getDebugMetadataSql());
     obfuscateDbInfo.setSelected(Settings.getInstance().getObfuscateLogInformation());
@@ -168,6 +148,7 @@ public class GeneralOptionsPanel
     focusToQuickFilter.setSelected(GuiSettings.focusToProfileQuickFilter());
     showMenuIcons.setSelected(GuiSettings.showMenuIcons());
     varsPerWindow.setSelected(Settings.getInstance().useWindowSpecificVariables());
+    restoreExpandedGroups.setSelected(GuiSettings.getRestoreExpandedProfileGroups());
     String iconName = Settings.getInstance().getProperty(IconHandler.PROP_LOADING_IMAGE, IconHandler.DEFAULT_BUSY_IMAGE);
     LoadingImage img = new LoadingImage();
     img.setName(iconName);
@@ -203,6 +184,7 @@ public class GeneralOptionsPanel
     GuiSettings.setEnableProfileQuickFilter(enableQuickFilter.isSelected());
     GuiSettings.setFocusToProfileQuickFilter(focusToQuickFilter.isSelected());
     GuiSettings.setShowMenuIcons(showMenuIcons.isSelected());
+    GuiSettings.setRestoreExpandedProfileGroups(restoreExpandedGroups.isSelected());
     set.setConsolidateLogMsg(this.consolidateLog.isSelected());
     set.setExitOnFirstConnectCancel(exitOnConnectCancel.isSelected());
     set.setShowConnectDialogOnStartup(autoConnect.isSelected());
@@ -223,20 +205,8 @@ public class GeneralOptionsPanel
     {
       set.setProperty(Settings.PROPERTY_TAB_POLICY, JTabbedPane.WRAP_TAB_LAYOUT);
     }
-    if (brushedMetal.isVisible())
-    {
-      GuiSettings.setUseBrushedMetal(brushedMetal.isSelected());
-    }
     GuiSettings.setUseLRUForTabs(tabLRUclose.isSelected());
-    GuiSettings.setShowScriptFinishedAlert(showFinishAlert.isSelected());
-    String v = alertDuration.getText().trim();
-    long duration = KeepAliveDaemon.parseTimeInterval(v);
-    GuiSettings.setScriptFinishedAlertDuration(duration);
     set.setSaveProfilesImmediately(autoSaveProfiles.isSelected());
-    if (SystemTray.isSupported())
-    {
-      GuiSettings.setUseSystemTrayForAlert(useSystemTray.isSelected());
-    }
     LoadingImage img = (LoadingImage)iconCombobox.getSelectedItem();
     set.setProperty(IconHandler.PROP_LOADING_IMAGE, img.getName());
 
@@ -296,13 +266,13 @@ public class GeneralOptionsPanel
     exitOnConnectCancel = new JCheckBox();
     autoConnect = new JCheckBox();
     singlePageHelp = new JCheckBox();
-    brushedMetal = new JCheckBox();
     autoSaveProfiles = new JCheckBox();
     enableQuickFilter = new JCheckBox();
     showMenuIcons = new JCheckBox();
     focusToQuickFilter = new JCheckBox();
     masterPwdButton = new JButton();
     varsPerWindow = new JCheckBox();
+    restoreExpandedGroups = new JCheckBox();
     settingsfilename = new WbLabelField();
     jPanel1 = new JPanel();
     showTabIndex = new JCheckBox();
@@ -322,11 +292,6 @@ public class GeneralOptionsPanel
     jPanel3 = new JPanel();
     logLevelLabel = new JLabel();
     logLevel = new JComboBox();
-    jPanel4 = new JPanel();
-    showFinishAlert = new JCheckBox();
-    jLabel2 = new JLabel();
-    alertDuration = new JTextField();
-    useSystemTray = new JCheckBox();
     jPanel5 = new JPanel();
     langLabel = new JLabel();
     languageDropDown = new JComboBox();
@@ -393,16 +358,6 @@ public class GeneralOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(singlePageHelp, gridBagConstraints);
-
-    brushedMetal.setText(ResourceMgr.getString("LblBrushedMetal")); // NOI18N
-    brushedMetal.setToolTipText(ResourceMgr.getString("d_LblBrushedMetal")); // NOI18N
-    brushedMetal.setBorder(null);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 4;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(0, 10, 4, 0);
-    jPanel2.add(brushedMetal, gridBagConstraints);
 
     autoSaveProfiles.setSelected(Settings.getInstance().getConsolidateLogMsg());
     autoSaveProfiles.setText(ResourceMgr.getString("LblAutoSaveProfiles")); // NOI18N
@@ -481,6 +436,16 @@ public class GeneralOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(0, 10, 4, 0);
     jPanel2.add(varsPerWindow, gridBagConstraints);
+
+    restoreExpandedGroups.setText(ResourceMgr.getString("LblRestoreExpandedGroups")); // NOI18N
+    restoreExpandedGroups.setBorder(null);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new Insets(0, 0, 4, 0);
+    jPanel2.add(restoreExpandedGroups, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -686,55 +651,6 @@ public class GeneralOptionsPanel
     gridBagConstraints.insets = new Insets(0, 10, 0, 10);
     add(logLevel, gridBagConstraints);
 
-    jPanel4.setLayout(new GridBagLayout());
-
-    showFinishAlert.setText(ResourceMgr.getString("LblShowScriptEndAlert")); // NOI18N
-    showFinishAlert.setBorder(null);
-    showFinishAlert.addActionListener(this);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    jPanel4.add(showFinishAlert, gridBagConstraints);
-
-    jLabel2.setText(ResourceMgr.getString("LblScriptEndAlertDuration")); // NOI18N
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(4, 19, 0, 0);
-    jPanel4.add(jLabel2, gridBagConstraints);
-
-    alertDuration.setColumns(8);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(4, 8, 0, 0);
-    jPanel4.add(alertDuration, gridBagConstraints);
-
-    useSystemTray.setText(ResourceMgr.getString("LblAlertSysTray")); // NOI18N
-    useSystemTray.setBorder(null);
-    useSystemTray.setMargin(new Insets(0, 0, 0, 0));
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(0, 8, 0, 0);
-    jPanel4.add(useSystemTray, gridBagConstraints);
-
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(5, 0, 0, 0);
-    add(jPanel4, gridBagConstraints);
-
     jPanel5.setLayout(new GridBagLayout());
 
     langLabel.setText(ResourceMgr.getString("LblLanguage")); // NOI18N
@@ -775,11 +691,14 @@ public class GeneralOptionsPanel
     daysLabel.setText(ResourceMgr.getString("LblUpdDays")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
     jPanel5.add(daysLabel, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridwidth = 4;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     add(jPanel5, gridBagConstraints);
 
     logAllStatements.setText(ResourceMgr.getString("LblLogAllSql")); // NOI18N
@@ -840,17 +759,7 @@ public class GeneralOptionsPanel
     {
       GeneralOptionsPanel.this.masterPwdButtonActionPerformed(evt);
     }
-    else if (evt.getSource() == showFinishAlert)
-    {
-      GeneralOptionsPanel.this.showFinishAlertActionPerformed(evt);
-    }
   }// </editor-fold>//GEN-END:initComponents
-
-  private void showFinishAlertActionPerformed(ActionEvent evt)//GEN-FIRST:event_showFinishAlertActionPerformed
-  {//GEN-HEADEREND:event_showFinishAlertActionPerformed
-    this.alertDuration.setEnabled(showFinishAlert.isSelected());
-    this.useSystemTray.setEnabled(SystemTray.isSupported() && showFinishAlert.isSelected());
-  }//GEN-LAST:event_showFinishAlertActionPerformed
 
   private void masterPwdButtonActionPerformed(ActionEvent evt)//GEN-FIRST:event_masterPwdButtonActionPerformed
   {//GEN-HEADEREND:event_masterPwdButtonActionPerformed
@@ -881,10 +790,8 @@ public class GeneralOptionsPanel
   }//GEN-LAST:event_masterPwdButtonActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private JTextField alertDuration;
   private JCheckBox autoConnect;
   private JCheckBox autoSaveProfiles;
-  private JCheckBox brushedMetal;
   private JLabel busyIconLabel;
   private JComboBox cancelIconCombo;
   private JLabel cancelIconLabel;
@@ -899,11 +806,9 @@ public class GeneralOptionsPanel
   private JCheckBox focusToQuickFilter;
   private JComboBox iconCombobox;
   private JPanel imagePanel;
-  private JLabel jLabel2;
   private JPanel jPanel1;
   private JPanel jPanel2;
   private JPanel jPanel3;
-  private JPanel jPanel4;
   private JPanel jPanel5;
   private JLabel langLabel;
   private JComboBox languageDropDown;
@@ -915,9 +820,9 @@ public class GeneralOptionsPanel
   private JButton masterPwdButton;
   private JCheckBox obfuscateDbInfo;
   private JCheckBox onlyActiveTab;
+  private JCheckBox restoreExpandedGroups;
   private JCheckBox scrollTabs;
   private JTextField settingsfilename;
-  private JCheckBox showFinishAlert;
   private JCheckBox showMenuIcons;
   private JCheckBox showResultTabClose;
   private JCheckBox showTabCloseButton;
@@ -925,7 +830,6 @@ public class GeneralOptionsPanel
   private JCheckBox singlePageHelp;
   private JCheckBox tabLRUclose;
   private JTextField updateInterval;
-  private JCheckBox useSystemTray;
   private JCheckBox varsPerWindow;
   // End of variables declaration//GEN-END:variables
 

@@ -3888,6 +3888,7 @@ public class Settings
       props.setProperty("workbench.db.postgresql.fk.inline", "true");
     }
     renameProperty("workbench.gui.selection.summar", "workbench.gui.data.selection.summary");
+    renameProperty("workbench.gui.profiles.restored.expanded", "workbench.gui.profiles.restore.expanded");
   }
 
   private void renameProperty(String oldKey, String newKey)

@@ -452,7 +452,7 @@ public class ProfileSelectionPanel
     }
     this.jSplitPane.setDividerLocation(pos);
 
-    if (GuiSettings.getRestoreExpandedProfiles())
+    if (GuiSettings.getRestoreExpandedProfileGroups())
     {
       String groups = Settings.getInstance().getProperty("workbench.profiles.expandedgroups", null);
       List<String> l = StringUtil.stringToList(groups, ",", true, true);

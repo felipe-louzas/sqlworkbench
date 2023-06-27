@@ -25,6 +25,7 @@ import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -39,6 +40,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import workbench.interfaces.Restoreable;
 import workbench.resource.ErrorPromptType;
@@ -46,9 +49,11 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
+import workbench.db.KeepAliveDaemon;
+
+import workbench.gui.components.DividerBorder;
 import workbench.gui.components.TextFieldWidthAdjuster;
 import workbench.gui.help.HelpManager;
-
 
 /**
  *
@@ -65,7 +70,9 @@ public class SqlExecOptionsPanel
     initComponents();
     TextFieldWidthAdjuster adjuster = new TextFieldWidthAdjuster();
     adjuster.adjustAllFields(this);
-
+    useSystemTray.setVisible(SystemTray.isSupported());
+    useSystemTray.setEnabled(SystemTray.isSupported());
+    jPanel4.setBorder(new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(5, 0, 0, 0)));
   }
 
   @Override
@@ -111,6 +118,14 @@ public class SqlExecOptionsPanel
     ErrorPromptType type = GuiSettings.getErrorPromptType();
     promptType.setSelectedIndex(promptTypeToIndex(type));
     setTypeTooltip();
+
+    showFinishAlert.setSelected(GuiSettings.showScriptFinishedAlert());
+    useSystemTray.setEnabled(SystemTray.isSupported() && GuiSettings.showScriptFinishedAlert());
+    useSystemTray.setSelected(GuiSettings.useSystemTrayForAlert());
+    long duration = GuiSettings.getScriptFinishedAlertDuration();
+    String durationDisplay = KeepAliveDaemon.getTimeDisplay(duration);
+    alertDuration.setText(durationDisplay);
+    alertDuration.setEnabled(showFinishAlert.isSelected());
   }
 
   @Override
@@ -145,6 +160,16 @@ public class SqlExecOptionsPanel
     GuiSettings.setShowScriptFinishTime(showScriptEndTime.isSelected());
     GuiSettings.setShowScriptStmtFinishTime(showStmtEndTime.isSelected());
     GuiSettings.setShowScriptProgress(showScriptProgress.isSelected());
+
+    GuiSettings.setShowScriptFinishedAlert(showFinishAlert.isSelected());
+    String v = alertDuration.getText().trim();
+    long duration = KeepAliveDaemon.parseTimeInterval(v);
+    GuiSettings.setScriptFinishedAlertDuration(duration);
+    if (SystemTray.isSupported())
+    {
+      GuiSettings.setUseSystemTrayForAlert(useSystemTray.isSelected());
+    }
+
   }
 
   private void setTypeTooltip()
@@ -213,6 +238,11 @@ public class SqlExecOptionsPanel
     cbxDbName = new JComboBox();
     jLabel1 = new JLabel();
     promptType = new JComboBox();
+    jPanel4 = new JPanel();
+    showFinishAlert = new JCheckBox();
+    jLabel2 = new JLabel();
+    alertDuration = new JTextField();
+    useSystemTray = new JCheckBox();
 
     setLayout(new GridBagLayout());
 
@@ -359,7 +389,6 @@ public class SqlExecOptionsPanel
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(13, 0, 0, 0);
     add(jPanel2, gridBagConstraints);
 
@@ -406,6 +435,56 @@ public class SqlExecOptionsPanel
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.insets = new Insets(1, 11, 0, 0);
     add(promptType, gridBagConstraints);
+
+    jPanel4.setLayout(new GridBagLayout());
+
+    showFinishAlert.setText(ResourceMgr.getString("LblShowScriptEndAlert")); // NOI18N
+    showFinishAlert.setBorder(null);
+    showFinishAlert.addActionListener(this);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    jPanel4.add(showFinishAlert, gridBagConstraints);
+
+    jLabel2.setText(ResourceMgr.getString("LblScriptEndAlertDuration")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(4, 19, 0, 0);
+    jPanel4.add(jLabel2, gridBagConstraints);
+
+    alertDuration.setColumns(8);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(4, 8, 0, 0);
+    jPanel4.add(alertDuration, gridBagConstraints);
+
+    useSystemTray.setText(ResourceMgr.getString("LblAlertSysTray")); // NOI18N
+    useSystemTray.setBorder(null);
+    useSystemTray.setMargin(new Insets(0, 0, 0, 0));
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(0, 8, 0, 0);
+    jPanel4.add(useSystemTray, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridwidth = 4;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(10, 0, 0, 0);
+    add(jPanel4, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -419,6 +498,10 @@ public class SqlExecOptionsPanel
     else if (evt.getSource() == promptType)
     {
       SqlExecOptionsPanel.this.promptTypeActionPerformed(evt);
+    }
+    else if (evt.getSource() == showFinishAlert)
+    {
+      SqlExecOptionsPanel.this.showFinishAlertActionPerformed(evt);
     }
   }
 
@@ -450,7 +533,14 @@ public class SqlExecOptionsPanel
     setTypeTooltip();
   }//GEN-LAST:event_promptTypeActionPerformed
 
+  private void showFinishAlertActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showFinishAlertActionPerformed
+  {//GEN-HEADEREND:event_showFinishAlertActionPerformed
+    this.alertDuration.setEnabled(showFinishAlert.isSelected());
+    this.useSystemTray.setEnabled(SystemTray.isSupported() && showFinishAlert.isSelected());
+  }//GEN-LAST:event_showFinishAlertActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private JTextField alertDuration;
   private JCheckBox allowEditDuringExec;
   private JLabel altDelimLabel;
   private JTextField alternateDelimiter;
@@ -461,15 +551,19 @@ public class SqlExecOptionsPanel
   private JCheckBox hiliteCurrent;
   private JCheckBox hiliteError;
   private JLabel jLabel1;
+  private JLabel jLabel2;
   private JPanel jPanel2;
   private JPanel jPanel3;
+  private JPanel jPanel4;
   private JCheckBox jumpToError;
   private JCheckBox keepHilite;
   private JComboBox promptType;
+  private JCheckBox showFinishAlert;
   private JCheckBox showScriptEndTime;
   private JCheckBox showScriptProgress;
   private JCheckBox showStmtEndTime;
   private JCheckBox useCurrentLineStmt;
+  private JCheckBox useSystemTray;
   // End of variables declaration//GEN-END:variables
 
 }
