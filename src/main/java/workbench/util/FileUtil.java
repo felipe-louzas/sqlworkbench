@@ -587,10 +587,9 @@ public class FileUtil
 
     List<WbFile> result = new ArrayList<>();
 
-    try
+    LogMgr.logDebug(new CallerInfo(){}, "Looking for files matching " + f.getName() + " in " + parentDir.getAbsolutePath());
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(parentDir.toPath(), f.getName());)
     {
-      LogMgr.logDebug(new CallerInfo(){}, "Looking for files matching " + f.getName() + " in " + parentDir.toPath());
-      DirectoryStream<Path> stream = Files.newDirectoryStream(parentDir.toPath(), f.getName());
       for (Path file : stream)
       {
         result.add(new WbFile(file.toFile()));

@@ -522,7 +522,6 @@ public class ProfileListModel
     }
   }
 
-
   private ConnectionProfile findOriginalProfile(ConnectionProfile copy)
   {
     if (copy == null) return null;
@@ -531,6 +530,18 @@ public class ProfileListModel
       if (copy.equals(profile)) return profile;
     }
     return null;
+  }
+
+  public void moveProfiles(List<ProfileNode> profiles, GroupNode targetGroup)
+  {
+    if (CollectionUtil.isEmpty(profiles) || targetGroup == null) return;
+
+    for (ProfileNode profile : profiles)
+    {
+      if (profile == null) continue;
+      insertNodeInto(profile, targetGroup, targetGroup.getChildCount());
+    }
+    targetGroup.updateProfileGroups();
   }
 
   public DefaultMutableTreeNode moveProfilesToGroup(List<ConnectionProfile> droppedProfiles, GroupNode targetGroup)

@@ -63,6 +63,33 @@ public class GroupNode
     return -1;
   }
 
+  /**
+   * Returns all profile nodes from this group and any child group.
+   */
+  public List<ProfileNode> getProfileNodes()
+  {
+    return getProfileNodes(this);
+  }
+
+  private List<ProfileNode> getProfileNodes(GroupNode node)
+  {
+    List<ProfileNode> profiles = new ArrayList<>();
+    int count = node.getChildCount();
+    for (int i = 0; i < count; i++)
+    {
+      DefaultMutableTreeNode child  = (DefaultMutableTreeNode)node.getChildAt(i);
+      if (child instanceof ProfileNode)
+      {
+        profiles.add((ProfileNode)child);
+      }
+      else if (child instanceof GroupNode)
+      {
+        profiles.addAll(getProfileNodes((GroupNode)child));
+      }
+    }
+    return profiles;
+  }
+
   public void updateProfileGroups()
   {
     updateProfileGroups(this);

@@ -187,43 +187,45 @@ public class ProfileTree
     if (path == null) return;
     if (path.length == 0) return;
 
-    DefaultMutableTreeNode group = (DefaultMutableTreeNode)path[0].getPathComponent(1);
-    DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode)path[0].getLastPathComponent();
-    int newIndex = getModel().getIndexOfChild(group, firstNode);
-    if (newIndex > 0)
-    {
-      newIndex--;
-    }
+    int indexInLastParent = -1;
+    TreeNode lastParent = null;
 
     for (TreePath element : path)
     {
       TreeNode node = (TreeNode) element.getLastPathComponent();
+
+      lastParent = node.getParent();
+      indexInLastParent = lastParent.getIndex(node);
+
       if (node instanceof ProfileNode)
       {
         getModel().deleteProfile((ProfileNode)node);
       }
       else if (node instanceof GroupNode)
       {
-        if (!checkGroupWithProfiles((GroupNode)node))
+        if (checkGroupWithProfiles((GroupNode)node))
         {
-          return;
+          getModel().removeGroupNode((GroupNode)node);
         }
-        getModel().removeGroupNode((GroupNode)node);
       }
     }
 
-    if (group.getChildCount() > 0)
+    if (lastParent != null && lastParent.getChildCount() > 0)
     {
-      Object newChild = getModel().getChild(group, newIndex);
-      TreePath newPath = new TreePath(new Object[]{getModel().getRoot(), group, newChild});
+      int newIndex = indexInLastParent > 1 ? indexInLastParent - 1 : 0;
+      DefaultMutableTreeNode toSelect = (DefaultMutableTreeNode)lastParent.getChildAt(newIndex);
+      TreePath newPath = new TreePath(toSelect.getPath());
       selectPath(newPath);
     }
   }
 
   private boolean checkGroupWithProfiles(GroupNode groupNode)
   {
+    if (groupNode.getChildCount() == 0) return true;
+
     List<String> groups = getModel().getGroups();
     JPanel p = new JPanel();
+
     DefaultComboBoxModel m = new DefaultComboBoxModel(groups.toArray());
     JComboBox groupBox = new JComboBox(m);
     groupBox.setSelectedIndex(0);
@@ -253,8 +255,8 @@ public class ProfileTree
       {
         return false;
       }
-
-      //getModel().moveProfilesToGroup(groupNode, group);
+      GroupNode targetGroup = getModel().findGroupNode(ProfileKey.parseGroupPath(group));
+      getModel().moveProfiles(groupNode.getProfileNodes(), targetGroup);
       return true;
     }
     else if (result == 1)

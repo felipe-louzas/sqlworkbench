@@ -145,13 +145,13 @@ public class FileVersioner
   {
     if (!target.exists()) return 1;
 
-    Path dir = getTargetDir(target).toPath();
-    if (!dir.toFile().exists()) return 1;
+    File targetDir = getTargetDir(target);
+    if (!targetDir.exists()) return 1;
 
     String name = target.getName() + versionSeparator + "*";
     int maxVersion = 0;
 
-    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir, name))
+    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(targetDir.toPath(), name))
     {
       for (Path p : dirStream)
       {
@@ -166,9 +166,9 @@ public class FileVersioner
         }
       }
     }
-    catch (IOException io)
+    catch (Exception ex)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not determine highest version", io);
+      LogMgr.logWarning(new CallerInfo(){}, "Could not determine highest version", ex);
     }
 
     if (maxVersion < maxVersions)
@@ -203,7 +203,7 @@ public class FileVersioner
     String name = target.getName();
     int idx = name.lastIndexOf(versionSeparator);
     if (idx < 0) return -1;
-    return Integer.valueOf(name.substring(idx + 1));
+    return StringUtil.getIntValue(name.substring(idx + 1), -1);
   }
 
   private void slideVersions(File target)
