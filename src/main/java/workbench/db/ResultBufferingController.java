@@ -38,11 +38,19 @@ public class ResultBufferingController
   private final WbConnection dbConn;
   private boolean autocommitChanged;
   private boolean setFetchSize;
-  private final int fetchSize = 100;
+  private int fetchSize = 100;
 
   public ResultBufferingController(WbConnection toCheck)
   {
     this.dbConn = toCheck;
+    if (toCheck.getFetchSize() > 1)
+    {
+      this.fetchSize = dbConn.getFetchSize();
+    }
+    else
+    {
+      this.fetchSize = this.dbConn.getDbSettings().getFetchSizeForDisabledBuffering();
+    }
   }
 
   public void restoreDriverBuffering()
@@ -51,7 +59,7 @@ public class ResultBufferingController
     {
       try
       {
-        LogMgr.logDebug(new CallerInfo(){}, "Re-enabling on autocommit");
+        LogMgr.logDebug(new CallerInfo(){}, "Re-enabling autocommit");
         this.dbConn.setAutoCommit(true);
       }
       catch (Exception ex)
@@ -74,7 +82,9 @@ public class ResultBufferingController
   {
     if (dbConn.getDbSettings().autoDisableDriverBuffering() && JdbcUtils.checkPostgresBuffering(dbConn))
     {
-      LogMgr.logInfo(new CallerInfo(){}, "Disabling auto commit and setting fetch size to avoid excessive buffering by the driver");
+      LogMgr.logInfo(new CallerInfo(){}, "Disabling auto commit and setting fetch size to " +
+        this.fetchSize + " to avoid excessive buffering by the driver");
+
       try
       {
         // Switching from autocommit on to autocommit off is safe as no transaction can be active at this moment

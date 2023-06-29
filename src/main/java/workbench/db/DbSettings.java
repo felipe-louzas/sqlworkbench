@@ -2771,6 +2771,11 @@ public class DbSettings
     return getBoolProperty("export.driver.buffering.disable", false);
   }
 
+  public int getFetchSizeForDisabledBuffering()
+  {
+    return getIntProperty("export.driver.disabled.buffering.fetchsize", 100);
+  }
+
   public boolean treatSchemaChangeErrorAsWarning()
   {
     return getBoolProperty("setschema.exception.is.warning", false);
