@@ -65,10 +65,8 @@ import org.apache.poi.xssf.streaming.SXSSFFormulaEvaluator;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookType;
-import org.apache.poi.xssf.usermodel.helpers.ColumnHelper;
 
 /**
  * Export data into an Excel spreadsheet using Apache's POI
@@ -99,7 +97,6 @@ public class XlsRowDataConverter
   private String outputSheetName;
   final private Map<Integer, CellStyle> styles = new HashMap<>(10);
   final private Map<Integer, CellStyle> headerStyles = new HashMap<>(10);
-  private final StringBuilder dummyResult = new StringBuilder();
 
   public XlsRowDataConverter()
   {
@@ -445,29 +442,16 @@ public class XlsRowDataConverter
         sheet.autoSizeColumn(col + columnOffset);
       }
 
-      // POI seems to use a strange unit for specifying column widths.
-      int charWidth = Settings.getInstance().getIntProperty("workbench.export.xls.defaultcharwidth", 200);
-
-      for (int col = 0; col < this.metaData.getColumnCount(); col++)
+      int addChars = Settings.getInstance().getIntProperty("workbench.export.xls.add.filterwidth.numchars", 3);
+      if (getEnableAutoFilter() && addChars > 0)
       {
-        if (isFormulaColumn(col + columnOffset)) continue;
-
-        int width = sheet.getColumnWidth(col + columnOffset);
-        int minWidth = metaData.getColumnName(col).length() * charWidth;
-        if (getEnableAutoFilter())
+        int charWidth = Settings.getInstance().getIntProperty("workbench.export.xls.defaultcharwidth", 200);
+        int filterWidth = (charWidth * addChars);
+        LogMgr.logDebug(new CallerInfo(){}, "Increasing column widths by " + filterWidth + " because of auto filter");
+        for (int col = 0; col < this.metaData.getColumnCount(); col++)
         {
-          minWidth += charWidth * 3;
-        }
-        if (width < minWidth)
-        {
-          LogMgr.logDebug(new CallerInfo(){}, "Calculated width of column " + col + " is: " + width + ". Applying min width: " + minWidth);
-          sheet.setColumnWidth(col + columnOffset, minWidth);
-          if (sheet instanceof XSSFSheet)
-          {
-            ColumnHelper helper = ((XSSFSheet)sheet).getColumnHelper();
-            helper.setColBestFit(col + columnOffset, false);
-            helper.setColHidden(col + columnOffset, false);
-          }
+          int width = sheet.getColumnWidth(col + columnOffset)  + filterWidth;
+          sheet.setColumnWidth(col + columnOffset, width);
         }
       }
     }
@@ -660,7 +644,7 @@ public class XlsRowDataConverter
       }
     }
     flushStreamingRows(rowIndex);
-    return dummyResult;
+    return null;
   }
 
   private boolean isIntegerColumn(int column)
