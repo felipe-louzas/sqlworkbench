@@ -71,11 +71,11 @@ class ExcelDataFormat
     return newFormat;
   }
 
-  protected void setupWithWorkbook(Workbook wb)
+  protected void setupWithWorkbook(Workbook wb, boolean useAutofilter)
   {
     CreationHelper helper = wb.getCreationHelper();
     DataFormat dataFormat = helper.createDataFormat();
-    setUpHeader(wb);
+    setUpHeader(wb, useAutofilter);
     setUpText(wb);
     setUpDate(wb, dataFormat);
     setUpDecimal(wb, dataFormat);
@@ -122,13 +122,20 @@ class ExcelDataFormat
     integerCellStyle.setDataFormat(gridIntegerFormat);
   }
 
-  protected void setUpHeader(Workbook wb)
+  protected void setUpHeader(Workbook wb, boolean useAutoFilter)
   {
     headerCellStyle = wb.createCellStyle();
     Font font = wb.createFont();
     font.setBold(true);
     headerCellStyle.setFont(font);
-    headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+    if (useAutoFilter)
+    {
+      headerCellStyle.setAlignment(HorizontalAlignment.LEFT);
+    }
+    else
+    {
+      headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+    }
   }
 
   protected void setUpTs(Workbook wb, DataFormat dataFormat)

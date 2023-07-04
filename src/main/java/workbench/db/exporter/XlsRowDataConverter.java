@@ -239,7 +239,7 @@ public class XlsRowDataConverter
     }
 
     createFormatters();
-    excelFormat.setupWithWorkbook(workbook);
+    excelFormat.setupWithWorkbook(workbook, getEnableAutoFilter());
     styles.clear();
     headerStyles.clear();
 
@@ -442,8 +442,8 @@ public class XlsRowDataConverter
         sheet.autoSizeColumn(col + columnOffset);
       }
 
-      int addChars = Settings.getInstance().getIntProperty("workbench.export.xls.add.filterwidth.numchars", 3);
-      if (getEnableAutoFilter() && addChars > 0)
+      int addChars = Settings.getInstance().getIntProperty("workbench.export.xls.add.filterwidth.numchars", 2);
+      if (getEnableAutoFilter() && addChars > 0 && writeHeader)
       {
         int charWidth = Settings.getInstance().getIntProperty("workbench.export.xls.defaultcharwidth", 200);
         int filterWidth = (charWidth * addChars);
