@@ -142,12 +142,12 @@ public class ReportProcedure
     }
     tagWriter.appendTag(result, indent2, TAG_PROC_SCHEMA, getSchema());
     tagWriter.appendTag(result, indent2, TAG_PROC_NAME, objectName);
-    if (StringUtil.isNonBlank(fullName) && StringUtil.stringsAreNotEqual(fullName, objectName))
+    if (StringUtil.isNotBlank(fullName) && StringUtil.stringsAreNotEqual(fullName, objectName))
     {
       tagWriter.appendTag(result, indent2, TAG_PROC_FULL_NAME, fullName);
     }
 
-    if (StringUtil.isNonBlank(procDef.getComment()))
+    if (StringUtil.isNotBlank(procDef.getComment()))
     {
       tagWriter.appendTag(result, indent2, TAG_PROC_COMMENT, procDef.getComment());
     }

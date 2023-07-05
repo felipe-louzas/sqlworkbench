@@ -156,7 +156,7 @@ public class WbGrepData
       if (cmdLine.isArgPresent(ARG_BLOB_ENCODING))
       {
         String encoding = cmdLine.getValue(ARG_BLOB_ENCODING);
-        searcher.setTreatBlobAsText(StringUtil.isNonBlank(encoding), encoding);
+        searcher.setTreatBlobAsText(StringUtil.isNotBlank(encoding), encoding);
       }
       else
       {

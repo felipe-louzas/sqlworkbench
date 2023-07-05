@@ -73,17 +73,17 @@ public class HsqlProcedureReader
       "  and data_type like 'ROW%'";
 
     StringBuilder condition = new StringBuilder(50);
-    if (StringUtil.isNonBlank(catalogPattern))
+    if (StringUtil.isNotBlank(catalogPattern))
     {
       condition.append("\n  AND ");
       SqlUtil.appendExpression(condition, "ROUTINE_CATALOG", catalogPattern, connection);
     }
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       condition.append("\n  AND ");
       SqlUtil.appendExpression(condition, "ROUTINE_SCHEMA", schemaPattern, connection);
     }
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       condition.append("\n  AND ");
       SqlUtil.appendExpression(condition, "ROUTINE_NAME", namePattern, connection);

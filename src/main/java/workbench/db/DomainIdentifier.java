@@ -173,8 +173,8 @@ public class DomainIdentifier
     StringBuilder result = new StringBuilder(25);
     result.append(this.dataType);
     if (!nullable) result.append(" NOT NULL");
-    if (StringUtil.isNonBlank(defaultValue)) result.append(" DEFAULT " + defaultValue);
-    if (StringUtil.isNonBlank(constraintDefinition))
+    if (StringUtil.isNotBlank(defaultValue)) result.append(" DEFAULT " + defaultValue);
+    if (StringUtil.isNotBlank(constraintDefinition))
     {
       result.append(' ');
       result.append(constraintDefinition);

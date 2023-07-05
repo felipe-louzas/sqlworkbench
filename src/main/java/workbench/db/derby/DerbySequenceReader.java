@@ -113,13 +113,13 @@ public class DerbySequenceReader
     sql.append(baseQuery);
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append(" WHERE sch.schemaname = '").append(schema).append('\'');
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded)
       {

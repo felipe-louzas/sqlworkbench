@@ -129,7 +129,7 @@ public class ValueStatement
       if (index > 0)
       {
         Object val = entry.getValue();
-        if (val == null || (val instanceof String && StringUtil.isEmptyString((String)val)))
+        if (val == null || (val instanceof String && StringUtil.isEmpty((String)val)))
         {
           continue;
         }

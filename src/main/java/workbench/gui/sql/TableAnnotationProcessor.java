@@ -63,7 +63,7 @@ public class TableAnnotationProcessor
     if (ds == null) return;
 
     String sql = ds.getGeneratingSql();
-    if (StringUtil.isEmptyString(sql)) return;
+    if (StringUtil.isEmpty(sql)) return;
 
     List<WbAnnotation> annotations = WbAnnotation.readAllAnnotations(sql,
                                                   new ScrollAnnotation(), new MacroAnnotation(),

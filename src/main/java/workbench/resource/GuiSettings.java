@@ -1191,7 +1191,7 @@ public class GuiSettings
 
   public static void setNumberDataAlignment(String align)
   {
-    if (StringUtil.isNonBlank(align))
+    if (StringUtil.isNotBlank(align))
     {
       if ("left".equalsIgnoreCase(align) || "right".equalsIgnoreCase(align))
       {

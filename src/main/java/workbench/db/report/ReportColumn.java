@@ -137,11 +137,11 @@ public class ReportColumn
     tagWriter.appendTag(result, myindent, TAG_COLUMN_JAVA_TYPE_NAME, SqlUtil.getTypeName(this.column.getDataType()));
     if (isRealColumn)
     {
-      if (StringUtil.isNonBlank(column.getGenerationExpression()))
+      if (StringUtil.isNotBlank(column.getGenerationExpression()))
       {
         tagWriter.appendTag(result, myindent, TAG_COLUMN_COMPUTED_COL, column.getGenerationExpression(), true);
       }
-      if (StringUtil.isNonBlank(column.getCollation()))
+      if (StringUtil.isNotBlank(column.getCollation()))
       {
         tagWriter.appendTag(result, myindent, TAG_COLUMN_COLLATION, column.getCollation());
       }

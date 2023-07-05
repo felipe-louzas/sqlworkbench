@@ -109,7 +109,7 @@ public class WbVersionReader
       conn.setRequestProperty("User-Agent", this.userAgent);
       String referer = System.getProperty("java.version");
       String arch = System.getProperty("sun.arch.data.model");
-      if (StringUtil.isNonBlank(arch))
+      if (StringUtil.isNotBlank(arch))
       {
         referer += " (" + arch + "bit)";
       }

@@ -61,7 +61,7 @@ public class TextFileTableDetector
     converter.setLogWarnings(false);
 
     char quote = 0;
-    if (StringUtil.isNonEmpty(quoteChar))
+    if (StringUtil.isNotEmpty(quoteChar))
     {
       quote = quoteChar.charAt(0);
     }
@@ -151,7 +151,7 @@ public class TextFileTableDetector
   private List<String> parseLine(String line)
   {
     List<String> values = new ArrayList<>();
-    if (StringUtil.isEmptyString(line)) return values;
+    if (StringUtil.isEmpty(line)) return values;
 
     parser.setLine(line);
     while (parser.hasNext())

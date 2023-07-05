@@ -142,7 +142,7 @@ public class WbDefineVarTest
     remove.execute("nWbVarDelete theanswer");
 
     varValue = VariablePool.getInstance().getParameterValue("theanswer");
-    assertEquals("Variable not deleted", true, StringUtil.isEmptyString(varValue));
+    assertEquals("Variable not deleted", true, StringUtil.isEmpty(varValue));
 
     File f = new File(util.getBaseDir(), "vardef.props");
 
@@ -163,7 +163,7 @@ public class WbDefineVarTest
     assertTrue("Error deleting variable", result.isSuccess());
 
     varValue = VariablePool.getInstance().getParameterValue("lastname");
-    assertEquals("SQL Variable still available ", true, StringUtil.isEmptyString(varValue));
+    assertEquals("SQL Variable still available ", true, StringUtil.isEmpty(varValue));
 
     result = cmd.execute("WbVardef var5=' a '");
     varValue = VariablePool.getInstance().getParameterValue("var5");

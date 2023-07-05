@@ -319,7 +319,7 @@ public class WbCommandAnalyzer
   private WbFile getCurrentDir(String parameter)
   {
     String lastDir = getLastDirectory(parameter);
-    if (StringUtil.isNonBlank(lastDir))
+    if (StringUtil.isNotBlank(lastDir))
     {
       WbFile dir = new WbFile(lastDir);
       if (dir.exists())
@@ -374,7 +374,7 @@ public class WbCommandAnalyzer
     String name = cmdLine.getValue(parameter);
     File[] files;
 
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       WbFile f = new WbFile(name);
       if (!f.isDirectory())
@@ -445,7 +445,7 @@ public class WbCommandAnalyzer
     for (Locale l : available)
     {
       String s = l.toString();
-      if (StringUtil.isNonEmpty(s))
+      if (StringUtil.isNotEmpty(s))
       {
         result.add(s);
       }

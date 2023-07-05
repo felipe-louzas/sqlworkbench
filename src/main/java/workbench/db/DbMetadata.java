@@ -924,7 +924,7 @@ public class DbMetadata
 
   public boolean ignoreSchema(String schema, String currentSchema)
   {
-    if (StringUtil.isEmptyString(schema)) return true;
+    if (StringUtil.isEmpty(schema)) return true;
     if (dbSettings.alwaysUseSchema()) return false;
 
     if (schemasToIgnore == null)
@@ -1024,12 +1024,12 @@ public class DbMetadata
     if (this.isAccess) return true;
 
     String cat = table.getCatalog();
-    if (StringUtil.isEmptyString(cat)) return false;
+    if (StringUtil.isEmpty(cat)) return false;
 
     if (this.isExcel)
     {
       String currentCat = getCurrentCatalog();
-      if (StringUtil.isEmptyString(currentCat)) return true;
+      if (StringUtil.isEmpty(currentCat)) return true;
 
       // Excel puts the directory into the catalog
       // so we need to normalize the directory name
@@ -1045,7 +1045,7 @@ public class DbMetadata
     if (this.dbSettings.needsCatalogIfNoCurrent())
     {
       String currentCat = getCurrentCatalog();
-      if (StringUtil.isEmptyString(currentCat))
+      if (StringUtil.isEmpty(currentCat))
       {
         return true;
       }
@@ -1179,7 +1179,7 @@ public class DbMetadata
         try
         {
           String words = metaData.getSQLKeywords();
-          if (StringUtil.isNonBlank(words))
+          if (StringUtil.isNotBlank(words))
           {
             List<String> driverKeywords = StringUtil.stringToList(words, ",");
             keywords.addAll(driverKeywords);
@@ -1222,7 +1222,7 @@ public class DbMetadata
   @Override
   public String removeQuotes(String name)
   {
-    if (StringUtil.isEmptyString(name)) return name;
+    if (StringUtil.isEmpty(name)) return name;
 
     name = name.trim();
 
@@ -1253,7 +1253,7 @@ public class DbMetadata
   @Override
   public String quoteObjectname(String name, boolean quoteAlways)
   {
-    if (StringUtil.isEmptyString(name)) return null;
+    if (StringUtil.isEmpty(name)) return null;
 
     // already quoted?
     if (isQuoted(name)) return name;
@@ -1479,7 +1479,7 @@ public class DbMetadata
 
   public static String cleanupWildcards(String pattern)
   {
-    if (StringUtil.isEmptyString(pattern)) return null;
+    if (StringUtil.isEmpty(pattern)) return null;
     if ("*".equals(pattern) || "%".equals(pattern)) return null;
     return SqlUtil.removeObjectQuotes(StringUtil.replace(pattern, "*", "%"));
   }
@@ -2471,7 +2471,7 @@ public class DbMetadata
       while (rs.next())
       {
         String cat = useColumnNames ? rs.getString("TABLE_CAT") : rs.getString(1);
-        if (StringUtil.isNonEmpty(cat))
+        if (StringUtil.isNotEmpty(cat))
         {
           result.add(cat);
         }
@@ -2624,7 +2624,7 @@ public class DbMetadata
       {
         count++;
         String schema = useColumnNames ? rs.getString("TABLE_SCHEM") : rs.getString(1);
-        if (StringUtil.isNonEmpty(schema))
+        if (StringUtil.isNotEmpty(schema))
         {
           result.add(schema);
         }

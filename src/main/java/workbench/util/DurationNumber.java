@@ -54,7 +54,7 @@ public class DurationNumber
 
   public long parseDefinition(String definition)
   {
-    if (StringUtil.isEmptyString(definition)) return 0;
+    if (StringUtil.isEmpty(definition)) return 0;
 
     definition = definition.trim().toLowerCase().replace(" ", "");
     if (definition.isEmpty()) return 0;

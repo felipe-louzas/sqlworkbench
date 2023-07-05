@@ -100,7 +100,7 @@ public class PostgresSubscriptionReader
       "                 from pg_catalog.pg_database \n" +
       "                 where datname = pg_catalog.current_database())");
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql.append("\n  and ");
       SqlUtil.appendExpression(sql, "s.subname", namePattern, connection);

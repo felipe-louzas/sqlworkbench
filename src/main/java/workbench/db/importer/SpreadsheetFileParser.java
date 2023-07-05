@@ -90,7 +90,7 @@ public class SpreadsheetFileParser
   public void setTableName(String aName)
   {
     super.setTableName(aName);
-    this.tableNameSpecified = StringUtil.isNonBlank(aName);
+    this.tableNameSpecified = StringUtil.isNotBlank(aName);
   }
 
   public void setRecalcFormulas(boolean flag)
@@ -381,7 +381,7 @@ public class SpreadsheetFileParser
       reader.setReturnDatesAsString(readDatesAsStrings);
       reader.setReturnNumbersAsString(readNumbersAsStrings);
       reader.enableRecalcOnLoad(recalcFormulas);
-      if (sheetIndex < 0 && StringUtil.isNonBlank(sheetName))
+      if (sheetIndex < 0 && StringUtil.isNotBlank(sheetName))
       {
         reader.setActiveWorksheet(sheetName);
       }
@@ -670,7 +670,7 @@ public class SpreadsheetFileParser
           }
           else if (SqlUtil.isCharacterType(colType))
           {
-            if (this.emptyStringIsNull && StringUtil.isEmptyString(svalue))
+            if (this.emptyStringIsNull && StringUtil.isEmpty(svalue))
             {
               value = null;
             }

@@ -98,7 +98,7 @@ public class ClassFinderGUI
     }
     JList<String> list = new JList<>(model);
     list.setVisibleRowCount(Math.min(10, entries.size() + 1));
-    if (StringUtil.isNonBlank(toSelect))
+    if (StringUtil.isNotBlank(toSelect))
     {
       list.setSelectedValue(toSelect, true);
     }

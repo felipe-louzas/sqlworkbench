@@ -153,7 +153,7 @@ public class PostgresStatementHook
     Object pid = getPID.invoke(notification, (Object[])null);
     String payload = (String)getParameter.invoke(notification, (Object[])null);
     String payloadMsg = "";
-    if (StringUtil.isNonEmpty(payload))
+    if (StringUtil.isNotEmpty(payload))
     {
       payloadMsg = " " + ResourceMgr.getFormattedString("MsgPgNotificationPayload", payload);
     }

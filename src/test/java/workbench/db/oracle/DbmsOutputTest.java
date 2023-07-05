@@ -86,7 +86,7 @@ public class DbmsOutputTest
       output.disable();
       stmt.execute("begin\n dbms_output.put_line('Hello, World'); end;");
       out = output.getResult();
-      assertTrue(StringUtil.isEmptyString(out));
+      assertTrue(StringUtil.isEmpty(out));
 
       output.close();
     }

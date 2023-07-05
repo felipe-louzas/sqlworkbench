@@ -52,7 +52,7 @@ public class VersionNumber
 
   public VersionNumber(String number)
   {
-    if (StringUtil.isEmptyString(number))
+    if (StringUtil.isEmpty(number))
     {
       return;
     }

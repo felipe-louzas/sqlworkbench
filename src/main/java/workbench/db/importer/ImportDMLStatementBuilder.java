@@ -330,7 +330,7 @@ public class ImportDMLStatementBuilder
       text.append(colname);
 
       String expr = columnExpressions.get(colname);
-      if (StringUtil.isNonBlank(expr))
+      if (StringUtil.isNotBlank(expr))
       {
         parms.append(expr);
       }

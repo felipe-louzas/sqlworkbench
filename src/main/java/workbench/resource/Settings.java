@@ -140,6 +140,9 @@ public class Settings
   public static final String PROPERTY_EDITOR_TAB_WIDTH = "workbench.editor.tabwidth";
 
   public static final String PROPERTY_EDITOR_AUTO_QUOTE = "workbench.editor.selection.autoquote";
+  public static final String PROP_EDITOR_AUTO_QUOTE_OPEN = "workbench.editor.selection.autoquote.openchars";
+  public static final String PROP_EDITOR_AUTO_QUOTE_CLOSE = "workbench.editor.selection.autoquote.closechars";
+
   public static final String PROPERTY_EDITOR_CURRENT_LINE_COLOR = "workbench.editor.currentline.color";
   public static final String PROPERTY_EDITOR_CURRENT_STMT_COLOR = "workbench.editor.currentstmt.color";
   public static final String PROPERTY_EDITOR_ERROR_STMT_COLOR = "workbench.editor.color.error";
@@ -398,7 +401,7 @@ public class Settings
       }
     }
 
-    if (useLog4j && StringUtil.isNonBlank(log4jConfig))
+    if (useLog4j && StringUtil.isNotBlank(log4jConfig))
     {
       try
       {
@@ -710,7 +713,7 @@ public class Settings
 
   public void setMacroStorage(String file)
   {
-    if (StringUtil.isEmptyString(file))
+    if (StringUtil.isEmpty(file))
     {
       this.props.remove(PROPERTY_DEFAULT_MACRO_STORAGE);
     }
@@ -1889,7 +1892,7 @@ public class Settings
     if (delim == null && con != null)
     {
       String text = getDbDelimiter(con.getDbId());
-      if (StringUtil.isNonBlank(text))
+      if (StringUtil.isNotBlank(text))
       {
         delim = new DelimiterDefinition(text);
       }
@@ -2043,6 +2046,16 @@ public class Settings
   public Color getEditorCurrentLineColor()
   {
     return getColor(PROPERTY_EDITOR_CURRENT_LINE_COLOR, null);
+  }
+
+  public String getEditorAutoQuoteOpenChars()
+  {
+    return getProperty(PROP_EDITOR_AUTO_QUOTE_OPEN, "\"'([");
+  }
+
+  public String getEditorAutoQuoteCloseChars()
+  {
+    return getProperty(PROP_EDITOR_AUTO_QUOTE_CLOSE, "\"')]");
   }
 
   public boolean getEditorAutoQuoteSelection()
@@ -3058,7 +3071,7 @@ public class Settings
   public WbNumberFormatter createDefaultIntegerFormatter()
   {
     String format = getIntegerFormatString();
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       char sep = getDecimalSymbol().charAt(0);
       char groupSymbol = getDecimalGroupCharacter().charAt(0);
@@ -3073,7 +3086,7 @@ public class Settings
     char sep = getDecimalSymbol().charAt(0);
     char groupSymbol = getDecimalGroupCharacter().charAt(0);
 
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       try
       {
@@ -3092,7 +3105,7 @@ public class Settings
   public String getDecimalSymbol()
   {
     String val = getProperty(PROPERTY_DECIMAL_SEP, ".");
-    if (StringUtil.isEmptyString(val))
+    if (StringUtil.isEmpty(val))
     {
       return ".";
     }
@@ -3107,7 +3120,7 @@ public class Settings
   public String getDecimalGroupCharacter()
   {
     String val = getProperty(PROPERTY_DECIMAL_GROUP, ",");
-    if (StringUtil.isEmptyString(val))
+    if (StringUtil.isEmpty(val))
     {
       val = ",";
     }
@@ -3189,7 +3202,7 @@ public class Settings
   public String getSqlParameterPrefix()
   {
     String value = getProperty(PROPERTY_VAR_PREFIX, "$[");
-    if (StringUtil.isEmptyString(value)) value = "$[";
+    if (StringUtil.isEmpty(value)) value = "$[";
     return value;
   }
 
@@ -3687,7 +3700,7 @@ public class Settings
 
   public boolean restoreWindowSize(GraphicsConfiguration config, final Component target, final String id)
   {
-    if (StringUtil.isEmptyString(id)) return false;
+    if (StringUtil.isEmpty(id)) return false;
 
     if (resetSizeIfNeeded(id)) return false;
 

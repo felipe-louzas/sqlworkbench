@@ -172,7 +172,7 @@ public class ImageUtil
 
       for (String fname : fileNames)
       {
-        if (StringUtil.isNonEmpty(fname))
+        if (StringUtil.isNotEmpty(fname))
         {
           File f = new File(fname);
           if (!f.isAbsolute())

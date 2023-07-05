@@ -95,14 +95,14 @@ public class GreenplumObjectListCleaner
       "FROM pg_partitions ");
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       sql.append(" \nWHERE ");
       SqlUtil.appendExpression(sql, "schemaname", schemaPattern, conn);
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(objectNamePattern))
+    if (StringUtil.isNotBlank(objectNamePattern))
     {
       sql.append(whereAdded ? "\n AND " : "\n WHERE ");
       SqlUtil.appendExpression(sql, "tablename", objectNamePattern, conn);

@@ -254,7 +254,7 @@ public class PostgresTableSourceBuilder
         boolean rlsEnabled = rs.getBoolean("relrowsecurity");
         boolean forceRls = rs.getBoolean("relforcerowsecurity");
 
-        if (showNonStandardTablespace && !"pg_default".equals(defaultTablespace) && StringUtil.isEmptyString(tableSpace))
+        if (showNonStandardTablespace && !"pg_default".equals(defaultTablespace) && StringUtil.isEmpty(tableSpace))
         {
           tableSpace = defaultTablespace;
         }
@@ -262,7 +262,7 @@ public class PostgresTableSourceBuilder
         tbl.setOwner(owner);
         tbl.setTablespace(tableSpace);
 
-        if (StringUtil.isNonEmpty(persistence))
+        if (StringUtil.isNotEmpty(persistence))
         {
           switch (persistence.charAt(0))
           {
@@ -275,7 +275,7 @@ public class PostgresTableSourceBuilder
           }
         }
 
-        if (StringUtil.isNonEmpty(replica))
+        if (StringUtil.isNotEmpty(replica))
         {
           String tname = tbl.getTableExpression(dbConnection);
           String alter = "ALTER TABLE " + tname + " REPLICA IDENTITY ";
@@ -321,7 +321,7 @@ public class PostgresTableSourceBuilder
           tableSql.append(inherit);
         }
 
-        if (StringUtil.isNonEmpty(settings))
+        if (StringUtil.isNotEmpty(settings))
         {
           setConfigSettings(settings, option);
           if (tableSql.length() > 0) tableSql.append('\n');
@@ -330,7 +330,7 @@ public class PostgresTableSourceBuilder
           tableSql.append(")");
         }
 
-        if (StringUtil.isNonBlank(tableSpace))
+        if (StringUtil.isNotBlank(tableSpace))
         {
           if (tableSql.length() > 0) tableSql.append('\n');
           tableSql.append("TABLESPACE ");
@@ -613,7 +613,7 @@ public class PostgresTableSourceBuilder
     {
       String conname = SqlUtil.quoteObjectname(node.getFkName());
       String comment = SqlUtil.escapeQuotes(node.getComment());
-      if (StringUtil.isNonEmpty(comment))
+      if (StringUtil.isNotEmpty(comment))
       {
         String ddl = "\nCOMMENT ON CONSTRAINT " + conname + " ON " + tblname + " IS '" + comment + "';";
         fkSource.append(ddl);
@@ -744,7 +744,7 @@ public class PostgresTableSourceBuilder
         if (rs.next())
         {
           String seq = rs.getString(1);
-          if (StringUtil.isNonBlank(seq))
+          if (StringUtil.isNotBlank(seq))
           {
             String msg = ResourceMgr.getFormattedString("TxtSequenceCol", col.getColumnName(), seq);
             b.append("\n-- ");
@@ -936,7 +936,7 @@ public class PostgresTableSourceBuilder
         }
         result.append("\nCREATE STATISTICS ");
         result.append(tbl.getTableExpression(dbConnection));
-        if (StringUtil.isNonBlank(types))
+        if (StringUtil.isNotBlank(types))
         {
           result.append(" (");
           for (int i=0; i < types.length(); i++)

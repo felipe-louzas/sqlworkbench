@@ -61,7 +61,7 @@ public class DerbySynonymReader
       "WHERE a.aliastype = 'S'\n" +
       "  AND s.schemaname = ? \n";
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql += " AND a.alias LIKE ?";
     }
@@ -74,7 +74,7 @@ public class DerbySynonymReader
     {
       stmt = con.getSqlConnection().prepareStatement(sql);
       stmt.setString(1, schema);
-      if (StringUtil.isNonBlank(namePattern)) stmt.setString(2, namePattern);
+      if (StringUtil.isNotBlank(namePattern)) stmt.setString(2, namePattern);
 
       rs = stmt.executeQuery();
       while (rs.next())

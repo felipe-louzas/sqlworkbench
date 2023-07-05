@@ -77,14 +77,14 @@ public class MonetDbSequenceReader
     query.append(baseQuery);
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       whereAdded = true;
       query.append(" WHERE ");
       SqlUtil.appendExpression(query, "sq.name", StringUtil.trimQuotes(namePattern), dbConn);
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       if (!whereAdded)
       {

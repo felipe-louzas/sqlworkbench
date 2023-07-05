@@ -60,7 +60,7 @@ public class StatementHistory
   @Override
   public synchronized boolean add(String statement)
   {
-    if (StringUtil.isEmptyString(statement)) return false;
+    if (StringUtil.isEmpty(statement)) return false;
 
     String last = entries.size() > 0 ? entries.getLast() : "";
     if (last != null && last.equals(statement)) return false;

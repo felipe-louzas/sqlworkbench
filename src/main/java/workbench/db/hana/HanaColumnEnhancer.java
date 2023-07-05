@@ -86,7 +86,7 @@ public class HanaColumnEnhancer
       {
         String colname = rs.getString(1);
         String generated = rs.getString(2);
-        if (StringUtil.isNonEmpty(generated))
+        if (StringUtil.isNotEmpty(generated))
         {
           expressions.put(colname, "GENERATED " + generated);
         }
@@ -104,7 +104,7 @@ public class HanaColumnEnhancer
     for (ColumnIdentifier col : table.getColumns())
     {
       String expr = expressions.get(col.getColumnName());
-      if (StringUtil.isNonBlank(expr))
+      if (StringUtil.isNotBlank(expr))
       {
         col.setDefaultValue(null);
         col.setGeneratedExpression(expr, GeneratedColumnType.autoIncrement);

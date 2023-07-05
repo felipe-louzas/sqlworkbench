@@ -52,7 +52,7 @@ public class RegexModifierParameter
     String regex = cmdLine.getValue(ARG_REPLACE_REGEX);
     String replacement = cmdLine.getValue(ARG_REPLACE_WITH);
 
-    if (StringUtil.isNonBlank(regex) && replacement != null)
+    if (StringUtil.isNotBlank(regex) && replacement != null)
     {
       try
       {

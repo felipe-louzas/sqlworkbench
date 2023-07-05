@@ -79,7 +79,7 @@ public class WbEnableOraOutput extends SqlCommand
 
     String value = cmdLine.getNonArguments();
 
-    if (StringUtil.isNonBlank(value))
+    if (StringUtil.isNotBlank(value))
     {
       try
       {

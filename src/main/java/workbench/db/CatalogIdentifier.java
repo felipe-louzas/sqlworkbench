@@ -48,7 +48,7 @@ public class CatalogIdentifier
 
   public void setTypeName(String type)
   {
-    if (StringUtil.isNonBlank(type))
+    if (StringUtil.isNotBlank(type))
     {
       typeName = type.trim().toUpperCase();
     }

@@ -94,7 +94,7 @@ public class H2TableSourceBuilder
       if (rs.next())
       {
         String create = rs.getString(1);
-        if (StringUtil.isNonEmpty(create))
+        if (StringUtil.isNotEmpty(create))
         {
           create = create.replace("/*--hide--*/", "");
         }

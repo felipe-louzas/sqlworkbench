@@ -225,11 +225,11 @@ public class LiquibaseParser
     String path = element.getAttribute("path");
     List<String> result = new ArrayList<>();
 
-    if (StringUtil.isEmptyString(path)) return result;
+    if (StringUtil.isEmpty(path)) return result;
 
     String encoding = element.getAttribute("encoding");
-    if (StringUtil.isEmptyString(encoding)) encoding = fileEncoding;
-    if (StringUtil.isEmptyString(encoding)) encoding = EncodingUtil.getDefaultEncoding();
+    if (StringUtil.isEmpty(encoding)) encoding = fileEncoding;
+    if (StringUtil.isEmpty(encoding)) encoding = EncodingUtil.getDefaultEncoding();
     DelimiterDefinition delimiter = getDelimiter(element);
     boolean relative = StringUtil.stringToBool(element.getAttribute("relativeToChangelogFile"));
     boolean split = getSplitAttribute(element);

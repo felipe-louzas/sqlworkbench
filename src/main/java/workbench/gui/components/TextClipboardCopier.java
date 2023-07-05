@@ -108,7 +108,7 @@ public class TextClipboardCopier
 
   public void setQuoteChar(String quote)
   {
-    if (StringUtil.isNonBlank(quote))
+    if (StringUtil.isNotBlank(quote))
     {
       this.quoteChar = quote;
     }

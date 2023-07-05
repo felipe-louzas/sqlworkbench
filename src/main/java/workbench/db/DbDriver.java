@@ -189,7 +189,7 @@ public class DbDriver
     {
       return StringUtil.stringToList(libList, LIB_SEPARATOR, true, true, false);
     }
-    else if (!StringUtil.isEmptyString(libList))
+    else if (!StringUtil.isEmpty(libList))
     {
       return StringUtil.stringToList(libList, StringUtil.getPathSeparator(), true, true, false);
     }
@@ -424,7 +424,7 @@ public class DbDriver
       loadDriverClass();
 
       Properties props = new Properties();
-      if (StringUtil.isNonBlank(user))
+      if (StringUtil.isNotBlank(user))
       {
         props.put("user", user);
       }
@@ -433,7 +433,7 @@ public class DbDriver
         props.put("user", "");
       }
 
-      if (StringUtil.isNonBlank(password))
+      if (StringUtil.isNotBlank(password))
       {
         props.put("password", password);
       }

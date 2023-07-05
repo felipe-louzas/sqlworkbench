@@ -252,7 +252,7 @@ public class SortHeaderRenderer
               valign = SwingConstants.TOP;
             }
 
-            if (showRemarks && StringUtil.isNonEmpty(remarks))
+            if (showRemarks && StringUtil.isNotEmpty(remarks))
             {
               valign = SwingConstants.TOP;
               label += "<p style=\"word-wrap: break-word\">" + HtmlUtil.convertToMultiline(remarks) + "</p>";
@@ -299,7 +299,7 @@ public class SortHeaderRenderer
       if (showBoldHeader) tip.append("</b>");
       tip.append("</code><br>");
       tip.append(type);
-      if (StringUtil.isNonBlank(remarks))
+      if (StringUtil.isNotBlank(remarks))
       {
         tip.append("<br>\"<i>");
         tip.append(remarks);

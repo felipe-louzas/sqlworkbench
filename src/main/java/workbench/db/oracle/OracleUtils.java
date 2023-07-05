@@ -318,7 +318,7 @@ public class OracleUtils
 
   public static String trimSQLPlusLineContinuation(String input)
   {
-    if (StringUtil.isEmptyString(input)) return input;
+    if (StringUtil.isEmpty(input)) return input;
     List<String> lines = StringUtil.getLines(input);
     StringBuilder result = new StringBuilder(input.length());
     for (String line : lines)
@@ -355,7 +355,7 @@ public class OracleUtils
   public static boolean useUserSpecificCatalogs(String currentUser, String requestedSchema)
   {
     return optimizeCatalogQueries() &&
-           (StringUtil.isEmptyString(requestedSchema) || StringUtil.equalStringIgnoreCase(requestedSchema, currentUser));
+           (StringUtil.isEmpty(requestedSchema) || StringUtil.equalStringIgnoreCase(requestedSchema, currentUser));
   }
 
   public static boolean optimizeCatalogQueries()

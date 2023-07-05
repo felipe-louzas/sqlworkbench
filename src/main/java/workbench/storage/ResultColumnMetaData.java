@@ -235,7 +235,7 @@ public class ResultColumnMetaData
 
   private String getTableNameForAlias(String alias)
   {
-    if (StringUtil.isEmptyString(alias)) return null;
+    if (StringUtil.isEmpty(alias)) return null;
     for (Alias table : tables)
     {
       if (StringUtil.equalStringOrEmpty(table.getAlias(), alias))

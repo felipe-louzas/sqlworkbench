@@ -556,7 +556,7 @@ public class IndexDefinition
     if (columns == null) return true;
     for (IndexColumn col : columns)
     {
-      if (col != null && StringUtil.isNonEmpty(col.getColumn())) return false;
+      if (col != null && StringUtil.isNotEmpty(col.getColumn())) return false;
     }
     return true;
   }

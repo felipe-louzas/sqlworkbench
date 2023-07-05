@@ -113,7 +113,7 @@ public class VerticaSequenceReader
       buf.append(" CYCLE");
       buf.append(";\n");
 
-      if (StringUtil.isNonBlank(def.getComment()))
+      if (StringUtil.isNotBlank(def.getComment()))
       {
         buf.append('\n');
         buf.append("COMMENT ON SEQUENCE ").append(def.getSequenceName()).append(" IS '").append(def.getComment().replace("'", "''")).append("';");

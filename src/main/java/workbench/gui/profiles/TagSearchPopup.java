@@ -157,13 +157,13 @@ public class TagSearchPopup
         word = "";
       }
 
-      if (StringUtil.isEmptyString(word))
+      if (StringUtil.isEmpty(word))
       {
         word = StringUtil.getWordLeftOfCursor(text, inputField.getCaretPosition(), wordBoundaries);
       }
 
       final int index = filterListByEntry(word);
-      if (index > -1 && StringUtil.isEmptyString(inputField.getSelectedText()))
+      if (index > -1 && StringUtil.isEmpty(inputField.getSelectedText()))
       {
         int end = inputField.getCaretPosition();
         int start = StringUtil.findWordBoundary(text, inputField.getCaretPosition(), wordBoundaries) + 1;

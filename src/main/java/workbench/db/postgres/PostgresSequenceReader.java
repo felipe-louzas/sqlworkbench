@@ -139,7 +139,7 @@ public class PostgresSequenceReader
         buf.append("IF NOT EXISTS ");
       }
       buf.append(name);
-      if (StringUtil.isNonBlank(dataType) && StringUtil.stringsAreNotEqual("bigint", dataType))
+      if (StringUtil.isNotBlank(dataType) && StringUtil.stringsAreNotEqual("bigint", dataType))
       {
         buf.append("\n       AS ");
         buf.append(dataType);
@@ -164,7 +164,7 @@ public class PostgresSequenceReader
       buf.append("CYCLE");
       String col = def.getRelatedColumn();
       TableIdentifier tbl = def.getRelatedTable();
-      if (tbl != null && StringUtil.isNonBlank(col))
+      if (tbl != null && StringUtil.isNotBlank(col))
       {
         String owningColumn = tbl.getTableName() + "." + col;
 
@@ -178,7 +178,7 @@ public class PostgresSequenceReader
 
       buf.append(";\n");
 
-      if (StringUtil.isNonBlank(def.getComment()))
+      if (StringUtil.isNotBlank(def.getComment()))
       {
         buf.append('\n');
         buf.append("COMMENT ON SEQUENCE ").append(def.getSequenceName()).append(" IS '").append(def.getComment().replace("'", "''")).append("';");
@@ -188,7 +188,7 @@ public class PostgresSequenceReader
       {
         PostgresSequenceGrantReader reader = new PostgresSequenceGrantReader();
         String grants = reader.getSequenceGrants(dbConnection, def);
-        if (StringUtil.isNonBlank(grants))
+        if (StringUtil.isNotBlank(grants))
         {
           buf.append('\n');
           buf.append(grants);
@@ -257,7 +257,7 @@ public class PostgresSequenceReader
     def.setSequenceProperty(PROP_UNLOGGED, unlogged);
 
     String ownedBy = ds.getValueAsString(0, "owned_by");
-    if (StringUtil.isNonEmpty(ownedBy))
+    if (StringUtil.isNotEmpty(ownedBy))
     {
       List<String> elements = StringUtil.stringToList(ownedBy, ".", true, true, false, false);
       TableIdentifier tbl = new TableIdentifier(schema, elements.get(0));
@@ -342,7 +342,7 @@ public class PostgresSequenceReader
       for (int i=0; i < result.getRowCount(); i++)
       {
         String owned = result.getValueAsString(i, colIndex);
-        if (StringUtil.isNonEmpty(owned))
+        if (StringUtil.isNotEmpty(owned))
         {
           if (cols.length() > 0) cols += ", ";
           cols += owned;

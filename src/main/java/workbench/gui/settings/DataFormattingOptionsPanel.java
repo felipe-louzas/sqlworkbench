@@ -112,7 +112,7 @@ public class DataFormattingOptionsPanel
   {
     String format = dateFormatTextField.getText();
 
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       String err = StringUtil.isDatePatternValid(format);
       if (err != null)
@@ -124,7 +124,7 @@ public class DataFormattingOptionsPanel
     }
 
     format = timestampFormatTextField.getText();
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       String err = StringUtil.isDatePatternValid(format);
       if (err != null)
@@ -136,7 +136,7 @@ public class DataFormattingOptionsPanel
     }
 
     format = timeFormat.getText();
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       String err = StringUtil.isDatePatternValid(format);
       if (err != null)
@@ -148,7 +148,7 @@ public class DataFormattingOptionsPanel
     }
 
     format = decimalFormat.getText();
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       try
       {
@@ -163,7 +163,7 @@ public class DataFormattingOptionsPanel
     }
 
     format = intFormat.getText();
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       try
       {

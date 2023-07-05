@@ -89,7 +89,7 @@ public class BrowserLauncher
         {
           ConnectionInfoBuilder builder = new ConnectionInfoBuilder();
           String info = builder.getPlainTextDisplay(currentConnection, 5);
-          if (StringUtil.isNonEmpty(info))
+          if (StringUtil.isNotEmpty(info))
           {
             String msg = ResourceMgr.getFormattedString("TxtFeedbackMailConInfo", info);
             body += "\n\n" + msg;

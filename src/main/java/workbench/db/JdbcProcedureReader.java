@@ -317,7 +317,7 @@ public class JdbcProcedureReader
     if (dbs.getStripProcGroupNumber() == false) return procname;
 
     String versionDelimiter = dbs.getProcGroupDelimiter();
-    if (StringUtil.isEmptyString(versionDelimiter)) return procname;
+    if (StringUtil.isEmpty(versionDelimiter)) return procname;
 
     int pos = procname.lastIndexOf(versionDelimiter);
     if (pos < 0) return procname;
@@ -404,7 +404,7 @@ public class JdbcProcedureReader
       {
         String colname = connection.getDbSettings().getSpecificNameColumn();
         specIndex = JdbcUtils.getColumnIndex(rs, colname);
-        useSpecificName = specIndex > -1 && StringUtil.isNonEmpty(specificName);
+        useSpecificName = specIndex > -1 && StringUtil.isNotEmpty(specificName);
       }
 
       while (rs.next())
@@ -570,11 +570,11 @@ public class JdbcProcedureReader
     }
 
     String comment = def.getComment();
-    if (StringUtil.isNonBlank(comment))
+    if (StringUtil.isNotBlank(comment))
     {
       CommentSqlManager mgr = new CommentSqlManager(connection.getDbSettings().getDbId());
       String template = mgr.getCommentSqlTemplate(def.getObjectType(), CommentSqlManager.COMMENT_ACTION_SET);
-      if (StringUtil.isNonBlank(template))
+      if (StringUtil.isNotBlank(template))
       {
         template = template.replace(CommentSqlManager.COMMENT_OBJECT_NAME_PLACEHOLDER, def.getProcedureName());
         template = template.replace("%specific_name%", def.getSpecificName());
@@ -789,13 +789,13 @@ public class JdbcProcedureReader
     String objSchema = toFind.getSchema();
     String objCat = toFind.getCatalog();
 
-    if (StringUtil.isNonEmpty(objCat) || StringUtil.isNonBlank(objSchema))
+    if (StringUtil.isNotEmpty(objCat) || StringUtil.isNotBlank(objSchema))
     {
-      if (StringUtil.isEmptyString(objCat))
+      if (StringUtil.isEmpty(objCat))
       {
         objCat = connection.getCurrentCatalog();
       }
-      if (StringUtil.isEmptyString(objSchema))
+      if (StringUtil.isEmpty(objSchema))
       {
         objSchema = connection.getCurrentSchema();
       }
@@ -807,13 +807,13 @@ public class JdbcProcedureReader
       return null;
     }
 
-    if (StringUtil.isEmptyString(objCat))
+    if (StringUtil.isEmpty(objCat))
     {
       objCat = connection.getCurrentCatalog();
     }
 
     List<String> searchPath = DbSearchPath.Factory.getSearchPathHandler(connection).getSearchPath(connection, null);
-    if (CollectionUtil.isEmpty(searchPath) && StringUtil.isEmptyString(objSchema))
+    if (CollectionUtil.isEmpty(searchPath) && StringUtil.isEmpty(objSchema))
     {
       searchPath = CollectionUtil.arrayList(connection.getCurrentSchema());
     }

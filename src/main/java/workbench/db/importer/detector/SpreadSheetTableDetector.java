@@ -75,7 +75,7 @@ public class SpreadSheetTableDetector
   protected String getDisplayFilename()
   {
     String name = super.getDisplayFilename();
-    if (StringUtil.isNonBlank(sheetName))
+    if (StringUtil.isNotBlank(sheetName))
     {
       name += ":" + SqlUtil.cleanupIdentifier(sheetName);
     }
@@ -104,7 +104,7 @@ public class SpreadSheetTableDetector
   @Override
   protected String getTableNameToUse()
   {
-    if (StringUtil.isNonBlank(sheetName))
+    if (StringUtil.isNotBlank(sheetName))
     {
       return SqlUtil.cleanupIdentifier(sheetName);
     }

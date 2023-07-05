@@ -181,7 +181,7 @@ public class WbDefineVar
     if (cmdLine.isArgPresent(ARG_VAR_NAME) && cmdLine.isArgPresent(ARG_LOOKUP_VALUES))
     {
       List<String> lookupValues = cmdLine.getListValue(ARG_LOOKUP_VALUES);
-      if (CollectionUtil.isNonEmpty(lookupValues) && StringUtil.isNonEmpty(varName))
+      if (CollectionUtil.isNonEmpty(lookupValues) && StringUtil.isNotEmpty(varName))
       {
         LogMgr.logDebug(new CallerInfo(){}, "Lookup values for variable " + varName + ": " + lookupValues);
         VariablePool.getInstance(this.variablePoolID).setLookupValues(varName, lookupValues);

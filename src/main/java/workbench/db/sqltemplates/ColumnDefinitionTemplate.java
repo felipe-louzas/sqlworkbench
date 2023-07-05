@@ -115,14 +115,14 @@ public class ColumnDefinitionTemplate
   public String getColumnDefinitionSQL(ColumnIdentifier column, String colConstraint, int typeLength, String dataTypeOverride)
   {
     String expr = column.getGenerationExpression();
-    boolean isComputed = StringUtil.isNonBlank(expr);
+    boolean isComputed = StringUtil.isNotBlank(expr);
     String sql = getTemplate(column.getGeneratedColumnType());
 
     String type = StringUtil.padRight(dataTypeOverride == null ? column.getDbmsType() : dataTypeOverride, typeLength);
 
     sql = replaceArg(sql, ColumnChanger.PARAM_DATATYPE, type);
     boolean isDefaultConstraint = false;
-    if (StringUtil.isNonBlank(colConstraint))
+    if (StringUtil.isNotBlank(colConstraint))
     {
       isDefaultConstraint = colConstraint.contains("DEFAULT");
     }
@@ -132,7 +132,7 @@ public class ColumnDefinitionTemplate
     {
       sql = replaceArg(sql, ColumnChanger.PARAM_DEFAULT_VALUE, colConstraint);
     }
-    else if (StringUtil.isNonBlank(def))
+    else if (StringUtil.isNotBlank(def))
     {
       sql = replaceArg(sql, ColumnChanger.PARAM_DEFAULT_VALUE, column.getDefaultClause() + " " + def);
     }
@@ -151,7 +151,7 @@ public class ColumnDefinitionTemplate
       sql = replaceArg(sql, PARAM_COL_CONSTRAINTS, colConstraint);
     }
 
-    if (StringUtil.isEmptyString(column.getSQLOption()))
+    if (StringUtil.isEmpty(column.getSQLOption()))
     {
       sql = replaceArg(sql, PARAM_OPTION, "");
     }
@@ -309,7 +309,7 @@ public class ColumnDefinitionTemplate
   private String getProperty(String suffix, String defaultValue)
   {
     String sql = Settings.getInstance().getProperty("workbench.db.sql." + suffix, defaultValue);
-    if (StringUtil.isNonBlank(dbid))
+    if (StringUtil.isNotBlank(dbid))
     {
       sql = Settings.getInstance().getProperty("workbench.db." + dbid + "." + suffix, sql);
     }

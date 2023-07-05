@@ -162,11 +162,11 @@ public class WbRowCount
       // Support the old way of specifying the catalog or schema
       String schema = cmdLine.getValue(CommonArgs.ARG_SCHEMA);
       String catalog = cmdLine.getValue(CommonArgs.ARG_CATALOG);
-      if (StringUtil.isBlank(include) && StringUtil.isNonBlank(schema))
+      if (StringUtil.isBlank(include) && StringUtil.isNotBlank(schema))
       {
         include = schema + ".%";
       }
-      else if (StringUtil.isBlank(include) && StringUtil.isNonBlank(catalog))
+      else if (StringUtil.isBlank(include) && StringUtil.isNotBlank(catalog))
       {
         include = catalog + ".%";
       }
@@ -176,7 +176,7 @@ public class WbRowCount
       include = cmdLine.getNonArguments();
     }
 
-    if (StringUtil.isEmptyString(include))
+    if (StringUtil.isEmpty(include))
     {
       include = "%";
     }

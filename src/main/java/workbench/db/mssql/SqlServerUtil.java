@@ -154,7 +154,7 @@ public class SqlServerUtil
       if (rs.next())
       {
         String edition = rs.getString(1);
-        if (StringUtil.isNonBlank(edition))
+        if (StringUtil.isNotBlank(edition))
         {
           isEnterprise = edition.toLowerCase().contains("enterprise") || edition.toLowerCase().contains("developer");
         }

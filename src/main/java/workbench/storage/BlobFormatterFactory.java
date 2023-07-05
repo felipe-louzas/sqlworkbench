@@ -78,7 +78,7 @@ public class BlobFormatterFactory
     String prefix = s.getBlobLiteralPrefix();
     String suffix = s.getBlobLiteralSuffix();
 
-    if (StringUtil.isNonBlank(prefix) && StringUtil.isNonBlank(suffix))
+    if (StringUtil.isNotBlank(prefix) && StringUtil.isNotBlank(suffix))
     {
       DefaultBlobFormatter f = new DefaultBlobFormatter();
       String type = s.getBlobLiteralType();

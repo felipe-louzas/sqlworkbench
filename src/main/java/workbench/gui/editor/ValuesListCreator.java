@@ -358,7 +358,7 @@ public class ValuesListCreator
   private boolean isNull(String item)
   {
     if (item == null) return true;
-    if (emptyStringIsNull && StringUtil.isEmptyString(item)) return true;
+    if (emptyStringIsNull && StringUtil.isEmpty(item)) return true;
     if (nullString != null && nullString.equals(item)) return true;
     return false;
   }

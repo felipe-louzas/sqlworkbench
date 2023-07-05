@@ -43,7 +43,7 @@ public class DerbyTableSourceBuilder
   protected String getColumnSQL(ColumnIdentifier column, int maxTypeLength, String columnConstraint)
   {
     String defaultValue = column.getDefaultValue();
-    if (StringUtil.isNonBlank(defaultValue) && defaultValue.startsWith("AUTOINCREMENT:"))
+    if (StringUtil.isNotBlank(defaultValue) && defaultValue.startsWith("AUTOINCREMENT:"))
     {
       StringBuilder sql = new StringBuilder(100);
       sql.append(StringUtil.padRight(column.getDbmsType(), maxTypeLength));
@@ -57,7 +57,7 @@ public class DerbyTableSourceBuilder
       sql.append(")");
       return sql.toString();
     }
-    else if (StringUtil.isNonBlank(defaultValue) && defaultValue.equals("GENERATED_BY_DEFAULT"))
+    else if (StringUtil.isNotBlank(defaultValue) && defaultValue.equals("GENERATED_BY_DEFAULT"))
     {
       StringBuilder sql = new StringBuilder(100);
       sql.append(StringUtil.padRight(column.getDbmsType(), maxTypeLength));

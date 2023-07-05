@@ -83,7 +83,7 @@ public class MySQLTableSourceBuilder
         table.getSourceOptions().addConfigSetting("engine", engine);
 
         String comment = rs.getString("table_comment");
-        if (StringUtil.isNonBlank(comment))
+        if (StringUtil.isNotBlank(comment))
         {
           comment = comment.replaceAll("'", "''");
           comment = "'" + comment + "'";
@@ -115,7 +115,7 @@ public class MySQLTableSourceBuilder
 
   private void appendOption(StringBuilder result, String option, String value)
   {
-    if (StringUtil.isNonEmpty(value))
+    if (StringUtil.isNotEmpty(value))
     {
       if (result.length() > 0) result.append('\n');
       result.append(option);

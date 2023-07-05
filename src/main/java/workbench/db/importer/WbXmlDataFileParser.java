@@ -271,7 +271,7 @@ public class WbXmlDataFileParser
       fileHandler.setMainFile(this.inputFile, getEncoding());
       XmlTableDefinitionParser tableDef = new XmlTableDefinitionParser(this.fileHandler);
       String mode = tableDef.getBlobEncoding();
-      if (StringUtil.isNonBlank(mode))
+      if (StringUtil.isNotBlank(mode))
       {
         setDefaultBlobMode(BlobMode.getMode(mode));
       }
@@ -286,7 +286,7 @@ public class WbXmlDataFileParser
   @Override
   public String getEncoding()
   {
-    return (StringUtil.isEmptyString(this.encoding) ? "UTF-8" : this.encoding);
+    return (StringUtil.isEmpty(this.encoding) ? "UTF-8" : this.encoding);
   }
 
   private void detectTagFormat()

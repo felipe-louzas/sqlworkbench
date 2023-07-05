@@ -171,7 +171,7 @@ public class OracleErrorPositionReader
       SqlUtil.calculateErrorLine(sql, errorInfo);
       if (errorInfo.getErrorColumn() > -1 && errorInfo.getErrorLine() > -1)
       {
-        if (StringUtil.isNonEmpty(originalMessage)) originalMessage += "\n";
+        if (StringUtil.isNotEmpty(originalMessage)) originalMessage += "\n";
         originalMessage = "Error at line " + (errorInfo.getErrorLine() + 1) + ":\n" + originalMessage.trim();
       }
       else
@@ -184,7 +184,7 @@ public class OracleErrorPositionReader
     String indicator = SqlUtil.getErrorIndicator(sql, errorInfo);
     if (indicator != null)
     {
-      if (StringUtil.isNonEmpty(originalMessage)) originalMessage += "\n";
+      if (StringUtil.isNotEmpty(originalMessage)) originalMessage += "\n";
       originalMessage += indicator;
     }
     return originalMessage;

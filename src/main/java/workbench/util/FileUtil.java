@@ -129,9 +129,9 @@ public class FileUtil
       while ( (line = input.readLine()) != null)
       {
         if (trim) line = StringUtil.trim(line);
-        if (removeEmpty && StringUtil.isEmptyString(line)) continue;
+        if (removeEmpty && StringUtil.isEmpty(line)) continue;
 
-        if (checkComments && StringUtil.isNonEmpty(line) && line.trim().startsWith("#"))
+        if (checkComments && StringUtil.isNotEmpty(line) && line.trim().startsWith("#"))
         {
           continue;
         }
@@ -562,7 +562,7 @@ public class FileUtil
    */
   public static List<WbFile> listFiles(String toSearch, String baseDir)
   {
-    if (StringUtil.isEmptyString(toSearch)) return Collections.emptyList();
+    if (StringUtil.isEmpty(toSearch)) return Collections.emptyList();
 
     File f = new File(toSearch);
     File parentDir = f.getParentFile();
@@ -810,7 +810,7 @@ public class FileUtil
 
   public static boolean fileExists(String fname)
   {
-    if (StringUtil.isEmptyString(fname)) return false;
+    if (StringUtil.isEmpty(fname)) return false;
     File f = new File(fname);
     return f.exists();
   }

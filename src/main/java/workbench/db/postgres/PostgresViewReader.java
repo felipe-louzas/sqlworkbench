@@ -66,7 +66,7 @@ public class PostgresViewReader
     StringBuilder result = new StringBuilder(source.length() + 50);
     result.append(source);
 
-    if (StringUtil.isNonBlank(defaults))
+    if (StringUtil.isNotBlank(defaults))
     {
       result.append(defaults);
     }

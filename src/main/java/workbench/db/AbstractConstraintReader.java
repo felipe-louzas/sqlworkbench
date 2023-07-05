@@ -124,7 +124,7 @@ public abstract class AbstractConstraintReader
         String constraint = rs.getString(2);
         ColumnIdentifier colId = ColumnIdentifier.findColumnInList(def.getColumns(), column);
 
-        if (colId != null && StringUtil.isNonEmpty(constraint))
+        if (colId != null && StringUtil.isNotEmpty(constraint))
         {
           colId.setConstraint(constraint.trim());
         }
@@ -258,7 +258,7 @@ public abstract class AbstractConstraintReader
 
   protected boolean shouldIncludeTableConstraint(String constraintName, String constraint, TableDefinition table)
   {
-    return StringUtil.isNonEmpty(constraint);
+    return StringUtil.isNotEmpty(constraint);
   }
 
 }

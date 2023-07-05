@@ -63,7 +63,7 @@ public class ImportFileLister
   public ImportFileLister(WbConnection con, File dir, final String ext)
   {
     if (!dir.isDirectory()) throw new IllegalArgumentException(dir + " is not a directory");
-    if (StringUtil.isEmptyString(ext)) throw new IllegalArgumentException("Extension may not be empty");
+    if (StringUtil.isEmpty(ext)) throw new IllegalArgumentException("Extension may not be empty");
 
     toProcess = new ArrayList<>();
     dbConn = con;

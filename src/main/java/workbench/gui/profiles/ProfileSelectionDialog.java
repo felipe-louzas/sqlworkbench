@@ -195,7 +195,7 @@ public class ProfileSelectionDialog
       versionInfo.setIcon(IconMgr.getInstance().getLabelIcon(event.getIconKey()));
       versionInfo.setText("<html><b>" + event.getMessage() + "</b></html>");
       String tip = event.getTooltip();
-      if (StringUtil.isNonEmpty(tip))
+      if (StringUtil.isNotEmpty(tip))
       {
         versionInfo.setToolTipText(tip);
       }

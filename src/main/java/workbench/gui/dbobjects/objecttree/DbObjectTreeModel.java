@@ -56,7 +56,7 @@ public class DbObjectTreeModel
 
   public ObjectTreeNode findNodeByType(String name, String type)
   {
-    if (StringUtil.isEmptyString(name) || StringUtil.isEmptyString(type)) return null;
+    if (StringUtil.isEmpty(name) || StringUtil.isEmpty(type)) return null;
 
     return findNodeByType((ObjectTreeNode)getRoot(), name, type);
   }
@@ -136,7 +136,7 @@ public class DbObjectTreeModel
 
   public void applyFilter(String text)
   {
-    if (StringUtil.isEmptyString(text))
+    if (StringUtil.isEmpty(text))
     {
       resetFilter();
     }

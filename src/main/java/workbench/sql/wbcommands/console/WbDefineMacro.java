@@ -148,7 +148,7 @@ public class WbDefineMacro
 
     def.setExpandWhileTyping(expand);
 
-    if (StringUtil.isNonEmpty(groupName))
+    if (StringUtil.isNotEmpty(groupName))
     {
       for (MacroGroup grp : groups)
       {

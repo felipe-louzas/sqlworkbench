@@ -59,7 +59,7 @@ public class ListItemProperty
     for (int i = 0; i < itemCount; i++)
     {
       String item = s.getProperty("workbench." + propName + "." + i, null);
-      if (StringUtil.isNonBlank(item))
+      if (StringUtil.isNotBlank(item))
       {
         result.add(item);
       }

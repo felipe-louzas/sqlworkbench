@@ -123,7 +123,7 @@ public class WbSysExec
       String prg = cmdLine.getValue(ARG_PROGRAM);
       String doc = cmdLine.getValue(ARG_DOCUMENT);
 
-      if (StringUtil.isNonBlank(doc) && Desktop.isDesktopSupported())
+      if (StringUtil.isNotBlank(doc) && Desktop.isDesktopSupported())
       {
         try
         {
@@ -143,7 +143,7 @@ public class WbSysExec
 
       List<String> params = cmdLine.getList(ARG_PRG_ARG);
 
-      if (StringUtil.isNonBlank(prg))
+      if (StringUtil.isNotBlank(prg))
       {
         if (prg.startsWith("."))
         {
@@ -183,7 +183,7 @@ public class WbSysExec
         pbEnv.putAll(envArgs);
       }
       String dir = cmdLine.getValue(ARG_WORKING_DIR);
-      if (StringUtil.isNonBlank(dir))
+      if (StringUtil.isNotBlank(dir))
       {
         File f = evaluateFileArgument(dir);
         pb.directory(f);
@@ -312,7 +312,7 @@ public class WbSysExec
 
   private boolean useShell(String command)
   {
-    if (StringUtil.isEmptyString(command)) return false;
+    if (StringUtil.isEmpty(command)) return false;
     String os = getOSID();
     if (os == null) return false;
 

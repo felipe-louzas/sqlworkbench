@@ -751,13 +751,13 @@ public class TableDataDiff
     out.write(" name=\"");
     out.write(table.getRawTableName());
     out.write("\"");
-    if (StringUtil.isNonEmpty(table.getRawSchema()))
+    if (StringUtil.isNotEmpty(table.getRawSchema()))
     {
       out.write(" schema=\"");
       out.write(table.getRawSchema());
       out.write("\"");
     }
-    if (StringUtil.isNonEmpty(table.getRawCatalog()))
+    if (StringUtil.isNotEmpty(table.getRawCatalog()))
     {
       out.write(" catalog=\"");
       out.write(table.getRawCatalog());

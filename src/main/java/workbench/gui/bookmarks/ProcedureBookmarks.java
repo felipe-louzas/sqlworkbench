@@ -250,7 +250,7 @@ public class ProcedureBookmarks
     if (currentStartToken != null && this.currentIdentifier != null)
     {
       String name = currentIdentifier;
-      if (StringUtil.isNonEmpty(parameterList))
+      if (StringUtil.isNotEmpty(parameterList))
       {
         name += "(" + parameterList + ")";
       }

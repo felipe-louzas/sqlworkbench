@@ -714,7 +714,7 @@ public class DbObjectsTree
   public ObjectTreeNode findNodeByType(ObjectTreeNode parent, String type)
   {
     if (!parent.canHaveChildren()) return null;
-    if (StringUtil.isEmptyString(type)) return null;
+    if (StringUtil.isEmpty(type)) return null;
 
     int childCount = parent.getChildCount();
     for (int i = 0; i < childCount; i++)

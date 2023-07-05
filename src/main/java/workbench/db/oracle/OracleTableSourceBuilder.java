@@ -206,7 +206,7 @@ public class OracleTableSourceBuilder
 
         iotType = rs.getString("IOT_TYPE");
 
-        if (StringUtil.isNonBlank(iotType))
+        if (StringUtil.isNotBlank(iotType))
         {
           tbl.getSourceOptions().addConfigSetting("organization", "index");
           options.append(IOT_OPTIONS);
@@ -271,7 +271,7 @@ public class OracleTableSourceBuilder
         }
 
         int free = rs.getInt("pct_free");
-        if (!rs.wasNull() && free != 10 && StringUtil.isEmptyString(iotType))
+        if (!rs.wasNull() && free != 10 && StringUtil.isEmpty(iotType))
         {
           tbl.getSourceOptions().addConfigSetting("pct_free", Integer.toString(free));
           if (options.length() > 0) options.append('\n');
@@ -280,7 +280,7 @@ public class OracleTableSourceBuilder
         }
 
         int used = rs.getInt("pct_used");
-        if (!rs.wasNull() && used != 40 && StringUtil.isEmptyString(iotType) && !isTempTable) // PCTUSED is not valid for IOTs
+        if (!rs.wasNull() && used != 40 && StringUtil.isEmpty(iotType) && !isTempTable) // PCTUSED is not valid for IOTs
         {
           tbl.getSourceOptions().addConfigSetting("pct_used", Integer.toString(used));
           if (options.length() > 0) options.append('\n');
@@ -329,7 +329,7 @@ public class OracleTableSourceBuilder
 
         String compression = rs.getString("compression");
         String compressType = rs.getString("compress_for");
-        if (StringUtil.equalStringIgnoreCase("enabled", compression) && StringUtil.isNonBlank(compressType))
+        if (StringUtil.equalStringIgnoreCase("enabled", compression) && StringUtil.isNotBlank(compressType))
         {
           tbl.getSourceOptions().addConfigSetting("compression", compressType);
           if (options.length() > 0) options.append('\n');
@@ -345,7 +345,7 @@ public class OracleTableSourceBuilder
         }
 
         archive = rs.getString("flashback_archive_name");
-        if (StringUtil.isNonEmpty(archive))
+        if (StringUtil.isNotEmpty(archive))
         {
           tbl.getSourceOptions().addConfigSetting("flashback_archive", archive);
         }
@@ -374,7 +374,7 @@ public class OracleTableSourceBuilder
       options.append(tablespace);
     }
 
-    if (StringUtil.isNonEmpty(archive))
+    if (StringUtil.isNotEmpty(archive))
     {
       if (options.length() > 0) options.append('\n');
       options.append("FLASHBACK ARCHIVE ");
@@ -413,13 +413,13 @@ public class OracleTableSourceBuilder
     }
 
     tbl.getSourceOptions().setTableOption(options.toString());
-    if (StringUtil.isNonEmpty(iotType))
+    if (StringUtil.isNotEmpty(iotType))
     {
       readIOTDefinition(tbl, useUserTables);
     }
 
     String columnGroups = readColumnGroups(tbl);
-    if (StringUtil.isNonEmpty(columnGroups))
+    if (StringUtil.isNotEmpty(columnGroups))
     {
       tbl.getSourceOptions().appendAdditionalSql(columnGroups);
     }
@@ -793,7 +793,7 @@ public class OracleTableSourceBuilder
 
     OracleIndexReader reader = (OracleIndexReader)dbConnection.getMetadata().getIndexReader();
     String sql = super.getPkSource(table, def, forInlineUse, useFQN).toString();
-    if (StringUtil.isEmptyString(sql)) return sql;
+    if (StringUtil.isEmpty(sql)) return sql;
 
     PkDefinition pk = def == null ? table.getPrimaryKey() : def;
 
@@ -929,7 +929,7 @@ public class OracleTableSourceBuilder
       if ("ENABLED".equalsIgnoreCase(compression))
       {
         String cols = rs.getString("prefix_length");
-        if (StringUtil.isNonBlank(cols))
+        if (StringUtil.isNotBlank(cols))
         {
           options.append("\nCOMPRESS ");
           options.append(cols);
@@ -939,7 +939,7 @@ public class OracleTableSourceBuilder
       {
         options.append("\nINCLUDING ");
         options.append(included);
-        if (StringUtil.isEmptyString(overflow))
+        if (StringUtil.isEmpty(overflow))
         {
           options.append(" OVERFLOW");
         }
@@ -947,14 +947,14 @@ public class OracleTableSourceBuilder
       }
 
       String idxTbs = rs.getString("INDEX_TABLESPACE");
-      if (StringUtil.isNonEmpty(idxTbs))
+      if (StringUtil.isNotEmpty(idxTbs))
       {
         options.append("\nTABLESPACE ").append(idxTbs);
         tbl.getSourceOptions().addConfigSetting("index_tablespace", idxTbs);
         tbl.setTablespace(null);
       }
 
-      if (StringUtil.isNonBlank(overflow))
+      if (StringUtil.isNotBlank(overflow))
       {
         options.append("\nOVERFLOW TABLESPACE ");
         options.append(overflow);
@@ -1063,7 +1063,7 @@ public class OracleTableSourceBuilder
         if (!inlinePK && table.getPrimaryKeyName() != null)
         {
           String pk = DbmsMetadata.getDDL(dbConnection, "CONSTRAINT", table.getPrimaryKeyName(), table.getSchema());
-          if (StringUtil.isNonEmpty(pk))
+          if (StringUtil.isNotEmpty(pk))
           {
             ddl += "\n\n" + pk + "\n";
           }
@@ -1141,7 +1141,7 @@ public class OracleTableSourceBuilder
     if (table.getPrimaryKeyName() != null)
     {
       String pk = DbmsMetadata.getDDL(dbConnection, "CONSTRAINT", table.getPrimaryKeyName(), table.getSchema());
-      if (StringUtil.isNonEmpty(pk))
+      if (StringUtil.isNotEmpty(pk))
       {
         result += "\n\n" + pk;
       }
@@ -1150,7 +1150,7 @@ public class OracleTableSourceBuilder
     if (includeFk && !inlineFK)
     {
       CharSequence fk = getFkSource(table);
-      if (StringUtil.isNonEmpty(fk))
+      if (StringUtil.isNotEmpty(fk))
       {
         result += "\n\n" + fk;
       }
@@ -1168,19 +1168,19 @@ public class OracleTableSourceBuilder
       indexDDL = getIndexReader().getIndexSource(table, toCreate);
     }
 
-    if (StringUtil.isNonEmpty(indexDDL))
+    if (StringUtil.isNotEmpty(indexDDL))
     {
       result += "\n\n" + indexDDL;
     }
 
     String columnGroups = readColumnGroups(table);
-    if (StringUtil.isNonEmpty(columnGroups))
+    if (StringUtil.isNotEmpty(columnGroups))
     {
       result += "\n\n" + columnGroups;
     }
 
     String comments = DbmsMetadata.getDependentDDL(dbConnection, "COMMENT", table.getTableName(), table.getSchema());
-    if (StringUtil.isNonEmpty(comments))
+    if (StringUtil.isNotEmpty(comments))
     {
       result += "\n\n" + comments;
     }
@@ -1189,7 +1189,7 @@ public class OracleTableSourceBuilder
     {
       TableGrantReader reader = new OracleTableGrantReader();
       StringBuilder grants = reader.getTableGrantSource(dbConnection, table);
-      if (StringUtil.isNonEmpty(grants))
+      if (StringUtil.isNotEmpty(grants))
       {
         result += "\n\n" + grants;
       }
@@ -1245,7 +1245,7 @@ public class OracleTableSourceBuilder
       while (rs.next())
       {
         String expression = rs.getString(1);
-        if (StringUtil.isNonEmpty(expression))
+        if (StringUtil.isNotEmpty(expression))
         {
           String stmt = String.format(cmd, userName, tname, SqlUtil.escapeQuotes(expression));
           result.append(stmt);

@@ -104,7 +104,7 @@ public class AddMacroAction
     {
       MacroGroup group = panel.getSelectedGroup();
       String name = panel.getMacroName();
-      if (StringUtil.isNonBlank(name) && group != null)
+      if (StringUtil.isNotBlank(name) && group != null)
       {
         MacroManager.getInstance().getMacros(macroClientId).addMacro(group, new MacroDefinition(name, text));
       }

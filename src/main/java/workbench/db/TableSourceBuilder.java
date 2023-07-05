@@ -172,7 +172,7 @@ public class TableSourceBuilder
 
   private boolean isFKName(String name, List<DependencyNode> foreignKeys)
   {
-    if (StringUtil.isEmptyString(name)) return false;
+    if (StringUtil.isEmpty(name)) return false;
     for (DependencyNode node : foreignKeys)
     {
       String fkname = node.getFkName();
@@ -261,7 +261,7 @@ public class TableSourceBuilder
       else
       {
         CharSequence fk = getFkSource(table, fkList, false);
-        if (StringUtil.isNonBlank(fk))
+        if (StringUtil.isNotBlank(fk))
         {
           result.append(lineEnding);
           result.append(fk);
@@ -276,7 +276,7 @@ public class TableSourceBuilder
     {
       List<IndexDefinition> toCreate = getIndexesToCreate(indexList, fkList);
       StringBuilder indexSource = getIndexReader().getIndexSource(table, toCreate);
-      if (StringUtil.isNonBlank(indexSource))
+      if (StringUtil.isNotBlank(indexSource))
       {
         result.append(lineEnding);
         result.append(indexSource);
@@ -294,7 +294,7 @@ public class TableSourceBuilder
     {
       TableGrantReader grantReader = TableGrantReader.createReader(dbConnection);
       StringBuilder grants = grantReader.getTableGrantSource(this.dbConnection, table);
-      if (StringUtil.isNonBlank(grants))
+      if (StringUtil.isNotBlank(grants))
       {
         result.append(lineEnding);
         result.append(grants);
@@ -338,7 +338,7 @@ public class TableSourceBuilder
       if (connection.getDbSettings().getUseInlineTableComments() == false)
       {
         String tableComment = commentReader.getTableCommentSql(connection, table);
-        if (StringUtil.isNonBlank(tableComment))
+        if (StringUtil.isNotBlank(tableComment))
         {
           result.append(lineEnding);
           result.append(tableComment);
@@ -348,7 +348,7 @@ public class TableSourceBuilder
       if (generateColumnComments && CollectionUtil.isNonEmpty(columns))
       {
         StringBuilder colComments = commentReader.getTableColumnCommentsSql(connection, table, columns);
-        if (StringUtil.isNonBlank(colComments))
+        if (StringUtil.isNotBlank(colComments))
         {
           result.append(lineEnding);
           result.append(colComments);
@@ -416,7 +416,7 @@ public class TableSourceBuilder
     appendColumnDefinitions(result, columns, meta, COL_INDENT);
 
     String cons = consReader.getConstraintSource(tableConstraints, COL_INDENT);
-    if (StringUtil.isNonEmpty(cons))
+    if (StringUtil.isNotEmpty(cons))
     {
       result.append(",\n").append(COL_INDENT);
       result.append(cons);
@@ -477,7 +477,7 @@ public class TableSourceBuilder
     result.append('\n');
     result.append(")");
     String options = sourceOptions.getTableOption();
-    if (StringUtil.isNonEmpty(options))
+    if (StringUtil.isNotEmpty(options))
     {
       result.append('\n');
       result.append(options);
@@ -486,7 +486,7 @@ public class TableSourceBuilder
 
     if (dbConnection.getDbSettings().getUseInlineTableComments()
         && dbConnection.getDbSettings().getInlineTableCommentKeyword() != null
-        && StringUtil.isNonEmpty(table.getComment()))
+        && StringUtil.isNotEmpty(table.getComment()))
     {
       result.append('\n');
       result.append(dbConnection.getDbSettings().getInlineTableCommentKeyword());
@@ -501,7 +501,7 @@ public class TableSourceBuilder
 
     // Add additional information provided by any specialized descendant class
     String info = getAdditionalTableInfo(table, columns, indexList);
-    if (StringUtil.isNonBlank(info))
+    if (StringUtil.isNotBlank(info))
     {
       result.append(info);
       result.append('\n');
@@ -612,7 +612,7 @@ public class TableSourceBuilder
     else
     {
       String cascadeVerb = dbConnection.getDbSettings().getCascadeConstraintsVerb(objectType);
-      boolean cascadeSupported = StringUtil.isNonEmpty(cascadeVerb);
+      boolean cascadeSupported = StringUtil.isNotEmpty(cascadeVerb);
 
       // if a cascaded drop was requested add it, even when a REPLACE is available
       // because a cascaded drop might do more than a create or replace
@@ -634,7 +634,7 @@ public class TableSourceBuilder
     ddl = StringUtil.replace(ddl, MetaDataSqlManager.NAME_PLACEHOLDER, useFQN ? fqName : name);
     ddl = StringUtil.replace(ddl, MetaDataSqlManager.FQ_NAME_PLACEHOLDER, fqName);
 
-    if (StringUtil.isEmptyString(typeOption))
+    if (StringUtil.isEmpty(typeOption))
     {
       ddl = TemplateHandler.removePlaceholder(ddl, MetaDataSqlManager.DDL_TYPEOPTION, true);
     }
@@ -644,7 +644,7 @@ public class TableSourceBuilder
     }
 
     String ifNotExists = dbConnection.getDbSettings().getDDLIfNoExistsOption(objectType);
-    if (dropType == DropType.none && StringUtil.isNonEmpty(ifNotExists))
+    if (dropType == DropType.none && StringUtil.isNotEmpty(ifNotExists))
     {
       ddl = TemplateHandler.replacePlaceholder(ddl, MetaDataSqlManager.DDL_IF_NOT_EXISTS, ifNotExists, true);
     }
@@ -756,7 +756,7 @@ public class TableSourceBuilder
     tmpl.setFixDefaultValues(!dbConnection.getDbSettings().returnsValidDefaultExpressions());
     result.append(tmpl.getColumnDefinitionSQL(toUse, columnConstraint, maxTypeLength));
 
-    if (inlineColumnComments && StringUtil.isNonBlank(column.getComment()))
+    if (inlineColumnComments && StringUtil.isNotBlank(column.getComment()))
     {
       String keyword = " " + dbConnection.getDbSettings().getInlineCommentKeyword() + " ";
       result.append(keyword);
@@ -875,7 +875,7 @@ public class TableSourceBuilder
     PkTemplate pkTmpl = new PkTemplate(dbConnection, forInlineUse);
     String template = pkTmpl.getSQLTemplate();
 
-    if (StringUtil.isEmptyString(template)) return StringUtil.EMPTY_STRING;
+    if (StringUtil.isEmpty(template)) return StringUtil.EMPTY_STRING;
 
     StringBuilder result = new StringBuilder(100);
     String fqName = table.getFullyQualifiedName(dbConnection);
@@ -908,7 +908,7 @@ public class TableSourceBuilder
       pkName = meta.quoteObjectname(pkName);
     }
 
-    if (StringUtil.isEmptyString(pkName))
+    if (StringUtil.isEmpty(pkName))
     {
       template = TemplateHandler.removePlaceholder(template, "CONSTRAINT " + MetaDataSqlManager.CONSTRAINT_NAME_PLACEHOLDER, true);
       template = TemplateHandler.removePlaceholder(template, MetaDataSqlManager.CONSTRAINT_NAME_PLACEHOLDER, true);
@@ -1038,7 +1038,7 @@ public class TableSourceBuilder
       }
 
       rule = getDeferrableVerb(node.getDeferrableType());
-      if (StringUtil.isEmptyString(rule))
+      if (StringUtil.isEmpty(rule))
       {
         stmt = TemplateHandler.removePlaceholder(stmt, MetaDataSqlManager.DEFERRABLE, true);
       }

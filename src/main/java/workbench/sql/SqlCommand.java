@@ -232,7 +232,7 @@ public class SqlCommand
 
   protected WbFile findXsltFile(String fileName)
   {
-    if (StringUtil.isEmptyString(fileName)) return null;
+    if (StringUtil.isEmpty(fileName)) return null;
 
     if (!fileName.toLowerCase().endsWith(".xslt"))
     {
@@ -295,7 +295,7 @@ public class SqlCommand
   protected String getDefaultSuccessMessage(StatementRunnerResult result)
   {
     String verb = getVerb();
-    if (StringUtil.isEmptyString(verb) && result != null)
+    if (StringUtil.isEmpty(verb) && result != null)
     {
       verb = getParsingUtil().getSqlVerb(result.getSourceCommand());
     }
@@ -315,7 +315,7 @@ public class SqlCommand
 
     if (msg != null) return msg;
 
-    if (StringUtil.isEmptyString(verb))
+    if (StringUtil.isEmpty(verb))
     {
       verb = ResourceMgr.getString("TxtStatement");
     }
@@ -344,7 +344,7 @@ public class SqlCommand
       {
         return ResourceMgr.getString("MsgGenDropSuccess");
       }
-      if (StringUtil.isNonBlank(info.getObjectName()))
+      if (StringUtil.isNotBlank(info.getObjectName()))
       {
         return ResourceMgr.getFormattedString("MsgDropSuccess", info.getDisplayType(), info.getObjectName());
       }
@@ -359,7 +359,7 @@ public class SqlCommand
       {
         return ResourceMgr.getString("MsgGenCreateSuccess");
       }
-      if (StringUtil.isNonBlank(info.getObjectName()))
+      if (StringUtil.isNotBlank(info.getObjectName()))
       {
         return ResourceMgr.getFormattedString("MsgCreateSuccess", info.getDisplayType(), info.getObjectName());
       }
@@ -416,7 +416,7 @@ public class SqlCommand
   {
     String s = this.currentConnection.getOutputMessages();
     boolean hideLabel = WbEnableOraOutput.HIDE_HINT.equals(runner.getSessionAttribute(StatementRunner.SERVER_MSG_PROP));
-    if (StringUtil.isNonBlank(s))
+    if (StringUtil.isNotBlank(s))
     {
       if (result.hasMessages())
       {
@@ -1145,7 +1145,7 @@ public class SqlCommand
   
   public WbFile evaluateFileArgument(String fileName, boolean replaceCommonPlaceholders)
   {
-    if (StringUtil.isEmptyString(fileName)) return null;
+    if (StringUtil.isEmpty(fileName)) return null;
 
     String fname = StringUtil.trimQuotes(fileName);
     if (replaceCommonPlaceholders)
@@ -1162,7 +1162,7 @@ public class SqlCommand
     if (this.runner != null)
     {
       String dir = this.runner.getBaseDir();
-      if (StringUtil.isNonEmpty(dir))
+      if (StringUtil.isNotEmpty(dir))
       {
         f = new WbFile(dir, fname);
       }

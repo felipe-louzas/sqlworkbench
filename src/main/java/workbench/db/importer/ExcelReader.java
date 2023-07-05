@@ -105,7 +105,7 @@ public class ExcelReader
   {
     inputFile = new WbFile(excelFile);
     sheetIndex = sheetNumber > -1 ? sheetNumber : -1;
-    if (sheetIndex < 0 && StringUtil.isNonBlank(name))
+    if (sheetIndex < 0 && StringUtil.isNotBlank(name))
     {
       sheetName = name.trim();
     }
@@ -452,7 +452,7 @@ public class ExcelReader
   @Override
   public void setActiveWorksheet(String name)
   {
-    if (StringUtil.isNonBlank(name) && !StringUtil.equalStringIgnoreCase(name, sheetName))
+    if (StringUtil.isNotBlank(name) && !StringUtil.equalStringIgnoreCase(name, sheetName))
     {
       this.sheetName = name;
       this.sheetIndex = -1;
@@ -663,7 +663,7 @@ public class ExcelReader
   private boolean isNullString(String value)
   {
     if (value == null) return true;
-    if (emptyStringIsNull && StringUtil.isEmptyString(value)) return true;
+    if (emptyStringIsNull && StringUtil.isEmpty(value)) return true;
     return StringUtil.equalString(value, nullString);
   }
 

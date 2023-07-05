@@ -44,7 +44,7 @@ public class OptimizeRowHeightAnnotation
   {
     String val = getValue();
     int lines = GuiSettings.getAutRowHeightMaxLines();
-    if (StringUtil.isNonBlank(val))
+    if (StringUtil.isNotBlank(val))
     {
       String[] elements = val.split("=");
       if (elements != null && elements.length == 2)

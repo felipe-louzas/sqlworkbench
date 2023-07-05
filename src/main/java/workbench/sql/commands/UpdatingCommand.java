@@ -147,7 +147,7 @@ public class UpdatingCommand
       }
 
       String table = getAffectedTable(sql);
-      if (StringUtil.isEmptyString(table))
+      if (StringUtil.isEmpty(table))
       {
         appendSuccessMessage(result);
       }
@@ -175,7 +175,7 @@ public class UpdatingCommand
     {
       runner.rollbackSavepoint();
       String table = getAffectedTable(sql);
-      if (StringUtil.isNonEmpty(table))
+      if (StringUtil.isNotEmpty(table))
       {
         String msg = ResourceMgr.getFormattedString("MsgDMLNoSuccess", getMessageVerb(), table);
         result.addMessage(msg);

@@ -132,7 +132,7 @@ public class StringUtil
   public static boolean endsWith(CharSequence s, String end)
   {
     if (s == null) return false;
-    if (isEmptyString(end)) return false;
+    if (isEmpty(end)) return false;
     int len = s.length();
     if (len == 0) return false;
     if (len < end.length()) return false;
@@ -150,8 +150,8 @@ public class StringUtil
 
   public static boolean lineStartsWith(CharSequence text, int lineStartPos, String compareTo)
   {
-    if (isEmptyString(compareTo)) return false;
-    if (isEmptyString(text)) return false;
+    if (isEmpty(compareTo)) return false;
+    if (isEmpty(text)) return false;
 
     int textLength = text.length();
     int len = compareTo.length();
@@ -223,7 +223,7 @@ public class StringUtil
   public static String trimToNull(String toTrim)
   {
     String result = trim(toTrim);
-    if (isEmptyString(result)) return null;
+    if (isEmpty(result)) return null;
     return result;
   }
 
@@ -403,7 +403,7 @@ public class StringUtil
 
   public static boolean hasOpenQuotes(String data, char quoteChar, QuoteEscapeType escapeType)
   {
-    if (isEmptyString(data)) return false;
+    if (isEmpty(data)) return false;
     int chars = data.length();
     boolean inQuotes = false;
     for (int i = 0; i < chars; i++)
@@ -591,7 +591,7 @@ public class StringUtil
    */
   public static String getLongestLine(String text, int maxLines)
   {
-    if (isEmptyString(text)) return EMPTY_STRING;
+    if (isEmpty(text)) return EMPTY_STRING;
     Matcher m = PATTERN_CRLF.matcher(text);
 
     int lastpos = 0;
@@ -660,7 +660,7 @@ public class StringUtil
    * @return true if at least one non-whitespace character is returned
    * @see #isBlank(java.lang.CharSequence)
    */
-  public static boolean isNonBlank(CharSequence value)
+  public static boolean isNotBlank(CharSequence value)
   {
     return !isBlank(value);
   }
@@ -681,7 +681,7 @@ public class StringUtil
    */
   public static boolean isBlank(CharSequence value)
   {
-    if (isEmptyString(value)) return true;
+    if (isEmpty(value)) return true;
     return isWhitespace(value);
   }
 
@@ -693,7 +693,7 @@ public class StringUtil
     if (values == null) return true;
     for (CharSequence value : values)
     {
-      if (isNonBlank(value)) return false;
+      if (isNotBlank(value)) return false;
     }
     return true;
   }
@@ -704,9 +704,9 @@ public class StringUtil
    * Whitespaces are considered "not empty".
    *
    * @param value
-   * @see #isEmptyString(java.lang.CharSequence)
+   * @see #isEmpty(java.lang.CharSequence)
    */
-  public static boolean isNonEmpty(CharSequence value)
+  public static boolean isNotEmpty(CharSequence value)
   {
     return value != null && value.length() > 0;
   }
@@ -718,7 +718,7 @@ public class StringUtil
    * @param value the String to test
    * @return true if the String is empty (or null)
    */
-  public static boolean isEmptyString(CharSequence value)
+  public static boolean isEmpty(CharSequence value)
   {
     if (value == null) return true;
     return value.length() == 0;
@@ -729,7 +729,7 @@ public class StringUtil
     if (values == null) return false;
     for (CharSequence value : values)
     {
-      if (isEmptyString(value)) return false;
+      if (isEmpty(value)) return false;
     }
     return true;
   }
@@ -739,7 +739,7 @@ public class StringUtil
     if (values == null) return true;
     for (CharSequence value : values)
     {
-      if (isNonEmpty(value)) return false;
+      if (isNotEmpty(value)) return false;
     }
     return true;
   }
@@ -963,7 +963,7 @@ public class StringUtil
     StringBuilder result = new StringBuilder(elements.length * 10);
     for (int i=0; i < elements.length; i++)
     {
-      if (StringUtil.isNonBlank(elements[i]))
+      if (StringUtil.isNotBlank(elements[i]))
       {
         if (i > 0 && result.length() > 0) result.append(separator);
         result.append(elements[i]);
@@ -1032,7 +1032,7 @@ public class StringUtil
    */
   public static List<String> stringToList(String aString, String aDelimiter, boolean removeEmpty, boolean trimEntries, boolean checkBrackets, boolean keepQuotes)
   {
-    if (isEmptyString(aString)) return new ArrayList<>(0);
+    if (isEmpty(aString)) return new ArrayList<>(0);
     WbStringTokenizer tok = new WbStringTokenizer(aString, aDelimiter);
     tok.setDelimiterNeedsWhitspace(false);
     tok.setKeepQuotes(keepQuotes);
@@ -1043,7 +1043,7 @@ public class StringUtil
       String element = tok.nextToken();
       if (element == null) continue;
       if (trimEntries) element = element.trim();
-      if (removeEmpty && isEmptyString(element)) continue;
+      if (removeEmpty && isEmpty(element)) continue;
       result.add(element);
     }
     return result;
@@ -1136,7 +1136,7 @@ public class StringUtil
    */
   public static String removeQuotes(String input, String quote)
   {
-    if (isEmptyString(input)) return input;
+    if (isEmpty(input)) return input;
     input = input.trim();
     if (input.equals(quote)) return input;
     if (!(input.startsWith(quote) && input.endsWith(quote))) return input;
@@ -1145,7 +1145,7 @@ public class StringUtil
 
   public static String removeBrackets(String input)
   {
-    if (isEmptyString(input)) return input;
+    if (isEmpty(input)) return input;
     if (input.length() < 2) return input;
 
     char first = input.charAt(0);
@@ -1309,7 +1309,7 @@ public class StringUtil
 
   public static String getFirstWord(String value)
   {
-    if (StringUtil.isEmptyString(value)) return "";
+    if (StringUtil.isEmpty(value)) return "";
 
     value = value.trim();
     int pos = findFirstWhiteSpace(value);
@@ -1747,7 +1747,7 @@ public class StringUtil
 
   public static String replaceProperties(Map<String, String> props, String input)
   {
-    if (isEmptyString(input)) return input;
+    if (isEmpty(input)) return input;
 
     Matcher m = VARIABLE_PATTERN.matcher(input);
     if (m == null)
@@ -1941,7 +1941,7 @@ public class StringUtil
    */
   public static int getLineStart(CharSequence text, int position)
   {
-    if (StringUtil.isEmptyString(text)) return 0;
+    if (StringUtil.isEmpty(text)) return 0;
     if (position >= text.length()) return 0;
 
     int start = 0;
@@ -1961,7 +1961,7 @@ public class StringUtil
 
   public static boolean hasLineFeed(String text)
   {
-    if (isEmptyString(text)) return false;
+    if (isEmpty(text)) return false;
     if (text.endsWith("\r\n")) return true;
     if (text.endsWith("\n")) return true;
     if (text.endsWith("\n\r")) return true;
@@ -1978,7 +1978,7 @@ public class StringUtil
    */
   public static int getLineEnd(String text, int position)
   {
-    if (StringUtil.isEmptyString(text)) return 0;
+    if (StringUtil.isEmpty(text)) return 0;
 
     int count = text.length();
     int end = count;
@@ -2092,7 +2092,7 @@ public class StringUtil
     if (args == null) return null;
     for (String s : args)
     {
-      if (isNonBlank(s)) return s;
+      if (isNotBlank(s)) return s;
     }
     return null;
   }

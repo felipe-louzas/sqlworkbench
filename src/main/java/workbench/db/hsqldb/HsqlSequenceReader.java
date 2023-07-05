@@ -92,14 +92,14 @@ public class HsqlSequenceReader
     query.append(baseQuery);
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       whereAdded = true;
       query.append(" WHERE ");
       SqlUtil.appendExpression(query, "sequence_name", StringUtil.trimQuotes(namePattern), dbConn);
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       if (!whereAdded)
       {
@@ -258,7 +258,7 @@ public class HsqlSequenceReader
         String schema = rs.getString(2);
         String name = rs.getString(3);
         String col = rs.getString(4);
-        if (StringUtil.isNonEmpty(name) && StringUtil.isNonEmpty(col))
+        if (StringUtil.isNotEmpty(name) && StringUtil.isNotEmpty(col))
         {
           def.setRelatedTable(new TableIdentifier(cat, schema, name), col);
         }

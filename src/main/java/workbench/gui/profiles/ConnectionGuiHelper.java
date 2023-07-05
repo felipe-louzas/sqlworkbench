@@ -94,7 +94,7 @@ public class ConnectionGuiHelper
     String title = profile.getName();
     String msg =  ResourceMgr.getFormattedString("MsgInputPwd", profile.getUsername());
     String pwd = WbSwingUtilities.passwordPrompt(parent, title, msg);
-    if (StringUtil.isEmptyString(pwd)) return false;
+    if (StringUtil.isEmpty(pwd)) return false;
 
     profile.setPassword(pwd);
     return true;
@@ -122,7 +122,7 @@ public class ConnectionGuiHelper
     }
 
     String pwd = WbSwingUtilities.passwordPrompt(parent, title, msg);
-    if (StringUtil.isEmptyString(pwd)) return false;
+    if (StringUtil.isEmpty(pwd)) return false;
     config.setTemporaryPassword(pwd);
     return true;
   }

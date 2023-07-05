@@ -149,7 +149,7 @@ public class WbObjectGrants
       }
       StringBuilder source = reader.getTableGrantSource(currentConnection, tbl);
 
-      if (StringUtil.isNonBlank(source))
+      if (StringUtil.isNotBlank(source))
       {
         grantSql.append(source);
       }
@@ -164,7 +164,7 @@ public class WbObjectGrants
       }
       StringBuilder source = viewReader.getViewGrantSource(currentConnection, tbl);
 
-      if (StringUtil.isNonBlank(source))
+      if (StringUtil.isNotBlank(source))
       {
         grantSql.append(source);
       }

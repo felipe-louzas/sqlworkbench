@@ -116,7 +116,7 @@ public class DelimiterDefinition
 
   public static DelimiterDefinition parseCmdLineArgument(String arg)
   {
-    if (StringUtil.isEmptyString(arg)) return null;
+    if (StringUtil.isEmpty(arg)) return null;
 
     arg = arg.trim();
     if ("ORA".equalsIgnoreCase(arg) || ORA_ABBREVIATION.equalsIgnoreCase(arg) || "SQLPLUS".equalsIgnoreCase(arg))
@@ -203,7 +203,7 @@ public class DelimiterDefinition
    */
   public boolean terminatesScript(String sql, boolean checkNonStandardComments, char nonStandardQuoteChar)
   {
-    if (StringUtil.isEmptyString(sql)) return false;
+    if (StringUtil.isEmpty(sql)) return false;
 
     // cleaning the SQL from all "noise" ensures that the alternate delimiter is still
     // recognized even if the script is terminated with only comments.
@@ -265,7 +265,7 @@ public class DelimiterDefinition
 
   public String removeFromEnd(String sql)
   {
-    if (StringUtil.isEmptyString(sql)) return sql;
+    if (StringUtil.isEmpty(sql)) return sql;
     int startPos = -1;
     if (this.isSingleLine())
     {

@@ -493,7 +493,7 @@ public class BatchRunner
       {
         this.printMessage(ResourceMgr.getFormattedString("MsgBatchConnectOk", info));
         String warn = c.getWarnings();
-        if (!StringUtil.isEmptyString(warn) && !c.getProfile().isHideWarnings())
+        if (!StringUtil.isEmpty(warn) && !c.getProfile().isHideWarnings())
         {
           printMessage(warn);
           LogMgr.logWarning(new CallerInfo(){}, "Connection returned warnings: " + warn);
@@ -983,7 +983,7 @@ public class BatchRunner
           }
           else
           {
-            if (result.hasWarning() && StringUtil.isNonBlank(feedback))
+            if (result.hasWarning() && StringUtil.isNotBlank(feedback))
             {
               LogMgr.logWarning(ci, feedback);
             }
@@ -1366,7 +1366,7 @@ public class BatchRunner
 
       result.setSshConfig(getSshConfig(cmdLine));
 
-      if (!StringUtil.isEmptyString(wksp))
+      if (!StringUtil.isEmpty(wksp))
       {
         wksp = FileDialogUtil.replaceConfigDir(wksp);
         File f = new WbFile(wksp);
@@ -1379,7 +1379,7 @@ public class BatchRunner
           result.setWorkspaceFile(f.getAbsolutePath());
         }
       }
-      if (!StringUtil.isEmptyString(commit))
+      if (!StringUtil.isEmpty(commit))
       {
         result.setAutocommit(StringUtil.stringToBool(commit));
       }
@@ -1509,7 +1509,7 @@ public class BatchRunner
     boolean interactive = cmdLine.getBoolean(AppArguments.ARG_INTERACTIVE, false);
 
     BatchRunner runner = null;
-    if (StringUtil.isNonBlank(scripts))
+    if (StringUtil.isNotBlank(scripts))
     {
       runner = new BatchRunner(scripts);
     }

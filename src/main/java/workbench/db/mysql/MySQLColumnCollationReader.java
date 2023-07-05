@@ -159,7 +159,7 @@ public class MySQLColumnCollationReader
   private boolean isNonDefault(String value, String defaultValue)
   {
     if (defaultValue == null) return false;
-    if (StringUtil.isEmptyString(value)) return false;
+    if (StringUtil.isEmpty(value)) return false;
     return !value.equals(defaultValue);
   }
 

@@ -372,7 +372,7 @@ public class TextFileParser
   @Override
   public void setTextDelimiter(String delimit)
   {
-    if (StringUtil.isEmptyString(delimit)) return;
+    if (StringUtil.isEmpty(delimit)) return;
     this.delimiter = delimit;
     if (this.delimiter.contains("\\t"))
     {
@@ -402,7 +402,7 @@ public class TextFileParser
   @Override
   public void setTextQuoteChar(String aChar)
   {
-    if (StringUtil.isNonBlank(aChar))
+    if (StringUtil.isNotBlank(aChar))
     {
       this.quoteChar = aChar;
     }
@@ -945,7 +945,7 @@ public class TextFileParser
   @Override
   public void setDecimalChar(String delim)
   {
-    if (converter != null && StringUtil.isNonBlank(delim))
+    if (converter != null && StringUtil.isNotBlank(delim))
     {
       converter.setDecimalCharacter(delim.charAt(0));
     }

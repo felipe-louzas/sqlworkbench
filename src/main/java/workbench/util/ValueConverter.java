@@ -171,7 +171,7 @@ public class ValueConverter
 
   public ValueConverter(String aDateFormat, String aTimeStampFormat)
   {
-    if (StringUtil.isEmptyString(aDateFormat))
+    if (StringUtil.isEmpty(aDateFormat))
     {
       this.setDefaultDateFormat(Settings.getInstance().getDefaultDateFormat());
     }
@@ -180,7 +180,7 @@ public class ValueConverter
       this.setDefaultDateFormat(aDateFormat);
     }
 
-    if (StringUtil.isEmptyString(aTimeStampFormat))
+    if (StringUtil.isEmpty(aTimeStampFormat))
     {
       this.setDefaultTimestampFormat(Settings.getInstance().getDefaultTimestampFormat());
     }
@@ -227,7 +227,7 @@ public class ValueConverter
       this.defaultDateFormat = FORMAT_MILLIS;
       this.checkBuiltInFormats = false;
     }
-    else if (StringUtil.isNonEmpty(dtFormat))
+    else if (StringUtil.isNotEmpty(dtFormat))
     {
       this.checkBuiltInFormats = false;
       this.defaultDateFormat = dtFormat;
@@ -255,7 +255,7 @@ public class ValueConverter
       this.defaultTimestampFormat = FORMAT_MILLIS;
       this.checkBuiltInFormats = false;
     }
-    else if (StringUtil.isNonEmpty(tsFormat))
+    else if (StringUtil.isNotEmpty(tsFormat))
     {
       this.checkBuiltInFormats = false;
       this.defaultTimestampFormat = tsFormat;
@@ -908,7 +908,7 @@ public class ValueConverter
 
   private boolean isKeyword(String type, String arg)
   {
-    if (StringUtil.isEmptyString(arg))
+    if (StringUtil.isEmpty(arg))
     {
       return false;
     }

@@ -182,7 +182,7 @@ public class VariablePool
       if (suffix == null)
       {
         this.suffix = Settings.getInstance().getSqlParameterSuffix();
-        if (StringUtil.isEmptyString(this.suffix)) this.suffix = StringUtil.EMPTY_STRING;
+        if (StringUtil.isEmpty(this.suffix)) this.suffix = StringUtil.EMPTY_STRING;
       }
       return suffix;
     }
@@ -580,7 +580,7 @@ public class VariablePool
     if (forPrompt) result.append('?');
     result.append(varName);
     String sufx = getSuffix();
-    if (StringUtil.isNonEmpty(sufx))
+    if (StringUtil.isNotEmpty(sufx))
     {
       result.append(sufx);
     }

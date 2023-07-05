@@ -38,7 +38,7 @@ public class TableListHistoryEntry
   public TableListHistoryEntry(TableIdentifier tbl, String filter, int selectedTab)
   {
     selectedTable = tbl;
-    if (StringUtil.isNonBlank(filter))
+    if (StringUtil.isNotBlank(filter))
     {
       regexFilter = filter;
     }

@@ -175,7 +175,7 @@ public class SQLConsole
         }
 
         if (line.trim().equals(";") && buffer.getLength() == 0) continue;
-        if (buffer.getLength() == 0 && StringUtil.isEmptyString(line)) continue;
+        if (buffer.getLength() == 0 && StringUtil.isEmpty(line)) continue;
 
         boolean isCompleteStatement = buffer.addLine(line);
 
@@ -189,7 +189,7 @@ public class SQLConsole
         String firstWord = getFirstWord(line);
 
         String macro = getMacroText(stmt);
-        if (StringUtil.isNonEmpty(macro))
+        if (StringUtil.isNotEmpty(macro))
         {
           isCompleteStatement = true;
           stmt = macro;
@@ -228,7 +228,7 @@ public class SQLConsole
               addToHistory = false;
             }
 
-            if (StringUtil.isNonEmpty(stmt))
+            if (StringUtil.isNotEmpty(stmt))
             {
               if (addToHistory) history.add(stmt);
 
@@ -311,7 +311,7 @@ public class SQLConsole
 
   private String replaceShortcuts(String sql)
   {
-    if (StringUtil.isEmptyString(sql)) return sql;
+    if (StringUtil.isEmpty(sql)) return sql;
 
     // this will change the original statement
     // but trimming whitespace from the start and end
@@ -351,7 +351,7 @@ public class SQLConsole
     String profilename = cmdLine.getValue(AppArguments.ARG_PROFILE);
     String group = cmdLine.getValue(AppArguments.ARG_PROFILE_GROUP);
 
-    if (StringUtil.isNonBlank(profilename))
+    if (StringUtil.isNotBlank(profilename))
     {
       ProfileKey def = new ProfileKey(StringUtil.trimQuotes(profilename), StringUtil.trimQuotes(group));
 
@@ -393,7 +393,7 @@ public class SQLConsole
         System.out.println(ResourceMgr.getFormattedString("MsgBatchConnectOk", conn.getDisplayString()));
 
         String warn = conn.getWarnings();
-        if (StringUtil.isNonBlank(warn))
+        if (StringUtil.isNotBlank(warn))
         {
           System.out.println(warn);
         }
@@ -600,7 +600,7 @@ public class SQLConsole
       String schema = current.getDisplaySchema();
       if (schema == null) current.getCurrentSchema();
 
-      if (StringUtil.isBlank(catalog) && StringUtil.isNonBlank(schema))
+      if (StringUtil.isBlank(catalog) && StringUtil.isNotBlank(schema))
       {
         if (schema.equalsIgnoreCase(user))
         {
@@ -611,11 +611,11 @@ public class SQLConsole
           newprompt = user + "@" + schema;
         }
       }
-      else if (StringUtil.isNonBlank(catalog) && StringUtil.isBlank(schema))
+      else if (StringUtil.isNotBlank(catalog) && StringUtil.isBlank(schema))
       {
         newprompt = user + "@" + catalog;
       }
-      else if (StringUtil.isNonBlank(catalog) && StringUtil.isNonBlank(schema))
+      else if (StringUtil.isNotBlank(catalog) && StringUtil.isNotBlank(schema))
       {
         newprompt = user + "@" + catalog + "/" + schema;
       }

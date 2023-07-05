@@ -78,7 +78,7 @@ public class HanaProcedureReader
       "from sys.functions\n";
     try
     {
-      if (StringUtil.isNonEmpty(schema))
+      if (StringUtil.isNotEmpty(schema))
       {
         sql += " where schema_name = '" + schema + "'";
       }

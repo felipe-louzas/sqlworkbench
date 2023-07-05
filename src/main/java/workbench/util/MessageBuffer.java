@@ -174,7 +174,7 @@ public class MessageBuffer
 
   public synchronized void append(CharSequence s)
   {
-    if (StringUtil.isEmptyString(s)) return;
+    if (StringUtil.isEmpty(s)) return;
     trimSize();
     this.messages.add(s);
     length += s.length();

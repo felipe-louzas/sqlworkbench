@@ -120,7 +120,7 @@ public class PGProcName
   public String getInputOIDsAsVector()
   {
     String oids = arguments.stream().
-      filter(arg -> (arg.argMode == PGArg.ArgMode.in || arg.argMode == PGArg.ArgMode.inout) && StringUtil.isNonBlank(arg.argType) ).
+      filter(arg -> (arg.argMode == PGArg.ArgMode.in || arg.argMode == PGArg.ArgMode.inout) && StringUtil.isNotBlank(arg.argType) ).
       map(arg ->  "'"+arg.argType+"'::regtype::oid::text").
       collect(Collectors.joining("||' '||"));
     if (StringUtil.isBlank(oids)) return null;

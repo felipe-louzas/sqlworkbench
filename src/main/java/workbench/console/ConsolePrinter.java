@@ -178,7 +178,7 @@ public abstract class ConsolePrinter
 
     String resultName = getResultName();
 
-    if (showResultName && StringUtil.isNonBlank(resultName))
+    if (showResultName && StringUtil.isNotBlank(resultName))
     {
       pw.println("---- " + resultName);
     }

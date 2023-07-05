@@ -68,7 +68,7 @@ public class SODSReader
     {
       worksheetIndex = sheetIndex;
     }
-    else if (StringUtil.isNonBlank(name))
+    else if (StringUtil.isNotBlank(name))
     {
       worksheetIndex = -1;
       worksheetName = name;
@@ -245,7 +245,7 @@ public class SODSReader
   private boolean isNullString(String value)
   {
     if (value == null) return true;
-    if (emptyStringIsNull && StringUtil.isEmptyString(value)) return true;
+    if (emptyStringIsNull && StringUtil.isEmpty(value)) return true;
     return StringUtil.equalString(value, nullIndicator);
   }
 

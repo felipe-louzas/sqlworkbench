@@ -104,7 +104,7 @@ public class DB2TypeReader
       "from syscat.datatypes  \n" +
       "where ownertype = 'U' ";
 
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       if (schemaPattern.indexOf('%') > -1)
       {
@@ -116,7 +116,7 @@ public class DB2TypeReader
       }
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (namePattern.indexOf('%') > -1)
       {

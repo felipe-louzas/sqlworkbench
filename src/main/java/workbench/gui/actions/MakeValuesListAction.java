@@ -88,7 +88,7 @@ public class MakeValuesListAction
       creator.setLineEnding(end);
       String list = creator.createValuesList();
 
-      if (StringUtil.isNonBlank(list))
+      if (StringUtil.isNotBlank(list))
       {
         client.setSelectedText(list);
       }

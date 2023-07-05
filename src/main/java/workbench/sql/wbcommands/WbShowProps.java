@@ -90,7 +90,7 @@ public class WbShowProps
         result.addDataStore(getWbProperties("workbench.db." + currentConnection.getDbId()));
       }
     }
-    else if (StringUtil.isNonBlank(args))
+    else if (StringUtil.isNotBlank(args))
     {
       if (currentConnection != null)
       {

@@ -860,11 +860,11 @@ public class WbSwingUtilities
 
   public static int getYesNo(Component caller, String title, String message, String yesOption, String noOption)
   {
-    if (StringUtil.isEmptyString(yesOption))
+    if (StringUtil.isEmpty(yesOption))
     {
       yesOption = ResourceMgr.getString("MsgConfirmYes");
     }
-    if (StringUtil.isEmptyString(noOption))
+    if (StringUtil.isEmpty(noOption))
     {
       noOption = ResourceMgr.getString("MsgConfirmNo");
     }
@@ -1299,7 +1299,7 @@ public class WbSwingUtilities
       {
         SimplePropertyEditor editor = (SimplePropertyEditor)c;
         String property = c.getName();
-        if (!StringUtil.isEmptyString(property))
+        if (!StringUtil.isEmpty(property))
         {
           editor.setSourceObject(bean, property);
           editor.setImmediateUpdate(true);
@@ -1547,7 +1547,7 @@ public class WbSwingUtilities
     if (f != null)
     {
       FontMetrics fm = button.getFontMetrics(f);
-      if (fm != null && StringUtil.isNonEmpty(button.getText()))
+      if (fm != null && StringUtil.isNotEmpty(button.getText()))
       {
         Rectangle2D bounds = f.getStringBounds(button.getText(), fm.getFontRenderContext());
         int width = (int)bounds.getWidth() + 2;

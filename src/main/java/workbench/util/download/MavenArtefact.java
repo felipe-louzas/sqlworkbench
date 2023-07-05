@@ -57,9 +57,9 @@ public class MavenArtefact
 
   public boolean isComplete()
   {
-    return StringUtil.isNonBlank(groupId) &&
-           StringUtil.isNonBlank(artefactId) &&
-           StringUtil.isNonBlank(version);
+    return StringUtil.isNotBlank(groupId) &&
+           StringUtil.isNotBlank(artefactId) &&
+           StringUtil.isNotBlank(version);
   }
 
   public String getDriverClassName()

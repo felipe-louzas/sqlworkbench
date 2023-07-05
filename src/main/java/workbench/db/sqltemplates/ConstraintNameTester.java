@@ -45,7 +45,7 @@ public class ConstraintNameTester
   public ConstraintNameTester(String id)
   {
     String regex = Settings.getInstance().getProperty("workbench.db." + id + ".constraints.systemname", null);
-    if (StringUtil.isNonEmpty(regex))
+    if (StringUtil.isNotEmpty(regex))
     {
       try
       {

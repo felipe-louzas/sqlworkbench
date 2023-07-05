@@ -674,7 +674,7 @@ public class SqlUtilTest
 
     sql = "-- comment only";
     verb = SqlUtil.getSqlVerb(sql);
-    assertEquals("None-empty verb returned", true, StringUtil.isEmptyString(verb));
+    assertEquals("None-empty verb returned", true, StringUtil.isEmpty(verb));
 
     sql = "\\i some_file.sql";
     verb = SqlUtil.getSqlVerb(sql);

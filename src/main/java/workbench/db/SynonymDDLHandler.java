@@ -75,11 +75,11 @@ public class SynonymDDLHandler
       result.setLength(0);
     }
 
-    if (StringUtil.isNonBlank(synonym.getComment()))
+    if (StringUtil.isNotBlank(synonym.getComment()))
     {
       CommentSqlManager mgr = new CommentSqlManager(dbConnection.getMetadata().getDbId());
       String sql = mgr.getCommentSqlTemplate(synonym.getType(), CommentSqlManager.COMMENT_ACTION_SET);
-      if (StringUtil.isNonBlank(sql))
+      if (StringUtil.isNotBlank(sql))
       {
         sql = sql.replace(CommentSqlManager.COMMENT_OBJECT_NAME_PLACEHOLDER, synonym.getRawTableName());
         sql = sql.replace(CommentSqlManager.COMMENT_PLACEHOLDER, synonym.getComment().replace("'", "''"));
@@ -99,7 +99,7 @@ public class SynonymDDLHandler
           TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(dbConnection);
 
           String tableSql = builder.getTableSource(syn, DropType.none, true);
-          if (StringUtil.isNonBlank(tableSql))
+          if (StringUtil.isNotBlank(tableSql))
           {
             result.append("\n\n");
             result.append("-------------- ");

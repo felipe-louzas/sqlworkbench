@@ -152,7 +152,7 @@ public class DataStoreReplacer
     lastCriteria = text;
     lastFoundPosition = Position.NO_POSITION;
     lastSelectedRowIndex = 0;
-    if (StringUtil.isEmptyString(text)) return Position.NO_POSITION;
+    if (StringUtil.isEmpty(text)) return Position.NO_POSITION;
     this.isRegexSearch = useRegex;
     String expression = SearchAndReplace.getSearchExpression(text, ignoreCase, wholeWord, useRegex);
     Pattern p = null;
@@ -240,7 +240,7 @@ public class DataStoreReplacer
         int type = client.getColumnType(col);
         if (SqlUtil.isBlobType(type)) continue;
         String colValue = client.getValueAsString(row, col);
-        if (StringUtil.isEmptyString(colValue)) continue;
+        if (StringUtil.isEmpty(colValue)) continue;
         Matcher m = p.matcher(colValue);
         if (m.find())
         {
@@ -338,7 +338,7 @@ public class DataStoreReplacer
     throws ConverterException
   {
     String value = this.client.getValueAsString(pos.getRow(), pos.getColumn());
-    if (!StringUtil.isEmptyString(value))
+    if (!StringUtil.isEmpty(value))
     {
       Matcher m = p.matcher(value);
       String newValue = m.replaceAll(replacement);

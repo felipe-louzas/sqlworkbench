@@ -103,7 +103,7 @@ public class ShowObjectInfoAction
       boolean deps = conn.getDbSettings().objectInfoWithDependencies();
       String text = SqlUtil.getIdentifierAtCursor(display.getEditor(), conn);
 
-      if (StringUtil.isNonBlank(text))
+      if (StringUtil.isNotBlank(text))
       {
         display.setStatusMessage(ResourceMgr.getString("TxtRetrieveTableDef") + " " + text);
         StatementRunnerResult result = info.getObjectInfo(conn, text, includeDependencies || deps, true);

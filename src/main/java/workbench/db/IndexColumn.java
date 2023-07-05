@@ -82,7 +82,7 @@ public class IndexColumn
 
   public String getExpression()
   {
-    if (StringUtil.isEmptyString(direction))
+    if (StringUtil.isEmpty(direction))
     {
       return column;
     }

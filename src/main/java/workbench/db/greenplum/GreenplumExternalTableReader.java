@@ -82,14 +82,14 @@ public class GreenplumExternalTableReader
       "  join pg_namespace s on s.oid = c.relnamespace");
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       sql.append("\nWHERE ");
       SqlUtil.appendExpression(sql, "s.nspname", schemaPattern, connection);
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded) sql.append("\n  AND ");
       else sql.append("\nWHERE ");
@@ -198,7 +198,7 @@ public class GreenplumExternalTableReader
         int[] distrCols = GreenplumUtil.parseIntArray(attrNums);
 
         // check for WEB tables
-        if (StringUtil.isNonBlank(cmd) || hasHTTPLocations(uris))
+        if (StringUtil.isNotBlank(cmd) || hasHTTPLocations(uris))
         {
           tbl.setType("EXTERNAL WEB TABLE");
         }
@@ -208,7 +208,7 @@ public class GreenplumExternalTableReader
           source += "LOCATION (\n  " + location + "\n)";
         }
 
-        if (StringUtil.isNonBlank(cmd))
+        if (StringUtil.isNotBlank(cmd))
         {
           source += "EXECUTE '" + cmd + "' " + decodeExeclocations(exec);
         }
@@ -238,7 +238,7 @@ public class GreenplumExternalTableReader
               break;
           }
           source += "'";
-          if (StringUtil.isNonBlank(fmtOptions))
+          if (StringUtil.isNotBlank(fmtOptions))
           {
             source += " (\n  " + fmtOptions + "\n)";
           }
@@ -249,7 +249,7 @@ public class GreenplumExternalTableReader
           tblOptions.setTypeModifier("WRITABLE");
         }
 
-        if (StringUtil.isNonBlank(encoding))
+        if (StringUtil.isNotBlank(encoding))
         {
           if (StringUtil.isNumber(encoding))
           {
@@ -275,7 +275,7 @@ public class GreenplumExternalTableReader
         if (writeable)
         {
           String distribute = GreenplumTableSourceBuilder.getDistribution(distrCols, columns);
-          if (StringUtil.isNonBlank(distribute))
+          if (StringUtil.isNotBlank(distribute))
           {
             source += "\n" + distribute;
           }

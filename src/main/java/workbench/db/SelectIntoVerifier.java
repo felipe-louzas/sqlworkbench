@@ -76,7 +76,7 @@ public class SelectIntoVerifier
   public boolean isSelectIntoNewTable(String sql)
   {
     if (this.selectIntoPattern == null) return false;
-    if (StringUtil.isEmptyString(sql)) return false;
+    if (StringUtil.isEmpty(sql)) return false;
 
     int pos = SqlParsingUtil.getInstance(null).getKeywordPosition("SELECT", sql);
     if (pos > -1)

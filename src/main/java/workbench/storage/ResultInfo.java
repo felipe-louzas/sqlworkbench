@@ -171,7 +171,7 @@ public class ResultInfo
         LogMgr.logWarning(ci, "Could not obtain column name or alias", th);
       }
 
-      if (StringUtil.isNonBlank(name))
+      if (StringUtil.isNotBlank(name))
       {
         this.realColumns ++;
       }
@@ -243,7 +243,7 @@ public class ResultInfo
       }
 
       int type = metaData.getColumnType(i + 1);
-      if (StringUtil.isEmptyString(typename))
+      if (StringUtil.isEmpty(typename))
       {
         // use the Java name if the driver did not return a type name for this column
         typename = SqlUtil.getTypeName(type);

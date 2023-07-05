@@ -2321,7 +2321,7 @@ public class JEditTextArea
           document.remove(rectStart, Math.min(lineEnd - rectStart, end - start));
 
           // if the selected text is not empty, it needs to overwrite the currently selected text
-          if (StringUtil.isNonEmpty(selectedText))
+          if (StringUtil.isNotEmpty(selectedText))
           {
             // if the new text is only a single line (the default when e.g. typing a character)
             // then use the full text
@@ -2373,7 +2373,7 @@ public class JEditTextArea
 
     if (rectSelect)
     {
-      if (StringUtil.isNonEmpty(selectedText))
+      if (StringUtil.isNotEmpty(selectedText))
       {
         selectionStart ++;
         if (overwrite)

@@ -83,7 +83,7 @@ public class ReportTrigger
   public CharSequence getSource()
   {
     CharSequence src = trigger.getSource();
-    if (StringUtil.isEmptyString(src)) return src;
+    if (StringUtil.isEmpty(src)) return src;
 
     // When retrieving the source of a Postgres trigger, the
     // source code for the underlying function is also appended.

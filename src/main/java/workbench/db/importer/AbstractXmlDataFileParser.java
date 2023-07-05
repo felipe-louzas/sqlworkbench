@@ -114,7 +114,7 @@ public abstract class AbstractXmlDataFileParser
   public void setColumns(String columnList)
     throws SQLException
   {
-    if (StringUtil.isNonBlank(columnList))
+    if (StringUtil.isNotBlank(columnList))
     {
       WbStringTokenizer tok = new WbStringTokenizer(columnList, ",");
       List<ColumnIdentifier> columns = new ArrayList<>();

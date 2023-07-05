@@ -169,7 +169,7 @@ public class RegexErrorPositionReader
     if (indicator != null)
     {
       if (originalMessage == null) originalMessage = ""; // avoid a "null" string in the output
-      if (StringUtil.isNonEmpty(originalMessage)) originalMessage += "\n\n";
+      if (StringUtil.isNotEmpty(originalMessage)) originalMessage += "\n\n";
       originalMessage += indicator;
     }
     return originalMessage;

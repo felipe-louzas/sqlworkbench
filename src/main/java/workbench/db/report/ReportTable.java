@@ -518,13 +518,13 @@ public class ReportTable
     tagWriter.appendTag(line, colindent, TAG_TABLE_PK_NAME, getPrimaryKeyName(), false);
     tagWriter.appendTag(line, colindent, TAG_TABLE_COMMENT, this.tableComment, true);
 
-    if (StringUtil.isNonBlank(table.getTablespace()))
+    if (StringUtil.isNotBlank(table.getTablespace()))
     {
       tagWriter.appendTag(line, colindent, TAG_TABLESPACE, table.getTablespace(), false);
     }
 
     String modifier = table.getSourceOptions().getTypeModifier();
-    if (StringUtil.isNonBlank(modifier))
+    if (StringUtil.isNotBlank(modifier))
     {
       tagWriter.appendTag(line, colindent, TAG_TABLE_TYPE, modifier, false);
     }
@@ -573,7 +573,7 @@ public class ReportTable
 
   private void writeDBMSOptions(StringBuilder output, StringBuilder indent)
   {
-    if (CollectionUtil.isEmpty(dbmsOptions) && StringUtil.isEmptyString(table.getSourceOptions().getAdditionalSql())) return;
+    if (CollectionUtil.isEmpty(dbmsOptions) && StringUtil.isEmpty(table.getSourceOptions().getAdditionalSql())) return;
 
     StringBuilder myindent = new StringBuilder(indent);
     myindent.append("  ");
@@ -586,7 +586,7 @@ public class ReportTable
       StringBuilder result = option.getXml(nextindent);
       output.append(result);
     }
-    if (StringUtil.isNonEmpty(table.getSourceOptions().getAdditionalSql()))
+    if (StringUtil.isNotEmpty(table.getSourceOptions().getAdditionalSql()))
     {
       tagWriter.appendCDATATag(output, nextindent, "additional-sql", table.getSourceOptions().getAdditionalSql());
     }
@@ -627,7 +627,7 @@ public class ReportTable
       sysName = new TagAttribute("generated-name", systemName);
     }
     tagWriter.appendCDATATag(line, indent, ReportTable.TAG_CONSTRAINT_DEF, expr, type, sysName, nameAttr);
-    if (StringUtil.isNonBlank(constraint.getComment()))
+    if (StringUtil.isNotBlank(constraint.getComment()))
     {
       tagWriter.appendTag(line, indent, TAG_CONSTRAINT_COMMENT, constraint.getComment());
     }

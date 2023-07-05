@@ -233,7 +233,7 @@ public class ToolDefinitionPanel
       {
         SimplePropertyEditor editor = (SimplePropertyEditor)c;
         String property = c.getName();
-        if (!StringUtil.isEmptyString(property))
+        if (!StringUtil.isEmpty(property))
         {
           editor.setSourceObject(this.currentTool, property);
           editor.setImmediateUpdate(true);

@@ -63,7 +63,7 @@ public class GlobalPasswordManager
 
   public String encrypt(String plaintext)
   {
-    if (StringUtil.isEmptyString(plaintext)) return plaintext;
+    if (StringUtil.isEmpty(plaintext)) return plaintext;
     if (masterCipher == null) return plaintext;
 
     return masterCipher.encryptString(plaintext);
@@ -71,7 +71,7 @@ public class GlobalPasswordManager
 
   public String decrypt(String toDecrypt)
   {
-    if (StringUtil.isEmptyString(toDecrypt)) return toDecrypt;
+    if (StringUtil.isEmpty(toDecrypt)) return toDecrypt;
 
     if (Settings.getInstance().getUseMasterPassword())
     {
@@ -120,7 +120,7 @@ public class GlobalPasswordManager
       if (profile.getStorePassword())
       {
         String pwd = decryptProfilePassword(profile);
-        if (newCipher != null && StringUtil.isNonEmpty(pwd))
+        if (newCipher != null && StringUtil.isNotEmpty(pwd))
         {
           String encrypted = newCipher.encryptString(pwd);
           profile.setEncryptedPassword(ConnectionProfile.MASTER_CRYPT_PREFIX + encrypted);
@@ -157,7 +157,7 @@ public class GlobalPasswordManager
   {
     if (config == null) return;
     String pwd = config.getDecryptedPassword();
-    if (newCipher != null && StringUtil.isNonEmpty(pwd))
+    if (newCipher != null && StringUtil.isNotEmpty(pwd))
     {
       String encrypted = newCipher.encryptString(pwd);
       config.setPassword(ConnectionProfile.MASTER_CRYPT_PREFIX + encrypted);
@@ -171,7 +171,7 @@ public class GlobalPasswordManager
   private String decryptProfilePassword(ConnectionProfile profile)
   {
     String input = profile.getPassword();
-    if (StringUtil.isEmptyString(input)) return input;
+    if (StringUtil.isEmpty(input)) return input;
     if (input.startsWith(ConnectionProfile.CRYPT_PREFIX))
     {
       WbCipher des = WbDesCipher.getInstance();

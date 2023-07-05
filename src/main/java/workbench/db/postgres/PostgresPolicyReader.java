@@ -118,17 +118,17 @@ public class PostgresPolicyReader
         }
         policy += "  FOR " + command;
 
-        if (StringUtil.isNonBlank(roles))
+        if (StringUtil.isNotBlank(roles))
         {
           policy += "\n  TO " + roles;
         }
 
-        if (StringUtil.isNonBlank(expr))
+        if (StringUtil.isNotBlank(expr))
         {
           policy += "\n  USING (" + expr + ")";
         }
 
-        if (StringUtil.isNonBlank(withCheck))
+        if (StringUtil.isNotBlank(withCheck))
         {
           policy += "\n  WITH CHECK (" + withCheck + ")";
         }

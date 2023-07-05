@@ -55,7 +55,7 @@ public class SqlServerTriggerReader
     throws SQLException
   {
     String currentDb = dbConnection.getCurrentCatalog();
-    boolean changeCatalog = StringUtil.stringsAreNotEqual(currentDb, dbName) && StringUtil.isNonBlank(dbName);
+    boolean changeCatalog = StringUtil.stringsAreNotEqual(currentDb, dbName) && StringUtil.isNotBlank(dbName);
 
     TriggerListDataStore result = null;
 
@@ -68,7 +68,7 @@ public class SqlServerTriggerReader
 
       result = super.getTriggers(dbName, schema, baseTable);
 
-      if (SqlServerUtil.isSqlServer2005(dbConnection) && StringUtil.isEmptyString(baseTable))
+      if (SqlServerUtil.isSqlServer2005(dbConnection) && StringUtil.isEmpty(baseTable))
       {
         readDDLTriggers(result);
       }

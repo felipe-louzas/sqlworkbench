@@ -195,7 +195,7 @@ public class OpenFileAction
           {
             SqlPanel sql;
             String encodingToUse = encoding;
-            if (StringUtil.isEmptyString(encodingToUse))
+            if (StringUtil.isEmpty(encodingToUse))
             {
               encodingToUse = FileUtil.detectFileEncoding(f);
             }
@@ -282,7 +282,7 @@ public class OpenFileAction
         lastDir = f.getParentFile();
       }
     }
-    else if (StringUtil.isNonBlank(profileDir))
+    else if (StringUtil.isNotBlank(profileDir))
     {
       File f = new File(profileDir);
       if (f.exists())
@@ -297,7 +297,7 @@ public class OpenFileAction
       {
         WbProperties props = window == null ? null : window.getToolProperties(TOOLNAME);
         String dirname = props == null ? null : props.getProperty(LAST_DIR_KEY, null);
-        if (StringUtil.isNonBlank(dirname))
+        if (StringUtil.isNotBlank(dirname))
         {
           lastDir = new File(dirname);
         }

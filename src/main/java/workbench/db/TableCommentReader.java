@@ -73,7 +73,7 @@ public class TableCommentReader
     }
 
     String result = null;
-    if (Settings.getInstance().getIncludeEmptyComments() || StringUtil.isNonBlank(comment))
+    if (Settings.getInstance().getIncludeEmptyComments() || StringUtil.isNotBlank(comment))
     {
       String fqn = table.getFullyQualifiedName(dbConnection);
 
@@ -132,7 +132,7 @@ public class TableCommentReader
     for (ColumnIdentifier col : columns)
     {
       String comment = col.getComment();
-      if (Settings.getInstance().getIncludeEmptyComments() || StringUtil.isNonBlank(comment))
+      if (Settings.getInstance().getIncludeEmptyComments() || StringUtil.isNotBlank(comment))
       {
         try
         {

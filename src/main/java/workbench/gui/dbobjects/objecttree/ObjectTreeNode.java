@@ -433,7 +433,7 @@ public class ObjectTreeNode
       return getColumnTooltip((ColumnIdentifier)dbo);
     }
     String remarks = dbo.getComment();
-    if (StringUtil.isNonBlank(remarks))
+    if (StringUtil.isNotBlank(remarks))
     {
       return remarks;
     }
@@ -443,14 +443,14 @@ public class ObjectTreeNode
   private String getColumnTooltip(ColumnIdentifier col)
   {
     String defaultValue = null;
-    if (StringUtil.isNonBlank(col.getDefaultValue()))
+    if (StringUtil.isNotBlank(col.getDefaultValue()))
     {
       defaultValue = "DEFAULT " + col.getDefaultValue();
     }
     String comment = col.getComment();
     String tip = null;
 
-    if (StringUtil.isNonEmpty(comment))
+    if (StringUtil.isNotEmpty(comment))
     {
       tip = "<html>" + (defaultValue == null ? "" : defaultValue + "<br>") + comment + "</html>";
     }

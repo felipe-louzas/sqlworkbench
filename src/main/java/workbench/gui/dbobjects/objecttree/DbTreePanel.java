@@ -399,7 +399,7 @@ public class DbTreePanel
     {
       connection = mgr.getConnection(profile, cid);
       CharSequence warnings = SqlUtil.getWarnings(connection, null);
-      if (StringUtil.isNonEmpty(warnings))
+      if (StringUtil.isNotEmpty(warnings))
       {
         LogMgr.logWarning(new CallerInfo(){}, "Received warnings from connection: " + warnings);
       }
@@ -1010,7 +1010,7 @@ public class DbTreePanel
   public synchronized void applyQuickFilter()
   {
     String text = filterValue.getText();
-    if (StringUtil.isEmptyString(text))
+    if (StringUtil.isEmpty(text))
     {
       resetFilter();
       return;

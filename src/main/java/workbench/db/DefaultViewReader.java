@@ -93,7 +93,7 @@ public class DefaultViewReader
       columns = view.getColumns();
     }
 
-    if (StringUtil.isEmptyString(source)) return StringUtil.EMPTY_STRING;
+    if (StringUtil.isEmpty(source)) return StringUtil.EMPTY_STRING;
 
     StringBuilder result = new StringBuilder(source.length() + 100);
 
@@ -202,7 +202,7 @@ public class DefaultViewReader
       return help.explainMissingViewSourceSql();
     }
 
-    if (StringUtil.isEmptyString(source)) return StringUtil.EMPTY_STRING;
+    if (StringUtil.isEmpty(source)) return StringUtil.EMPTY_STRING;
 
     StringBuilder result = new StringBuilder(source.length() + 100);
     result.append(source);
@@ -224,14 +224,14 @@ public class DefaultViewReader
 
     TableCommentReader commentReader = new TableCommentReader();
     String viewComment = commentReader.getTableCommentSql(this.connection, view.getTable());
-    if (StringUtil.isNonBlank(viewComment))
+    if (StringUtil.isNotBlank(viewComment))
     {
       result.append(viewComment);
       if (!viewComment.endsWith(";")) result.append(';');
     }
 
     StringBuilder colComments = commentReader.getTableColumnCommentsSql(this.connection, view.getTable(), view.getColumns());
-    if (StringUtil.isNonBlank(colComments))
+    if (StringUtil.isNotBlank(colComments))
     {
       result.append(lineEnding);
       result.append(colComments);

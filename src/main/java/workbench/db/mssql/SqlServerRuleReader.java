@@ -204,13 +204,13 @@ public class SqlServerRuleReader
         "where ao.type = 'R'";
 
       sql.append(baseSql);
-      if (StringUtil.isNonBlank(ruleNamePattern))
+      if (StringUtil.isNotBlank(ruleNamePattern))
       {
         sql.append("\n AND ");
         SqlUtil.appendExpression(sql, "ao.name", ruleNamePattern, con);
       }
 
-      if (StringUtil.isNonBlank(ruleSchemaPattern))
+      if (StringUtil.isNotBlank(ruleSchemaPattern))
       {
         sql.append("\n AND ");
         SqlUtil.appendExpression(sql, "sc.name", ruleSchemaPattern, con);
@@ -227,13 +227,13 @@ public class SqlServerRuleReader
           "from sysobjects with (nolock) \n" +
           "where type = 'R' ";
       sql.append(query);
-      if (StringUtil.isNonBlank(ruleNamePattern))
+      if (StringUtil.isNotBlank(ruleNamePattern))
       {
         sql.append("\n AND ");
         SqlUtil.appendExpression(sql, "name", ruleNamePattern, con);
       }
 
-      if (StringUtil.isNonBlank(ruleSchemaPattern))
+      if (StringUtil.isNotBlank(ruleSchemaPattern))
       {
         sql.append("\n AND ");
         SqlUtil.appendExpression(sql, "convert(sysname, user_name(uid))", ruleSchemaPattern, con);

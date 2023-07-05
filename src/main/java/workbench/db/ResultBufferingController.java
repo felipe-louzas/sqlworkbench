@@ -43,13 +43,16 @@ public class ResultBufferingController
   public ResultBufferingController(WbConnection toCheck)
   {
     this.dbConn = toCheck;
-    if (toCheck.getFetchSize() > 1)
+    if (dbConn != null)
     {
-      this.fetchSize = dbConn.getFetchSize();
-    }
-    else
-    {
-      this.fetchSize = this.dbConn.getDbSettings().getFetchSizeForDisabledBuffering();
+      if (dbConn.getFetchSize() > 1)
+      {
+        this.fetchSize = dbConn.getFetchSize();
+      }
+      else
+      {
+        this.fetchSize = this.dbConn.getDbSettings().getFetchSizeForDisabledBuffering();
+      }
     }
   }
 

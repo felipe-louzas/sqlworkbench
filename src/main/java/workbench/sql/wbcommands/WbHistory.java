@@ -88,7 +88,7 @@ public class WbHistory
     }
 
     String parameter = this.getCommandLine(sql);
-    if (StringUtil.isNonBlank(parameter)) return result;
+    if (StringUtil.isNotBlank(parameter)) return result;
 
     DataStore ds = new DataStore(
         new String[] {"NR", "SQL"},

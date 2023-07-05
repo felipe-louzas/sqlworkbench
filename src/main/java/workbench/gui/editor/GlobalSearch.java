@@ -391,7 +391,7 @@ public class GlobalSearch
   {
     if (e.getSource() == this.criteria.getEditor().getEditorComponent() && e.getKeyChar() == KeyEvent.VK_ENTER)
     {
-      if ((searchResult.getRowCount() == 0 || searchResult.getSelectedRowCount() == 0) && StringUtil.isNonBlank(criteria.getText()))
+      if ((searchResult.getRowCount() == 0 || searchResult.getSelectedRowCount() == 0) && StringUtil.isNotBlank(criteria.getText()))
       {
         doSearch();
       }

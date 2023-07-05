@@ -56,7 +56,7 @@ public class ScrollAnnotation
 
   public static int scrollToLine(String value)
   {
-    if (StringUtil.isNonBlank(value))
+    if (StringUtil.isNotBlank(value))
     {
       if (value.startsWith("#"))
       {

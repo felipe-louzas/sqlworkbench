@@ -436,7 +436,7 @@ public class SetCommand
   {
     StatementRunnerResult result = new StatementRunnerResult();
 
-    if (StringUtil.isEmptyString(param))
+    if (StringUtil.isEmpty(param))
     {
       result.addErrorMessageByKey("ErrAutocommitWrongParameter");
       return result;
@@ -474,7 +474,7 @@ public class SetCommand
   private StatementRunnerResult setFeedback(String param)
   {
     StatementRunnerResult result = new StatementRunnerResult();
-    if (StringUtil.isEmptyString(param))
+    if (StringUtil.isEmpty(param))
     {
       result.addErrorMessageByKey("ErrFeedbackWrongParameter");
       return result;

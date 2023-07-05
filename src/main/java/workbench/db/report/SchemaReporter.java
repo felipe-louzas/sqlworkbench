@@ -389,7 +389,7 @@ public class SchemaReporter
     StringBuilder indent = new StringBuilder("  ");
     StringBuilder indent2 = new StringBuilder("    ");
 
-    if (!StringUtil.isEmptyString(this.reportTitle))
+    if (!StringUtil.isEmpty(this.reportTitle))
     {
       this.tagWriter.appendTag(info, indent, "report-title", this.reportTitle);
     }

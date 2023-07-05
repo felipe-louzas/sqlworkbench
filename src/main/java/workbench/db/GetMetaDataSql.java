@@ -511,12 +511,12 @@ public class GetMetaDataSql
       pstmt.setString(namePos, name);
       params = "Parameter " + namePos + ": '" + name + "'";
     }
-    if (schemaPos > 0 && StringUtil.isNonEmpty(schema))
+    if (schemaPos > 0 && StringUtil.isNotEmpty(schema))
     {
       pstmt.setString(schemaPos, schema);
       params += ", Parameter " + schemaPos + ": '" + schema + "'";
     }
-    if (catalogPos > 0 && StringUtil.isNonEmpty(catalog))
+    if (catalogPos > 0 && StringUtil.isNotEmpty(catalog))
     {
       pstmt.setString(catalogPos, catalog);
       params += ", Parameter " + catalogPos + ": '" + catalog + "'";

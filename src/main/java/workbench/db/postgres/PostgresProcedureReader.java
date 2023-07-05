@@ -105,7 +105,7 @@ public class PostgresProcedureReader
     {
       namePattern = null;
     }
-    else if (StringUtil.isNonBlank(procName))
+    else if (StringUtil.isNotBlank(procName))
     {
       PGProcName pg = new PGProcName(procName);
       namePattern = pg.getName();
@@ -135,13 +135,13 @@ public class PostgresProcedureReader
         "   LEFT JOIN pg_catalog.pg_namespace pn ON c.relnamespace=pn.oid AND pn.nspname='pg_catalog'";
 
     boolean whereNeeded = true;
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       sql += "\n WHERE n.nspname LIKE '" + schemaPattern + "' ";
       whereNeeded = false;
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql += whereNeeded ? "\n WHERE " : "\n  AND ";
       sql += "p.proname LIKE '" + namePattern + "' ";
@@ -365,13 +365,13 @@ public class PostgresProcedureReader
     }
 
     sql += "WHERE p.proname = '" + name.getName() + "' \n";
-    if (StringUtil.isNonBlank(def.getSchema()))
+    if (StringUtil.isNotBlank(def.getSchema()))
     {
       sql += "  AND n.nspname = '" + def.getSchema() + "' \n";
     }
 
     String oids = name.getInputOIDsAsVector();
-    if (StringUtil.isNonBlank(oids))
+    if (StringUtil.isNotBlank(oids))
     {
       sql += " AND p.proargtypes = " + oids + " \n ";
     }
@@ -510,7 +510,7 @@ public class PostgresProcedureReader
       if (!src.endsWith(";")) source.append(';');
       source.append("\n$body$\n");
 
-      if (StringUtil.isNonBlank(config))
+      if (StringUtil.isNotBlank(config))
       {
         source.append("  SET ");
         source.append(config);
@@ -570,7 +570,7 @@ public class PostgresProcedureReader
       source.append(";\n");
     }
 
-    if (StringUtil.isNonBlank(comment))
+    if (StringUtil.isNotBlank(comment))
     {
       source.append("\nCOMMENT ON " + procType.toUpperCase() + " ");
       source.append(quoter.quoteObjectname(StringUtil.coalesce(schemaForSource, schema)));
@@ -582,7 +582,7 @@ public class PostgresProcedureReader
       source.append("';\n\n");
     }
 
-    if (StringUtil.isNonBlank(extname))
+    if (StringUtil.isNotBlank(extname))
     {
       source.append("\n-- Created through extension: " + extname + "\n");
     }
@@ -651,7 +651,7 @@ public class PostgresProcedureReader
       {
         String src = rs.getString(1);
         String extension = rs.getString(2);
-        if (StringUtil.isNonBlank(src))
+        if (StringUtil.isNotBlank(src))
         {
           source = new StringBuilder(src.length() + 50);
           source.append(src);
@@ -659,7 +659,7 @@ public class PostgresProcedureReader
 
           source.append(";\n");
 
-          if (StringUtil.isNonBlank(def.getComment()))
+          if (StringUtil.isNotBlank(def.getComment()))
           {
             source.append("\nCOMMENT ON FUNCTION ");
             source.append(name.getFormattedName());
@@ -668,7 +668,7 @@ public class PostgresProcedureReader
             source.append("'\n;\n" );
           }
         }
-        if (StringUtil.isNonBlank(extension))
+        if (StringUtil.isNotBlank(extension))
         {
           source.append("\n-- Created through extension: " + extension + "\n");
         }
@@ -707,7 +707,7 @@ public class PostgresProcedureReader
 
     String sql = baseSelect + "\n" + from;
     sql += " WHERE p.proname = '" + name.getName() + "' ";
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql += " and n.nspname = '" + schema + "' ";
     }
@@ -741,21 +741,21 @@ public class PostgresProcedureReader
         source.append(stype);
 
         String sortop = rs.getString("oprname");
-        if (StringUtil.isNonBlank(sortop))
+        if (StringUtil.isNotBlank(sortop))
         {
           source.append(",\n  sortop = ");
           source.append(connection.getMetadata().quoteObjectname(sortop));
         }
 
         String finalfunc = rs.getString("aggfinalfn");
-        if (StringUtil.isNonBlank(finalfunc) && !finalfunc.equals("-"))
+        if (StringUtil.isNotBlank(finalfunc) && !finalfunc.equals("-"))
         {
           source.append(",\n  finalfunc = ");
           source.append( finalfunc);
         }
 
         String initcond = rs.getString("agginitval");
-        if (StringUtil.isNonBlank(initcond))
+        if (StringUtil.isNotBlank(initcond))
         {
           source.append(",\n  initcond = '");
           source.append(initcond);
@@ -842,7 +842,7 @@ public class PostgresProcedureReader
 
     String oids = procname.getInputOIDsAsVector();
 
-    if (StringUtil.isNonBlank(oids))
+    if (StringUtil.isNotBlank(oids))
     {
       sql += " AND p.proargtypes = " + oids + " \n ";
     }

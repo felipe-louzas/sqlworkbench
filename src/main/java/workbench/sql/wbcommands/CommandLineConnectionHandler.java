@@ -59,7 +59,7 @@ public class CommandLineConnectionHandler
   {
     String globalValue = WbManager.getInstance().getCommandLine().getValue(connectionArgument, null);
     String desc = cmdLine.getValue(connectionArgument, globalValue);
-    if (StringUtil.isNonBlank(desc))
+    if (StringUtil.isNotBlank(desc))
     {
       try
       {

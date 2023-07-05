@@ -539,7 +539,7 @@ public class XmlRowDataConverter
       }
 
       String comment = this.metaData.getColumn(i).getComment();
-      if (StringUtil.isNonBlank(comment))
+      if (StringUtil.isNotBlank(comment))
       {
         result.append(indent);
         appendTag(result, "    ", ReportColumn.TAG_COLUMN_COMMENT, comment);

@@ -57,7 +57,7 @@ public enum ControlFileFormat
   public static Set<ControlFileFormat> parseCommandLine(String args)
     throws WrongFormatFileException
   {
-    if (StringUtil.isEmptyString(args)) return Collections.emptySet();
+    if (StringUtil.isEmpty(args)) return Collections.emptySet();
     Set<ControlFileFormat> result = EnumSet.noneOf(ControlFileFormat.class);
     List<String> formats = StringUtil.stringToList(args);
     for (String fs : formats)

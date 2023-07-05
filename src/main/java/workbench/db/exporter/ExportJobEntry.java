@@ -86,7 +86,7 @@ public class ExportJobEntry
 
   private void appendWhere(String where)
   {
-    if (StringUtil.isNonBlank(where))
+    if (StringUtil.isNotBlank(where))
     {
       if (!where.trim().toLowerCase().startsWith("where"))
       {

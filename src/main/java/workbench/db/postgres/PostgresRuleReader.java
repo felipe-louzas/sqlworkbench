@@ -84,14 +84,14 @@ public class PostgresRuleReader
 
     sql.append(baseSql);
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(ruleNamePattern))
+    if (StringUtil.isNotBlank(ruleNamePattern))
     {
       sql.append("\n WHERE ");
       SqlUtil.appendExpression(sql, "r.rulename", ruleNamePattern, con);
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(ruleSchemaPattern))
+    if (StringUtil.isNotBlank(ruleSchemaPattern))
     {
       if (!whereAdded)
       {
@@ -105,7 +105,7 @@ public class PostgresRuleReader
       SqlUtil.appendExpression(sql, "n.nspname", ruleSchemaPattern, con);
     }
 
-    if (StringUtil.isNonBlank(ruleTable))
+    if (StringUtil.isNotBlank(ruleTable))
     {
       if (!whereAdded)
       {

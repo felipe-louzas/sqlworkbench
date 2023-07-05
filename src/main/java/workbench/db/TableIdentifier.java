@@ -448,7 +448,7 @@ public class TableIdentifier
       this.adjustCase(conn);
       String catalogToUse = getCatalogToUse(conn);
       boolean hasCatalog = false;
-      if (StringUtil.isNonBlank(catalogToUse))
+      if (StringUtil.isNotBlank(catalogToUse))
       {
         hasCatalog = true;
         result.append(meta.quoteObjectname(catalogToUse, preserveQuotes && catalogWasQuoted));
@@ -464,7 +464,7 @@ public class TableIdentifier
         schemaToUse = conn.getCurrentSchema();
       }
 
-      if (StringUtil.isNonBlank(schemaToUse))
+      if (StringUtil.isNotBlank(schemaToUse))
       {
         result.append(meta.quoteObjectname(schemaToUse, preserveQuotes && schemaWasQuoted));
         result.append(schemaSeparator);
@@ -1058,11 +1058,11 @@ public class TableIdentifier
   {
     String name = table.getTableName();
     String schema = table.getSchema();
-    if (StringUtil.isEmptyString(schema) && StringUtil.isNonEmpty(table.getCatalog()))
+    if (StringUtil.isEmpty(schema) && StringUtil.isNotEmpty(table.getCatalog()))
     {
       schema = table.getCatalog();
     }
-    if (StringUtil.isEmptyString(schema)) return name;
+    if (StringUtil.isEmpty(schema)) return name;
     return schema + "." + name;
   }
 

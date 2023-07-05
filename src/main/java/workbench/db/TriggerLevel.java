@@ -33,7 +33,7 @@ public enum TriggerLevel
 
   public static TriggerLevel parseLevel(String level)
   {
-    if (StringUtil.isEmptyString(level)) return null;
+    if (StringUtil.isEmpty(level)) return null;
 
     try
     {

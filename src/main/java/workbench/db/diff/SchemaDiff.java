@@ -1003,7 +1003,7 @@ public class SchemaDiff
    */
   public void setEncoding(String enc)
   {
-    if (StringUtil.isNonBlank(enc))
+    if (StringUtil.isNotBlank(enc))
     {
       this.encoding = enc;
     }
@@ -1197,7 +1197,7 @@ public class SchemaDiff
     for (SequenceDefinition def : sequencesToDelete)
     {
       writeTag(out, myindent, ReportSequence.TAG_SEQ_DEF, true);
-      if (StringUtil.isNonEmpty(def.getCatalog()))
+      if (StringUtil.isNotEmpty(def.getCatalog()))
       {
         writeTagValue(out, myindent2, ReportSequence.TAG_SEQ_CATALOG, def.getCatalog());
       }
@@ -1482,11 +1482,11 @@ public class SchemaDiff
     if (def == null) return "";
     String result = "";
 
-    if (StringUtil.isNonBlank(def.getCatalog()))
+    if (StringUtil.isNotBlank(def.getCatalog()))
     {
       result += def.getCatalog().trim() + conn.getMetadata().getCatalogSeparator();
     }
-    if (StringUtil.isNonBlank(def.getSchema()))
+    if (StringUtil.isNotBlank(def.getSchema()))
     {
       result += def.getSchema().trim() + conn.getMetadata().getSchemaSeparator();
     }

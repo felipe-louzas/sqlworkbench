@@ -272,7 +272,7 @@ public abstract class AbstractImportFileParser
 
   public void setBlobModeForColumn(String colName, BlobMode mode)
   {
-    if (StringUtil.isNonEmpty(colName) && mode != null)
+    if (StringUtil.isNotEmpty(colName) && mode != null)
     {
       columnBlobModes.put(colName, mode);
     }

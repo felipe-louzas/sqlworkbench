@@ -99,7 +99,7 @@ public class ServerSideTableSearchPanel
 
   public void setLikeOperator(String operator)
   {
-    if (StringUtil.isNonBlank(operator))
+    if (StringUtil.isNotBlank(operator))
     {
       this.likeLabel.setText(operator.trim().toUpperCase());
     }

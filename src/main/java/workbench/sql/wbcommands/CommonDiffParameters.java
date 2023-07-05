@@ -161,11 +161,11 @@ public class CommonDiffParameters
     String refSchema = cmdLine.getValue(PARAM_REFERENCESCHEMA);
     String targetSchema = cmdLine.getValue(PARAM_TARGETSCHEMA);
 
-    if (StringUtil.isEmptyString(refTableNames) && StringUtil.isEmptyString(refSchema))
+    if (StringUtil.isEmpty(refTableNames) && StringUtil.isEmpty(refSchema))
     {
       refSchema = referenceConn.getCurrentSchema();
     }
-    else if (StringUtil.isNonEmpty(refSchema))
+    else if (StringUtil.isNotEmpty(refSchema))
     {
       refSchema = referenceConn.getMetadata().adjustSchemaNameCase(refSchema);
     }
@@ -184,20 +184,20 @@ public class CommonDiffParameters
     refTables = refArg.getTables();
     missingRefTables.addAll(refArg.getMissingTables());
 
-    if (StringUtil.isNonBlank(includeNames))
+    if (StringUtil.isNotBlank(includeNames))
     {
       SourceTableArgument include = new SourceTableArgument(includeNames, null, refSchema, tableTypes, referenceConn);
       refTables.addAll(include.getTables());
     }
 
     boolean multipleSchema = getSchemas(refTables).size() > 1 || getCatalogs(targetTables).size() > 1;
-    if (multipleSchema && StringUtil.isEmptyString(targetTableNames) && StringUtil.isEmptyString(targetSchema))
+    if (multipleSchema && StringUtil.isEmpty(targetTableNames) && StringUtil.isEmpty(targetSchema))
     {
       // multiples source schemas, this can only be achieved by specifying one.*, two.* for the reference tables
       targetTableNames = refTableNames;
       targetSchema = null;
     }
-    else if (StringUtil.isEmptyString(targetTableNames) && StringUtil.isEmptyString(targetSchema))
+    else if (StringUtil.isEmpty(targetTableNames) && StringUtil.isEmpty(targetSchema))
     {
       if (targetCon.getDbSettings().supportsSchemas())
       {
@@ -208,12 +208,12 @@ public class CommonDiffParameters
         targetSchema = targetCon.getCurrentCatalog();
       }
     }
-    else if (StringUtil.isNonEmpty(targetSchema))
+    else if (StringUtil.isNotEmpty(targetSchema))
     {
       targetSchema = targetCon.getMetadata().adjustSchemaNameCase(targetSchema);
     }
 
-    if (StringUtil.isEmptyString(targetSchema) && StringUtil.isEmptyString(targetTableNames))
+    if (StringUtil.isEmpty(targetSchema) && StringUtil.isEmpty(targetTableNames))
     {
       // assume the reference tables are the targettables
       // if neither target tables were specified nor a schema could be detected
@@ -226,7 +226,7 @@ public class CommonDiffParameters
     missingTargetTables.addAll(targetArg.getMissingTables());
 
     boolean matchNames = true;
-    if (StringUtil.isNonEmpty(refTableNames) && StringUtil.isNonEmpty(targetTableNames) && !refArg.wasWildcardArgument())
+    if (StringUtil.isNotEmpty(refTableNames) && StringUtil.isNotEmpty(targetTableNames) && !refArg.wasWildcardArgument())
     {
       matchNames = false;
     }

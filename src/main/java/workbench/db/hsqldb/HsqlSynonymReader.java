@@ -62,7 +62,7 @@ public class HsqlSynonymReader
       "FROM information_schema.system_synonyms \n" +
       "WHERE synonym_schema = ? \n";
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql += " AND synonym_name LIKE ?";
     }
@@ -75,7 +75,7 @@ public class HsqlSynonymReader
     {
       stmt = con.getSqlConnection().prepareStatement(sql);
       stmt.setString(1, schema);
-      if (StringUtil.isNonBlank(namePattern)) stmt.setString(2, namePattern);
+      if (StringUtil.isNotBlank(namePattern)) stmt.setString(2, namePattern);
 
       rs = stmt.executeQuery();
       while (rs.next())

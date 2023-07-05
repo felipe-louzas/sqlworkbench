@@ -144,7 +144,7 @@ public class Db2IndexReader
   private void updateIndexColumn(IndexDefinition idx, String colName, String expression)
   {
     if (idx == null) return;
-    if (StringUtil.isEmptyString(colName)) return;
+    if (StringUtil.isEmpty(colName)) return;
     if (StringUtil.isBlank(expression)) return;
     for (IndexColumn col : idx.getColumns())
     {

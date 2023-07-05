@@ -160,7 +160,7 @@ public class Db2iVariableReader
 
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       select += "\nwhere ";
       whereAdded = true;
@@ -174,7 +174,7 @@ public class Db2iVariableReader
       }
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded)
       {

@@ -107,7 +107,7 @@ public class WbListProfiles
         for (ConnectionProfile profile : profiles)
         {
           String msg = "  " + profile.getName();
-          if (StringUtil.isNonBlank(profile.getUsername()))
+          if (StringUtil.isNotBlank(profile.getUsername()))
           {
             msg += ", " + userTxt + "=" + profile.getUsername();
           }

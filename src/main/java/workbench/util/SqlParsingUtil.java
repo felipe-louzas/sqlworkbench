@@ -93,7 +93,7 @@ public class SqlParsingUtil
    */
   public String getSqlVerb(String sql)
   {
-    if (StringUtil.isEmptyString(sql)) return "";
+    if (StringUtil.isEmpty(sql)) return "";
 
     synchronized (lexer)
     {
@@ -122,7 +122,7 @@ public class SqlParsingUtil
 
   public String stripStartingComment(String sql)
   {
-    if (StringUtil.isEmptyString(sql)) return sql;
+    if (StringUtil.isEmpty(sql)) return sql;
 
     String result;
     try
@@ -240,7 +240,7 @@ public class SqlParsingUtil
 
   public static int getKeywordPosition(Set<String> keywords, CharSequence sql, int startPos, SQLLexer sqlLexer)
   {
-    if (StringUtil.isEmptyString(sql)) return -1;
+    if (StringUtil.isEmpty(sql)) return -1;
 
     sqlLexer.setInput(sql);
     int pos = -1;

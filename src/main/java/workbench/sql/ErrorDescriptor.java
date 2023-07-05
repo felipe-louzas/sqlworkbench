@@ -186,11 +186,11 @@ public class ErrorDescriptor
     if (includeErrorCodeInMessage)
     {
       String msg = "";
-      if (StringUtil.isNonBlank(errorCode))
+      if (StringUtil.isNotBlank(errorCode))
       {
         msg = "Error code: " + errorCode;
       }
-      if (StringUtil.isNonBlank(sqlState))
+      if (StringUtil.isNotBlank(sqlState))
       {
         if (msg.length() > 0) msg += "\n";
         msg += "SQL state: " + sqlState;

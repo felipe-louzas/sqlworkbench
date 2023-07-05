@@ -167,7 +167,7 @@ public class Db2Variable
     {
       sql += " CCSID " + ccsid;
     }
-    if (StringUtil.isNonBlank(defaultValue))
+    if (StringUtil.isNotBlank(defaultValue))
     {
       sql += "\n  DEFAULT " + defaultValue;
     }

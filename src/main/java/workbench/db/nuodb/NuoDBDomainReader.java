@@ -77,7 +77,7 @@ public class NuoDBDomainReader
     sql.append(baseSql);
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       sql.append(" WHERE dom.domainname like '");
       sql.append(connection.getMetadata().quoteObjectname(name));
@@ -85,7 +85,7 @@ public class NuoDBDomainReader
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append(whereAdded ? " AND " : " WHERE ");
 
@@ -165,7 +165,7 @@ public class NuoDBDomainReader
     result.append(domain.getObjectName());
     result.append(" AS ");
     result.append(domain.getDataType());
-    if (StringUtil.isNonBlank(domain.getDefaultValue()))
+    if (StringUtil.isNotBlank(domain.getDefaultValue()))
     {
       result.append(" DEFAULT ");
       result.append(domain.getDefaultValue());

@@ -61,7 +61,7 @@ public class Replacer
 
   public String replace(String input)
   {
-    if (StringUtil.isEmptyString(input)) return input;
+    if (StringUtil.isEmpty(input)) return input;
     Matcher matcher = replacePattern.matcher(input);
     return matcher.replaceAll(replacement);
   }

@@ -148,7 +148,7 @@ public class SqlServerIndexReader
       index.getSourceOptions().addConfigSetting(KEY_INCLUDED_COLS, StringUtil.listToString(cols, ','));
     }
 
-    if (StringUtil.isNonBlank(filter))
+    if (StringUtil.isNotBlank(filter))
     {
       options.append("\n   WHERE ");
       options.append(filter.trim());

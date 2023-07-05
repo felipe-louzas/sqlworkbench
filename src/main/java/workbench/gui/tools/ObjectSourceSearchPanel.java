@@ -668,19 +668,19 @@ public class ObjectSourceSearchPanel
     result.append(indent);
     result.append("-" + WbGrepSource.PARAM_USE_REGEX + "=" + Boolean.toString(regex.isSelected()));
 
-    if (StringUtil.isNonBlank(objectTypes.getText()))
+    if (StringUtil.isNotBlank(objectTypes.getText()))
     {
       result.append(indent);
       result.append("-" + CommonArgs.ARG_TYPES + "=" + StringUtil.quoteIfNeeded(objectTypes.getText()));
     }
 
-    if (StringUtil.isNonBlank(objectNames.getText()))
+    if (StringUtil.isNotBlank(objectNames.getText()))
     {
       result.append(indent);
       result.append("-" + CommonArgs.ARG_OBJECTS + "=" + StringUtil.quoteIfNeeded(objectNames.getText()));
     }
 
-    if (StringUtil.isNonBlank(schemaNames.getText()))
+    if (StringUtil.isNotBlank(schemaNames.getText()))
     {
       result.append(indent);
       result.append("-" + CommonArgs.ARG_SCHEMAS + "=" + StringUtil.quoteIfNeeded(schemaNames.getText()));

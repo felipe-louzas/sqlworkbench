@@ -539,7 +539,7 @@ public class JdbcIndexReader
       sql = TemplateHandler.removePlaceholder(sql, MetaDataSqlManager.UNIQUE_PLACEHOLDER, true);
     }
 
-    if (StringUtil.isEmptyString(type))
+    if (StringUtil.isEmpty(type))
     {
       sql = TemplateHandler.removePlaceholder(sql, MetaDataSqlManager.INDEX_TYPE_PLACEHOLDER, true);
     }
@@ -573,7 +573,7 @@ public class JdbcIndexReader
     sql = TemplateHandler.replacePlaceholder(sql, MetaDataSqlManager.INDEX_WHERE_CONDITION, indexDefinition.getFilterExpression(), true);
     idx.append(sql.trim());
 
-    if (StringUtil.isNonBlank(options))
+    if (StringUtil.isNotBlank(options))
     {
       idx.append(options);
     }
@@ -581,7 +581,7 @@ public class JdbcIndexReader
 
     CommentSqlManager mgr = new CommentSqlManager(metaData.getDbId());
     String commentTemplate = mgr.getCommentSqlTemplate("INDEX", null);
-    if (StringUtil.isNonBlank(indexDefinition.getComment()) && commentTemplate != null)
+    if (StringUtil.isNotBlank(indexDefinition.getComment()) && commentTemplate != null)
     {
       commentTemplate = StringUtil.replace(commentTemplate, MetaDataSqlManager.FQ_INDEX_NAME_PLACEHOLDER, indexDefinition.getObjectExpression(metaData.getWbConnection()));
       commentTemplate = StringUtil.replace(commentTemplate, MetaDataSqlManager.INDEX_NAME_PLACEHOLDER, indexDefinition.getObjectName());
@@ -1130,7 +1130,7 @@ public class JdbcIndexReader
 
   protected IndexDefinition findIndexByName(Collection<IndexDefinition> indexList, String toFind)
   {
-    if (StringUtil.isEmptyString(toFind)) return null;
+    if (StringUtil.isEmpty(toFind)) return null;
     if (CollectionUtil.isEmpty(indexList)) return null;
     for (IndexDefinition index : indexList)
     {

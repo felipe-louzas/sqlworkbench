@@ -132,7 +132,7 @@ public class OpenEdgeObjectListEnhancer
         String objectSchema = rs.getString(1);
         String objectName = rs.getString(2);
         String remark = rs.getString(3);
-        if (objectName != null && StringUtil.isNonEmpty(remark))
+        if (objectName != null && StringUtil.isNotEmpty(remark))
         {
           remarks.put(objectSchema + "." + objectName.trim(), remark);
         }

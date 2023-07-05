@@ -246,7 +246,7 @@ public abstract class TemplateHandler
    */
   public static String replacePlaceholder(String sql, String placeholder, String replacement, boolean addWhitespace)
   {
-    if (StringUtil.isEmptyString(replacement)) return removePlaceholder(sql, placeholder, false);
+    if (StringUtil.isEmpty(replacement)) return removePlaceholder(sql, placeholder, false);
     int pos = sql.indexOf(placeholder);
     if (pos < 0) return sql;
 

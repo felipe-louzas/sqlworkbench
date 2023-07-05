@@ -619,7 +619,7 @@ public class TableDefinitionPanel
       String column = this.tableDefinition.getValueAsString(rows[i], TableColumnsDatastore.COLUMN_NAME_COL_NAME);
 
       // the column name can be empty if a new column has just been inserted in the definition display
-      if (StringUtil.isNonBlank(column))
+      if (StringUtil.isNotBlank(column))
       {
         columns.add(new ColumnIdentifier(column));
       }

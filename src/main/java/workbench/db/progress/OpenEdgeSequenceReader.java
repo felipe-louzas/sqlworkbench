@@ -76,14 +76,14 @@ public class OpenEdgeSequenceReader
     owner = StringUtil.trimToNull(owner);
     namePattern = StringUtil.trimToNull(namePattern);
 
-    if (StringUtil.isNonBlank(owner))
+    if (StringUtil.isNotBlank(owner))
     {
       whereAdded = true;
       ownerIndex = 1;
       sql.append(" WHERE \"SEQ-OWNER\" = ?");
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded)
       {

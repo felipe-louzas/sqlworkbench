@@ -197,7 +197,7 @@ public class ProfileListModel
   {
     profiles.addAll(filtered);
     filtered.clear();
-    if (StringUtil.isNonBlank(value))
+    if (StringUtil.isNotBlank(value))
     {
       value = value.toLowerCase();
       Iterator<ConnectionProfile> itr = profiles.iterator();

@@ -103,7 +103,7 @@ public class RowHeightOptimizer
     // But it is a somewhat safe fallback in case countVisibleLines() doesn't work
     // because the TextArea wasn't properly initialized.
     String content = edit.getText();
-    if (StringUtil.isEmptyString(content)) return 0;
+    if (StringUtil.isEmpty(content)) return 0;
 
     int numLines = 0;
     try
@@ -132,7 +132,7 @@ public class RowHeightOptimizer
   public int countVisibleLines(JTextArea edit, FontMetrics fm, int colWidth)
   {
     String content = edit.getText();
-    if (StringUtil.isEmptyString(content)) return 0;
+    if (StringUtil.isEmpty(content)) return 0;
 
     int fontHeight = fm.getHeight();
     int lineCount;

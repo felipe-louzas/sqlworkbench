@@ -94,7 +94,7 @@ public class H2IndexReader
       "WHERE primary_key = true \n";
 
     primaryKeysStatement = this.metaData.getSqlConnection().createStatement();
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql += " AND table_schema = '" + StringUtil.trimQuotes(schema) + "' ";
     }

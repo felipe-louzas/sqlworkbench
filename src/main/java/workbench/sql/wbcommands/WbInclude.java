@@ -177,7 +177,7 @@ public class WbInclude
     else
     {
       WbFile file = evaluateFileArgument(fileArg);
-      if (file != null && StringUtil.isEmptyString(file.getExtension()))
+      if (file != null && StringUtil.isEmpty(file.getExtension()))
       {
         file = new WbFile(file.getFullPath() + ".sql");
       }

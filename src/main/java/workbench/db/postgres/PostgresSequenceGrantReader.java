@@ -64,7 +64,7 @@ public class PostgresSequenceGrantReader
       sequence.setSequenceProperty(PostgresSequenceReader.PROP_ACL, acl);
     }
 
-    if (StringUtil.isNonBlank(acl))
+    if (StringUtil.isNotBlank(acl))
     {
       PgACLParser parser = new PgACLParser(acl);
       return parser.getSQL(sequence.getObjectExpression(conn), "SEQUENCE");

@@ -496,7 +496,7 @@ public class WbExport
 
     String falseLiteral = cmdLine.getValue(ARG_FALSE_LITERAL);
     String trueLiteral = cmdLine.getValue(ARG_TRUE_LITERAL);
-    if (StringUtil.isNonBlank(falseLiteral) && StringUtil.isNonBlank(trueLiteral))
+    if (StringUtil.isNotBlank(falseLiteral) && StringUtil.isNotBlank(trueLiteral))
     {
       exporter.setBooleanLiterals(trueLiteral, falseLiteral);
     }
@@ -528,9 +528,9 @@ public class WbExport
     String group = cmdLine.getValue(ARG_DECIMAL_GROUP);
 
     // the formatting options should only default to true if no target sheet was specified
-    boolean targetSheetSpecified = cmdLine.getIntValue(ARG_TARGET_SHEET_IDX, -1) > -1 || StringUtil.isNonBlank(cmdLine.getValue(ARG_TARGET_SHEET_NAME));
+    boolean targetSheetSpecified = cmdLine.getIntValue(ARG_TARGET_SHEET_IDX, -1) > -1 || StringUtil.isNotBlank(cmdLine.getValue(ARG_TARGET_SHEET_NAME));
 
-    if (StringUtil.isNonBlank(decimalFormat))
+    if (StringUtil.isNotBlank(decimalFormat))
     {
       exporter.setDecimalFormatString(decimalFormat, decimal, group);
     }
@@ -800,7 +800,7 @@ public class WbExport
     }
 
     String ext = cmdLine.getValue(WbImport.ARG_FILE_EXT, null);
-    if (StringUtil.isNonBlank(ext))
+    if (StringUtil.isNotBlank(ext))
     {
       defaultExtension = ext;
     }
@@ -1220,7 +1220,7 @@ public class WbExport
   private void addMessages(StatementRunnerResult result)
   {
     CharSequence errors = this.exporter.getErrors();
-    if (StringUtil.isNonEmpty(errors))
+    if (StringUtil.isNotEmpty(errors))
     {
       result.addMessage(errors);
     }

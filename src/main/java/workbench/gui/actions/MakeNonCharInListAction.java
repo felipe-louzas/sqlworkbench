@@ -61,7 +61,7 @@ public class MakeNonCharInListAction
     String text = client.getSelectedText();
     InListCreator tools = new InListCreator(text);
     String list = tools.makeInListForNonChar();
-    if (StringUtil.isNonEmpty(list))
+    if (StringUtil.isNotEmpty(list))
     {
       client.setSelectedText(list);
     }

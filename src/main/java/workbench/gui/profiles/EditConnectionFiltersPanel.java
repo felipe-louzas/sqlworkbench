@@ -401,7 +401,7 @@ public class EditConnectionFiltersPanel
 
     ObjectFilterTemplateStorage model = (ObjectFilterTemplateStorage)schemaTemplates.getModel();
     String name = WbSwingUtilities.getUserInput(this, "Enter a name", "Schema Filter Template");
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       model.addTemplate(name, filter.createCopy());
     }
@@ -414,7 +414,7 @@ public class EditConnectionFiltersPanel
 
     ObjectFilterTemplateStorage model = (ObjectFilterTemplateStorage)schemaTemplates.getModel();
     String name = WbSwingUtilities.getUserInput(this, "Enter a name", "Catalog Filter Template");
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       model.addTemplate(name, filter.createCopy());
     }

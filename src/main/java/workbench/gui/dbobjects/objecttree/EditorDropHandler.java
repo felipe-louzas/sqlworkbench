@@ -71,7 +71,7 @@ public class EditorDropHandler
     // into an "empty" area of the editor. In that case
     // generate a select statement for the table instead
     // of just inserting the table name
-    if (nodes.length == 1 && StringUtil.isEmptyString(sql))
+    if (nodes.length == 1 && StringUtil.isEmpty(sql))
     {
       DbObject dbo = nodes[0].getDbObject();
       if (dbo instanceof TableIdentifier)

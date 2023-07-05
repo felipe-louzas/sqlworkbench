@@ -123,7 +123,7 @@ public class GenericReportObject
       tagWriter.appendOpenTag(line, defIndent, TAG_OBJECT_DETAILS);
       line.append('\n');
       DomainIdentifier domain = (DomainIdentifier)object;
-      if (StringUtil.isNonBlank(domain.getCheckConstraint()))
+      if (StringUtil.isNotBlank(domain.getCheckConstraint()))
       {
         tagWriter.appendOpenTag(line, details, TAG_DOMAIN_CONSTRAINT);
         line.append('\n');
@@ -169,7 +169,7 @@ public class GenericReportObject
         tagWriter.appendCloseTag(line, defIndent, TAG_OBJECT_DETAILS);
       }
     }
-    if (StringUtil.isNonEmpty(source))
+    if (StringUtil.isNotEmpty(source))
     {
       tagWriter.appendTag(line, defIndent, TAG_OBJECT_SOURCE, source, true);
     }

@@ -123,11 +123,11 @@ public class DbObjectFinder
         StringEqualsComparator comp = new StringEqualsComparator();
         filter.addColumnExpression(ds.getObjectColumnName(), comp, table.getRawTableName(), true);
 
-        if (StringUtil.isNonBlank(schema) && !searchAllSchemas)
+        if (StringUtil.isNotBlank(schema) && !searchAllSchemas)
         {
           filter.addColumnExpression(ds.getSchemaColumnName(), comp, schema, true);
         }
-        if (StringUtil.isNonBlank(catalog) && !searchAllCatalogs)
+        if (StringUtil.isNotBlank(catalog) && !searchAllCatalogs)
         {
           filter.addColumnExpression(ds.getCatalogColumnName(), comp, catalog, true);
         }

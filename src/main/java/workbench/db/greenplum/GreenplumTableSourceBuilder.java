@@ -141,7 +141,7 @@ public class GreenplumTableSourceBuilder
         {
           option.setTypeModifier("TEMPORARY");
         }
-        if (StringUtil.isNonEmpty(settings))
+        if (StringUtil.isNotEmpty(settings))
         {
           setConfigSettings(settings, option);
           if (tableSql.length() > 0) tableSql.append('\n');

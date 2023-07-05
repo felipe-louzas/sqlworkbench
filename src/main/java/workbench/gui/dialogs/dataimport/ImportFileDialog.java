@@ -177,7 +177,7 @@ public class ImportFileDialog
         filename = fl.getAbsolutePath();
 
         String ext = ExtensionFileFilter.getExtension(fl);
-        if (StringUtil.isEmptyString(ext))
+        if (StringUtil.isEmpty(ext))
         {
           if (!filename.endsWith(".")) filename = filename + ".";
           filename = filename + eff.getDefaultExtension();

@@ -283,7 +283,7 @@ public class LnFHelper
 
     try
     {
-      if (StringUtil.isEmptyString(className))
+      if (StringUtil.isEmpty(className))
       {
         className = getDefaultLookAndFeel();
       }
@@ -411,7 +411,7 @@ public class LnFHelper
 
       // This can be used when SQL Workbench is started from within an IDE
       String props = Settings.getInstance().getProperty("workbench.flatlaf.propdir", null);
-      if (StringUtil.isNonBlank(props))
+      if (StringUtil.isNotBlank(props))
       {
         File propdir = new File(props);
         registerDir.invoke(null, propdir);

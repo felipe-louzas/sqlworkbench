@@ -300,7 +300,7 @@ public class MacroManagerDialog
         if (!node.getAllowsChildren())
         {
           MacroDefinition macro = (MacroDefinition)node.getDataObject();
-          selectedIsMacro = selectedIsMacro && StringUtil.isNonBlank(macro.getText());
+          selectedIsMacro = selectedIsMacro && StringUtil.isNotBlank(macro.getText());
         }
       }
     }

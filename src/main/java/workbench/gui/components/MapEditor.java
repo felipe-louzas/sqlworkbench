@@ -145,7 +145,7 @@ public class MapEditor
     for (int row=0; row < count; row++)
     {
       String key = this.propData.getValueAsString(row, 0);
-      if (StringUtil.isEmptyString(key)) continue;
+      if (StringUtil.isEmpty(key)) continue;
       String value = this.propData.getValueAsString(row, 1);
       props.put(key.trim(), (value == null ? "" : value.trim()));
     }

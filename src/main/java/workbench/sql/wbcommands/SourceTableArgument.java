@@ -91,7 +91,7 @@ public class SourceTableArgument
   public SourceTableArgument(String includeTables, String excludeTables, String schema, String[] types, WbConnection dbConn)
     throws SQLException
   {
-    if (StringUtil.isEmptyString(includeTables) && StringUtil.isEmptyString(schema)) return;
+    if (StringUtil.isEmpty(includeTables) && StringUtil.isEmpty(schema)) return;
     if (dbConn == null) return;
     schemaAsCatalog = !dbConn.getDbSettings().supportsSchemas();
 
@@ -105,7 +105,7 @@ public class SourceTableArgument
     List<TableIdentifier> toAdd = retrieveObjects(includeTables, schema, true, types, dbConn);
     tables.addAll(toAdd);
 
-    if (StringUtil.isNonBlank(excludeTables))
+    if (StringUtil.isNotBlank(excludeTables))
     {
       List<TableIdentifier> toRemove = retrieveObjects(excludeTables, schema, false, null, dbConn);
       tables.removeAll(toRemove);
@@ -226,7 +226,7 @@ public class SourceTableArgument
 
   private void adjustTableSchema(TableIdentifier tbl, String schemaToUse)
   {
-    if (tbl.getSchema() == null && StringUtil.isNonEmpty(schemaToUse))
+    if (tbl.getSchema() == null && StringUtil.isNotEmpty(schemaToUse))
     {
       if (schemaAsCatalog)
       {
@@ -260,7 +260,7 @@ public class SourceTableArgument
    */
   List<String> getObjectNames(String list)
   {
-    if (StringUtil.isEmptyString(list)) return Collections.emptyList();
+    if (StringUtil.isEmpty(list)) return Collections.emptyList();
     WbStringTokenizer tok = new WbStringTokenizer(list, ",");
     tok.setDelimiterNeedsWhitspace(false);
     tok.setCheckBrackets(false);

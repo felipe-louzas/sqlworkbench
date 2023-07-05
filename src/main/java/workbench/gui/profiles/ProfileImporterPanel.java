@@ -251,7 +251,7 @@ public class ProfileImporterPanel
       File f = chooser.getSelectedFile();
       if (f == null) return null;
       WbFile wf = new WbFile(f);
-      if (StringUtil.isEmptyString(wf.getExtension()))
+      if (StringUtil.isEmpty(wf.getExtension()))
       {
         ExtensionFileFilter ff = (ExtensionFileFilter)chooser.getFileFilter();
         String ext = ff.getDefaultExtension();

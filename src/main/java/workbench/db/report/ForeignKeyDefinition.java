@@ -166,7 +166,7 @@ public class ForeignKeyDefinition
       tagWriter.appendTag(result, colIndent, "column", col);
     }
     tagWriter.appendCloseTag(result, indent, TAG_TARGET_COLS);
-    if (StringUtil.isNonBlank(fkDefinition.getComment()))
+    if (StringUtil.isNotBlank(fkDefinition.getComment()))
     {
       tagWriter.appendTag(result, indent, "comment", fkDefinition.getComment());
     }

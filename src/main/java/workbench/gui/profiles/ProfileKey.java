@@ -65,7 +65,7 @@ public class ProfileKey
     parseNameAndGroup(pname);
 
     // only parse the path if the name did not contain one
-    if (StringUtil.isNonBlank(path))
+    if (StringUtil.isNotBlank(path))
     {
       List<String> newPath = parseGroupPath(path);
       if (groupPath.isEmpty())

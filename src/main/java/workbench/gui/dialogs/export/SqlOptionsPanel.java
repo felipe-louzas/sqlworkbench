@@ -197,7 +197,7 @@ public class SqlOptionsPanel
   public String getAlternateUpdateTable()
   {
     String s = alternateTable.getText();
-    if (StringUtil.isNonBlank(s)) return s.trim();
+    if (StringUtil.isNotBlank(s)) return s.trim();
     return null;
   }
 

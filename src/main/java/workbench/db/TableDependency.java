@@ -437,7 +437,7 @@ public class TableDependency
         if (remarksColumn > -1)
         {
           String remarks = ds.getValueAsString(i, remarksColumn);
-          if (StringUtil.isNonBlank(remarks))
+          if (StringUtil.isNotBlank(remarks))
           {
             child.setComment(remarks);
           }
@@ -445,7 +445,7 @@ public class TableDependency
         if (matchTypeColumn > -1)
         {
           String matchType = ds.getValueAsString(i, matchTypeColumn);
-          if (StringUtil.isNonBlank(matchType) && !matchType.equals("s"))
+          if (StringUtil.isNotBlank(matchType) && !matchType.equals("s"))
           {
             child.setMatchType(FKMatchType.fromString(matchType));
           }

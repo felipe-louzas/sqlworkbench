@@ -84,7 +84,7 @@ public class RedshiftUDFReader
     {
       namePattern = null;
     }
-    else if (StringUtil.isNonBlank(procName))
+    else if (StringUtil.isNotBlank(procName))
     {
       PGProcName pg = new PGProcName(procName);
       namePattern = pg.getName();
@@ -281,7 +281,7 @@ public class RedshiftUDFReader
       " WHERE p.proowner != 1)) \n";
 
     sql += "WHERE udfname = '" + name.getName() + "' \n";
-    if (StringUtil.isNonBlank(def.getSchema()))
+    if (StringUtil.isNotBlank(def.getSchema()))
     {
       sql += "  AND schemaname = '" + def.getSchema() + "' \n";
     }
@@ -310,7 +310,7 @@ public class RedshiftUDFReader
 
       connection.releaseSavepoint(sp);
 
-      if (StringUtil.isNonBlank(def.getComment()))
+      if (StringUtil.isNotBlank(def.getComment()))
       {
         source.append("\nCOMMENT ON FUNCTION ");
         source.append(name.getFormattedName());

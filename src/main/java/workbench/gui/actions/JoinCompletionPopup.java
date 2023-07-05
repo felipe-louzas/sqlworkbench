@@ -107,7 +107,7 @@ public class JoinCompletionPopup
           condition = creator.getJoinCondition(conditions.get(0));
         }
       }
-      if (StringUtil.isNonBlank(condition))
+      if (StringUtil.isNotBlank(condition))
       {
         editor.insertText(condition + " ");
       }

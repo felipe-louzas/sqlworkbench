@@ -221,7 +221,7 @@ public class PostgresColumnEnhancer
         ColumnIdentifier col = table.findColumn(colname);
         if (col == null) continue; // should not happen
 
-        if (StringUtil.isNonEmpty(collation))
+        if (StringUtil.isNotEmpty(collation))
         {
           col.setCollation(collation);
           col.setCollationExpression(" COLLATE \"" + collation + "\"");

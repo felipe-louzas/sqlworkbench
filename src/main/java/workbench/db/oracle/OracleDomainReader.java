@@ -213,7 +213,7 @@ public class OracleDomainReader
     int schemaIndex = -1;
     int nameIndex = -1;
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       if (schema.indexOf("%") > 0)
       {
@@ -228,7 +228,7 @@ public class OracleDomainReader
       schemaIndex = 1;
     }
 
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       if (schemaIndex != -1)
       {

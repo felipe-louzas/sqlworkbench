@@ -153,7 +153,7 @@ public class H2SequenceReader
     result.append(nl);
 
     String comments = def.getComment();
-    if (StringUtil.isNonBlank(comments))
+    if (StringUtil.isNotBlank(comments))
     {
       result.append("\nCOMMENT ON SEQUENCE ");
       result.append(def.getSequenceName());
@@ -204,7 +204,7 @@ public class H2SequenceReader
 
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       if (!whereAdded)
       {
@@ -218,7 +218,7 @@ public class H2SequenceReader
       sql.append(" sequence_schema = '" + schema + "'");
     }
 
-    if (StringUtil.isNonBlank(sequence))
+    if (StringUtil.isNotBlank(sequence))
     {
       if (!whereAdded)
       {

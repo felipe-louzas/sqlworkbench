@@ -95,7 +95,7 @@ public class H2DomainReader
     sql.append(baseSql);
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       sql.append(" WHERE d.domain_name like '");
       sql.append(connection.getMetadata().quoteObjectname(name));
@@ -103,7 +103,7 @@ public class H2DomainReader
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append(whereAdded ? " AND " : " WHERE ");
 
@@ -207,13 +207,13 @@ public class H2DomainReader
       result.append("\n   DEFAULT ");
       result.append(domain.getDefaultValue());
     }
-    if (StringUtil.isNonBlank(domain.getCheckConstraint()))
+    if (StringUtil.isNotBlank(domain.getCheckConstraint()))
     {
       result.append("\n   CHECK ");
       result.append(domain.getCheckConstraint());
     }
     result.append(";\n");
-    if (StringUtil.isNonBlank(domain.getComment()))
+    if (StringUtil.isNotBlank(domain.getComment()))
     {
       result.append("\nCOMMENT ON DOMAIN " + domain.getObjectName() + " IS '");
       result.append(SqlUtil.escapeQuotes(domain.getComment()));

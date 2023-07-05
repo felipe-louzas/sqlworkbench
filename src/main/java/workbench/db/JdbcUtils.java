@@ -170,7 +170,7 @@ public class JdbcUtils
     try
     {
       if (rs == null) return -1;
-      if (StringUtil.isEmptyString(colname)) return -1;
+      if (StringUtil.isEmpty(colname)) return -1;
       ResultSetMetaData meta = rs.getMetaData();
       return getColumnIndex(meta, colname);
     }
@@ -186,7 +186,7 @@ public class JdbcUtils
     try
     {
       if (meta == null) return -1;
-      if (StringUtil.isEmptyString(colname)) return -1;
+      if (StringUtil.isEmpty(colname)) return -1;
 
       int colcount = meta.getColumnCount();
       for (int i=1; i <= colcount; i++)

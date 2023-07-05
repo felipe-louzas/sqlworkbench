@@ -119,13 +119,13 @@ public class InformixSequenceReader
     sql.append(" t on seq.tabid = t.tabid");
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append(" WHERE t.owner = '" + schema + "'");
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded)
       {

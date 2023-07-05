@@ -333,7 +333,7 @@ public class ServerSideTableSearcher
     if (StringUtil.isBlank(this.criteria)) return false;
 
     String operator = connection.getDbSettings().getTableSearchLIKEOperator();
-    if (StringUtil.isNonBlank(operator))
+    if (StringUtil.isNotBlank(operator))
     {
       return connection.getDbSettings().isTableSearchLIKEOperatorCaseSensitive();
     }
@@ -360,7 +360,7 @@ public class ServerSideTableSearcher
   {
     this.columnFunction = null;
     boolean setResult = false;
-    if (StringUtil.isNonBlank(aColFunc))
+    if (StringUtil.isNotBlank(aColFunc))
     {
       if (aColFunc.equalsIgnoreCase("$col$"))
       {

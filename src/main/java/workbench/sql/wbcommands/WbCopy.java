@@ -208,7 +208,7 @@ public class WbCopy
     String sourcequery = cmdLine.getValue(PARAM_SOURCEQUERY);
 
     boolean doSyncDelete = cmdLine.getBoolean(PARAM_DELETE_SYNC, false);
-    if (doSyncDelete && StringUtil.isNonBlank(sourcequery))
+    if (doSyncDelete && StringUtil.isNotBlank(sourcequery))
     {
       result.addErrorMessageByKey("ErrCopySyncNoQuery");
       return result;
@@ -221,7 +221,7 @@ public class WbCopy
       return result;
     }
 
-    if (StringUtil.isNonBlank(sourcetable) && StringUtil.isNonBlank(sourcequery))
+    if (StringUtil.isNotBlank(sourcetable) && StringUtil.isNotBlank(sourcequery))
     {
       result.addErrorMessageByKey("ErrCopyTargetAndQuery");
       return result;
@@ -276,7 +276,7 @@ public class WbCopy
     if (tablesToExport.size() > 1 || sourceTables.wasWildcardArgument())
     {
       String targetTable = cmdLine.getValue(PARAM_TARGETTABLE);
-      if (StringUtil.isNonBlank(targetTable))
+      if (StringUtil.isNotBlank(targetTable))
       {
         result.addErrorMessageByKey("ErrCopyMultiSrcNoTarget");
         return result;

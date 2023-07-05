@@ -116,12 +116,12 @@ public class WbDefineDriver
       ConnectionMgr.getInstance().getDrivers().add(drv);
     }
 
-    if (StringUtil.isNonBlank(jarFile))
+    if (StringUtil.isNotBlank(jarFile))
     {
       drv.setLibrary(jarFile);
     }
 
-    if (StringUtil.isNonBlank(drvClass))
+    if (StringUtil.isNotBlank(drvClass))
     {
       drv.setDriverClass(drvClass);
     }

@@ -419,7 +419,7 @@ public class LexerBasedParser
 
   protected ScriptCommandDefinition createCommandDef(StringBuilder sql, int start, int end)
   {
-    if (returnLeadingWhitespace || StringUtil.isEmptyString(sql) || !Character.isWhitespace(sql.charAt(0)))
+    if (returnLeadingWhitespace || StringUtil.isEmpty(sql) || !Character.isWhitespace(sql.charAt(0)))
     {
       String toStore = storeStatementText ? sql.toString() : null;
       return new ScriptCommandDefinition(toStore, start, end);

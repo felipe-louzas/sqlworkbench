@@ -197,7 +197,7 @@ public class CteParser
     int colIndex = 1;
     for (String col : cl)
     {
-      if (StringUtil.isNonBlank(col))
+      if (StringUtil.isNotBlank(col))
       {
         SelectColumn sc = new SelectColumn(col);
         ColumnIdentifier ci = new ColumnIdentifier(sc.getNameToUse());

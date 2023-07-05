@@ -138,7 +138,7 @@ public class ObjectNameFilter
     for (String exp : expressions)
     {
       String s = StringUtil.trim(exp);
-      if (StringUtil.isNonBlank(s))
+      if (StringUtil.isNotBlank(s))
       {
         patternSource.add(s);
       }
@@ -176,7 +176,7 @@ public class ObjectNameFilter
       {
         expression = replaceVariable(replacements, exp);
       }
-      if (StringUtil.isNonBlank(expression))
+      if (StringUtil.isNotBlank(expression))
       {
         addPattern(expression);
       }

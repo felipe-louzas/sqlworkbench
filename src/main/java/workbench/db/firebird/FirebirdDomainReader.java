@@ -96,7 +96,7 @@ public class FirebirdDomainReader
 
     sql.append(baseSql);
 
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       sql.append(" AND trim(rdb$field_name) ");
       if (name.indexOf('%') == -1)
@@ -182,11 +182,11 @@ public class FirebirdDomainReader
       result.append("\n  ");
       result.append(domain.getDefaultValue());
     }
-    if (StringUtil.isNonBlank(domain.getCheckConstraint()) || !domain.isNullable())
+    if (StringUtil.isNotBlank(domain.getCheckConstraint()) || !domain.isNullable())
     {
       result.append("\n  ");
       if (!domain.isNullable()) result.append("NOT NULL");
-      if (StringUtil.isNonBlank(domain.getCheckConstraint()))
+      if (StringUtil.isNotBlank(domain.getCheckConstraint()))
       {
         if (!domain.isNullable()) result.append(' ');
         result.append(domain.getCheckConstraint());

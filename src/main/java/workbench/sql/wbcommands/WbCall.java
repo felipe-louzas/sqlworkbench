@@ -269,7 +269,7 @@ public class WbCall
               if (ds.getResultName() == null)
               {
                 String name = refs.getValue().getParameterName();
-                if (StringUtil.isNonBlank(name))
+                if (StringUtil.isNotBlank(name))
                 {
                   ds.setResultName(name);
                 }
@@ -382,7 +382,7 @@ public class WbCall
       {
         DbmsOutput output = new DbmsOutput(currentConnection.getSqlConnection());
         String msg = output.retrieveOutput();
-        if (StringUtil.isNonEmpty(msg))
+        if (StringUtil.isNotEmpty(msg))
         {
           result.addMessage(msg);
         }

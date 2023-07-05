@@ -148,7 +148,7 @@ public class ToolDefinition
   {
     List<String> result = new ArrayList<>(2);
     result.add(this.exePath);
-    if (StringUtil.isNonBlank(parameters))
+    if (StringUtil.isNotBlank(parameters))
     {
       result.add(this.parameters);
     }

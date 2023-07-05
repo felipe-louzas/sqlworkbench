@@ -271,7 +271,7 @@ public class XsltTransformer
   public File findStylesheet(String fname)
   {
     WbFile f = new WbFile(fname);
-    if (StringUtil.isEmptyString(f.getExtension()))
+    if (StringUtil.isEmpty(f.getExtension()))
     {
       fname += ".xslt";
       f = new WbFile(fname);

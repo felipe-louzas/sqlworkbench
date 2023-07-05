@@ -73,7 +73,7 @@ public class Alias
    */
   public Alias(String value)
   {
-    if (StringUtil.isEmptyString(value)) throw new IllegalArgumentException("Identifier must not be empty");
+    if (StringUtil.isEmpty(value)) throw new IllegalArgumentException("Identifier must not be empty");
 
     SQLLexer lexer = SQLLexerFactory.createLexer(value);
     StringBuilder name = new StringBuilder(value.length());
@@ -110,7 +110,7 @@ public class Alias
 
   public boolean isNotEmpty()
   {
-    return StringUtil.isNonEmpty(objectName);
+    return StringUtil.isNotEmpty(objectName);
   }
 
   public void appendObjectName(String name)

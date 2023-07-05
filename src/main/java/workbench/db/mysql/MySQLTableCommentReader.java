@@ -106,13 +106,13 @@ public class MySQLTableCommentReader
 
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(object))
+    if (StringUtil.isNotBlank(object))
     {
       sql += " WHERE table_name = '" + object + "'";
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(catalog))
+    if (StringUtil.isNotBlank(catalog))
     {
       if (whereAdded) sql += " AND ";
       else sql += " WHERE ";
@@ -136,7 +136,7 @@ public class MySQLTableCommentReader
           String schema = rs.getString(1);
           String objectname = rs.getString(2);
           String remark = rs.getString(3);
-          if (objectname != null && StringUtil.isNonBlank(remark))
+          if (objectname != null && StringUtil.isNotBlank(remark))
           {
             remarks.put(getNameKey(schema, objectname), remark);
           }

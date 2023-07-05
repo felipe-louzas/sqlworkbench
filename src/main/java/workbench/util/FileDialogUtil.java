@@ -96,7 +96,7 @@ public class FileDialogUtil
       this.encoding = encodingPanel.getEncoding();
 
       File fl = fc.getSelectedFile();
-      if (StringUtil.isEmptyString(encoding))
+      if (StringUtil.isEmpty(encoding))
       {
         encoding = FileUtil.detectFileEncoding(fl);
       }
@@ -107,7 +107,7 @@ public class FileDialogUtil
         filename = fl.getAbsolutePath();
 
         String ext = ExtensionFileFilter.getExtension(fl);
-        if (StringUtil.isEmptyString(ext))
+        if (StringUtil.isEmpty(ext))
         {
           if (!filename.endsWith(".")) filename += ".";
           filename += eff.getDefaultExtension();
@@ -223,7 +223,7 @@ public class FileDialogUtil
           filename = fl.getAbsolutePath();
 
           String ext = ExtensionFileFilter.getExtension(fl);
-          if (StringUtil.isEmptyString(ext))
+          if (StringUtil.isEmpty(ext))
           {
             if (!filename.endsWith(".")) filename += ".";
             filename += ExtensionFileFilter.WORKSPACE_EXT;
@@ -373,7 +373,7 @@ public class FileDialogUtil
     String last = Settings.getInstance().getProperty(lastDirProp, null);
     File lastDir = null;
 
-    if (StringUtil.isNonBlank(last))
+    if (StringUtil.isNotBlank(last))
     {
       lastDir = new File(last);
     }

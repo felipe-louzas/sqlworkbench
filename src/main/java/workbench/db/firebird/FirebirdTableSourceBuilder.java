@@ -117,7 +117,7 @@ public class FirebirdTableSourceBuilder
   {
     String ddl = super.getCreateDDL(objectType, tbl);
     String file = tbl.getSourceOptions().getConfigSettings().get("external_file");
-    if (StringUtil.isNonBlank(file))
+    if (StringUtil.isNotBlank(file))
     {
       ddl += "\nEXTERNAL FILE '" + file + "'";
     }

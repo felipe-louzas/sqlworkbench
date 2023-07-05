@@ -95,7 +95,7 @@ public class H2ColumnEnhancer
 
         // Before h2 2.0 the driver returned the expression as a the default value
         String expr = col.getDefaultValue();
-        if (StringUtil.isNonBlank(expr))
+        if (StringUtil.isNotBlank(expr))
         {
           if (!expr.startsWith("AS"))
           {
@@ -105,7 +105,7 @@ public class H2ColumnEnhancer
           col.setGeneratedExpression(expr, GeneratedColumnType.computed);
         }
         // Starting with 2.0 this needs to be taken from information_schema.columns
-        else if (StringUtil.isNonBlank(expression))
+        else if (StringUtil.isNotBlank(expression))
         {
           if (!expression.startsWith("AS"))
           {

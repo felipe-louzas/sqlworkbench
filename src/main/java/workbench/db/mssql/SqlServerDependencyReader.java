@@ -346,7 +346,7 @@ public class SqlServerDependencyReader
     if (dbo == null) return null;
     String schema = conn.getMetadata().quoteObjectname(dbo.getSchema());
     String name = conn.getMetadata().quoteObjectname(dbo.getObjectName());
-    if (StringUtil.isEmptyString(schema))
+    if (StringUtil.isEmpty(schema))
     {
       schema = conn.getMetadata().quoteObjectname(conn.getCurrentSchema());
     }

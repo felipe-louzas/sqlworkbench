@@ -1426,7 +1426,7 @@ public class ConnectionEditorPanel
     String last = Settings.getInstance().getProperty("workbench.iconfile.lastdir", null);
     File lastDir = null;
 
-    if (StringUtil.isNonBlank(last))
+    if (StringUtil.isNotBlank(last))
     {
       lastDir = new File(last);
     }
@@ -1531,11 +1531,11 @@ public class ConnectionEditorPanel
     if (currentProfile.isNew())
     {
       String workspace = tfWorkspaceFile.getText();
-      if (StringUtil.isNonEmpty(workspace))
+      if (StringUtil.isNotEmpty(workspace))
       {
         WbFile f = new WbFile(workspace);
         String ext = f.getExtension();
-        if (StringUtil.isEmptyString(ext))
+        if (StringUtil.isEmpty(ext))
         {
           tfWorkspaceFile.setText(workspace + ".wksp");
         }

@@ -65,7 +65,7 @@ public class WbFetchSize
     StatementRunnerResult result = new StatementRunnerResult();
 
     String value = getCommandLine(sql);
-    if (StringUtil.isNonBlank(value))
+    if (StringUtil.isNotBlank(value))
     {
       setFetchSize(value, result, currentConnection);
     }

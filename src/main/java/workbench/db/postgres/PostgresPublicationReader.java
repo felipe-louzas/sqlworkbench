@@ -114,7 +114,7 @@ public class PostgresPublicationReader
       "       pg_catalog.obj_description(oid) as remarks \n" +
       "from pg_catalog.pg_publication ");
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql.append("\nwhere ");
       SqlUtil.appendExpression(sql, "pubname", namePattern, connection);

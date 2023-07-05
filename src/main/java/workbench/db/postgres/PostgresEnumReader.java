@@ -84,7 +84,7 @@ public class PostgresEnumReader
       "WHERE enum_name = '" + enumName + "' ";
 
     String schema = obj.getSchema();
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql += "\n  AND enum_schema = '"  + schema + "'";
     }
@@ -140,13 +140,13 @@ public class PostgresEnumReader
 
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql.append("\nWHERE ");
       SqlUtil.appendExpression(sql, "enum_name", namePattern, con);
       whereAdded = true;
     }
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append(whereAdded ? "\n  AND " : "\nWHERE ");
       SqlUtil.appendExpression(sql, "enum_schema", schema, con);
@@ -271,7 +271,7 @@ public class PostgresEnumReader
     String values = StringUtil.listToString(id.getValues(), ",", true, '\'');
     result.append(values);
     result.append(");\n");
-    if (StringUtil.isNonBlank(id.getComment()))
+    if (StringUtil.isNotBlank(id.getComment()))
     {
       result.append("\nCOMMENT ON TYPE ");
       result.append(id.getObjectName());

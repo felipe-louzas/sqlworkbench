@@ -66,14 +66,14 @@ public class NuoDBSequenceReader
     query.append(baseQuery);
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       whereAdded = true;
       query.append(" WHERE ");
       SqlUtil.appendExpression(query, "SEQUENCENAME", StringUtil.trimQuotes(namePattern), dbConn);
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       if (!whereAdded)
       {

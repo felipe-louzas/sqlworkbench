@@ -83,12 +83,12 @@ public class WbRun
 
     WbFile file = evaluateFileArgument(clean);
 
-    if (StringUtil.isEmptyString(file.getExtension()))
+    if (StringUtil.isEmpty(file.getExtension()))
     {
       file = new WbFile(file.getFullPath() + ".sql");
     }
 
-    if (StringUtil.isEmptyString(clean) || !file.exists())
+    if (StringUtil.isEmpty(clean) || !file.exists())
     {
       result.addErrorMessageByKey("ErrFileNotFound", file.getFullPath());
       return result;

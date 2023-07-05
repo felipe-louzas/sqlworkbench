@@ -154,7 +154,7 @@ public class SshHostConfig
       }
     }
 
-    if (StringUtil.isNonEmpty(pwd))
+    if (StringUtil.isNotEmpty(pwd))
     {
       // check encryption settings when reading the profiles...
       if (Settings.getInstance().getUseMasterPassword())

@@ -58,7 +58,7 @@ public class SourceTableDetector
       if (colTable != null)
       {
         String table = findTableFromAlias(colTable, tables);
-        if (StringUtil.isNonBlank(table) && TableIdentifier.compareNames(selectedTable, new TableIdentifier(table), true))
+        if (StringUtil.isNotBlank(table) && TableIdentifier.compareNames(selectedTable, new TableIdentifier(table), true))
         {
           result.add(col.getObjectName());
         }

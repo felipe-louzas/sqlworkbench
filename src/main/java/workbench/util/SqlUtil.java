@@ -337,7 +337,7 @@ public class SqlUtil
 
   public static DdlObjectInfo getDDLObjectInfo(CharSequence sql, ParserType type)
   {
-    if (StringUtil.isEmptyString(sql)) return null;
+    if (StringUtil.isEmpty(sql)) return null;
 
     DdlObjectInfo info = new DdlObjectInfo(sql, type);
     if (info.isValid())
@@ -349,7 +349,7 @@ public class SqlUtil
   }
   public static DdlObjectInfo getDDLObjectInfo(CharSequence sql, WbConnection conn)
   {
-    if (StringUtil.isEmptyString(sql)) return null;
+    if (StringUtil.isEmpty(sql)) return null;
 
     DdlObjectInfo info = new DdlObjectInfo(sql, conn);
     if (info.isValid())
@@ -379,14 +379,14 @@ public class SqlUtil
     // only compare the catalog if both objects have one
     String cat1 = removeObjectQuotes(dbo1.getCatalog());
     String cat2 = removeObjectQuotes(dbo2.getCatalog());
-    if (StringUtil.isNonEmpty(cat1) && StringUtil.isNonEmpty(cat2))
+    if (StringUtil.isNotEmpty(cat1) && StringUtil.isNotEmpty(cat2))
     {
       if (!cat1.equalsIgnoreCase(cat2)) return false;
     }
 
     String schema1 = removeObjectQuotes(dbo1.getSchema());
     String schema2 = removeObjectQuotes(dbo2.getSchema());
-    if (StringUtil.isNonEmpty(schema1) && StringUtil.isNonEmpty(schema2))
+    if (StringUtil.isNotEmpty(schema1) && StringUtil.isNotEmpty(schema2))
     {
       if (!schema1.equalsIgnoreCase(schema2)) return false;
     }
@@ -414,8 +414,8 @@ public class SqlUtil
    */
   public static boolean objectNamesAreEqual(String one, String other)
   {
-    boolean firstEmpty = StringUtil.isEmptyString(one);
-    boolean secondEmpty = StringUtil.isEmptyString(other);
+    boolean firstEmpty = StringUtil.isEmpty(one);
+    boolean secondEmpty = StringUtil.isEmpty(other);
 
     if (firstEmpty && secondEmpty) return true;
     if (firstEmpty || secondEmpty) return false;
@@ -465,7 +465,7 @@ public class SqlUtil
   public static String escapeUnderscore(String name, String escape)
   {
     if (name == null) return null;
-    if (StringUtil.isEmptyString(escape)) return name;
+    if (StringUtil.isEmpty(escape)) return name;
     if (name.indexOf('_') == -1) return name;
 
     String escaped = escape + "_";
@@ -493,7 +493,7 @@ public class SqlUtil
 
     if (!con.getDbSettings().doEscapeSearchString()) return "";
     String escape = con.getSearchStringEscape();
-    if (StringUtil.isEmptyString(escape)) return "";
+    if (StringUtil.isEmpty(escape)) return "";
     return " ESCAPE '" + escape + "'";
   }
 
@@ -689,7 +689,7 @@ public class SqlUtil
    */
   public static String trimSemicolon(String sql)
   {
-    if (StringUtil.isEmptyString(sql)) return sql;
+    if (StringUtil.isEmpty(sql)) return sql;
     int index = findSemicolonFromEnd(sql);
 
     if (index > -1)
@@ -1122,7 +1122,7 @@ public class SqlUtil
 
   public static String stripColumnAlias(String expression)
   {
-    if (StringUtil.isEmptyString(expression)) return null;
+    if (StringUtil.isEmpty(expression)) return null;
 
     int length = expression.length();
     StringBuilder result = new StringBuilder(length);
@@ -1193,7 +1193,7 @@ public class SqlUtil
    */
   public static boolean isUnRestrictedDML(String sql, WbConnection conn)
   {
-    if (StringUtil.isEmptyString(sql)) return false;
+    if (StringUtil.isEmpty(sql)) return false;
 
     SqlParsingUtil util = SqlParsingUtil.getInstance(conn);
     String verb = util.getSqlVerb(sql);
@@ -1784,12 +1784,12 @@ public class SqlUtil
 
     char catalogSeparator = SqlUtil.getCatalogSeparator(conn);
     char schemaSeparator = SqlUtil.getSchemaSeparator(conn);
-    if (supportsCatalogs && StringUtil.isNonEmpty(catalog))
+    if (supportsCatalogs && StringUtil.isNotEmpty(catalog))
     {
       result.append(quoter.quoteObjectname(catalog));
       result.append(catalogSeparator);
     }
-    if (supportsSchemas && StringUtil.isNonEmpty(schema))
+    if (supportsSchemas && StringUtil.isNotEmpty(schema))
     {
       result.append(quoter.quoteObjectname(schema));
       result.append(schemaSeparator);
@@ -1812,18 +1812,18 @@ public class SqlUtil
    */
   public static String buildExpression(WbConnection conn, String catalog, String schema, String name)
   {
-    if (StringUtil.isEmptyString(name)) return null;
+    if (StringUtil.isEmpty(name)) return null;
 
     StringBuilder result = new StringBuilder(30);
     DbMetadata meta = (conn != null ? conn.getMetadata() : null);
     if (meta == null)
     {
-      if (StringUtil.isNonEmpty(catalog))
+      if (StringUtil.isNotEmpty(catalog))
       {
         result.append(SqlUtil.quoteObjectname(catalog, false));
         result.append('.');
       }
-      if (StringUtil.isNonEmpty(schema))
+      if (StringUtil.isNotEmpty(schema))
       {
         result.append(SqlUtil.quoteObjectname(schema, false));
         result.append('.');
@@ -1834,12 +1834,12 @@ public class SqlUtil
     {
       char catalogSeparator = meta.getCatalogSeparator();
       char schemaSeparator = meta.getSchemaSeparator();
-      if (StringUtil.isNonEmpty(catalog) && !meta.ignoreCatalog(catalog))
+      if (StringUtil.isNotEmpty(catalog) && !meta.ignoreCatalog(catalog))
       {
         result.append(meta.quoteObjectname(catalog));
         result.append(catalogSeparator);
       }
-      if (StringUtil.isNonEmpty(schema) && !meta.ignoreSchema(schema))
+      if (StringUtil.isNotEmpty(schema) && !meta.ignoreSchema(schema))
       {
         result.append(meta.quoteObjectname(schema));
         result.append(schemaSeparator);
@@ -1902,7 +1902,7 @@ public class SqlUtil
    */
   public static boolean appendAndCondition(StringBuilder baseSql, String column, String value, WbConnection con)
   {
-    if (StringUtil.isNonEmpty(value) && StringUtil.isNonEmpty(column))
+    if (StringUtil.isNotEmpty(value) && StringUtil.isNotEmpty(column))
     {
       baseSql.append(" AND ");
       return appendExpression(baseSql, column, value, con);
@@ -1926,8 +1926,8 @@ public class SqlUtil
    */
   public static boolean appendExpression(StringBuilder baseSql, String column, String value, WbConnection con)
   {
-    if (StringUtil.isEmptyString(value)) return false;
-    if (StringUtil.isEmptyString(column)) return false;
+    if (StringUtil.isEmpty(value)) return false;
+    if (StringUtil.isEmpty(column)) return false;
 
     baseSql.append(column);
     boolean isLike = false;
@@ -1991,7 +1991,7 @@ public class SqlUtil
 
   public static String quoteLiteral(String value)
   {
-    if (StringUtil.isEmptyString(value)) return value;
+    if (StringUtil.isEmpty(value)) return value;
     if (value.startsWith("'") && value.endsWith("'"))
     {
       return value;
@@ -2130,7 +2130,7 @@ public class SqlUtil
 
   public static int getRealStart(String sql)
   {
-    if (StringUtil.isEmptyString(sql)) return 0;
+    if (StringUtil.isEmpty(sql)) return 0;
     SQLLexer lexer = SQLLexerFactory.createLexer(sql);
     SQLToken token = lexer.getNextToken(false, false);
     if (token == null)
@@ -2154,7 +2154,7 @@ public class SqlUtil
   public static void calculateErrorLine(String sql, ErrorDescriptor error)
   {
     if (error == null) return;
-    if (StringUtil.isEmptyString(sql)) return;
+    if (StringUtil.isEmpty(sql)) return;
     if (error.getErrorLine() > -1 && error.getErrorColumn() > -1) return;
     int errorPos = error.getErrorPosition();
     if (errorPos == -1) return;
@@ -2208,7 +2208,7 @@ public class SqlUtil
   {
     if (error == null) return -1;
     if (error.getErrorPosition() > -1) return error.getErrorPosition();
-    if (StringUtil.isEmptyString(sql)) return -1;
+    if (StringUtil.isEmpty(sql)) return -1;
     int length = sql.length();
     int errorLine = error.getErrorLine();
     int errorColumn = error.getErrorColumn();
@@ -2296,7 +2296,7 @@ public class SqlUtil
   public static String getIdentifierAtCursor(TextContainer display, WbConnection conn)
   {
     String text = display.getSelectedText();
-    if (StringUtil.isEmptyString(text))
+    if (StringUtil.isEmpty(text))
     {
       // Use valid SQL characters including schema/catalog separator and the quote character
       // for the list of allowed (additional) word characters so that fully qualified names (public.foo)

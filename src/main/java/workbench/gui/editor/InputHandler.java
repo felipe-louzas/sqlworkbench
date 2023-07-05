@@ -163,8 +163,6 @@ public class InputHandler
   private boolean enabled = true;
 
   private KeyStroke expandKey;
-  private static final String AUTO_QUOTE_CHARS = "\"'([";
-  private static final String AUTO_QUOTE_PAIRS = "\"')]";
 
   public InputHandler()
   {
@@ -708,12 +706,18 @@ public class InputHandler
   public static class InsertChar
     implements ActionListener
   {
+    private final String openChars = Settings.getInstance().getEditorAutoQuoteOpenChars();
+    private final String closeChars = Settings.getInstance().getEditorAutoQuoteCloseChars();
+
     @Override
     public void actionPerformed(ActionEvent evt)
     {
       JEditTextArea textArea = getTextArea(evt);
       String str = evt.getActionCommand();
 
+      boolean autoCloseEnabled = textArea.getAutoQuoteSelection() &&
+                                 StringUtil.isNoneBlank(openChars, closeChars) &&
+                                 openChars.length() == closeChars.length();
       if (textArea.isEditable())
       {
         char typedChar = str.charAt(0);
@@ -727,9 +731,9 @@ public class InputHandler
           selectionSupportsAutoQuote = textArea.getSelectionLength() > 0;
         }
 
-        if (textArea.getAutoQuoteSelection()
+        if (autoCloseEnabled
             && selectionSupportsAutoQuote
-            && (AUTO_QUOTE_CHARS.indexOf(typedChar) > -1 && str.length() == 1)
+            && (openChars.indexOf(typedChar) > -1 && str.length() == 1)
             && !StringUtil.equalString(str, textArea.getSelectedText()))
         {
           String newSelection = applyAutoQuote(textArea, typedChar);
@@ -768,7 +772,7 @@ public class InputHandler
         if (i > 0) result.append('\n');
         result.append(quote);
         result.append(lines.get(i));
-        result.append(AUTO_QUOTE_PAIRS.charAt(AUTO_QUOTE_CHARS.indexOf(quote)));
+        result.append(closeChars.charAt(openChars.indexOf(quote)));
       }
       return result.toString();
     }

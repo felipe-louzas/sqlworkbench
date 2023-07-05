@@ -74,7 +74,7 @@ public abstract class TableDetector
 
   public void setTableName(String name)
   {
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       this.tableName = name.trim();
     }
@@ -110,7 +110,7 @@ public abstract class TableDetector
 
   protected String getTableNameToUse()
   {
-    if (StringUtil.isNonBlank(tableName)) return tableName.trim();
+    if (StringUtil.isNotBlank(tableName)) return tableName.trim();
     if (inputFile == null) return "import_table";
     return SqlUtil.cleanupIdentifier(inputFile.getFileName());
   }

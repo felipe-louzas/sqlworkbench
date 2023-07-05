@@ -52,7 +52,7 @@ public class BlobDecoder
   public Object decodeBlob(String value, BlobMode mode)
     throws IOException
   {
-    if (StringUtil.isEmptyString(value)) return null;
+    if (StringUtil.isEmpty(value)) return null;
 
     switch (mode)
     {
@@ -79,7 +79,7 @@ public class BlobDecoder
   public byte[] decodeString(String value, BlobLiteralType type)
     throws IOException
   {
-    if (StringUtil.isEmptyString(value)) return null;
+    if (StringUtil.isEmpty(value)) return null;
 
     if (type != null)
     {

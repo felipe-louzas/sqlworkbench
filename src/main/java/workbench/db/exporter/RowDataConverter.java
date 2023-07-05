@@ -282,7 +282,7 @@ public abstract class RowDataConverter
 
   public String getPageTitle(String defaultTitle)
   {
-    if (StringUtil.isEmptyString(pageTitle))
+    if (StringUtil.isEmpty(pageTitle))
     {
       return defaultTitle;
     }
@@ -369,7 +369,7 @@ public abstract class RowDataConverter
 
   public void retrieveColumnComments()
   {
-    if (StringUtil.isEmptyString(generatingSql)) return;
+    if (StringUtil.isEmpty(generatingSql)) return;
     ResultColumnMetaData meta = new ResultColumnMetaData(generatingSql, this.originalConnection);
     try
     {
@@ -784,21 +784,21 @@ public abstract class RowDataConverter
 
   public void setDefaultDateFormat(String format)
   {
-    if (StringUtil.isEmptyString(format)) return;
+    if (StringUtil.isEmpty(format)) return;
     WbDateFormatter formatter = new WbDateFormatter(format, localeToUse);
     this.setDefaultDateFormatter(formatter);
   }
 
   public void setDefaultTimestampFormat(String format)
   {
-    if (StringUtil.isEmptyString(format)) return;
+    if (StringUtil.isEmpty(format)) return;
     WbDateFormatter formatter = new WbDateFormatter(format, localeToUse);
     this.setDefaultTimestampFormatter(formatter);
   }
 
   public void setDefaultTimeFormat(String format)
   {
-    if (StringUtil.isEmptyString(format)) return;
+    if (StringUtil.isEmpty(format)) return;
     WbDateFormatter formatter;
     if (localeToUse == null)
     {
@@ -1023,7 +1023,7 @@ public abstract class RowDataConverter
     WbFile f = new WbFile(of);
 
     String extension = f.getExtension();
-    if (StringUtil.isEmptyString(extension)) return false;
+    if (StringUtil.isEmpty(extension)) return false;
     return extension.equalsIgnoreCase(ext);
   }
 

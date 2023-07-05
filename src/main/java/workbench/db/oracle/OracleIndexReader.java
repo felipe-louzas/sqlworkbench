@@ -208,12 +208,12 @@ public class OracleIndexReader
       sql += "  AND i.uniqueness = 'UNIQUE'\n";
     }
 
-    if (StringUtil.isNonBlank(indexName))
+    if (StringUtil.isNotBlank(indexName))
     {
       sql += "  AND i.index_name = '" + indexName + "' \n";
     }
 
-    if (StringUtil.isNonEmpty(indexSchema) && !useUserTables)
+    if (StringUtil.isNotEmpty(indexSchema) && !useUserTables)
     {
       sql += "  AND i.owner = '" +  indexSchema + "' \n";
     }
@@ -346,7 +346,7 @@ public class OracleIndexReader
     if (!inlinePK && definition.isUniqueConstraint())
     {
       String constraint = DbmsMetadata.getDependentDDL(metaData.getWbConnection(), "CONSTRAINT", table.getTableName(), table.getSchema());
-      if (StringUtil.isNonBlank(constraint))
+      if (StringUtil.isNotBlank(constraint))
       {
         indexDDL += "\n\n" + constraint;
       }

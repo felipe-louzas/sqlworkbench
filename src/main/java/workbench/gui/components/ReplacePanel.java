@@ -478,7 +478,7 @@ public class ReplacePanel
 
       boolean hasSelectedText = false;
 
-      if (!StringUtil.isEmptyString(selectedText) && selectedText.indexOf('\n') == -1 && selectedText.indexOf('\r') == -1)
+      if (!StringUtil.isEmpty(selectedText) && selectedText.indexOf('\n') == -1 && selectedText.indexOf('\r') == -1)
       {
         ((HistoryTextField)searchCriteria).setText(selectedText);
         hasSelectedText = true;

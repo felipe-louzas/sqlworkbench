@@ -158,7 +158,7 @@ public class JoinCompletionAction
 
     WbSwingUtilities.invoke(() ->
     {
-      if (StringUtil.isEmptyString(msg))
+      if (StringUtil.isEmpty(msg))
       {
         statusbar.clearStatusMessage();
       }

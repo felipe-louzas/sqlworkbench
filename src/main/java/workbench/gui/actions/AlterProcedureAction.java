@@ -105,7 +105,7 @@ public class AlterProcedureAction
     }
     DbObjectChanger changer = new DbObjectChanger(dbConnection);
     String sql = changer.getAlterScript(changed);
-    return StringUtil.isNonEmpty(sql);
+    return StringUtil.isNotEmpty(sql);
   }
 
   @Override

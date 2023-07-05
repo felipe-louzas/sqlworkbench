@@ -139,7 +139,7 @@ public class ClasspathUtil
   {
     // Allow an alternate "ext" dir from within the IDE
     String dir = System.getProperty("workbench.libs.extdir", null);
-    if (StringUtil.isNonBlank(dir))
+    if (StringUtil.isNotBlank(dir))
     {
       WbFile f = new WbFile(dir);
       if (f.exists())

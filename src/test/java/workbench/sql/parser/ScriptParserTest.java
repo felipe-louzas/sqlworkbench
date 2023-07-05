@@ -548,7 +548,7 @@ public class ScriptParserTest
         assertEquals("Statement #" + commandsInFile + " of " + statementCount + " not correct!", sql, command.trim());
         commandsInFile++;
         command = parser.getNextCommand();
-        if (StringUtil.isEmptyString(command)) break;
+        if (StringUtil.isEmpty(command)) break;
       }
       assertEquals(statementCount, commandsInFile);
     }

@@ -131,7 +131,7 @@ public class CommandRegistry
 
   public ToolWindow getGuiExtension(String name)
   {
-    if (StringUtil.isEmptyString(name))
+    if (StringUtil.isEmpty(name))
     {
       return null;
     }

@@ -549,7 +549,7 @@ public class TestUtil
           {
             reader.getErrorInfo(null, null, info.getObjectName(), info.getObjectType(), true);
           }
-          if (StringUtil.isNonBlank(msg))
+          if (StringUtil.isNotBlank(msg))
           {
             System.out.println("**** Error executing statement:\n" + msg + "\n------------------");
           }

@@ -125,7 +125,7 @@ public class IndexReporter
       }
       tagWriter.appendTag(result, defIndent, TAG_INDEX_PK, index.isPrimaryKeyIndex());
       tagWriter.appendTag(result, defIndent, TAG_INDEX_TYPE, index.getIndexType());
-      if (StringUtil.isNonBlank(index.getComment()))
+      if (StringUtil.isNotBlank(index.getComment()))
       {
         tagWriter.appendTag(result, defIndent, TAG_INDEX_COMMENT, index.getComment(), true);
       }
@@ -152,11 +152,11 @@ public class IndexReporter
         }
         tagWriter.appendCloseTag(result, defIndent, TAG_INDEX_COLUMN_LIST);
       }
-      if (StringUtil.isNonBlank(index.getFilterExpression()))
+      if (StringUtil.isNotBlank(index.getFilterExpression()))
       {
         tagWriter.appendTag(result, defIndent, TAG_INDEX_FILTER, index.getFilterExpression(), true);
       }
-      if (StringUtil.isNonBlank(index.getTablespace()))
+      if (StringUtil.isNotBlank(index.getTablespace()))
       {
         tagWriter.appendTag(result, defIndent, ReportTable.TAG_TABLESPACE, index.getTablespace(), false);
       }
@@ -190,7 +190,7 @@ public class IndexReporter
       sysName = new TagAttribute("generated-name", isSystemName);
     }
 
-    boolean hasComment = StringUtil.isNonBlank(constraint.getComment());
+    boolean hasComment = StringUtil.isNotBlank(constraint.getComment());
     tagWriter.appendOpenTag(line, indent, ReportTable.TAG_CONSTRAINT_DEF, hasComment, type, nameAttr, sysName, deferrable, initiallyAtt);
     if (hasComment)
     {

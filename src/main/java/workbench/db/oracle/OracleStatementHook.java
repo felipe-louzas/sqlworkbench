@@ -424,7 +424,7 @@ public class OracleStatementHook
 
     String defaultOptions = "PARTITION ALIAS BYTES COST NOTE ROWS ALLSTATS LAST";
     String options = Settings.getInstance().getProperty("workbench.db.oracle.xplan.options", defaultOptions);
-    if (StringUtil.isEmptyString(options))
+    if (StringUtil.isEmpty(options))
     {
       options = defaultOptions;
     }
@@ -506,7 +506,7 @@ public class OracleStatementHook
     Statement stmt = null;
     try
     {
-      if (StringUtil.isEmptyString(newLevel))
+      if (StringUtil.isEmpty(newLevel))
       {
         // should not happen, but just in case.
         newLevel = "TYPICAL";

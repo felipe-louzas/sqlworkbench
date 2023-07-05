@@ -119,13 +119,13 @@ public class OracleTypeReader
     int schemaIndex = -1;
     int nameIndex = -1;
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       select.append("\nWHERE owner = ? ");
       schemaIndex = 1;
     }
 
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       if (schemaIndex != -1)
       {

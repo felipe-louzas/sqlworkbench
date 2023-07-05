@@ -131,14 +131,14 @@ public class PostgresDomainReader
     sql.append(baseSql);
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       sql.append("\nWHERE ");
       SqlUtil.appendExpression(sql, "domain_name", name, con);
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append(whereAdded ? "\n  AND " : " WHERE ");
       SqlUtil.appendExpression(sql, "domain_schema", schema, con);
@@ -215,13 +215,13 @@ public class PostgresDomainReader
       result.append(domain.getDefaultValue());
     }
     if (!domain.isNullable()) result.append("\n  NOT NULL");
-    if (StringUtil.isNonBlank(domain.getCheckConstraint()))
+    if (StringUtil.isNotBlank(domain.getCheckConstraint()))
     {
       result.append("\n  ");
       result.append(domain.getCheckConstraint());
     }
     result.append(";\n");
-    if (StringUtil.isNonBlank(domain.getComment()))
+    if (StringUtil.isNotBlank(domain.getComment()))
     {
       result.append("\nCOMMENT ON DOMAIN ").append(name).append(" IS '");
       result.append(SqlUtil.escapeQuotes(domain.getComment()));

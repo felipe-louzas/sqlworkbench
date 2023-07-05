@@ -99,7 +99,7 @@ public class MySQLColumnEnhancer
           // MySQL < 8.0 returns the "extra" as e.g. "GENERATED on UPDATE..."
           // For MySQL 8.0, Oracle chose to change that, and now prefixes this with DEFAUL_GENERATED.
           extra = trimKeyWords(extra, "GENERATED", "DEFAULT_GENERATED");
-          if (StringUtil.isNonBlank(expression))
+          if (StringUtil.isNotBlank(expression))
           {
             String genSql = "GENERATED ALWAYS AS (" + expression + ") " + extra;
             col.setGeneratedExpression(genSql, GeneratedColumnType.computed);

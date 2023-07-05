@@ -69,7 +69,7 @@ public class ResultAsTextAnnotation
   @Override
   public void setValue(String annotationValue)
   {
-    if (StringUtil.isNonBlank(annotationValue))
+    if (StringUtil.isNotBlank(annotationValue))
     {
       parseValue(annotationValue);
     }

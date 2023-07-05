@@ -109,7 +109,7 @@ public class WbSetMasterPwd
     WbConsole console = WbConsoleFactory.getConsole();
 
     String pwd1 = console.readPassword(ResourceMgr.getString("LblNewPwd") + ": ");
-    if (StringUtil.isEmptyString(pwd1))
+    if (StringUtil.isEmpty(pwd1))
     {
       result.addErrorMessageByKey("MsgNoPwd");
       return null;

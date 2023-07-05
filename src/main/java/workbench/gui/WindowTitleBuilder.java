@@ -59,7 +59,7 @@ public class WindowTitleBuilder
   public final void setTitleTemplate(String template)
   {
     this.titleTemplate = StringUtil.trimToNull(template);
-    if (StringUtil.isNonBlank(titleTemplate))
+    if (StringUtil.isNotBlank(titleTemplate))
     {
       showWorkspace = titleTemplate.contains(PARM_WKSP);
     }
@@ -147,7 +147,7 @@ public class WindowTitleBuilder
     }
 
     String wksp = null;
-    if (StringUtil.isNonBlank(workspaceFile) && showWorkspace)
+    if (StringUtil.isNotBlank(workspaceFile) && showWorkspace)
     {
       File f = new File(workspaceFile);
       String baseName = f.getName();
@@ -156,7 +156,7 @@ public class WindowTitleBuilder
 
     String fname = null;
     int showFilename = GuiSettings.getShowFilenameInWindowTitle();
-    if (StringUtil.isNonBlank(editorFile) && showFilename != GuiSettings.SHOW_NO_FILENAME)
+    if (StringUtil.isNotBlank(editorFile) && showFilename != GuiSettings.SHOW_NO_FILENAME)
     {
       if (showFilename == GuiSettings.SHOW_FULL_PATH)
       {
@@ -177,7 +177,7 @@ public class WindowTitleBuilder
 
   private String replace(String title, String param, String value)
   {
-    if (StringUtil.isEmptyString(value))
+    if (StringUtil.isEmpty(value))
     {
       title = title.replace(DELIM + param, "");
       title = title.replace(param + DELIM, "");
@@ -225,13 +225,13 @@ public class WindowTitleBuilder
 
   private char getOpeningBracket(String settingsValue)
   {
-    if (StringUtil.isEmptyString(settingsValue)) return 0;
+    if (StringUtil.isEmpty(settingsValue)) return 0;
     return settingsValue.charAt(0);
   }
 
   private char getClosingBracket(String settingsValue)
   {
-    if (StringUtil.isEmptyString(settingsValue)) return 0;
+    if (StringUtil.isEmpty(settingsValue)) return 0;
     char open = getOpeningBracket(settingsValue);
     if (open == '{') return '}';
     if (open == '[') return ']';
@@ -242,7 +242,7 @@ public class WindowTitleBuilder
 
   public String makeCleanUrl(String url)
   {
-    if (StringUtil.isEmptyString(url)) return url;
+    if (StringUtil.isEmpty(url)) return url;
     // remove the jdbc: prefix as it's not useful
     url = url.replace("jdbc:", "");
 
@@ -298,7 +298,7 @@ public class WindowTitleBuilder
 
   private String getTemplate()
   {
-    if (StringUtil.isNonBlank(titleTemplate)) return titleTemplate;
+    if (StringUtil.isNotBlank(titleTemplate)) return titleTemplate;
 
     String template = GuiSettings.getTitleTemplate();
     if (template != null) return template;

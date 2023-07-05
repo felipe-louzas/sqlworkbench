@@ -517,7 +517,7 @@ public class SqlPanel
   {
     if (editor == null) return null;
     String text = editor.getText();
-    if (StringUtil.isEmptyString(text)) return Collections.emptyList();
+    if (StringUtil.isEmpty(text)) return Collections.emptyList();
     BookmarkAnnotation reader = new BookmarkAnnotation();
     ParserType type = ParserType.getTypeFromConnection(getConnection());
     List<NamedScriptLocation> bookmarks = reader.getBookmarks(text, getId(), type);
@@ -2748,7 +2748,7 @@ public class SqlPanel
   public String getInput(String prompt)
   {
     String pwd = WbSwingUtilities.getUserInput(this, prompt, "");
-    if (StringUtil.isEmptyString(pwd)) return null;
+    if (StringUtil.isEmpty(pwd)) return null;
     return pwd;
   }
 
@@ -2756,7 +2756,7 @@ public class SqlPanel
   public String getPassword(String title, String prompt)
   {
     String pwd = WbSwingUtilities.passwordPrompt(this, title, prompt);
-    if (StringUtil.isEmptyString(pwd)) return null;
+    if (StringUtil.isEmpty(pwd)) return null;
     return pwd;
   }
 
@@ -3509,7 +3509,7 @@ public class SqlPanel
       for (int i=startIndex; i < endIndex; i++)
       {
         String currentSql = scriptParser.getCommand(i);
-        if (StringUtil.isEmptyString(currentSql)) continue;
+        if (StringUtil.isEmpty(currentSql)) continue;
 
         if (LogMgr.isTraceEnabled())
         {
@@ -4088,7 +4088,7 @@ public class SqlPanel
       }
       else
       {
-        if (StringUtil.isNonBlank(comment))
+        if (StringUtil.isNotBlank(comment))
         {
           if (pos > 1) this.editor.appendLine("\n");
           this.editor.appendLine(comment + "\n");
@@ -4301,7 +4301,7 @@ public class SqlPanel
           {
             String genSql = sql;
             List<WbAnnotation> localAnnotations;
-            if (StringUtil.isEmptyString(sql))
+            if (StringUtil.isEmpty(sql))
             {
               genSql = ds.getGeneratingSql();
               localAnnotations = WbAnnotation.readAllAnnotations(genSql, useTab, asTextAnnotation);
@@ -4319,7 +4319,7 @@ public class SqlPanel
                                        ResultAsTextAnnotation.showResultHeader(localAnnotations);
             String tabName1 = localAnnotations.contains(useTab) ? useTab.getResultName(sql) : null;
             DwPanel p = null;
-            if (StringUtil.isNonEmpty(tabName1))
+            if (StringUtil.isNotEmpty(tabName1))
             {
               ds.setResultName(tabName1);
               p = findResultPanelByName(tabName1);

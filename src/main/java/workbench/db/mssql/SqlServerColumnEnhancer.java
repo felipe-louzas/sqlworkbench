@@ -145,7 +145,7 @@ public class SqlServerColumnEnhancer
         ColumnIdentifier col = ColumnIdentifier.findColumnInList(columns, colname);
         if (col == null) continue; // shouldn't happen
 
-        if (StringUtil.isNonEmpty(def))
+        if (StringUtil.isNotEmpty(def))
         {
           if (!def.startsWith("("))
           {
@@ -294,7 +294,7 @@ public class SqlServerColumnEnhancer
 
   private boolean isNonDefault(String value, String defaultValue)
   {
-    if (StringUtil.isEmptyString(value)) return false;
+    if (StringUtil.isEmpty(value)) return false;
     return !value.equals(defaultValue);
   }
 }

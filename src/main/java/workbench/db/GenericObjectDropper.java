@@ -100,7 +100,7 @@ public class GenericObjectDropper
         String verb = this.connection.getDbSettings().getCascadeConstraintsVerb(type);
 
         // if at least one type can be dropped with CASCADE, enable the checkbox
-        if (StringUtil.isNonBlank(verb))
+        if (StringUtil.isNotBlank(verb))
         {
           canCascade = true;
           break;

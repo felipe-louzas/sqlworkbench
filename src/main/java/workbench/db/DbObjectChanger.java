@@ -216,7 +216,7 @@ public class DbObjectChanger
 
   private String getSimpleName(String name)
   {
-    if (StringUtil.isEmptyString(name)) return name;
+    if (StringUtil.isEmpty(name)) return name;
     int pos = name.indexOf('(');
     if (pos < 0) return name;
     return name.substring(0, pos);

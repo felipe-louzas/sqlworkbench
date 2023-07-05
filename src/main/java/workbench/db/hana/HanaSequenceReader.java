@@ -79,14 +79,14 @@ public class HanaSequenceReader
     query.append(baseQuery);
     boolean whereAdded = false;
     final CallerInfo ci = new CallerInfo(){};
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       whereAdded = true;
       query.append(" WHERE ");
       SqlUtil.appendExpression(query, "sequence_name", StringUtil.trimQuotes(namePattern), dbConn);
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       if (!whereAdded)
       {
@@ -245,7 +245,7 @@ public class HanaSequenceReader
     }
 
     String resetQuery = (String)def.getSequenceProperty(PROP_RESET_QUERY);
-    if (StringUtil.isNonBlank(resetQuery))
+    if (StringUtil.isNotBlank(resetQuery))
     {
       result.append(nl);
       result.append("       RESET BY ");

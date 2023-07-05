@@ -983,7 +983,7 @@ public class DataExporter
   @Override
   public void setTextDelimiter(String aDelimiter)
   {
-    if (StringUtil.isNonBlank(aDelimiter))
+    if (StringUtil.isNotBlank(aDelimiter))
     {
       this.delimiter = aDelimiter;
     }
@@ -1184,7 +1184,7 @@ public class DataExporter
   @Override
   public void setDecimalSymbol(String symbol)
   {
-    if (StringUtil.isNonBlank(symbol))
+    if (StringUtil.isNotBlank(symbol))
     {
       numberFormatter = new WbNumberFormatter(symbol.charAt(0));
       decimalFormatWasSet = true;
@@ -1193,7 +1193,7 @@ public class DataExporter
 
   public void setIntegerFormatString(String format, String decimalSymbol, String decimalGroup)
   {
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       integerFormatter = createFormatter(format, decimalSymbol, decimalGroup);
       integerFormatWasSet = true;
@@ -1202,7 +1202,7 @@ public class DataExporter
 
   public void setDecimalFormatString(String format, String decimalSymbol, String decimalGroup)
   {
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       numberFormatter = createFormatter(format, decimalSymbol, decimalGroup);
       decimalFormatWasSet = true;
@@ -1219,7 +1219,7 @@ public class DataExporter
 
   public void setDecimalDigits(int digits, String symbol, boolean fixedLength)
   {
-    if (StringUtil.isNonBlank(symbol))
+    if (StringUtil.isNotBlank(symbol))
     {
       this.numberFormatter = new WbNumberFormatter(digits, symbol.charAt(0), fixedLength);
       decimalFormatWasSet = true;

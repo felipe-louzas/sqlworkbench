@@ -537,7 +537,7 @@ public class TriggerListPanel
         if (dropType != DropType.none && sql != null && !isReplace)
         {
           String drop = def.getDropStatement(dbConnection, dropType == DropType.cascaded);
-          if (StringUtil.isNonBlank(drop))
+          if (StringUtil.isNotBlank(drop))
           {
             sql = drop + getDelimiterForDrop() + "\n\n" + sql;
           }

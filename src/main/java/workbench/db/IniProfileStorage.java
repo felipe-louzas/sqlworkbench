@@ -228,7 +228,7 @@ public class IniProfileStorage
 
     // if a driver jar was explicitely specified, that jar should be used
     // regardless of any registered driver that might be referenced through driverName
-    if (StringUtil.isNonEmpty(driverJar))
+    if (StringUtil.isNotEmpty(driverJar))
     {
       if (StringUtil.isBlank(driverClass))
       {

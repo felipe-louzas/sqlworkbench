@@ -140,7 +140,7 @@ public class PkMapping
     {
       String table = (String)entry.getKey();
       String columns = (String)entry.getValue();
-      if (StringUtil.isEmptyString(columns))
+      if (StringUtil.isEmpty(columns))
       {
         LogMgr.logWarning(ci, "Mapping for table \"" + table + "\" ignored because column list is empty");
       }
@@ -167,7 +167,7 @@ public class PkMapping
    */
   public synchronized void addMapping(String table, String columns)
   {
-    if (!StringUtil.isEmptyString(table) && !StringUtil.isEmptyString(columns))
+    if (!StringUtil.isEmpty(table) && !StringUtil.isEmpty(columns))
     {
       this.columnMapping.put(table.toLowerCase(), columns);
     }

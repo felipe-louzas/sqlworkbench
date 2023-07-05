@@ -145,7 +145,7 @@ public class SelectionDisplay
   public void setText(String text)
   {
     super.setText(text);
-    if (StringUtil.isEmptyString(text))
+    if (StringUtil.isEmpty(text))
     {
       setBorder(WbSwingUtilities.EMPTY_BORDER);
     }

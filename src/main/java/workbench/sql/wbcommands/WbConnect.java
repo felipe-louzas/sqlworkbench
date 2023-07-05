@@ -131,7 +131,7 @@ public class WbConnect
       profName = cmdLine.getValue(AppArguments.ARG_PROFILE);
     }
 
-    if (StringUtil.isEmptyString(profName))
+    if (StringUtil.isEmpty(profName))
     {
       profile = BatchRunner.createCmdLineProfile(cmdLine, currentConnection, getBaseDir());
     }

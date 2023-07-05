@@ -75,7 +75,7 @@ public class H2ConstantReader
     sql.append(baseSql);
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       sql.append("\nWHERE constant_name like '");
       sql.append(connection.getMetadata().quoteObjectname(name));
@@ -83,7 +83,7 @@ public class H2ConstantReader
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append(whereAdded ? "\n  AND " : "\nWHERE ");
 
@@ -170,7 +170,7 @@ public class H2ConstantReader
     result.append(" VALUE ");
     result.append(constant.getValue());
     result.append(";\n");
-    if (StringUtil.isNonBlank(constant.getComment()))
+    if (StringUtil.isNotBlank(constant.getComment()))
     {
       result.append("\nCOMMENT ON CONSTANT " + constant.getObjectName() + " IS '");
       result.append(SqlUtil.escapeQuotes(constant.getComment()));

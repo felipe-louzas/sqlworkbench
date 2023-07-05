@@ -171,7 +171,7 @@ public class Log4JLogger
     Logger log = LogManager.getLogger(getClass());
     log.info("=================== Log started ===================");
     String configFile = System.getProperty(LOG4_CONFIG_PROP);
-    if (StringUtil.isNonBlank(configFile))
+    if (StringUtil.isNotBlank(configFile))
     {
       log.info("Log4J initialized from: " + configFile);
     }

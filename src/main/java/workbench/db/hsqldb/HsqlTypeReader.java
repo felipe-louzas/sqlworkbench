@@ -82,14 +82,14 @@ public class HsqlTypeReader
 
     select.append(baseSelect);
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       select.append("\n WHERE ");
       SqlUtil.appendExpression(select, "user_defined_type_schema", schemaPattern, con);
       whereAdded = true;
     }
 
-    if (StringUtil.isNonEmpty(objectPattern))
+    if (StringUtil.isNotEmpty(objectPattern))
     {
       if (whereAdded)
       {

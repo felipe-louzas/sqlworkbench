@@ -84,7 +84,7 @@ public class DisplayLocale
         s.append(locale.getLocale().getDisplayLanguage(displayLocale));
         country = locale.getLocale().getDisplayCountry(displayLocale);
       }
-      if (!StringUtil.isEmptyString(country))
+      if (!StringUtil.isEmpty(country))
       {
         s.append(" (");
         s.append(country);

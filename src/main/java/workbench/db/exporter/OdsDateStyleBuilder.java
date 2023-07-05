@@ -32,8 +32,8 @@ import workbench.util.HtmlUtil;
  */
 public class OdsDateStyleBuilder
 {
-  private String formatString;
-  private List<String> elements = new ArrayList<>(5);
+  private final String formatString;
+  private final List<String> elements = new ArrayList<>(5);
 
   public OdsDateStyleBuilder(String format)
   {
@@ -112,9 +112,9 @@ public class OdsDateStyleBuilder
       case 'y':
         return getNumberTag("year", count > 3, false);
       case 'M':
-        return getNumberTag("month", count > 3, count > 2);
+        return getNumberTag("month", count > 1, count > 2);
       case 'd':
-        return getNumberTag("day", count > 2, false);
+        return getNumberTag("day", count > 1, false);
       case 'h':
       case 'H':
         return getNumberTag("hours", true, false);

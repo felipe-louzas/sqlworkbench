@@ -70,7 +70,7 @@ public class ExecAnalyzer
     title = ResourceMgr.getString("TxtDbExplorerProcs");
     String schema = null;
 
-    if (StringUtil.isNonBlank(qualifier))
+    if (StringUtil.isNotBlank(qualifier))
     {
       String[] parsed = qualifier.split("\\.");
       if (parsed.length == 1)

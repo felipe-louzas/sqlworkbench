@@ -415,7 +415,7 @@ public class QuickFilterPanel
     try
     {
       ignoreEvents = true;
-      if (StringUtil.isEmptyString(filterExpression) || filterExpression.trim().equals("*") || filterExpression.trim().equals("%"))
+      if (StringUtil.isEmpty(filterExpression) || filterExpression.trim().equals("*") || filterExpression.trim().equals("%"))
       {
         searchTable.resetFilter();
         searchTable.clearLastFilter(false);

@@ -285,7 +285,7 @@ public class ProfileSelectionPanel
         break;
 
       case KeyEvent.VK_ESCAPE:
-        if (StringUtil.isNonBlank(filterValue.getText()))
+        if (StringUtil.isNotBlank(filterValue.getText()))
         {
           e.consume();
           resetFilter();

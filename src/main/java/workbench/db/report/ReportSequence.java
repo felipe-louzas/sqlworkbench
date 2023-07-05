@@ -90,7 +90,7 @@ public class ReportSequence
 
     tagWriter.appendOpenTag(line, indent, TAG_SEQ_DEF, "name", this.sequence.getSequenceName());
     line.append('\n');
-    if (StringUtil.isNonEmpty(sequence.getCatalog()))
+    if (StringUtil.isNotEmpty(sequence.getCatalog()))
     {
       tagWriter.appendTag(line, colindent, TAG_SEQ_CATALOG, this.sequence.getCatalog());
     }

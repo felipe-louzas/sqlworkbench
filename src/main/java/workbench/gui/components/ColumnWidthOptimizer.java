@@ -352,7 +352,7 @@ public class ColumnWidthOptimizer
     if (remarksVisible)
     {
       String remarks = model.getColumnRemarks(col);
-      if (StringUtil.isNonBlank(remarks))
+      if (StringUtil.isNotBlank(remarks))
       {
         int pos = StringUtil.findFirstWhiteSpace(remarks, (char)0, remarksMinLength);
         String word;
@@ -375,7 +375,7 @@ public class ColumnWidthOptimizer
     if (tableNameVisible)
     {
       String tname = model.getColumnTable(col);
-      if (StringUtil.isNonEmpty(tname))
+      if (StringUtil.isNotEmpty(tname))
       {
         int tableWidth = hfm.stringWidth(tname) + addHeaderSpace;
         if (tableWidth > headerWidth)

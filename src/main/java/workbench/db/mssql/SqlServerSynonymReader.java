@@ -80,14 +80,14 @@ public class SqlServerSynonymReader
 
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       sql.append("WHERE sc.name = ?");
       whereAdded = true;
       schemaIndex = 1;
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded)
       {

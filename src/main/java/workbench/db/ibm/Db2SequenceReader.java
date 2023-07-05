@@ -204,14 +204,14 @@ public class Db2SequenceReader
     StringBuilder query = new StringBuilder(baseSql.length() + 50);
     query.append(baseSql);
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       query.append(" WHERE " + schemaCol + " = ?");
       schemaIndex = 1;
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded)
       {
@@ -314,7 +314,7 @@ public class Db2SequenceReader
     result.append(';');
     result.append(nl);
 
-    if (StringUtil.isNonBlank(def.getComment()))
+    if (StringUtil.isNotBlank(def.getComment()))
     {
       result.append("COMMENT ON SEQUENCE " + def.getSequenceName() + " IS '" + def.getComment().replace("'", "''") + "';");
       result.append(nl);

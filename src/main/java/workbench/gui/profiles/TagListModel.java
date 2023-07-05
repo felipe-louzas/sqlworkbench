@@ -88,7 +88,7 @@ public class TagListModel
     elements.addAll(filtered);
     filtered.clear();
 
-    if (StringUtil.isNonEmpty(value))
+    if (StringUtil.isNotEmpty(value))
     {
       value = value.toLowerCase();
       for (String element : elements)

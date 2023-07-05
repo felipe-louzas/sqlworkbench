@@ -123,7 +123,7 @@ public class TextRowDataConverter
    */
   public void setRowIndexColName(String colname)
   {
-    if (StringUtil.isEmptyString(colname))
+    if (StringUtil.isEmpty(colname))
     {
       this.rowIndexColumnName = null;
     }
@@ -431,7 +431,7 @@ public class TextRowDataConverter
 
   public void setQuoteCharacter(String quote)
   {
-    if (StringUtil.isNonBlank(quote))
+    if (StringUtil.isNotBlank(quote))
     {
       this.quoteCharacter = quote;
       setAdditionalEncodeCharacters();

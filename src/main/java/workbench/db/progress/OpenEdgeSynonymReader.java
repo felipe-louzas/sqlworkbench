@@ -65,7 +65,7 @@ public class OpenEdgeSynonymReader
 
     boolean whereAdded = false;
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (namePattern.contains("%"))
       {
@@ -80,7 +80,7 @@ public class OpenEdgeSynonymReader
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(owner))
+    if (StringUtil.isNotBlank(owner))
     {
       if (whereAdded)
       {
@@ -100,7 +100,7 @@ public class OpenEdgeSynonymReader
     {
       stmt = con.getSqlConnection().prepareStatement(sql);
       stmt.setString(1, owner);
-      if (StringUtil.isNonBlank(namePattern)) stmt.setString(2, namePattern);
+      if (StringUtil.isNotBlank(namePattern)) stmt.setString(2, namePattern);
 
       rs = stmt.executeQuery();
       while (rs.next())

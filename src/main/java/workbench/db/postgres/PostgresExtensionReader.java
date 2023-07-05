@@ -73,13 +73,13 @@ public class PostgresExtensionReader
       "  join pg_catalog.pg_user u on u.usesysid = ext.extowner \n" +
       "where ext.extname not in (select l.lanname from pg_language l) ");
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql.append("\n  and ");
       SqlUtil.appendExpression(sql, "ext.extname", namePattern, connection);
     }
 
-    if (StringUtil.isNonBlank(schemaPattern))
+    if (StringUtil.isNotBlank(schemaPattern))
     {
       sql.append("\n  and ");
       SqlUtil.appendExpression(sql, "nsp.nspname", schemaPattern, connection);

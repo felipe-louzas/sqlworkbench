@@ -333,7 +333,7 @@ public class GenericXmlFileParser
   @Override
   public String getEncoding()
   {
-    return (StringUtil.isEmptyString(this.encoding) ? "UTF-8" : this.encoding);
+    return (StringUtil.isEmpty(this.encoding) ? "UTF-8" : this.encoding);
   }
 
   @Override

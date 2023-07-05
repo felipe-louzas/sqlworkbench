@@ -178,8 +178,8 @@ public class CompletionHandler
         BaseAnalyzer analyzer = ctx.getAnalyzer();
         currentWord = editor.getWordLeftOfCursor(analyzer.getWordDelimiters());
 
-        boolean selectWord = (analyzer.getOverwriteCurrentWord() && StringUtil.isNonBlank(currentWord));
-        if (StringUtil.isNonBlank(currentWord) && analyzer.isWbParam() && currentWord.charAt(0) == '-')
+        boolean selectWord = (analyzer.getOverwriteCurrentWord() && StringUtil.isNotBlank(currentWord));
+        if (StringUtil.isNotBlank(currentWord) && analyzer.isWbParam() && currentWord.charAt(0) == '-')
         {
           currentWord = currentWord.substring(1);
         }

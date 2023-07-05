@@ -698,7 +698,7 @@ public class EditorPanel
   public boolean hasFileLoaded()
   {
     String fileName = this.getCurrentFileName();
-    return StringUtil.isNonEmpty(fileName);
+    return StringUtil.isNotEmpty(fileName);
   }
 
   public int checkAndSaveFile()
@@ -795,12 +795,12 @@ public class EditorPanel
     BufferedReader reader = null;
     SyntaxDocument doc = null;
 
-    if (StringUtil.isEmptyString(encoding) && Settings.getInstance().getEditorDetectEncoding())
+    if (StringUtil.isEmpty(encoding) && Settings.getInstance().getEditorDetectEncoding())
     {
       encoding = FileUtil.detectFileEncoding(toLoad);
     }
 
-    if (StringUtil.isEmptyString(encoding))
+    if (StringUtil.isEmpty(encoding))
     {
       encoding = Settings.getInstance().getDefaultFileEncoding();
       LogMgr.logWarning(new CallerInfo(){}, "No encoding specified or detected for file \"" + toLoad.getAbsolutePath() + "\". Using default encoding: " + encoding);
@@ -951,7 +951,7 @@ public class EditorPanel
       try
       {
         String encoding = dd.getEncoding();
-        if (StringUtil.isEmptyString(encoding))
+        if (StringUtil.isEmpty(encoding))
         {
           encoding = FileUtil.detectFileEncoding(fc.getSelectedFile());
         }

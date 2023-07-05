@@ -108,7 +108,7 @@ public class WbListProcedures
         catalog = cmdLine.getValue("package");
       }
     }
-    else if (StringUtil.isNonBlank(args))
+    else if (StringUtil.isNotBlank(args))
     {
       DbObject db = new TableIdentifier(args, currentConnection);
       schema = db.getSchema();

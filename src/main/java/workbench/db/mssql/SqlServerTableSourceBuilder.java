@@ -62,7 +62,7 @@ public class SqlServerTableSourceBuilder
   public CharSequence getPkSource(TableIdentifier table, PkDefinition pk, boolean forInlineUse, boolean useFQN)
   {
     CharSequence pkSource = super.getPkSource(table, pk, forInlineUse, useFQN);
-    if (StringUtil.isEmptyString(pkSource))
+    if (StringUtil.isEmpty(pkSource))
     {
       return pkSource;
     }

@@ -199,7 +199,7 @@ public abstract class AbstractOraclePartition
         result.append(StringUtil.listToString(columns, ','));
         result.append(')');
       }
-      if (StringUtil.isNonBlank(intervalDefinition))
+      if (StringUtil.isNotBlank(intervalDefinition))
       {
         result.append(" INTERVAL (");
         result.append(intervalDefinition);

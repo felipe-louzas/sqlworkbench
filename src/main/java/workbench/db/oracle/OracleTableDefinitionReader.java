@@ -173,7 +173,7 @@ public class OracleTableDefinitionReader
 
         OracleDataTypeResolver.CharSemantics charSemantics = oraTypes.getDefaultCharSemantics();
 
-        if (StringUtil.isEmptyString(byteOrChar))
+        if (StringUtil.isEmpty(byteOrChar))
         {
           charSemantics = oraTypes.getDefaultCharSemantics();
         }
@@ -299,7 +299,7 @@ public class OracleTableDefinitionReader
           String exp = "GENERATED " + type + " AS IDENTITY";
           String options = rs.getString("IDENTITY_OPTIONS");
           String addOptions = parser.getIdentitySequenceOptions(options);
-          if (StringUtil.isNonBlank(addOptions))
+          if (StringUtil.isNotBlank(addOptions))
           {
             exp += " " + addOptions;
           }
@@ -459,7 +459,7 @@ public class OracleTableDefinitionReader
       sql = StringUtil.replace(sql, "all_tab_columns", "all_tab_columns" + dblink);
       sql = StringUtil.replace(sql, "all_col_comments", "all_col_comments" + dblink);
       String dblinkOwner = this.getDbLinkTargetSchema(dblink.substring(1), schema);
-      if (StringUtil.isEmptyString(schema) && !StringUtil.isEmptyString(dblinkOwner))
+      if (StringUtil.isEmpty(schema) && !StringUtil.isEmpty(dblinkOwner))
       {
         schema = dblinkOwner;
       }

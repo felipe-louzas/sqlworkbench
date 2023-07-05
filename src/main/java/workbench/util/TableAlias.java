@@ -68,7 +68,7 @@ public class TableAlias
    */
   public boolean isTableOrAlias(String name, char catalogSeparator, char schemaSeparator)
   {
-    if (StringUtil.isEmptyString(name)) return false;
+    if (StringUtil.isEmpty(name)) return false;
     if (name.trim().equalsIgnoreCase(getAlias())) return true;
 
     TableIdentifier tbl = new TableIdentifier(name, catalogSeparator, schemaSeparator);

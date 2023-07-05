@@ -83,7 +83,7 @@ public class CleanJavaCodeAction
 
   public String cleanJavaString(String aString)
   {
-    if (StringUtil.isEmptyString(aString)) return "";
+    if (StringUtil.isEmpty(aString)) return "";
     // a regex to find escaped newlines in the literal
     Pattern newline = Pattern.compile("\\\\n|\\\\r");
     String[] lines = StringUtil.PATTERN_CRLF.split(aString);

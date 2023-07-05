@@ -274,7 +274,7 @@ public class BookmarkSelector
     if (GuiSettings.getSaveBookmarkSort())
     {
       String sort = Settings.getInstance().getProperty(PROP_SORT_DEF, null);
-      if (StringUtil.isNonBlank(sort))
+      if (StringUtil.isNotBlank(sort))
       {
         savedSort = SortDefinition.parseDefinitionString(sort);
         if (savedSort != null)
@@ -559,7 +559,7 @@ public class BookmarkSelector
   {
     if (e.getSource() == this.filterValue && e.getModifiersEx() == 0)
     {
-      if (e.getKeyCode() == KeyEvent.VK_ESCAPE && StringUtil.isNonBlank(filterValue.getText()))
+      if (e.getKeyCode() == KeyEvent.VK_ESCAPE && StringUtil.isNotBlank(filterValue.getText()))
       {
         e.consume();
         resetFilter();

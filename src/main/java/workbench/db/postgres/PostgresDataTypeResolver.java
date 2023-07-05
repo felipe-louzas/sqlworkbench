@@ -173,7 +173,7 @@ public class PostgresDataTypeResolver
 
   public static String mapInternaArrayToDisplay(String internal)
   {
-    if (StringUtil.isEmptyString(internal)) return null;
+    if (StringUtil.isEmpty(internal)) return null;
 
     String display = TYPE_TO_DISPLAY.get(internal);
     if (display != null) return display;

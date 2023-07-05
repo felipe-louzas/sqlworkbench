@@ -139,7 +139,7 @@ public class PgPublication
   {
     String option = tbl.getTableExpression(con);
     String filter = tbl.getSourceOptions().getConfigSettings().get(OPTION_KEY_FILTER);
-    if (StringUtil.isNonEmpty(filter))
+    if (StringUtil.isNotEmpty(filter))
     {
       option = option + " WHERE " + filter;
     }

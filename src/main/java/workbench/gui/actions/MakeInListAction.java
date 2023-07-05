@@ -69,7 +69,7 @@ public class MakeInListAction
     {
       list = creator.makeInList();
     }
-    if (StringUtil.isNonEmpty(list))
+    if (StringUtil.isNotEmpty(list))
     {
       client.setSelectedText(list);
     }

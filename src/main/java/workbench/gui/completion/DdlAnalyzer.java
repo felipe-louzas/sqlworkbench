@@ -86,7 +86,7 @@ public class DdlAnalyzer
       TableIdentifier tbl = new TableIdentifier(nameToken.getContents());
       this.namespaceForTableList = Namespace.fromTable(tbl, dbConnection);
       tableName = tbl.getTableName();
-      if (StringUtil.isEmptyString(tableName))
+      if (StringUtil.isEmpty(tableName))
       {
         tableName = null;
       }

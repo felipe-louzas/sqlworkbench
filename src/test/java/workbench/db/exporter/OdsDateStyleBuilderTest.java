@@ -44,9 +44,9 @@ public class OdsDateStyleBuilderTest
     String expected =
       "<number:year number:style=\"long\"/>\n" +
       "<number:text>-</number:text>\n" +
-      "<number:month/>\n" +
+      "<number:month number:style=\"long\"/>\n" +
       "<number:text>-</number:text>\n" +
-      "<number:day/>\n" +
+      "<number:day number:style=\"long\"/>\n" +
       "<number:text> </number:text>\n" +
       "<number:hours number:style=\"long\"/>\n" +
       "<number:text>:</number:text>\n" +
@@ -58,16 +58,15 @@ public class OdsDateStyleBuilderTest
     builder = new OdsDateStyleBuilder("dd.MM.yy HH:mm");
     xml = builder.getXML("");
     expected =
-      "<number:day/>\n" +
+      "<number:day number:style=\"long\"/>\n" +
       "<number:text>.</number:text>\n" +
-      "<number:month/>\n" +
+      "<number:month number:style=\"long\"/>\n" +
       "<number:text>.</number:text>\n" +
       "<number:year/>\n" +
       "<number:text> </number:text>\n" +
       "<number:hours number:style=\"long\"/>\n" +
       "<number:text>:</number:text>\n" +
       "<number:minutes/>";
-//    System.out.println(xml.trim() + "\n-------\n" + expected);
     assertEquals(expected, xml.trim());
 
   }

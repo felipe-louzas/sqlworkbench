@@ -697,7 +697,7 @@ public class MainWindow
 
   public boolean hasProfileWorkspace()
   {
-    return currentProfile != null && StringUtil.isNonEmpty(currentProfile.getWorkspaceFile());
+    return currentProfile != null && StringUtil.isNotEmpty(currentProfile.getWorkspaceFile());
   }
 
   protected void checkWorkspaceActions()
@@ -1825,7 +1825,7 @@ public class MainWindow
     {
       WbSwingUtilities.invoke(() ->
       {
-        if (StringUtil.isEmptyString(aMsg))
+        if (StringUtil.isEmpty(aMsg))
         {
           status.clearStatusMessage();
         }
@@ -2384,7 +2384,7 @@ public class MainWindow
   {
     String profileWkspName = currentProfile != null ? currentProfile.getWorkspaceFile() : null;
 
-    if (StringUtil.isNonEmpty(profileWkspName))
+    if (StringUtil.isNotEmpty(profileWkspName))
     {
       boolean isProfileWorkspace = false;
       WbFile profileWksp = new WbFile(getRealWorkspaceFilename(profileWkspName));
@@ -2445,7 +2445,7 @@ public class MainWindow
       }
     }
 
-    if (StringUtil.isNonBlank(workspaceFilename))
+    if (StringUtil.isNotBlank(workspaceFilename))
     {
       // loadWorkspace will replace the %ConfigDir% placeholder,
       // so we need to pass the original filename

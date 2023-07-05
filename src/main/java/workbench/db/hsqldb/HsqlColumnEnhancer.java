@@ -134,7 +134,7 @@ public class HsqlColumnEnhancer
           genType = GeneratedColumnType.identity;
         }
 
-        if (StringUtil.isNonBlank(columnExpression))
+        if (StringUtil.isNotBlank(columnExpression))
         {
           col.setDefaultValue(null);
           col.setGeneratedExpression(columnExpression, genType);

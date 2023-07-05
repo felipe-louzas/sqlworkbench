@@ -73,7 +73,7 @@ public class WbAESCipher
   @Override
   public String decryptString(String toDecrypt)
   {
-    if (StringUtil.isEmptyString(toDecrypt)) return toDecrypt;
+    if (StringUtil.isEmpty(toDecrypt)) return toDecrypt;
 
     try
     {
@@ -91,7 +91,7 @@ public class WbAESCipher
   @Override
   public String encryptString(String toEncrypt)
   {
-    if (StringUtil.isEmptyString(toEncrypt)) return toEncrypt;
+    if (StringUtil.isEmpty(toEncrypt)) return toEncrypt;
 
     try
     {

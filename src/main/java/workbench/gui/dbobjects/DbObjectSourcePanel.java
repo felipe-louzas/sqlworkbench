@@ -335,7 +335,7 @@ public class DbObjectSourcePanel
   public void setText(final String sql, String name, String type)
   {
     initGui();
-    boolean hasText = StringUtil.isNonEmpty(sql);
+    boolean hasText = StringUtil.isNotEmpty(sql);
     this.objectName = name;
     this.objectType = type;
 
@@ -393,7 +393,7 @@ public class DbObjectSourcePanel
 
   public void appendText(final String text)
   {
-    if (StringUtil.isEmptyString(text)) return;
+    if (StringUtil.isEmpty(text)) return;
     WbSwingUtilities.invoke(() ->
     {
       sourceEditor.appendLine(text);

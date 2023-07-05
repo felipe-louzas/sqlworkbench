@@ -225,7 +225,7 @@ public class SqlServerTypeReader
     if (SqlServerUtil.isSqlServer2000(con))
     {
       sql.append(sqlServer2000Query);
-      if (StringUtil.isNonBlank(typeName))
+      if (StringUtil.isNotBlank(typeName))
       {
         SqlUtil.appendAndCondition(sql, "t.name", typeName, con);
       }
@@ -233,11 +233,11 @@ public class SqlServerTypeReader
     else
     {
       sql.append(baseSql);
-      if (StringUtil.isNonBlank(typeName))
+      if (StringUtil.isNotBlank(typeName))
       {
         SqlUtil.appendAndCondition(sql, "t.name", typeName, con);
       }
-      if (StringUtil.isNonBlank(owner))
+      if (StringUtil.isNotBlank(owner))
       {
         SqlUtil.appendAndCondition(sql, "s.name", owner, con);
       }
@@ -300,7 +300,7 @@ public class SqlServerTypeReader
 
     sql += "where tt.name = ? \n";
 
-    if (StringUtil.isNonBlank(type.getSchema()))
+    if (StringUtil.isNotBlank(type.getSchema()))
     {
       sql += " AND s.name = ? \n";
     }
@@ -315,7 +315,7 @@ public class SqlServerTypeReader
       pstmt = con.getSqlConnection().prepareStatement(sql);
       pstmt.setString(1, con.getMetadata().removeQuotes(type.getObjectName()));
 
-      if (StringUtil.isNonBlank(type.getSchema()))
+      if (StringUtil.isNotBlank(type.getSchema()))
       {
         pstmt.setString(2, con.getMetadata().removeQuotes(type.getSchema()));
       }

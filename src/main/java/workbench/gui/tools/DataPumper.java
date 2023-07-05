@@ -1831,12 +1831,12 @@ public class DataPumper
       }
     }
 
-    if (StringUtil.isNonBlank(preTableStmt.getText()))
+    if (StringUtil.isNotBlank(preTableStmt.getText()))
     {
       CommonArgs.appendArgument(sql, CommonArgs.ARG_PRE_TABLE_STMT, "\""  + preTableStmt.getText() + "\"", indent);
     }
 
-    if (StringUtil.isNonBlank(postTableStmt.getText()))
+    if (StringUtil.isNotBlank(postTableStmt.getText()))
     {
       CommonArgs.appendArgument(sql, CommonArgs.ARG_POST_TABLE_STMT, "\""  + postTableStmt.getText() + "\"", indent);
     }
@@ -1936,7 +1936,7 @@ public class DataPumper
       if (s.indexOf(' ') > -1) result.append('"');
 
       s = sqlEditor.getText();
-      if (StringUtil.isNonBlank(s))
+      if (StringUtil.isNotBlank(s))
       {
         result.append(indent);
         result.append("-" + WbCopy.PARAM_SOURCEWHERE + "=\"");

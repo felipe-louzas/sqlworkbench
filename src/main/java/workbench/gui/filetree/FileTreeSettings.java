@@ -61,7 +61,7 @@ public class FileTreeSettings
     int index = 1;
     for (String dir : dirs)
     {
-      if (StringUtil.isNonBlank(dir))
+      if (StringUtil.isNotBlank(dir))
       {
         settings.setProperty(DIR_PREFIX + "." + index, dir);
         index++;
@@ -77,7 +77,7 @@ public class FileTreeSettings
     for (String key : keys)
     {
       String path = settings.getProperty(key, null);
-      if (StringUtil.isNonBlank(path))
+      if (StringUtil.isNotBlank(path))
       {
         dirs.add(path);
       }

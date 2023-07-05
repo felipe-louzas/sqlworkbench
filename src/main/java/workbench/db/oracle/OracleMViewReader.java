@@ -135,7 +135,7 @@ public class OracleMViewReader
         result.append("\n)");
       }
 
-      if (StringUtil.isNonEmpty(partitionSql))
+      if (StringUtil.isNotEmpty(partitionSql))
       {
         result.append('\n');
         result.append(partitionSql);
@@ -288,7 +288,7 @@ public class OracleMViewReader
         if (StringUtil.equalStringIgnoreCase("enabled", compress))
         {
           String compressType = rs.getString("compress_for");
-          if (StringUtil.isNonBlank(compressType))
+          if (StringUtil.isNotBlank(compressType))
           {
             switch (compressType)
             {
@@ -337,7 +337,7 @@ public class OracleMViewReader
         }
 
         String next = rs.getString("INTERVAL");
-        if (StringUtil.isNonBlank(next))
+        if (StringUtil.isNotBlank(next))
         {
           options.append("\n  NEXT ");
           options.append(next.trim());

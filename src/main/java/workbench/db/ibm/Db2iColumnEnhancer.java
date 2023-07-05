@@ -93,7 +93,7 @@ public class Db2iColumnEnhancer
         ColumnIdentifier col = ColumnIdentifier.findColumnInList(table.getColumns(), colname);
         if (col != null)
         {
-          if (showComments && StringUtil.isNonEmpty(comment))
+          if (showComments && StringUtil.isNotEmpty(comment))
           {
             col.setComment(comment);
           }

@@ -706,7 +706,7 @@ public class DataCopier
     String select = builder.getSelectForColumns(sourceTable, sourceCols, this.maxRows);
     sql.append(select);
 
-    if (StringUtil.isNonBlank(addWhere))
+    if (StringUtil.isNotBlank(addWhere))
     {
       sql.append(' ');
       String first = this.sourceConnection.getParsingUtil().getSqlVerb(addWhere);

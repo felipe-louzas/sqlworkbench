@@ -137,7 +137,7 @@ public class PgCollation
   private String buildSource(String nameExpression)
   {
     String sql = "CREATE COLLATION IF NOT EXISTS " + nameExpression + " (";
-    if (StringUtil.isNonBlank(provider))
+    if (StringUtil.isNotBlank(provider))
     {
       sql += "provider = " + provider + ", ";
     }

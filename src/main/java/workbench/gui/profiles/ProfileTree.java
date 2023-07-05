@@ -733,7 +733,7 @@ public class ProfileTree
     if (group == null) return;
     String oldName = (String)group.getUserObject();
     String newName = WbSwingUtilities.getUserInput(SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("LblRenameProfileGroup"), oldName);
-    if (StringUtil.isEmptyString(newName)) return;
+    if (StringUtil.isEmpty(newName)) return;
     group.setUserObject(newName);
     group.setName(newName);
   }
@@ -751,7 +751,7 @@ public class ProfileTree
   {
     String group = WbSwingUtilities.getUserInput(SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("LblNewProfileGroup"), "");
     // user cancelled input
-    if (StringUtil.isEmptyString(group)) return null;
+    if (StringUtil.isEmpty(group)) return null;
 
     group = group.trim();
     if (group.contains("/"))

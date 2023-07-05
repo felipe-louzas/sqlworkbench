@@ -71,7 +71,7 @@ public class OracleErrorInformationReader
   @Override
   public ErrorDescriptor getErrorInfo(String originalSql, String schema, String objectName, String objectType, boolean showObjectHeaders)
   {
-    if (StringUtil.isEmptyString(objectName))
+    if (StringUtil.isEmpty(objectName))
     {
       return null;
     }

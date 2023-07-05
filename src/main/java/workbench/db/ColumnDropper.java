@@ -246,7 +246,7 @@ public class ColumnDropper
     String singleSql = conn.getDbSettings().getDropSingleColumnSql();
     List<String> result = new ArrayList<>(columns.size());
 
-    if (columns.size() == 1 || StringUtil.isEmptyString(multiSql))
+    if (columns.size() == 1 || StringUtil.isEmpty(multiSql))
     {
       singleSql = TemplateHandler.replaceTablePlaceholder(singleSql, table, conn);
       for (ColumnIdentifier col : columns)

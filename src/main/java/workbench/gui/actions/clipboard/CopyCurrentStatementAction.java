@@ -76,7 +76,7 @@ public class CopyCurrentStatementAction
   public void executeAction(ActionEvent e)
   {
     String sql = script.getText();
-    if (StringUtil.isEmptyString(sql)) return;
+    if (StringUtil.isEmpty(sql)) return;
 
     ScriptParser parser = new ScriptParser(sql, DBID.fromID(dbid));
     parser.setAlternateDelimiter(alternateDelimiter);

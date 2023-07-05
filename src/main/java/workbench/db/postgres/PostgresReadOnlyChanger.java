@@ -56,7 +56,7 @@ public class PostgresReadOnlyChanger
       {
         sql = conn.getDbSettings().getSetReadWriteSQL();
       }
-      if (StringUtil.isNonBlank(sql))
+      if (StringUtil.isNotBlank(sql))
       {
         LogMgr.logInfo(new CallerInfo(){}, "Setting connection to " + (flag ? "read only" : "read/write") + " using: " + sql);
       }

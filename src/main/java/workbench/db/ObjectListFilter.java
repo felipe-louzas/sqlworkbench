@@ -53,7 +53,7 @@ public class ObjectListFilter
 
   private void addFilter(String regex, String type)
   {
-    if (StringUtil.isNonBlank(regex) && StringUtil.isNonBlank(type))
+    if (StringUtil.isNotBlank(regex) && StringUtil.isNotBlank(type))
     {
       ObjectNameFilter filter = new ObjectNameFilter();
       filter.setExpressionList(regex);

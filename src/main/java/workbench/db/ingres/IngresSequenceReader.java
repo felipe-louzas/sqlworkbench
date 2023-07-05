@@ -74,14 +74,14 @@ public class IngresSequenceReader
     int ownerIndex = -1;
     int nameIndex = -1;
 
-    if (StringUtil.isNonBlank(owner))
+    if (StringUtil.isNotBlank(owner))
     {
       whereAdded = true;
       ownerIndex = 1;
       sql.append(" WHERE seq_owner = ?");
     }
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (whereAdded)
       {

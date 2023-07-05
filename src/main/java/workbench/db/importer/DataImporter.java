@@ -497,7 +497,7 @@ public class DataImporter
 
   public void setWhereClauseForUpdate(String clause)
   {
-    if (StringUtil.isEmptyString(clause))
+    if (StringUtil.isEmpty(clause))
     {
       this.whereClauseForUpdate = null;
     }
@@ -694,7 +694,7 @@ public class DataImporter
 
   public boolean setMode(String mode, WbConnection conn)
   {
-    if (StringUtil.isEmptyString(mode)) return true;
+    if (StringUtil.isEmpty(mode)) return true;
 
     ImportMode modeValue = getModeValue(mode);
     if (modeValue == null) return false;
@@ -2241,7 +2241,7 @@ public class DataImporter
         sql.append(colname);
         sql.append(" = ");
         String expr = columnExpressions.get(data.getIdentifier().getColumnName());
-        if (StringUtil.isNonBlank(expr))
+        if (StringUtil.isNotBlank(expr))
         {
           sql.append(expr);
         }
@@ -2337,7 +2337,7 @@ public class DataImporter
 
     sql.append(where);
 
-    if (StringUtil.isNonEmpty(this.whereClauseForUpdate))
+    if (StringUtil.isNotEmpty(this.whereClauseForUpdate))
     {
       boolean addBracket = false;
       String whereClause = this.whereClauseForUpdate.trim().toUpperCase();

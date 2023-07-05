@@ -46,7 +46,7 @@ public class TableConstraint
   public TableConstraint(String constraintName, String expr, String sqlTemplate)
   {
     super(constraintName);
-    expression = StringUtil.isNonBlank(expr) ? expr.trim() : null;
+    expression = StringUtil.isNotBlank(expr) ? expr.trim() : null;
     checkConstraintTemplate = StringUtil.trimToNull(sqlTemplate);
     setConstraintType(ConstraintType.Check);
 
@@ -117,7 +117,7 @@ public class TableConstraint
 
     StringBuilder result = new StringBuilder(50);
 
-    if (StringUtil.isNonBlank(getConstraintName()) && !isSystemName())
+    if (StringUtil.isNotBlank(getConstraintName()) && !isSystemName())
     {
       result.append("CONSTRAINT ");
       result.append(getConstraintName());

@@ -78,7 +78,7 @@ public class MonetDbProcedureReader
       "from sys.functions fct \n" +
       "  left join sys.schemas sch on sch.id = fct.schema_id \n");
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       sql.append("where ");
       SqlUtil.appendExpression(sql, "sch.name", schema, connection);
@@ -117,7 +117,7 @@ public class MonetDbProcedureReader
     throws SQLException
   {
     String name = def.getSpecificName();
-    if (StringUtil.isEmptyString(name))
+    if (StringUtil.isEmpty(name))
     {
       name = def.getProcedureName();
     }
@@ -173,7 +173,7 @@ public class MonetDbProcedureReader
 
     appendProcNameCondition(sql, procName);
 
-    if (StringUtil.isNonBlank(schema))
+    if (StringUtil.isNotBlank(schema))
     {
       SqlUtil.appendAndCondition(sql, "sch.name", schema, connection);
     }

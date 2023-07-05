@@ -74,7 +74,7 @@ public class PostgresForeignServerReader
       "from pg_catalog.pg_foreign_server s\n" +
       "  join pg_catalog.pg_foreign_data_wrapper w on s.srvfdw = w.oid";
 
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       if (namePattern.contains("%"))
       {

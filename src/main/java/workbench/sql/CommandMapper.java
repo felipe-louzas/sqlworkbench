@@ -501,7 +501,7 @@ public class CommandMapper
   {
     SqlCommand cmd = null;
 
-    if (StringUtil.isEmptyString(verb)) return null;
+    if (StringUtil.isEmpty(verb)) return null;
 
     // checking for the collection size before checking for the presence
     // is a bit faster because of the hashing that is necessary to look up

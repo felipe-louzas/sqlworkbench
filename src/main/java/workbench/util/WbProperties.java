@@ -147,7 +147,7 @@ public class WbProperties
         }
       }
       String comment = comments.get(key);
-      if (StringUtil.isNonBlank(comment))
+      if (StringUtil.isNotBlank(comment))
       {
         if (!hadComment) bw.newLine();
         bw.write(comment);
@@ -507,13 +507,13 @@ public class WbProperties
         if (lineFragment != null)
         {
           lineFragment += "\n" + line;
-          if (StringUtil.isNonBlank(lineFragment))
+          if (StringUtil.isNotBlank(lineFragment))
           {
             this.addPropertyDefinition(StringUtil.decodeUnicode(lineFragment.trim()), lastComment);
           }
           lineFragment = null;
         }
-        else if (StringUtil.isNonBlank(line))
+        else if (StringUtil.isNotBlank(line))
         {
           this.addPropertyDefinition(StringUtil.decodeUnicode(line.trim()), lastComment);
         }

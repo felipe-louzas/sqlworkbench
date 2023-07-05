@@ -63,9 +63,9 @@ public class CsvLineReader
   {
     String line = readNextLine();
 
-    if (ignoreEmptyLines && StringUtil.isEmptyString(line))
+    if (ignoreEmptyLines && StringUtil.isEmpty(line))
     {
-      while (line != null && StringUtil.isEmptyString(line))
+      while (line != null && StringUtil.isEmpty(line))
       {
         line = readNextLine();
       }

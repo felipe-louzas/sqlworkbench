@@ -136,7 +136,7 @@ public class FirebirdSequenceReader
     result.append(";\n");
 
     String comments = def.getComment();
-    if (StringUtil.isNonBlank(comments))
+    if (StringUtil.isNotBlank(comments))
     {
       result.append("\nCOMMENT ON SEQUENCE ");
       result.append(def.getSequenceName());

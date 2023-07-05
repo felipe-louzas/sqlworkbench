@@ -176,19 +176,19 @@ public class ConnectionDescriptor
     }
     else
     {
-      if (StringUtil.isEmptyString(driverClass))
+      if (StringUtil.isEmpty(driverClass))
       {
         driverClass = findDriverClassFromUrl(url);
       }
 
-      if (StringUtil.isEmptyString(driverClass) )
+      if (StringUtil.isEmpty(driverClass) )
       {
         throw new InvalidConnectionDescriptor("No JDBC URL specified in connection specification", ResourceMgr.getFormattedString("ErrConnectDrvNotFound", url));
       }
     }
 
     DbDriver driver = null;
-    if (StringUtil.isNonEmpty(driverName))
+    if (StringUtil.isNotEmpty(driverName))
     {
       driver = ConnectionMgr.getInstance().findDriverByName(driverClass, driverName);
     }
@@ -241,7 +241,7 @@ public class ConnectionDescriptor
 
   private String getValue(String parameter)
   {
-    if (StringUtil.isEmptyString(parameter)) return null;
+    if (StringUtil.isEmpty(parameter)) return null;
     int pos = parameter.indexOf('=');
     if (pos == -1) return null;
     return StringUtil.trimToNull(StringUtil.trimQuotes(parameter.substring(pos + 1).trim()));
@@ -249,7 +249,7 @@ public class ConnectionDescriptor
 
   protected static String getUrlPrefix(String url)
   {
-    if (StringUtil.isEmptyString(url)) return null;
+    if (StringUtil.isEmpty(url)) return null;
     int pos = url.indexOf(':');
     if (pos == -1) return null;
     int pos2 = url.indexOf(':', pos + 1);
@@ -316,7 +316,7 @@ public class ConnectionDescriptor
 
   private boolean isSameDBMS(WbConnection connection, String url)
   {
-    if (StringUtil.isEmptyString(url)) return false;
+    if (StringUtil.isEmpty(url)) return false;
     if (connection == null) return false;
     String conPrefix = getUrlPrefix(connection.getUrl());
     return conPrefix.equals(getUrlPrefix(url));

@@ -234,7 +234,7 @@ public class TableSelectorPanel
 
       for (String schema : schemas)
       {
-        if (StringUtil.isEmptyString(schema)) continue;
+        if (StringUtil.isEmpty(schema)) continue;
         schemaSelector.addItem(schema);
         if (current != null && schema.equalsIgnoreCase(current)) this.currentSchema = schema;
       }

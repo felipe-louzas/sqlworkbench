@@ -73,11 +73,11 @@ public class TableSelectBuilder
     this.dbConnection = source;
     if (this.dbConnection != null)
     {
-      if (StringUtil.isNonBlank(templateKey))
+      if (StringUtil.isNotBlank(templateKey))
       {
         sqlTemplate = dbConnection.getDbSettings().getTableSelectTemplate(templateKey.toLowerCase());
       }
-      if (StringUtil.isBlank(sqlTemplate) && StringUtil.isNonBlank(fallbackTemplate))
+      if (StringUtil.isBlank(sqlTemplate) && StringUtil.isNotBlank(fallbackTemplate))
       {
         sqlTemplate = dbConnection.getDbSettings().getTableSelectTemplate(fallbackTemplate.toLowerCase());
       }
@@ -263,7 +263,7 @@ public class TableSelectBuilder
 
   private String applyOrderBy(String sql, String sortCols)
   {
-    if (StringUtil.isNonBlank(sortCols))
+    if (StringUtil.isNotBlank(sortCols))
     {
       String orderBy = " \nORDER BY " + sortCols;
       if (sql.contains(ORDER_BY_PLACEHOLDER))
@@ -366,7 +366,7 @@ public class TableSelectBuilder
   public String getLimitExpression(int maxRows)
   {
     if (maxRows <= 0) return StringUtil.EMPTY_STRING;
-    if (StringUtil.isEmptyString(limitClause)) return StringUtil.EMPTY_STRING;
+    if (StringUtil.isEmpty(limitClause)) return StringUtil.EMPTY_STRING;
     if (!limitClause.contains(MAX_ROWS_PLACEHOLDER)) return StringUtil.EMPTY_STRING;
     return limitClause.replace(MAX_ROWS_PLACEHOLDER, Integer.toString(maxRows));
   }

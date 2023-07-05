@@ -207,7 +207,7 @@ public class ConnectionProfile
 
   public boolean isConfigured()
   {
-    return StringUtil.isNonBlank(this.driverclass) && StringUtil.isNonBlank(this.url) && this.url.startsWith("jdbc:");
+    return StringUtil.isNotBlank(this.driverclass) && StringUtil.isNotBlank(this.url) && this.url.startsWith("jdbc:");
   }
 
   public String getMacroFilename()
@@ -814,7 +814,7 @@ public class ConnectionProfile
    */
   public String decryptPassword(String pwd)
   {
-    if (StringUtil.isEmptyString(pwd)) return "";
+    if (StringUtil.isEmpty(pwd)) return "";
     if (pwd.startsWith(CRYPT_PREFIX))
     {
       WbCipher des = WbDesCipher.getInstance();
@@ -1019,7 +1019,7 @@ public class ConnectionProfile
 
   public String getLoginPassword()
   {
-    if (StringUtil.isNonEmpty(password))
+    if (StringUtil.isNotEmpty(password))
     {
       return this.decryptPassword(password);
     }
@@ -1034,7 +1034,7 @@ public class ConnectionProfile
   public String getLoginUser()
   {
     String user = getUsername();
-    if (usePgPass() && StringUtil.isEmptyString(user))
+    if (usePgPass() && StringUtil.isEmpty(user))
     {
       user = System.getenv("PGUSER");
       if (user == null)
@@ -1346,9 +1346,9 @@ public class ConnectionProfile
   public boolean hasConnectScript()
   {
     return
-      StringUtil.isNonEmpty(postConnectScript) ||
-      StringUtil.isNonEmpty(preDisconnectScript) ||
-      (StringUtil.isNonEmpty(idleScript) && idleTime > 0);
+      StringUtil.isNotEmpty(postConnectScript) ||
+      StringUtil.isNotEmpty(preDisconnectScript) ||
+      (StringUtil.isNotEmpty(idleScript) && idleTime > 0);
   }
 
   public String getPostConnectScript()
@@ -1423,7 +1423,7 @@ public class ConnectionProfile
     url = url.substring(5);
 
     String user = "";
-    if (StringUtil.isNonBlank(userName))
+    if (StringUtil.isNotBlank(userName))
     {
       Matcher userMatcher = invalidChars.matcher(userName);
       user = userMatcher.replaceAll("_") + "@";

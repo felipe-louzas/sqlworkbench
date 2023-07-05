@@ -86,7 +86,7 @@ public class ConsolePrompter
 
       String msg = StringUtil.isBlank(value) ? varName + ": " : varName + " [" + value + "]: ";
       String newValue = getInput(msg);
-      if (StringUtil.isEmptyString(newValue) && StringUtil.isNonEmpty(value))
+      if (StringUtil.isEmpty(newValue) && StringUtil.isNotEmpty(value))
       {
         newValue = value;
       }

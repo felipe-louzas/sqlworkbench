@@ -183,7 +183,7 @@ public class CompletionPopup
       boolean showQuickSearch = false;
       String initialSearchValue = null;
 
-      if (StringUtil.isNonBlank(valueToSelect))
+      if (StringUtil.isNotBlank(valueToSelect))
       {
         index = findEntry(valueToSelect);
         initialSearchValue = valueToSelect;
@@ -610,7 +610,7 @@ public class CompletionPopup
       }
     }
 
-    if (StringUtil.isNonBlank(value))
+    if (StringUtil.isNotBlank(value))
     {
       editor.setSelectedText(value.trim());
       if (value.charAt(0) == '<' || value.charAt(0) == '>')

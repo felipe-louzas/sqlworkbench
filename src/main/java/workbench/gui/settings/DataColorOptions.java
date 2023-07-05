@@ -120,7 +120,7 @@ public class DataColorOptions
 
   private boolean validateTextField(final JTextField field)
   {
-    if (StringUtil.isEmptyString(field.getText().trim())) return true;
+    if (StringUtil.isEmpty(field.getText().trim())) return true;
     String errMsg = ResourceMgr.getString("ErrInvalidBlend");
 
     int blend = -1;

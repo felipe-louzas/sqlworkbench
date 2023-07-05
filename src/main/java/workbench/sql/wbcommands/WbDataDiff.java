@@ -336,7 +336,7 @@ public class WbDataDiff
     }
 
     String blobtype = cmdLine.getValue(WbExport.ARG_BLOB_TYPE);
-    if (StringUtil.isNonBlank(blobtype))
+    if (StringUtil.isNotBlank(blobtype))
     {
       dataDiff.setBlobMode(blobtype);
     }

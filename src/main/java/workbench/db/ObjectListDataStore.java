@@ -294,11 +294,11 @@ public class ObjectListDataStore
       String schema = getSchema(row);
       String catalog = getCatalog(row);
       boolean removeRow = false;
-      if (applyCatalogFilter && StringUtil.isNonBlank(catalog))
+      if (applyCatalogFilter && StringUtil.isNotBlank(catalog))
       {
         removeRow = catalogFilter.isExcluded(catalog);
       }
-      if (applySchemaFilter && StringUtil.isNonBlank(schema))
+      if (applySchemaFilter && StringUtil.isNotBlank(schema))
       {
         removeRow = removeRow || schemaFilter.isExcluded(schema);
       }

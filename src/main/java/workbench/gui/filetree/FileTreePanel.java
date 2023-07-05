@@ -350,7 +350,7 @@ public class FileTreePanel
       }
     }
 
-    if (dirs.isEmpty() && StringUtil.isNonBlank(workspaceDefaultDir))
+    if (dirs.isEmpty() && StringUtil.isNotBlank(workspaceDefaultDir))
     {
       File f = FileUtil.getCanonicalFile(new File(workspaceDefaultDir));
       if (f.exists())

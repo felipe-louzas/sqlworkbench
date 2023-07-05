@@ -77,14 +77,14 @@ public class PostgresCollationReader
       "  join pg_catalog.pg_namespace s on s.oid = c.collnamespace");
 
     boolean whereAdded = false;
-    if (StringUtil.isNonBlank(namePattern))
+    if (StringUtil.isNotBlank(namePattern))
     {
       sql.append("\n WHERE ");
       SqlUtil.appendExpression(sql, "c.collname", namePattern, con);
       whereAdded = true;
     }
 
-    if (StringUtil.isNonBlank(schemaNamePattern))
+    if (StringUtil.isNotBlank(schemaNamePattern))
     {
       if (!whereAdded)
       {

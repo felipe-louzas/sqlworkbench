@@ -101,7 +101,7 @@ public class WbTextLabel
       int minWidth = charWidth * minCharacters;
 
       int textWidth = minWidth;
-      if (StringUtil.isNonEmpty(text))
+      if (StringUtil.isNotEmpty(text))
       {
         Rectangle2D bounds = fm.getStringBounds(text, getGraphics());
         textWidth = (int)bounds.getWidth();

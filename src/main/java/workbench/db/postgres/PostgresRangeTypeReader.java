@@ -229,7 +229,7 @@ public class PostgresRangeTypeReader
     String comment = type.getComment();
     CommentSqlManager mgr = new CommentSqlManager(con.getDbSettings().getDbId());
     String template = mgr.getCommentSqlTemplate("type", null);
-    if (StringUtil.isNonBlank(comment) && template != null)
+    if (StringUtil.isNotBlank(comment) && template != null)
     {
       template = template.replace(CommentSqlManager.COMMENT_OBJECT_NAME_PLACEHOLDER, type.getObjectExpression(con));
       template = template.replace(CommentSqlManager.COMMENT_PLACEHOLDER, comment);

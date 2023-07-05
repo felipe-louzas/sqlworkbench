@@ -168,7 +168,7 @@ public class ClientSideTableSearchPanel
     searchText.setText(props.getProperty(prefix + ".clientsearch.criteria", ""));
     ignoreCase.setSelected(props.getBoolProperty(prefix + ".clientsearch.ignorecase", true));
     String compClass = props.getProperty(prefix + ".clientsearch.comparator", null);
-    if (StringUtil.isNonBlank(compClass))
+    if (StringUtil.isNotBlank(compClass))
     {
       int count = comparatorDropDown.getItemCount();
       for (int i=0; i < count; i++)

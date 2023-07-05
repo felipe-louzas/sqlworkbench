@@ -69,7 +69,7 @@ public class GenericSchemaInfoReader
   @Override
   public boolean isSupported()
   {
-    return StringUtil.isNonEmpty(schemaQuery);
+    return StringUtil.isNotEmpty(schemaQuery);
   }
 
   private void logSettings()
@@ -121,7 +121,7 @@ public class GenericSchemaInfoReader
   public String getCurrentSchema()
   {
     if (this.connection == null) return null;
-    if (StringUtil.isEmptyString(this.schemaQuery)) return null;
+    if (StringUtil.isEmpty(this.schemaQuery)) return null;
 
     if (isCacheable && cachedSchema != null)
     {

@@ -108,7 +108,7 @@ public class WbViewSource
       source = reader.getExtendedViewSource(tbl, DropType.none);
     }
 
-    if (StringUtil.isNonEmpty(source))
+    if (StringUtil.isNotEmpty(source))
     {
       if (outputfile != null)
       {

@@ -94,7 +94,7 @@ public class WbMessage
     StatementRunnerResult result = new StatementRunnerResult();
     result.setSuccess();
 
-    if (StringUtil.isNonBlank(msg) && WbManager.getInstance().isGUIMode())
+    if (StringUtil.isNotBlank(msg) && WbManager.getInstance().isGUIMode())
     {
       JOptionPane.showMessageDialog(WbManager.getInstance().getCurrentWindow(), msg, title, JOptionPane.INFORMATION_MESSAGE);
     }

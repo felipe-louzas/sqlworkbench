@@ -225,7 +225,7 @@ public class DefaultInsertGenerator
   {
     StringBuilder text = new StringBuilder(targetColumns.size() * 50);
     String sql = getInsertSQLStart();
-    if (StringUtil.isNonBlank(sql))
+    if (StringUtil.isNotBlank(sql))
     {
       text.append(sql);
       text.append(' ');

@@ -100,12 +100,12 @@ public class WbListVars extends SqlCommand
     if (cmdLine.hasArguments())
     {
       String regex = cmdLine.getValue(ARG_MATCH);
-      if (StringUtil.isNonBlank(regex))
+      if (StringUtil.isNotBlank(regex))
       {
         filter = new ColumnExpression(ds.getColumnName(0), new RegExComparator(), regex);
       }
     }
-    else if (StringUtil.isNonBlank(args))
+    else if (StringUtil.isNotBlank(args))
     {
       QuickFilterExpressionBuilder builder = new QuickFilterExpressionBuilder();
       filter = builder.buildExpression(args.trim(), ds.getColumnName(0), true);

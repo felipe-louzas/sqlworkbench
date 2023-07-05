@@ -56,7 +56,7 @@ public class CopyColumnNameAction
     if (col > -1)
     {
       String name = client.getColumnName(col);
-      if (StringUtil.isNonBlank(name))
+      if (StringUtil.isNotBlank(name))
       {
         Clipboard clipboard = client.getToolkit().getSystemClipboard();
         clipboard.setContents(new StringSelection(name), null);

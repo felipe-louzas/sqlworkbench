@@ -406,7 +406,7 @@ public class OracleProcedureReader
 
   private String getNameCondition(String name)
   {
-    if (StringUtil.isEmptyString(name)) return "";
+    if (StringUtil.isEmpty(name)) return "";
     if (name.contains("_") || name.contains("%"))
     {
       return "LIKE '" + name + "' ";
@@ -450,12 +450,12 @@ public class OracleProcedureReader
     {
       standardProcs = getUserSpecificProcSQL();
     }
-    else if (StringUtil.isNonBlank(schema))
+    else if (StringUtil.isNotBlank(schema))
     {
       standardProcs += "\n    and ao.owner = '" + schema + "' ";
     }
 
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       standardProcs += "\n    and ao.object_name " + getNameCondition(name);
     }
@@ -499,17 +499,17 @@ public class OracleProcedureReader
       "  )\n" +
       "  where rn = 1";
 
-    if (StringUtil.isNonBlank(schema) && !userSpecificCatalogs)
+    if (StringUtil.isNotBlank(schema) && !userSpecificCatalogs)
     {
       pkgProcs += "\n    and procedure_owner = '" + schema + "' ";
     }
 
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       pkgProcs += "\n    and procedure_name " + getNameCondition(name);
     }
 
-    if (StringUtil.isNonBlank(pkgName))
+    if (StringUtil.isNotBlank(pkgName))
     {
       pkgProcs += "\n    and package_name = '" + pkgName + "' ";
     }
@@ -629,7 +629,7 @@ public class OracleProcedureReader
       "                                   $schema_condition$))";
 
 
-    if (!useUserSpecificCatalogs && StringUtil.isNonBlank(schema))
+    if (!useUserSpecificCatalogs && StringUtil.isNotBlank(schema))
     {
       query += "\n    and ao.owner = '" + schema + "' ";
       query = query.replace("$schema_condition$", "AND arg.owner = '" + schema + "' ");
@@ -639,7 +639,7 @@ public class OracleProcedureReader
       query = query.replace("$schema_condition$", "");
     }
 
-    if (StringUtil.isNonBlank(name))
+    if (StringUtil.isNotBlank(name))
     {
       query += "\n    and ao.object_name " + getNameCondition(name);
     }

@@ -74,7 +74,7 @@ public class CatalogChanger
     throws SQLException
   {
     if (conn == null) return false;
-    if (StringUtil.isEmptyString(newCatalog)) return false;
+    if (StringUtil.isEmpty(newCatalog)) return false;
 
     DbMetadata meta = conn.getMetadata();
 

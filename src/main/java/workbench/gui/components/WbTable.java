@@ -2081,7 +2081,7 @@ public class WbTable
     this.setDefaultRenderer(Blob.class, bcr);
 
     TableCellRenderer numberRenderer;
-    if (StringUtil.isNonBlank(decimalFormat))
+    if (StringUtil.isNotBlank(decimalFormat))
     {
       numberRenderer = new NumberColumnRenderer(decimalFormat, sep, groupSymbol);
     }
@@ -2095,7 +2095,7 @@ public class WbTable
     this.setDefaultRenderer(BigDecimal.class, numberRenderer);
 
     TableCellRenderer intRenderer;
-    if (StringUtil.isNonBlank(intFormat))
+    if (StringUtil.isNotBlank(intFormat))
     {
       intRenderer = new NumberColumnRenderer(intFormat, sep, groupSymbol);
     }

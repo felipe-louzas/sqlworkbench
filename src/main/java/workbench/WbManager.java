@@ -675,7 +675,7 @@ public final class WbManager
       String profilename = cmdLine.getValue(AppArguments.ARG_PROFILE);
       String group = cmdLine.getValue(AppArguments.ARG_PROFILE_GROUP);
       ConnectionProfile prof;
-      if (StringUtil.isNonBlank(profilename))
+      if (StringUtil.isNotBlank(profilename))
       {
         ProfileKey def = new ProfileKey(profilename, group);
         prof = ConnectionMgr.getInstance().getProfile(def);
@@ -731,7 +731,7 @@ public final class WbManager
       cmdLine.parse(args);
 
       String lang = cmdLine.getValue(AppArguments.ARG_LANG);
-      if (StringUtil.isNonEmpty(lang))
+      if (StringUtil.isNotEmpty(lang))
       {
         System.setProperty("workbench.gui.language", lang);
       }
@@ -743,26 +743,26 @@ public final class WbManager
       }
 
       String configDir = cmdLine.getValue(AppArguments.ARG_CONFIGDIR);
-      if (StringUtil.isNonEmpty(configDir))
+      if (StringUtil.isNotEmpty(configDir))
       {
         System.setProperty("workbench.configdir", configDir);
       }
 
       String libdir = cmdLine.getValue(AppArguments.ARG_LIBDIR);
-      if (StringUtil.isNonEmpty(libdir))
+      if (StringUtil.isNotEmpty(libdir))
       {
         System.setProperty(Settings.PROP_LIBDIR, libdir);
       }
 
       String logfile = cmdLine.getValue(AppArguments.ARG_LOGFILE);
-      if (StringUtil.isNonEmpty(logfile))
+      if (StringUtil.isNotEmpty(logfile))
       {
         WbFile file = new WbFile(logfile);
         System.setProperty("workbench.log.filename", file.getFullPath());
       }
 
       String logLevel = cmdLine.getValue(AppArguments.ARG_LOGLEVEL);
-      if (StringUtil.isNonEmpty(logLevel))
+      if (StringUtil.isNotEmpty(logLevel))
       {
         System.setProperty("workbench.log.level", logLevel);
       }
@@ -792,7 +792,7 @@ public final class WbManager
       String scriptname = cmdLine.getValue(AppArguments.ARG_SCRIPT);
       String cmd = cmdLine.getValue(AppArguments.ARG_COMMAND);
 
-      if (StringUtil.isEmptyString(cmd) && cmdLine.isArgPresent(AppArguments.ARG_COMMAND))
+      if (StringUtil.isEmpty(cmd) && cmdLine.isArgPresent(AppArguments.ARG_COMMAND))
       {
         cmd = FileUtil.getSystemIn();
         cmdLine.setCommandString(cmd);
@@ -800,7 +800,7 @@ public final class WbManager
 
       boolean readDriverTemplates = true;
       boolean showHelp = cmdLine.isArgPresent("help");
-      boolean hasScript = StringUtil.isNonBlank(scriptname) || StringUtil.isNonBlank(cmd) ;
+      boolean hasScript = StringUtil.isNotBlank(scriptname) || StringUtil.isNotBlank(cmd) ;
 
       if (mode == null)
       {
@@ -831,7 +831,7 @@ public final class WbManager
       for (String name : profileNames)
       {
         File baseDir = Settings.getInstance().getConfigDir();
-        if (StringUtil.isNonEmpty(name))
+        if (StringUtil.isNotEmpty(name))
         {
           name = StringUtil.replaceProperties(name);
 
@@ -864,7 +864,7 @@ public final class WbManager
       }
 
       String macros = cmdLine.getValue(AppArguments.ARG_MACRO_STORAGE);
-      if (StringUtil.isNonEmpty(macros))
+      if (StringUtil.isNotEmpty(macros))
       {
         WbFile prof = new WbFile(macros);
         if (prof.exists())

@@ -295,7 +295,7 @@ public class WbFilePicker
   {
     if (this.selectedFiles == null)
     {
-      if (StringUtil.isNonBlank(getFilename()))
+      if (StringUtil.isNotBlank(getFilename()))
       {
         return new File(getFilename());
       }

@@ -467,7 +467,7 @@ public class DefaultTriggerReader
 
         CommentSqlManager mgr = new CommentSqlManager(this.dbConnection.getMetadata().getDbId());
         String ddl = mgr.getCommentSqlTemplate("trigger", CommentSqlManager.COMMENT_ACTION_SET);
-        if (result.length() > 0 && StringUtil.isNonBlank(ddl) && StringUtil.isNonBlank(trgComment))
+        if (result.length() > 0 && StringUtil.isNotBlank(ddl) && StringUtil.isNotBlank(trgComment))
         {
           result.append(nl);
           String commentSql = ddl.replace(TriggerDefinition.PLACEHOLDER_TRIGGER_NAME, triggerName);

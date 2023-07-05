@@ -134,7 +134,7 @@ public class InformixTableSourceBuilder
           options = "EXTENT SIZE " + Integer.toString(fext) + "\nNEXT SIZE " + Integer.toString(next);
         }
 
-        if (StringUtil.isNonEmpty(lvl))
+        if (StringUtil.isNotEmpty(lvl))
         {
           switch (lvl.charAt(0))
           {

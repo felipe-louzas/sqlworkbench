@@ -211,7 +211,7 @@ public class ClientSideTableSearcher
       builder.setIncludeCLOBColumns(includeCLOBs);
 
       String sql = builder.getSelectForTable(table, -1);
-      if (StringUtil.isEmptyString(sql))
+      if (StringUtil.isEmpty(sql))
       {
         LogMgr.logWarning(new CallerInfo(){}, "No SELECT generated for " + table.getTableExpression() + ". Most probably the table was not fund");
         return;
@@ -294,7 +294,7 @@ public class ClientSideTableSearcher
 
   public void setCriteria(String search, boolean ignoreCase, Collection<String> columns)
   {
-    if (StringUtil.isNonBlank(search))
+    if (StringUtil.isNotBlank(search))
     {
       searchString = search.trim();
       if (searchString.charAt(0) == '%')

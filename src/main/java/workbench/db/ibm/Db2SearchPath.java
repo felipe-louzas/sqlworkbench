@@ -76,7 +76,7 @@ public class Db2SearchPath
       while (rs.next())
       {
         String row = rs.getString(1);
-        if (StringUtil.isNonBlank(row))
+        if (StringUtil.isNotBlank(row))
         {
           result.add(row.trim());
         }

@@ -72,7 +72,7 @@ public class CommentSqlManager
       sql = Settings.getInstance().getProperty(key, defaultValue);
     }
 
-    if (StringUtil.isEmptyString(sql))
+    if (StringUtil.isEmpty(sql))
     {
       // If the DB specific property is present, but empty, this means
       // the database does not support this type of comments.
@@ -96,12 +96,12 @@ public class CommentSqlManager
   {
     if (StringUtil.equalStringOrEmpty(oldComment, newComment, true)) return null;
 
-    if (StringUtil.isEmptyString(oldComment) && StringUtil.isNonEmpty(newComment))
+    if (StringUtil.isEmpty(oldComment) && StringUtil.isNotEmpty(newComment))
     {
       return COMMENT_ACTION_SET;
     }
 
-    if (StringUtil.isEmptyString(newComment) && StringUtil.isNonEmpty(oldComment))
+    if (StringUtil.isEmpty(newComment) && StringUtil.isNotEmpty(oldComment))
     {
       return COMMENT_ACTION_DELETE;
     }

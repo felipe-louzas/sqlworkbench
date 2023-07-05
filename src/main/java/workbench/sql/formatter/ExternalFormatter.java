@@ -219,14 +219,14 @@ public class ExternalFormatter
       if (!useSystemOut)
       {
         String out = readFile(sysOut);
-        if (StringUtil.isNonEmpty(out))
+        if (StringUtil.isNotEmpty(out))
         {
           LogMgr.logInfo(ci, "Output from formatter: " + out);
         }
       }
 
       String error = readFile(errFile);
-      if (StringUtil.isNonEmpty(error))
+      if (StringUtil.isNotEmpty(error))
       {
         LogMgr.logWarning(ci, "Error message from formatter: " + error);
       }
@@ -236,7 +236,7 @@ public class ExternalFormatter
     catch (Exception ex)
     {
       String error = readFile(errFile);
-      if (StringUtil.isNonEmpty(error))
+      if (StringUtil.isNotEmpty(error))
       {
         LogMgr.logError(ci, "Error message from formatter: " + error, null);
         LogMgr.logDebug(ci, "Error cause", ex);
@@ -286,7 +286,7 @@ public class ExternalFormatter
   @Override
   public String toString()
   {
-    if (StringUtil.isEmptyString(program)) return "<empty>";
+    if (StringUtil.isEmpty(program)) return "<empty>";
     WbFile f = new WbFile(program);
     return f.getAbsolutePath();
   }
@@ -305,7 +305,7 @@ public class ExternalFormatter
 
   public static ExternalFormatter getDefinition(String dbId)
   {
-    if (StringUtil.isEmptyString(dbId))
+    if (StringUtil.isEmpty(dbId))
     {
       dbId = DEFAULT_DBID;
     }

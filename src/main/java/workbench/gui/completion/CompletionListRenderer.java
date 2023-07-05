@@ -96,7 +96,7 @@ public class CompletionListRenderer
           colname += " (NN)";
         }
       }
-      if (showRemarks && StringUtil.isNonBlank(col.getComment()))
+      if (showRemarks && StringUtil.isNotBlank(col.getComment()))
       {
         colname = colname + " (" + StringUtil.getMaxSubstring(col.getComment(), maxRemarksLength) + ")";
       }
@@ -106,7 +106,7 @@ public class CompletionListRenderer
     {
       DbObject dbo = (DbObject)value;
       String name = dbo.toString();
-      if (showRemarks && StringUtil.isNonBlank(dbo.getComment()))
+      if (showRemarks && StringUtil.isNotBlank(dbo.getComment()))
       {
         name = name + " (" + StringUtil.getMaxSubstring(dbo.getComment(), maxRemarksLength) + ")";
       }
@@ -134,11 +134,11 @@ public class CompletionListRenderer
       String tooltip = null;
       String comment = dbo.getComment();
 
-      if (StringUtil.isBlank(comment) && StringUtil.isNonBlank(type))
+      if (StringUtil.isBlank(comment) && StringUtil.isNotBlank(type))
       {
         tooltip = "<html><tt>" + type + "</tt></html>";
       }
-      else if (StringUtil.isNonBlank(type))
+      else if (StringUtil.isNotBlank(type))
       {
         tooltip = "<html><tt>" + type + "</tt><br><i>" + comment + "</i></html>";
       }

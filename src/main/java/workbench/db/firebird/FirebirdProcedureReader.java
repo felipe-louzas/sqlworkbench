@@ -131,7 +131,7 @@ public class FirebirdProcedureReader
 
     namePattern = DbMetadata.cleanupWildcards(namePattern);
 
-    if (StringUtil.isNonEmpty(namePattern))
+    if (StringUtil.isNotEmpty(namePattern))
     {
       SqlUtil.appendAndCondition(sql, "procedure_name", namePattern, connection);
     }
@@ -211,7 +211,7 @@ public class FirebirdProcedureReader
 
     name = DbMetadata.cleanupWildcards(name);
 
-    if (StringUtil.isNonEmpty(name))
+    if (StringUtil.isNotEmpty(name))
     {
       sql.append("WHERE ");
       SqlUtil.appendExpression(sql, "procedure_name", name, connection);

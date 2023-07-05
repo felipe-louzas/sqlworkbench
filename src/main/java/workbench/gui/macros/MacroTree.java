@@ -703,7 +703,7 @@ public class MacroTree
   public String addGroup(boolean isCtrlPressed)
   {
     String group = WbSwingUtilities.getUserInput(SwingUtilities.getWindowAncestor(this), ResourceMgr.getString("LblNewProfileGroup"), "");
-    if (StringUtil.isEmptyString(group)) return null;
+    if (StringUtil.isEmpty(group)) return null;
 
     if (macroModel.getMacros().containsGroup(group))
     {

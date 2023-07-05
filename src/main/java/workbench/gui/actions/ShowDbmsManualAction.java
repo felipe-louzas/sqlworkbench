@@ -53,7 +53,7 @@ public class ShowDbmsManualAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    if (StringUtil.isNonBlank(onlineManualUrl))
+    if (StringUtil.isNotBlank(onlineManualUrl))
     {
       try
       {
@@ -85,7 +85,7 @@ public class ShowDbmsManualAction
 
   private void setDbms(String dbid, int majorVersion, int minorVersion)
   {
-    if (StringUtil.isNonBlank(dbid))
+    if (StringUtil.isNotBlank(dbid))
     {
       String url = null;
       if (majorVersion > 0 && minorVersion > 0)
@@ -114,7 +114,7 @@ public class ShowDbmsManualAction
     {
       onlineManualUrl = null;
     }
-    setEnabled(StringUtil.isNonBlank(onlineManualUrl));
+    setEnabled(StringUtil.isNotBlank(onlineManualUrl));
     if (onlineManualUrl != null)
     {
       setTooltip("<html>" + ResourceMgr.getDescription("MnuTxtDbmsHelp") + "<br>(" + onlineManualUrl + ")</html>");

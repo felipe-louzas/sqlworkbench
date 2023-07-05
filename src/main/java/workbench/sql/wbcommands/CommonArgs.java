@@ -122,7 +122,7 @@ public class CommonArgs
   public static List<String> getListArgument(ArgumentParser cmdLine, String arg)
   {
     String value = cmdLine.getValue(arg);
-    if (StringUtil.isEmptyString(value)) return null;
+    if (StringUtil.isEmpty(value)) return null;
     List<String> items = StringUtil.stringToList(value, ",");
     return items;
   }
@@ -349,7 +349,7 @@ public class CommonArgs
   {
     String localeName = cmdLine.getValue(ARG_LOCALE);
     Locale locale = null;
-    if (StringUtil.isNonBlank(localeName))
+    if (StringUtil.isNotBlank(localeName))
     {
       try
       {
@@ -469,7 +469,7 @@ public class CommonArgs
 
   public static void appendArgument(StringBuilder result, String arg, String value, CharSequence indent)
   {
-    if (StringUtil.isNonBlank(value))
+    if (StringUtil.isNotBlank(value))
     {
       if (indent.charAt(0) != '\n')
       {

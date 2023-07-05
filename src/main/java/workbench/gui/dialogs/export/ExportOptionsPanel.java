@@ -429,7 +429,7 @@ public class ExportOptionsPanel
         {
           ExtensionFileFilter eff = (ExtensionFileFilter)ff;
           String ext = ExtensionFileFilter.getExtension(fl);
-          if (StringUtil.isEmptyString(ext))
+          if (StringUtil.isEmpty(ext))
           {
             if (!filename.endsWith(".")) filename += ".";
             filename += eff.getDefaultExtension();

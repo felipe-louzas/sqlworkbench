@@ -586,7 +586,7 @@ public class LookupValuePicker
   {
     if (e.getSource() == this.filterValue && e.getModifiersEx() == 0)
     {
-      if (e.getKeyCode() == KeyEvent.VK_ESCAPE && StringUtil.isNonBlank(filterValue.getText()))
+      if (e.getKeyCode() == KeyEvent.VK_ESCAPE && StringUtil.isNotBlank(filterValue.getText()))
       {
         e.consume();
         resetFilter();

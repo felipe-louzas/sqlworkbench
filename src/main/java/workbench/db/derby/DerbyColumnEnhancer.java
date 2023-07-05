@@ -43,7 +43,7 @@ public class DerbyColumnEnhancer
     for (ColumnIdentifier col : table.getColumns())
     {
       String defaultValue = col.getDefaultValue();
-      if (StringUtil.isNonBlank(defaultValue))
+      if (StringUtil.isNotBlank(defaultValue))
       {
         if (defaultValue.startsWith("GENERATED ALWAYS AS"))
         {

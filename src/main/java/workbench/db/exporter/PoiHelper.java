@@ -143,13 +143,13 @@ public class PoiHelper
 
   public static Point excelToNumbers(String excelAddress)
   {
-    if (StringUtil.isEmptyString(excelAddress)) return null;
+    if (StringUtil.isEmpty(excelAddress)) return null;
 
     String col = excelAddress.toLowerCase().replaceAll("[^a-z]", "");
     String row = excelAddress.toLowerCase().replaceAll("[^0-9]", "");
 
-    if (StringUtil.isEmptyString(col)) return null;
-    if (StringUtil.isEmptyString(row)) return null;
+    if (StringUtil.isEmpty(col)) return null;
+    if (StringUtil.isEmpty(row)) return null;
 
     int y = StringUtil.getIntValue(row, -1);
     if (y == -1) return null;

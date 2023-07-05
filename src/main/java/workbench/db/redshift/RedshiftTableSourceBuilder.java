@@ -335,7 +335,7 @@ public class RedshiftTableSourceBuilder
 
     TableGrantReader grantReader = TableGrantReader.createReader(dbConnection);
     StringBuilder grants = grantReader.getTableGrantSource(this.dbConnection, table);
-    if (StringUtil.isNonBlank(grants))
+    if (StringUtil.isNotBlank(grants))
     {
       createSql.append("\n");
       createSql.append(grants);
@@ -418,7 +418,7 @@ public class RedshiftTableSourceBuilder
         if (rs.next())
         {
           String seq = rs.getString(1);
-          if (StringUtil.isNonBlank(seq))
+          if (StringUtil.isNotBlank(seq))
           {
             String msg = ResourceMgr.getFormattedString("TxtSequenceCol", col.getColumnName(), seq);
             b.append("\n-- ");

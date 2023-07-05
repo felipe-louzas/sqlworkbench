@@ -108,7 +108,7 @@ public class SqlServerSequenceReader
     sql.append(SqlUtil.removeObjectQuotes(schema));
     sql.append("' ");
 
-    if (StringUtil.isNonEmpty(sequence))
+    if (StringUtil.isNotEmpty(sequence))
     {
       SqlUtil.appendAndCondition(sql, "sq.name", sequence, connection);
     }

@@ -244,7 +244,7 @@ public class DataStoreTableModel
       }
       return false;
     }
-    return StringUtil.isEmptyString(s);
+    return StringUtil.isEmpty(s);
   }
 
   public void setValidator(InputValidator validator)

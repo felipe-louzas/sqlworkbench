@@ -74,7 +74,7 @@ public class GeneralImportOptionsPanel
     dateFmt.setSettingsProperty("dateformat");
     tsFmt.setSettingsProperty("timestampformat");
     Settings s = Settings.getInstance();
-    if (StringUtil.isEmptyString(key))
+    if (StringUtil.isEmpty(key))
     {
       key = "general";
     }
@@ -106,13 +106,13 @@ public class GeneralImportOptionsPanel
     tsFmt.setSettingsProperty("timestampformat");
     tsFmt.restoreSettings(s, "workbench.import." + key + ".");
 
-    if (StringUtil.isEmptyString(dateFmt.getText()))
+    if (StringUtil.isEmpty(dateFmt.getText()))
     {
       // old property before changing to a history textfield
       this.setDateFormat(s.getProperty("workbench.import." + key + ".dateformat", s.getDefaultDateFormat()));
     }
 
-    if (StringUtil.isEmptyString(tsFmt.getText()))
+    if (StringUtil.isEmpty(tsFmt.getText()))
     {
       // old property before changing to a history textfield
       this.setTimestampFormat(s.getProperty("workbench.import." + key + ".timestampformat", s.getDefaultTimestampFormat()));
@@ -174,7 +174,7 @@ public class GeneralImportOptionsPanel
   {
     String format = getDateFormat();
 
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       String err = StringUtil.isDatePatternValid(format);
       if (err != null)
@@ -186,7 +186,7 @@ public class GeneralImportOptionsPanel
     }
 
     format = getTimestampFormat();
-    if (StringUtil.isNonBlank(format))
+    if (StringUtil.isNotBlank(format))
     {
       String err = StringUtil.isDatePatternValid(format);
       if (err != null)

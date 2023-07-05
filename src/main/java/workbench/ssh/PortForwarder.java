@@ -169,7 +169,7 @@ public class PortForwarder
   private void addConfig(String key, Properties props)
   {
     String add = Settings.getInstance().getProperty("workbench.jsch.add." + key, null);
-    if (StringUtil.isNonBlank(add))
+    if (StringUtil.isNotBlank(add))
     {
       String value = JSch.getConfig(key);
       LogMgr.logInfo(new CallerInfo(){}, "Adding \"" + add + "\" to built-in: " + key);
@@ -182,7 +182,7 @@ public class PortForwarder
   private void overrideConfig(String key, Properties props)
   {
     String override = Settings.getInstance().getProperty("workbench.jsch.override." + key, null);
-    if (StringUtil.isNonBlank(override))
+    if (StringUtil.isNotBlank(override))
     {
       LogMgr.logInfo(new CallerInfo(){}, "Overriding built-in " + key + " for JSch with: " + override);
       props.put(key, override);

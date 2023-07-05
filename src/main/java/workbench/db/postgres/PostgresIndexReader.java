@@ -206,12 +206,12 @@ public class PostgresIndexReader
           String defaultTablespace = rs.getString("default_tablespace");
           Integer[] colStats = JdbcUtils.getArray(rs, "column_stats", Integer[].class);
 
-          if (showNonStandardTablespace && !"pg_default".equals(defaultTablespace) && StringUtil.isEmptyString(tblSpace))
+          if (showNonStandardTablespace && !"pg_default".equals(defaultTablespace) && StringUtil.isEmpty(tblSpace))
           {
             tblSpace = defaultTablespace;
           }
 
-          if (StringUtil.isNonEmpty(tblSpace))
+          if (StringUtil.isNotEmpty(tblSpace))
           {
             IndexDefinition idx = findIndexByName(indexList, idxName);
             idx.setTablespace(tblSpace);
@@ -234,7 +234,7 @@ public class PostgresIndexReader
           }
 
           String remarks = rs.getString("remarks");
-          if (StringUtil.isNonBlank(remarks))
+          if (StringUtil.isNotBlank(remarks))
           {
             source.append("COMMENT ON INDEX " + SqlUtil.quoteObjectname(idxName) + " IS '" + SqlUtil.escapeQuotes(remarks) + "'");
           }
@@ -261,12 +261,12 @@ public class PostgresIndexReader
   private boolean useIfNotExists()
   {
     if (this.metaData == null) return false;
-    return StringUtil.isNonEmpty(metaData.getDbSettings().getDDLIfNoExistsOption("INDEX"));
+    return StringUtil.isNotEmpty(metaData.getDbSettings().getDDLIfNoExistsOption("INDEX"));
   }
 
   private String addIfNotExists(String indexDef)
   {
-    if (StringUtil.isEmptyString(indexDef)) return indexDef;
+    if (StringUtil.isEmpty(indexDef)) return indexDef;
     if (useIfNotExists())
     {
       return indexDef.replace("CREATE INDEX", "CREATE INDEX IF NOT EXISTS");
@@ -289,7 +289,7 @@ public class PostgresIndexReader
   @Override
   public String getIndexOptions(TableIdentifier table, IndexDefinition index)
   {
-    if (index != null && StringUtil.isNonEmpty(index.getTablespace()))
+    if (index != null && StringUtil.isNotEmpty(index.getTablespace()))
     {
       return "\n   TABLESPACE " + index.getTablespace();
     }
@@ -391,7 +391,7 @@ public class PostgresIndexReader
         String type = rs.getString(4);
         String filter = rs.getString(5);
         IndexDefinition idx = findIndexByName(indexDefs, idxName);
-        if (StringUtil.isNonEmpty(tblSpace))
+        if (StringUtil.isNotEmpty(tblSpace))
         {
           idx.setTablespace(tblSpace);
         }

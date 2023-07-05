@@ -86,7 +86,7 @@ public class TagWriter
 
   public void appendTagConditionally(StringBuilder target, StringBuilder indent, String tag, String value)
   {
-    if (!StringUtil.isEmptyString(value)) appendTag(target, indent, tag, value, false);
+    if (!StringUtil.isEmpty(value)) appendTag(target, indent, tag, value, false);
   }
 
   public void appendTag(StringBuilder target, StringBuilder indent, String tag, CharSequence value, String attr, String attValue)
@@ -163,7 +163,7 @@ public class TagWriter
 
   public  void appendOpenTag(StringBuilder target, StringBuilder indent, String tag, String attribute, String attValue)
   {
-    if (StringUtil.isNonBlank(attribute))
+    if (StringUtil.isNotBlank(attribute))
     {
       appendOpenTag(target, indent, tag, true, new TagAttribute(attribute, attValue));
     }

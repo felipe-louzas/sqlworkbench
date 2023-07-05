@@ -278,7 +278,7 @@ public class DbSettings
    */
   public boolean isUpdatingCommand(String verb)
   {
-    if (StringUtil.isEmptyString(verb)) return false;
+    if (StringUtil.isEmpty(verb)) return false;
     return updatingCommands.contains(verb);
   }
 
@@ -1067,7 +1067,7 @@ public class DbSettings
 
   public boolean isNotDeferrable(String deferrable)
   {
-    if (StringUtil.isEmptyString(deferrable)) return true;
+    if (StringUtil.isEmpty(deferrable)) return true;
     return deferrable.equals(getRuleDisplay(DatabaseMetaData.importedKeyNotDeferrable));
   }
 
@@ -1233,7 +1233,7 @@ public class DbSettings
 
   public boolean canDropType(String type)
   {
-    if (StringUtil.isEmptyString(type)) return false;
+    if (StringUtil.isEmpty(type)) return false;
     if (type.equalsIgnoreCase("column"))
     {
       return getDropSingleColumnSql() != null;
@@ -1529,7 +1529,7 @@ public class DbSettings
     {
       if (OracleUtils.getUseOracleDBMSMeta(OracleUtils.DbmsMetadataTypes.table)) return true;
     }
-    return (getUseCustomizedCreateObjectRetrieval(type) && StringUtil.isNonEmpty(getRetrieveObjectSourceSql(type)));
+    return (getUseCustomizedCreateObjectRetrieval(type) && StringUtil.isNotEmpty(getRetrieveObjectSourceSql(type)));
   }
 
   /**
@@ -1876,7 +1876,7 @@ public class DbSettings
   {
     if (StringUtil.isBlank(type)) return null;
     String sql = getProperty("alter." + getKeyValue(type) + ".add.pk", null);
-    if (StringUtil.isEmptyString(sql) && checkDefault)
+    if (StringUtil.isEmpty(sql) && checkDefault)
     {
       sql = Settings.getInstance().getProperty("workbench.db.sql.alter." + getKeyValue(type) + ".add.pk", null);
     }
@@ -2362,7 +2362,7 @@ public class DbSettings
     List<String> dbVerbs = StringUtil.stringToList(dbCommands, ",", true, true);
     for (String verb : dbVerbs)
     {
-      if (StringUtil.isEmptyString(verb)) continue;
+      if (StringUtil.isEmpty(verb)) continue;
       if (verb.startsWith("-"))
       {
         useMaxRowsVerbs.remove(verb.substring(1));
@@ -2383,7 +2383,7 @@ public class DbSettings
     List<String> userVerbs = getListProperty("no.updatecount");
     for (String verb : userVerbs)
     {
-      if (StringUtil.isEmptyString(verb)) continue;
+      if (StringUtil.isEmpty(verb)) continue;
 
       if (verb.charAt(0) == '-')
       {

@@ -161,7 +161,7 @@ public class ConditionCheck
     {
       String var = cmdLine.getValue(PARAM_IF_EMPTY);
       String value = VariablePool.getInstance(variablePool).getParameterValue(var);
-      if (StringUtil.isNonEmpty(value))
+      if (StringUtil.isNotEmpty(value))
       {
         return new Result(PARAM_IF_EMPTY, var);
       }
@@ -171,7 +171,7 @@ public class ConditionCheck
     {
       String var = cmdLine.getValue(PARAM_IF_NOTEMPTY);
       String value = VariablePool.getInstance(variablePool).getParameterValue(var);
-      if (StringUtil.isEmptyString(value))
+      if (StringUtil.isEmpty(value))
       {
         return new Result(PARAM_IF_NOTEMPTY, var);
       }

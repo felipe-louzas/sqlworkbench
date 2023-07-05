@@ -492,7 +492,7 @@ public class WbConnection
   private String getWindowsUser()
   {
     String url = this.getUrl();
-    if (StringUtil.isEmptyString(url)) return StringUtil.EMPTY_STRING;
+    if (StringUtil.isEmpty(url)) return StringUtil.EMPTY_STRING;
 
     if (url.startsWith("jdbc:sqlserver:") && url.contains("integratedSecurity=true"))
     {
@@ -682,7 +682,7 @@ public class WbConnection
       }
 
       StringBuilder msg = new StringBuilder(200);
-      if (!StringUtil.isEmptyString(this.scriptError)) msg.append(this.scriptError);
+      if (!StringUtil.isEmpty(this.scriptError)) msg.append(this.scriptError);
 
       String s;
       while (warn != null)
@@ -1374,7 +1374,7 @@ public class WbConnection
       return getCurrentUser();
     }
     String username = profile.getLoginUser();
-    if (StringUtil.isEmptyString(username) && isSQLServer())
+    if (StringUtil.isEmpty(username) && isSQLServer())
     {
       // This is for SQL Server connections with "Windows authentication"
       username = getWindowsUser();
@@ -1389,7 +1389,7 @@ public class WbConnection
       return DBID.SQL_Server.isDB(this);
     }
     String url = this.getUrl();
-    if (StringUtil.isEmptyString(url)) return false;
+    if (StringUtil.isEmpty(url)) return false;
 
     return url.startsWith("jdbc:sqlserver:");
   }
@@ -1432,7 +1432,7 @@ public class WbConnection
       String user = getDisplayUser();
       boolean hasUser = false;
       boolean hasCatalog = false;
-      if (StringUtil.isNonBlank(user))
+      if (StringUtil.isNotBlank(user))
       {
         buff.append(ResourceMgr.getString("TxtUser"));
         buff.append('=');
@@ -1571,7 +1571,7 @@ public class WbConnection
   private boolean useDatabaseProductVersion(String dbid)
   {
     String url = getUrl();
-    if (StringUtil.isEmptyString(url)) return false;
+    if (StringUtil.isEmpty(url)) return false;
 
     if (dbid == null)
     {

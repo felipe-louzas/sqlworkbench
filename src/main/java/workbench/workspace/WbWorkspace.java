@@ -720,7 +720,7 @@ public class WbWorkspace
     if (this.tabInfo == null) return null;
     String key = TAB_PROP_PREFIX + tabIndex + ENCODING_PROP;
     String value = (String)this.tabInfo.get(key);
-    if (StringUtil.isEmptyString(value)) return Settings.getInstance().getDefaultEncoding();
+    if (StringUtil.isEmpty(value)) return Settings.getInstance().getDefaultEncoding();
     return value;
   }
 

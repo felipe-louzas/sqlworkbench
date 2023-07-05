@@ -555,7 +555,7 @@ public class WbImport
       textParser.setIgnoreMissingColumns(ignoreMissingCols);
 
       String delimiter = cmdLine.getEscapedString(CommonArgs.ARG_DELIM);
-      if (cmdLine.isArgPresent(CommonArgs.ARG_DELIM) && StringUtil.isEmptyString(delimiter))
+      if (cmdLine.isArgPresent(CommonArgs.ARG_DELIM) && StringUtil.isEmpty(delimiter))
       {
         result.addErrorMessageByKey("ErrImpDelimEmpty");
         return result;
@@ -588,7 +588,7 @@ public class WbImport
 
       // when all columns are defined we can check for a fixed-width import
       String width = cmdLine.getValue(ARG_COL_WIDTHS);
-      if (!StringUtil.isEmptyString(width))
+      if (!StringUtil.isEmpty(width))
       {
         try
         {
@@ -836,7 +836,7 @@ public class WbImport
       return result;
     }
 
-    if (StringUtil.isNonEmpty(table) && StringUtil.isNonEmpty(dir))
+    if (StringUtil.isNotEmpty(table) && StringUtil.isNotEmpty(dir))
     {
       parser.setMultiFileImport(true);
     }
@@ -964,7 +964,7 @@ public class WbImport
 
     String importcolumns = cmdLine.getValue(ARG_IMPORTCOLUMNS);
     List<ColumnIdentifier> toImport = null;
-    if (StringUtil.isNonBlank(importcolumns))
+    if (StringUtil.isNotBlank(importcolumns))
     {
       toImport = stringToCols(importcolumns);
     }
@@ -1044,7 +1044,7 @@ public class WbImport
   {
     String fname = cmdLine.getValue(ARG_FILE);
     String dir = cmdLine.getValue(ARG_DIRECTORY);
-    if (StringUtil.isEmptyString(dir) && StringUtil.isEmptyString(fname)) return null;
+    if (StringUtil.isEmpty(dir) && StringUtil.isEmpty(fname)) return null;
 
     ImportFileLister lister = null;
 

@@ -111,7 +111,7 @@ public class OracleSequenceReader
 
     sql.append("WHERE s.sequence_owner = '");
 
-    if (is12c && connection.getDbSettings().hideOracleIdentitySequences() && StringUtil.isEmptyString(sequence))
+    if (is12c && connection.getDbSettings().hideOracleIdentitySequences() && StringUtil.isEmpty(sequence))
     {
       sql.append("  AND s.sequence_name NOT LIKE 'ISEQ$$%'"); // remove Oracle 12c sequences used for identity columns
     }
@@ -119,7 +119,7 @@ public class OracleSequenceReader
     sql.append(StringUtil.trimQuotes(owner));
     sql.append("'\n ");
 
-    if (StringUtil.isNonEmpty(sequence))
+    if (StringUtil.isNotEmpty(sequence))
     {
       SqlUtil.appendAndCondition(sql, "s.sequence_name", sequence, connection);
     }

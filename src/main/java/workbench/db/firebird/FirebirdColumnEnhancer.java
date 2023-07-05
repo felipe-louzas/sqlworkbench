@@ -125,7 +125,7 @@ public class FirebirdColumnEnhancer
     for (ColumnIdentifier col : table.getColumns())
     {
       String expr = expressions.get(col.getColumnName());
-      if (StringUtil.isNonBlank(expr))
+      if (StringUtil.isNotBlank(expr))
       {
         col.setGeneratedExpression("COMPUTED BY " + expr.trim(), GeneratedColumnType.computed);
       }

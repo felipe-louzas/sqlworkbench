@@ -36,7 +36,7 @@ public class FormatterUtil
 
   public static String getIdentifier(String input)
   {
-    if (StringUtil.isEmptyString(input)) return input;
+    if (StringUtil.isEmpty(input)) return input;
     if (SqlUtil.isQuotedIdentifier(input)) return input;
 
     // maybe a multi-part identifier where just one part is quoted

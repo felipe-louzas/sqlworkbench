@@ -164,7 +164,7 @@ public class MacroRunner
       if (pool.isValidVariableName(varName))
       {
         String data = converter.getValueAsFormattedString(row, i);
-        if (StringUtil.isNonEmpty(data))
+        if (StringUtil.isNotEmpty(data))
         {
           pool.setParameterValue(varName, data);
         }

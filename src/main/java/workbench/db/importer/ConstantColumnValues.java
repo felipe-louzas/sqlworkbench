@@ -91,7 +91,7 @@ public class ConstantColumnValues
   public ConstantColumnValues(List<String> entries, WbConnection con, String tablename, ValueConverter converter)
     throws SQLException, ConverterException
   {
-    if (StringUtil.isNonEmpty(tablename))
+    if (StringUtil.isNotEmpty(tablename))
     {
       currentTable = new TableIdentifier(tablename, con);
       List<ColumnIdentifier> tableColumns = con.getMetadata().getTableColumns(currentTable, false);
@@ -165,7 +165,7 @@ public class ConstantColumnValues
           }
         }
 
-        if (SqlUtil.isCharacterType(col.getDataType()) && StringUtil.isNonBlank(value) && !usesVariables)
+        if (SqlUtil.isCharacterType(col.getDataType()) && StringUtil.isNotBlank(value) && !usesVariables)
         {
           usesVariables = VariablePool.getInstance(variablePool).containsVariable(value, varNames);
         }

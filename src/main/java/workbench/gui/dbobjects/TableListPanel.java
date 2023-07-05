@@ -1520,12 +1520,12 @@ public class TableListPanel
       this.tableTypeToSelect = defType;
     }
     String colString = props.getProperty(prefix + "columnorder", null);
-    if (StringUtil.isNonEmpty(colString))
+    if (StringUtil.isNotEmpty(colString))
     {
       tableList.setNewColumnOrder(StringUtil.stringToList(colString, ","));
     }
     String sortString = props.getProperty(prefix + "tablelist.sort", null);
-    if (StringUtil.isNonBlank(sortString))
+    if (StringUtil.isNotBlank(sortString))
     {
       savedSort = parseDefinitionString(sortString);
       if (savedSort != null)
@@ -1815,7 +1815,7 @@ public class TableListPanel
           source = dbo.getSource(dbConnection);
         }
 
-        if (StringUtil.isNonEmpty(source))
+        if (StringUtil.isNotEmpty(source))
         {
           sql = drop + source;
         }
@@ -1847,7 +1847,7 @@ public class TableListPanel
         CharSequence seqSql = sequenceReader.getSequenceSource(selectedTable.getCatalog(),
           this.selectedTable.getSchema(), this.selectedTable.getTableName(), opt);
 
-        if (StringUtil.isEmptyString(seqSql))
+        if (StringUtil.isEmpty(seqSql))
         {
           sql = ResourceMgr.getString("MsgSequenceSourceNotImplemented") + " " + meta.getProductName();
         }

@@ -62,7 +62,7 @@ public class PgPassReader
 
   public String getPort()
   {
-    return StringUtil.isEmptyString(port) ? "5432" : port;
+    return StringUtil.isEmpty(port) ? "5432" : port;
   }
 
   public String getPwd()
@@ -126,7 +126,7 @@ public class PgPassReader
 
   private String getPassword(String line)
   {
-    if (StringUtil.isEmptyString(line)) return null;
+    if (StringUtil.isEmpty(line)) return null;
     Matcher m = linePattern.matcher(line);
     if (!m.matches()) return null;
 

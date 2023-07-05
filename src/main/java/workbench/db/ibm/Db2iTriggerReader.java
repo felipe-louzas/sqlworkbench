@@ -98,7 +98,7 @@ public class Db2iTriggerReader
         "WHERE event_object_schema = ? \n" +
         "  AND event_object_table = ? \n";
     }
-    else if (!"*".equals(schema) && StringUtil.isNonBlank(schema))
+    else if (!"*".equals(schema) && StringUtil.isNotBlank(schema))
     {
       type = "trigger list";
       sql += "WHERE trigger_schema = ? \n";
@@ -114,7 +114,7 @@ public class Db2iTriggerReader
     try
     {
       pstmt = this.dbConnection.getSqlConnection().prepareStatement(sql);
-      if (StringUtil.isNonBlank(schema) && !"*".equals(schema))
+      if (StringUtil.isNotBlank(schema) && !"*".equals(schema))
       {
         pstmt.setString(1, schema);
       }

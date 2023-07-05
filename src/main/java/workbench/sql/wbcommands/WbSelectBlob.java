@@ -144,7 +144,7 @@ public class WbSelectBlob
     File outputDir = outputFile.getParentFile();
     String baseFilename = outputFile.getFileName();
     String extension = outputFile.getExtension();
-    if (StringUtil.isEmptyString(extension)) extension = "";
+    if (StringUtil.isEmpty(extension)) extension = "";
     else extension = "." + extension;
 
     try

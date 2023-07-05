@@ -740,7 +740,7 @@ public abstract class BaseAnalyzer
   protected void checkOverwrite()
   {
     String currentWord = getCurrentWord();
-    if (StringUtil.isEmptyString(currentWord))
+    if (StringUtil.isEmpty(currentWord))
     {
       setOverwriteCurrentWord(false);
     }

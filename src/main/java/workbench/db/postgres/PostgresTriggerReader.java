@@ -331,12 +331,12 @@ public class PostgresTriggerReader
         "  AND trg.tgname not like 'pg_sync_pg%' \n";
     }
 
-    if (StringUtil.isNonBlank(schema) && !"*".equals(schema))
+    if (StringUtil.isNotBlank(schema) && !"*".equals(schema))
     {
       sql += "  AND ns.nspname = '" + SqlUtil.escapeQuotes(schema) + "' \n";
     }
 
-    if (StringUtil.isNonBlank(tableName))
+    if (StringUtil.isNotBlank(tableName))
     {
       sql += "  AND tbl.relname = '" + SqlUtil.escapeQuotes(tableName) + "' \n";
     }

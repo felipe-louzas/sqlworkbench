@@ -127,7 +127,7 @@ public class ColumnChanger
       String sql = addColumn(table, newDefinition);
       if (sql != null) result.add(sql);
 
-      if (StringUtil.isNonBlank(newDefinition.getComment()))
+      if (StringUtil.isNotBlank(newDefinition.getComment()))
       {
         String comment = changeRemarks(table, null, newDefinition);
         if (comment != null) result.add(comment);

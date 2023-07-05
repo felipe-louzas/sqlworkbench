@@ -139,7 +139,7 @@ public class ProcedureDefinition
   public static ProcedureDefinition createOracleDefinition(String schema, String procedureName, String packageName, int type, String remarks)
   {
     ProcedureDefinition def = new ProcedureDefinition(packageName, schema, procedureName, RoutineType.fromProcedureResult(type), type);
-    if (StringUtil.isNonBlank(packageName))
+    if (StringUtil.isNotBlank(packageName))
     {
       if ("OBJECT TYPE".equals(remarks))
       {
@@ -503,7 +503,7 @@ public class ProcedureDefinition
 
   public void setPackageName(String packageName)
   {
-    if (StringUtil.isNonEmpty(packageName))
+    if (StringUtil.isNotEmpty(packageName))
     {
       procType = ProcType.packageType;
       catalog = packageName;

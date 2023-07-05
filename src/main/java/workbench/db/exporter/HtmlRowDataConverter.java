@@ -46,7 +46,7 @@ public class HtmlRowDataConverter
   public StringBuilder getEnd(long totalRows)
   {
     StringBuilder html = new StringBuilder("</table>\n");
-    if (StringUtil.isNonBlank(trailer))
+    if (StringUtil.isNotBlank(trailer))
     {
       html.append(trailer);
       html.append('\n');
@@ -170,7 +170,7 @@ public class HtmlRowDataConverter
       result.append("</head>\n<body>\n");
     }
 
-    if (StringUtil.isNonBlank(heading))
+    if (StringUtil.isNotBlank(heading))
     {
       result.append(heading);
       result.append('\n');
@@ -188,7 +188,7 @@ public class HtmlRowDataConverter
       result.append(this.metaData.getColumnDisplayName(c));
       result.append("</b>");
       String comment = metaData.getColumn(c).getComment();
-      if (includeColumnComments && StringUtil.isNonBlank(comment))
+      if (includeColumnComments && StringUtil.isNotBlank(comment))
       {
         result.append("<br/>");
         result.append(comment);

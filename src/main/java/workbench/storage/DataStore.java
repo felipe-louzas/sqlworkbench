@@ -755,7 +755,7 @@ public class DataStore
 
   public void setUpdateTable(String aTablename, WbConnection aConn)
   {
-    if (StringUtil.isEmptyString(aTablename))
+    if (StringUtil.isEmpty(aTablename))
     {
       setUpdateTable((TableIdentifier)null, aConn);
     }
@@ -877,7 +877,7 @@ public class DataStore
     String sourceTable = resultInfo.getColumn(col).getSourceTableName();
 
     // conservative approach: if no table was detected assume the column belongs to the update table
-    if (StringUtil.isEmptyString(sourceTable)) return true;
+    if (StringUtil.isEmpty(sourceTable)) return true;
 
     TableIdentifier tbl = new TableIdentifier(sourceTable);
     return TableIdentifier.compareNames(tbl, updateTable, true);

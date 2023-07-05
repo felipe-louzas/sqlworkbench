@@ -39,6 +39,7 @@ import workbench.util.HtmlUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbDateFormatter;
+import workbench.util.WbNumberFormatter;
 import workbench.util.ZipOutputFactory;
 
 /**
@@ -52,13 +53,14 @@ public class OdsRowDataConverter
   private Writer content;
 
   // The formatters used for the interal date/time formats in the cell values
-  private WbDateFormatter tFormat = new WbDateFormatter("HH:mm:ss");
-  private WbDateFormatter dtFormat = new WbDateFormatter("yyyy-MM-dd");
-  private WbDateFormatter tsFormat = new WbDateFormatter("yyyy-MM-dd'T'HH:mm:ss");
+  private final WbDateFormatter tFormat = new WbDateFormatter("HH:mm:ss");
+  private final WbDateFormatter dtFormat = new WbDateFormatter("yyyy-MM-dd");
+  private final WbDateFormatter tsFormat = new WbDateFormatter("yyyy-MM-dd'T'HH:mm:ss");
 
   private final String dateStyle = "ce2";
   private final String tsStyle = "ce3";
   private final String timeStyle = "ce4";
+  private boolean applyDecimalFormat = false;
 
   @Override
   public StringBuilder getStart()
@@ -111,7 +113,7 @@ public class OdsRowDataConverter
       this.content = factory.createWriter("content.xml", "UTF-8");
 
       content.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n");
-      content.write("<office:document-content xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" xmlns:text=\"urn:oasis:names:tc:opendocument:xmlns:text:1.0\" xmlns:table=\"urn:oasis:names:tc:opendocument:xmlns:table:1.0\" xmlns:draw=\"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0\" xmlns:fo=\"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0\" xmlns:xlink=\"https://www.w3.org/1999/xlink\" xmlns:dc=\"https://purl.org/dc/elements/1.1/\" xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\" xmlns:number=\"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0\" xmlns:presentation=\"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" xmlns:chart=\"urn:oasis:names:tc:opendocument:xmlns:chart:1.0\" xmlns:dr3d=\"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0\" xmlns:math=\"https://www.w3.org/1998/Math/MathML\" xmlns:form=\"urn:oasis:names:tc:opendocument:xmlns:form:1.0\" xmlns:script=\"urn:oasis:names:tc:opendocument:xmlns:script:1.0\" xmlns:ooo=\"https://openoffice.org/2004/office\" xmlns:ooow=\"https://openoffice.org/2004/writer\" xmlns:oooc=\"https://openoffice.org/2004/calc\" xmlns:dom=\"https://www.w3.org/2001/xml-events\" xmlns:xforms=\"https://www.w3.org/2002/xforms\" xmlns:xsd=\"https://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"https://www.w3.org/2001/XMLSchema-instance\" office:version=\"1.2\"> \n");
+      content.write("<office:document-content xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" xmlns:ooo=\"http://openoffice.org/2004/office\" xmlns:fo=\"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\" xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" xmlns:text=\"urn:oasis:names:tc:opendocument:xmlns:text:1.0\" xmlns:rpt=\"http://openoffice.org/2005/report\" xmlns:draw=\"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0\" xmlns:dr3d=\"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" xmlns:chart=\"urn:oasis:names:tc:opendocument:xmlns:chart:1.0\" xmlns:table=\"urn:oasis:names:tc:opendocument:xmlns:table:1.0\" xmlns:number=\"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0\" xmlns:ooow=\"http://openoffice.org/2004/writer\" xmlns:oooc=\"http://openoffice.org/2004/calc\" xmlns:of=\"urn:oasis:names:tc:opendocument:xmlns:of:1.2\" xmlns:xforms=\"http://www.w3.org/2002/xforms\" xmlns:tableooo=\"http://openoffice.org/2009/table\" xmlns:calcext=\"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0\" xmlns:drawooo=\"http://openoffice.org/2010/draw\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" xmlns:loext=\"urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0\" xmlns:field=\"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0\" xmlns:math=\"http://www.w3.org/1998/Math/MathML\" xmlns:form=\"urn:oasis:names:tc:opendocument:xmlns:form:1.0\" xmlns:script=\"urn:oasis:names:tc:opendocument:xmlns:script:1.0\" xmlns:formx=\"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0\" xmlns:dom=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:grddl=\"http://www.w3.org/2003/g/data-view#\" xmlns:css3t=\"http://www.w3.org/TR/css3-text/\" xmlns:presentation=\"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0\" office:version=\"1.3\"> \n");
 
       writeInlineStyles();
 
@@ -349,8 +351,22 @@ public class OdsRowDataConverter
     String dateStyleDef = dateIncluded() ? buildDateStyle(new OdsDateStyleBuilder(this.defaultDateFormatter.toPattern()), dateStyle, "N60") : "";
     String timeStyleDef = timeIncluded() ? buildDateStyle(new OdsDateStyleBuilder(this.defaultTimeFormatter.toPattern()), dateStyle, "N80") : "";
 
+    String numericDef = "";
+    applyDecimalFormat = false;
+    WbNumberFormatter decimalFormatter = exporter != null ? exporter.getDecimalFormatter() : null;
+    if (decimalFormatter != null)
+    {
+      int digits = decimalFormatter.getMaxDigits();
+      int minDigits = decimalFormatter.isFixedDigits() ? digits : 1;
+      numericDef =
+        "  <number:number-style style:name=\"N100\" style:family=\"table-cell\" >\n" +
+        "    <number:number number:decimal-places=\"" + digits + "\" number:min-decimal-places=\"" + minDigits + "\" number:min-integer-digits=\"1\"/>\n"+
+        "  </number:number-style>\n";
+      applyDecimalFormat = true;
+    }
+
     // The style:row-height=\"5.00mm\" is for Excel which otherwise wouldn't display the header properly
-    // LibreOffice and OpenOffice have no problem without it (and also not problem with it)
+    // LibreOffice and OpenOffice have no problem without it (and also no problem if it's included)
     String styles =
       "  <style:style style:name=\"ro1\" style:family=\"table-row\"> \n" +
       "    <style:table-row-properties fo:break-before=\"auto\" style:row-height=\"5.00mm\" style:use-optimal-row-height=\"true\"/> \n" +
@@ -364,6 +380,7 @@ public class OdsRowDataConverter
       dateStyleDef +
       tsStyleDef +
       timeStyleDef +
+      numericDef +
       "</office:automatic-styles>\n";
     content.write(styles);
   }
@@ -487,7 +504,7 @@ public class OdsRowDataConverter
       {
         value = getNullDisplay();
       }
-      if (o == null && StringUtil.isEmptyString(value))
+      if (o == null && StringUtil.isEmpty(value))
       {
         xml.append("<table:table-cell />");
         continue;
@@ -545,7 +562,7 @@ public class OdsRowDataConverter
       attr.append("\"float\" ");
       attr.append(" office:value=\"");
       attr.append(data.toString());
-      attr.append("\"");
+      attr.append("\" calcext:value-type=\"float\"");
     }
     else if (type == Types.DATE)
     {

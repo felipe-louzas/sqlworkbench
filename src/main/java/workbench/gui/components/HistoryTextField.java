@@ -191,7 +191,7 @@ public class HistoryTextField
 
   public void addToHistory(String s)
   {
-    if (StringUtil.isEmptyString(s)) return;
+    if (StringUtil.isEmpty(s)) return;
     s = s.trim();
     Object item = getSelectedItem();
     historyValues.addEntry(s);

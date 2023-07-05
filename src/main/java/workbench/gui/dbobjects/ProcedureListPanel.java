@@ -745,7 +745,7 @@ public class ProcedureListPanel
     splitPane.setDividerLocation(loc);
     findPanel.restoreSettings(props, prefix);
     String colString = props.getProperty(prefix + "columnorder", null);
-    if (StringUtil.isNonEmpty(colString))
+    if (StringUtil.isNotEmpty(colString))
     {
       procList.setNewColumnOrder(StringUtil.stringToList(colString, ","));
     }
@@ -1020,7 +1020,7 @@ public class ProcedureListPanel
     }
     drop = StringUtil.trim(SqlUtil.trimSemicolon(drop));
 
-    if (StringUtil.isEmptyString(drop)) return sql.toString();
+    if (StringUtil.isEmpty(drop)) return sql.toString();
 
     DelimiterDefinition delim = Settings.getInstance().getAlternateDelimiter(dbConnection, DelimiterDefinition.STANDARD_DELIMITER);
 
@@ -1054,7 +1054,7 @@ public class ProcedureListPanel
     if (this.dbConnection == null) return 0;
     if (!DBID.Oracle.isDB(dbConnection)) return 0;
 
-    if (StringUtil.isEmptyString(def.getPackageName())) return 0;
+    if (StringUtil.isEmpty(def.getPackageName())) return 0;
     int pos = OraclePackageParser.findProcedurePosition(sql, def, getParameterNames());
 
     return (pos < 0 ? 0 : pos);
