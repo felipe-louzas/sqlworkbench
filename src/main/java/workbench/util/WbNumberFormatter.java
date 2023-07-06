@@ -206,4 +206,14 @@ public class WbNumberFormatter
     return display;
   }
 
+  public int getMaxDigits()
+  {
+    return maxDigits;
+  }
+
+  public boolean isFixedDigits()
+  {
+    return fixedDigits;
+  }
+
 }

@@ -287,7 +287,7 @@ public class SqlLiteralFormatter
     this.treatClobAsFile = true;
     this.clobFileThreshold = threshold;
     this.clobWriter = writer;
-    if (!StringUtil.isEmptyString(encoding)) this.clobEncoding = encoding;
+    if (!StringUtil.isEmpty(encoding)) this.clobEncoding = encoding;
   }
 
   private static String getPattern(String format, String dataType)
@@ -566,7 +566,7 @@ public class SqlLiteralFormatter
     if (formatter == null)
     {
       format = getDbmsFormat(dbmsType);
-      if (StringUtil.isEmptyString(format))
+      if (StringUtil.isEmpty(format))
       {
         return null;
       }
