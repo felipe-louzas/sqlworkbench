@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.channels.FileLock;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,7 +93,8 @@ public class WbWorkspace
   private final Map<Integer, SqlHistoryProvider> executionHistories = new HashMap<>();
   private String filename;
   private String loadError;
-
+  private final Map<String, Long> lastCRC = new HashMap<>();
+  private FileLock writeLock;
   public WbWorkspace(String archiveName)
   {
     if (archiveName == null) throw new NullPointerException("Filename cannot be null");
@@ -120,22 +123,21 @@ public class WbWorkspace
     try
     {
       File f = new File(filename);
-      out = new BufferedOutputStream(new FileOutputStream(f), 64*1024);
+      FileOutputStream fout = new FileOutputStream(f);
+      writeLock = fout.getChannel().lock();
+      if (writeLock == null)
+      {
+        throw new IOException("Could not obtain a lock on " + filename);
+      }
+      out = new BufferedOutputStream(fout);
       zout = new ZipOutputStream(out);
-      zout.setLevel(Settings.getInstance().getIntProperty("workbench.workspace.compression", 9));
+      zout.setLevel(Settings.getInstance().getIntProperty("workbench.workspace.compression", 5));
       zout.setComment("SQL Workbench/J Workspace file");
       state = WorkspaceState.writing;
     }
     catch (Exception e)
     {
-      if (zout == null)
-      {
-        FileUtil.closeQuietely(out);
-      }
-      else
-      {
-        FileUtil.closeQuietely(zout);
-      }
+      FileUtil.closeQuietely(writeLock, zout, out);
       state = WorkspaceState.closed;
       if (e instanceof IOException)
       {
@@ -339,26 +341,48 @@ public class WbWorkspace
     }
   }
 
+  public Map<String, Long> getLastCRCValues()
+  {
+    return Collections.unmodifiableMap(this.lastCRC);
+  }
+
+  /**
+   * Saves everything to the zip file and closes this workspace.
+   *
+   * For each entry, the CRC of that entry is stored. All CRC values
+   * from the most recent call to this method can be retrieved
+   * using {@link #getLastCRCValues()}.
+   *
+   * @see #getLastCRCValues()
+   */
   public void save()
     throws IOException
   {
-    if (this.zout != null)
+    if (this.zout == null) return;
+
+    try
     {
+      lastCRC.clear();
       saveTabInfo();
       saveToolProperties();
       saveVariables();
       saveEditorHistory();
+      flush();
       saveExecutionHistory();
-      editorHistories.clear();
-      executionHistories.clear();
+      flush();
     }
+    finally
+    {
+      close();
+    }
+    editorHistories.clear();
+    executionHistories.clear();
   }
 
   @Override
   public void close()
   {
-    FileUtil.closeQuietely(zout);
-    FileUtil.closeQuietely(archive);
+    FileUtil.closeQuietely(writeLock, zout, archive);
     zout = null;
     archive = null;
     state = WorkspaceState.closed;
@@ -471,6 +495,7 @@ public class WbWorkspace
       ZipEntry entry = new ZipEntry(VARIABLES_FILENAME);
       this.zout.putNextEntry(entry);
       variables.save(this.zout);
+      lastCRC.put(VARIABLES_FILENAME, entry.getCrc());
     }
     catch (IOException ex)
     {
@@ -491,9 +516,12 @@ public class WbWorkspace
     {
       for (Map.Entry<String, WbProperties> propEntry : toolProperties.entrySet())
       {
-        ZipEntry entry = new ZipEntry(TOOL_ENTRY_PREFIX + propEntry.getKey() + ".properties");
+        String entryName = TOOL_ENTRY_PREFIX + propEntry.getKey() + ".properties";
+        ZipEntry entry = new ZipEntry(entryName);
         zout.putNextEntry(entry);
         propEntry.getValue().save(zout);
+        this.lastCRC.put(entryName, entry.getCrc());
+
       }
     }
     catch (IOException ex)
@@ -517,11 +545,13 @@ public class WbWorkspace
         try
         {
           int index = historyEntry.getKey();
-          ZipEntry entry = new ZipEntry("SqlHistory" + (index + 1) + ".txt");
+          String entryName = "SqlHistory" + (index + 1) + ".txt";
+          ZipEntry entry = new ZipEntry(entryName);
           this.zout.putNextEntry(entry);
           Writer writer = EncodingUtil.createWriter(zout, "UTF-8");
           historyEntry.getValue().saveTo(writer);
           writer.flush();
+          lastCRC.put(entryName, entry.getCrc());
         }
         catch (IOException ex)
         {
@@ -545,9 +575,11 @@ public class WbWorkspace
         try
         {
           int index = historyEntry.getKey();
-          ZipEntry entry = new ZipEntry("WbStatements" + (index + 1) + ".txt");
+          String entryName = "WbStatements" + (index + 1) + ".txt";
+          ZipEntry entry = new ZipEntry(entryName);
           this.zout.putNextEntry(entry);
           historyEntry.getValue().writeToStream(zout);
+          this.lastCRC.put(entryName, entry.getCrc());
         }
         catch (IOException ex)
         {
@@ -572,6 +604,7 @@ public class WbWorkspace
       ZipEntry entry = new ZipEntry(TABINFO_FILENAME);
       this.zout.putNextEntry(entry);
       tabInfo.save(this.zout);
+      this.lastCRC.put(TABINFO_FILENAME, entry.getCrc());
     }
     catch (IOException ex)
     {

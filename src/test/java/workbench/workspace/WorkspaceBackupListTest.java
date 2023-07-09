@@ -33,6 +33,7 @@ import workbench.gui.sql.PanelType;
 import workbench.util.FileVersioner;
 import workbench.util.WbFile;
 import workbench.util.WbProperties;
+import workbench.util.ZipUtil;
 
 import org.junit.Test;
 
@@ -67,6 +68,7 @@ public class WorkspaceBackupListTest
     {
       wksp1.openForWriting();
       wksp1.save();
+      assertTrue(ZipUtil.isValid(workspaceFile, wksp1.getLastCRCValues()));
     }
 
     FileVersioner version = new FileVersioner(5, backupDir, '.');
@@ -76,6 +78,7 @@ public class WorkspaceBackupListTest
     {
       wksp2.openForWriting();
       wksp2.save();
+      assertTrue(ZipUtil.isValid(workspaceFile, wksp2.getLastCRCValues()));
     }
 
     version.createBackup(workspaceFile);

@@ -28,8 +28,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 /**
  * @author Thomas Kellerer
@@ -135,4 +140,42 @@ public class ZipUtil
       // ignore
     }
   }
+
+  public static boolean isValid(File file, Map<String, Long> crcValues)
+  {
+    final CallerInfo ci = new CallerInfo(){};
+    LogMgr.logDebug(ci, "Testing archive: " + WbFile.getPathForLogging(file));
+
+    try (ZipFile zipfile = new ZipFile(file);
+         ZipInputStream zis = new ZipInputStream(new FileInputStream(file)))
+    {
+      int entries = 0;
+      ZipEntry ze = zis.getNextEntry();
+      while (ze != null)
+      {
+        zipfile.getInputStream(ze);
+        ze.getCompressedSize();
+        String name = ze.getName();
+        long crc = ze.getCrc();
+        Long expectedCrc = crcValues.get(name);
+        if (expectedCrc != null && crc != expectedCrc.longValue())
+        {
+          LogMgr.logError(ci,
+            "The CRC value for entry " + name + " in " + WbFile.getPathForLogging(file) +  " is: " + crc + " but " + expectedCrc + " was expected!", null);
+        }
+        else
+        {
+          entries ++;
+        }
+        ze = zis.getNextEntry();
+      }
+      return entries > 0;
+    }
+    catch (Exception e)
+    {
+      LogMgr.logError(ci, "An error occurred while testing archive: " + WbFile.getPathForLogging(file), e);
+      return false;
+    }
+  }
+
 }

@@ -523,15 +523,15 @@ public class FileUtil
   }
 
   /**
-   * Closes a Closeable without throwing an IOException.
+   * Closes one or more Closeables without throwing an IOException.
    *
    * @param c the Closeable to close
    */
-  public static void closeQuietely(Closeable... toClose)
+  public static void closeQuietely(AutoCloseable... toClose)
   {
     if (toClose == null) return;
 
-    for (Closeable c : toClose)
+    for (AutoCloseable c : toClose)
     {
       if (c == null) continue;
 
@@ -539,7 +539,7 @@ public class FileUtil
       {
         c.close();
       }
-      catch (IOException e)
+      catch (Exception e)
       {
       }
     }

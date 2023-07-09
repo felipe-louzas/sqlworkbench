@@ -195,6 +195,7 @@ import workbench.util.VersionNumber;
 import workbench.util.WbFile;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
+import workbench.util.ZipUtil;
 
 /**
  * The main window for SQL Workbench.
@@ -3566,13 +3567,15 @@ public class MainWindow
 
   public boolean saveWorkspace(String filename, boolean checkUnsaved)
   {
-    if (workspaceIsSaving)
-    {
-      LogMgr.logWarning(new CallerInfo(){}, "Workspace is being saved. Ignoring this save request.");
-      return false;
-    }
+
     synchronized (workspaceLock)
     {
+      if (workspaceIsSaving)
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Workspace is being saved. Ignoring this save request.", new Exception("Backtrace"));
+        return false;
+      }
+
       try
       {
         workspaceIsSaving = true;
@@ -3632,7 +3635,7 @@ public class MainWindow
     long start = System.currentTimeMillis();
 
     File backupFile = null;
-    boolean deleteBackup = false;
+    boolean isTempBackup = false;
     boolean restoreBackup = false;
 
     if (Settings.getInstance().getCreateWorkspaceBackup())
@@ -3646,7 +3649,7 @@ public class MainWindow
       // in case something goes wrong when writing the new workspace, at least the last good version can be restored
       backupFile = workspaceFile.makeBackup();
       LogMgr.logDebug(ci, "Created temporary backup file: " + WbFile.getPathForLogging(backupFile));
-      deleteBackup = true;
+      isTempBackup = true;
     }
 
     this.showMacroPopup.saveWorkspaceSettings();
@@ -3666,6 +3669,8 @@ public class MainWindow
     {
       fileTreePanel.saveSettings(getToolProperties(FILE_TREE_PROPS));
     }
+
+    boolean success = true;
 
     try
     {
@@ -3701,28 +3706,38 @@ public class MainWindow
       currentWorkspace.save();
       long duration = System.currentTimeMillis() - start;
       LogMgr.logDebug(ci, "Workspace " + workspaceFile.getFullpathForLogging() + " saved in " + duration + "ms");
-      if (deleteBackup && backupFile != null)
-      {
-        LogMgr.logDebug(ci, "Deleting temporary backup file: " + WbFile.getPathForLogging(backupFile));
-        backupFile.delete();
-      }
     }
-    catch (Throwable e)
+    catch (Exception e)
     {
       LogMgr.logError(ci, "Error saving workspace: " + realFilename, e);
       WbSwingUtilities.showErrorMessage(this, ResourceMgr.getString("ErrSavingWorkspace") + "\n" + ExceptionUtil.getDisplay(e));
       restoreBackup = true;
-    }
-    finally
-    {
-      FileUtil.closeQuietely(currentWorkspace);
+      success = false;
     }
 
-    if (restoreBackup && backupFile != null)
+    if (!ZipUtil.isValid(workspaceFile, currentWorkspace.getLastCRCValues()))
+    {
+      LogMgr.logError(ci, "Generated ZIP archive " + WbFile.getPathForLogging(workspaceFile) + " is not valid!", null);
+      File savedCorrupt = new File(realFilename + "_corrupt");
+      FileUtil.copySilently(workspaceFile, savedCorrupt);
+      WbSwingUtilities.showErrorMessage(this, ResourceMgr.getFormattedString("ErrInvalidArchive", realFilename));
+      restoreBackup = true;
+      success = false;
+    }
+
+    if (restoreBackup)
     {
       LogMgr.logWarning(ci, "Restoring the old workspace file from backup: " + WbFile.getPathForLogging(backupFile));
       FileUtil.copySilently(backupFile, workspaceFile);
     }
+
+    if (isTempBackup && success)
+    {
+      LogMgr.logInfo(ci, "Deleting temporary backup file: " + WbFile.getPathForLogging(backupFile));
+      backupFile.delete();
+    }
+
+    if (!success) return false;
 
     if (interactive)
     {
