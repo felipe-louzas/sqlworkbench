@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,15 +34,10 @@ import java.util.TreeMap;
 import workbench.interfaces.MacroChangeListener;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
 import workbench.resource.ShortcutManager;
 
 import workbench.util.CaseInsensitiveComparator;
-import workbench.util.FileUtil;
-import workbench.util.FileVersioner;
 import workbench.util.WbFile;
-import workbench.util.WbPersistence;
 
 /**
  * Manages laoding and saving of macros to an external (XML) file.
@@ -58,6 +52,7 @@ public class MacroStorage
   private final Object lock = new Object();
   private final Map<String, MacroDefinition> allMacros = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
   private final List<MacroGroup> groups = new ArrayList<>();
+  private long modificationTime;
 
   private boolean modified = false;
   private String currentFilter;
@@ -72,6 +67,17 @@ public class MacroStorage
 
   public MacroStorage()
   {
+  }
+
+  public long getLastModificationTime()
+  {
+    return modificationTime;
+  }
+
+  public boolean wasModifiedAfterLoading()
+  {
+    if (sourceFile == null) return false;
+    return sourceFile.lastModified() > this.modificationTime;
   }
 
   public synchronized void loadNewFile(WbFile toLoad)
@@ -152,26 +158,6 @@ public class MacroStorage
     return copy;
   }
 
-  private File createBackup(WbFile f)
-  {
-    if (Settings.getInstance().getCreateMacroBackup())
-    {
-      int maxVersions = Settings.getInstance().getMaxBackupFiles();
-      File dir = Settings.getInstance().getBackupDir();
-      char sep = Settings.getInstance().getFileVersionDelimiter();
-      FileVersioner version = new FileVersioner(maxVersions, dir, sep);
-      try
-      {
-        return version.createBackup(f);
-      }
-      catch (IOException e)
-      {
-        LogMgr.logWarning(new CallerInfo(){}, "Error when creating backup for: " + f.getFullpathForLogging(), e);
-      }
-    }
-    return f.makeBackup();
-  }
-
   /**
    * Saves the macros to a new file.
    *
@@ -200,13 +186,8 @@ public class MacroStorage
   {
     if (sourceFile == null) return;
 
-    boolean deleteBackup = !Settings.getInstance().getCreateMacroBackup();
-    boolean restoreBackup = false;
-    File backupFile = null;
-
     String savedFilter = currentFilter;
 
-    long start = System.currentTimeMillis();
     synchronized (lock)
     {
       if (currentFilter != null)
@@ -214,51 +195,13 @@ public class MacroStorage
         resetFilter();
       }
 
-      if (this.getSize() == 0)
+      if (sourceFile.isFile())
       {
-        if (sourceFile.exists() && isModified())
-        {
-          backupFile = createBackup(sourceFile);
-          sourceFile.delete();
-          LogMgr.logDebug(new CallerInfo(){}, "All macros from " + sourceFile.getFullpathForLogging()+ " were removed. Macro file deleted.");
-        }
-        else
-        {
-          LogMgr.logDebug(new CallerInfo(){}, "No macros defined, nothing to save");
-        }
+        saveMacroFile();
       }
-      else
+      else if (sourceFile.isDirectory())
       {
-        backupFile = createBackup(sourceFile);
-
-        WbPersistence writer = new WbPersistence(sourceFile.getAbsolutePath());
-        try
-        {
-          writer.writeObject(this.groups);
-          long duration = System.currentTimeMillis() - start;
-          LogMgr.logDebug(new CallerInfo(){}, "Saved " + allMacros.size() + " macros to " + sourceFile.getFullpathForLogging()+ " in " + duration + "ms");
-        }
-        catch (Throwable th)
-        {
-          LogMgr.logError(new CallerInfo(){}, "Error saving macros to " + sourceFile.getFullPath(), th);
-          restoreBackup = true;
-        }
-
-        if (backupFile != null)
-        {
-          if (restoreBackup)
-          {
-            LogMgr.logWarning(new CallerInfo(){}, "Restoring the old macro file from backup: " +
-              WbFile.getPathForLogging(backupFile.getAbsolutePath()));
-            FileUtil.copySilently(backupFile, sourceFile);
-          }
-          else if (deleteBackup)
-          {
-            LogMgr.logDebug(new CallerInfo(){}, "Deleting temporary backup file: " +
-              WbFile.getPathForLogging(backupFile.getAbsolutePath()));
-            backupFile.delete();
-          }
-        }
+        saveMacroDirectory();
       }
 
       if (savedFilter != null)
@@ -266,7 +209,20 @@ public class MacroStorage
         applyFilter(savedFilter);
       }
       resetModified();
+      modificationTime = sourceFile.lastModified();
     }
+  }
+
+  private void saveMacroDirectory()
+  {
+    DirectoryMacroPersistence persistence = new DirectoryMacroPersistence();
+    persistence.saveMacros(sourceFile, groups);
+  }
+
+  private void saveMacroFile()
+  {
+    XmlMacroPersistence persistence = new XmlMacroPersistence();
+    persistence.saveMacros(sourceFile, getGroups(), isModified());
   }
 
   private void fireMacroListChanged()
@@ -361,36 +317,17 @@ public class MacroStorage
     {
       synchronized (lock)
       {
-        WbPersistence reader = new WbPersistence(sourceFile.getAbsolutePath());
-        Object o = reader.readObject();
-        if (o instanceof List)
+        if (sourceFile.isFile())
         {
-          List<MacroGroup> g = (List)o;
-          groups.clear();
-          groups.addAll(g);
+          loadMacroFile();
         }
-        else if (o instanceof HashMap)
+        else if (sourceFile.isDirectory())
         {
-          // Upgrade from previous version
-          File backup = new File(sourceFile.getParentFile(), sourceFile.getName() + ".old");
-          FileUtil.copy(sourceFile, backup);
-          Map<String, String> oldMacros = (Map)o;
-          MacroGroup group = new MacroGroup(ResourceMgr.getString("LblDefGroup"));
-
-          groups.clear();
-
-          int sortOrder = 0;
-          for (Map.Entry<String, String> entry : oldMacros.entrySet())
-          {
-            MacroDefinition def = new MacroDefinition(entry.getKey(), entry.getValue());
-            def.setSortOrder(sortOrder);
-            sortOrder++;
-            group.addMacro(def);
-          }
-          groups.add(group);
+          loadMacroDirectory();
         }
         applySort();
         updateMap();
+        modificationTime = sourceFile.lastModified();
       }
     }
     catch (Exception e)
@@ -398,6 +335,34 @@ public class MacroStorage
       LogMgr.logError(new CallerInfo(){}, "Error loading macro file", e);
     }
     resetModified();
+  }
+
+  private void loadMacroDirectory()
+    throws IOException
+  {
+    if (!sourceFile.isDirectory())
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "loadMacroDirectory() called, but source " + sourceFile.getFullpathForLogging() + " is not a directory! No macros loaded");
+      return;
+    }
+    DirectoryMacroPersistence loader = new DirectoryMacroPersistence();
+    List<MacroGroup> macros = loader.loadMacros(sourceFile);
+    groups.clear();
+    groups.addAll(macros);
+  }
+
+  private void loadMacroFile()
+    throws Exception
+  {
+    if (!sourceFile.isFile())
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "loadMacroFile() called, but source " + sourceFile.getFullpathForLogging() + " is not a file! No macros loaded");
+      return;
+    }
+    XmlMacroPersistence loader = new XmlMacroPersistence();
+    List<MacroGroup> macros = loader.loadMacros(sourceFile);
+    groups.clear();
+    groups.addAll(macros);
   }
 
   public synchronized void moveMacro(MacroDefinition macro, MacroGroup newGroup)

@@ -28,11 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
-import workbench.db.DbSettings;
 import workbench.interfaces.JobErrorHandler;
 import workbench.resource.Settings;
 
+import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
@@ -77,7 +79,7 @@ public class WbShowProps
 
       if (types.contains("wb"))
       {
-        result.addDataStore(getWbProperties(null));
+        result.addDataStore(getWbProperties((String)null));
       }
 
       if (types.isEmpty() || types.contains("system"))
@@ -87,7 +89,7 @@ public class WbShowProps
 
       if (types.contains("db") && currentConnection != null)
       {
-        result.addDataStore(getWbProperties("workbench.db." + currentConnection.getDbId()));
+        result.addDataStore(getDbProperties("workbench.db." + currentConnection.getDbId()));
       }
     }
     else if (StringUtil.isNotBlank(args))
@@ -96,6 +98,9 @@ public class WbShowProps
       {
         args = args.toLowerCase().replace(DbSettings.DBID_PLACEHOLDER, currentConnection.getDbId());
       }
+      Map<String, String> shortNames = WbSetProp.getAbbreviations();
+      args = shortNames.getOrDefault(args, args);
+
       DataStore ds = getWbProperties(args);
       if (ds.getRowCount() > 0)
       {
@@ -109,15 +114,23 @@ public class WbShowProps
 
   static DataStore getWbProperties(String prefix)
   {
+    return getWbProperties((s -> prefix == null || s.startsWith(prefix)));
+  }
+
+  static DataStore getDbProperties(String prefix)
+  {
+    Pattern p = Pattern.compile("^" + StringUtil.quoteRegexMeta(prefix) + "_{0,1}[0-9]*\\..+");
+    return getWbProperties((s -> prefix == null || p.matcher(s).matches()));
+  }
+
+  static DataStore getWbProperties(Predicate<String> filter)
+  {
     DataStore data = new PropertyDataStore(true);
     Set<String> keys = Settings.getInstance().getKeys();
 
-    Map<String, String> shortNames = WbSetProp.getAbbreviations();
-    prefix = shortNames.getOrDefault(prefix, prefix);
-
     for (String key : keys)
     {
-      if (isWorkbenchProperty(key) && (prefix == null || key.startsWith(prefix)))
+      if (isWorkbenchProperty(key) && filter.test(key))
       {
         int row = data.addRow();
         data.setValue(row, 0, key);
@@ -177,7 +190,7 @@ public class WbShowProps
   private static class PropertyDataStore
     extends DataStore
   {
-    private boolean wbProps;
+    private final boolean wbProps;
     PropertyDataStore(boolean isWbProps)
     {
       super(new String[] { "PROPERTY", "VALUE"}, new int[] { Types.VARCHAR, Types.VARCHAR} );

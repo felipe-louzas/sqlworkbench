@@ -26,6 +26,7 @@ import workbench.resource.StoreableKeyStroke;
 
 import workbench.util.HtmlUtil;
 import workbench.util.StringUtil;
+import workbench.util.WbFile;
 
 /**
  * A single Macro that maps a name to a SQL text.
@@ -55,6 +56,10 @@ public class MacroDefinition
   private boolean appendResult;
   private boolean shortcutChanged;
 
+  // Used for macros loaded from a directory, rather than an XML file
+  private WbFile sourceFile;
+  private long fileModificationTime;
+
   public MacroDefinition()
   {
   }
@@ -73,6 +78,30 @@ public class MacroDefinition
       return "<html><pre>" + HtmlUtil.escapeXML(StringUtil.getMaxSubstring(getText(), len), false) + "</pre></html>";
     }
     return tooltip;
+  }
+
+  /**
+   * If macros are loaded from a directory, rather than from a single XML file,
+   * this is the original file inside that directory.
+   */
+  public WbFile getOriginalSourceFile()
+  {
+    return sourceFile;
+  }
+
+  public void setOriginalSourceFile(WbFile source)
+  {
+    sourceFile = source;
+    if (sourceFile != null)
+    {
+      fileModificationTime = sourceFile.lastModified();
+    }
+  }
+
+  public boolean wasChangedAfterLoading()
+  {
+    if (sourceFile == null) return false;
+    return sourceFile.lastModified() >= fileModificationTime;
   }
 
   public String getTooltip()

@@ -82,6 +82,7 @@ public class MacroFileSelector
     String lastDir = Settings.getInstance().getProperty(LAST_DIR_PROPERTY, Settings.getInstance().getConfigDir().getAbsolutePath());
 
     JFileChooser fc = new WbFileChooser(lastDir);
+    fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     fc.addChoosableFileFilter(ExtensionFileFilter.getXmlFileFilter());
     fc.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
     fc.setDialogTitle(ResourceMgr.getString("MsgSelectMacroFile"));
@@ -110,7 +111,7 @@ public class MacroFileSelector
       {
         WbFile wb = new WbFile(selectedFile);
         String ext = wb.getExtension();
-        if (!ext.equalsIgnoreCase("xml"))
+        if (!wb.isDirectory() && !ext.equalsIgnoreCase("xml"))
         {
           String fullname = wb.getFullPath();
           fullname += ".xml";

@@ -69,12 +69,12 @@ public class MacroManagerGui
   extends JPanel
   implements FileActions, TreeSelectionListener, PropertyChangeListener, TreeModelListener
 {
-  private JToolBar toolbar;
-  private WbSplitPane splitPane;
-  private MacroDefinitionPanel macroPanel;
-  private MacroGroupPanel groupPanel;
-  private MacroTree macroTree;
-  private MacroTreeQuickFilter filterHandler;
+  private final JToolBar toolbar;
+  private final WbSplitPane splitPane;
+  private final MacroDefinitionPanel macroPanel;
+  private final MacroGroupPanel groupPanel;
+  private final MacroTree macroTree;
+  private final MacroTreeQuickFilter filterHandler;
 
   public MacroManagerGui(int macroId)
   {

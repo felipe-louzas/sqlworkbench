@@ -47,7 +47,7 @@ public class ExtensionFileFilter
   // The created FileFilters are stored in variables
   // as in some cases it is necessary to access the
   // instance (e.g. for JFileChooser.setFileFilter()
-  private static Map<String, ExtensionFileFilter> FILTERS = new HashMap<>();
+  private static final Map<String, ExtensionFileFilter> FILTERS = new HashMap<>();
   private static FileFilter jarFileFilter;
 
   private final List<String> extensions;

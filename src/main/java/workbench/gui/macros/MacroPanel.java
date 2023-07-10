@@ -65,6 +65,7 @@ import workbench.gui.actions.SaveListFileAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.CloseIcon;
 import workbench.gui.components.DividerBorder;
+import workbench.gui.components.WbLabelField;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.components.WbToolbarButton;
 import workbench.gui.editor.MacroExpander;
@@ -108,6 +109,10 @@ public class MacroPanel
     JScrollPane p = new JScrollPane(tree);
     p.setBorder(WbSwingUtilities.EMPTY_BORDER);
     add(p, BorderLayout.CENTER);
+    int clientId = parent.getMacroClientId();
+    String infoText = MacroManager.getInstance().getMacros(clientId).getCurrentMacroFilename();
+    WbLabelField lbl = new WbLabelField(infoText);
+    add(lbl, BorderLayout.PAGE_END);
 
     restoreExpandedGroups();
     tree.addMouseListener(this);

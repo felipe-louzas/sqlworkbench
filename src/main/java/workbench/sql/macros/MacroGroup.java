@@ -46,6 +46,7 @@ public class MacroGroup
   private String name;
   private final List<MacroDefinition> macros = new ArrayList<>();
   private final List<MacroDefinition> filtered = new ArrayList<>();
+  private final List<MacroDefinition> deleted = new ArrayList<>();
   private int sortOrder;
   private String tooltip;
   private boolean modified = false;
@@ -244,10 +245,18 @@ public class MacroGroup
     return allMacros;
   }
 
+  public synchronized List<MacroDefinition> getDeletedMacros()
+  {
+    return new ArrayList<>(deleted);
+  }
+
   public synchronized void removeMacro(MacroDefinition macro)
   {
-    macros.remove(macro);
-    modified = true;
+    if (macros.remove(macro))
+    {
+      deleted.add(macro);
+      modified = true;
+    }
   }
 
   /**
@@ -313,6 +322,7 @@ public class MacroGroup
     {
       macro.resetModified();
     }
+    deleted.clear();
   }
 
   /**

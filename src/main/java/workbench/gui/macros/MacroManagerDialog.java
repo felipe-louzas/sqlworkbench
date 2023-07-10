@@ -77,7 +77,7 @@ public class MacroManagerDialog
   private JButton cancelButton;
   private boolean cancelled = true;
   private EscAction escAction;
-  private SqlPanel client;
+  private final SqlPanel client;
   private JCheckBox replaceEditorText;
   private final int macroClient;
 
