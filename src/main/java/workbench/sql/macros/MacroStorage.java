@@ -22,7 +22,6 @@
 package workbench.sql.macros;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,9 +40,12 @@ import workbench.util.WbFile;
 
 /**
  * Manages laoding and saving of macros to an external (XML) file.
- * <br/>
- * It also converts the old (HashMap based) implementation of the Macro storage
- * into the new format.
+ *
+ * <p>Two storage formats are supported:</p>
+ * <ul>
+ *  <li>a single XML file, implemented through {@link XmlMacroPersistence}</li>
+ *  <li>SQL scripts stored in a directory, implemented through {@link DirectoryMacroPersistence}</li>
+ * </ul>
  *
  * @author Thomas Kellerer
  */
@@ -58,10 +60,12 @@ public class MacroStorage
   private String currentFilter;
   private final List<MacroChangeListener> changeListeners = new ArrayList<>(1);
   private WbFile sourceFile;
+  private MacroPersistence persistence;
 
   public MacroStorage(WbFile toLoad)
   {
     sourceFile = toLoad;
+    persistence = createPersistence();
     loadMacros();
   }
 
@@ -83,6 +87,7 @@ public class MacroStorage
   public synchronized void loadNewFile(WbFile toLoad)
   {
     sourceFile = toLoad;
+    persistence = createPersistence();
     loadMacros();
     fireMacroListChanged();
   }
@@ -195,14 +200,7 @@ public class MacroStorage
         resetFilter();
       }
 
-      if (sourceFile.isFile())
-      {
-        saveMacroFile();
-      }
-      else if (sourceFile.isDirectory())
-      {
-        saveMacroDirectory();
-      }
+      persistence.saveMacros(sourceFile, getGroups(), modified);
 
       if (savedFilter != null)
       {
@@ -213,16 +211,13 @@ public class MacroStorage
     }
   }
 
-  private void saveMacroDirectory()
+  private MacroPersistence createPersistence()
   {
-    DirectoryMacroPersistence persistence = new DirectoryMacroPersistence();
-    persistence.saveMacros(sourceFile, groups);
-  }
-
-  private void saveMacroFile()
-  {
-    XmlMacroPersistence persistence = new XmlMacroPersistence();
-    persistence.saveMacros(sourceFile, getGroups(), isModified());
+    if (sourceFile.isFile())
+    {
+      return new XmlMacroPersistence();
+    }
+    return new DirectoryMacroPersistence();
   }
 
   private void fireMacroListChanged()
@@ -307,7 +302,7 @@ public class MacroStorage
       return;
     }
 
-    if (!sourceFile .exists())
+    if (!sourceFile.exists())
     {
       LogMgr.logDebug(new CallerInfo(){}, "Macro file " + sourceFile.getFullpathForLogging() + " not found. No Macros loaded");
       return;
@@ -317,14 +312,10 @@ public class MacroStorage
     {
       synchronized (lock)
       {
-        if (sourceFile.isFile())
-        {
-          loadMacroFile();
-        }
-        else if (sourceFile.isDirectory())
-        {
-          loadMacroDirectory();
-        }
+        List<MacroGroup> macros = persistence.loadMacros(sourceFile);
+        groups.clear();
+        groups.addAll(macros);
+
         applySort();
         updateMap();
         modificationTime = sourceFile.lastModified();
@@ -335,34 +326,6 @@ public class MacroStorage
       LogMgr.logError(new CallerInfo(){}, "Error loading macro file", e);
     }
     resetModified();
-  }
-
-  private void loadMacroDirectory()
-    throws IOException
-  {
-    if (!sourceFile.isDirectory())
-    {
-      LogMgr.logWarning(new CallerInfo(){}, "loadMacroDirectory() called, but source " + sourceFile.getFullpathForLogging() + " is not a directory! No macros loaded");
-      return;
-    }
-    DirectoryMacroPersistence loader = new DirectoryMacroPersistence();
-    List<MacroGroup> macros = loader.loadMacros(sourceFile);
-    groups.clear();
-    groups.addAll(macros);
-  }
-
-  private void loadMacroFile()
-    throws Exception
-  {
-    if (!sourceFile.isFile())
-    {
-      LogMgr.logWarning(new CallerInfo(){}, "loadMacroFile() called, but source " + sourceFile.getFullpathForLogging() + " is not a file! No macros loaded");
-      return;
-    }
-    XmlMacroPersistence loader = new XmlMacroPersistence();
-    List<MacroGroup> macros = loader.loadMacros(sourceFile);
-    groups.clear();
-    groups.addAll(macros);
   }
 
   public synchronized void moveMacro(MacroDefinition macro, MacroGroup newGroup)

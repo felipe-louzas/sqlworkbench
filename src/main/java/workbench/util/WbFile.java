@@ -102,7 +102,9 @@ public class WbFile
   /**
    * Creates a backup copy of this file.
    *
-   * This file is copied to a new file while adding the current timestamp to the filename.
+   * This file is copied to a new file while adding the current timestamp (including milliseconds) to the filename.
+   *
+   * @return the name of the backup file
    */
   public WbFile makeBackup()
   {
@@ -115,7 +117,7 @@ public class WbFile
     }
     catch (Exception io)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not copy " + this.getFullPath() + " to " + newfile.getFullPath());
+      LogMgr.logWarning(new CallerInfo(){}, "Could not copy " + getFullpathForLogging() + " to " + newfile.getFullpathForLogging());
       return null;
     }
     return newfile;

@@ -23,13 +23,10 @@ package workbench.sql.macros;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.util.FileUtil;
@@ -38,51 +35,43 @@ import workbench.util.WbFile;
 import workbench.util.WbPersistence;
 
 /**
+ * A class to load and save macro definitions to an XML file.
  *
  * @author Thomas Kellerer
  */
 public class XmlMacroPersistence
+  implements MacroPersistence
 {
   public XmlMacroPersistence()
   {
     WbPersistence.makeTransient(MacroDefinition.class, "originalSourceFile");
   }
 
+  @Override
   public List<MacroGroup> loadMacros(File sourceFile)
-    throws Exception
   {
     List<MacroGroup> groups = new ArrayList<>();
-    WbPersistence reader = new WbPersistence(sourceFile.getAbsolutePath());
-    Object o = reader.readObject();
-    if (o instanceof List)
+    try
     {
-      List<MacroGroup> g = (List)o;
-      groups.clear();
-      groups.addAll(g);
-    }
-    else if (o instanceof HashMap)
-    {
-      // Upgrade from previous version
-      File backup = new File(sourceFile.getParentFile(), sourceFile.getName() + ".old");
-      FileUtil.copy(sourceFile, backup);
-      Map<String, String> oldMacros = (Map)o;
-      MacroGroup group = new MacroGroup(ResourceMgr.getString("LblDefGroup"));
-
-      groups.clear();
-
-      int sortOrder = 0;
-      for (Map.Entry<String, String> entry : oldMacros.entrySet())
+      WbPersistence reader = new WbPersistence(sourceFile.getAbsolutePath());
+      Object o = reader.readObject();
+      if (o instanceof List)
       {
-        MacroDefinition def = new MacroDefinition(entry.getKey(), entry.getValue());
-        def.setSortOrder(sortOrder);
-        sortOrder++;
-        group.addMacro(def);
+        groups.addAll((List)o);
       }
-      groups.add(group);
+      else
+      {
+        LogMgr.logWarning(new CallerInfo(){}, "Format of macro file " + WbFile.getPathForLogging(sourceFile) + " not supported!");
+      }
+    }
+    catch (Exception ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not load macros from: " + WbFile.getPathForLogging(sourceFile), ex);
     }
     return groups;
   }
 
+  @Override
   public void saveMacros(WbFile sourceFile, List<MacroGroup> groups, boolean isModified)
   {
     boolean deleteBackup = !Settings.getInstance().getCreateMacroBackup();
@@ -92,6 +81,7 @@ public class XmlMacroPersistence
 
     if (groups.size() == 0)
     {
+      // If a file existed but all macros were deleted, then delete the original file.
       if (sourceFile.exists() && isModified)
       {
         backupFile = createBackup(sourceFile);

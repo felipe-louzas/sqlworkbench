@@ -33,8 +33,7 @@ import workbench.util.StringUtil;
 /**
  * A list of macros combined into a group.
  * <br/>
- * A MacroGroup defines a sort order which is essentially maintained
- * through the GUI.
+ * A MacroGroup defines a sort order of each element which is maintained through the GUI.
  * <br/>
  * Groups can be hidden from the menu.
  *
@@ -134,6 +133,9 @@ public class MacroGroup
 
   /**
    * Sorts the macros by name.
+   *
+   * After the macros are sorted, the {@link MacroDefinition#setSortOrder(int)} is
+   * set to the new position of the macro.
    */
   public synchronized void sortByName()
   {
@@ -153,8 +155,9 @@ public class MacroGroup
   }
 
   /**
-   * Synchronizes the sort order of each macro with the
-   * order of the List in which the macros are stored.
+   * Sort all macros according to their {@link MacroDefinition#getSortOrder()}.
+   *
+   * After the macros are sorted, their sort order is updated to be gapless.
    */
   public synchronized void applySort()
   {
@@ -267,6 +270,8 @@ public class MacroGroup
    * The copy will be marked as "not modified" (i.e. isModified() will
    * return false on the copy), even if this group is modified.
    *
+   * Deleted macros will <b>not</b> be copied.
+   *
    * @return a deep copy of this group
    * @see MacroDefinition#createCopy()
    */
@@ -328,7 +333,8 @@ public class MacroGroup
   /**
    * Returns the number of macros in this groups that should be displayed in the menu.
    *
-   * This returns a non-zero count even if isVisibleInMenu() returns false!
+   * This might return a non-zero count even if isVisibleInMenu() returns false!
+   * 
    * @see #getVisibleMacros()
    */
   public int getVisibleMacroSize()
@@ -339,6 +345,11 @@ public class MacroGroup
       if (def.isVisibleInMenu()) size ++;
     }
     return size;
+  }
+
+  public int getTotalSize()
+  {
+    return macros.size() + filtered.size();
   }
 
   public int getSize()

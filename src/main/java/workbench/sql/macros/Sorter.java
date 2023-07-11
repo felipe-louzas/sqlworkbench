@@ -24,7 +24,7 @@ package workbench.sql.macros;
 import java.util.Comparator;
 
 /**
- * A comparator to sort <tt>Sortable> objects.
+ * A comparator to sort <tt>Sortable</tt> objects.
  *
  * @author Thomas Kellerer
  * @see Sortable
