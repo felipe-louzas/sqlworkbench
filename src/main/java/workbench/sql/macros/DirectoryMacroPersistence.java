@@ -29,6 +29,7 @@ import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.StoreableKeyStroke;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
@@ -58,8 +59,10 @@ public class DirectoryMacroPersistence
   private static final String GROUP_INFO_FILE = "wb-macro-group.properties";
   private static final String GROUP_PREFIX = "group.info.";
 
+  private static final String PROP_COUNT = "count";
   private static final String PROP_TOOLTIP = "tooltip";
   private static final String PROP_SORT_ORDER = "sortorder";
+  private static final String PROP_SHORTCUT = "shortcut";
   private static final String PROP_NAME = "name";
   private static final String PROP_EXPAND = "expandWhileTyping";
   private static final String PROP_APPEND = "appendResults";
@@ -142,7 +145,7 @@ public class DirectoryMacroPersistence
       File toDelete = def.getOriginalSourceFile();
       if (toDelete == null)
       {
-        toDelete = new File(groupDir, getFilename(def) + ".sql");
+        toDelete = new File(groupDir, getFilename(def));
       }
       if (toDelete.exists())
       {
@@ -153,13 +156,16 @@ public class DirectoryMacroPersistence
 
   private void writeGroupInfo(File directory, MacroGroup group)
   {
+    List<MacroDefinition> allMacros = group.getAllMacros();
+
     WbProperties props = new WbProperties(2);
     props.setProperty(GROUP_PREFIX + PROP_INCLUDE_IN_MENU, group.isVisibleInMenu());
     props.setProperty(GROUP_PREFIX + PROP_INCLUDE_IN_POPUP, group.isVisibleInPopup());
     props.setProperty(GROUP_PREFIX + PROP_TOOLTIP, group.getTooltip());
     props.setProperty(GROUP_PREFIX + PROP_NAME, group.getName());
+    props.setProperty(GROUP_PREFIX + PROP_COUNT, allMacros.size());
 
-    for (MacroDefinition def : group.getAllMacros())
+    for (MacroDefinition def : allMacros)
     {
       String key = makeKey(def);
       props.setProperty(key + PROP_INCLUDE_IN_MENU, def.isVisibleInMenu());
@@ -170,6 +176,11 @@ public class DirectoryMacroPersistence
       props.setProperty(key + PROP_NAME, def.getName());
       props.setProperty(key + PROP_TOOLTIP, def.getTooltip());
       props.setProperty(key + PROP_SORT_ORDER, def.getSortOrder());
+      StoreableKeyStroke shortcut = def.getShortcut();
+      if (shortcut != null)
+      {
+        props.setProperty(key + PROP_SHORTCUT, shortcut.toPropertiesString());
+      }
     }
 
     WbFile info = new WbFile(directory, GROUP_INFO_FILE);
@@ -216,6 +227,8 @@ public class DirectoryMacroPersistence
         def.setName(props.getProperty(key + PROP_NAME, def.getName()));
         def.setTooltip(props.getProperty(key + PROP_TOOLTIP, def.getTooltip()));
         def.setSortOrder(props.getIntProperty(key + PROP_SORT_ORDER, def.getSortOrder()));
+        StoreableKeyStroke keystroke = StoreableKeyStroke.fromPropertiesString(props.getProperty(key + PROP_SHORTCUT));
+        def.setShortcut(keystroke);
       }
     }
     catch (Exception io)
@@ -280,13 +293,21 @@ public class DirectoryMacroPersistence
     {
       return macro.getOriginalSourceFile().getName();
     }
-    return StringUtil.makeFilename(macro.getName(), false);
+    return StringUtil.makeFilename(macro.getName(), false) + ".sql";
   }
 
-  private String makeKey(MacroDefinition def)
+  private String makeKey(MacroDefinition macro)
   {
-    String cleanName = getFilename(def).replace(' ', '_').replace('=', '-');
-    return "macro." + cleanName + ".";
+    String name;
+    if (macro.getOriginalSourceFile() != null)
+    {
+      name = macro.getOriginalSourceFile().getFileName();
+    }
+    else
+    {
+      name = macro.getName();
+    }
+    return "macro." + name.replace(' ', '_').replace('=', '-') + ".";
   }
 
 }

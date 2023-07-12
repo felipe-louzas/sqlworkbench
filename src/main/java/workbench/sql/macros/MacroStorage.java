@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import workbench.interfaces.MacroChangeListener;
 import workbench.log.CallerInfo;
@@ -60,12 +61,10 @@ public class MacroStorage
   private String currentFilter;
   private final List<MacroChangeListener> changeListeners = new ArrayList<>(1);
   private WbFile sourceFile;
-  private MacroPersistence persistence;
 
   public MacroStorage(WbFile toLoad)
   {
     sourceFile = toLoad;
-    persistence = createPersistence();
     loadMacros();
   }
 
@@ -87,7 +86,6 @@ public class MacroStorage
   public synchronized void loadNewFile(WbFile toLoad)
   {
     sourceFile = toLoad;
-    persistence = createPersistence();
     loadMacros();
     fireMacroListChanged();
   }
@@ -158,18 +156,20 @@ public class MacroStorage
     {
       copy.groups.add(group.createCopy());
     }
-    copy.updateMap();
+    copy.updateMap(false);
     copy.resetModified();
     return copy;
   }
 
   /**
-   * Saves the macros to a new file.
+   * Saves the macros to a new file or directory.
    *
    * The contents of the file they were loaded from, will be unaffected
    * (effectively creating a copy of the current file).
    *
    * After saving the macros to a new file, getCurrentFile() will return the new file name.
+   *
+   * This method can also be used to convert between the XML storage and directory based storage.
    *
    * @param file
    * @see #saveMacros()
@@ -193,6 +193,7 @@ public class MacroStorage
 
     String savedFilter = currentFilter;
 
+    MacroPersistence persistence = createPersistence();
     synchronized (lock)
     {
       if (currentFilter != null)
@@ -263,6 +264,11 @@ public class MacroStorage
 
   private void updateMap()
   {
+    updateMap(true);
+  }
+
+  private void updateMap(boolean fireEvent)
+  {
     boolean shortcutChanged = false;
     allMacros.clear();
     for (MacroGroup group : groups)
@@ -274,7 +280,7 @@ public class MacroStorage
         shortcutChanged = shortcutChanged || macro.isShortcutChanged();
       }
     }
-    if (shortcutChanged)
+    if (shortcutChanged && fireEvent)
     {
       ShortcutManager.getInstance().fireShortcutsChanged();
     }
@@ -308,6 +314,7 @@ public class MacroStorage
       return;
     }
 
+    MacroPersistence persistence = createPersistence();
     try
     {
       synchronized (lock)
@@ -465,9 +472,12 @@ public class MacroStorage
   }
 
   /**
-   * Returns only groups that have isVisibleInMenu() == true and
-   * contain only macros hat have isVisibleInMenu() == true
+   * Return all visible macro groups.
    *
+   * Returns only groups that have isVisibleInMenu() == true and
+   * contain at least one macro with isVisibleInMenu() == true
+   *
+   * @see MacroGroup#getVisibleMacroSize()
    */
   public List<MacroGroup> getVisibleGroups()
   {
@@ -485,17 +495,19 @@ public class MacroStorage
     return Collections.unmodifiableList(result);
   }
 
+  /**
+   * Returns all macros to be used in the DbTree.
+   *
+   * @see MacroDefinition#isDbTreeMacro()
+   */
   public List<MacroDefinition> getDbTreeMacros()
   {
-    List<MacroDefinition> result = new ArrayList<>();
-    for (MacroDefinition macro : allMacros.values())
-    {
-      if (macro.isDbTreeMacro())
-      {
-        result.add(macro);
-      }
-    }
+    List<MacroDefinition> result = allMacros.values().
+      stream().
+      filter(m -> m.isDbTreeMacro()).
+      collect(Collectors.toList());
     result.sort(new Sorter());
+
     return result;
   }
 

@@ -28,6 +28,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import workbench.util.StringUtil;
+
 /**
  * A class which wraps keyStroke and can be serialized
  * using the XMLDecode/XMLEncoder classes
@@ -44,6 +46,14 @@ public class StoreableKeyStroke
 
   public StoreableKeyStroke()
   {
+  }
+
+  public StoreableKeyStroke(int keyCode, int modifier)
+  {
+    this.keyCode = keyCode;
+    this.modifier = modifier;
+    this.modifierSet = true;
+    this.keyCodeSet = true;
   }
 
   public StoreableKeyStroke(KeyStroke aKey)
@@ -148,6 +158,35 @@ public class StoreableKeyStroke
       text = InputEvent.getModifiersExText(modifier) + "-" + text;
     }
     return text;
+  }
+
+  public String toPropertiesString()
+  {
+    return getKeyCode() + "," + getKeyModifier();
+  }
+
+  public static StoreableKeyStroke fromPropertiesString(String data)
+  {
+    if (StringUtil.isBlank(data)) return null;
+    String[] items = data.split(",");
+    if (items.length < 1) return null;
+
+    int code = 0;
+    int modifier = 0;
+    if (items.length > 0)
+    {
+      code = StringUtil.getIntValue(items[0], Integer.MIN_VALUE);
+    }
+    if (items.length > 1)
+    {
+      modifier = StringUtil.getIntValue(items[1], 0);
+    }
+
+    if (code > 0)
+    {
+      return new StoreableKeyStroke(code, modifier);
+    }
+    return null;
   }
 
   public StoreableKeyStroke createCopy()

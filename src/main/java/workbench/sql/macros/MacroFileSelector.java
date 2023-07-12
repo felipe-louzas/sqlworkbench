@@ -82,7 +82,14 @@ public class MacroFileSelector
     String lastDir = Settings.getInstance().getProperty(LAST_DIR_PROPERTY, Settings.getInstance().getConfigDir().getAbsolutePath());
 
     JFileChooser fc = new WbFileChooser(lastDir);
-    fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    if (Settings.getInstance().enableDirectoryBasedMacroStorage())
+    {
+      fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    }
+    else
+    {
+      fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    }
     fc.addChoosableFileFilter(ExtensionFileFilter.getXmlFileFilter());
     fc.setFileFilter(ExtensionFileFilter.getXmlFileFilter());
     fc.setDialogTitle(ResourceMgr.getString("MsgSelectMacroFile"));

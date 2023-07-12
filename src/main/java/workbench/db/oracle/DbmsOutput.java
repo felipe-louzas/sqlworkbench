@@ -32,7 +32,6 @@ import workbench.log.LogMgr;
 
 import workbench.db.JdbcUtils;
 
-import workbench.db.JdbcUtils;
 import workbench.util.StringUtil;
 
 /**
@@ -42,7 +41,7 @@ import workbench.util.StringUtil;
  */
 public class DbmsOutput
 {
-  private Connection conn;
+  private final Connection conn;
   private boolean enabled = false;
   private long lastSize;
   private final boolean useGetLines;
