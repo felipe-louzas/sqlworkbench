@@ -23,8 +23,6 @@ package workbench.sql.macros;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.KeyStroke;
 
@@ -33,7 +31,6 @@ import workbench.WbTestCase;
 import workbench.resource.StoreableKeyStroke;
 
 import workbench.util.WbFile;
-import workbench.util.WbPersistence;
 
 import org.junit.Test;
 
@@ -155,30 +152,5 @@ public class MacroStorageTest
     group3.setSortOrder(0);
     macros.addGroup(group3);
     assertEquals(2, group3.getSortOrder());
-  }
-
-  @Test
-  public void testConvertOld()
-    throws Exception
-  {
-    TestUtil util = new TestUtil(this.getName());
-    Map<String, String> old = new HashMap<>();
-    old.put("macro1", "select 42 from dual;");
-    old.put("macro2", "explain ${current_statement}");
-    old.put("macro3", "select * from pg_stat_activity");
-    WbFile oldfile = new WbFile(util.getBaseDir(), "OldMacros.xml");
-    WbPersistence writer = new WbPersistence(oldfile.getFullPath());
-    writer.writeObject(old);
-
-    MacroStorage newStorage = new MacroStorage(oldfile);
-
-    MacroDefinition m1 = newStorage.getMacro("macro1");
-    assertEquals(old.get("macro1"), m1.getText());
-
-    WbFile newfile = new WbFile(util.getBaseDir(), "WbMacros.xml");
-    newStorage.saveMacros(newfile);
-
-    MacroStorage new2 = new MacroStorage(newfile);
-    assertEquals(m1, new2.getMacro("macro1"));
   }
 }

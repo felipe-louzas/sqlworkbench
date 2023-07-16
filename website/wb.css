@@ -278,6 +278,14 @@ ol > li
   font-weight: normal;
 }
 
+ul.compact > li 
+{
+  list-style: square;
+  margin-bottom: 1px;
+  padding-bottom:2px;
+  font-weight: normal;
+  line-height: 105%;
+}
 
 li
 {

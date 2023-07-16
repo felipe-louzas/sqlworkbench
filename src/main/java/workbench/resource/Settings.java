@@ -693,11 +693,21 @@ public class Settings
     return new WbFile(getConfigDir(), "WbShortcuts.xml").getFullPath();
   }
 
+  public boolean getWatchMacroFiles()
+  {
+    return getBoolProperty("workbench.macrostorage.watch.files", false);
+  }
+
+  public void setWatchMacroFiles(boolean flag)
+  {
+    setProperty("workbench.macrostorage.watch.files", flag);
+  }
+
   public boolean enableDirectoryBasedMacroStorage()
   {
     return getBoolProperty("workbench.macrostorage.allow.directory.storage", false);
   }
-  
+
   public String getMacroStorage()
   {
     String macros = this.props.getProperty(PROPERTY_DEFAULT_MACRO_STORAGE);

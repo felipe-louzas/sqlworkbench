@@ -76,6 +76,7 @@ import workbench.util.ClasspathCheck;
 import workbench.util.CollectionUtil;
 import workbench.util.DeadlockMonitor;
 import workbench.util.FileUtil;
+import workbench.util.FileWatcherFactory;
 import workbench.util.MacOSHelper;
 import workbench.util.MemoryWatcher;
 import workbench.util.StringUtil;
@@ -361,6 +362,7 @@ public final class WbManager
     }
 
     inShutdown = true;
+    FileWatcherFactory.getInstance().stopAllWatchers();
 
     if (window == null)
     {
@@ -426,8 +428,8 @@ public final class WbManager
     }
   }
 
-  /**
-   *	this gets called from exitWorkbench() when disconnecting everything
+  /*
+   *	This gets called from exitWorkbench() when disconnecting everything
    */
   private void disconnected()
   {
