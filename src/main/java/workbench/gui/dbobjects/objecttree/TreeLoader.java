@@ -997,6 +997,7 @@ public class TreeLoader
     List<IndexDefinition> indexes = meta.getIndexReader().getTableIndexList(tbl, false);
     DbObjectSorter.sort(indexes, Settings.getInstance().useNaturalSortForTableList());
 
+    boolean removeColumnQuotes = DbTreeSettings.removeColumnQuotesForDisplay();
     for (IndexDefinition idx : indexes)
     {
       ObjectTreeNode node = new ObjectTreeNode(idx);
@@ -1004,7 +1005,7 @@ public class TreeLoader
       node.setChildrenLoaded(true);
       for (IndexColumn col : idx.getColumns())
       {
-         ObjectTreeNode idxCol = new ObjectTreeNode(col.getExpression(), TYPE_IDX_COL);
+         ObjectTreeNode idxCol = new ObjectTreeNode(col.getExpression(removeColumnQuotes), TYPE_IDX_COL);
          idxCol.setAllowsChildren(false);
          idxCol.setChildrenLoaded(true);
          node.add(idxCol);

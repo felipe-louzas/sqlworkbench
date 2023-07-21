@@ -26,7 +26,6 @@ import workbench.resource.Settings;
 
 import workbench.util.StringUtil;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -98,6 +97,10 @@ public class DbTreeSettings
     Settings.getInstance().setProperty(SETTINGS_PREFIX + "count.rows.visible", flag);
   }
 
+  public static boolean removeColumnQuotesForDisplay()
+  {
+    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "columns.remove.quotes", true);
+  }
 
   /**
    * Controls if the SELECT statement for displaying a table's data through drag and drop

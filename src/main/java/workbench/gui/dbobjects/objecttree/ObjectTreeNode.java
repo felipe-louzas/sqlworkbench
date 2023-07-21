@@ -49,7 +49,6 @@ import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbNumberFormatter;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -315,17 +314,17 @@ public class ObjectTreeNode
     if (dbo instanceof ColumnIdentifier)
     {
       ColumnIdentifier col = (ColumnIdentifier)dbo;
-      String name = null;
-      String type = null;
-      if (col.isNullable())
+      String name = col.getColumnName();
+      String type = col.getDbmsType();
+      if (DbTreeSettings.removeColumnQuotesForDisplay())
       {
-        name = col.getColumnName();
-        type = col.getDbmsType();
+        name = SqlUtil.removeObjectQuotes(name);
       }
-      else
+
+      if (!col.isNullable())
       {
-        name = "<b>" + col.getColumnName() + "</b>";
-        type = col.getDbmsType() + " NOT NULL";
+        name = "<b>" + name + "</b>";
+        type = type + " NOT NULL";
       }
       return "<html>" + name + " - <tt>" + type + "</tt></html>";
     }

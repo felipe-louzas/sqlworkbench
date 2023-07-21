@@ -82,13 +82,19 @@ public class IndexColumn
 
   public String getExpression()
   {
+    return getExpression(false);
+  }
+
+  public String getExpression(boolean removeColumnQuotes)
+  {
+    String colName = removeColumnQuotes ? SqlUtil.removeObjectQuotes(column) : column;
     if (StringUtil.isEmpty(direction))
     {
-      return column;
+      return colName;
     }
     else
     {
-      return column+ " " + getDirection();
+      return colName + " " + getDirection();
     }
   }
 
