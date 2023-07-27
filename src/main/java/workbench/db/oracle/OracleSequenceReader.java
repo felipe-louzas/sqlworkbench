@@ -52,15 +52,19 @@ import workbench.util.StringUtil;
 public class OracleSequenceReader
   implements SequenceReader
 {
-  private WbConnection connection;
-  private boolean is12c;
-  private boolean hasIdentitySeqName;
+  private final WbConnection connection;
+  private final boolean is12c;
+  private final boolean hasIdentitySeqName;
+  private final boolean is19c;
+  public static final String PROP_EXTEND = "extend";
+  public static final String PROP_SCALE = "scale";
 
   public OracleSequenceReader(WbConnection conn)
   {
-    this.connection = conn;
-    this.is12c = JdbcUtils.hasMinimumServerVersion(connection, "12.1");
+    connection = conn;
+    is12c = JdbcUtils.hasMinimumServerVersion(connection, "12.1");
     hasIdentitySeqName = OracleUtils.is12_1_0_2(conn);
+    is19c = JdbcUtils.hasMinimumServerVersion(connection, "19.0");
   }
 
   @Override
@@ -100,8 +104,10 @@ public class OracleSequenceReader
       "       case when order_flag = 'Y' then 'ORDER' else 'NOORDER' end as order_flag, \n" +
       "       s.cache_size, \n" +
       "       s.last_number, \n" +
-      (hasIdentitySeqName ? "       ic.table_name, \n" : "       null as table_name, \n") +
-      (hasIdentitySeqName ? "       ic.column_name \n" : "       null as column_name \n") +
+      (is19c              ? "       s.scale_flag,  \n" : "       null as scale_flag,  \n") +
+      (is19c              ? "       s.extend_flag, \n" : "       null as extend_flag, \n") +
+      (hasIdentitySeqName ? "       ic.table_name, \n" : "       null as table_name,  \n") +
+      (hasIdentitySeqName ? "       ic.column_name \n" : "       null as column_name  \n") +
       "from all_sequences s \n");
 
     if (hasIdentitySeqName)
@@ -183,6 +189,8 @@ public class OracleSequenceReader
     result.setSequenceProperty(PROP_CYCLE, Boolean.toString("CYCLE".equalsIgnoreCase(ds.getValueAsString(row, "CYCLE_FLAG"))));
     result.setSequenceProperty(PROP_CACHE_SIZE, ds.getValue(row, "CACHE_SIZE"));
     result.setSequenceProperty(PROP_ORDERED, Boolean.toString("ORDER".equalsIgnoreCase(ds.getValueAsString(row, "ORDER_FLAG"))));
+    result.setSequenceProperty(PROP_SCALE, ds.getValueAsString(row, "SCALE_FLAG"));
+    result.setSequenceProperty(PROP_EXTEND, ds.getValueAsString(row, "EXTEND_FLAG"));
 
     int tblIndex = ds.getColumnIndex("TABLE_NAME");
     if (tblIndex > -1)
@@ -275,11 +283,24 @@ public class OracleSequenceReader
       result.append(nl).append("       NOCACHE");
     }
     result.append(nl).append("       ");
-    result.append(Boolean.valueOf(cycle) ? "CYCLE" : "NOCYCLE");
+    result.append(Boolean.parseBoolean(cycle) ? "CYCLE" : "NOCYCLE");
 
     result.append(nl).append("       ");
-    result.append(Boolean.valueOf(order) ? "ORDER" : "NOORDER");
+    result.append(Boolean.parseBoolean(order) ? "ORDER" : "NOORDER");
 
+    if (is19c)
+    {
+      String scale = (String)def.getSequenceProperty(PROP_SCALE);
+      String extend = (String)def.getSequenceProperty(PROP_EXTEND);
+      if ("Y".equalsIgnoreCase(scale))
+      {
+        result.append(nl).append("       SCALE");
+        if ("Y".equalsIgnoreCase(extend))
+        {
+          result.append(" EXTEND");
+        }
+      }
+    }
     result.append(';');
     result.append(nl);
 
