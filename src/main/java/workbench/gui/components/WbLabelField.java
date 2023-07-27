@@ -28,6 +28,7 @@ import java.awt.Font;
 
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
@@ -42,12 +43,19 @@ import workbench.gui.actions.WbAction;
 public class WbLabelField
   extends JTextField
 {
+  private static final Border DEFAULT_BORDER = new EmptyBorder(2, 5, 2, 2);
   private TextComponentMouseListener mouseListener;
 
   public WbLabelField()
   {
     super();
     init();
+  }
+
+  public WbLabelField(Border border)
+  {
+    super();
+    init(border);
   }
 
   public WbLabelField(String text)
@@ -58,12 +66,17 @@ public class WbLabelField
 
   private void init()
   {
+    init(DEFAULT_BORDER);
+  }
+  
+  private void init(Border border)
+  {
     setUI(new BasicTextFieldUI());
     setEditable(false);
     setOpaque(false);
     mouseListener = new TextComponentMouseListener();
     addMouseListener(mouseListener);
-    setBorder(new EmptyBorder(2, 5, 2, 2));
+    setBorder(border);
 
     Font f = UIManager.getFont("Label.font");
     if (f != null)

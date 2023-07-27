@@ -26,8 +26,11 @@ import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
+import workbench.resource.ResourceMgr;
 
 import workbench.gui.WbSwingUtilities;
 
@@ -65,6 +68,54 @@ public class FileTree
   public void setDirectories(List<File> dirs)
   {
     this.loader.setDirectories(dirs);
+  }
+
+  /**
+   * Returns the number of files below the currently selected node.
+   *
+   * Returns -1 if the current selection is not a directory.
+   */
+  public String getSelectionSummary()
+  {
+    TreePath path = getSelectionPath();
+    if (path == null || path.getPathCount() < 1) return "";
+
+    TreeNode node = (TreeNode)path.getLastPathComponent();
+    String msg = "";
+    if (node instanceof FileNode && node.getAllowsChildren())
+    {
+      FileNode fn = (FileNode)node;
+      int fileCount = 0;
+      int dirCount = 0;
+      int children = fn.getChildCount();
+      for (int i=0; i < children; i++)
+      {
+        FileNode childNode = (FileNode)fn.getChildAt(i);
+        if (childNode.getFile() != null)
+        {
+          if (childNode.getFile().isFile())
+          {
+            fileCount ++;
+          }
+          if (childNode.getFile().isDirectory())
+          {
+            dirCount ++;
+          }
+        }
+      }
+      if (dirCount > 0)
+      {
+        msg = ResourceMgr.getFormattedString("TxtNumDirs", dirCount);
+      }
+      
+      if (fileCount > 0)
+      {
+        if (msg.length() > 0) msg += ", ";
+        msg += ResourceMgr.getFormattedString("TxtNumFiles", fileCount);
+      }
+
+    }
+    return msg;
   }
 
   public File getSelectedRootDir()

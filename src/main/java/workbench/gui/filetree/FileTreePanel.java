@@ -44,6 +44,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -65,10 +66,10 @@ import workbench.gui.actions.ReloadAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.CloseIcon;
 import workbench.gui.components.WbFileChooser;
+import workbench.gui.components.WbLabelField;
 import workbench.gui.components.WbPopupMenu;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.components.WbToolbarButton;
-import workbench.gui.dbobjects.DbObjectSourcePanel;
 import workbench.gui.sql.SqlPanel;
 
 import workbench.util.FileUtil;
@@ -89,14 +90,14 @@ public class FileTreePanel
 
   private final FileTree tree;
   private JPanel toolPanel;
-  public ReloadAction reload;
+  private ReloadAction reload;
   private WbToolbarButton closeButton;
-  public DbObjectSourcePanel source;
   private final MainWindow window;
   private JTextField filterText;
   private JButton addDirectoryButton;
   private JButton removeDirectoryButton;
   private String workspaceDefaultDir;
+  private final WbLabelField statusBar;
 
   public FileTreePanel(MainWindow window)
   {
@@ -116,8 +117,10 @@ public class FileTreePanel
     scroll.setBorder(WbSwingUtilities.EMPTY_BORDER);
     createToolbar();
 
+    statusBar = new WbLabelField(new EmptyBorder(3, 5, 3, 3));
     add(toolPanel, BorderLayout.PAGE_START);
     add(scroll, BorderLayout.CENTER);
+    add(statusBar, BorderLayout.PAGE_END);
   }
 
   private void createToolbar()
@@ -512,6 +515,7 @@ public class FileTreePanel
   public void valueChanged(TreeSelectionEvent e)
   {
     removeDirectoryButton.setEnabled(tree.isRootDirSelected());
+    statusBar.setText(tree.getSelectionSummary());
   }
 
 }

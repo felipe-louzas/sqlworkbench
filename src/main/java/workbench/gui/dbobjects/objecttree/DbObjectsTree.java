@@ -68,10 +68,10 @@ public class DbObjectsTree
   implements TreeExpansionListener, Serializable, TreeSelectionListener
 {
   private TreeLoader loader;
-  private ObjectTreeDragSource dragSource;
-  private WbStatusLabel statusBar;
-  private DbObjectNodeRenderer renderer;
-  private Map<ObjectTreeNode, Runnable> afterLoadProcess = new ConcurrentHashMap<>();
+  private final ObjectTreeDragSource dragSource;
+  private final WbStatusLabel statusBar;
+  private final DbObjectNodeRenderer renderer;
+  private final Map<ObjectTreeNode, Runnable> afterLoadProcess = new ConcurrentHashMap<>();
   private boolean ignoreEvents;
   private final ReentrantLock loadLock = new ReentrantLock();
 

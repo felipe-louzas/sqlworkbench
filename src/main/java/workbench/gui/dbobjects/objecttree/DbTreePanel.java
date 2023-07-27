@@ -112,11 +112,11 @@ public class DbTreePanel
   public static final String PROP_TYPES = "tree.selectedtypes";
 
   private static int instanceCount = 0;
-  private DbObjectsTree tree;
-  private int id;
+  private final DbObjectsTree tree;
+  private final int id;
   private WbConnection connection;
-  private WbStatusLabel statusBar;
-  private WbLabelField currentSchemaLabel;
+  private final WbStatusLabel statusBar;
+  private final WbLabelField currentSchemaLabel;
   private JPanel schemaPanel;
   private MultiSelectComboBox<String> typeFilter;
   private List<String> selectedTypes;
