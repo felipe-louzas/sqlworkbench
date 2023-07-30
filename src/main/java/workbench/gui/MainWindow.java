@@ -39,6 +39,7 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -195,7 +196,6 @@ import workbench.util.VersionNumber;
 import workbench.util.WbFile;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
-import workbench.util.ZipUtil;
 
 /**
  * The main window for SQL Workbench.
@@ -3600,15 +3600,6 @@ public class MainWindow
     if (!WbManager.getInstance().getSettingsShouldBeSaved()) return true;
 
     final CallerInfo ci = new CallerInfo(){};
-    if (currentWorkspace != null && currentWorkspace.isOpen())
-    {
-      LogMgr.logWarning(ci,
-        "Current workspace " + WbFile.getPathForLogging(currentWorkspace.getFilename()) +
-          " is already open in window \"" + getTitle() + "\". Can't save it now.",
-        new Exception("Backtrace"));
-      return true;
-    }
-
     boolean interactive = false;
 
     if (filename == null)
@@ -3634,22 +3625,15 @@ public class MainWindow
 
     long start = System.currentTimeMillis();
 
-    File backupFile = null;
+    File backupFile = currentWorkspace.createBackup();
     boolean isTempBackup = false;
     boolean restoreBackup = false;
 
-    if (Settings.getInstance().getCreateWorkspaceBackup())
+    if (!Settings.getInstance().getCreateWorkspaceBackup())
     {
-      backupFile = FileUtil.createBackup(workspaceFile);
-    }
-
-    if (backupFile == null)
-    {
-      // create a backup of the current workspace in order to preserve it
-      // in case something goes wrong when writing the new workspace, at least the last good version can be restored
-      backupFile = workspaceFile.makeBackup();
-      LogMgr.logDebug(ci, "Created temporary backup file: " + WbFile.getPathForLogging(backupFile));
       isTempBackup = true;
+      LogMgr.logInfo(ci, "Created temporary backup \"" + WbFile.getPathForLogging(backupFile) +
+        "\" of workspace: " + workspaceFile.getFullpathForLogging());
     }
 
     this.showMacroPopup.saveWorkspaceSettings();
@@ -3701,8 +3685,6 @@ public class MainWindow
           p.get().storeInWorkspace(currentWorkspace, i);
         }
       }
-
-      currentWorkspace.openForWriting();
       currentWorkspace.save();
       long duration = System.currentTimeMillis() - start;
       LogMgr.logDebug(ci, "Workspace " + workspaceFile.getFullpathForLogging() + " saved in " + duration + "ms");
@@ -3715,7 +3697,7 @@ public class MainWindow
       success = false;
     }
 
-    if (!ZipUtil.isValid(workspaceFile, currentWorkspace.getLastCRCValues()))
+    if (!currentWorkspace.isOutputValid())
     {
       LogMgr.logError(ci, "Generated ZIP archive " + WbFile.getPathForLogging(workspaceFile) + " is not valid!", null);
       File savedCorrupt = new File(realFilename + "_corrupt");
@@ -3728,7 +3710,16 @@ public class MainWindow
     if (restoreBackup)
     {
       LogMgr.logWarning(ci, "Restoring the old workspace file from backup: " + WbFile.getPathForLogging(backupFile));
-      FileUtil.copySilently(backupFile, workspaceFile);
+      try
+      {
+        currentWorkspace.restoreBackup(backupFile);
+      }
+      catch (IOException io)
+      {
+        LogMgr.logError(ci, "Error when restoring workspace backup " + WbFile.getPathForLogging(backupFile), io);
+        WbSwingUtilities.showErrorMessage(this, ResourceMgr.getString("ErrRestoreWkspBck") + "\n" + ExceptionUtil.getDisplay(io));
+        success = false;
+      }
     }
 
     if (isTempBackup && success)

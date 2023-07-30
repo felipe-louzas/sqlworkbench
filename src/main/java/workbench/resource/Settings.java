@@ -708,6 +708,16 @@ public class Settings
     return getBoolProperty("workbench.macrostorage.allow.directory.storage", false);
   }
 
+  public boolean enableDirectoryBasedWorkspaceStorage()
+  {
+    return getBoolProperty("workbench.workspace.allow.directory.storage", false);
+  }
+
+  public void setEnableDirectoryBasedWorkspaceStorage(boolean flag)
+  {
+    setProperty("workbench.workspace.allow.directory.storage", flag);
+  }
+
   public String getMacroStorage()
   {
     String macros = this.props.getProperty(PROPERTY_DEFAULT_MACRO_STORAGE);

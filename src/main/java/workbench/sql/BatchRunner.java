@@ -50,7 +50,6 @@ import workbench.interfaces.ParameterPrompter;
 import workbench.interfaces.ResultLogger;
 import workbench.interfaces.ResultSetConsumer;
 import workbench.interfaces.ScriptErrorHandler;
-import workbench.interfaces.SqlHistoryProvider;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
@@ -251,9 +250,9 @@ public class BatchRunner
     this.stmtRunner.setBaseDir(dir);
   }
 
-  public void setHistoryProvider(SqlHistoryProvider provider)
+  public void setHistoryProvider(StatementHistory provider)
   {
-    this.stmtRunner.setHistoryProvider(provider);
+    this.stmtRunner.setSqlHistory(provider);
   }
 
   public void setUseSavepoint(boolean flag)

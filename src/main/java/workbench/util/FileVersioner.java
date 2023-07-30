@@ -104,15 +104,26 @@ public class FileVersioner
   public File createBackup(File toBackup)
     throws IOException
   {
-    if (toBackup == null) return null;
     if (!toBackup.exists()) return null;
+    File backup = getNextBackupFile(toBackup);
+    long start = System.currentTimeMillis();
+    FileUtil.copy(toBackup, backup);
+    long duration = System.currentTimeMillis() - start;
+    LogMgr.logDebug(new CallerInfo(){}, "Created file \"" +
+      WbFile.getPathForLogging(backup.getAbsolutePath()) + "\" as a backup of \"" +
+      WbFile.getPathForLogging(toBackup) + "\" in " + duration + "ms");
+    return backup;
+  }
 
+  public File getNextBackupFile(File toBackup)
+  {
+    if (toBackup == null) return null;
     long start = System.currentTimeMillis();
     int nextVersion = findNextIndex(toBackup);
     File dir = getTargetDir(toBackup);
     if (dir == null)
     {
-      LogMgr.logWarning(new CallerInfo(){}, "Could not determine target directory. Using current directory");
+      LogMgr.logWarning(new CallerInfo(){}, "Could not determine target directory for backup. Using current directory");
       dir = new File(".");
     }
 
@@ -126,13 +137,10 @@ public class FileVersioner
         dir = toBackup.getParentFile();
       }
     }
-    File backup = new File(dir, toBackup.getName() + versionSeparator + nextVersion);
-    FileUtil.copy(toBackup, backup);
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(new CallerInfo(){}, "Created file \"" +
-      WbFile.getPathForLogging(backup.getAbsolutePath()) + "\" as a backup of \"" +
-      WbFile.getPathForLogging(toBackup) + "\" in " + duration + "ms");
-    return backup;
+    LogMgr.logDebug(new CallerInfo(){}, "Calculating next backup version for file \"" +
+      WbFile.getPathForLogging(toBackup) + "\" took " + duration + "ms");
+    return new File(dir, toBackup.getName() + versionSeparator + nextVersion);
   }
 
   private File getTargetDir(File target)
@@ -143,8 +151,6 @@ public class FileVersioner
 
   private int findNextIndex(File target)
   {
-    if (!target.exists()) return 1;
-
     File targetDir = getTargetDir(target);
     if (!targetDir.exists()) return 1;
 

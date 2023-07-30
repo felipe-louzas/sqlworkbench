@@ -197,8 +197,16 @@ public class FileDialogUtil
       JFileChooser fc = new WbFileChooser(lastDir);
 
       FileFilter wksp = ExtensionFileFilter.getWorkspaceFileFilter();
-      fc.removeChoosableFileFilter(fc.getFileFilter()); // remove the default "All files filter"
-      fc.addChoosableFileFilter(wksp);
+      if (Settings.getInstance().enableDirectoryBasedWorkspaceStorage())
+      {
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+      }
+      else
+      {
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.removeChoosableFileFilter(fc.getFileFilter()); // remove the default "All files filter"
+        fc.addChoosableFileFilter(wksp);
+      }
 
       String filename = null;
 
@@ -223,7 +231,7 @@ public class FileDialogUtil
           filename = fl.getAbsolutePath();
 
           String ext = ExtensionFileFilter.getExtension(fl);
-          if (StringUtil.isEmpty(ext))
+          if (StringUtil.isEmpty(ext) && !fl.isDirectory())
           {
             if (!filename.endsWith(".")) filename += ".";
             filename += ExtensionFileFilter.WORKSPACE_EXT;

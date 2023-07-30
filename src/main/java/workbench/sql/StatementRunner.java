@@ -39,7 +39,6 @@ import workbench.interfaces.ParameterPrompter;
 import workbench.interfaces.ResultLogger;
 import workbench.interfaces.ResultSetConsumer;
 import workbench.interfaces.ScriptErrorHandler;
-import workbench.interfaces.SqlHistoryProvider;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
@@ -122,7 +121,7 @@ public class StatementRunner
 
   // The history provider is here to give SqlCommands access to the command history.
   // Currently this is only used in WbHistory to show a list of executed statements.
-  private SqlHistoryProvider history;
+  private StatementHistory history;
 
   public StatementRunner()
   {
@@ -164,12 +163,12 @@ public class StatementRunner
     this.retryHandler = handler;
   }
 
-  public void setHistoryProvider(SqlHistoryProvider provider)
+  public void setSqlHistory(StatementHistory provider)
   {
     this.history = provider;
   }
 
-  public SqlHistoryProvider getHistoryProvider()
+  public StatementHistory getSqlHistory()
   {
     return this.history;
   }

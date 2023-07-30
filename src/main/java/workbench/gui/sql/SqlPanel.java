@@ -1795,7 +1795,7 @@ public class SqlPanel
     {
       this.stmtRunner.setConnection(aConnection);
       this.stmtRunner.setMessageLogger(this);
-      this.stmtRunner.setHistoryProvider(this.historyStatements);
+      this.stmtRunner.setSqlHistory(this.historyStatements);
     }
 
     if (this.editor != null) this.editor.setDatabaseConnection(this.dbConnection);

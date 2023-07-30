@@ -27,12 +27,12 @@ import java.util.Collections;
 import java.util.List;
 
 import workbench.WbManager;
-import workbench.interfaces.SqlHistoryProvider;
 import workbench.resource.GuiSettings;
 
 import workbench.storage.DataStore;
 
 import workbench.sql.SqlCommand;
+import workbench.sql.StatementHistory;
 import workbench.sql.StatementRunnerResult;
 import workbench.sql.annotations.ScrollAnnotation;
 
@@ -80,11 +80,11 @@ public class WbHistory
   {
     StatementRunnerResult result = new StatementRunnerResult();
 
-    SqlHistoryProvider provider = this.runner.getHistoryProvider();
+    StatementHistory sqlHistory = this.runner.getSqlHistory();
     List<String> history = Collections.emptyList();
-    if (provider != null)
+    if (sqlHistory != null)
     {
-      history = provider.getHistoryEntries();
+      history = sqlHistory.getHistoryEntries();
     }
 
     String parameter = this.getCommandLine(sql);

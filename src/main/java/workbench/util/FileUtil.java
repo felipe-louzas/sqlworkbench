@@ -47,10 +47,10 @@ import java.util.Objects;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
-import static workbench.resource.Settings.*;
 
 /**
  * @author  Thomas Kellerer
@@ -360,6 +360,40 @@ public class FileUtil
   }
 
   /**
+   * Copies all files from the source directory to the target directory.
+   *
+   * This method does not work recursively.
+   *
+   * If the source does not exist or is not a directory, nothing is copied.
+   *
+   * If the target exists and is not a directory, nothing is copied.
+   *
+   * @param source          the source directory
+   * @param destination     the destination directory
+   * @throws IOException
+   */
+  public static void copyDirectory(File source, File destination)
+    throws IOException
+  {
+    if (source == null || destination == null) return;
+    if (!source.exists()) return;
+    if (!source.isDirectory()) return;
+
+    if (destination.exists() && !destination.isDirectory()) return;
+
+    if (!destination.exists())
+    {
+      destination.mkdirs();
+    }
+
+    for (File f : source.listFiles())
+    {
+      File targetFile = new File(destination, f.getName());
+      copy(source, targetFile);
+    }
+  }
+
+  /**
    * Copies a file without throwing an exception.
    *
    * @param fromFile
@@ -374,7 +408,14 @@ public class FileUtil
 
     try
     {
-      copy(fromFile, toFile);
+      if (fromFile.isDirectory())
+      {
+        copyDirectory(fromFile, toFile);
+      }
+      else
+      {
+        copy(fromFile, toFile);
+      }
     }
     catch (Exception ex)
     {
@@ -392,6 +433,21 @@ public class FileUtil
   public static long copy(InputStream in, OutputStream out)
     throws IOException
   {
+    return copy(in, out, true);
+  }
+
+  /**
+   * Copies the content of the InputStream to the OutputStream.
+   *
+   * @param in the source
+   * @param out the destination
+   * @param closeStreams if true, both streams are closed automatically.
+   * 
+   * @return the number of bytes copied
+   */
+  public static long copy(InputStream in, OutputStream out, boolean closeStreams)
+    throws IOException
+  {
     long filesize = 0;
     try
     {
@@ -406,8 +462,11 @@ public class FileUtil
     }
     finally
     {
-      closeQuietely(out);
-      closeQuietely(in);
+      if (closeStreams)
+      {
+        closeQuietely(out);
+        closeQuietely(in);
+      }
     }
     return filesize;
   }
@@ -793,10 +852,11 @@ public class FileUtil
     if (f == null) return null;
     if (!f.exists()) return null;
 
-    int maxVersions = getInstance().getMaxBackupFiles();
-    File dir = getInstance().getBackupDir();
-    char sep = getInstance().getFileVersionDelimiter();
+    int maxVersions = Settings.getInstance().getMaxBackupFiles();
+    File dir = Settings.getInstance().getBackupDir();
+    char sep = Settings.getInstance().getFileVersionDelimiter();
     FileVersioner version = new FileVersioner(maxVersions, dir, sep);
+
     try
     {
       return version.createBackup(f);

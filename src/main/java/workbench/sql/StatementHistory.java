@@ -28,7 +28,6 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 
-import workbench.interfaces.SqlHistoryProvider;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
@@ -47,7 +46,6 @@ import workbench.util.StringUtil;
  */
 public class StatementHistory
   extends FixedSizeList<String>
-  implements SqlHistoryProvider
 {
 
   public StatementHistory(int max)
@@ -57,7 +55,6 @@ public class StatementHistory
     doAppend(true);
   }
 
-  @Override
   public synchronized boolean add(String statement)
   {
     if (StringUtil.isEmpty(statement)) return false;
@@ -71,13 +68,11 @@ public class StatementHistory
     return super.add(statement);
   }
 
-  @Override
   public List<String> getHistoryEntries()
   {
     return Collections.unmodifiableList(this.getEntries());
   }
 
-  @Override
   public String getHistoryEntry(int index)
   {
     return this.get(index);
@@ -98,7 +93,6 @@ public class StatementHistory
     }
   }
 
-  @Override
   public void readFrom(BufferedReader reader)
     throws IOException
   {
@@ -133,7 +127,6 @@ public class StatementHistory
    * The caller needs to close the Writer instance.
    *
    */
-  @Override
   public void saveTo(Writer writer)
     throws IOException
   {

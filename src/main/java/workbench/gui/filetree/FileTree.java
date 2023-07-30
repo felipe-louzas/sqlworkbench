@@ -81,10 +81,13 @@ public class FileTree
     if (path == null || path.getPathCount() < 1) return "";
 
     TreeNode node = (TreeNode)path.getLastPathComponent();
+
+    if (!(node instanceof FileNode)) return "";
+    FileNode fn = (FileNode)node;
+
     String msg = "";
-    if (node instanceof FileNode && node.getAllowsChildren())
+    if (fn.getAllowsChildren())
     {
-      FileNode fn = (FileNode)node;
       int fileCount = 0;
       int dirCount = 0;
       int children = fn.getChildCount();
@@ -107,13 +110,16 @@ public class FileTree
       {
         msg = ResourceMgr.getFormattedString("TxtNumDirs", dirCount);
       }
-      
+
       if (fileCount > 0)
       {
         if (msg.length() > 0) msg += ", ";
         msg += ResourceMgr.getFormattedString("TxtNumFiles", fileCount);
       }
-
+    }
+    else if (fn.getFile() != null)
+    {
+      msg = fn.getFile().getAbsolutePath();
     }
     return msg;
   }

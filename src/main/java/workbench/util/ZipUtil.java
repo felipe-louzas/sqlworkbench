@@ -23,6 +23,7 @@ package workbench.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -32,9 +33,11 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 /**
  * @author Thomas Kellerer
@@ -175,6 +178,74 @@ public class ZipUtil
     {
       LogMgr.logError(ci, "An error occurred while testing archive: " + WbFile.getPathForLogging(file), e);
       return false;
+    }
+  }
+
+  /**
+   * Creates a ZIP archive with all files in the given directory.
+   *
+   * Sub-Directories are not included.
+   *
+   * @param sourceDir   the directory to zip
+   * @param targetZip   the target ZIP file.
+   * @throws IOException
+   */
+  public static void zipDirectory(File sourceDir, File targetZip)
+    throws IOException
+  {
+    if (sourceDir == null || !sourceDir.exists()) return;
+
+    try (FileOutputStream fout = new FileOutputStream(targetZip);
+         ZipOutputStream zout = new ZipOutputStream(fout);)
+    {
+      zout.setLevel(Settings.getInstance().getIntProperty("workbench.workspace.compression", 5));
+      zout.setComment("SQL Workbench/J Workspace backup");
+      File[] files = sourceDir.listFiles();
+      for (File f : files)
+      {
+        ZipEntry entry = new ZipEntry(f.getName());
+        zout.putNextEntry(entry);
+        copyToZip(f, zout);
+      }
+    }
+    catch (Exception e)
+    {
+      if (e instanceof IOException)
+      {
+        throw (IOException)e;
+      }
+      throw new IOException("Could not create ZIP file", e);
+    }
+  }
+
+  public static void unzipToDirectory(File zip, File targetDirectory)
+    throws IOException
+  {
+
+    try (ZipFile archive = new ZipFile(zip);)
+    {
+      Enumeration<? extends ZipEntry> entries = archive.entries();
+      while (entries.hasMoreElements())
+      {
+        ZipEntry entry = entries.nextElement();
+        InputStream in = archive.getInputStream(entry);
+        File target = new File(targetDirectory, entry.getName());
+        FileOutputStream out = new FileOutputStream(target);
+        FileUtil.copy(in, out);
+      }
+    }
+  }
+
+  private static void copyToZip(File source, ZipOutputStream zout)
+    throws IOException
+  {
+    try (FileInputStream in = new FileInputStream(source);)
+    {
+      FileUtil.copy(in, zout, false);
+    }
+    finally
+    {
+      zout.closeEntry();
     }
   }
 
