@@ -36,7 +36,9 @@ import workbench.resource.Settings;
 import workbench.util.FileUtil;
 import workbench.util.FileVersioner;
 import workbench.util.ZipUtil;
+
 /**
+ * An implementation of WorkpacePersistence that saves a workspace into a directory.
  *
  * @author Thomas Kellerer
  */
@@ -112,6 +114,7 @@ public class DirectoryWorkspacePersistence
     throws IOException
   {
     File toRead = new File(directoryName, entryName);
+    if (!toRead.exists()) return null;
     return new FileInputStream(toRead);
   }
 

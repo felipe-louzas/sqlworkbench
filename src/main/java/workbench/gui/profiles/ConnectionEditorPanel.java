@@ -112,9 +112,9 @@ public class ConnectionEditorPanel
   private ConnectionProfile currentProfile;
   private final List<ProfileChangeListener> changeListener = new ArrayList<>();
   private boolean init;
-  private List<SimplePropertyEditor> editors = new ArrayList<>();
+  private final List<SimplePropertyEditor> editors = new ArrayList<>();
   private Set<String> allTags;
-  private char echoChar;
+  private final char echoChar;
 
   public ConnectionEditorPanel()
   {
@@ -211,6 +211,10 @@ public class ConnectionEditorPanel
     alignHeight(macroFile, selectMacroFileButton);
 
     this.initEditorList();
+
+    String wkspTooltip = ResourceMgr.getFormattedString("d_LblOpenWksp", Settings.getInstance().getWorkspaceDir());
+    tfWorkspaceFile.setToolTipText(wkspTooltip);
+    workspaceFileLabel.setToolTipText(wkspTooltip);
   }
 
   private void alignHeight(JTextField text, JButton button)
@@ -413,7 +417,6 @@ public class ConnectionEditorPanel
 
     workspaceFileLabel.setLabelFor(tfWorkspaceFile);
     workspaceFileLabel.setText(ResourceMgr.getString("LblOpenWksp")); // NOI18N
-    workspaceFileLabel.setToolTipText(ResourceMgr.getString("d_LblOpenWksp")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
@@ -455,7 +458,6 @@ public class ConnectionEditorPanel
     jPanel1.setLayout(new java.awt.GridBagLayout());
 
     tfWorkspaceFile.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-    tfWorkspaceFile.setToolTipText(ResourceMgr.getDescription("LblOpenWksp"));
     tfWorkspaceFile.setName("workspaceFile"); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -487,6 +489,7 @@ public class ConnectionEditorPanel
 
     scriptDirLabel.setLabelFor(tfScriptDir);
     scriptDirLabel.setText(ResourceMgr.getString("LblEditorDefaultDir")); // NOI18N
+    scriptDirLabel.setToolTipText(ResourceMgr.getString("d_LblWkspDefDir")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
@@ -498,7 +501,7 @@ public class ConnectionEditorPanel
     jPanel7.setLayout(new java.awt.GridBagLayout());
 
     tfScriptDir.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-    tfScriptDir.setToolTipText(ResourceMgr.getDescription("LblWkspDefDir"));
+    tfScriptDir.setToolTipText(ResourceMgr.getString("d_LblWkspDefDir")); // NOI18N
     tfScriptDir.setName("defaultDirectory"); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -1123,13 +1126,13 @@ public class ConnectionEditorPanel
       {
         ConnectionEditorPanel.this.testConnectionButtonActionPerformed(evt);
       }
-      else if (evt.getSource() == sshConfig)
-      {
-        ConnectionEditorPanel.this.sshConfigActionPerformed(evt);
-      }
       else if (evt.getSource() == extendedProps)
       {
         ConnectionEditorPanel.this.extendedPropsActionPerformed(evt);
+      }
+      else if (evt.getSource() == sshConfig)
+      {
+        ConnectionEditorPanel.this.sshConfigActionPerformed(evt);
       }
     }
 

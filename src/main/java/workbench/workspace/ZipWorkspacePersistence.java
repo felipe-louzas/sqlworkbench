@@ -42,7 +42,9 @@ import workbench.resource.Settings;
 import workbench.util.FileUtil;
 import workbench.util.WbFile;
 import workbench.util.ZipUtil;
+
 /**
+ * An implementation of WorkpacePersistence that saves a workspace into ZIP archive.
  *
  * @author Thomas Kellerer
  */
@@ -75,6 +77,7 @@ public class ZipWorkspacePersistence
       writeLock = fout.getChannel().lock();
       if (writeLock == null)
       {
+        FileUtil.closeQuietely(fout);
         throw new IOException("Could not obtain a lock on " + filename);
       }
       zout = new ZipOutputStream(fout);
