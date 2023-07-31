@@ -42,6 +42,7 @@ import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DbObjectFinder;
+import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -58,9 +59,6 @@ import workbench.storage.reader.RowDataReaderFactory;
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 import workbench.util.MessageBuffer;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -88,8 +86,8 @@ import workbench.util.WbFile;
 public class TableDataDiff
   implements ProgressReporter, ErrorReporter
 {
-  private WbConnection toSync;
-  private WbConnection reference;
+  private final WbConnection toSync;
+  private final WbConnection reference;
   private TableIdentifier referenceTable;
   private TableIdentifier tableToSync;
   private TableDefinition toSyncDef;
@@ -104,23 +102,24 @@ public class TableDataDiff
   private boolean firstUpdate;
   private boolean firstInsert;
 
-  private SqlLiteralFormatter formatter;
-  private List<ColumnIdentifier> pkColumns = new ArrayList<>();
+  private final SqlLiteralFormatter formatter;
+  private final List<ColumnIdentifier> pkColumns = new ArrayList<>();
   private String lineEnding = "\n";
   private String encoding = "UTF-8";
 
   private boolean cancelExecution;
   private int progressInterval = 10;
+  private String additionalWhereCondition;
 
-  private Set<String> columnsToIgnore = CollectionUtil.caseInsensitiveSet();
-  private RowDataComparer comparer;
+  private final Set<String> columnsToIgnore = CollectionUtil.caseInsensitiveSet();
+  private final RowDataComparer comparer;
 
-  private MessageBuffer warnings = new MessageBuffer();
-  private MessageBuffer errors = new MessageBuffer();
+  private final MessageBuffer warnings = new MessageBuffer();
+  private final MessageBuffer errors = new MessageBuffer();
   private long currentRowNumber;
 
   private Map<String, Set<String>> alternateKeys;
-  private Set<String> realPKCols = CollectionUtil.caseInsensitiveSet();
+  private final Set<String> realPKCols = CollectionUtil.caseInsensitiveSet();
   private boolean excludeRealPK;
   private boolean excludeIgnoredColumns;
   private boolean ignoreMissingTarget;
@@ -139,6 +138,15 @@ public class TableDataDiff
     comparer.setConnection(toSync);
     comparer.setTypeSql();
     comparer.setApplySQLFormatting(Settings.getInstance().getDoFormatInserts() || Settings.getInstance().getDoFormatUpdates());
+  }
+
+  public void setTableWhere(String where)
+  {
+    this.additionalWhereCondition = StringUtil.trimToNull(where);
+    if (additionalWhereCondition != null)
+    {
+      additionalWhereCondition = additionalWhereCondition.replaceFirst("(?i)^WHERE", "");
+    }
   }
 
   public void setWriteHeader(boolean flag)
@@ -431,6 +439,11 @@ public class TableDataDiff
   {
     String retrieve = "SELECT * FROM " + this.referenceTable.getTableExpression(this.reference);
 
+    if (this.additionalWhereCondition != null)
+    {
+      retrieve += " WHERE " + additionalWhereCondition;
+    }
+
     LogMgr.logDebug(new CallerInfo(){}, "Using " + retrieve + " to retrieve rows from reference database");
 
     checkStatement = toSync.createStatementForQuery();
@@ -699,6 +712,11 @@ public class TableDataDiff
         }
       }
       sql.append(") ");
+    }
+    if (this.additionalWhereCondition != null)
+    {
+      sql.append(" AND ");
+      sql.append(additionalWhereCondition);
     }
     return sql.toString();
   }

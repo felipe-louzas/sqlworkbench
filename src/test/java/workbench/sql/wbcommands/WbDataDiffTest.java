@@ -107,7 +107,14 @@ public class WbDataDiffTest
   {
     String script =
       "drop all objects;\n" +
-      "create table some_data (id integer primary key, code varchar(10), firstname varchar(100), lastname varchar(100), foo varchar(20), bar varchar(20));\n" +
+      "create table some_data (" +
+      "  id integer primary key, " +
+      "  code varchar(10), " +
+      "  firstname varchar(100), " +
+      "  lastname varchar(100), " +
+      "  foo varchar(20), " +
+      "  bar varchar(20)" +
+      ");\n" +
       "commit;\n";
 
     setupConnections();
@@ -120,20 +127,18 @@ public class WbDataDiffTest
 
       TestUtil.executeScript(source,
         "insert into some_data (id, code, firstname, lastname, foo) \n" +
-        "values (1, 'ad', 'Arthur', 'Dent', 'foo');\n" +
-        "insert into some_data (id, code, firstname, lastname, foo) \n" +
-        "values (2, 'fp', 'Ford', 'Prefect', 'foobar');\n" +
-        "insert into some_data (id, code, firstname, lastname, foo) \n" +
-        "values (3, 'zb', 'Zaphod', 'Beeblebrox', 'bar');\n " +
+        "values \n" +
+        "(1, 'ad', 'Arthur', 'Dent', 'foo'), \n" +
+        "(2, 'fp', 'Ford', 'Prefect', 'foobar'), \n" +
+        "(3, 'zb', 'Zaphod', 'Beeblebrox', 'bar'); \n " +
         "commit;\n");
 
       TestUtil.executeScript(target,
         "insert into some_data (id, code, firstname, lastname, foo) \n" +
-        "values (100, 'ad', 'Arthur', 'Dent', 'foox');\n" +
-        "insert into some_data (id, code, firstname, lastname, foo) \n" +
-        "values (200, 'fp', 'Ford', 'Prefect', 'foobar');\n" +
-        "insert into some_data (id, code, firstname, lastname, foo) \n" +
-        "values (300, 'zb', 'Zaphod2', 'Beeblebrox', 'bar');\n " +
+        "values \n" +
+        "(100, 'ad', 'Arthur', 'Dent', 'foox'), \n" +
+        "(200, 'fp', 'Ford', 'Prefect', 'foobar'), \n" +
+        "(300, 'zb', 'Zaphod2', 'Beeblebrox', 'bar');\n " +
         "commit;\n");
 
       util.emptyBaseDirectory();
@@ -412,13 +417,14 @@ public class WbDataDiffTest
       "create table foo1 (id integer primary key, some_data varchar(100)); \n" +
       "create table foo2 (id integer primary key, some_data varchar(100)); \n" +
       " \n" +
-      "insert into foo1 values (1, 'one'); \n" +
-      "insert into foo1 values (2, 'two'); \n" +
-      "insert into foo1 values (3, 'three'); \n" +
+      "insert into foo1 values " +
+      "(1, 'one'), \n" +
+      "(2, 'two'), \n" +
+      "(3, 'three'); \n" +
       " \n" +
-      " \n" +
-      "insert into foo2 values (1, 'one-'); \n" +
-      "insert into foo2 values (2, 'two-');";
+      "insert into foo2 values \n" +
+      "(1, 'one-'), \n" +
+      "(2, 'two-');";
 
     WbConnection conn = util.getConnection();
     TestUtil.executeScript(conn, sql);
@@ -481,17 +487,20 @@ public class WbDataDiffTest
 
     try
     {
-      TestUtil.executeScript(source, "DROP ALL OBJECTS;\n"
-        + "create table person (id integer primary key, name varchar(50), nickname varchar(50));\n"
-        + "insert into person values (1, 'Arthur Dent', 'Earthling');\n"
-        + "insert into person values (2, 'Zaphod Beeblebrox', 'President');\n"
-        + "commit;\n");
+      TestUtil.executeScript(source,
+        "DROP ALL OBJECTS;\n" +
+        "create table person (id integer primary key, name varchar(50), nickname varchar(50));\n" +
+        "insert into person values \n" +
+        "(1, 'Arthur Dent', 'Earthling'), \n" +
+        "(2, 'Zaphod Beeblebrox', 'President');\n" +
+        "commit;\n");
 
-      TestUtil.executeScript(target, "DROP ALL OBJECTS;\n"
-        + "create table person (id integer primary key, name varchar(50));\n"
-        + "insert into person values (1, 'Arthur');\n"
-        + "insert into person values (2, 'Zaphod Beeblebrox');\n"
-        + "commit;\n");
+      TestUtil.executeScript(target, "DROP ALL OBJECTS;\n" +
+        "create table person (id integer primary key, name varchar(50));\n" +
+        "insert into person values \n" +
+        "(1, 'Arthur'), \n" +
+        "(2, 'Zaphod Beeblebrox');\n" +
+        "commit;\n");
 
       StatementRunner runner = new StatementRunner();
       runner.setBaseDir(util.getBaseDir());
@@ -534,16 +543,18 @@ public class WbDataDiffTest
     {
       TestUtil.executeScript(source, "DROP ALL OBJECTS;\n" +
         "create table person (id integer primary key, \"p_Name\" varchar(50), \"NickName\" varchar(50));\n" +
-        "insert into person values (1, 'Arthur Dent', 'Earthling');\n" +
-        "insert into person values (2, 'Zaphod Beeblebrox', 'President');\n" +
+        "insert into person values \n" +
+        "(1, 'Arthur Dent', 'Earthling'), \n" +
+        "(2, 'Zaphod Beeblebrox', 'President');\n" +
         "commit;\n");
 
-      TestUtil.executeScript(target, "DROP ALL OBJECTS;\n"
-        + "create table person (id integer primary key, \"p_Name\" varchar(50), \"NickName\" varchar(50));\n"
-        + "insert into person values (1, 'Arthur Dent2', 'Earthling');\n"
-        + "insert into person values (2, 'Zaphod Beeblebrox2', 'President');\n"
-        + "insert into person values (3, 'Ford Prefect', 'Hitchhiker');\n"
-        + "commit;\n");
+      TestUtil.executeScript(target, "DROP ALL OBJECTS;\n" +
+        "create table person (id integer primary key, \"p_Name\" varchar(50), \"NickName\" varchar(50));\n" +
+        "insert into person values \n" +
+        "(1, 'Arthur Dent2', 'Earthling'), \n" +
+        "(2, 'Zaphod Beeblebrox2', 'President'), \n" +
+        "(3, 'Ford Prefect', 'Hitchhiker');\n" +
+        "commit;\n");
 
       StatementRunner runner = new StatementRunner();
       runner.setBaseDir(util.getBaseDir());
@@ -708,4 +719,104 @@ public class WbDataDiffTest
     assertEquals(1, keys.size());
     assertEquals(2, keys.get("person").size());
   }
+
+  @Test
+  public void testTableWhere()
+    throws Exception
+  {
+    String script =
+      "drop all objects;\n" +
+      "create table some_data (" +
+      "  id integer primary key, " +
+      "  created_at timestamp, " +
+      "  code varchar(10), " +
+      "  firstname varchar(100), " +
+      "  lastname varchar(100), " +
+      "  foo varchar(20), " +
+      "  bar varchar(20)" +
+      ");\n" +
+      "commit;\n";
+
+    setupConnections();
+
+    try
+    {
+      util.prepareEnvironment();
+      TestUtil.executeScript(source, script);
+      TestUtil.executeScript(target, script);
+
+      TestUtil.executeScript(source,
+        "insert into some_data (id, created_at, code, firstname, lastname, foo) \n" +
+        "values \n" +
+        "(1, '2023-01-01 00:00:00', 'ad', 'Arthur1', 'Dent', 'foo'), \n" +
+        "(2, '2023-02-01 00:00:00', 'fp', 'Ford', 'Prefect', 'foobar'), \n" +
+        "(3, '2023-03-01 00:00:00', 'zb', 'Zaphod', 'Beeblebrox', 'bar'),\n " +
+        "(4, '2023-04-01 00:00:00', 'ma', 'Marvin', 'Android', 'bar');\n " +
+        "commit;\n");
+
+      TestUtil.executeScript(target,
+        "insert into some_data (id, created_at, code, firstname, lastname, foo) \n" +
+        "values \n" +
+        "(1, '2023-01-01 00:00:00', 'ad', 'Arthur', 'Dent', 'foox'), \n" +
+        "(2, '2023-02-01 00:00:00', 'fp', 'Ford', 'Prefect', 'foobar'), \n" +
+        "(3, '2023-03-01 00:00:00', 'zb', 'Zaphod2', 'Beeblebrox', 'bar'); \n " +
+        "commit;\n");
+
+      util.emptyBaseDirectory();
+
+      StatementRunner runner = new StatementRunner();
+      runner.setBaseDir(util.getBaseDir());
+
+      String sql = "WbDataDiff " +
+        " -referenceProfile=dataDiffSource " +
+        " -targetProfile=dataDiffTarget " +
+        " -includeDelete=false -excludeRealPK=true " +
+        " -alternateKey='some_data=code' -ignoreColumns='foo,bar' " +
+        " -singleFile=true " +
+        " -tableWhere=\"created_at>='2023-03-01 00:00:00'\" " +
+        " -file=sync_ex.sql -encoding=UTF8";
+      StatementRunnerResult result = runner.runStatement(sql);
+
+      assertTrue(result.getMessages().toString(), result.isSuccess());
+
+      WbFile main = new WbFile(util.getBaseDir(), "sync_ex.sql");
+      assertTrue(main.exists());
+      String diffScript = FileUtil.readFile(main, "UTF-8");
+      ScriptParser parser = new ScriptParser(diffScript);
+      assertEquals(3, parser.getSize()); // 1 update plus two commits
+
+      String ins1 = TestUtil.cleanupSql(parser.getCommand(0));
+      assertEquals("INSERT INTO SOME_DATA ( CREATED_AT, CODE, FIRSTNAME, LASTNAME, FOO, BAR ) VALUES ( {ts '2023-04-01 00:00:00.000000'}, 'ma', 'Marvin', 'Android', 'bar', NULL )", ins1);
+      assertTrue(main.delete());
+
+      TestUtil.executeScript(source,
+        "insert into some_data (id, created_at, code, firstname, lastname, foo, bar) \n" +
+        "values (5, '2023-05-01 00:00:00', 'tm', 'Tricia', 'McMillan', 'foo', 'bar');\n " +
+        "commit;\n");
+
+      sql = "WbDataDiff " +
+        " -referenceProfile=dataDiffSource " +
+        " -targetProfile=dataDiffTarget " +
+        " -includeDelete=false -excludeRealPK=true " +
+        " -alternateKey='some_data=code' -ignoreColumns='foo,bar' " +
+        " -singleFile=true " +
+        " -excludeIgnored=true " +
+        " -tableWhere=\"created_at > '2023-04-01 00:00:00'\" " +
+        " -file=sync_ex.sql -encoding=UTF8";
+      result = runner.runStatement(sql);
+
+      assertTrue(result.getMessages().toString(), result.isSuccess());
+      diffScript = FileUtil.readFile(main, "UTF-8");
+      parser = new ScriptParser(diffScript);
+      assertEquals(2, parser.getSize()); // 1 insert plus a commit
+      String ins = TestUtil.cleanupSql(parser.getCommand(0));
+      assertEquals("INSERT INTO SOME_DATA ( CREATED_AT, CODE, FIRSTNAME, LASTNAME ) VALUES ( {ts '2023-05-01 00:00:00.000000'}, 'tm', 'Tricia', 'McMillan' )", ins);
+    }
+    finally
+    {
+      source.disconnect();
+      target.disconnect();
+    }
+  }
+
 }

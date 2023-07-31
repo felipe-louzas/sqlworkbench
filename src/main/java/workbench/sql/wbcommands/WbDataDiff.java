@@ -87,12 +87,13 @@ public class WbDataDiff
   public static final String PARAM_IGNORE_MISSING_TARGET = "ignoreMissingTarget";
   public static final String PARAM_INCLUDE_IDENTITY_COLS = "includeIdentityColumns";
   public static final String PARAM_TABLE_TYPES = "tableTypes";
+  public static final String PARAM_TABLE_WHERE = "tableWhere";
 
   private WbFile outputDir;
   private TableDataDiff dataDiff;
   private TableDeleteSync deleteSync;
   private boolean xmlOutput;
-  private CommonDiffParameters params;
+  private final CommonDiffParameters params;
 
   public WbDataDiff()
   {
@@ -114,6 +115,7 @@ public class WbDataDiff
     cmdLine.addArgument(PARAM_IGNORE_MISSING_TARGET, ArgumentType.BoolSwitch);
     cmdLine.addArgument(PARAM_INCLUDE_IDENTITY_COLS, ArgumentType.BoolArgument);
     cmdLine.addArgument(PARAM_TABLE_TYPES);
+    cmdLine.addArgument(PARAM_TABLE_WHERE);
 
     CommonArgs.addCheckDepsParameter(cmdLine);
     CommonArgs.addSqlDateLiteralParameter(cmdLine);
@@ -270,7 +272,7 @@ public class WbDataDiff
     String nl = Settings.getInstance().getExternalEditorLineEnding();
     boolean useCDATA = cmdLine.getBoolean(WbExport.ARG_USE_CDATA, false);
     List<String> types = cmdLine.getListValue(PARAM_TABLE_TYPES);
-    
+
     params.setIgnoreMissing(ignoreMissing);
 
     CommonDiffParameters.TableMapping mapping = params.getTables(sourceCon, targetCon, types);
@@ -307,6 +309,7 @@ public class WbDataDiff
     }
 
     dataDiff = new TableDataDiff(sourceCon, targetCon);
+    dataDiff.setTableWhere(cmdLine.getValue(PARAM_TABLE_WHERE));
     dataDiff.setSqlDateLiteralType(literalType);
     dataDiff.setIgnoreMissingTarget(ignoreMissing);
 
