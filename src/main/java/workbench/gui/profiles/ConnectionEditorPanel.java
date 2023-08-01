@@ -215,6 +215,10 @@ public class ConnectionEditorPanel
     String wkspTooltip = ResourceMgr.getFormattedString("d_LblOpenWksp", Settings.getInstance().getWorkspaceDir());
     tfWorkspaceFile.setToolTipText(wkspTooltip);
     workspaceFileLabel.setToolTipText(wkspTooltip);
+
+    String macroTooltip = ResourceMgr.getFormattedString("d_LblMacroFile", Settings.getInstance().getMacroBaseDirectory());
+    macroFile.setToolTipText(macroTooltip);
+    macroFileLabel.setToolTipText(macroTooltip);
   }
 
   private void alignHeight(JTextField text, JButton button)
@@ -327,7 +331,7 @@ public class ConnectionEditorPanel
     jPanel4 = new javax.swing.JPanel();
     icon = new StringPropertyEditor();
     selectIconButton = new javax.swing.JButton();
-    jLabel4 = new javax.swing.JLabel();
+    macroFileLabel = new javax.swing.JLabel();
     jPanel5 = new javax.swing.JPanel();
     macroFile = new StringPropertyEditor();
     selectMacroFileButton = new javax.swing.JButton();
@@ -574,15 +578,14 @@ public class ConnectionEditorPanel
     gridBagConstraints.insets = new java.awt.Insets(5, 4, 0, 6);
     jPanel3.add(jPanel4, gridBagConstraints);
 
-    jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-    jLabel4.setText(ResourceMgr.getString("LblMacros")); // NOI18N
-    jLabel4.setToolTipText(ResourceMgr.getString("d_LblMacroFile")); // NOI18N
+    macroFileLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    macroFileLabel.setText(ResourceMgr.getString("LblMacros")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-    jPanel3.add(jLabel4, gridBagConstraints);
+    jPanel3.add(macroFileLabel, gridBagConstraints);
 
     jPanel5.setLayout(new java.awt.GridBagLayout());
 
@@ -1332,7 +1335,6 @@ public class ConnectionEditorPanel
   protected javax.swing.JLabel jLabel1;
   protected javax.swing.JLabel jLabel2;
   protected javax.swing.JLabel jLabel3;
-  protected javax.swing.JLabel jLabel4;
   protected javax.swing.JPanel jPanel1;
   protected javax.swing.JPanel jPanel2;
   protected javax.swing.JPanel jPanel3;
@@ -1345,6 +1347,7 @@ public class ConnectionEditorPanel
   protected javax.swing.JLabel lblUrl;
   protected javax.swing.JLabel lblUsername;
   protected javax.swing.JTextField macroFile;
+  protected javax.swing.JLabel macroFileLabel;
   protected javax.swing.JPanel mainPanel;
   protected javax.swing.JCheckBox preventNoWhere;
   protected javax.swing.JCheckBox readOnly;

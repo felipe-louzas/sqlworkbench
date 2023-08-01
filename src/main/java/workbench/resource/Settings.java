@@ -718,12 +718,21 @@ public class Settings
     setProperty("workbench.workspace.allow.directory.storage", flag);
   }
 
+  public File getMacroBaseDirectory()
+  {
+    String dir = getProperty("workbench.macrostorage.base.directory", null);
+    if (StringUtil.isBlank(dir)) return getConfigDir();
+    File fd = new File(dir);
+    if (fd.exists()) return fd;
+    return getConfigDir();
+  }
+
   public String getMacroStorage()
   {
     String macros = this.props.getProperty(PROPERTY_DEFAULT_MACRO_STORAGE);
     if (macros == null)
     {
-      return new File(getConfigDir(), DEFAULT_MACRO_FILENAME).getAbsolutePath();
+      return new File(getMacroBaseDirectory(), DEFAULT_MACRO_FILENAME).getAbsolutePath();
     }
     String realFilename = FileDialogUtil.replaceConfigDir(macros);
 
@@ -731,7 +740,7 @@ public class Settings
     if (!f.isAbsolute())
     {
       // no directory in filename -> use config directory
-      f = new WbFile(getConfigDir(), realFilename);
+      f = new WbFile(getMacroBaseDirectory(), realFilename);
     }
     return f.getFullPath();
   }

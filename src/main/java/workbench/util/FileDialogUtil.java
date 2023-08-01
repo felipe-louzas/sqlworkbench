@@ -56,6 +56,7 @@ public class FileDialogUtil
 
   private int lastFileType = FILE_TYPE_UNKNOWN;
   public static final String CONFIG_DIR_KEY = "%ConfigDir%";
+  public static final String MACRO_DIR_KEY = "%MacroDir%";
   public static final String WKSP_DIR_KEY = "%WorkspaceDir%";
   public static final String PROGRAM_DIR_KEY = "%ProgramDir%";
   private String encoding = null;
@@ -301,6 +302,13 @@ public class FileDialogUtil
     if (aPathname == null) return null;
     WbFile dir = new WbFile(Settings.getInstance().getConfigDir());
     return StringUtil.replace(aPathname, CONFIG_DIR_KEY, dir.getFullPath());
+  }
+
+  public static String replaceMacroDir(String aPathname)
+  {
+    if (aPathname == null) return null;
+    WbFile dir = new WbFile(Settings.getInstance().getMacroBaseDirectory());
+    return StringUtil.replace(aPathname, MACRO_DIR_KEY, dir.getFullPath());
   }
 
   public static String makeWorkspacePath(String aPathname)

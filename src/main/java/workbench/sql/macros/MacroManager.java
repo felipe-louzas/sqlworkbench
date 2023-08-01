@@ -128,6 +128,11 @@ public class MacroManager
 
   public synchronized void loadMacros(int clientId, WbFile macroFile)
   {
+    if (!macroFile.isAbsolute())
+    {
+      macroFile = new WbFile(Settings.getInstance().getMacroBaseDirectory());
+    }
+
     String newFilename = macroFile.getFullPath();
     String oldFilename = macroClients.get(clientId);
 

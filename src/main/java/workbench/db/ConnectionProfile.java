@@ -218,13 +218,15 @@ public class ConnectionProfile
   public WbFile getMacroFile()
   {
     if (StringUtil.isBlank(macroFileName)) return null;
-    WbFile f = new WbFile(FileDialogUtil.replaceConfigDir(macroFileName));
+    String fname = FileDialogUtil.replaceMacroDir(macroFileName);
+    fname = FileDialogUtil.replaceConfigDir(fname);
+    WbFile f = new WbFile(fname);
     if (f.isAbsolute() && f.exists())
     {
       return f;
     }
-    WbFile realFile = new WbFile(Settings.getInstance().getConfigDir(), macroFileName);
-    if (realFile.exists() && realFile.isFile()) return realFile;
+    WbFile realFile = new WbFile(Settings.getInstance().getMacroBaseDirectory(), macroFileName);
+    if (realFile.exists()) return realFile;
     return null;
   }
 

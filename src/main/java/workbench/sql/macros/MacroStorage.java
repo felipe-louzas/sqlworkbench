@@ -44,7 +44,7 @@ import workbench.util.FileWatcherFactory;
 import workbench.util.WbFile;
 
 /**
- * Manages laoding and saving of macros to an external (XML) file.
+ * Manages loading and saving of macros.
  *
  * <p>Two storage formats are supported:</p>
  * <ul>
@@ -231,9 +231,20 @@ public class MacroStorage
     FileWatcherFactory.getInstance().continueWatcher(sourceFile);
   }
 
+  private boolean sourceIsFile()
+  {
+    if (sourceFile == null) return false;
+
+    if (sourceFile.exists())
+    {
+      return sourceFile.isFile();
+    }
+    return "xml".equalsIgnoreCase(sourceFile.getExtension());
+  }
+
   private MacroPersistence createPersistence()
   {
-    if (sourceFile.isFile())
+    if (sourceIsFile())
     {
       return new XmlMacroPersistence();
     }
