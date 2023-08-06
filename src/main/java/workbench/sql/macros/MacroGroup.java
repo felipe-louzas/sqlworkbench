@@ -21,6 +21,7 @@
  */
 package workbench.sql.macros;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,6 +52,7 @@ public class MacroGroup
   private boolean modified = false;
   private boolean showInMenu = true;
   private boolean showInPopup = true;
+  private File groupInfoFile;
 
   public MacroGroup()
   {
@@ -234,11 +236,21 @@ public class MacroGroup
     modified = false;
   }
 
+  /**
+   * Returns currently visible macros in this group.
+   *
+   * Filtered macros are not returned.
+   *
+   * @see #applyFilter(String)
+   */
   public synchronized List<MacroDefinition> getMacros()
   {
     return macros;
   }
 
+  /**
+   * Returns all macros in this group including filtered macros.
+   */
   public synchronized List<MacroDefinition> getAllMacros()
   {
     List<MacroDefinition> allMacros = new ArrayList<>();
@@ -260,6 +272,17 @@ public class MacroGroup
       deleted.add(macro);
       modified = true;
     }
+  }
+
+  public boolean isGroupForInfoFile(File f)
+  {
+    if (this.groupInfoFile == null || f == null) return false;
+    return this.groupInfoFile.equals(f);
+  }
+  
+  public void setGroupInfoFile(File groupInfoFile)
+  {
+    this.groupInfoFile = groupInfoFile;
   }
 
   /**
@@ -334,7 +357,7 @@ public class MacroGroup
    * Returns the number of macros in this groups that should be displayed in the menu.
    *
    * This might return a non-zero count even if isVisibleInMenu() returns false!
-   * 
+   *
    * @see #getVisibleMacros()
    */
   public int getVisibleMacroSize()

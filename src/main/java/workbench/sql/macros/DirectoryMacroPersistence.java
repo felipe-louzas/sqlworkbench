@@ -127,6 +127,64 @@ public class DirectoryMacroPersistence
     }
   }
 
+  @Override
+  public void reload(List<MacroGroup> groups, File changed)
+  {
+    if (CollectionUtil.isEmpty(groups) || changed == null) return;
+    if (changed.getName().equals(GROUP_INFO_FILE))
+    {
+      for (MacroGroup group : groups)
+      {
+        if (group.isGroupForInfoFile(changed))
+        {
+          readGroupInfo(group, changed);
+        }
+      }
+    }
+    else
+    {
+      reloadSingleMacro(groups, changed);
+    }
+  }
+
+  private void reloadSingleMacro(List<MacroGroup> groups, File changed)
+  {
+    MacroDefinition macro = findMacroForFile(groups, changed);
+    if (macro != null)
+    {
+      try
+      {
+        String content = FileUtil.readFile(changed, "UTF-8");
+        macro.setText(content);
+        LogMgr.logDebug(new CallerInfo(){}, "Reloaded definition for macro: " + macro.getName() + " from: " + WbFile.getPathForLogging(changed));
+      }
+      catch (Exception io)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Could not reload macro file: " + WbFile.getPathForLogging(changed), io);
+      }
+    }
+    else
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "No macro definition found for modified file: " + WbFile.getPathForLogging(changed));
+    }
+  }
+
+  private MacroDefinition findMacroForFile(List<MacroGroup> groups, File toFind)
+  {
+    for (MacroGroup group : groups)
+    {
+      List<MacroDefinition> macros = group.getAllMacros();
+      for (MacroDefinition macro : macros)
+      {
+        if (macro.getOriginalSourceFile() != null && toFind.equals(macro.getOriginalSourceFile()))
+        {
+          return macro;
+        }
+      }
+    }
+    return null;
+  }
+
   private void saveGroup(File groupDir, MacroGroup group)
   {
     if (!groupDir.exists())
@@ -205,7 +263,11 @@ public class DirectoryMacroPersistence
       group.sortByName();
       return;
     }
+    readGroupInfo(group, infoFile);
+  }
 
+  private void readGroupInfo(MacroGroup group, File infoFile)
+  {
     WbProperties props = new WbProperties(0);
     try
     {
@@ -230,13 +292,15 @@ public class DirectoryMacroPersistence
         StoreableKeyStroke keystroke = StoreableKeyStroke.fromPropertiesString(props.getProperty(key + PROP_SHORTCUT));
         def.setShortcut(keystroke);
       }
+      group.setGroupInfoFile(infoFile);
     }
     catch (Exception io)
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not read info file for macro group " + group.getName() + " in directory: " + WbFile.getPathForLogging(directory), io);
+      LogMgr.logError(new CallerInfo(){}, "Could not read info file for macro group " + group.getName() +
+        " in directory: " + WbFile.getPathForLogging(infoFile.getParent()), io);
     }
-
   }
+  
   private void saveMacro(File baseDirectory, MacroDefinition macro)
   {
     if (baseDirectory == null || macro == null) return;

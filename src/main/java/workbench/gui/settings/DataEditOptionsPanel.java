@@ -281,7 +281,7 @@ public class DataEditOptionsPanel
     File mappingFile = FileDialogUtil.selectPkMapFile(this);
     if (mappingFile != null)
     {
-      String fname = FileDialogUtil.getPathWithPlaceholder(new WbFile(mappingFile));
+      String fname = FileDialogUtil.getPathWithConfigDirPlaceholder(new WbFile(mappingFile));
       pkMapFile.setText(fname);
     }
   }//GEN-LAST:event_selectMapFile

@@ -1421,7 +1421,7 @@ public class ConnectionEditorPanel
     WbFile file = selector.selectMacroFile(this);
     if (file != null)
     {
-      String path = FileDialogUtil.getPathWithPlaceholder(file);
+      String path = FileDialogUtil.getPathWithMacroPlaceholder(file);
       macroFile.setText(path);
       macroFile.setCaretPosition(0);
     }

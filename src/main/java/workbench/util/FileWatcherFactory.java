@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * A class to manage FileWatcher instances per watched file.
  *
@@ -92,7 +93,7 @@ public class FileWatcherFactory
    * @see #addChangeListener(PropertyChangeListener, File)
    * @see #registerWatcher(File, PropertyChangeListener)
    */
-  public void removeChangeListener(PropertyChangeListener listener, File toWatch)
+  public void removeChangeListener(File toWatch, PropertyChangeListener listener)
   {
     if (toWatch == null || listener == null) return;
 

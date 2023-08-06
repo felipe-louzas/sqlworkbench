@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -83,7 +84,7 @@ public class MacroStorage
 
     if (sourceFile == null || !sourceFile.equals(toLoad))
     {
-      FileWatcherFactory.getInstance().removeChangeListener(this, sourceFile);
+      FileWatcherFactory.getInstance().removeChangeListener(sourceFile, this);
       sourceFile = toLoad;
       loadMacros();
       fireMacroListChanged();
@@ -129,8 +130,12 @@ public class MacroStorage
     LogMgr.logDebug(new CallerInfo(){}, "MacroStorage file changed: " + f.getAbsolutePath());
     if (Settings.getInstance().getWatchMacroFiles())
     {
-      loadMacros();
-      fireMacroListChanged();
+      synchronized (this.lock)
+      {
+        MacroPersistence persistence = createPersistence();
+        persistence.reload(groups, f);
+        fireMacroListChanged();
+      }
     }
   }
 
@@ -194,6 +199,7 @@ public class MacroStorage
    */
   public void saveMacros(WbFile file)
   {
+    FileWatcherFactory.getInstance().removeChangeListener(sourceFile, this);
     sourceFile = file;
     saveMacros();
   }
@@ -351,7 +357,7 @@ public class MacroStorage
         applySort();
         updateMap();
         resetModified();
-        LogMgr.logDebug(new CallerInfo(){}, "Loaded " + getSize() + " from " + sourceFile.getAbsolutePath());
+        LogMgr.logDebug(new CallerInfo(){}, "Loaded " + getSize() + " macros from " + sourceFile.getAbsolutePath());
       }
       if (Settings.getInstance().getWatchMacroFiles())
       {
@@ -616,4 +622,22 @@ public class MacroStorage
   {
     return currentFilter != null;
   }
+
+  @Override
+  public int hashCode()
+  {
+    return sourceFile.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    final MacroStorage other = (MacroStorage)obj;
+    return Objects.equals(this.sourceFile, other.sourceFile);
+  }
+
+
 }

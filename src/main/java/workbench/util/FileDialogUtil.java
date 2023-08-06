@@ -281,19 +281,33 @@ public class FileDialogUtil
     }
   }
 
-  public static String getPathWithPlaceholder(WbFile file)
+  public static String getPathWithConfigDirPlaceholder(WbFile file)
   {
-    File configDir = Settings.getInstance().getConfigDir();
+    return getPathWithPlaceholder(file, Settings.getInstance().getConfigDir(), CONFIG_DIR_KEY);
+  }
+
+  public static String getPathWithMacroPlaceholder(WbFile file)
+  {
+    return getPathWithPlaceholder(file, Settings.getInstance().getMacroBaseDirectory(), MACRO_DIR_KEY);
+  }
+
+  public static String getPathWithPlaceholder(WbFile file, File toReplace, String placeHolder)
+  {
+    if (toReplace == null) return file.getAbsolutePath();
+    if (!Settings.getInstance().getReplaceDirVariables())
+    {
+      return file.getAbsolutePath();
+    }
 
     File fileDir = file.getParentFile();
-    while (!fileDir.equals(configDir))
+    while (!fileDir.equals(toReplace))
     {
       fileDir = fileDir.getParentFile();
       if (fileDir == null) break;
     }
     if (fileDir == null) return file.getFullPath();
 
-    String fpath = file.getAbsolutePath().replace(fileDir.getAbsolutePath(), CONFIG_DIR_KEY);
+    String fpath = file.getAbsolutePath().replace(fileDir.getAbsolutePath(), placeHolder);
     return fpath;
   }
 
@@ -316,8 +330,8 @@ public class FileDialogUtil
     if (aPathname == null) return null;
     WbFile dir = new WbFile(Settings.getInstance().getWorkspaceDir());
 
-    String fullPath = replaceConfigDir(aPathname);
-    fullPath = StringUtil.replace(fullPath, WKSP_DIR_KEY, dir.getFullPath());
+    String fullPath = replaceMacroDir(aPathname);
+    fullPath = replaceConfigDir(fullPath);
     fullPath = replaceProgramDir(fullPath);
     return fullPath;
   }

@@ -33,4 +33,5 @@ public interface MacroPersistence
 {
   List<MacroGroup> loadMacros(File sourceFile);
   void saveMacros(WbFile sourceFile, List<MacroGroup> groups, boolean isModified);
+  void reload(List<MacroGroup> groups, File changed);
 }

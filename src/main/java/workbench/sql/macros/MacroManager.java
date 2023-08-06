@@ -21,6 +21,7 @@
  */
 package workbench.sql.macros;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ import workbench.util.CaseInsensitiveComparator;
 import workbench.util.WbFile;
 
 /**
- * A singleton class to load and saveAs SQL macros (aliases)
+ * A singleton class to load and save SQL macros (aliases)
  *
  * @author Thomas Kellerer
  */
@@ -46,8 +47,7 @@ public class MacroManager
 {
   public static final int DEFAULT_STORAGE = Integer.MIN_VALUE;
 
-  private final Map<String, MacroStorage> allMacros = new HashMap<>();
-  private final Map<Integer, String> macroClients = new HashMap<>();
+  private final Map<Integer, MacroStorage> macroClients = new HashMap<>();
 
   /**
    * Thread safe singleton instance.
@@ -63,9 +63,8 @@ public class MacroManager
     long start = System.currentTimeMillis();
     MacroStorage storage = new MacroStorage(file);
     long duration = System.currentTimeMillis() - start;
-    allMacros.put(file.getFullPath(), storage);
+    macroClients.put(DEFAULT_STORAGE, storage);
     LogMgr.logDebug(new CallerInfo(){}, "Loading default macros took " + duration + "ms");
-    dumpMacroInfo();
   }
 
   public static MacroManager getInstance()
@@ -80,7 +79,7 @@ public class MacroManager
 
   public synchronized void save()
   {
-    for (MacroStorage storage : allMacros.values())
+    for (MacroStorage storage : macroClients.values())
     {
       storage.saveMacros();
     }
@@ -88,11 +87,21 @@ public class MacroManager
 
   public void saveAs(int clientId, WbFile macroFile)
   {
-    MacroStorage storage = allMacros.get(getClientfilename(clientId));
+    MacroStorage storage = macroClients.get(clientId);
     if (storage != null)
     {
-      storage.saveMacros(macroFile);
-      macroClients.put(clientId, macroFile.getFullPath());
+      if (isShared(clientId, macroFile))
+      {
+        // if a different client is using the same macro file
+        // we should create a copy under the new name
+        MacroStorage copy = storage.createCopy();
+        copy.saveMacros(macroFile);
+        macroClients.put(clientId, copy);
+      }
+      else
+      {
+        storage.saveMacros(macroFile);
+      }
     }
   }
 
@@ -103,22 +112,11 @@ public class MacroManager
    */
   public void save(int clientId)
   {
-    String fname = getClientfilename(clientId);
-    MacroStorage storage = allMacros.get(fname);
+    MacroStorage storage = macroClients.get(clientId);
     if (storage != null && storage.isModified())
     {
-      storage.saveMacros(new WbFile(fname));
+      storage.saveMacros();
     }
-  }
-
-  private String getClientfilename(int clientId)
-  {
-    String clientFilename = macroClients.get(clientId);
-    if (clientFilename == null)
-    {
-      return getDefaultMacroFile().getFullPath();
-    }
-    return clientFilename;
   }
 
   public void loadDefaultMacros(int clientId)
@@ -133,47 +131,47 @@ public class MacroManager
       macroFile = new WbFile(Settings.getInstance().getMacroBaseDirectory());
     }
 
-    String newFilename = macroFile.getFullPath();
-    String oldFilename = macroClients.get(clientId);
-
-    MacroStorage storage = null;
-    if (oldFilename != null)
-    {
-      storage = allMacros.get(oldFilename);
-    }
-
+    MacroStorage storage = findLoadedMacros(macroFile);
     if (storage == null)
     {
       storage = new MacroStorage(macroFile);
+      macroClients.put(clientId, storage);
     }
-    else
+    LogMgr.logDebug(new CallerInfo(){}, "Loaded " + storage.getSize() + " macros from file " + macroFile.getFullpathForLogging() + " for clientId:  " + clientId);
+  }
+
+  private MacroStorage findLoadedMacros(File f)
+  {
+    if (f == null) return null;
+    for (MacroStorage storage : macroClients.values())
     {
-      if (isNonDefaultMacroFile(oldFilename))
+      if (storage.getCurrentFile().equals(f))
       {
-        allMacros.remove(oldFilename);
+        return storage;
       }
-      storage.loadNewFile(macroFile);
     }
-
-    LogMgr.logDebug(new CallerInfo(){}, "Loaded " + storage.getSize() + " macros from file " + macroFile.getFullPath() + " for clientId:  " + clientId);
-    allMacros.put(newFilename, storage);
-    macroClients.put(clientId, newFilename);
-    dumpMacroInfo();
+    return null;
   }
 
-  private boolean isNonDefaultMacroFile(String filename)
+  private boolean isShared(int clientId, File f)
   {
-    WbFile f = new WbFile(filename);
-    return f.equals(getDefaultMacroFile()) == false;
+    if (f == null) return false;
+    for (Map.Entry<Integer, MacroStorage> entry : macroClients.entrySet())
+    {
+      if (clientId != entry.getKey() && f.equals(entry.getValue().getCurrentFile()))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
-  private MacroStorage getStorage(int macroClientId)
+  private MacroStorage getStorageOrDefault(int macroClientId)
   {
-    String fname = getClientfilename(macroClientId);
-    MacroStorage storage = allMacros.get(fname);
+    MacroStorage storage = macroClients.get(macroClientId);
     if (storage == null)
     {
-      storage = allMacros.get(getDefaultMacroFile().getFullPath());
+      return macroClients.get(DEFAULT_STORAGE);
     }
     return storage;
   }
@@ -182,7 +180,7 @@ public class MacroManager
   {
     if (key == null) return null;
 
-    MacroStorage storage = getStorage(macroClientId);
+    MacroStorage storage = getStorageOrDefault(macroClientId);
     if (storage == null) return null;
 
     MacroDefinition macro = storage.getMacro(key);
@@ -211,7 +209,7 @@ public class MacroManager
 
   public synchronized MacroStorage getMacros(int clientId)
   {
-    return getStorage(clientId);
+    return getStorageOrDefault(clientId);
   }
 
   /**
@@ -223,7 +221,7 @@ public class MacroManager
   public synchronized MacroDefinition getMacroForKeyStroke(KeyStroke key)
   {
     if (key == null) return null;
-    for (MacroStorage storage : allMacros.values())
+    for (MacroStorage storage : macroClients.values())
     {
       StoreableKeyStroke sk = new StoreableKeyStroke(key);
       List<MacroGroup> groups = storage.getGroups();
@@ -244,7 +242,7 @@ public class MacroManager
 
   public synchronized Map<String, MacroDefinition> getExpandableMacros(int clientId)
   {
-    MacroStorage storage = getStorage(clientId);
+    MacroStorage storage = getStorageOrDefault(clientId);
     Map<String, MacroDefinition> result = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
     List<MacroGroup> groups = storage.getGroups();
     for (MacroGroup group : groups)
@@ -258,14 +256,5 @@ public class MacroManager
       }
     }
     return result;
-  }
-
-  private void dumpMacroInfo()
-  {
-    if (LogMgr.isTraceEnabled())
-    {
-      LogMgr.logTrace(new CallerInfo(){}, "Current macro clients: " + macroClients);
-      LogMgr.logTrace(new CallerInfo(){}, "Current storages: " + allMacros);
-    }
   }
 }

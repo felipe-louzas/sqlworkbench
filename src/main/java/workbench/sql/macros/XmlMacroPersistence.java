@@ -48,6 +48,17 @@ public class XmlMacroPersistence
   }
 
   @Override
+  public void reload(List<MacroGroup> groups, File changed)
+  {
+    List<MacroGroup> newMacros = loadMacros(changed);
+    if (newMacros.size() > 0)
+    {
+      groups.clear();
+      groups.addAll(newMacros);
+    }
+  }
+
+  @Override
   public List<MacroGroup> loadMacros(File sourceFile)
   {
     List<MacroGroup> groups = new ArrayList<>();

@@ -244,7 +244,6 @@ public class FileWatcher
       if (this.toWatch.isFile())
       {
         Path path = toWatch.getParentFile().toPath();
-        LogMgr.logDebug(new CallerInfo(){}, "Registered directory " + path.toString());
         WatchKey key = path.register(watcher, ENTRY_MODIFY);
         registration.add(key);
         FileEvent evt = new FileEvent(toWatch);
@@ -256,7 +255,7 @@ public class FileWatcher
         for (File dir : dirs)
         {
           Path path = dir.toPath();
-          LogMgr.logDebug(new CallerInfo(){}, "Registered directory " + path.toString());
+          LogMgr.logDebug(new CallerInfo(){}, "Registered sub-directory " + path.toString());
           WatchKey key = path.register(watcher, ENTRY_MODIFY, ENTRY_DELETE);
           registration.add(key);
         }

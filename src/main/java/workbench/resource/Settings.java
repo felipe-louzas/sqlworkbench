@@ -652,6 +652,11 @@ public class Settings
     return new WbFile(getConfigDir(), "WbColumnOrder.xml");
   }
 
+  public boolean getReplaceDirVariables()
+  {
+    return getBoolProperty("workbench.directories.replace.vars", true);
+  }
+
   public final File getWorkspaceDir()
   {
     String dir = getProperty("workbench.workspacedir", null);
@@ -2568,7 +2573,7 @@ public class Settings
     {
       setPKMappingFilename(null);
     }
-    String fname = FileDialogUtil.getPathWithPlaceholder(new WbFile(mappingFile));
+    String fname = FileDialogUtil.getPathWithConfigDirPlaceholder(new WbFile(mappingFile));
     setPKMappingFilename(fname);
   }
 
