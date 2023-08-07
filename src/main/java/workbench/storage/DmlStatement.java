@@ -44,24 +44,21 @@ import java.util.List;
 import java.util.Map;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
+import workbench.db.ArrayValueHandler;
 import workbench.db.DbSettings;
 import workbench.db.DmlExpressionBuilder;
 import workbench.db.DmlExpressionType;
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
-import workbench.db.ArrayValueHandler;
-
-import workbench.log.LogMgr;
-import workbench.resource.Settings;
 
 import workbench.sql.formatter.WbSqlFormatter;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
 import workbench.util.NumberStringCache;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -78,6 +75,7 @@ public class DmlStatement
   private String chrFunc;
   private String concatString;
   private String concatFunction;
+  private boolean trimCharacterValues;
   private boolean formatInserts;
   private boolean formatUpdates;
   private boolean formatDeletes;
@@ -116,6 +114,11 @@ public class DmlStatement
       this.values = aValueList;
     }
     initFormattingFlags();
+  }
+
+  public void setTrimCharacterValues(boolean flag)
+  {
+    this.trimCharacterValues = flag;
   }
 
   public void setFormatSql(boolean flag)
@@ -244,6 +247,10 @@ public class DmlStatement
         else if (padCharColumns && (type == Types.CHAR || type == Types.NCHAR))
         {
           currentStatement.setString(i + 1, getCharValue(value, data.getIdentifier().getColumnSize()));
+        }
+        else if (trimCharacterValues && SqlUtil.isCharacterType(type) && value instanceof String)
+        {
+          currentStatement.setString(i + 1, StringUtil.trim((String)value));
         }
         else if (type == Types.ARRAY)
         {
@@ -459,7 +466,7 @@ public class DmlStatement
         if (c == '?' && !inQuotes && parmIndex < this.values.size())
         {
           ColumnData data = this.values.get(parmIndex);
-          CharSequence literal = literalFormatter.getDefaultLiteral(data);
+          String literal = literalFormatter.getDefaultLiteral(data, trimCharacterValues);
           if (this.chrFunc != null && SqlUtil.isCharacterType(data.getIdentifier().getDataType()))
           {
             literal = this.createInsertString(literal);
@@ -496,7 +503,7 @@ public class DmlStatement
     return toUse;
   }
 
-  private CharSequence createInsertString(CharSequence aValue)
+  private String createInsertString(String aValue)
   {
     if (aValue == null) return null;
     if (this.chrFunc == null) return aValue;
@@ -568,7 +575,7 @@ public class DmlStatement
     {
       result.append(')');
     }
-    return result;
+    return result.toString();
   }
 
   private int countParameters(String aSql)

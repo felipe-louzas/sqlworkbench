@@ -353,7 +353,12 @@ public class SqlLiteralFormatter
    *
    * @see #setDateLiteralType(String)
    */
-  public CharSequence getDefaultLiteral(ColumnData data)
+  public String getDefaultLiteral(ColumnData data)
+  {
+    return getDefaultLiteral(data, false);
+  }
+
+  public String getDefaultLiteral(ColumnData data, boolean trimCharacterData)
   {
     Object value = data.getValue();
     if (value == null) return "NULL";
@@ -396,6 +401,7 @@ public class SqlLiteralFormatter
       }
       else
       {
+        if (trimCharacterData) t = t.trim();
         return quoteString(type, t);
       }
     }

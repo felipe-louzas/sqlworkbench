@@ -58,6 +58,7 @@ public class StatementFactory
   private boolean useColumnLabel;
   private boolean includeReadOnlyColumns;
   private boolean includeGeneratedColumns;
+  private boolean trimCharacterValues;
   private final DmlExpressionBuilder expressionBuilder;
 
   /**
@@ -71,6 +72,12 @@ public class StatementFactory
     expressionBuilder = DmlExpressionBuilder.Factory.getBuilder(conn);
     includeGeneratedColumns = !Settings.getInstance().getGenerateInsertIgnoreIdentity();
     includeReadOnlyColumns = !Settings.getInstance().getCheckEditableColumns();
+    trimCharacterValues = Settings.getInstance().getTrimAllCharacterValuesForSQLGeneration();
+  }
+
+  public void setTrimCharacterValues(boolean flag)
+  {
+    this.trimCharacterValues = flag;
   }
 
   /**
@@ -197,6 +204,7 @@ public class StatementFactory
     }
 
     dml = new DmlStatement(sql.toString(), values);
+    dml.setTrimCharacterValues(trimCharacterValues);
     return dml;
   }
 
@@ -338,6 +346,7 @@ public class StatementFactory
     sql.append(valuePart);
     sql.append(')');
     dml = new DmlStatement(sql.toString(), values);
+    dml.setTrimCharacterValues(trimCharacterValues);
 
     if (realColcount == 0)
     {
@@ -403,6 +412,7 @@ public class StatementFactory
     }
 
     dml = new DmlStatement(sql.toString(), values);
+    dml.setTrimCharacterValues(trimCharacterValues);
     return dml;
   }
 

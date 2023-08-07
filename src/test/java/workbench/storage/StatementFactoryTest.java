@@ -119,9 +119,10 @@ public class StatementFactoryTest
 
     info.setUpdateTable(table);
     StatementFactory factory = new StatementFactory(info, null);
+    factory.setTrimCharacterValues(true);
     RowData data = new RowData(info.getColumnCount());
     data.setValue(0, 42);
-    data.setValue(1, "start");
+    data.setValue(1, " start ");
     data.setValue(2, "Zaphod");
     data.setValue(3, "Bla");
     data.resetStatus();
@@ -150,10 +151,11 @@ public class StatementFactoryTest
 
     info.setUpdateTable(table);
     StatementFactory factory = new StatementFactory(info, null);
+    factory.setTrimCharacterValues(true);
     RowData data = new RowData(3);
     data.setValue(0, 42);
     data.setValue(1, "Zaphod");
-    data.setValue(2, "Beeblebrox");
+    data.setValue(2, "Beeblebrox  ");
 
     DmlStatement stmt = factory.createInsertStatement(data, false, "\n");
     String sql = stmt.toString();

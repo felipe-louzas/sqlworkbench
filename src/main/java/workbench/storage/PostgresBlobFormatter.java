@@ -26,11 +26,10 @@ import java.io.InputStream;
 import java.sql.SQLException;
 
 import workbench.log.CallerInfo;
-
-import workbench.db.exporter.BlobMode;
-
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
+
+import workbench.db.exporter.BlobMode;
 
 import workbench.util.FileUtil;
 import workbench.util.NumberStringCache;
@@ -102,7 +101,7 @@ public class PostgresBlobFormatter
   }
 
   @Override
-  public CharSequence getBlobLiteral(Object value)
+  public String getBlobLiteral(Object value)
     throws SQLException
   {
     switch (blobLiteral)
@@ -118,7 +117,7 @@ public class PostgresBlobFormatter
     }
   }
 
-  private CharSequence getUUIDString(Object value)
+  private String getUUIDString(Object value)
   {
     if (value == null) return null;
     byte[] buffer = getBytes(value);
@@ -134,7 +133,7 @@ public class PostgresBlobFormatter
     }
   }
 
-  private CharSequence getDecodeString(Object value)
+  private String getDecodeString(Object value)
   {
     if (value == null) return null;
     byte[] buffer = getBytes(value);
@@ -144,10 +143,10 @@ public class PostgresBlobFormatter
     result.append("decode('");
     appendBuffer(buffer, result);
     result.append("', 'hex')");
-    return result;
+    return result.toString();
   }
 
-  private CharSequence getHexString(Object value)
+  private String getHexString(Object value)
   {
     if (value == null) return null;
     byte[] buffer = getBytes(value);
@@ -156,7 +155,7 @@ public class PostgresBlobFormatter
     StringBuilder result = new StringBuilder(buffer.length * 2 + 5);
     result.append("\\\\x");
     appendBuffer(buffer, result);
-    return result;
+    return result.toString();
   }
 
   private void appendBuffer(byte[] buffer, StringBuilder result)
@@ -168,7 +167,7 @@ public class PostgresBlobFormatter
     }
   }
 
-  private CharSequence getEscapeString(Object value)
+  private String getEscapeString(Object value)
   {
     if (value == null) return null;
     byte[] buffer = getBytes(value);
@@ -193,7 +192,7 @@ public class PostgresBlobFormatter
       result.append(s);
     }
     result.append("'::bytea");
-    return result;
+    return result.toString();
   }
 
   private byte[] getBytes(Object value)

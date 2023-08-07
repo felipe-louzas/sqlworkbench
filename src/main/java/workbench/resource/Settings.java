@@ -1256,6 +1256,16 @@ public class Settings
     setProperty("workbench.sql.generate.insert.colsperline",1);
   }
 
+  public boolean getTrimAllCharacterValuesForSQLGeneration()
+  {
+    return getBoolProperty("workbench.sql.generate.trim.charactervalues", false);
+  }
+
+  public void setTrimAllCharacterValuesForSQLGeneration(boolean flag)
+  {
+    setProperty("workbench.sql.generate.trim.charactervalues", flag);
+  }
+
   public boolean getGenerateInsertIgnoreIdentity()
   {
     return getBoolProperty("workbench.sql.generate.insert.ignoreidentity",true);
