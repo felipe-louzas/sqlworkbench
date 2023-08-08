@@ -24,13 +24,13 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
-import workbench.db.WbConnection;
-
 import workbench.db.JdbcUtils;
+import workbench.db.WbConnection;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -148,8 +148,18 @@ public class DbmsMetadata
     }
     catch (SQLException ex)
     {
-      LogMgr.logMetadataError(new CallerInfo(){}, ex, "dbms_metadata for " + type, sql, type, name, owner);
-      throw ex;
+      if (dependent)
+      {
+        // If there is no dependent DDL, Oracle throws an error rather then returning nothing
+        // We don't need the full exception information in that case
+        List<String> lines = StringUtil.getLines(ex.getMessage());
+        LogMgr.logWarning(new CallerInfo(){}, "Error when calling get_dependent_ddl() for " + type + ": " + lines.get(0));
+      }
+      else
+      {
+        LogMgr.logMetadataError(new CallerInfo(){}, ex, "dbms_metadata for " + type, sql, type, name, owner);
+        throw ex;
+      }
     }
     finally
     {
@@ -158,16 +168,19 @@ public class DbmsMetadata
     }
 
     long duration = System.currentTimeMillis() - start;
-    LogMgr.logDebug(new CallerInfo(){}, "Retrieving DDL using dbms_metadata for " + type + " " + owner + "." + name + " took: " + duration + "ms");
+    LogMgr.logDebug(new CallerInfo(){},
+      "Retrieving " + (dependent ? "dependent " : "") + "DDL using dbms_metadata for " + type + " " + owner + "." + name + " took: " + duration + "ms");
     return source;
   }
 
   /**
-   * Calls dbms_metadata.set_transform_param to turn on the use of a SQLTERMINATOR
+   * Calls dbms_metadata.set_transform_param to turn on the use of a SQLTERMINATOR.
    *
    * See: https://docs.oracle.com/database/121/ARPLS/d_metada.htm#BGBJBFGE
    *
    * Use {@link #resetSessionTransforms(WbConnection)} to reset the dbms_metadata configuration.
+   *
+   * The "PRETTY" option is also enabled to make the generated DDL a little bit less ugly.
    *
    * @param con  the connection on which to invoke the procedure.
    */

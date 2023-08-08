@@ -40,10 +40,8 @@ public class OracleTableGrantReader
   {
     if (OracleUtils.getUseOracleDBMSMeta(OracleUtils.DbmsMetadataTypes.grant))
     {
-      String grants = DbmsMetadata.getDependentDDL(dbConnection, "OBJECT_GRANT", table.getTableName(), table.getSchema());
-      StringBuilder result = new StringBuilder(grants == null ? 0 : grants.length());
-      result.append(grants);
-      return result;
+      String grants = DbmsMetadata.getDependentDDL(dbConnection, "OBJECT_GRANT", table.getRawTableName(), table.getRawSchema());
+      return new StringBuilder(grants == null ? "" : grants);
     }
     return super.getTableGrantSource(dbConnection, table);
   }
