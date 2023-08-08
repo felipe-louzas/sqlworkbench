@@ -446,10 +446,33 @@ public class OracleTableSourceBuilder
 
     String sql =
       "-- SQL Workbench/J \n" +
-      "select column_name, tablespace_name, chunk, retention, cache, logging, encrypt, compression, deduplication, in_row, securefile, retention_type, retention_value \n" +
-      "from all_lobs \n" +
-      "where table_name = '" +tbl.getRawTableName() + "' \n " +
-      "  and owner = '" + tbl.getRawSchema() + "' ";
+      "select coalesce(realcol.column_name, al.column_name) as column_name, \n" +
+      "       realcol.data_type as declared_type,\n" +
+      "       lobcol.data_type as internal_type,\n" +
+      "       al.tablespace_name, \n" +
+      "       al.chunk, \n" +
+      "       al.retention, \n" +
+      "       al.cache, \n" +
+      "       al.logging, \n" +
+      "       al.encrypt, \n" +
+      "       al.compression, \n" +
+      "       al.deduplication, \n" +
+      "       al.in_row, \n" +
+      "       al.securefile, \n" +
+      "       al.retention_type, \n" +
+      "       al.retention_value\n" +
+      "from all_lobs al\n" +
+      "  left join all_tab_cols lobcol \n" +
+      "         on lobcol.column_name = al.column_name \n" +
+      "        and lobcol.table_name = al.table_name\n" +
+      "        and lobcol.owner = al.owner\n" +
+      "  left join all_tab_cols realcol\n" +
+      "         on realcol.table_name = lobcol.table_name\n" +
+      "        and realcol.owner = lobcol.owner\n" +
+      "        and realcol.column_id = lobcol.column_id \n" +
+      "        and realcol.column_name <> lobcol.column_name \n" +
+      "where al.table_name = '" +tbl.getRawTableName() + "' \n " +
+      "  and al.owner = '" + tbl.getRawSchema() + "' ";
 
     LogMgr.logMetadataSql(ci, "LOB options", sql);
 
@@ -465,6 +488,8 @@ public class OracleTableSourceBuilder
       {
         String column = rs.getString("column_name");
         String tbspace = rs.getString("tablespace_name");
+        String declaredType = rs.getString("declared_type");
+        String internalType = rs.getString("internal_type");
         long chunkSize = rs.getLong("chunk");
         long retention = rs.getLong("retention");
         long sfRetention = rs.getLong("retention_value");
@@ -487,16 +512,32 @@ public class OracleTableSourceBuilder
         StringBuilder colOptions = new StringBuilder(50);
 
         boolean isSecureFile = false;
+        boolean isXML = "XMLTYPE".equals(declaredType);
 
         if ("YES".equals(securefile))
         {
-          colOptions.append(" SECUREFILE (");
+          colOptions.append(" SECUREFILE ");
           isSecureFile = true;
         }
         else
         {
-          colOptions.append(" BASICFILE (");
+          colOptions.append(" BASICFILE ");
         }
+
+        if (isXML)
+        {
+          switch (internalType)
+          {
+            case "BLOB":
+              colOptions.append("BINARY XML ");
+              break;
+            case "CLOB":
+              colOptions.append("CLOB ");
+              break;
+          }
+        }
+
+        colOptions.append("(");
 
         if (!StringUtil.equalStringIgnoreCase(tbspace, tbl.getTablespace()))
         {
@@ -569,8 +610,16 @@ public class OracleTableSourceBuilder
         }
 
         colOptions.append(')');
-        if (!first) result.append(",\n");
-        String key = "LOB (" + column + ")";
+        if (!first) result.append("\n");
+        String key;
+        if (isXML)
+        {
+          key = "XMLTYPE " + column;
+        }
+        else
+        {
+          key = "LOB (" + column + ")";
+        }
         result.append(key);
         result.append(" STORE AS");
         result.append(colOptions);
@@ -599,6 +648,7 @@ public class OracleTableSourceBuilder
     for (ColumnIdentifier column : columns)
     {
       if (column.getDbmsType().endsWith("LOB")) return true;
+      if (column.getDbmsType().equalsIgnoreCase("xmltype")) return true;
     }
     return false;
   }
