@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -40,16 +42,16 @@ import workbench.util.WbProperties;
 /**
  * A class to load macro definitions from a directory containing multiple SQL scripts.
  *
- * Each sub-directory of the defined base directory is assumed to be a macro group.
- * File in the base directory are not loaded.
+ * <p>Each sub-directory of the defined base directory is assumed to be a macro group.</p>
  *
- * The files in the main directory are stored in a group that has the same name as the
- * source directory.
+ * <p>Files in the base directory are only loaded if there are no sub-directories.</p>
  *
+ * <p>
  * Additional properties of the MacroGroup and MacroDefinition are stored and loaded from
  * a properties file ({@link #GROUP_INFO_FILE}) in the group's directory.
- *
- * If the file is not present, the default values for attributes of the group or macro definitions are used.
+ * If the info file is not present, the default values for attributes of the group
+ * or macro definitions are used.
+ * </p>
  *
  * @author Thomas Kellerer
  */
@@ -84,12 +86,19 @@ public class DirectoryMacroPersistence
     }
 
     File[] dirs = sourceDirectory.listFiles((File f) -> f != null && f.isDirectory());
-    Arrays.sort(dirs, fileSorter);
-    int groupIndex = 0;
-
-    for (File dir : dirs)
+    if (dirs.length == 0)
     {
-      result.add(loadMacrosFromDirectory(new WbFile(dir), groupIndex++));
+      result.add(loadMacrosFromDirectory(new WbFile(sourceDirectory), 0));
+    }
+    else
+    {
+      Arrays.sort(dirs, fileSorter);
+      int groupIndex = 0;
+
+      for (File dir : dirs)
+      {
+        result.add(loadMacrosFromDirectory(new WbFile(dir), groupIndex++));
+      }
     }
     return result;
   }
@@ -108,10 +117,22 @@ public class DirectoryMacroPersistence
       baseDirectory.mkdirs();
     }
 
+    int numGroups = groups.size();
+    if (numGroups > 1)
+    {
+      // If macros from a single directory were loaded, but new groups
+      // were added later, we need to delete the macros in the root direcctory.
+      // That way, each group is in a separate directory and nothing is stored
+      // in the base directory (to avoid confusion).
+      FileUtil.deleteDirecctoryContent(baseDirectory);
+    }
+
+    Set<File> activeGroupDirs = new HashSet<>();
     for (MacroGroup group : groups)
     {
       String groupName = group.getName();
-      WbFile groupDir = new WbFile(baseDirectory, StringUtil.makeFilename(groupName, false));
+      WbFile groupDir = numGroups == 1 ? new WbFile(baseDirectory) : new WbFile(baseDirectory, StringUtil.makeFilename(groupName, false));
+
       if (group.getTotalSize() == 0)
       {
         File infoFile = new File(groupDir, GROUP_INFO_FILE);
@@ -123,6 +144,18 @@ public class DirectoryMacroPersistence
       else
       {
         saveGroup(groupDir, group);
+        activeGroupDirs.add(groupDir);
+      }
+    }
+
+    // Now remove any directory that is no longer used.
+    for (File f : baseDirectory.listFiles())
+    {
+      if (f.isDirectory() && !activeGroupDirs.contains(f))
+      {
+        LogMgr.logDebug(new CallerInfo(){}, "Deleting no longer used macro group directory: " + WbFile.getPathForLogging(f));
+        FileUtil.deleteDirecctoryContent(f);
+        f.delete();
       }
     }
   }
@@ -300,7 +333,7 @@ public class DirectoryMacroPersistence
         " in directory: " + WbFile.getPathForLogging(infoFile.getParent()), io);
     }
   }
-  
+
   private void saveMacro(File baseDirectory, MacroDefinition macro)
   {
     if (baseDirectory == null || macro == null) return;

@@ -442,7 +442,7 @@ public class FileUtil
    * @param in the source
    * @param out the destination
    * @param closeStreams if true, both streams are closed automatically.
-   * 
+   *
    * @return the number of bytes copied
    */
   public static long copy(InputStream in, OutputStream out, boolean closeStreams)
@@ -767,6 +767,20 @@ public class FileUtil
       return o1.compareTo(o2);
     };
     Collections.sort(files, comp);
+  }
+
+  public static int deleteDirecctoryContent(File toDelete)
+  {
+    if (toDelete == null || !toDelete.isDirectory()) return 0;
+    int count = 0;
+    for (File f : toDelete.listFiles())
+    {
+      if (deleteSilently(f))
+      {
+        count ++;
+      }
+    }
+    return count;
   }
 
   public static boolean deleteSilently(File toDelete)

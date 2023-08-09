@@ -28,13 +28,16 @@ import java.util.List;
 
 import javax.swing.KeyStroke;
 
+import workbench.TestUtil;
 import workbench.resource.StoreableKeyStroke;
 
+import workbench.util.FileUtil;
 import workbench.util.WbFile;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
 /**
  *
  * @author Thomas Kellerer
@@ -91,6 +94,49 @@ public class DirectoryMacroPersistenceTest
     assertEquals("select 1.2", loaded.get(0).getMacros().get(1).getText());
     assertEquals("Second Group", loaded.get(1).getName());
     assertEquals(2, loaded.get(1).getSize());
+  }
+
+  @Test
+  public void testSingleDirectory()
+    throws Exception
+  {
+    TestUtil util = new TestUtil("MacroTest");
+    util.emptyBaseDirectory();
+    File macroDir = new File(util.getBaseDir(), "macro-test");
+    macroDir.mkdirs();
+    macroDir.deleteOnExit();
+    FileUtil.writeString(new File(macroDir, "macro-1.sql"), "select 1");
+    FileUtil.writeString(new File(macroDir, "macro-2.sql"), "select 1");
+
+    DirectoryMacroPersistence persistence = new DirectoryMacroPersistence();
+    List<MacroGroup> groups = persistence.loadMacros(macroDir);
+    assertEquals(1, groups.size());
+    assertEquals(2, groups.get(0).getSize());
+
+    groups.get(0).setName("group-01");
+    MacroGroup g2 = new MacroGroup();
+    g2.setName("group-02");
+    MacroDefinition m3 = new MacroDefinition("macro-3", "select 3");
+    MacroDefinition m4 = new MacroDefinition("macro-4", "select 4");
+    MacroDefinition m5 = new MacroDefinition("macro-5", "select 5");
+    g2.addMacro(m3);
+    g2.addMacro(m4);
+    g2.addMacro(m5);
+
+    groups.add(g2);
+    persistence.saveMacros(new WbFile(macroDir), groups, true);
+    File[] files = macroDir.listFiles();
+    assertEquals(2, files.length);
+    assertTrue(files[0].isDirectory());
+    assertTrue(files[1].isDirectory());
+
+    File d1 = new File(macroDir, "group-01");
+    File[] d1files = d1.listFiles();
+    assertEquals(3, d1files.length);
+
+    File d2 = new File(macroDir, "group-02");
+    File[] d2files = d2.listFiles();
+    assertEquals(4, d2files.length);
   }
 
 }

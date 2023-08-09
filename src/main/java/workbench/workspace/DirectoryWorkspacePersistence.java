@@ -56,7 +56,7 @@ public class DirectoryWorkspacePersistence
   public void openForWriting()
     throws IOException
   {
-    deleteDirectoryContent();
+    FileUtil.deleteDirecctoryContent(new File(directoryName));
   }
 
   @Override
@@ -160,16 +160,9 @@ public class DirectoryWorkspacePersistence
     throws IOException
   {
     if (backup == null || backup.exists()) return;
-    deleteDirectoryContent();
-    ZipUtil.unzipToDirectory(backup, new File(directoryName));
+    File dir = new File(directoryName);
+    FileUtil.deleteDirecctoryContent(dir);
+    ZipUtil.unzipToDirectory(backup, dir);
   }
 
-  private void deleteDirectoryContent()
-  {
-    File dir = new File(directoryName);
-    for (File f : dir.listFiles())
-    {
-      f.delete();
-    }
-  }
 }
