@@ -31,6 +31,8 @@ import java.util.Set;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.DirectorySaveStrategy;
+import workbench.resource.Settings;
 import workbench.resource.StoreableKeyStroke;
 
 import workbench.util.CollectionUtil;
@@ -124,37 +126,45 @@ public class DirectoryMacroPersistence
       // were added later, we need to delete the macros in the root direcctory.
       // That way, each group is in a separate directory and nothing is stored
       // in the base directory (to avoid confusion).
-      FileUtil.deleteDirecctoryContent(baseDirectory);
+      FileUtil.deleteDirectoryContent(baseDirectory);
     }
 
+    DirectorySaveStrategy saveStrategy = Settings.getInstance().getDirectoryBaseMacroStorageSaveStrategy();
     Set<File> activeGroupDirs = new HashSet<>();
+
     for (MacroGroup group : groups)
     {
       String groupName = group.getName();
       WbFile groupDir = numGroups == 1 ? new WbFile(baseDirectory) : new WbFile(baseDirectory, StringUtil.makeFilename(groupName, false));
 
-      if (group.getTotalSize() == 0)
+      switch (saveStrategy)
       {
-        File infoFile = new File(groupDir, GROUP_INFO_FILE);
-        if (infoFile.exists())
-        {
-          infoFile.delete();
-        }
+        case Flush:
+          FileUtil.deleteDirectoryContent(groupDir);
+          break;
+        case Merge:
+          if (group.getTotalSize() == 0)
+          {
+            File infoFile = new File(groupDir, GROUP_INFO_FILE);
+            if (infoFile.exists())
+            {
+              infoFile.delete();
+            }
+          }
+          break;
       }
-      else
-      {
-        saveGroup(groupDir, group);
-        activeGroupDirs.add(groupDir);
-      }
+
+      saveGroup(groupDir, group, saveStrategy);
+      activeGroupDirs.add(groupDir);
     }
 
-    // Now remove any directory that is no longer used.
+    // Now remove any directory that represents a group that is no longer there.
     for (File f : baseDirectory.listFiles())
     {
       if (f.isDirectory() && !activeGroupDirs.contains(f))
       {
         LogMgr.logDebug(new CallerInfo(){}, "Deleting no longer used macro group directory: " + WbFile.getPathForLogging(f));
-        FileUtil.deleteDirecctoryContent(f);
+        FileUtil.deleteDirectoryContent(f);
         f.delete();
       }
     }
@@ -218,7 +228,7 @@ public class DirectoryMacroPersistence
     return null;
   }
 
-  private void saveGroup(File groupDir, MacroGroup group)
+  private void saveGroup(File groupDir, MacroGroup group, DirectorySaveStrategy strategy)
   {
     if (!groupDir.exists())
     {
@@ -230,17 +240,21 @@ public class DirectoryMacroPersistence
       saveMacro(groupDir, macro);
     }
     writeGroupInfo(groupDir, group);
-    List<MacroDefinition> deleted = group.getDeletedMacros();
-    for (MacroDefinition def : deleted)
+
+    if (strategy == DirectorySaveStrategy.Merge)
     {
-      File toDelete = def.getOriginalSourceFile();
-      if (toDelete == null)
+      List<MacroDefinition> deleted = group.getDeletedMacros();
+      for (MacroDefinition def : deleted)
       {
-        toDelete = new File(groupDir, getFilename(def));
-      }
-      if (toDelete.exists())
-      {
-        toDelete.delete();
+        File toDelete = def.getOriginalSourceFile();
+        if (toDelete == null)
+        {
+          toDelete = new File(groupDir, getFilename(def));
+        }
+        if (toDelete.exists())
+        {
+          toDelete.delete();
+        }
       }
     }
   }
@@ -402,7 +416,7 @@ public class DirectoryMacroPersistence
     }
     else
     {
-      name = macro.getName();
+      name = StringUtil.makeFilename(macro.getName(), false);
     }
     return "macro." + name.replace(' ', '_').replace('=', '-') + ".";
   }

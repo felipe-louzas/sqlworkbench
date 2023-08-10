@@ -42,6 +42,7 @@ public class MacroGroupTest
     group.setVisibleInPopup(false);
 
     group.addMacro(new MacroDefinition("one", "test one"));
+    group.resetModified();
 
     MacroGroup copy = group.createCopy();
     assertFalse(copy.isModified());

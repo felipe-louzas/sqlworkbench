@@ -708,6 +708,11 @@ public class Settings
     setProperty("workbench.macrostorage.watch.files", flag);
   }
 
+  public DirectorySaveStrategy getDirectoryBaseMacroStorageSaveStrategy()
+  {
+    return getEnumProperty("workbench.macrostorage.directory.save.strategy", DirectorySaveStrategy.Flush);
+  }
+
   public boolean enableDirectoryBasedMacroStorage()
   {
     return getBoolProperty("workbench.macrostorage.allow.directory.storage", false);

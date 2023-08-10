@@ -279,21 +279,19 @@ public class MacroGroup
     if (this.groupInfoFile == null || f == null) return false;
     return this.groupInfoFile.equals(f);
   }
-  
+
   public void setGroupInfoFile(File groupInfoFile)
   {
     this.groupInfoFile = groupInfoFile;
   }
 
   /**
-   * Creates a deep copy of this group.
+   * Creates a stateful deep copy of this group.
+   *
    * For each macro definition that is part of this group, a copy
    * is created and added to the list of macros of the copy.
    *
-   * The copy will be marked as "not modified" (i.e. isModified() will
-   * return false on the copy), even if this group is modified.
-   *
-   * Deleted macros will <b>not</b> be copied.
+   * The copy will have the same modified state as the source
    *
    * @return a deep copy of this group
    * @see MacroDefinition#createCopy()
@@ -306,14 +304,18 @@ public class MacroGroup
     copy.showInMenu = this.showInMenu;
     copy.showInPopup = this.showInPopup;
     copy.tooltip = this.tooltip;
-    copy.modified = false;
+    copy.modified = this.modified;
     for (MacroDefinition def : macros)
     {
       copy.macros.add(def.createCopy());
     }
     for (MacroDefinition def : filtered)
     {
-      copy.macros.add(def.createCopy());
+      copy.filtered.add(def.createCopy());
+    }
+    for (MacroDefinition def : deleted)
+    {
+      copy.deleted.add(def.createCopy());
     }
     applySort(copy.macros);
     return copy;

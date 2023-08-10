@@ -51,7 +51,6 @@ import workbench.resource.Settings;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
-
 /**
  * @author  Thomas Kellerer
  */
@@ -769,7 +768,7 @@ public class FileUtil
     Collections.sort(files, comp);
   }
 
-  public static int deleteDirecctoryContent(File toDelete)
+  public static int deleteDirectoryContent(File toDelete)
   {
     if (toDelete == null || !toDelete.isDirectory()) return 0;
     int count = 0;
