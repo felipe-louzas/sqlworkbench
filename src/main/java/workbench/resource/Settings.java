@@ -659,7 +659,7 @@ public class Settings
 
   public final File getWorkspaceDir()
   {
-    String dir = getProperty("workbench.workspacedir", null);
+    String dir = getProperty("workbench.workspace.basedir", null);
     if (dir == null)
     {
       return getConfigDir();
