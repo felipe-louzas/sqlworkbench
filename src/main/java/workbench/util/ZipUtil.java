@@ -184,7 +184,7 @@ public class ZipUtil
   /**
    * Creates a ZIP archive with all files in the given directory.
    *
-   * Sub-Directories are not included.
+   * Sub-Directories are included recursively.
    *
    * @param sourceDir   the directory to zip
    * @param targetZip   the target ZIP file.
@@ -199,14 +199,8 @@ public class ZipUtil
          ZipOutputStream zout = new ZipOutputStream(fout);)
     {
       zout.setLevel(Settings.getInstance().getIntProperty("workbench.workspace.compression", 5));
-      zout.setComment("SQL Workbench/J Workspace backup");
-      File[] files = sourceDir.listFiles();
-      for (File f : files)
-      {
-        ZipEntry entry = new ZipEntry(f.getName());
-        zout.putNextEntry(entry);
-        copyToZip(f, zout);
-      }
+      zout.setComment("SQL Workbench/J backup file");
+      zipDirectory("", sourceDir, zout);
     }
     catch (Exception e)
     {
@@ -215,6 +209,28 @@ public class ZipUtil
         throw (IOException)e;
       }
       throw new IOException("Could not create ZIP file", e);
+    }
+  }
+  
+  private static void zipDirectory(String namePrefix, File sourceDir, ZipOutputStream zip)
+    throws IOException
+  {
+    File[] files = sourceDir.listFiles();
+    for (File f : files)
+    {
+      if (f.isDirectory())
+      {
+        String path = namePrefix + "/" + f.getName();
+        zip.putNextEntry(new ZipEntry(path + "/"));
+        zip.closeEntry();
+        zipDirectory(path + "/", f, zip);
+      }
+      else
+      {
+        ZipEntry entry = new ZipEntry(namePrefix + f.getName());
+        zip.putNextEntry(entry);
+        copyToZip(f, zip);
+      }
     }
   }
 

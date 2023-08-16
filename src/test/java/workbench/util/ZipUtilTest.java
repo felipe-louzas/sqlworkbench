@@ -29,6 +29,7 @@ import workbench.WbTestCase;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
 /**
  *
  * @author Thomas Kellerer
@@ -64,6 +65,42 @@ public class ZipUtilTest
     {
       assertTrue(content.contains("file"+i+".txt"));
     }
+  }
+
+  @Test
+  public void testZipDirectoryRecursive()
+    throws Exception
+  {
+    TestUtil util = getTestUtil();
+    util.emptyBaseDirectory();
+    File sourceDir = new File(util.getBaseDir(), "sourcedata");
+    sourceDir.mkdir();
+    File subDir1 = new File(sourceDir, "subdir1");
+    subDir1.mkdir();
+    File subDir2 = new File(sourceDir, "subdir2");
+    subDir2.mkdir();
+
+    FileUtil.writeString(new File(sourceDir, "file1.txt"), "File one");
+    FileUtil.writeString(new File(sourceDir, "file2.txt"), "File two");
+    FileUtil.writeString(new File(subDir1, "sub-file1.txt"), "File three");
+    FileUtil.writeString(new File(subDir1, "sub-file2.txt"), "File four");
+    FileUtil.writeString(new File(subDir2, "sub-file3.txt"), "File five");
+    FileUtil.writeString(new File(subDir2, "sub-file4.txt"), "File six");
+
+    File zip = new File(util.getBaseDir(), "backup.zip");
+    ZipUtil.zipDirectory(sourceDir, zip);
+    assertTrue(zip.exists());
+
+    List<String> files = ZipUtil.getFiles(zip);
+    assertEquals(8, files.size()); // six files and two directory entries
+    assertTrue(files.contains("file1.txt"));
+    assertTrue(files.contains("file2.txt"));
+    assertTrue(files.contains("/subdir1/"));
+    assertTrue(files.contains("/subdir1/sub-file1.txt"));
+    assertTrue(files.contains("/subdir1/sub-file2.txt"));
+    assertTrue(files.contains("/subdir2/"));
+    assertTrue(files.contains("/subdir2/sub-file3.txt"));
+    assertTrue(files.contains("/subdir2/sub-file4.txt"));
   }
 
 }

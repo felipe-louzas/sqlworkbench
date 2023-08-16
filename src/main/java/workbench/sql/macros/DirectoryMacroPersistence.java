@@ -37,9 +37,11 @@ import workbench.resource.StoreableKeyStroke;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileUtil;
+import workbench.util.FileVersioner;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbProperties;
+import workbench.util.ZipUtil;
 
 /**
  * A class to load macro definitions from a directory containing multiple SQL scripts.
@@ -114,7 +116,12 @@ public class DirectoryMacroPersistence
     {
       throw new IllegalArgumentException("The provided file " + baseDirectory + " is not a directory!");
     }
-    if (!baseDirectory.exists())
+
+    if (isModified && baseDirectory.exists() && Settings.getInstance().getCreateMacroBackup())
+    {
+      createBackup(baseDirectory);
+    }
+    else
     {
       baseDirectory.mkdirs();
     }
@@ -420,5 +427,36 @@ public class DirectoryMacroPersistence
     }
     return "macro." + name.replace(' ', '_').replace('=', '-') + ".";
   }
+
+  private void createBackup(File sourceDir)
+  {
+    int maxVersions = Settings.getInstance().getMaxBackupFiles();
+    File dir = Settings.getInstance().getBackupDir();
+    File backupDir = null;
+    if (dir == null)
+    {
+      backupDir = sourceDir.getParentFile();
+    }
+    else
+    {
+      backupDir = new File(dir, "macros");
+    }
+    char sep = Settings.getInstance().getFileVersionDelimiter();
+
+    FileVersioner version = new FileVersioner(maxVersions, backupDir, sep);
+    File zip = new File(backupDir, sourceDir.getName()  + "_backup.zip");
+    File backupFile = version.getNextBackupFile(zip);
+    try
+    {
+      ZipUtil.zipDirectory(sourceDir, backupFile);
+      LogMgr.logDebug(new CallerInfo(){}, "Created backup of macros in " + WbFile.getPathForLogging(sourceDir) +
+        " to " + WbFile.getPathForLogging(backupFile));
+    }
+    catch (Exception ex)
+    {
+      LogMgr.logError(new CallerInfo(){}, "Could not create backup zip of macros from: " + WbFile.getPathForLogging(sourceDir), ex);
+    }
+  }
+
 
 }

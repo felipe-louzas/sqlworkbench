@@ -128,16 +128,20 @@ public class DirectoryWorkspacePersistence
   public File createBackup()
   {
     int maxVersions = Settings.getInstance().getMaxBackupFiles();
-    File dir = Settings.getInstance().getBackupDir();
+    File backupDir = Settings.getInstance().getBackupDir();
     char sep = Settings.getInstance().getFileVersionDelimiter();
 
     File wkspdir = new File(directoryName);
-    if (dir == null)
+    if (backupDir == null)
     {
-      dir = wkspdir.getParentFile();
+      backupDir = wkspdir.getParentFile();
     }
-    FileVersioner version = new FileVersioner(maxVersions, dir, sep);
-    File zip = new File(dir, wkspdir.getName() + "_backup.zip");
+    else
+    {
+      backupDir = new File(backupDir, "workspaces");
+    }
+    FileVersioner version = new FileVersioner(maxVersions, backupDir, sep);
+    File zip = new File(backupDir, wkspdir.getName() + "_backup.zip");
     File backup = version.getNextBackupFile(zip);
     createBackup(backup);
     return backup;

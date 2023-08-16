@@ -768,18 +768,40 @@ public class FileUtil
     Collections.sort(files, comp);
   }
 
-  public static int deleteDirectoryContent(File toDelete)
+  public static boolean isSymbolicLink(File f)
   {
-    if (toDelete == null || !toDelete.isDirectory()) return 0;
-    int count = 0;
+    if (f == null || !f.exists()) return false;
+    try
+    {
+      Path fpath = f.toPath();
+      Path realPath = fpath.toRealPath();
+      return !fpath.equals(realPath);
+    }
+    catch (IOException io)
+    {
+      return false;
+    }
+  }
+  
+  public static void deleteDirectoryContent(File toDelete)
+  {
+    deleteDirectoryContent(toDelete, false);
+  }
+
+  public static void deleteDirectoryContent(File toDelete, boolean includeDirectories)
+  {
+    if (toDelete == null || !toDelete.isDirectory()) return;
     for (File f : toDelete.listFiles())
     {
-      if (deleteSilently(f))
+      if (f.isDirectory() && includeDirectories)
       {
-        count ++;
+        deleteDirectoryContent(f, includeDirectories);
+      }
+      else if (f.isFile())
+      {
+        deleteSilently(f);
       }
     }
-    return count;
   }
 
   public static boolean deleteSilently(File toDelete)
