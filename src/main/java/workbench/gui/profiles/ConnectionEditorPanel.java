@@ -1534,20 +1534,6 @@ public class ConnectionEditorPanel
 
     boolean changed = false;
 
-    if (currentProfile.isNew())
-    {
-      String workspace = tfWorkspaceFile.getText();
-      if (StringUtil.isNotEmpty(workspace))
-      {
-        WbFile f = new WbFile(workspace);
-        String ext = f.getExtension();
-        if (StringUtil.isEmpty(ext))
-        {
-          tfWorkspaceFile.setText(workspace + ".wksp");
-        }
-      }
-    }
-
     for (SimplePropertyEditor editor : editors)
     {
       changed = changed || editor.isChanged();

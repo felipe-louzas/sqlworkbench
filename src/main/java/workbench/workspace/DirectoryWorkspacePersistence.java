@@ -35,6 +35,7 @@ import workbench.resource.Settings;
 
 import workbench.util.FileUtil;
 import workbench.util.FileVersioner;
+import workbench.util.WbFile;
 import workbench.util.ZipUtil;
 
 /**
@@ -45,18 +46,18 @@ import workbench.util.ZipUtil;
 public class DirectoryWorkspacePersistence
   extends WorkspacePersistence
 {
-  private final String directoryName;
+  private final File workspaceDir;
 
   public DirectoryWorkspacePersistence(String directoryName)
   {
-    this.directoryName = directoryName;
+    this.workspaceDir = new File(directoryName);
   }
 
   @Override
   public void openForWriting()
     throws IOException
   {
-    FileUtil.deleteDirectoryContent(new File(directoryName));
+    clearDirectoryContent();
   }
 
   @Override
@@ -73,7 +74,7 @@ public class DirectoryWorkspacePersistence
   @Override
   public void removeEntry(String entryName)
   {
-    File toRemove = new File(directoryName, entryName);
+    File toRemove = new File(workspaceDir, entryName);
     toRemove.delete();
   }
 
@@ -81,8 +82,7 @@ public class DirectoryWorkspacePersistence
   public List<String> getEntries()
   {
     List<String> entries = new ArrayList<>();
-    File dir = new File(directoryName);
-    for (File f : dir.listFiles())
+    for (File f : workspaceDir.listFiles())
     {
       entries.add(f.getName());
     }
@@ -99,7 +99,7 @@ public class DirectoryWorkspacePersistence
   protected OutputStream createOutputStream(String entryName)
     throws IOException
   {
-    File toWrite = new File(directoryName, entryName);
+    File toWrite = new File(workspaceDir, entryName);
     return new FileOutputStream(toWrite);
   }
 
@@ -113,7 +113,7 @@ public class DirectoryWorkspacePersistence
   protected InputStream createInputStream(String entryName)
     throws IOException
   {
-    File toRead = new File(directoryName, entryName);
+    File toRead = new File(workspaceDir, entryName);
     if (!toRead.exists()) return null;
     return new FileInputStream(toRead);
   }
@@ -131,17 +131,16 @@ public class DirectoryWorkspacePersistence
     File backupDir = Settings.getInstance().getBackupDir();
     char sep = Settings.getInstance().getFileVersionDelimiter();
 
-    File wkspdir = new File(directoryName);
     if (backupDir == null)
     {
-      backupDir = wkspdir.getParentFile();
+      backupDir = workspaceDir.getParentFile();
     }
     else
     {
       backupDir = new File(backupDir, "workspaces");
     }
     FileVersioner version = new FileVersioner(maxVersions, backupDir, sep);
-    File zip = new File(backupDir, wkspdir.getName() + "_backup.zip");
+    File zip = new File(backupDir, workspaceDir.getName() + "_backup.zip");
     File backup = version.getNextBackupFile(zip);
     createBackup(backup);
     return backup;
@@ -151,11 +150,11 @@ public class DirectoryWorkspacePersistence
   {
     try
     {
-      ZipUtil.zipDirectory(new File(directoryName), backupTarget);
+      ZipUtil.zipDirectory(workspaceDir, backupTarget);
     }
     catch (Exception ex)
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not create backup zip of workspace: " + directoryName, ex);
+      LogMgr.logError(new CallerInfo(){}, "Could not create backup zip of workspace: " + WbFile.getPathForLogging(workspaceDir), ex);
     }
   }
 
@@ -164,9 +163,19 @@ public class DirectoryWorkspacePersistence
     throws IOException
   {
     if (backup == null || backup.exists()) return;
-    File dir = new File(directoryName);
-    FileUtil.deleteDirectoryContent(dir);
-    ZipUtil.unzipToDirectory(backup, dir);
+    clearDirectoryContent();
+    ZipUtil.unzipToDirectory(backup, workspaceDir);
   }
 
+  private void clearDirectoryContent()
+  {
+    if (workspaceDir.exists())
+    {
+      FileUtil.deleteDirectoryContent(workspaceDir);
+    }
+    else
+    {
+      workspaceDir.mkdirs();
+    }
+  }
 }

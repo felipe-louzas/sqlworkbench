@@ -662,14 +662,30 @@ public class Settings
     String dir = getProperty("workbench.workspace.basedir", null);
     if (dir == null)
     {
-      return getConfigDir();
+      return getDefaultWorkspaceDir();
     }
+    
     File fdir = new File(dir);
     if (!fdir.exists())
     {
-      return getConfigDir();
+      if (!fdir.mkdirs())
+      {
+        File result = getDefaultWorkspaceDir();
+        LogMgr.logWarning(new CallerInfo(){}, "Workspace base directory " + dir + " could not be created. Using: " + WbFile.getPathForLogging(result));
+        return result;
+      }
     }
     return fdir;
+  }
+
+  private File getDefaultWorkspaceDir()
+  {
+    if (enableDirectoryBasedWorkspaceStorage())
+    {
+      return new File(getConfigDir(), "workspaces");
+    }
+    return getConfigDir();
+
   }
 
   public final File getConfigDir()
