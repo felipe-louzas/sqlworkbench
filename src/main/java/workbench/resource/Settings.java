@@ -660,32 +660,22 @@ public class Settings
   public final File getWorkspaceDir()
   {
     String dir = getProperty("workbench.workspace.basedir", null);
-    if (dir == null)
+    if (StringUtil.isBlank(dir))
     {
-      return getDefaultWorkspaceDir();
+      return getConfigDir();
     }
-    
+
     File fdir = new File(dir);
     if (!fdir.exists())
     {
       if (!fdir.mkdirs())
       {
-        File result = getDefaultWorkspaceDir();
+        File result = getConfigDir();
         LogMgr.logWarning(new CallerInfo(){}, "Workspace base directory " + dir + " could not be created. Using: " + WbFile.getPathForLogging(result));
         return result;
       }
     }
     return fdir;
-  }
-
-  private File getDefaultWorkspaceDir()
-  {
-    if (enableDirectoryBasedWorkspaceStorage())
-    {
-      return new File(getConfigDir(), "workspaces");
-    }
-    return getConfigDir();
-
   }
 
   public final File getConfigDir()
@@ -729,27 +719,22 @@ public class Settings
     return getEnumProperty("workbench.macrostorage.directory.save.strategy", DirectorySaveStrategy.Flush);
   }
 
-  public boolean enableDirectoryBasedMacroStorage()
-  {
-    return getBoolProperty("workbench.macrostorage.allow.directory.storage", false);
-  }
-
-  public boolean enableDirectoryBasedWorkspaceStorage()
-  {
-    return getBoolProperty("workbench.workspace.allow.directory.storage", false);
-  }
-
-  public void setEnableDirectoryBasedWorkspaceStorage(boolean flag)
-  {
-    setProperty("workbench.workspace.allow.directory.storage", flag);
-  }
-
   public File getMacroBaseDirectory()
   {
     String dir = getProperty("workbench.macrostorage.base.directory", null);
     if (StringUtil.isBlank(dir)) return getConfigDir();
+
     File fd = new File(dir);
-    if (fd.exists()) return fd;
+    if (!fd.exists())
+    {
+      if (!fd.mkdirs())
+      {
+        File result = getConfigDir();
+        LogMgr.logWarning(new CallerInfo(){}, "Macro base directory " + dir + " could not be created. Using: " + WbFile.getPathForLogging(result));
+        return result;
+      }
+      return fd;
+    }
     return getConfigDir();
   }
 

@@ -79,17 +79,9 @@ public class WbWorkspace
   private String filename;
   private String loadError;
   private WorkspacePersistence persistence;
-  private boolean allowDirectoryStorage;
 
   public WbWorkspace(String archiveName)
   {
-    this(archiveName, Settings.getInstance().enableDirectoryBasedWorkspaceStorage());
-  }
-
-  public WbWorkspace(String archiveName, boolean allowDirectoryWorkspace)
-  {
-    if (archiveName == null) throw new NullPointerException("Filename cannot be null");
-    this.allowDirectoryStorage = allowDirectoryWorkspace;
     setFilename(archiveName);
   }
 
@@ -188,7 +180,7 @@ public class WbWorkspace
       persistence.close();
     }
 
-    if (allowDirectoryStorage && isDirectory(f))
+    if (isDirectory(f))
     {
       persistence = new DirectoryWorkspacePersistence(filename);
     }

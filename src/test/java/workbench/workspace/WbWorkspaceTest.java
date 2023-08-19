@@ -55,6 +55,7 @@ public class WbWorkspaceTest
     TestUtil util = getTestUtil();
     util.emptyBaseDirectory();
   }
+  
   @Test
   public void testDirectoryPersistence()
     throws Exception
@@ -62,9 +63,9 @@ public class WbWorkspaceTest
     TestUtil util = getTestUtil();
     WbFile wdir = new WbFile(util.getBaseDir(), "my_workspace");
     wdir.mkdir();
-    WbWorkspace wksp = createWorkspace(wdir.getAbsolutePath(), true);
+    WbWorkspace wksp = createWorkspace(wdir.getAbsolutePath());
     wksp.save();
-    testOne(wksp, wdir.getAbsolutePath(), true);
+    testOne(wksp, wdir.getAbsolutePath());
 
     File backup1 = wksp.createBackup();
     assertNotNull(backup1);
@@ -81,15 +82,15 @@ public class WbWorkspaceTest
   {
     TestUtil util = getTestUtil();
     WbFile wFile = new WbFile(util.getBaseDir(), "my_workspace.wksp");
-    WbWorkspace wksp = createWorkspace(wFile.getAbsolutePath(), false);
+    WbWorkspace wksp = createWorkspace(wFile.getAbsolutePath());
     wksp.save();
-    testOne(wksp, wFile.getAbsolutePath(), false);
+    testOne(wksp, wFile.getAbsolutePath());
   }
 
-  private void testOne(WbWorkspace toTest, String name, boolean useDir)
+  private void testOne(WbWorkspace toTest, String name)
     throws Exception
   {
-    try (WbWorkspace wksp2 = new WbWorkspace(name, useDir))
+    try (WbWorkspace wksp2 = new WbWorkspace(name))
     {
       wksp2.openForReading();
       assertEquals(toTest.getSelectedTab(), wksp2.getSelectedTab());
@@ -101,10 +102,10 @@ public class WbWorkspaceTest
     }
   }
 
-  private WbWorkspace createWorkspace(String name, boolean allowDirectory)
+  private WbWorkspace createWorkspace(String name)
     throws Exception
   {
-    WbWorkspace wksp = new WbWorkspace(name, allowDirectory);
+    WbWorkspace wksp = new WbWorkspace(name);
     EditorHistory h1 = new EditorHistory(1);
     h1.addContent("This is the editor content", 0, 0, 0);
     wksp.addEditorHistory(0, h1);

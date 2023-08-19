@@ -200,15 +200,7 @@ public class FileDialogUtil
       FileFilter wksp = ExtensionFileFilter.getWorkspaceFileFilter();
       fc.removeChoosableFileFilter(fc.getFileFilter()); // remove the default "All files" filter
       fc.addChoosableFileFilter(wksp);
-
-      if (Settings.getInstance().enableDirectoryBasedWorkspaceStorage())
-      {
-        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-      }
-      else
-      {
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      }
+      fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
       String filename = null;
 
