@@ -71,7 +71,7 @@ public class GuiSettings
   public static final String PROPERTY_MACRO_SOURCE_TOOLTIP_LENGTH = "workbench.gui.macro.source.tooltip.length";
   public static final String PROPERTY_MACRO_MENU_USE_SOURCE_TOOLTIP = "workbench.gui.macro.menuitem.tooltip.usesource";
 
-  public static final String PROP_TITLE_SHOW_WKSP = "workbench.gui.display.showpworkspace";
+  public static final String PROP_TITLE_SHOW_WKSP = "workbench.gui.display.show.workspace";
   public static final String PROP_TITLE_SHOW_URL = "workbench.gui.display.showurl";
   public static final String PROP_TITLE_SHOW_URL_USER = "workbench.gui.display.showurl.includeuser";
   public static final String PROP_TITLE_SHOW_URL_CLEANUP = "workbench.gui.display.showurl.cleanup";

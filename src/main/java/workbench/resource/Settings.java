@@ -452,13 +452,6 @@ public class Settings
       logfilename = FileDialogUtil.replaceProgramDir(logfilename);
       logfilename = StringUtil.replace(logfilename, FileDialogUtil.CONFIG_DIR_KEY, getConfigDir().getAbsolutePath());
 
-      // Replace old System.out or System.err settings
-      if (logfilename.equalsIgnoreCase("System.out") || logfilename.equalsIgnoreCase("System.err"))
-      {
-        logfilename = "workbench.log";
-        setProperty("workbench.log.filename", "workbench.log");
-      }
-
       WbFile logfile = new WbFile(logfilename);
       if (!logfile.isAbsolute())
       {
@@ -475,10 +468,10 @@ public class Settings
       {
         configuredFile = logfile.getFullPath();
         logfile = new WbFile(getConfigDir(), "workbench.log");
-        setProperty("workbench.log.filename", "workbench.log");
+        setLogFilename("workbench.log");
       }
 
-      int maxSize = this.getMaxLogfileSize();
+      int maxSize = getMaxLogfileSize();
       int backups = getLogfileBackupCount();
       LogMgr.setOutputFile(logfile, maxSize, backups);
 
@@ -492,6 +485,11 @@ public class Settings
       System.err.println("Error initializing log system!");
       e.printStackTrace(System.err);
     }
+  }
+
+  public void setLogFilename(String fileName)
+  {
+    setProperty("workbench.log.filename", fileName);
   }
 
   private boolean loadConfig(WbFile cfile)
@@ -657,6 +655,20 @@ public class Settings
     return getBoolProperty("workbench.directories.replace.vars", true);
   }
 
+  public void setWorkspaceDir(String dir)
+  {
+    dir = StringUtil.trimToNull(dir);
+    if (dir != null)
+    {
+      File f = new File(dir);
+      if (f.equals(getConfigDir()))
+      {
+        dir = null;
+      }
+    }
+    setProperty("workbench.workspace.basedir", dir);
+  }
+
   public final File getWorkspaceDir()
   {
     String dir = getProperty("workbench.workspace.basedir", null);
@@ -719,6 +731,20 @@ public class Settings
     return getEnumProperty("workbench.macrostorage.directory.save.strategy", DirectorySaveStrategy.Flush);
   }
 
+  public void setMacroBaseDirectory(String dirName)
+  {
+    dirName = StringUtil.trimToNull(dirName);
+    if (dirName != null)
+    {
+      File f = new File(dirName.trim());
+      if (f.equals(getConfigDir()))
+      {
+        dirName = null;
+      }
+    }
+    setProperty("workbench.macrostorage.base.directory", dirName);
+  }
+
   public File getMacroBaseDirectory()
   {
     String dir = getProperty("workbench.macrostorage.base.directory", null);
@@ -735,7 +761,7 @@ public class Settings
       }
       return fd;
     }
-    return getConfigDir();
+    return fd;
   }
 
   public String getMacroStorage()
@@ -3292,9 +3318,19 @@ public class Settings
     return this.getIntProperty("workbench.log.maxfilesize", 10 * 1024 * 1024);
   }
 
+  public void setMaxLogfileSize(int sizeInBytes)
+  {
+    setProperty("workbench.log.maxfilesize", sizeInBytes);
+  }
+
   public int getLogfileBackupCount()
   {
     return this.getIntProperty("workbench.log.backup.count", 5);
+  }
+
+  public void setLogfileBackupCount(int maxBackups)
+  {
+    setProperty("workbench.log.backup.count", maxBackups);
   }
 
   public boolean getDelimiterDefaultSingleLine()
@@ -3912,6 +3948,7 @@ public class Settings
     renameProperty("drivers.lastlibdir", "workbench.drivers.lastlibdir");
     renameProperty("workbench.db.debugger", "workbench.db.previewsql");
     renameProperty("workbench.gui.display.multilinethreshold", "workbench.gui.display.multiline.threshold");
+    renameProperty("workbench.gui.display.showpworkspace", "workbench.gui.display.show.workspace");
 
     // Fix typos from incorrect default.properties
     renameProperty("workbench.db.objecttype.data.postgres", "workbench.db.objecttype.data.postgresql");

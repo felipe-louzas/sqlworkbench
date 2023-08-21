@@ -33,13 +33,15 @@ import workbench.resource.ResourceMgr;
 import workbench.gui.MainWindow;
 import workbench.gui.actions.WbAction;
 
+import workbench.util.StringUtil;
+
 /**
  * @author Thomas Kellerer
  */
 public class SaveWorkspaceAction
   extends WbAction
 {
-  private MainWindow client;
+  private final MainWindow client;
 
   public SaveWorkspaceAction(MainWindow aClient)
   {
@@ -48,6 +50,16 @@ public class SaveWorkspaceAction
     this.initMenuDefinition("MnuTxtSaveWorkspace", KeyStroke.getKeyStroke(KeyEvent.VK_S, PlatformShortcuts.getDefaultModifier() | InputEvent.SHIFT_DOWN_MASK));
     this.setMenuItemName(ResourceMgr.MNU_TXT_WORKSPACE);
     this.setIcon(null);
+  }
+
+  public void setCurrentWorkspaceFile(String filename)
+  {
+    String text = ResourceMgr.getString("d_MnuTxtSaveWorkspace");
+    if (StringUtil.isNotBlank(filename))
+    {
+      text = "<html>" + text + "<br>(" + filename + ")</html>";
+    }
+    setTooltip(text);
   }
 
   @Override

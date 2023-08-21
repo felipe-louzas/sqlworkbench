@@ -77,7 +77,7 @@ public class SettingsPanel
   {
     super(new BorderLayout());
     // Remember to adjust the calculation of the width and height for the dialog
-    // when changing the order of pages
+    // when changing the order of pages, or adding new pages
     pages.add(new OptionPanelPage("GeneralOptionsPanel", "LblSettingsGeneral"));
     pages.add(new OptionPanelPage("EditorOptionsPanel", "LblSettingsEditor"));
     pages.add(new OptionPanelPage("SqlExecOptionsPanel", "LblSqlExecOptions"));
@@ -101,6 +101,7 @@ public class SettingsPanel
     pages.add(new OptionPanelPage("WindowTitleOptionsPanel", "LblSettingsWinTitle"));
     pages.add(new OptionPanelPage("ExternalToolsPanel", "LblExternalTools"));
     pages.add(new OptionPanelPage("GlobalSshHostsPanel", "LblSshGlobalCfg"));
+    pages.add(new OptionPanelPage("LoggingOptionsPanel", "LblLoggingOptions"));
     pages.add(new OptionPanelPage("LnFOptionsPanel", "LblLnFOptions"));
 
     initComponents();
@@ -223,8 +224,8 @@ public class SettingsPanel
     }
     else
     {
-      // the "General" page is the highest page
-      pageList.setSelectedIndex(0);
+      // the "Data Display" page is the highest page
+      pageList.setSelectedIndex(11);
       dialog.pack();
       int h = dialog.getSize().height;
 

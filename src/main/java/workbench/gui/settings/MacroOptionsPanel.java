@@ -25,6 +25,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -32,15 +33,19 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import workbench.interfaces.Restoreable;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 import workbench.resource.StoreableKeyStroke;
 
 import workbench.gui.components.TextFieldWidthAdjuster;
 import workbench.gui.dbobjects.objecttree.ComponentPosition;
+
+import workbench.util.StringUtil;
 
 /**
  *
@@ -95,6 +100,16 @@ public class MacroOptionsPanel
         treePosition.setSelectedIndex(2);
         break;
     }
+    File dir = Settings.getInstance().getMacroBaseDirectory();
+    if (dir != null)
+    {
+      baseDirName.setText(dir.getAbsolutePath());
+    }
+    else
+    {
+      baseDirName.setText("");
+    }
+
   }
 
   @Override
@@ -119,6 +134,11 @@ public class MacroOptionsPanel
         GuiSettings.setMacroListPosition(ComponentPosition.right);
         break;
     }
+    String dirName = StringUtil.trimToNull(baseDirName.getText());
+    if (dirName != null)
+    {
+      Settings.getInstance().setMacroBaseDirectory(dirName);
+    }
   }
 
 
@@ -141,6 +161,8 @@ public class MacroOptionsPanel
     enterRuns = new JCheckBox();
     jLabel1 = new JLabel();
     treePosition = new JComboBox<>();
+    jLabel2 = new JLabel();
+    baseDirName = new JTextField();
 
     setLayout(new GridBagLayout());
 
@@ -223,6 +245,22 @@ public class MacroOptionsPanel
     gridBagConstraints.insets = new Insets(8, 0, 0, 0);
     jPanel1.add(treePosition, gridBagConstraints);
 
+    jLabel2.setText(ResourceMgr.getString("LblMacrosBaseDir")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(11, 0, 0, 10);
+    jPanel1.add(jLabel2, gridBagConstraints);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 6;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(11, 0, 0, 0);
+    jPanel1.add(baseDirName, gridBagConstraints);
+
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
@@ -237,10 +275,12 @@ public class MacroOptionsPanel
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private JTextField baseDirName;
   private JComboBox cbExpansionKey;
   private JCheckBox closeEsc;
   private JCheckBox enterRuns;
   private JLabel jLabel1;
+  private JLabel jLabel2;
   private JLabel jLabel3;
   private JPanel jPanel1;
   private JCheckBox saveWksp;

@@ -77,21 +77,13 @@ public class GeneralOptionsPanel
   {
     super();
     initComponents();
-    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, 4, 0));
-    jPanel2.setBorder(b);
-    jPanel1.setBorder(b);
-
-    if (LogMgr.isTraceEnabled())
-    {
-      DefaultComboBoxModel model = (DefaultComboBoxModel)logLevel.getModel();
-      model.addElement("TRACE");
-    }
+    Border b = new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(0, 0, 4, 0));
+    tabOptionsPanel.setBorder(b);
   }
 
   @Override
   public void restoreSettings()
   {
-    logLevel.setSelectedItem(LogMgr.getLevel());
     int days = Settings.getInstance().getUpdateCheckInterval();
     if (days <= 0)
     {
@@ -140,9 +132,6 @@ public class GeneralOptionsPanel
     onlyActiveTab.setSelected(GuiSettings.getCloseActiveTabOnly());
     closeButtonRightSide.setSelected(GuiSettings.getShowCloseButtonOnRightSide());
     tabLRUclose.setSelected(GuiSettings.getUseLRUForTabs());
-    logAllStatements.setSelected(Settings.getInstance().getLogAllStatements());
-    logMetaSQL.setSelected(Settings.getInstance().getDebugMetadataSql());
-    obfuscateDbInfo.setSelected(Settings.getInstance().getObfuscateLogInformation());
     autoSaveProfiles.setSelected(Settings.getInstance().getSaveProfilesImmediately());
     enableQuickFilter.setSelected(GuiSettings.enableProfileQuickFilter());
     focusToQuickFilter.setSelected(GuiSettings.focusToProfileQuickFilter());
@@ -188,13 +177,7 @@ public class GeneralOptionsPanel
     set.setConsolidateLogMsg(this.consolidateLog.isSelected());
     set.setExitOnFirstConnectCancel(exitOnConnectCancel.isSelected());
     set.setShowConnectDialogOnStartup(autoConnect.isSelected());
-    set.setLogAllStatements(logAllStatements.isSelected());
-    set.setDebugMetadataSql(logMetaSQL.isSelected());
-    set.setObfuscateLogInformation(obfuscateDbInfo.isSelected());
     set.setUpdateCheckInterval(StringUtil.getIntValue(updateInterval.getText(), -1));
-    String level = (String)logLevel.getSelectedItem();
-    LogMgr.setLevel(level);
-    set.setProperty("workbench.log.level", level);
     set.setLanguage(getSelectedLanguage());
     set.setUseSinglePageHelp(singlePageHelp.isSelected());
     if (scrollTabs.isSelected())
@@ -273,8 +256,7 @@ public class GeneralOptionsPanel
     masterPwdButton = new JButton();
     varsPerWindow = new JCheckBox();
     restoreExpandedGroups = new JCheckBox();
-    settingsfilename = new WbLabelField();
-    jPanel1 = new JPanel();
+    tabOptionsPanel = new JPanel();
     showTabIndex = new JCheckBox();
     scrollTabs = new JCheckBox();
     confirmTabClose = new JCheckBox();
@@ -290,18 +272,14 @@ public class GeneralOptionsPanel
     cancelIconCombo = new IconListCombobox();
     cancelIconLabel = new JLabel();
     jPanel3 = new JPanel();
-    logLevelLabel = new JLabel();
-    logLevel = new JComboBox();
     jPanel5 = new JPanel();
     langLabel = new JLabel();
     languageDropDown = new JComboBox();
     checkUpdatesLabel = new JLabel();
     updateInterval = new JTextField();
     daysLabel = new JLabel();
-    logAllStatements = new JCheckBox();
-    logMetaSQL = new JCheckBox();
+    settingsfilename = new WbLabelField();
     logfileLabel = new WbLabelField();
-    obfuscateDbInfo = new JCheckBox();
 
     setLayout(new GridBagLayout());
 
@@ -456,17 +434,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.insets = new Insets(10, 0, 0, 0);
     add(jPanel2, gridBagConstraints);
 
-    settingsfilename.setText("Settings");
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 12;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
-    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
-    add(settingsfilename, gridBagConstraints);
-
-    jPanel1.setLayout(new GridBagLayout());
+    tabOptionsPanel.setLayout(new GridBagLayout());
 
     showTabIndex.setSelected(GuiSettings.getShowTabIndex());
     showTabIndex.setText(ResourceMgr.getString("LblShowTabIndex")); // NOI18N
@@ -480,7 +448,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(4, 16, 1, 0);
-    jPanel1.add(showTabIndex, gridBagConstraints);
+    tabOptionsPanel.add(showTabIndex, gridBagConstraints);
 
     scrollTabs.setText(ResourceMgr.getString("LblScrolTabs")); // NOI18N
     scrollTabs.setToolTipText(ResourceMgr.getString("d_LblScrolTabs")); // NOI18N
@@ -490,7 +458,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(4, 16, 0, 0);
-    jPanel1.add(scrollTabs, gridBagConstraints);
+    tabOptionsPanel.add(scrollTabs, gridBagConstraints);
 
     confirmTabClose.setText(ResourceMgr.getString("LblConfirmTabClose")); // NOI18N
     confirmTabClose.setToolTipText(ResourceMgr.getString("d_LblConfirmTabClose")); // NOI18N
@@ -500,7 +468,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(4, 0, 1, 0);
-    jPanel1.add(confirmTabClose, gridBagConstraints);
+    tabOptionsPanel.add(confirmTabClose, gridBagConstraints);
 
     confirmMultiTabClose.setText(ResourceMgr.getString("LblConfirmMultiTabClose")); // NOI18N
     confirmMultiTabClose.setToolTipText(ResourceMgr.getString("d_LblConfirmMultiTabClose")); // NOI18N
@@ -510,7 +478,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(4, 0, 0, 0);
-    jPanel1.add(confirmMultiTabClose, gridBagConstraints);
+    tabOptionsPanel.add(confirmMultiTabClose, gridBagConstraints);
 
     showTabCloseButton.setText(ResourceMgr.getString("LblShowTabClose")); // NOI18N
     showTabCloseButton.setToolTipText(ResourceMgr.getString("d_LblShowTabClose")); // NOI18N
@@ -523,7 +491,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(6, 0, 2, 0);
-    jPanel1.add(showTabCloseButton, gridBagConstraints);
+    tabOptionsPanel.add(showTabCloseButton, gridBagConstraints);
 
     showResultTabClose.setText(ResourceMgr.getString("LblShowResultClose")); // NOI18N
     showResultTabClose.setToolTipText(ResourceMgr.getString("d_LblShowResultClose")); // NOI18N
@@ -537,7 +505,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(6, 16, 2, 0);
-    jPanel1.add(showResultTabClose, gridBagConstraints);
+    tabOptionsPanel.add(showResultTabClose, gridBagConstraints);
 
     onlyActiveTab.setText(ResourceMgr.getString("LblCloseActive")); // NOI18N
     onlyActiveTab.setToolTipText(ResourceMgr.getString("d_LblCloseActive")); // NOI18N
@@ -547,7 +515,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(3, 0, 5, 0);
-    jPanel1.add(onlyActiveTab, gridBagConstraints);
+    tabOptionsPanel.add(onlyActiveTab, gridBagConstraints);
 
     closeButtonRightSide.setText(ResourceMgr.getString("LblCloseOnRight")); // NOI18N
     closeButtonRightSide.setToolTipText(ResourceMgr.getString("d_LblCloseOnRight")); // NOI18N
@@ -559,7 +527,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new Insets(3, 16, 5, 0);
-    jPanel1.add(closeButtonRightSide, gridBagConstraints);
+    tabOptionsPanel.add(closeButtonRightSide, gridBagConstraints);
 
     tabLRUclose.setText(ResourceMgr.getString("LblTabOrderLRU")); // NOI18N
     tabLRUclose.setToolTipText(ResourceMgr.getString("d_LblTabOrderLRU")); // NOI18N
@@ -570,7 +538,7 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(4, 0, 0, 0);
-    jPanel1.add(tabLRUclose, gridBagConstraints);
+    tabOptionsPanel.add(tabLRUclose, gridBagConstraints);
 
     imagePanel.setLayout(new GridBagLayout());
 
@@ -616,40 +584,22 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridheight = 2;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(0, 12, 1, 0);
-    jPanel1.add(imagePanel, gridBagConstraints);
+    tabOptionsPanel.add(imagePanel, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(4, 0, 0, 0);
-    add(jPanel1, gridBagConstraints);
+    add(tabOptionsPanel, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 9;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(jPanel3, gridBagConstraints);
-
-    logLevelLabel.setText(ResourceMgr.getString("LblLogLevel")); // NOI18N
-    logLevelLabel.setToolTipText(ResourceMgr.getString("d_LblLogLevel")); // NOI18N
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 11;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    add(logLevelLabel, gridBagConstraints);
-
-    logLevel.setModel(new DefaultComboBoxModel(new String[] { "ERROR", "WARNING", "INFO", "DEBUG" }));
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 11;
-    gridBagConstraints.gridwidth = 3;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 10, 0, 10);
-    add(logLevel, gridBagConstraints);
 
     jPanel5.setLayout(new GridBagLayout());
 
@@ -701,54 +651,25 @@ public class GeneralOptionsPanel
     gridBagConstraints.weightx = 1.0;
     add(jPanel5, gridBagConstraints);
 
-    logAllStatements.setText(ResourceMgr.getString("LblLogAllSql")); // NOI18N
-    logAllStatements.setToolTipText(ResourceMgr.getString("d_LblLogAllSql")); // NOI18N
-    logAllStatements.setBorder(null);
-    logAllStatements.setHorizontalAlignment(SwingConstants.LEFT);
-    logAllStatements.setHorizontalTextPosition(SwingConstants.RIGHT);
-    logAllStatements.setIconTextGap(5);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(7, 0, 5, 0);
-    add(logAllStatements, gridBagConstraints);
-
-    logMetaSQL.setText(ResourceMgr.getString("LblLogMetaSql")); // NOI18N
-    logMetaSQL.setToolTipText(ResourceMgr.getString("d_LblLogMetaSql")); // NOI18N
-    logMetaSQL.setBorder(null);
-    logMetaSQL.setHorizontalAlignment(SwingConstants.LEFT);
-    logMetaSQL.setHorizontalTextPosition(SwingConstants.RIGHT);
-    logMetaSQL.setIconTextGap(5);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
-    gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(3, 0, 5, 0);
-    add(logMetaSQL, gridBagConstraints);
-
-    logfileLabel.setText("Logfile");
+    settingsfilename.setText("Settings");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 13;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
-    gridBagConstraints.insets = new Insets(2, 0, 0, 0);
-    add(logfileLabel, gridBagConstraints);
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
+    add(settingsfilename, gridBagConstraints);
 
-    obfuscateDbInfo.setText(ResourceMgr.getString("LblObfuscateDbInfo")); // NOI18N
-    obfuscateDbInfo.setToolTipText(ResourceMgr.getString("d_LblObfuscateDbInfo")); // NOI18N
-    obfuscateDbInfo.setBorder(null);
+    logfileLabel.setText("Logfile");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 7;
+    gridBagConstraints.gridy = 14;
     gridBagConstraints.gridwidth = 4;
-    gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(4, 0, 2, 0);
-    add(obfuscateDbInfo, gridBagConstraints);
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
+    gridBagConstraints.insets = new Insets(2, 0, 0, 0);
+    add(logfileLabel, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -806,19 +727,13 @@ public class GeneralOptionsPanel
   private JCheckBox focusToQuickFilter;
   private JComboBox iconCombobox;
   private JPanel imagePanel;
-  private JPanel jPanel1;
   private JPanel jPanel2;
   private JPanel jPanel3;
   private JPanel jPanel5;
   private JLabel langLabel;
   private JComboBox languageDropDown;
-  private JCheckBox logAllStatements;
-  private JComboBox logLevel;
-  private JLabel logLevelLabel;
-  private JCheckBox logMetaSQL;
   private JTextField logfileLabel;
   private JButton masterPwdButton;
-  private JCheckBox obfuscateDbInfo;
   private JCheckBox onlyActiveTab;
   private JCheckBox restoreExpandedGroups;
   private JCheckBox scrollTabs;
@@ -829,6 +744,7 @@ public class GeneralOptionsPanel
   private JCheckBox showTabIndex;
   private JCheckBox singlePageHelp;
   private JCheckBox tabLRUclose;
+  private JPanel tabOptionsPanel;
   private JTextField updateInterval;
   private JCheckBox varsPerWindow;
   // End of variables declaration//GEN-END:variables

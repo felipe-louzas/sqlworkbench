@@ -24,6 +24,7 @@ package workbench.gui.settings;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.File;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -87,6 +88,9 @@ public class WorkspaceOptions
       default:
         fileHandling.setSelectedIndex(0);
     }
+    File dir = Settings.getInstance().getWorkspaceDir();
+    String dirName = dir == null ? "" : dir.getAbsolutePath();
+    baseDir.setText(dirName);
   }
 
   @Override
@@ -98,7 +102,7 @@ public class WorkspaceOptions
     set.setAutoSaveWorkspace(autoSaveWorkspace.isSelected());
     String minutes = StringUtil.trimToNull(autoSaveInterval.getText());
     set.setAutoSaveWorkspaceInterval(StringUtil.getIntValue(minutes, 0));
-    
+
     int index = fileHandling.getSelectedIndex();
     switch (index)
     {
@@ -114,6 +118,7 @@ public class WorkspaceOptions
       default:
         set.setFilesInWorkspaceHandling(ExternalFileHandling.link);
     }
+    set.setWorkspaceDir(StringUtil.trimToNull(baseDir.getText()));
   }
 
   /** This method is called from within the constructor to
@@ -127,11 +132,12 @@ public class WorkspaceOptions
     GridBagConstraints gridBagConstraints;
 
     autoSaveWorkspace = new JCheckBox();
-    jPanel1 = new JPanel();
     jLabel3 = new JLabel();
     fileHandling = new JComboBox();
     jLabel1 = new JLabel();
     autoSaveInterval = new JTextField();
+    jLabel2 = new JLabel();
+    baseDir = new JTextField();
 
     setLayout(new GridBagLayout());
 
@@ -144,61 +150,72 @@ public class WorkspaceOptions
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(0, 3, 3, 0);
     add(autoSaveWorkspace, gridBagConstraints);
 
-    jPanel1.setLayout(new GridBagLayout());
-
     jLabel3.setText(ResourceMgr.getString("LblRememberFileWksp")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(4, 3, 0, 0);
-    jPanel1.add(jLabel3, gridBagConstraints);
+    add(jLabel3, gridBagConstraints);
 
     fileHandling.setModel(new DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(0, 8, 0, 0);
-    jPanel1.add(fileHandling, gridBagConstraints);
+    add(fileHandling, gridBagConstraints);
 
     jLabel1.setText(ResourceMgr.getString("LblAutoSaveWkspInt")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(4, 3, 9, 0);
-    jPanel1.add(jLabel1, gridBagConstraints);
+    gridBagConstraints.insets = new Insets(0, 3, 0, 0);
+    add(jLabel1, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 0;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new Insets(0, 8, 9, 0);
-    jPanel1.add(autoSaveInterval, gridBagConstraints);
+    gridBagConstraints.insets = new Insets(0, 8, 9, 15);
+    add(autoSaveInterval, gridBagConstraints);
 
+    jLabel2.setText(ResourceMgr.getString("LblWkspBaseDir")); // NOI18N
+    jLabel2.setToolTipText(ResourceMgr.getString("d_LblWkspBaseDir")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(3, 0, 0, 0);
-    add(jPanel1, gridBagConstraints);
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(0, 3, 6, 0);
+    add(jLabel2, gridBagConstraints);
+
+    baseDir.setToolTipText(ResourceMgr.getString("d_LblWkspBaseDir")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(0, 8, 9, 15);
+    add(baseDir, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JTextField autoSaveInterval;
   private JCheckBox autoSaveWorkspace;
+  private JTextField baseDir;
   private JComboBox fileHandling;
   private JLabel jLabel1;
+  private JLabel jLabel2;
   private JLabel jLabel3;
-  private JPanel jPanel1;
   // End of variables declaration//GEN-END:variables
 
 }

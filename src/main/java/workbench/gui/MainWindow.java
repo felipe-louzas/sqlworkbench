@@ -2303,6 +2303,10 @@ public class MainWindow
       EventQueue.invokeLater(this::updateRecentWorkspaces);
     }
 
+    if (saveWorkspaceAction != null)
+    {
+      saveWorkspaceAction.setCurrentWorkspaceFile(getCurrentWorkspaceFile());
+    }
     shouldShowMacroList = getToolProperties(MacroPanel.TOOLKEY).getBoolProperty(MacroPanel.PROP_VISIBLE, false);
     shouldShowTree = getToolProperties(DB_TREE_PROPS).getBoolProperty(DbTreePanel.PROP_VISIBLE, false);
     shouldShowFileList = getToolProperties(FILE_TREE_PROPS).getBoolProperty(FileTreeSettings.PROP_VISIBLE, false);

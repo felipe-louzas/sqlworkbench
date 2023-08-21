@@ -28,6 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
 import workbench.console.TextPrinter;
@@ -37,7 +38,6 @@ import workbench.interfaces.TextContainer;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
-import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.ClearMessagesAction;
 import workbench.gui.components.TextComponentMouseListener;
 import workbench.gui.editor.SearchAndReplace;
@@ -49,14 +49,14 @@ public class LogArea
   extends JTextArea
   implements FontChangedListener, PropertyChangeListener, TextContainer, ResultLogger, TextPrinter
 {
-  private TextComponentMouseListener contextMenu;
+  private final TextComponentMouseListener contextMenu;
   private int maxLines = Integer.MAX_VALUE;
 
   public LogArea(Container owner)
   {
     super();
     setDoubleBuffered(true);
-    setBorder(WbSwingUtilities.EMPTY_BORDER);
+    setBorder(new EmptyBorder(4,4,4,4));
     setFont(Settings.getInstance().getMsgLogFont());
     setEditable(false);
     setLineWrap(true);
