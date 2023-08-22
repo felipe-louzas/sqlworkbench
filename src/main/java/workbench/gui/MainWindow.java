@@ -2184,7 +2184,7 @@ public class MainWindow
             return true;
           case LOAD_OTHER:
             FileDialogUtil util = new FileDialogUtil();
-            String fname = util.getWorkspaceFilename(this, false, true);
+            String fname = util.getWorkspaceFilename(this, false);
             realFilename = getRealWorkspaceFilename(fname);
         }
       }
@@ -2436,7 +2436,7 @@ public class MainWindow
       {
         case LOAD_OTHER:
           FileDialogUtil util = new FileDialogUtil();
-          workspaceFilename = util.getWorkspaceFilename(this, false, true);
+          workspaceFilename = util.getWorkspaceFilename(this, false);
           currentProfile.setWorkspaceFile(workspaceFilename);
           break;
         case IGNORE:
@@ -3438,7 +3438,7 @@ public class MainWindow
   {
     this.saveWorkspace();
     FileDialogUtil dialog = new FileDialogUtil();
-    String filename = dialog.getWorkspaceFilename(this, false, true);
+    String filename = dialog.getWorkspaceFilename(this, false);
     if (filename == null) return;
     boolean loaded = this.loadWorkspace(filename, true);
     if (loaded && Settings.getInstance().getBoolProperty("workbench.gui.workspace.load.askassign", true))
@@ -3610,7 +3610,7 @@ public class MainWindow
     {
       interactive = true;
       FileDialogUtil util = new FileDialogUtil();
-      filename = util.getWorkspaceFilename(this, true, true);
+      filename = util.getWorkspaceFilename(this, true);
       if (filename == null) return true;
     }
 

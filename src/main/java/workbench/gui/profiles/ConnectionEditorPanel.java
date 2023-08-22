@@ -1513,7 +1513,7 @@ public class ConnectionEditorPanel
   public void selectWorkspace()
   {
     FileDialogUtil util = new FileDialogUtil();
-    String filename = util.getWorkspaceFilename(SwingUtilities.getWindowAncestor(this), false, true);
+    String filename = util.getWorkspaceFilename(SwingUtilities.getWindowAncestor(this), false);
     if (filename == null)
     {
       return;

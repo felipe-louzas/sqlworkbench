@@ -190,7 +190,7 @@ public class FileDialogUtil
     }
   }
 
-  public String getWorkspaceFilename(Window parent, boolean toSave, boolean replaceConfigDir)
+  public String getWorkspaceFilename(Window parent, boolean toSave)
   {
     try
     {
@@ -239,13 +239,11 @@ public class FileDialogUtil
         lastDir = fc.getCurrentDirectory().getAbsolutePath();
         Settings.getInstance().setLastWorkspaceDir(lastDir);
       }
-      if (replaceConfigDir && filename != null)
-      {
-        filename = removeConfigDir(filename);
-      }
+
+      filename = removeWorkspaceDir(filename);
       return filename;
     }
-    catch (Throwable e)
+    catch (Exception e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
@@ -253,24 +251,34 @@ public class FileDialogUtil
     }
   }
 
-  public static String removeConfigDir(String aPathname)
+  public static String removeConfigDir(String filePath)
   {
-    WbFile f = new WbFile(aPathname);
+    WbFile f = new WbFile(filePath);
     return removeConfigDir(f);
   }
 
-  public static String removeConfigDir(WbFile toRemove)
+  public static String removeConfigDir(WbFile selectedFile)
   {
-    String fname = toRemove.getName();
-    File dir = toRemove.getParentFile();
-    File config = Settings.getInstance().getConfigDir();
-    if (dir != null && dir.equals(config))
+    return removeBaseDir(selectedFile, Settings.getInstance().getConfigDir());
+  }
+
+  public static String removeWorkspaceDir(String selectedDir)
+  {
+    if (StringUtil.isBlank(selectedDir)) return selectedDir;
+    return removeBaseDir(new WbFile(selectedDir), Settings.getInstance().getWorkspaceDir());
+  }
+
+  public static String removeBaseDir(WbFile selectedDir, File baseDir)
+  {
+    String fname = selectedDir.getName();
+    File dir = selectedDir.getParentFile();
+    if (dir != null && dir.equals(baseDir))
     {
       return fname;
     }
     else
     {
-      return toRemove.getFullPath();
+      return selectedDir.getFullPath();
     }
   }
 

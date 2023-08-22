@@ -2988,7 +2988,7 @@ public class Settings
 
   public String getLastWorkspaceDir()
   {
-    return getProperty("workbench.workspace.lastdir", this.getConfigDir().getAbsolutePath());
+    return getProperty("workbench.workspace.lastdir", getWorkspaceDir().getAbsolutePath());
   }
 
   public void setLastWorkspaceDir(String aDir)
