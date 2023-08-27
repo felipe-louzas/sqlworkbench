@@ -25,16 +25,17 @@ import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import workbench.WbManager;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.YesNoCancel;
 import workbench.gui.components.ExtensionFileFilter;
 import workbench.gui.components.WbFileChooser;
 
+import workbench.util.FileDialogUtil;
 import workbench.util.WbFile;
 
 /**
@@ -45,31 +46,29 @@ public class MacroFileSelector
 {
   public static final String LAST_DIR_PROPERTY = "workbench.macros.lastdir";
 
+  public MacroFileSelector()
+  {
+  }
+
   public boolean canLoadMacros(int clientId)
   {
     if (!MacroManager.getInstance().getMacros(clientId).isModified()) return true;
 
-    int result = WbSwingUtilities.getYesNoCancel(WbManager.getInstance().getCurrentWindow(), ResourceMgr.getString("MsgConfirmUnsavedMacros"));
-    if (result == JOptionPane.CANCEL_OPTION)
+    YesNoCancel result = WbSwingUtilities.getYesNoCancel(WbManager.getInstance().getCurrentWindow(), ResourceMgr.getString("MsgConfirmUnsavedMacros"));
+    switch (result)
     {
-      return false;
-    }
-    if (result == JOptionPane.YES_OPTION)
-    {
-      MacroManager.getInstance().save();
+      case cancel:
+        return false;
+      case yes:
+        MacroManager.getInstance().save();
     }
     return true;
-  }
-
-  public WbFile selectMacroFile(Component parent)
-  {
-    return selectStorageFile(parent, false, null);
   }
 
   public WbFile selectStorageForLoad(Component parent, int clientId)
   {
     if (!canLoadMacros(clientId)) return null;
-    return selectStorageFile(parent, false, null);
+    return selectStorageFile(parent, false, MacroManager.getInstance().getMacros(clientId).getCurrentFile());
   }
 
   public WbFile selectStorageForSave(Component parent, int clientId)
@@ -79,7 +78,7 @@ public class MacroFileSelector
 
   private WbFile selectStorageFile(Component parent, boolean forSave, File currentFile)
   {
-    String lastDir = Settings.getInstance().getProperty(LAST_DIR_PROPERTY, Settings.getInstance().getConfigDir().getAbsolutePath());
+    String lastDir = Settings.getInstance().getProperty(LAST_DIR_PROPERTY, Settings.getInstance().getMacroBaseDirectory().getAbsolutePath());
 
     JFileChooser fc = new WbFileChooser(lastDir);
     fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -89,43 +88,97 @@ public class MacroFileSelector
 
     int answer = JFileChooser.CANCEL_OPTION;
 
-    if (forSave)
-    {
-      if (currentFile != null)
-      {
-        fc.setSelectedFile(currentFile);
-      }
-      answer = fc.showSaveDialog(parent);
-    }
-    else
-    {
-      answer = fc.showOpenDialog(parent);
-    }
-
     File selectedFile = null;
-
-    if (answer == JFileChooser.APPROVE_OPTION)
+    boolean done = false;
+    while (!done)
     {
-      selectedFile = fc.getSelectedFile();
       if (forSave)
       {
-        WbFile wb = new WbFile(selectedFile);
-        String ext = wb.getExtension();
-        if (!wb.isDirectory() && !ext.equalsIgnoreCase("xml"))
+        if (currentFile != null)
         {
-          String fullname = wb.getFullPath();
-          fullname += ".xml";
-          selectedFile = new File(fullname);
+          fc.setSelectedFile(currentFile);
         }
+        answer = fc.showSaveDialog(parent);
       }
-      lastDir = fc.getCurrentDirectory().getAbsolutePath();
-      Settings.getInstance().setProperty(LAST_DIR_PROPERTY, lastDir);
+      else
+      {
+        answer = fc.showOpenDialog(parent);
+      }
+
+      if (answer == JFileChooser.APPROVE_OPTION)
+      {
+        selectedFile = fc.getSelectedFile();
+
+        if (!isValidSelection(selectedFile))
+        {
+          YesNoCancel choice = confirmDirectorySelection(parent, selectedFile);
+          if (choice == YesNoCancel.cancel)
+          {
+            selectedFile = null;
+            done = true;
+            break;
+          }
+
+          if (choice == YesNoCancel.no)
+          {
+            done = false;
+            continue;
+          }
+        }
+
+        if (forSave)
+        {
+          selectedFile = checkFileExtension(selectedFile);
+        }
+        done = true;
+        lastDir = fc.getCurrentDirectory().getAbsolutePath();
+        Settings.getInstance().setProperty(LAST_DIR_PROPERTY, lastDir);
+      }
     }
+
     if (selectedFile == null)
     {
       return null;
     }
-    return new WbFile(selectedFile);
+
+    String pathToUse = FileDialogUtil.removeMacroDir(selectedFile.getAbsolutePath());
+    return new WbFile(pathToUse);
+  }
+
+  private File checkFileExtension(File selectedFile)
+  {
+    WbFile wb = new WbFile(selectedFile);
+    String ext = wb.getExtension();
+    if (!wb.isDirectory() && !ext.equalsIgnoreCase("xml"))
+    {
+      String fullname = wb.getFullPath() + ".xml";
+      selectedFile = new File(fullname);
+    }
+    return selectedFile;
+  }
+
+  private YesNoCancel confirmDirectorySelection(Component parent, File selected)
+  {
+    String msg = ResourceMgr.getFormattedString("MsgMacroDirNotEmpty", selected.getAbsolutePath());
+    return WbSwingUtilities.getYesNoCancel(parent, msg);
+  }
+
+  private boolean isValidSelection(File selected)
+  {
+    if (selected == null) return false;
+    if (selected.isFile() || !selected.exists())
+    {
+      return true;
+    }
+
+    // Only allow directories that are empty or are already used for macros
+    File props = new File(selected, DirectoryMacroPersistence.GROUP_INFO_FILE);
+    if (props.exists())
+    {
+      return true;
+    }
+    File[] files = selected.listFiles();
+    return (files == null || files.length == 0);
   }
 
 }

@@ -28,7 +28,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -36,6 +35,7 @@ import workbench.resource.Settings;
 
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.YesNoCancel;
 import workbench.gui.actions.EscAction;
 
 /**
@@ -97,13 +97,13 @@ public class MacroPopup
     isClosing = true;
     if (panel.isModified())
     {
-      int result = WbSwingUtilities.getYesNoCancel(this, ResourceMgr.getString("MsgConfirmUnsavedMacros"));
-      if (result == JOptionPane.CANCEL_OPTION)
+      YesNoCancel result = WbSwingUtilities.getYesNoCancel(this, ResourceMgr.getString("MsgConfirmUnsavedMacros"));
+      if (result == YesNoCancel.cancel)
       {
         isClosing = false;
         return;
       }
-      if (result == JOptionPane.YES_OPTION)
+      if (result == YesNoCancel.yes)
       {
         panel.saveMacros(false);
       }

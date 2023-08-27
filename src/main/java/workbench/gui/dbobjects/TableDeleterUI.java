@@ -46,7 +46,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -66,6 +65,7 @@ import workbench.db.WbConnection;
 import workbench.db.importer.TableDependencySorter;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.YesNoIgnore;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.EditWindow;
 import workbench.gui.components.NoSelectionModel;
@@ -397,14 +397,13 @@ public class TableDeleterUI
   @Override
   public int getActionOnError(int errorRow, String errorColumn, String data, String errorMessage)
   {
-    int choice = WbSwingUtilities.getYesNoIgnoreAll(this.dialog, errorMessage);
-    if (choice == WbSwingUtilities.IGNORE_ALL)
+    YesNoIgnore choice = WbSwingUtilities.getYesNoIgnoreAll(this.dialog, errorMessage);
+    switch (choice)
     {
-      return JobErrorHandler.JOB_IGNORE_ALL;
-    }
-    if (choice == JOptionPane.YES_OPTION)
-    {
-      return JobErrorHandler.JOB_CONTINUE;
+      case ignore:
+        return JobErrorHandler.JOB_IGNORE_ALL;
+      case yes:
+        return JobErrorHandler.JOB_CONTINUE;
     }
     return JobErrorHandler.JOB_ABORT;
   }

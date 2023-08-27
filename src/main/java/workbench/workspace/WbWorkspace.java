@@ -52,9 +52,9 @@ public class WbWorkspace
   implements Closeable
 {
   public static final String TAB_PROP_PREFIX = "tab";
-
+  public static final String TABINFO_FILENAME = "tabs.properties";
+  
   private static final String VARIABLES_FILENAME = "variables.properties";
-  private static final String TABINFO_FILENAME = "tabs.properties";
   private static final String TOOL_ENTRY_PREFIX = "toolprop_";
 
   private static final String CURSOR_POS_PROP = ".file.cursorpos";

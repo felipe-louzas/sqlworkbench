@@ -19,16 +19,15 @@
  * To contact the author please send an email to: support@sql-workbench.eu
  *
  */
-package workbench.gui.sql;
+package workbench.gui;
 
 /**
  *
  * @author Thomas Kellerer
  */
-public enum ErrorPromptResult
+public enum YesNoCancel
 {
-  Cancel,
-  IngoreOne,
-  IgnoreAll,
-  Continue;
+  yes,
+  no,
+  cancel;
 }

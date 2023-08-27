@@ -104,6 +104,8 @@ import workbench.gui.MainWindow;
 import workbench.gui.PanelReloader;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.WindowTitleBuilder;
+import workbench.gui.YesNoCancel;
+import workbench.gui.YesNoIgnore;
 import workbench.gui.actions.AppendResultsAction;
 import workbench.gui.actions.AutoCompletionAction;
 import workbench.gui.actions.AutoJumpNextStatement;
@@ -730,8 +732,8 @@ public class SqlPanel
   public boolean checkAndSaveFile()
   {
     if (this.editor == null) return true;
-    int result = this.editor.checkAndSaveFile();
-    return result != JOptionPane.CANCEL_OPTION;
+    YesNoCancel result = this.editor.checkAndSaveFile();
+    return result != YesNoCancel.cancel;
   }
 
   /**
@@ -2595,16 +2597,19 @@ public class SqlPanel
     }
 
     iconHandler.showBusyIcon(false);
-    int choice = WbSwingUtilities.getYesNoIgnoreAll(this, msg);
-    int result = JobErrorHandler.JOB_ABORT;
+    YesNoIgnore choice = WbSwingUtilities.getYesNoIgnoreAll(this, msg);
+    int result;
     iconHandler.showBusyIcon(true);
-    if (choice == JOptionPane.YES_OPTION)
+    switch (choice)
     {
-      result = JobErrorHandler.JOB_CONTINUE;
-    }
-    else if (choice == WbSwingUtilities.IGNORE_ALL)
-    {
-      result = JobErrorHandler.JOB_IGNORE_ALL;
+      case yes:
+        result = JobErrorHandler.JOB_CONTINUE;
+        break;
+      case ignore:
+        result = JobErrorHandler.JOB_IGNORE_ALL;
+        break;
+      default:
+        result = JobErrorHandler.JOB_ABORT;
     }
     return result;
   }

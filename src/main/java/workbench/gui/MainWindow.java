@@ -196,6 +196,7 @@ import workbench.util.VersionNumber;
 import workbench.util.WbFile;
 import workbench.util.WbProperties;
 import workbench.util.WbThread;
+import workbench.util.WorkspaceSelector;
 
 /**
  * The main window for SQL Workbench.
@@ -2183,8 +2184,8 @@ public class MainWindow
             resetWorkspace(realFilename);
             return true;
           case LOAD_OTHER:
-            FileDialogUtil util = new FileDialogUtil();
-            String fname = util.getWorkspaceFilename(this, false);
+            WorkspaceSelector selector = new WorkspaceSelector(this);
+            String fname = selector.showLoadDialog();
             realFilename = getRealWorkspaceFilename(fname);
         }
       }
@@ -2435,8 +2436,8 @@ public class MainWindow
       switch (choice)
       {
         case LOAD_OTHER:
-          FileDialogUtil util = new FileDialogUtil();
-          workspaceFilename = util.getWorkspaceFilename(this, false);
+          WorkspaceSelector selector = new WorkspaceSelector(this);
+          workspaceFilename = selector.showLoadDialog();
           currentProfile.setWorkspaceFile(workspaceFilename);
           break;
         case IGNORE:
@@ -3437,8 +3438,8 @@ public class MainWindow
   public void loadWorkspace()
   {
     this.saveWorkspace();
-    FileDialogUtil dialog = new FileDialogUtil();
-    String filename = dialog.getWorkspaceFilename(this, false);
+    WorkspaceSelector selector = new WorkspaceSelector(this);
+    String filename = selector.showLoadDialog();
     if (filename == null) return;
     boolean loaded = this.loadWorkspace(filename, true);
     if (loaded && Settings.getInstance().getBoolProperty("workbench.gui.workspace.load.askassign", true))
@@ -3609,8 +3610,8 @@ public class MainWindow
     if (filename == null)
     {
       interactive = true;
-      FileDialogUtil util = new FileDialogUtil();
-      filename = util.getWorkspaceFilename(this, true);
+      WorkspaceSelector selector = new WorkspaceSelector(this);
+      filename = selector.showLoadDialog();
       if (filename == null) return true;
     }
 

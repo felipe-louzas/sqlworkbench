@@ -102,7 +102,6 @@ import workbench.gui.components.WbOptionPane;
 import workbench.gui.lnf.LnFHelper;
 import workbench.gui.renderer.ColorUtils;
 
-import workbench.util.NumberStringCache;
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
@@ -696,10 +695,18 @@ public class WbSwingUtilities
    *
    * @return JOptionPane.YES_OPTION or JOptionPane.NO_OPTION or JOptionPane.CANCEL_OPTION
    */
-  public static int getYesNoCancel(Component aCaller, String aMessage)
+  public static YesNoCancel getYesNoCancel(Component aCaller, String aMessage)
   {
     int result = JOptionPane.showConfirmDialog(getWindowAncestor(aCaller), aMessage, ResourceMgr.TXT_PRODUCT_NAME, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-    return result;
+    switch (result)
+    {
+      case JOptionPane.YES_OPTION:
+        return YesNoCancel.yes;
+      case JOptionPane.NO_OPTION:
+        return YesNoCancel.no;
+      default:
+        return YesNoCancel.cancel;
+    }
   }
 
   public static boolean getProceedCancel(Component aCaller, String resourceKey, Object... params)
@@ -759,7 +766,7 @@ public class WbSwingUtilities
     return messagePanel;
   }
 
-  public static int getYesNoIgnoreAll(Component caller, Object message)
+  public static YesNoIgnore getYesNoIgnoreAll(Component caller, Object message)
   {
     String[] options = new String[]
     {
@@ -770,7 +777,7 @@ public class WbSwingUtilities
 
     JDialog dialog = ignorePane.createDialog(getWindowAncestor(caller), ResourceMgr.TXT_PRODUCT_NAME);
     dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-    int rvalue = -1;
+    YesNoIgnore rvalue;
     try
     {
       dialog.setResizable(true);
@@ -779,23 +786,23 @@ public class WbSwingUtilities
       Object result = ignorePane.getValue();
       if (result == null)
       {
-        rvalue = JOptionPane.YES_OPTION;
+        rvalue = YesNoIgnore.yes;
       }
       else if (result.equals(options[0]))
       {
-        rvalue = JOptionPane.YES_OPTION;
+        rvalue = YesNoIgnore.yes;
       }
       else if (result.equals(options[1]))
       {
-        rvalue = JOptionPane.NO_OPTION;
+        rvalue = YesNoIgnore.no;
       }
       else if (result.equals(options[2]))
       {
-        rvalue = IGNORE_ALL;
+        rvalue = YesNoIgnore.ignore;
       }
       else
       {
-        rvalue = JOptionPane.NO_OPTION;
+        rvalue = YesNoIgnore.no;
       }
     }
     finally
@@ -1426,23 +1433,6 @@ public class WbSwingUtilities
       width = charWidth * numChars;
     }
     return width;
-  }
-
-  public static String choiceToString(int choice)
-  {
-    switch (choice)
-    {
-      case JOptionPane.OK_OPTION:
-        return "OK_OPTION";
-      case JOptionPane.CANCEL_OPTION:
-        return "CANCEL_OPTION";
-      case JOptionPane.NO_OPTION:
-        return "NO_OPTION";
-      case JOptionPane.CLOSED_OPTION:
-        return "CLOSED_OPTION";
-      default:
-        return NumberStringCache.getNumberString(choice);
-    }
   }
 
   public static void showToolTip(final JComponent component, String tip)

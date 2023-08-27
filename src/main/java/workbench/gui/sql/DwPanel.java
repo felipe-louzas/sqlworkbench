@@ -36,7 +36,6 @@ import javax.swing.CellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JTabbedPane;
@@ -78,6 +77,7 @@ import workbench.db.WbConnection;
 
 import workbench.gui.MainWindow;
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.YesNoIgnore;
 import workbench.gui.actions.CopyRowAction;
 import workbench.gui.actions.CreateDeleteScriptAction;
 import workbench.gui.actions.DeleteDependentRowsAction;
@@ -1600,19 +1600,15 @@ public class DwPanel
       StringUtil.getMaxSubstring(data, 50), errorMessage);
 
     Window w = SwingUtilities.getWindowAncestor(this);
-    int choice = WbSwingUtilities.getYesNoIgnoreAll(w, msg);
-
-    int result = JobErrorHandler.JOB_ABORT;
-
-    if (choice == JOptionPane.YES_OPTION)
+    YesNoIgnore choice = WbSwingUtilities.getYesNoIgnoreAll(w, msg);
+    switch (choice)
     {
-      result = JobErrorHandler.JOB_CONTINUE;
+      case yes:
+        return JobErrorHandler.JOB_CONTINUE;
+      case ignore:
+        return JobErrorHandler.JOB_IGNORE_ALL;
     }
-    else if (choice == WbSwingUtilities.IGNORE_ALL)
-    {
-      result = JobErrorHandler.JOB_IGNORE_ALL;
-    }
-    return result;
+    return JobErrorHandler.JOB_ABORT;
   }
 
   /**

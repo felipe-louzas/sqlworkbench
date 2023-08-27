@@ -41,9 +41,9 @@ import workbench.util.StringUtil;
 public class FileTreeSettings
 {
   public static final String SETTINGS_PREFIX = "workbench.gui.filetree.";
-  public static final String DIR_PREFIX = SETTINGS_PREFIX + ".default.dir";
-  public static final String EXCLUDED_FILES_PROPERTY = SETTINGS_PREFIX + ".exclude.files";
-  public static final String EXCLUDED_EXT_PROPERTY = SETTINGS_PREFIX + ".exclude.extensions";
+  public static final String DIR_PREFIX = SETTINGS_PREFIX + "default.dir";
+  public static final String EXCLUDED_FILES_PROPERTY = SETTINGS_PREFIX + "exclude.files";
+  public static final String EXCLUDED_EXT_PROPERTY = SETTINGS_PREFIX + "exclude.extensions";
   public static final String PROP_VISIBLE = "tree.visible";
 
   public static void setDefaultDirectoryNames(List<String> dirs)

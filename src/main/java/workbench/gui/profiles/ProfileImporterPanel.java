@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -42,6 +41,7 @@ import workbench.db.ConnectionMgr;
 import workbench.db.ProfileManager;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.YesNoCancel;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ExtensionFileFilter;
 import workbench.gui.components.WbScrollPane;
@@ -330,12 +330,12 @@ public class ProfileImporterPanel
 
     String msg = ResourceMgr.getFormattedString("MsgConfirmUnsavedEditorFile", fname);
 
-    int choice = WbSwingUtilities.getYesNoCancel(this, msg);
-    if (choice == JOptionPane.YES_OPTION)
+    YesNoCancel choice = WbSwingUtilities.getYesNoCancel(this, msg);
+    if (choice == YesNoCancel.yes)
     {
       return CheckResult.saveFile;
     }
-    if (choice == JOptionPane.CANCEL_OPTION)
+    if (choice == YesNoCancel.cancel)
     {
       return CheckResult.cancel;
     }

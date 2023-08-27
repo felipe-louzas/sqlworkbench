@@ -190,67 +190,6 @@ public class FileDialogUtil
     }
   }
 
-  public String getWorkspaceFilename(Window parent, boolean toSave)
-  {
-    try
-    {
-      String lastDir = Settings.getInstance().getLastWorkspaceDir();
-      JFileChooser fc = new WbFileChooser(lastDir);
-
-      FileFilter wksp = ExtensionFileFilter.getWorkspaceFileFilter();
-      fc.removeChoosableFileFilter(fc.getFileFilter()); // remove the default "All files" filter
-      fc.addChoosableFileFilter(wksp);
-      fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-      String filename = null;
-
-      int answer = JFileChooser.CANCEL_OPTION;
-      if (toSave)
-      {
-        fc.setDialogTitle(ResourceMgr.getString("TxtSaveWksp"));
-        answer = fc.showSaveDialog(parent);
-      }
-      else
-      {
-        fc.setDialogTitle(ResourceMgr.getString("TxtLoadWksp"));
-        answer = fc.showOpenDialog(parent);
-      }
-
-      if (answer == JFileChooser.APPROVE_OPTION)
-      {
-        File fl = fc.getSelectedFile();
-        FileFilter ff = fc.getFileFilter();
-        if (ff == wksp)
-        {
-          filename = fl.getAbsolutePath();
-
-          String ext = ExtensionFileFilter.getExtension(fl);
-          if (StringUtil.isEmpty(ext) && !fl.isDirectory())
-          {
-            if (!filename.endsWith(".")) filename += ".";
-            filename += ExtensionFileFilter.WORKSPACE_EXT;
-          }
-        }
-        else
-        {
-          filename = fl.getAbsolutePath();
-        }
-
-        lastDir = fc.getCurrentDirectory().getAbsolutePath();
-        Settings.getInstance().setLastWorkspaceDir(lastDir);
-      }
-
-      filename = removeWorkspaceDir(filename);
-      return filename;
-    }
-    catch (Exception e)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
-      WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
-      return null;
-    }
-  }
-
   public static String removeConfigDir(String filePath)
   {
     WbFile f = new WbFile(filePath);
@@ -266,6 +205,12 @@ public class FileDialogUtil
   {
     if (StringUtil.isBlank(selectedDir)) return selectedDir;
     return removeBaseDir(new WbFile(selectedDir), Settings.getInstance().getWorkspaceDir());
+  }
+
+  public static String removeMacroDir(String selectedDir)
+  {
+    if (StringUtil.isBlank(selectedDir)) return selectedDir;
+    return removeBaseDir(new WbFile(selectedDir), Settings.getInstance().getMacroBaseDirectory());
   }
 
   public static String removeBaseDir(WbFile selectedDir, File baseDir)

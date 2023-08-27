@@ -46,7 +46,6 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -74,6 +73,7 @@ import workbench.db.WbConnection;
 import workbench.gui.MainWindow;
 import workbench.gui.ModifiedFileStrategy;
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.YesNoCancel;
 import workbench.gui.actions.ColumnSelectionAction;
 import workbench.gui.actions.CommentAction;
 import workbench.gui.actions.FileReloadAction;
@@ -701,27 +701,27 @@ public class EditorPanel
     return StringUtil.isNotEmpty(fileName);
   }
 
-  public int checkAndSaveFile()
+  public YesNoCancel checkAndSaveFile()
   {
     return checkAndSaveFile(true);
   }
 
-  public int checkAndSaveFile(boolean allowCancel)
+  public YesNoCancel checkAndSaveFile(boolean allowCancel)
   {
-    if (!this.hasFileLoaded()) return JOptionPane.YES_OPTION;
+    if (!this.hasFileLoaded()) return YesNoCancel.yes;
 
     ModifiedFileStrategy strategy = GuiSettings.getModifiedFileStrategy();
-    if (strategy == ModifiedFileStrategy.discard) return JOptionPane.YES_OPTION;
+    if (strategy == ModifiedFileStrategy.discard) return YesNoCancel.yes;
 
     if (this.isModified() && strategy == ModifiedFileStrategy.save)
     {
       if (this.saveCurrentFile())
       {
-        return JOptionPane.YES_OPTION;
+        return YesNoCancel.yes;
       }
     }
 
-    int result = JOptionPane.YES_OPTION;
+    YesNoCancel result = YesNoCancel.yes;
 
     if (this.isModified())
     {
@@ -735,42 +735,29 @@ public class EditorPanel
         boolean yesNo = WbSwingUtilities.getYesNo(this, msg);
         if (yesNo)
         {
-          result = JOptionPane.YES_OPTION;
+          result = YesNoCancel.yes;
         }
         else
         {
-          result = JOptionPane.NO_OPTION;
+          result = YesNoCancel.no;
         }
       }
 
-      if (result == JOptionPane.YES_OPTION)
+      if (result == YesNoCancel.yes)
       {
         this.saveCurrentFile();
       }
-
-      if (result == JOptionPane.CLOSED_OPTION)
+      else
       {
-        result = JOptionPane.CANCEL_OPTION;
+        result = YesNoCancel.cancel;
       }
     }
     return result;
   }
 
-  public YesNoCancelResult canCloseFile()
+  public YesNoCancel canCloseFile()
   {
-    int choice = this.checkAndSaveFile();
-    if (choice == JOptionPane.YES_OPTION)
-    {
-      return YesNoCancelResult.yes;
-    }
-    else if (choice == JOptionPane.NO_OPTION)
-    {
-      return YesNoCancelResult.no;
-    }
-    else
-    {
-      return YesNoCancelResult.cancel;
-    }
+    return this.checkAndSaveFile();
   }
 
   public boolean readFile(File aFile)
@@ -1144,7 +1131,7 @@ public class EditorPanel
         if (fileList != null && fileList.size() == 1)
         {
           File file = (File)fileList.get(0);
-          if (this.canCloseFile() != YesNoCancelResult.cancel)
+          if (this.canCloseFile() != YesNoCancel.cancel)
           {
             this.readFile(file);
             evt.getDropTargetContext().dropComplete(true);

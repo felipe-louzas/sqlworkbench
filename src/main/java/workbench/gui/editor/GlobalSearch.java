@@ -286,7 +286,7 @@ public class GlobalSearch
     {
       int[] widths = getColumnWidths();
       if (widths == null) return;
-      Settings.getInstance().setProperty(settingsKey + ".search.colwidths", StringUtil.arrayToString(widths));
+      Settings.getInstance().setProperty(settingsKey + "search.colwidths", StringUtil.arrayToString(widths));
     }
   }
 
@@ -294,7 +294,7 @@ public class GlobalSearch
   {
     if (GuiSettings.getSaveSearchAllColWidths())
     {
-      String widths = Settings.getInstance().getProperty(settingsKey  + ".search.colwidths", null);
+      String widths = Settings.getInstance().getProperty(settingsKey  + "search.colwidths", null);
       return StringUtil.stringToArray(widths);
     }
     return null;

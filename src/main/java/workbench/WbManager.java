@@ -56,6 +56,7 @@ import workbench.db.ConnectionProfile;
 import workbench.gui.MainWindow;
 import workbench.gui.WbKeyDispatcher;
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.YesNoCancel;
 import workbench.gui.bookmarks.BookmarkManager;
 import workbench.gui.components.ColumnOrderMgr;
 import workbench.gui.components.FeedbackWindow;
@@ -333,10 +334,9 @@ public final class WbManager
       if (Settings.getInstance().wasExternallyModified())
       {
         String msg = ResourceMgr.getFormattedString("MsgSettingsChanged", Settings.getInstance().getConfigFile().getFullPath());
-        int choice = WbSwingUtilities.getYesNoCancel(getCurrentWindow(), msg);
-        LogMgr.logDebug(new CallerInfo(){}, "Config file overwrite choice: " + WbSwingUtilities.choiceToString(choice));
-        this.overWriteGlobalSettingsFile = (choice == JOptionPane.OK_OPTION);
-        return choice != JOptionPane.CANCEL_OPTION;
+        YesNoCancel choice = WbSwingUtilities.getYesNoCancel(getCurrentWindow(), msg);
+        this.overWriteGlobalSettingsFile = (choice == YesNoCancel.yes);
+        return choice != YesNoCancel.cancel;
       }
       return true;
     }

@@ -94,12 +94,14 @@ import workbench.gui.renderer.ColorUtils;
 
 import workbench.sql.DelimiterDefinition;
 import workbench.sql.macros.MacroFileSelector;
+import workbench.sql.macros.MacroManager;
 
 import workbench.util.CollectionUtil;
 import workbench.util.FileDialogUtil;
 import workbench.util.ImageUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
+import workbench.util.WorkspaceSelector;
 
 /**
  *
@@ -1418,7 +1420,7 @@ public class ConnectionEditorPanel
   public void selectMacroFile()
   {
     MacroFileSelector selector = new MacroFileSelector();
-    WbFile file = selector.selectMacroFile(this);
+    WbFile file = selector.selectStorageForLoad(this, MacroManager.DEFAULT_STORAGE);
     if (file != null)
     {
       String path = FileDialogUtil.getPathWithMacroPlaceholder(file);
@@ -1512,8 +1514,8 @@ public class ConnectionEditorPanel
 
   public void selectWorkspace()
   {
-    FileDialogUtil util = new FileDialogUtil();
-    String filename = util.getWorkspaceFilename(SwingUtilities.getWindowAncestor(this), false);
+    WorkspaceSelector selector = new WorkspaceSelector(SwingUtilities.getWindowAncestor(this));
+    String filename = selector.showLoadDialog();
     if (filename == null)
     {
       return;

@@ -3950,12 +3950,18 @@ public class Settings
     renameProperty("workbench.gui.display.multilinethreshold", "workbench.gui.display.multiline.threshold");
     renameProperty("workbench.gui.display.showpworkspace", "workbench.gui.display.show.workspace");
 
-    // Fix typos from incorrect default.properties
     renameProperty("workbench.db.objecttype.data.postgres", "workbench.db.objecttype.data.postgresql");
     renameProperty("workbench.db.objecttype.selectable.postgres", "workbench.db.objecttype.selectable.postgresql");
     renameProperty("workbench.ignoretypes.postgres", "workbench.ignoretypes.postgresql");
+    renameProperty("workbench.gui.filetree..exclude.extensions", "workbench.gui.filetree.exclude.extensions");
+    renameProperty("workbench.gui.filetree..exclude.files", "workbench.gui.filetree.exclude.files");
+    for (int i=1; i<=10; i++)
+    {
+      renameProperty("workbench.gui.filetree..default.dir."+i, "workbench.gui.filetree.default.dir."+i);
+    }
+
     String s = getProperty("workbench.db.truncatesupported",null);
-    if (s!=null)
+    if (s != null)
     {
       s = s.replace(",postgres,",",postgresql,");
       setProperty("workbench.db.truncatesupported",s);

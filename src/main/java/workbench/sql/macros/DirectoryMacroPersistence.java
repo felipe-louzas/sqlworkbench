@@ -62,7 +62,7 @@ import workbench.util.ZipUtil;
 public class DirectoryMacroPersistence
   implements MacroPersistence
 {
-  private static final String GROUP_INFO_FILE = "wb-macro-group.properties";
+  public static final String GROUP_INFO_FILE = "wb-macro-group.properties";
   private static final String GROUP_PREFIX = "group.info.";
 
   private static final String PROP_COUNT = "count";

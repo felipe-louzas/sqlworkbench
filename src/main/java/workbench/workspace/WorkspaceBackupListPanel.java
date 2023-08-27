@@ -52,7 +52,7 @@ import workbench.gui.sql.EditorHistoryEntry;
 import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.PanelType;
 
-import workbench.util.FileDialogUtil;
+import workbench.util.WorkspaceSelector;
 
 /**
  * A class to show the backups for a specific workspace including a summary of the content.
@@ -164,8 +164,8 @@ public class WorkspaceBackupListPanel
   {
     if (e.getSource() == selectWorkspaceButton)
     {
-      FileDialogUtil util = new FileDialogUtil();
-      String filename = util.getWorkspaceFilename(SwingUtilities.getWindowAncestor(this), false);
+      WorkspaceSelector selector = new WorkspaceSelector(SwingUtilities.getWindowAncestor(this));
+      String filename = selector.showLoadDialog();
       if (filename != null)
       {
         setWorkspacefile(new File(filename));
