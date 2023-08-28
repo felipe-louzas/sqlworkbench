@@ -24,6 +24,7 @@ package workbench.util;
 import java.awt.Component;
 import java.awt.Window;
 import java.io.File;
+import java.nio.file.Path;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -215,16 +216,16 @@ public class FileDialogUtil
 
   public static String removeBaseDir(WbFile selectedDir, File baseDir)
   {
-    String fname = selectedDir.getName();
-    File dir = selectedDir.getParentFile();
-    if (dir != null && dir.equals(baseDir))
+    if (selectedDir == null || baseDir == null) return "";
+
+    Path sp = selectedDir.toPath();
+    Path bp = baseDir.toPath();
+
+    if (sp.startsWith(bp))
     {
-      return fname;
+      return sp.subpath(bp.getNameCount(), sp.getNameCount()).toString();
     }
-    else
-    {
-      return selectedDir.getFullPath();
-    }
+    return selectedDir.getFullPath();
   }
 
   public static String getPathWithConfigDirPlaceholder(WbFile file)
@@ -239,22 +240,19 @@ public class FileDialogUtil
 
   public static String getPathWithPlaceholder(WbFile file, File toReplace, String placeHolder)
   {
-    if (toReplace == null) return file.getAbsolutePath();
-    if (!Settings.getInstance().getReplaceDirVariables())
+    if (file == null) return "";
+    if (toReplace == null || StringUtil.isBlank(placeHolder) || !Settings.getInstance().getReplaceDirVariables())
     {
       return file.getAbsolutePath();
     }
 
-    File fileDir = file.getParentFile();
-    while (!fileDir.equals(toReplace))
+    Path pf = file.toPath();
+    Path rp = toReplace.toPath();
+    if (pf.startsWith(rp))
     {
-      fileDir = fileDir.getParentFile();
-      if (fileDir == null) break;
+      return placeHolder + "/" + pf.subpath(rp.getNameCount(), pf.getNameCount()).toString();
     }
-    if (fileDir == null) return file.getFullPath();
-
-    String fpath = file.getAbsolutePath().replace(fileDir.getAbsolutePath(), placeHolder);
-    return fpath;
+    return file.getFullPath();
   }
 
   public static String replaceConfigDir(String aPathname)
@@ -274,7 +272,6 @@ public class FileDialogUtil
   public static String makeWorkspacePath(String aPathname)
   {
     if (aPathname == null) return null;
-    WbFile dir = new WbFile(Settings.getInstance().getWorkspaceDir());
 
     String fullPath = replaceMacroDir(aPathname);
     fullPath = replaceConfigDir(fullPath);

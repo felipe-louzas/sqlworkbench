@@ -56,7 +56,7 @@ public class LogArea
   {
     super();
     setDoubleBuffered(true);
-    setBorder(new EmptyBorder(4,4,4,4));
+    setBorder(new EmptyBorder(2,2,2,2));
     setFont(Settings.getInstance().getMsgLogFont());
     setEditable(false);
     setLineWrap(true);
