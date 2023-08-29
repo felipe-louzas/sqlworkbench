@@ -31,6 +31,8 @@ import workbench.db.ConnectionProfile;
 import workbench.db.WbConnection;
 
 import workbench.util.StringUtil;
+import workbench.util.WbFile;
+import workbench.util.WorkspaceSelector;
 
 /**
  *
@@ -149,9 +151,15 @@ public class WindowTitleBuilder
     String wksp = null;
     if (StringUtil.isNotBlank(workspaceFile) && showWorkspace)
     {
-      File f = new File(workspaceFile);
-      String baseName = f.getName();
-      wksp = baseName;
+      if (GuiSettings.shortenWorkspaceNameInWindowTitle())
+      {
+        wksp = WorkspaceSelector.shortenFilename(workspaceFile);
+      }
+      else
+      {
+        WbFile f = new WbFile(workspaceFile);
+        wksp = f.getFullPath();
+      }
     }
 
     String fname = null;

@@ -66,6 +66,7 @@ import workbench.sql.wbcommands.console.WbToggleDisplay;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.PlatformHelper;
+import workbench.util.PromptRegistry;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
@@ -119,6 +120,7 @@ public class SQLConsole
     titleBuilder.setShowURL(ConsoleSettings.termTitleIncludeUrl());
     titleBuilder.setShowNotConnected(false);
     CommandRegistry.getInstance().scanForExtensions();
+    PromptRegistry.getInstance().registerExecutionController(prompter);
   }
 
   public void startConsole()

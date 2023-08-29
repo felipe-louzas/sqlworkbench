@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import workbench.RunMode;
 import workbench.WbManager;
+import workbench.interfaces.ExecutionController;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
@@ -33,6 +35,7 @@ import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 
+import workbench.util.PromptRegistry;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
@@ -253,12 +256,22 @@ public class PortForwarder
   @Override
   public boolean promptPassword(String message)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassword() called with message: " + message);
+    LogMgr.logInfo(new CallerInfo(){}, "UserInfo.promptPassword() called with message: " + message);
 
     String title = ResourceMgr.getString("MsgInputSshPwd");
     String dest = message.replace("Password for ", "");
     String msg = ResourceMgr.getFormattedString("MsgInputPwd", dest);
-    String pwd = WbSwingUtilities.passwordPrompt(WbManager.getInstance().getCurrentWindow(), title, msg);
+
+    ExecutionController prompter = PromptRegistry.getInstance().getExecutionController();
+    String pwd = null;
+    if (prompter != null)
+    {
+      pwd = prompter.getPassword(message);
+    }
+    else
+    {
+      pwd = WbSwingUtilities.passwordPrompt(WbManager.getInstance().getCurrentWindow(), title, msg);
+    }
     if (pwd == null) return false;
     this.password = pwd;
     return true;
@@ -267,12 +280,21 @@ public class PortForwarder
   @Override
   public boolean promptPassphrase(String message)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "UserInfo.promptPassphrase() called with message: " + message);
+    LogMgr.logInfo(new CallerInfo(){}, "UserInfo.promptPassphrase() called with message: " + message);
 
     String title = ResourceMgr.getString("MsgInputSshPassPhrase");
     WbFile f = new WbFile(this.privateKeyFile);
     String msg = ResourceMgr.getFormattedString("MsgInputPwd", f.getFileName());
-    String pwd = WbSwingUtilities.passwordPrompt(WbManager.getInstance().getCurrentWindow(), title, msg);
+    ExecutionController prompter = PromptRegistry.getInstance().getExecutionController();
+    String pwd = null;
+    if (prompter != null)
+    {
+      pwd = prompter.getPassword(msg);
+    }
+    else
+    {
+      pwd = WbSwingUtilities.passwordPrompt(WbManager.getInstance().getCurrentWindow(), title, msg);
+    }
     if (pwd == null) return false;
     this.passphrase = pwd;
     return true;
@@ -281,20 +303,35 @@ public class PortForwarder
   @Override
   public boolean promptYesNo(String message)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "JSch.UserInfo.promptYesNo() called with message: " + message);
+    LogMgr.logInfo(new CallerInfo(){}, "UserInfo.promptYesNo() called with message: " + message);
 
-    message = "<html>" + message.replaceAll(StringUtil.REGEX_CRLF, "<br>") + "</html>";
-    boolean ok = WbSwingUtilities.getYesNo(WbManager.getInstance().getCurrentWindow(), message);
+    ExecutionController prompter = PromptRegistry.getInstance().getExecutionController();
+    boolean ok = false;
+    if (prompter != null)
+    {
+      ok = prompter.confirmExecution(message, null, null);
+    }
+    else
+    {
+      message = "<html>" + message.replaceAll(StringUtil.REGEX_CRLF, "<br>") + "</html>";
+      ok = WbSwingUtilities.getYesNo(WbManager.getInstance().getCurrentWindow(), message);
+    }
     return ok;
   }
 
   @Override
   public void showMessage(String message)
   {
-    LogMgr.logDebug(new CallerInfo(){}, "JSch.UserInfo.showMessage() called with message: " + message);
+    LogMgr.logInfo(new CallerInfo(){}, "UserInfo.showMessage() called with message: " + message);
+    if (StringUtil.isBlank(message)) return;
+    
+    if (!Settings.getInstance().showSSHBanner()) return;
 
-    message = "<html>" + message.replaceAll(StringUtil.REGEX_CRLF, "<br>") + "</html>";
-    WbSwingUtilities.showMessage(WbManager.getInstance().getCurrentWindow(), message);
+    if (WbManager.getInstance().getRunMode() == RunMode.GUI)
+    {
+      message = "<html>" + message.replaceAll(StringUtil.REGEX_CRLF, "<br>") + "</html>";
+      WbSwingUtilities.showMessage(WbManager.getInstance().getCurrentWindow(), message);
+    }
   }
 
 }

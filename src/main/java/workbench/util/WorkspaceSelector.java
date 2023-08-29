@@ -140,7 +140,11 @@ public class WorkspaceSelector {
         }
       }
 
-      filename = FileDialogUtil.removeWorkspaceDir(filename);
+      if (Settings.getInstance().shortenWorkspaceFileName())
+      {
+        filename = shortenFilename(filename);
+      }
+
       return filename;
     }
     catch (Exception e)
@@ -149,6 +153,17 @@ public class WorkspaceSelector {
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
       return null;
     }
+  }
+
+  public static String shortenFilename(String filename)
+  {
+    File f = new File(filename);
+    filename = FileDialogUtil.removeWorkspaceDir(filename);
+    if (f.isDirectory() && PlatformHelper.isWindows())
+    {
+      filename = filename.replace("\\", "/");
+    }
+    return filename;
   }
 
   private YesNoCancel confirmDirectorySelection(File selected)

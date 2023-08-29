@@ -655,6 +655,11 @@ public class Settings
     return getBoolProperty("workbench.directories.replace.vars", true);
   }
 
+  public static boolean shortenWorkspaceFileName()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.workspace.filename.shorten", true);
+  }
+
   public void setWorkspaceDir(String dir)
   {
     dir = StringUtil.trimToNull(dir);
@@ -4184,6 +4189,11 @@ public class Settings
   public boolean enableJSchLogging()
   {
     return getBoolProperty("workbench.jsch.logging.enabled", true);
+  }
+
+  public boolean showSSHBanner()
+  {
+    return getBoolProperty("workbench.jsch.banner.display", true);
   }
 
   public WbFile getGlogalSshConfigFile()

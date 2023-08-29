@@ -83,6 +83,7 @@ public class GuiSettings
   public static final String PROP_TITLE_SHOW_EDITOR_FILE = "workbench.gui.display.showfilename";
   public static final String PROP_TITLE_GROUP_SEP = "workbench.gui.display.titlegroupsep";
   public static final String PROP_TITLE_GROUP_BRACKET = "workbench.gui.display.titlegroupbracket";
+  public static final String PROP_TITLE_ABBREV_WKSP = "workbench.gui.display.title.abbreviate.wksp";
 
   public static final String PROP_FONT_ZOOM_WHEEL = "workbench.gui.fontzoom.mousewheel";
   public static final String PROP_NUMBER_ALIGN = "workbench.gui.renderer.numberalignment";
@@ -830,6 +831,11 @@ public class GuiSettings
         Settings.getInstance().setProperty(PROP_TITLE_SHOW_EDITOR_FILE, "path");
         break;
     }
+  }
+
+  public static boolean shortenWorkspaceNameInWindowTitle()
+  {
+    return Settings.getInstance().getBoolProperty(PROP_TITLE_ABBREV_WKSP, true);
   }
 
   public static int getShowFilenameInWindowTitle()
