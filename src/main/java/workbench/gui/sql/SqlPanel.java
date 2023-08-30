@@ -3348,12 +3348,19 @@ public class SqlPanel
     String macroMsg = null;
     if (this.macroExecution)
     {
-      // executeMacro() will set "macroExecution" so that we can
-      // log the macro statement here. Otherwise we wouldn't know at this point
-      // that a macro is beeing executed
-      // we don't need to log this here, as this can only occur when the user
-      // execute the macro through the menu
+      // executeMacro() will set "macroExecution" so that we can log the macro statement here.
+      // Otherwise we wouldn't know at this point that a macro is beeing executed
       macroRun = true;
+
+      if (GuiSettings.getLogDataMacroText())
+      {
+        String sql = this.stmtRunner.getParsingUtil().stripStartingComment(script);
+        if (VariablePool.getInstance(variablePoolID).getParameterCount() > 0)
+        {
+          sql = VariablePool.getInstance(variablePoolID).replaceAllParameters(sql);
+        }
+        macroMsg = ResourceMgr.getString("MsgExecutingMacro") + ":\n" + sql + "\n\n";
+      }
     }
     else
     {

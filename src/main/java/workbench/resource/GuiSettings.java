@@ -264,6 +264,11 @@ public class GuiSettings
     Settings.getInstance().setProperty(PROPERTY_EXPAND_KEYSTROKE, Integer.toString(code) + "," + Integer.toString(modifier));
   }
 
+  public static boolean getLogDataMacroText()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.macro.data.log.text", true);
+  }
+
   public static int getMacroSourceTooltipLength()
   {
     return Settings.getInstance().getIntProperty(PROPERTY_MACRO_SOURCE_TOOLTIP_LENGTH, 500);

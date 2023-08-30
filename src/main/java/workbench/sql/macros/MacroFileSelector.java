@@ -27,6 +27,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import workbench.WbManager;
+import workbench.resource.DirectorySaveStrategy;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -177,6 +178,13 @@ public class MacroFileSelector
     {
       return true;
     }
+
+    DirectorySaveStrategy saveStrategy = Settings.getInstance().getDirectoryBaseMacroStorageSaveStrategy();
+    if (saveStrategy == DirectorySaveStrategy.Merge)
+    {
+      return true;
+    }
+    
     File[] files = selected.listFiles();
     return (files == null || files.length == 0);
   }
