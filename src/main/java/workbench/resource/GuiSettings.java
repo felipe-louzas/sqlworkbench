@@ -126,6 +126,11 @@ public class GuiSettings
 
   public static final String PROP_SHOW_TEXT_SELECTION_INFO = "workbench.gui.text.selection.summary";
 
+  public static boolean includeTooltipsInSettingsSearch()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.search.settings.include.tooltip", true);
+  }
+  
   public static boolean includeQueryWithResultAsText()
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.resultastext.include.sql", false);

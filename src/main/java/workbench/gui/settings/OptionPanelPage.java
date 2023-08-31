@@ -50,23 +50,38 @@ import workbench.util.ExceptionUtil;
  * @author Thomas Kellerer
  */
 public class OptionPanelPage
+  implements Comparable<OptionPanelPage>
 {
   public static final Border PAGE_PADDING = new EmptyBorder(8, 8, 8, 8);
   private static final Set<String> NO_PADDING_PANELS = CollectionUtil.treeSet(
     "LnFOptionsPanel", "ExternalToolsPanel", "FormatterOptionsPanel",
     "DbExplorerOptionsPanel", "GlobalSshHostsPanel");
 
-  private String label;
-  private String pageClass;
+  private final String label;
+  private final String pageClass;
+  private final boolean addPadding;
+
   private JPanel panel;
   private Restoreable options;
-  private boolean addPadding;
+  private int displayIndex;
 
   public OptionPanelPage(String clz, String key)
   {
     this.label = ResourceMgr.getString(key);
     this.pageClass = "workbench.gui.settings." + clz;
     addPadding = !NO_PADDING_PANELS.contains(clz);
+  }
+
+  @Override
+  public int compareTo(OptionPanelPage o)
+  {
+    if (o == null) return 1;
+    return this.displayIndex - o.displayIndex;
+  }
+
+  public void setDisplayIndex(int index)
+  {
+    this.displayIndex = index;
   }
 
   @Override
@@ -123,6 +138,15 @@ public class OptionPanelPage
       }
     }
     return this.panel;
+  }
+
+  public JPanel getOptionsPanel()
+  {
+    if (this.options == null)
+    {
+      getPanel();
+    }
+    return (JPanel)this.options;
   }
 
   public boolean validateInput()

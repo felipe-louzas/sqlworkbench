@@ -5,6 +5,9 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2023-06-04">
+    <entry dev-build="5" type="enh">It's now possible to search the settings dialog for specific labels.</entry>
+    <entry dev-build="5" type="enh">Storing a workspace in a directory, rather than a ZIP archive (.wksp) is now supported.</entry>
+    <entry dev-build="5" type="enh">Storing macros as SQL scripts in a directory, rather than an XML file is now supported.</entry>
     <entry dev-build="4" type="enh">For DB2 (LUW), tablespace information is now included in the generated DDL for tables.</entry>
     <entry dev-build="4" type="enh">WbSchemaDiff now writes a drop-constraint tag for indexes supporting unique constraints.</entry>
     <entry dev-build="3" type="enh">For DB2 (LUW), the table for a trigger was not shown in the DbExplorer's trigger list</entry>

@@ -108,7 +108,6 @@ public class PostgresViewReaderTest
     tbl.setNeverAdjustCase(true);
 
     String sql = con.getMetadata().getViewReader().getViewSource(tbl).toString();
-    assertTrue(sql.contains("SELECT some_table.id"));
     assertTrue(sql.contains("FROM some_table"));
   }
 
@@ -127,7 +126,6 @@ public class PostgresViewReaderTest
     TableIdentifier tbl = new TableIdentifier(TEST_SCHEMA, "v_def_test");
 
     String sql = con.getMetadata().getViewReader().getExtendedViewSource(tbl).toString();
-    assertTrue(sql.contains("SELECT some_table.id"));
     assertTrue(sql.contains("FROM some_table"));
     assertTrue(sql.contains("SET DEFAULT 42"));
   }

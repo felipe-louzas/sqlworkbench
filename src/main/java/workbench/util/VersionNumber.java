@@ -58,44 +58,45 @@ public class VersionNumber
     }
 
     number = number.toLowerCase();
-    if (number.contains("beta"))
-    {
-      number = number.replaceAll("beta[0-9.]*", "");
-      minor = 0;
-      patchLevel = 0;
-    }
-    else if (number.contains("("))
-    {
-      number = number.replaceAll("\\(.*\\)", "");
-    }
 
     if ("@build_number@".equals(number))
     {
       major = 999;
       minor = 999;
+      return;
     }
-    else
+
+    if (number.contains("("))
     {
-      try
-      {
-        String[] numbers = number.split("\\.");
+      number = number.replaceAll("\\(.*\\)", "");
+    }
 
-        major = Integer.parseInt(numbers[0]);
+    Pattern nonNumbers = Pattern.compile("[^0-9.].*");
+    Matcher m = nonNumbers.matcher(number);
+    if (m.find())
+    {
+      number = number.substring(0, m.start());
+    }
 
-        if (numbers.length > 1)
-        {
-          minor = parseValue(numbers[1]);
-        }
-        if (numbers.length > 2)
-        {
-          patchLevel = parseValue(numbers[2]);
-        }
-      }
-      catch (Exception e)
+    try
+    {
+      String[] numbers = number.split("\\.");
+
+      major = Integer.parseInt(numbers[0]);
+
+      if (numbers.length > 1)
       {
-        minor = -1;
-        major = -1;
+        minor = parseValue(numbers[1]);
       }
+      if (numbers.length > 2)
+      {
+        patchLevel = parseValue(numbers[2]);
+      }
+    }
+    catch (Exception e)
+    {
+      minor = -1;
+      major = -1;
     }
   }
 

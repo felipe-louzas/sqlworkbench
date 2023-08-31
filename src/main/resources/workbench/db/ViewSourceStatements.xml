@@ -288,12 +288,13 @@ where type = 'VIEW'
    <object class="workbench.db.GetMetaDataSql">
     <void property="baseSql">
      <string>
-SELECT rtrim(pg_get_viewdef(c.oid, true),';')||
-       case
+SELECT concat(
+        rtrim(pg_get_viewdef(c.oid, true),';'),
+        case
           when substr(c.reloptions[1], 1, 12) = 'check_option'
           then chr(10)|| 'WITH '|| upper(substr(c.reloptions[1],14))||' CHECK OPTION'
-          else ''
-       end||';' as definition
+        end,
+       ';') as definition
 FROM pg_class c
    JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE c.relkind in ('v', 'm')

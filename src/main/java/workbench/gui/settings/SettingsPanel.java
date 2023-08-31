@@ -25,58 +25,72 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import workbench.interfaces.QuickFilter;
 import workbench.interfaces.ValidatingComponent;
+import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
+import workbench.gui.actions.QuickFilterAction;
+import workbench.gui.actions.WbAction;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbButton;
 import workbench.gui.components.WbScrollPane;
+import workbench.gui.components.WbSplitPane;
+import workbench.gui.components.WbToolbar;
 import workbench.gui.help.HelpManager;
+
+import workbench.util.StringUtil;
 
 /**
  * @author Thomas Kellerer
  */
 public class SettingsPanel
   extends JPanel
-  implements ActionListener, ListSelectionListener, WindowListener, ValidatingComponent
+  implements ActionListener, ListSelectionListener, WindowListener, ValidatingComponent, QuickFilter, KeyListener
 {
   private JButton cancelButton;
   private JButton helpButton;
-  private JPanel content;
+  private WbSplitPane content;
   private JList pageList;
-  private JPanel currentPanel;
   private JButton okButton;
   private JDialog dialog;
   private EscAction escAction;
-  private List<OptionPanelPage> pages = new ArrayList<>();
+  private final PageListModel listModel;
+  private JTextField filterValue;
+  private WbAction resetFilter;
+  private QuickFilterAction applyFilter;
 
   public SettingsPanel()
   {
     super(new BorderLayout());
-    // Remember to adjust the calculation of the width and height for the dialog
+    List<OptionPanelPage> pages = new ArrayList<>(30);
+    // Remember to adjust the calculation of the width and height in showSettingsDialog()
     // when changing the order of pages, or adding new pages
     pages.add(new OptionPanelPage("GeneralOptionsPanel", "LblSettingsGeneral"));
     pages.add(new OptionPanelPage("EditorOptionsPanel", "LblSettingsEditor"));
@@ -99,11 +113,15 @@ public class SettingsPanel
     pages.add(new OptionPanelPage("FormatterOptionsPanel", "LblSqlFormat"));
     pages.add(new OptionPanelPage("SqlGenerationOptionsPanel", "LblSqlGeneration"));
     pages.add(new OptionPanelPage("WindowTitleOptionsPanel", "LblSettingsWinTitle"));
-    pages.add(new OptionPanelPage("ExternalToolsPanel", "LblExternalTools"));
     pages.add(new OptionPanelPage("GlobalSshHostsPanel", "LblSshGlobalCfg"));
-    pages.add(new OptionPanelPage("LoggingOptionsPanel", "LblLoggingOptions"));
+    pages.add(new OptionPanelPage("ExternalToolsPanel", "LblExternalTools"));
     pages.add(new OptionPanelPage("LnFOptionsPanel", "LblLnFOptions"));
-
+    pages.add(new OptionPanelPage("LoggingOptionsPanel", "LblLoggingOptions"));
+    for (int i=0; i < pages.size(); i++)
+    {
+      pages.get(i).setDisplayIndex(i);
+    }
+    listModel = new PageListModel(pages);
     initComponents();
   }
 
@@ -113,21 +131,16 @@ public class SettingsPanel
     if (e.getValueIsAdjusting()) return;
 
     int index = this.pageList.getSelectedIndex();
+    if (index < 0) return;
 
     try
     {
       WbSwingUtilities.showWaitCursor(this);
-      OptionPanelPage option = pages.get(index);
+      OptionPanelPage option = listModel.getElementAt(index);
       JPanel panel = option.getPanel();
-
-      if (currentPanel != null)
-      {
-        content.remove(currentPanel);
-      }
-      content.add(panel, BorderLayout.CENTER);
-      content.validate();
-      WbSwingUtilities.repaintLater(content);
-      this.currentPanel = panel;
+      int divider = content.getDividerLocation();
+      content.setRightComponent(panel);
+      content.setDividerLocation(divider);
     }
     finally
     {
@@ -137,28 +150,25 @@ public class SettingsPanel
 
   private void initComponents()
   {
-    ListModel model = new AbstractListModel()
-    {
-      @Override
-      public Object getElementAt(int index)
-      {
-        return pages.get(index);
-      }
+    content = new WbSplitPane();
+    content.setBorder(new EmptyBorder(2,2,2,2));
+    content.setDividerBorder(new DividerBorder(DividerBorder.LEFT_RIGHT));
+    content.setDividerSize(GuiSettings.getSplitPaneDividerWidth());
 
-      @Override
-      public int getSize()
-      {
-        return pages.size();
-      }
-    };
-
-    pageList = new JList(model);
+    pageList = new JList(listModel);
     pageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     pageList.addListSelectionListener(this);
+
+    JPanel optionList = new JPanel(new BorderLayout(0,2));
+
     JScrollPane scroll = new WbScrollPane(pageList);
-    content = new JPanel(new BorderLayout());
-    content.add(scroll, BorderLayout.WEST);
-    content.setBorder(DividerBorder.BOTTOM_DIVIDER);
+    scroll.setBorder(new EmptyBorder(0,0,0,0));
+
+    JPanel filterPanel = buildQuickFilterPanel();
+    optionList.add(filterPanel, BorderLayout.NORTH);
+    optionList.add(scroll, BorderLayout.CENTER);
+    content.setLeftComponent(optionList);
+
     okButton = new WbButton(ResourceMgr.getString("LblOK"));
     cancelButton = new WbButton(ResourceMgr.getString("LblCancel"));
     helpButton = new JButton(ResourceMgr.getString("LblHelp"));
@@ -189,14 +199,59 @@ public class SettingsPanel
     gc.weightx = 0.0;
     gc.insets = new Insets(7, 0, 7, 4);
     buttonPanel.add(cancelButton, gc);
+    buttonPanel.setBorder(DividerBorder.TOP_DIVIDER);
 
     add(content, BorderLayout.CENTER);
-    add(buttonPanel, BorderLayout.SOUTH);
+    add(buttonPanel, BorderLayout.PAGE_END);
+  }
+
+  private JPanel buildQuickFilterPanel()
+  {
+    applyFilter = new QuickFilterAction(this);
+    resetFilter = new WbAction()
+    {
+      @Override
+      public void executeAction(ActionEvent e)
+      {
+        resetFilter();
+      }
+    };
+    resetFilter.setIcon("resetfilter");
+    resetFilter.setEnabled(true);
+
+    JPanel filterPanel = new JPanel(new GridBagLayout());
+    filterPanel.setBorder(new DividerBorder(DividerBorder.TOP));
+    filterValue = new JTextField();
+    filterValue.addKeyListener(this);
+
+    GridBagConstraints gc = new GridBagConstraints();
+    gc.anchor = GridBagConstraints.LINE_START;
+    gc.gridx = 0;
+    gc.gridy = 0;
+    gc.fill = GridBagConstraints.HORIZONTAL;
+    gc.weightx = 1.0;
+    gc.weighty = 0.0;
+    gc.insets = new Insets(0,0,0,5);
+    filterPanel.add(filterValue, gc);
+
+    WbToolbar filterBar = new WbToolbar();
+    filterBar.add(applyFilter);
+    filterBar.add(resetFilter);
+    filterBar.setMargin(WbSwingUtilities.getEmptyInsets());
+    filterBar.setBorder(new EmptyBorder(0,0,0,0));
+    filterBar.setBorderPainted(true);
+
+    gc.gridx ++;
+    gc.weightx = 0.0;
+    gc.fill = GridBagConstraints.NONE;
+    filterPanel.add(filterBar, gc);
+
+    return filterPanel;
   }
 
   private void saveSettings()
   {
-    for (OptionPanelPage page : pages)
+    for (OptionPanelPage page : listModel.getAllPages())
     {
       page.saveSettings();
     }
@@ -251,7 +306,7 @@ public class SettingsPanel
   private void closeWindow()
   {
     Settings.getInstance().setWindowSize(this.getGraphicsConfiguration(), this.getClass().getName(), this.dialog.getWidth(),this.dialog.getHeight());
-    for (OptionPanelPage page : pages)
+    for (OptionPanelPage page : listModel.getAllPages())
     {
       page.dispose();
     }
@@ -320,6 +375,8 @@ public class SettingsPanel
   @Override
   public boolean validateInput()
   {
+    resetFilter();
+    List<OptionPanelPage> pages = listModel.getAllPages();
     for (int i = 0; i < pages.size(); i++)
     {
       OptionPanelPage page = pages.get(i);
@@ -337,13 +394,96 @@ public class SettingsPanel
   }
 
   @Override
+  public void applyQuickFilter()
+  {
+    String value = StringUtil.trimToNull(this.filterValue.getText());
+    if (value == null)
+    {
+      resetFilter();
+      return;
+    }
+
+    String selected = getSelectedPageTitle();
+    try
+    {
+      WbSwingUtilities.showWaitCursor(this);
+      content.setRightComponent(null);
+      pageList.clearSelection();
+      listModel.applyFilter(value);
+      selectPageByTitle(selected);
+    }
+    finally
+    {
+      WbSwingUtilities.showDefaultCursor(this);
+    }
+  }
+
+  private String getSelectedPageTitle()
+  {
+    int index = pageList.getSelectedIndex();
+    if (index < 0) return null;
+    return listModel.getElementAt(index).getLabel();
+  }
+
+  @Override
+  public void resetFilter()
+  {
+    String selected = getSelectedPageTitle();
+    filterValue.setText("");
+    pageList.clearSelection();
+    listModel.resetFilter();
+    selectPageByTitle(selected);
+  }
+
+  private void selectPageByTitle(String title)
+  {
+    if (listModel.getSize() == 0) return;
+    int oldIndex = listModel.getIndexOf(title);
+    if (oldIndex < 0)
+    {
+      pageList.setSelectedIndex(0);
+    }
+    else
+    {
+      pageList.setSelectedIndex(oldIndex);
+    }
+
+  }
+
+  @Override
   public void componentWillBeClosed()
   {
-    // nothing to do
   }
 
   @Override
   public void componentDisplayed()
   {
   }
+
+  @Override
+  public void keyTyped(KeyEvent e)
+  {
+  }
+
+  @Override
+  public void keyPressed(KeyEvent e)
+  {
+    if (e.getModifiersEx() != 0) return;
+    switch (e.getKeyCode())
+    {
+      case KeyEvent.VK_ESCAPE:
+        e.consume();
+        resetFilter();
+        break;
+      case KeyEvent.VK_ENTER:
+      e.consume();
+      applyQuickFilter();
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e)
+  {
+  }
+
 }

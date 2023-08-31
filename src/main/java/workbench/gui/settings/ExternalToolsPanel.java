@@ -58,9 +58,9 @@ public class ExternalToolsPanel
   implements Restoreable, ListSelectionListener, FileActions,
              PropertyChangeListener
 {
-  private JList toolList;
-  private ToolDefinitionPanel definitionPanel;
-  private WbToolbar toolbar;
+  private final JList toolList;
+  private final ToolDefinitionPanel definitionPanel;
+  private final WbToolbar toolbar;
   private DefaultListModel tools;
 
   public ExternalToolsPanel()

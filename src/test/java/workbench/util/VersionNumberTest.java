@@ -21,8 +21,9 @@
  */
 package workbench.util;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -95,11 +96,22 @@ public class VersionNumberTest
   }
 
   @Test
-  public void testPoiVersion()
+  public void testCleanup()
   {
-    VersionNumber strange = new VersionNumber("3.5-FINAL-20090928");
-    assertEquals(3, strange.getMajorVersion());
-    assertEquals(5, strange.getMinorVersion());
-  }
+    VersionNumber vn = new VersionNumber("3.5-FINAL-20090928");
+    assertEquals(3, vn.getMajorVersion());
+    assertEquals(5, vn.getMinorVersion());
 
+    vn = new VersionNumber("16-rc6");
+    assertEquals(16, vn.getMajorVersion());
+
+    vn = new VersionNumber("16rc4");
+    assertEquals(16, vn.getMajorVersion());
+
+    vn = new VersionNumber("16-rc-1");
+    assertEquals(16, vn.getMajorVersion());
+
+    vn = new VersionNumber("16-beta1");
+    assertEquals(16, vn.getMajorVersion());
+  }
 }

@@ -76,7 +76,7 @@ public class ProfileSelectionDialog
   private ProfileSelectionPanel profiles;
   private ConnectionProfile selectedProfile;
   private boolean cancelled;
-  private String escActionCommand;
+  private final String escActionCommand;
   private JLabel versionInfo;
   private boolean processEscKey;
   private static boolean firstDisplay = true;
