@@ -25,6 +25,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -91,13 +93,13 @@ public class PanelTextSearcher {
     ArrayList<JComponent> result = new ArrayList<>();
     List<JComponent> labels = getLabels(panel);
 
-      for (JComponent label : labels)
+    for (JComponent label : labels)
+    {
+      if (containsText(label, search))
       {
-        if (containsText(label, search))
-        {
-          result.add(label);
-        }
+        result.add(label);
       }
+    }
 
     return result;
   }
@@ -106,13 +108,33 @@ public class PanelTextSearcher {
   {
     if (label == null) return false;
     String text = getText(label);
-    if (text != null && text.toLowerCase().contains(search)) return true;
+    if (isMatch(text, search)) return true;
+
     if (GuiSettings.includeTooltipsInSettingsSearch())
     {
       String tip =  StringUtil.trimToNull(label.getToolTipText());
-      if (tip != null && tip.toLowerCase().contains(search)) return true;
+      if (isMatch(tip, search)) return true;
     }
     return false;
+  }
+
+  private boolean isMatch(String label, String search)
+  {
+    if (StringUtil.isAnyBlank(label, search)) return false;
+    if (GuiSettings.useRegexForSettingsSearch())
+    {
+      try
+      {
+        Pattern p = Pattern.compile(search, Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE);
+        Matcher m = p.matcher(label);
+        return m.find();
+      }
+      catch (Exception ex)
+      {
+        // Ignore, fallback to simple "contains"
+      }
+    }
+    return label.toLowerCase().contains(search.toLowerCase());
   }
 
   private String getText(JComponent comp)

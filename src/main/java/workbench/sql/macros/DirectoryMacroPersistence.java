@@ -165,14 +165,21 @@ public class DirectoryMacroPersistence
       activeGroupDirs.add(groupDir);
     }
 
-    // Now remove any directory that represents a group that is no longer there.
-    for (File f : baseDirectory.listFiles())
+    if (saveStrategy == DirectorySaveStrategy.Flush)
     {
-      if (f.isDirectory() && !activeGroupDirs.contains(f))
+      // When doing a flush & fill, remove any directory that represents a group that is no longer there.
+      for (File f : baseDirectory.listFiles())
       {
-        LogMgr.logDebug(new CallerInfo(){}, "Deleting no longer used macro group directory: " + WbFile.getPathForLogging(f));
-        FileUtil.deleteDirectoryContent(f);
-        f.delete();
+        if (f.isDirectory() && !activeGroupDirs.contains(f))
+        {
+          // for symbolic links, we only delete the link, not the content
+          if (!FileUtil.isSymbolicLink(f))
+          {
+            FileUtil.deleteDirectoryContent(f);
+          }
+          LogMgr.logDebug(new CallerInfo(){}, "Deleting no longer used macro group directory: " + WbFile.getPathForLogging(f));
+          f.delete();
+        }
       }
     }
   }

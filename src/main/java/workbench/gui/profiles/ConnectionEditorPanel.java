@@ -1420,10 +1420,18 @@ public class ConnectionEditorPanel
   public void selectMacroFile()
   {
     MacroFileSelector selector = new MacroFileSelector();
-    WbFile file = selector.selectStorageForLoad(this, MacroManager.DEFAULT_STORAGE);
+    File file = selector.selectStorageForLoad(this, MacroManager.DEFAULT_STORAGE);
     if (file != null)
     {
-      String path = FileDialogUtil.getPathWithMacroPlaceholder(file);
+      String path;
+      if (Settings.getInstance().shortenMacroFileName())
+      {
+        path = FileDialogUtil.removeMacroDir(file);
+      }
+      else
+      {
+        path = file.getAbsolutePath();
+      }
       macroFile.setText(path);
       macroFile.setCaretPosition(0);
     }

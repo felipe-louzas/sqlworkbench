@@ -36,7 +36,6 @@ import workbench.gui.YesNoCancel;
 import workbench.gui.components.ExtensionFileFilter;
 import workbench.gui.components.WbFileChooser;
 
-import workbench.util.FileDialogUtil;
 import workbench.util.WbFile;
 
 /**
@@ -142,8 +141,7 @@ public class MacroFileSelector
       return null;
     }
 
-    String pathToUse = FileDialogUtil.removeMacroDir(selectedFile.getAbsolutePath());
-    return new WbFile(pathToUse);
+    return new WbFile(selectedFile);
   }
 
   private File checkFileExtension(File selectedFile)
@@ -184,8 +182,19 @@ public class MacroFileSelector
     {
       return true;
     }
-    
+
     File[] files = selected.listFiles();
+    if (files != null)
+    {
+      for (File f : files)
+      {
+        if (f.isDirectory())
+        {
+          File mp = new File(f, DirectoryMacroPersistence.GROUP_INFO_FILE);
+          if (mp.exists()) return true;
+        }
+      }
+    }
     return (files == null || files.length == 0);
   }
 

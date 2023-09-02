@@ -655,9 +655,14 @@ public class Settings
     return getBoolProperty("workbench.directories.replace.vars", true);
   }
 
-  public static boolean shortenWorkspaceFileName()
+  public boolean shortenWorkspaceFileName()
   {
-    return Settings.getInstance().getBoolProperty("workbench.workspace.filename.shorten", true);
+    return getBoolProperty("workbench.workspace.filename.shorten", true);
+  }
+
+  public boolean shortenMacroFileName()
+  {
+    return getBoolProperty("workbench.macros.filename.shorten", true);
   }
 
   public void setWorkspaceDir(String dir)

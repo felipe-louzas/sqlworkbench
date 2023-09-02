@@ -50,7 +50,7 @@ public class RecentFileManager
   private final String MACROS_PROP_NAME = "macros.recent";
   private final String FILES_PROP_NAME = "files.recent";
 
-  private Map<String, FixedSizeList<WbFile>> recentFiles = new HashMap<>();
+  private final Map<String, FixedSizeList<WbFile>> recentFiles = new HashMap<>();
 
   /**
    * Thread safe singleton-instance

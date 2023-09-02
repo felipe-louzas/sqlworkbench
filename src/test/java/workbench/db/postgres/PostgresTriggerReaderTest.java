@@ -26,6 +26,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.PostgresDbTest;
 import workbench.db.TriggerDefinition;
 import workbench.db.TriggerReader;
@@ -155,6 +156,11 @@ public class PostgresTriggerReaderTest
       "CREATE TRIGGER some_trg BEFORE UPDATE\n" +
       "  ON s1.t1 FOR EACH ROW\n" +
       "  EXECUTE FUNCTION f1.some_trigger_func();";
+
+    if (!JdbcUtils.hasMinimumServerVersion(con, "12"))
+    {
+      expected1 = expected1.replace("EXECUTE FUNCTION", "EXECUTE PROCEDURE");
+    }
     assertEquals(expected1, src1);
 
     List<TriggerDefinition> t2Triggers = reader.getTriggerList(null, "s2", "t2");
@@ -164,6 +170,10 @@ public class PostgresTriggerReaderTest
       "CREATE TRIGGER some_trg BEFORE UPDATE\n" +
       "  ON s2.t2 FOR EACH ROW\n" +
       "  EXECUTE FUNCTION f1.some_trigger_func();";
+    if (!JdbcUtils.hasMinimumServerVersion(con, "12"))
+    {
+      expected2 = expected2.replace("EXECUTE FUNCTION", "EXECUTE PROCEDURE");
+    }
     assertEquals(expected2, src2);
   }
 }

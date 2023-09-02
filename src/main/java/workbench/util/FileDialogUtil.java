@@ -214,6 +214,12 @@ public class FileDialogUtil
     return removeBaseDir(new WbFile(selectedDir), Settings.getInstance().getMacroBaseDirectory());
   }
 
+  public static String removeMacroDir(File selectedDir)
+  {
+    if (selectedDir == null) return "";
+    return removeBaseDir(new WbFile(selectedDir), Settings.getInstance().getMacroBaseDirectory());
+  }
+
   public static String removeBaseDir(WbFile selectedDir, File baseDir)
   {
     if (selectedDir == null || baseDir == null) return "";

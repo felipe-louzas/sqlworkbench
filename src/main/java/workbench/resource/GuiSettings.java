@@ -130,7 +130,12 @@ public class GuiSettings
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.search.settings.include.tooltip", true);
   }
-  
+
+  public static boolean useRegexForSettingsSearch()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.search.settings.regex", false);
+  }
+
   public static boolean includeQueryWithResultAsText()
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.resultastext.include.sql", false);

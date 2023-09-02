@@ -65,6 +65,15 @@ public class StringUtilTest
   }
 
   @Test
+  public void testIsAnyBlank()
+  {
+    assertTrue(StringUtil.isAnyBlank(null));
+    assertTrue(StringUtil.isAnyBlank(null, " "));
+    assertTrue(StringUtil.isAnyBlank("42", "  "));
+    assertFalse(StringUtil.isAnyBlank("foo", "bar"));
+  }
+
+  @Test
   public void removeTrailing()
   {
     assertEquals("bla", StringUtil.removeTrailing("bla.", '.'));

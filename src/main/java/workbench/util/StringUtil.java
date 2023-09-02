@@ -699,6 +699,22 @@ public class StringUtil
   }
 
   /**
+   * Checks if any of given parameters is empty.
+   *
+   * @see #isBlank(CharSequence)
+   */
+  public static boolean isAnyBlank(CharSequence... values)
+  {
+    if (values == null) return true;
+    for (CharSequence value : values)
+    {
+      if (isBlank(value)) return true;
+    }
+    return false;
+  }
+
+
+  /**
    * Checks if the given string value is not empty (!= null && length() > 0).
    *
    * Whitespaces are considered "not empty".

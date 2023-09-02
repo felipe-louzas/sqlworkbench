@@ -40,7 +40,7 @@ public class LoadMacrosAction
   extends WbAction
 {
   private final int macroClientId;
-  private Component parent;
+  private final Component parent;
 
   public LoadMacrosAction(Component parent, int clientId)
   {
