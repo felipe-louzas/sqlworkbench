@@ -4196,9 +4196,9 @@ public class Settings
     return getBoolProperty("workbench.jsch.logging.enabled", true);
   }
 
-  public boolean showSSHBanner()
+  public boolean ignoreSSHBanners()
   {
-    return getBoolProperty("workbench.jsch.banner.display", true);
+    return getBoolProperty("workbench.ssh.banner.ignore.always", false);
   }
 
   public WbFile getGlogalSshConfigFile()

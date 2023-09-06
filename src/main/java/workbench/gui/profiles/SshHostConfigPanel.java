@@ -220,6 +220,7 @@ public class SshHostConfigPanel
         password.setText(StringUtil.coalesce(config.getDecryptedPassword(), ""));
         keyPassFile.setFilename(config.getPrivateKeyFile());
         useAgent.setSelected(config.getTryAgent());
+        ignoreBanner.setSelected(config.getIgnoreBanner());
 
         int port = config.getSshPort();
         if (port > 0 && port != PortForwarder.DEFAULT_SSH_PORT)
@@ -248,6 +249,7 @@ public class SshHostConfigPanel
     username.setEnabled(flag);
     password.setEnabled(flag);
     sshPort.setEnabled(flag);
+    ignoreBanner.setEnabled(flag);
     if (flag)
     {
       useAgent.setEnabled(canUseAgent);
@@ -270,6 +272,7 @@ public class SshHostConfigPanel
       password.setText("");
       sshPort.setText("");
       useAgent.setSelected(false);
+      ignoreBanner.setSelected(false);
     }
     finally
     {
@@ -285,6 +288,7 @@ public class SshHostConfigPanel
     config.setSshPort(StringUtil.getIntValue(sshPort.getText(), 0));
     config.setPrivateKeyFile(StringUtil.trimToNull(keyPassFile.getFilename()));
     config.setTryAgent(useAgent.isSelected());
+    config.setIgnoreBanner(ignoreBanner.isSelected());
     if (showConfigName)
     {
       config.setConfigName(StringUtil.trimToNull(configName.getText()));
@@ -378,6 +382,7 @@ public class SshHostConfigPanel
     jPanel1 = new JPanel();
     password = new JPasswordField();
     showPasswordButton = new JButton();
+    ignoreBanner = new JCheckBox();
 
     setLayout(new GridBagLayout());
 
@@ -472,7 +477,6 @@ public class SshHostConfigPanel
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(4, 1, 0, 0);
     add(useAgent, gridBagConstraints);
 
@@ -520,12 +524,25 @@ public class SshHostConfigPanel
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(5, 5, 0, 11);
     add(jPanel1, gridBagConstraints);
+
+    ignoreBanner.setText(ResourceMgr.getString("LblSshIgnoreBanner")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 8;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(4, 1, 0, 0);
+    add(ignoreBanner, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JTextField configName;
   private JTextField hostname;
+  private JCheckBox ignoreBanner;
   private JPanel jPanel1;
   private WbFilePicker keyPassFile;
   private JLabel labelConfigName;

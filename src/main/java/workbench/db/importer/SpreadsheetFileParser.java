@@ -617,7 +617,7 @@ public class SpreadsheetFileParser
         continue;
       }
 
-      if (dataRowValues.size() < rowData.length)
+      if (dataRowValues.size() < rowData.length && !ignoreMissingColumns)
       {
         String msg = ResourceMgr.getFormattedString("ErrImpIgnoreShortRow", currentRow, dataRowValues.size(), rowData.length);
         messages.append(msg);
@@ -637,10 +637,19 @@ public class SpreadsheetFileParser
 
         if (sourceIndex >= dataRowValues.size())
         {
+          String colName;
+          if (fileCol == null)
+          {
+            colName = "with index=" + (sourceIndex + 1);
+          }
+          else
+          {
+            colName = fileCol.getColumn().getColumnName();
+          }
           // Log this warning only once
           if (importRow == 1)
           {
-            LogMgr.logWarning(new CallerInfo(){}, "Ignoring column with index=" + (sourceIndex + 1) + " because the import file has fewer columns");
+            LogMgr.logWarning(new CallerInfo(){}, "Ignoring column " + colName + " because the import file has fewer columns");
           }
           continue;
         }

@@ -751,7 +751,6 @@ public class WbImport
         {
           spreadSheetParser.setSheetIndex(-1);
           multiFileImport = true;
-//          table = null;
         }
         else if (cmdLine.isArgPresent(ARG_SHEET_NAME))
         {

@@ -66,6 +66,7 @@ public class PortForwarder
   private int localPort;
 
   private final boolean tryAgent;
+  private final boolean ignoreBanner;
 
   public PortForwarder(SshHostConfig config)
   {
@@ -73,6 +74,7 @@ public class PortForwarder
     this.sshUser = config.getUsername();
     this.password = config.getDecryptedPassword();
     this.tryAgent = config.getTryAgent();
+    this.ignoreBanner = config.getIgnoreBanner();
     setPrivateKeyFile(config.getPrivateKeyFile());
   }
 
@@ -324,8 +326,9 @@ public class PortForwarder
   {
     LogMgr.logInfo(new CallerInfo(){}, "UserInfo.showMessage() called with message: " + message);
     if (StringUtil.isBlank(message)) return;
-    
-    if (!Settings.getInstance().showSSHBanner()) return;
+
+    if (ignoreBanner) return;
+    if (Settings.getInstance().ignoreSSHBanners()) return;
 
     if (WbManager.getInstance().getRunMode() == RunMode.GUI)
     {

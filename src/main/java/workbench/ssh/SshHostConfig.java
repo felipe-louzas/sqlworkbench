@@ -48,6 +48,7 @@ public class SshHostConfig
 
   private int sshPort = PortForwarder.DEFAULT_SSH_PORT;
   private boolean tryAgent;
+  private boolean ignoreBanner;
 
   public SshHostConfig()
   {
@@ -61,6 +62,16 @@ public class SshHostConfig
   public boolean isGlobalConfig()
   {
     return this.configName != null;
+  }
+
+  public boolean getIgnoreBanner()
+  {
+    return ignoreBanner;
+  }
+
+  public void setIgnoreBanner(boolean flag)
+  {
+    this.ignoreBanner = flag;
   }
 
   public int getSshPort()
@@ -228,6 +239,7 @@ public class SshHostConfig
     copy.tryAgent = this.tryAgent;
     copy.username = this.username;
     copy.configName = this.configName;
+    copy.ignoreBanner = this.ignoreBanner;
     return copy;
   }
 
@@ -241,6 +253,7 @@ public class SshHostConfig
     hash = 37 * hash + Objects.hashCode(this.configName);
     hash = 37 * hash + this.sshPort;
     hash = 37 * hash + Boolean.hashCode(tryAgent);
+    hash = 37 * hash + Boolean.hashCode(ignoreBanner);
     return hash;
   }
 
@@ -254,6 +267,7 @@ public class SshHostConfig
 
     if (this.sshPort != other.sshPort) return false;
     if (this.tryAgent != other.tryAgent) return false;
+    if (this.ignoreBanner != other.ignoreBanner) return false;
     if (!Objects.equals(this.sshHost, other.sshHost)) return false;
     if (!Objects.equals(this.username, other.username)) return false;
     if (!Objects.equals(this.privateKeyFile, other.privateKeyFile)) return false;

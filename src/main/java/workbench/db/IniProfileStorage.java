@@ -110,6 +110,7 @@ public class IniProfileStorage
   public static final String PROP_SSH_TRY_AGENT = ".ssh.try.agent";
   public static final String PROP_SSH_GLOBAL_CONFIG = ".ssh.global.hostconfig";
   public static final String PROP_SSH_PORT = ".ssh.port";
+  public static final String PROP_IGNORE_BANNER = ".ssh.ignore.banner";
   private static final String PROP_SSH_LOCAL_PORT = ".ssh.localport";
   private static final String PROP_SSH_DB_PORT = ".ssh.db.port";
   private static final String PROP_SSH_DB_HOST = ".ssh.db.host";

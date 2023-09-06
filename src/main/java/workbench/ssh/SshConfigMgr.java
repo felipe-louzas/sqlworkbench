@@ -189,6 +189,7 @@ public class SshConfigMgr
     props.setProperty(PREFIX + key + PROP_SSH_KEYFILE, config.getPrivateKeyFile());
     props.setProperty(PREFIX + key + PROP_SSH_PWD, config.getPassword());
     props.setProperty(PREFIX + key + PROP_SSH_PORT, config.getSshPort());
+    props.setProperty(PREFIX + key + PROP_IGNORE_BANNER, config.getIgnoreBanner());
     props.setProperty(PREFIX + key + CONFIG_NAME, config.getConfigName());
     if (config.getTryAgent())
     {
@@ -209,6 +210,7 @@ public class SshConfigMgr
     String name = props.getProperty(PREFIX + key + CONFIG_NAME, null);
     int port = props.getIntProperty(PREFIX + key + PROP_SSH_PORT, PortForwarder.DEFAULT_SSH_PORT);
     boolean tryAgent = props.getBoolProperty(PREFIX + key + PROP_SSH_TRY_AGENT, false);
+    boolean ignoreBanner = props.getBoolProperty(PREFIX + key + PROP_IGNORE_BANNER, false);
     if (name != null && hostName != null && user != null)
     {
       SshHostConfig config = new SshHostConfig(name);
@@ -218,6 +220,7 @@ public class SshConfigMgr
       config.setPrivateKeyFile(keyFile);
       config.setTryAgent(tryAgent);
       config.setSshPort(port);
+      config.setIgnoreBanner(ignoreBanner);
       return config;
     }
     return null;
