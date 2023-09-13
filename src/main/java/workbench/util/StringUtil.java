@@ -1975,6 +1975,18 @@ public class StringUtil
     return start;
   }
 
+  public static String trimAfterLineFeed(String line)
+  {
+    if (line == null) return line;
+    Matcher m = Pattern.compile(REGEX_CRLF + "([ \t\f]+)$").matcher(line);
+    if (m.find())
+    {
+      int pos = m.end(1);
+      line = line.substring(0,pos);
+    }
+    return line;
+  }
+
   public static boolean hasLineFeed(String text)
   {
     if (isEmpty(text)) return false;

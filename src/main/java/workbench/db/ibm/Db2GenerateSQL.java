@@ -144,11 +144,10 @@ public class Db2GenerateSQL
         result = new StringBuilder(100);
         while (rs.next())
         {
-          String line = StringUtil.removeTrailing(rs.getString(3), ' ');
-          if (line != null)
-          {
-            result.append(line);
-          }
+          String line = StringUtil.trimAfterLineFeed(rs.getString(3));
+          if (line == null) continue;
+
+          result.append(line);
           if (!enableFormatting && !StringUtil.hasLineFeed(line))
           {
             result.append(nl);

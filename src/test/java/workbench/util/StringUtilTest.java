@@ -37,6 +37,28 @@ public class StringUtilTest
 {
 
   @Test
+  public void testTrimAfterLineFeed()
+  {
+    String line = "   this is a test    ";
+    assertEquals(line, StringUtil.trimAfterLineFeed(line));
+
+    line = "this is a test  \r\n    ";
+    assertEquals("this is a test  \r\n", StringUtil.trimAfterLineFeed(line));
+
+    line = "this is a test  \r\n    \t";
+    assertEquals("this is a test  \r\n", StringUtil.trimAfterLineFeed(line));
+
+    line = "this is a test  \r\n";
+    assertEquals("this is a test  \r\n", StringUtil.trimAfterLineFeed(line));
+
+    line = "this is a test  \r\nbla\r\n";
+    assertEquals("this is a test  \r\nbla\r\n", StringUtil.trimAfterLineFeed(line));
+
+    line = "this is a test  \r\nbla\r\n    \t  ";
+    assertEquals("this is a test  \r\nbla\r\n", StringUtil.trimAfterLineFeed(line));
+  }
+
+  @Test
   public void testIncrementCounter()
   {
     String result = StringUtil.incrementCounter("SQLExport", 4);
