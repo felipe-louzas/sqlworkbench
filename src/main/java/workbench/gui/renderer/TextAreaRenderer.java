@@ -84,6 +84,8 @@ public class TextAreaRenderer
     textDisplay.setAutoscrolls(false);
     textDisplay.setTabSize(Settings.getInstance().getEditorTabWidth());
     textDisplay.setBorder(WbSwingUtilities.EMPTY_BORDER);
+    textDisplay.setDoubleBuffered(true);
+    textDisplay.setOpaque(true);
   }
 
   @Override

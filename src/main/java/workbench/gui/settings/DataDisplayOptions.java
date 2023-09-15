@@ -744,7 +744,7 @@ public class DataDisplayOptions
     gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(2, 21, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(5, 21, 4, 0);
     multiLinePanel.add(multilineThresholLabel, gridBagConstraints);
 
     multiLineThreshold.setColumns(8);
@@ -753,7 +753,7 @@ public class DataDisplayOptions
     gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 8);
+    gridBagConstraints.insets = new java.awt.Insets(3, 5, 4, 8);
     multiLinePanel.add(multiLineThreshold, gridBagConstraints);
 
     enableMultilineRenderer.setText(ResourceMgr.getString("LblEnableMultiLineRenderer")); // NOI18N
@@ -853,13 +853,13 @@ public class DataDisplayOptions
     {
       DataDisplayOptions.this.showMaxRowsWarnActionPerformed(evt);
     }
-    else if (evt.getSource() == showTableName)
-    {
-      DataDisplayOptions.this.showTableNameActionPerformed(evt);
-    }
     else if (evt.getSource() == enableMultilineRenderer)
     {
       DataDisplayOptions.this.enableMultilineRendererActionPerformed(evt);
+    }
+    else if (evt.getSource() == showTableName)
+    {
+      DataDisplayOptions.this.showTableNameActionPerformed(evt);
     }
   }// </editor-fold>//GEN-END:initComponents
 

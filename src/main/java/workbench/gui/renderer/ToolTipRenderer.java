@@ -99,12 +99,12 @@ public class ToolTipRenderer
   private int currentRow = -1;
   private String currentColumnName;
 
-  private Rectangle paintIconR = new Rectangle();
-  private Rectangle paintTextR = new Rectangle();
-  private Rectangle paintViewR = new Rectangle();
+  private final Rectangle paintIconR = new Rectangle();
+  private final Rectangle paintTextR = new Rectangle();
+  private final Rectangle paintViewR = new Rectangle();
 
-  protected Insets focusedInsets;
-  protected Insets regularInsets;
+  protected final Insets focusedInsets;
+  protected final Insets regularInsets;
 
   protected boolean isSelected;
   protected boolean hasFocus;
@@ -119,11 +119,13 @@ public class ToolTipRenderer
   private boolean isModifiedColumn;
 
   protected boolean showTooltip = true;
-  private Map renderingHints;
+  private final Map renderingHints;
 
   public ToolTipRenderer()
   {
     super();
+    setDoubleBuffered(true);
+    setOpaque(true);
     regularInsets = getDefaultInsets();
     int thick = WbSwingUtilities.FOCUSED_CELL_BORDER.getThickness();
 
@@ -315,6 +317,8 @@ public class ToolTipRenderer
   protected Color getBackgroundColor()
   {
     Color c = getColumnHighlightColor(currentRow);
+    if (c == null) return unselectedBackground;
+
     if (isSelected)
     {
       return ColorUtils.blend(selectedBackground, c, selectionBlendFactor);
@@ -323,7 +327,6 @@ public class ToolTipRenderer
     {
       return ColorUtils.blend(rendererSetup.alternateBackground, c, alternateBlendFactor);
     }
-    if (c != null) return c;
     return unselectedBackground;
   }
 
@@ -372,16 +375,7 @@ public class ToolTipRenderer
     Font f = getFont();
     FontMetrics fm = g.getFontMetrics(f);
 
-    Insets insets;
-
-    if (hasFocus)
-    {
-      insets = focusedInsets;
-    }
-    else
-    {
-      insets = regularInsets;
-    }
+    final Insets insets = hasFocus ? focusedInsets : regularInsets;
 
     paintViewR.x = insets.left;
     paintViewR.y = insets.top;
@@ -424,17 +418,6 @@ public class ToolTipRenderer
     {
       WbSwingUtilities.FOCUSED_CELL_BORDER.paintBorder(this, g, 0, 0, w, h);
     }
-  }
-
-  @Override
-  protected void firePropertyChange(String propertyName, Object oldValue, Object newValue)
-  {
-  }
-
-  @Override
-  public boolean isOpaque()
-  {
-    return true;
   }
 
   @Override

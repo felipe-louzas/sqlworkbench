@@ -42,8 +42,8 @@ import workbench.util.StringUtil;
  *
  * @author Thomas Kellerer
  */
-public class PanelTextSearcher {
-
+public class PanelTextSearcher
+{
   private static final String ORIGINAL_COLOR_KEY = "originalColor";
   private static final String OPAQUE_KEY = "wasOpaque";
 
@@ -159,21 +159,18 @@ public class PanelTextSearcher {
   {
     ArrayList<JComponent> result = new ArrayList<>();
     if (component == null) return result;
+
     Component[] children = component.getComponents();
     for (Component child : children)
     {
-      if (child instanceof Container)
+      if (child instanceof JLabel || child instanceof JCheckBox)
+      {
+        result.add((JComponent)child);
+      }
+      else if (child instanceof Container)
       {
         List<JComponent> labels = getContainerLabels((Container)child);
         result.addAll(labels);
-      }
-      if (child instanceof JLabel)
-      {
-        result.add((JLabel)child);
-      }
-      if (child instanceof JCheckBox)
-      {
-        result.add((JCheckBox)child);
       }
     }
     return result;

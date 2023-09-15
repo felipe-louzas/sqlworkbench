@@ -85,7 +85,7 @@ public class SettingsPanel
   private JTextField filterValue;
   private WbAction resetFilter;
   private QuickFilterAction applyFilter;
-
+  
   public SettingsPanel()
   {
     super(new BorderLayout());
@@ -404,13 +404,15 @@ public class SettingsPanel
     }
 
     String selected = getSelectedPageTitle();
+    int location = content.getDividerLocation();
     try
     {
       WbSwingUtilities.showWaitCursor(this);
-      content.setRightComponent(null);
+      content.setRightComponent(new JPanel());
       pageList.clearSelection();
       listModel.applyFilter(value);
       selectPageByTitle(selected);
+      content.setDividerLocation(location);
     }
     finally
     {
