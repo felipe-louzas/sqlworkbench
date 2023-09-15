@@ -614,8 +614,8 @@ public class QuickFilterPanel
   {
     if (ignoreEvents) return;
 
-    // ignore key events with Alt or Ctrl Modifiers
-    if (WbAction.isAltPressed(e) || WbAction.isCtrlPressed(e)) return;
+    // ignore key events with Alt or Ctrl Modifiers except Ctrl + Backspace (delete word left of cursor)
+    if (WbAction.isAltPressed(e) || (WbAction.isCtrlPressed(e) && e.getKeyChar() != KeyEvent.VK_BACK_SPACE) ) return;
 
     EventQueue.invokeLater(() ->
     {
