@@ -317,7 +317,6 @@ public class ToolTipRenderer
   protected Color getBackgroundColor()
   {
     Color c = getColumnHighlightColor(currentRow);
-    if (c == null) return unselectedBackground;
 
     if (isSelected)
     {
@@ -327,6 +326,8 @@ public class ToolTipRenderer
     {
       return ColorUtils.blend(rendererSetup.alternateBackground, c, alternateBlendFactor);
     }
+    if (c != null) return c;
+    
     return unselectedBackground;
   }
 
