@@ -140,7 +140,7 @@ public class WorkspaceSelector {
         }
       }
 
-      if (Settings.getInstance().shortenWorkspaceFileName())
+      if (filename != null && Settings.getInstance().shortenWorkspaceFileName())
       {
         filename = shortenFilename(filename);
       }
