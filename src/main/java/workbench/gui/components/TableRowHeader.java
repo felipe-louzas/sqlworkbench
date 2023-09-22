@@ -21,12 +21,14 @@
  */
 package workbench.gui.components;
 
-import java.beans.PropertyChangeEvent;
-import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import workbench.gui.WbSwingUtilities;
 
 /**
@@ -37,15 +39,13 @@ public class TableRowHeader
   extends JTable
   implements ChangeListener, PropertyChangeListener
 {
-  private TableRowHeaderModel rowModel;
-  private RowHeaderRenderer renderer;
-  private JTable clientTable;
+  private final RowHeaderRenderer renderer;
+  private final JTable clientTable;
 
   public TableRowHeader(JTable client)
   {
     super();
-    rowModel = new TableRowHeaderModel(client);
-    setModel(rowModel);
+    setModel(new TableRowHeaderModel(client));
     clientTable = client;
     renderer = new RowHeaderRenderer(this, client);
     getColumnModel().getColumn(0).setCellRenderer(renderer);
@@ -63,6 +63,8 @@ public class TableRowHeader
   public void setFont(Font f)
   {
     super.setFont(f);
+    // the constructor of JTable will eventually call setFont()
+    // before the renderer can be assigned.
     if (renderer != null)
     {
       renderer.setFont(f);

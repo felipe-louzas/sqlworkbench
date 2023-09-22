@@ -1248,7 +1248,10 @@ public class StringUtil
     }
     else
     {
-      return s.substring(0, maxLen) + add;
+      StringBuilder result = new StringBuilder(maxLen + add.length());
+      result.append(s, 0, maxLen);
+      result.append(add);
+      return result.toString();
     }
   }
 

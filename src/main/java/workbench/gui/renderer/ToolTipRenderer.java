@@ -76,7 +76,6 @@ public class ToolTipRenderer
   protected Object currentValue;
   protected String tooltip;
   protected boolean useOwnPaint = true;
-  protected int rightMargin;
   protected Color selectedForeground;
   protected Color selectedBackground;
   protected Color unselectedForeground;
@@ -327,7 +326,7 @@ public class ToolTipRenderer
       return ColorUtils.blend(rendererSetup.alternateBackground, c, alternateBlendFactor);
     }
     if (c != null) return c;
-    
+
     return unselectedBackground;
   }
 
@@ -398,11 +397,6 @@ public class ToolTipRenderer
         SwingConstants.TOP, SwingConstants.LEFT, paintViewR, paintIconR, paintTextR, 0);
     }
 
-    int textX = paintTextR.x - rightMargin;
-    if (textX < 0) textX = 0;
-    int textY = paintTextR.y + fm.getAscent();
-    if (textY < 0) textY = 0;
-
     if (renderingHints != null)
     {
       Graphics2D g2d = (Graphics2D)g;
@@ -413,7 +407,7 @@ public class ToolTipRenderer
     g.setColor(getBackgroundColor());
     g.fillRect(0, 0, w, h);
     g.setColor(getForegroundColor());
-    g.drawString(clippedText, textX, textY);
+    g.drawString(clippedText, paintTextR.x, paintTextR.y + fm.getAscent());
 
     if (hasFocus)
     {

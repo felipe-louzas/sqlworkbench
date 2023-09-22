@@ -21,7 +21,6 @@
  */
 package workbench.gui.components;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -29,12 +28,11 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
 import workbench.resource.GuiSettings;
-
-import workbench.gui.renderer.ToolTipRenderer;
 
 import workbench.util.NumberStringCache;
 
@@ -44,55 +42,37 @@ import workbench.util.NumberStringCache;
  * @author Thomas Kellerer
  */
 public class RowHeaderRenderer
-  extends ToolTipRenderer
+  extends DefaultTableCellRenderer
 {
-  private JTable table;
+  private final JTable table;
   private TableRowHeader rowHeader;
   private int colWidth = -1;
-  private Color backgroundColor;
-  private Color textColor;
+  private int rightMargin;
 
-  public RowHeaderRenderer(TableRowHeader rowHead, JTable client)
+  public RowHeaderRenderer(TableRowHeader rowHeader, JTable client)
   {
-    table = client;
-    rowHeader = rowHead;
+    this.table = client;
+    this.rowHeader = rowHeader;
 
     JTableHeader header = table.getTableHeader();
     setFont(header.getFont());
     setOpaque(true);
     setHorizontalAlignment(SwingConstants.RIGHT);
 
-    textColor = header.getForeground();
-    backgroundColor = header.getBackground();
+    setForeground(header.getForeground());
+    setBackground(header.getBackground());
 
     rightMargin = GuiSettings.getRowNumberMargin();
     calculateWidth();
-    setTooltip(null);
-  }
-
-  @Override
-  protected void initDisplay(JTable table, Object value, boolean selected, boolean focus, int row, int col)
-  {
-    // nothing to do...
-  }
-
-  @Override
-  protected Color getBackgroundColor()
-  {
-    return backgroundColor;
-  }
-
-  @Override
-  protected Color getForegroundColor()
-  {
-    return textColor;
   }
 
   @Override
   public void setFont(Font f)
   {
+    Font oldFont = getFont();
     super.setFont(f);
-    if (table != null)
+    boolean fontChanged = (oldFont == null && f != null) || (oldFont != null && f != null && !f.equals(oldFont));
+    if (table != null && fontChanged)
     {
       calculateWidth();
     }
@@ -137,19 +117,6 @@ public class RowHeaderRenderer
     catch (Exception e)
     {
       e.printStackTrace();
-    }
-  }
-
-  @Override
-  public void prepareDisplay(Object aValue)
-  {
-    try
-    {
-      this.displayValue = (String)aValue;
-    }
-    catch (Throwable e)
-    {
-      displayValue = (aValue == null ? null : aValue.toString());
     }
   }
 
