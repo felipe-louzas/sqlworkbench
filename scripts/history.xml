@@ -4,7 +4,7 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
 
-  <release build="-1" date="2023-09-19">
+  <release build="-1" date="2023-09-23">
     <entry dev-build="5" type="enh">It's now possible to search the settings dialog for specific labels.</entry>
     <entry dev-build="5" type="enh">Storing a workspace in a directory, rather than a ZIP archive (.wksp) is now supported.</entry>
     <entry dev-build="5" type="enh">Storing macros as SQL scripts in a directory, rather than an XML file is now supported.</entry>

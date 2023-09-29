@@ -187,7 +187,7 @@ public class DataPumper
     Border statusBorder = new CompoundBorder(WbSwingUtilities.createLineBorder(this), new EmptyBorder(2,2,2,2));
     statusPanel.setBorder(statusBorder);
     execTime.setHorizontalAlignment(SwingConstants.RIGHT);
-    WbSwingUtilities.setMinimumSize(execTime, 10);
+    WbSwingUtilities.calculatePreferredSize(execTime, 10);
     execTime.setText("");
     this.executionTimer = new Timer(1000, this);
 

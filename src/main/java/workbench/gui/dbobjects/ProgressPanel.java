@@ -80,8 +80,8 @@ public class ProgressPanel
       remove(fileNameField);
     }
     setRowSize(20);
-    WbSwingUtilities.setMinimumSize(rowInfo, 15);
-    WbSwingUtilities.setMinimumSize(progressInfoText, 30);
+    WbSwingUtilities.calculatePreferredSize(rowInfo, 15);
+    WbSwingUtilities.calculatePreferredSize(progressInfoText, 30);
   }
 
   public void setParentDialog(JDialog d)

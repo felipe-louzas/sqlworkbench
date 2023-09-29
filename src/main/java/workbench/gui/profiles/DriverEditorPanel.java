@@ -103,8 +103,8 @@ public class DriverEditorPanel
     tfClassName.getDocument().addDocumentListener(this);
     classpathEditor.setLastDirProperty("workbench.drivers.lastlibdir");
     classpathEditor.addActionListener(this);
-    WbSwingUtilities.setMinimumSize(tfName, 40);
-    WbSwingUtilities.setMinimumSize(tfClassName, 50);
+    WbSwingUtilities.calculatePreferredSize(tfName, 40);
+    WbSwingUtilities.calculatePreferredSize(tfClassName, 50);
   }
 
   public void setValidator(Validator nameValidator)

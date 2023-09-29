@@ -129,6 +129,8 @@ public class WbSwingUtilities
   public static final int IGNORE_ONE = 3042;
   public static final int EXECUTE_ALL = 4042;
 
+  private static final char[] M_CHAR = new char[]{'M'};
+
   public static Insets getEmptyInsets()
   {
     return new Insets(0, 0, 0, 0);
@@ -1377,7 +1379,7 @@ public class WbSwingUtilities
     if (font != null)
     {
       FontMetrics fm = component.getFontMetrics(font);
-      int width = fm.stringWidth("M");
+      int width = fm.getMaxAdvance();
       int height = fm.getHeight();
       Dimension d = new Dimension(width * columns, height * lines);
       component.setPreferredSize(d);
@@ -1388,49 +1390,71 @@ public class WbSwingUtilities
   {
     int columns = component.getColumns();
     component.setColumns(0);
-    setMinimumSize(component, columns);
+    calculatePreferredSize(component, columns);
   }
 
-  public static void setMinimumSize(JComponent component, int numChars)
+  /**
+   * Sets preferred size based on the number of characters.
+   */
+  public static void calculatePreferredSize(JComponent component, int numChars)
   {
-    int width = calculateCharWidth(component, numChars);
-    if (width > 0)
+    Dimension min = calculateMinSize(component, numChars);
+    if (min != null)
     {
-      Dimension current = component.getPreferredSize();
-      Dimension d = new Dimension(width, current.height);
+      Dimension d = new Dimension(min.width, component.getHeight());
       component.setPreferredSize(d);
     }
   }
 
+  /**
+   * Sets minimum and preferred size based on the number of characters.
+   */
   public static void setMinTextSize(JComponent component, int numChars)
   {
-    if (numChars <= 0) return;
-    if (component == null) return;
+    Dimension d = calculateMinSize(component, numChars);
+    if (d != null)
+    {
+      component.setMinimumSize(d);
+      component.setPreferredSize(d);
+    }
+  }
+
+  public static Dimension calculateMinSize(JComponent component, int numChars)
+  {
+    if (numChars <= 0) return null;
+    if (component == null) return null;
 
     Font font = component.getFont();
-    if (font == null) return;
+    if (font == null) return null;
+
+    int addWidth = 0;
+    Border b = component.getBorder();
+    if (b != null)
+    {
+      Insets insets = b.getBorderInsets(component);
+      if (insets != null)
+      {
+        addWidth = insets.left + insets.right;
+      }
+    }
 
     FontMetrics fm = component.getFontMetrics(font);
-    int charWidth = fm.stringWidth("M");
-    int width = charWidth * numChars;
-    int height = fm.getHeight();
-    Dimension d = new Dimension(width, height);
-    component.setMinimumSize(d);
-    component.setPreferredSize(d);
+    Rectangle2D bounds = font.getStringBounds(M_CHAR, 0, 1, fm.getFontRenderContext());
+    int width = (int)Math.ceil(bounds.getWidth());
+    int height = (int)Math.ceil(bounds.getHeight());
+    return new Dimension(width + addWidth, height);
   }
 
   public static int calculateCharWidth(JComponent component, int numChars)
   {
-    if (numChars < 0) return -1;
-    if (component == null) return -1;
+    if (numChars < 0 || component == null) return 0;
 
-    int width = -1;
+    int width = 8 * numChars;
     Font font = component.getFont();
     if (font != null)
     {
       FontMetrics fm = component.getFontMetrics(font);
-      int charWidth = fm.stringWidth("M");
-      width = charWidth * numChars;
+      width = fm.getMaxAdvance() * numChars;
     }
     return width;
   }

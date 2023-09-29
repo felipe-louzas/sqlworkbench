@@ -199,9 +199,9 @@ public class ConnectionEditorPanel
     this.confirmUpdates.addActionListener(this);
     this.readOnly.addActionListener(this);
     this.cbxPromptUsername.addActionListener(this);
-    WbSwingUtilities.setMinimumSize(tfFetchSize, 5);
-    WbSwingUtilities.setMinimumSize(tfTimeout, 5);
-    WbSwingUtilities.setMinimumSize(altDelimiter, 5);
+    WbSwingUtilities.calculatePreferredSize(tfFetchSize, 5);
+    WbSwingUtilities.calculatePreferredSize(tfTimeout, 5);
+    WbSwingUtilities.calculatePreferredSize(altDelimiter, 5);
 
     showPassword.setText(null);
     showPassword.setIcon(IconMgr.getInstance().getLabelIcon("eye"));

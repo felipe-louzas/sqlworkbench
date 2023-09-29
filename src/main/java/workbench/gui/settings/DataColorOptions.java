@@ -51,8 +51,8 @@ public class DataColorOptions
   {
     super();
     initComponents();
-    WbSwingUtilities.setMinimumSize(alternateBlend, 5);
-    WbSwingUtilities.setMinimumSize(selectionBlend, 5);
+    WbSwingUtilities.calculatePreferredSize(alternateBlend, 5);
+    WbSwingUtilities.calculatePreferredSize(selectionBlend, 5);
   }
 
   @Override

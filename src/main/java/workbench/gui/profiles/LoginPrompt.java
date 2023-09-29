@@ -49,8 +49,8 @@ public class LoginPrompt
   {
     initComponents();
     getUsernameField().setSettingsProperty(historyKey);
-    WbSwingUtilities.setMinimumSize(tfUsername, 25);
-    WbSwingUtilities.setMinimumSize(tfPwd, 25);
+    WbSwingUtilities.calculatePreferredSize(tfUsername, 25);
+    WbSwingUtilities.calculatePreferredSize(tfPwd, 25);
   }
 
   public String getUserName()

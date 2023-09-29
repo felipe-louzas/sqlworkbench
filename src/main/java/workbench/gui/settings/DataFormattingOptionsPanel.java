@@ -53,14 +53,14 @@ public class DataFormattingOptionsPanel
     super();
     initComponents();
     jPanel2.setBorder(new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(6, 0, 0, 0)));
-    WbSwingUtilities.setMinimumSize(decimalField, 5);
-    WbSwingUtilities.setMinimumSize(groupSeparator, 5);
-    WbSwingUtilities.setMinimumSize(maxDigitsField, 5);
-    WbSwingUtilities.setMinimumSize(intFormat, 25);
-    WbSwingUtilities.setMinimumSize(decimalFormat, 25);
-    WbSwingUtilities.setMinimumSize(timeFormat, 25);
-    WbSwingUtilities.setMinimumSize(timestampFormatTextField, 25);
-    WbSwingUtilities.setMinimumSize(dateFormatTextField, 25);
+    WbSwingUtilities.calculatePreferredSize(decimalField, 5);
+    WbSwingUtilities.calculatePreferredSize(groupSeparator, 5);
+    WbSwingUtilities.calculatePreferredSize(maxDigitsField, 5);
+    WbSwingUtilities.calculatePreferredSize(intFormat, 25);
+    WbSwingUtilities.calculatePreferredSize(decimalFormat, 25);
+    WbSwingUtilities.calculatePreferredSize(timeFormat, 25);
+    WbSwingUtilities.calculatePreferredSize(timestampFormatTextField, 25);
+    WbSwingUtilities.calculatePreferredSize(dateFormatTextField, 25);
   }
 
   @Override

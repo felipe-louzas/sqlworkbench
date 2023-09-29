@@ -132,11 +132,12 @@ public class DwStatusBar
     }
 
     execTime = new JLabel();
-    WbSwingUtilities.setMinTextSize(execTime, 8);
-    Border eb = new CompoundBorder(new DividerBorder(DividerBorder.RIGHT, c), new EmptyBorder(0,6,0,6));
-    execTime.setBorder(eb);
+    execTime.setBorder(new CompoundBorder(new DividerBorder(DividerBorder.RIGHT, c), new EmptyBorder(0,6,0,6)));
     execTime.setHorizontalAlignment(SwingConstants.RIGHT);
     execTime.setToolTipText(ResourceMgr.getString("MsgTotalSqlTime"));
+
+    // This should be called after setting the border!
+    WbSwingUtilities.setMinTextSize(execTime, 8);
     infoPanel.add(execTime);
 
     if (showTimeout)
