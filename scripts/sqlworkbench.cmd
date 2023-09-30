@@ -31,6 +31,7 @@ if "%1"=="console" goto console_mode
 start "SQL Workbench/J" "%JAVA_BINPATH%javaw.exe"^
       --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
       --add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
+      --add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED ^
       -Xmx%max_mem%m ^
       -Dvisualvm.display.name=SQLWorkbench/J ^
       -Dsun.java2d.noddraw=true ^

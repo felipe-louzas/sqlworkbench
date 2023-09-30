@@ -38,7 +38,7 @@ cp="$cp:$SCRIPT_PATH/ext/*"
 
 os=`uname -s`
 
-OPTS="--add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"
+OPTS="--add-opens java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED --add-opens=java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED"
 if [ "$os" = Darwin ];
 then
 # this would result in a warning on non MacOS systems
