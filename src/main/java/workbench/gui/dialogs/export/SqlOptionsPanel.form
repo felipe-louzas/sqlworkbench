@@ -220,7 +220,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="commitCount">
           <Properties>
-            <Property name="columns" type="int" value="4"/>
+            <Property name="columns" type="int" value="6"/>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[32, 20]"/>
             </Property>

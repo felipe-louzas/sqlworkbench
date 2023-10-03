@@ -2171,6 +2171,12 @@ public class SqlPanel
 
   private void startExecution(final String sql, final int offset, final boolean highlightError, final boolean appendResult, final RunType runType)
   {
+    startExecution(sql, offset, highlightError, appendResult, runType, false);
+  }
+
+  private void startExecution(final String sql, final int offset, final boolean highlightError,
+                              final boolean appendResult, final RunType runType, final boolean refreshCurrent)
+  {
     if (this.executionThread != null || this.isConnectionBusy())
     {
       final CallerInfo ci = new CallerInfo(){};
@@ -2197,12 +2203,22 @@ public class SqlPanel
       return;
     }
 
+    // Save the current result panel in order to be able to refresh it.
+    // runStatement() might change "currentData" so we have to
+    // remember the one that was active before this query is executed.
+    final DwPanel result = currentData;
+
     this.executionThread = new WbThread(getThreadId())
     {
       @Override
       public void run()
       {
-        runStatement(sql, offset, highlightError, appendResult, runType);
+        boolean success = runStatement(sql, offset, highlightError, appendResult, runType);
+        if (result != null && refreshCurrent && success)
+        {
+          resultTab.setSelectedComponent(result);
+          runCurrentSql(result);
+        }
       }
     };
 
@@ -2244,7 +2260,7 @@ public class SqlPanel
    * This is only public to allow a direct call during
    * GUI testing (to avoid multi-threading)
    */
-  protected void runStatement(String sql, int selectionOffset, boolean highlightOnError, boolean appendResult, RunType runType)
+  protected boolean runStatement(String sql, int selectionOffset, boolean highlightOnError, boolean appendResult, RunType runType)
   {
     this.setStatusMessage(ResourceMgr.getString("MsgExecutingSql"));
 
@@ -2262,9 +2278,10 @@ public class SqlPanel
 
     setCancelState(true);
 
+    boolean success = true;
     try
     {
-      this.displayResult(sql, selectionOffset, highlightOnError, appendResult, runType);
+      success = this.displayResult(sql, selectionOffset, highlightOnError, appendResult, runType);
     }
     finally
     {
@@ -2281,6 +2298,7 @@ public class SqlPanel
       this.executionThread = null;
       this.cancelExecution = false;
     }
+    return success;
   }
 
   public AutomaticRefreshMgr getRefreshMgr()
@@ -2419,7 +2437,7 @@ public class SqlPanel
   }
 
   @Override
-  public void executeMacroSql(final String sql, final boolean replaceText, boolean appendData)
+  public void executeMacroSql(final String sql, final boolean replaceText, boolean appendData, boolean refreshCurrent)
   {
     if (isConnectionBusy()) return;
     if (StringUtil.isBlank(sql)) return;
@@ -2434,7 +2452,7 @@ public class SqlPanel
     {
       this.macroExecution = true;
     }
-    this.startExecution(sql, 0, false, this.appendResults || appendData, RunType.RunAll);
+    this.startExecution(sql, 0, false, this.appendResults || appendData, RunType.RunAll, refreshCurrent);
   }
 
   @Override
@@ -3283,9 +3301,9 @@ public class SqlPanel
    * @param appendResult     if true and result is appended to the result tab
    * @param runType          how to run the SQL.
    */
-  private void displayResult(String script, int selectionOffset, boolean highlightOnError, boolean appendResult, RunType runType)
+  private boolean displayResult(String script, int selectionOffset, boolean highlightOnError, boolean appendResult, RunType runType)
   {
-    if (script == null) return;
+    if (script == null) return false;
 
     final CallerInfo ci = new CallerInfo(){};
     boolean logWasCompressed = false;
@@ -3294,6 +3312,8 @@ public class SqlPanel
     boolean restoreSelection = false;
     boolean shouldRestoreSelection = Settings.getInstance().getBoolProperty("workbench.gui.sql.restoreselection", true);
     boolean macroRun = false;
+    boolean success = true;
+
     String nl = Settings.getInstance().getInternalEditorLineEnding();
     Pattern fixNLPattern = null;
     // do we need to convert the \n used in the editor
@@ -3391,7 +3411,7 @@ public class SqlPanel
       {
         this.printMessage(ResourceMgr.getString("ErrNoCommand"));
         this.showLogPanel();
-        return;
+        return false;
       }
 
       int cursorPos = editor.getCaretPosition();
@@ -3441,7 +3461,7 @@ public class SqlPanel
           {
             this.printMessage(ResourceMgr.getString("ErrNoCurrentStatement"));
             this.showLogPanel();
-            return;
+            return false;
           }
         }
       }
@@ -3557,12 +3577,14 @@ public class SqlPanel
 
         if (statementResult == null) continue;
         ignoreUpdateCounts = ignoreUpdateCounts && statementResult.isIgnoreUpdateCount();
+        success = statementResult.isSuccess();
 
         if (statementResult.stopScript())
         {
           String cancelMsg = ResourceMgr.getString("MsgScriptCancelled");
           this.printMessage(cancelMsg);
           this.showLogPanel();
+          success = false;
           break;
         }
 
@@ -3572,6 +3594,7 @@ public class SqlPanel
           this.showLogPanel();
           if (GuiSettings.cancellingVariablePromptStopsExecution())
           {
+            success = false;
             break;
           }
           continue;
@@ -3644,7 +3667,11 @@ public class SqlPanel
         this.stmtRunner.statementDone();
 
         // this will be set by confirmExecution() if "Cancel" was selected
-        if (cancelAll) break;
+        if (cancelAll)
+        {
+          success = false;
+          break;
+        }
 
         if (statementResult.isSuccess())
         {
@@ -3680,6 +3707,7 @@ public class SqlPanel
             if (choice == JOptionPane.CANCEL_OPTION)
             {
               statementResult.setStopScript(true);
+              success = false;
               break;
             }
             else if (choice == WbSwingUtilities.IGNORE_ALL)
@@ -3813,12 +3841,14 @@ public class SqlPanel
       {
         showLogMessage(e.getLocalizedMessage());
       }
+      success = false;
     }
     finally
     {
       stmtRunner.done();
       ignoreStateChange = false;
     }
+    return success;
   }
 
   private boolean shouldRetrieveCommentsImmediately()

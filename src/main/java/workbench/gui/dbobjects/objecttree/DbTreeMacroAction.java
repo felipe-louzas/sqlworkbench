@@ -113,7 +113,7 @@ class DbTreeMacroAction
     parser.setColumn(columns);
     String sql = parser.getSQL(tree.getConnection());
     LogMgr.logDebug(new CallerInfo(){}, "Running DbTree macro: " + sql);
-    tree.getMacroClient().executeMacroSql(sql, false, macro.isAppendResult());
+    tree.getMacroClient().executeMacroSql(sql, false, macro.isAppendResult(), false);
   }
 
   private boolean isMainNode(ObjectTreeNode node)

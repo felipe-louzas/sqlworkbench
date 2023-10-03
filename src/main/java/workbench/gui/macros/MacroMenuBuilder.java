@@ -110,6 +110,7 @@ public class MacroMenuBuilder
         run.setTooltip(null);
         run.setDataTable(table, annotation.getColumnMap());
         run.addToMenu(result);
+        run.setRefreshCurrentResult(annotation.getRefreshResult());
       }
     }
     return result;

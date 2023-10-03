@@ -31,7 +31,7 @@ import javax.swing.JComponent;
  */
 public interface MacroClient
 {
-  void executeMacroSql(String sql, boolean replaceText, boolean appendResults);
+  void executeMacroSql(String sql, boolean replaceText, boolean appendResults, boolean refreshCurrentResult);
   String getStatementAtCursor();
   String getSelectedText();
   String getText();

@@ -35,7 +35,6 @@ import workbench.resource.GeneratedIdentifierCase;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
-import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.DividerBorder;
 
 import workbench.sql.formatter.JoinWrapStyle;
@@ -69,12 +68,6 @@ public class WbFormatterOptionsPanel
     String mnu = ResourceMgr.getPlainString("MnuTxtMakeCharInList");
     String lbl = ResourceMgr.getFormattedString("LblMaxElements", mnu);
     jLabel1.setText(lbl);
-    WbSwingUtilities.setMinimumSizeFromCols(subselectMaxLength);
-    WbSwingUtilities.setMinimumSizeFromCols(insertColumns);
-    WbSwingUtilities.setMinimumSizeFromCols(updateColumns);
-    WbSwingUtilities.setMinimumSizeFromCols(selectColumns);
-    WbSwingUtilities.setMinimumSizeFromCols(maxCharElements);
-    WbSwingUtilities.setMinimumSizeFromCols(maxNumElements);
   }
 
   @Override

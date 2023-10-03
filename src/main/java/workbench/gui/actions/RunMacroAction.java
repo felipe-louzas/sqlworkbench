@@ -55,11 +55,12 @@ public class RunMacroAction
   extends WbAction
   implements ListSelectionListener
 {
-  private MainWindow client;
+  private final MainWindow client;
   private MacroDefinition macro;
   private WbTable dataTable;
   private Map<String, String> columnMap;
   private static int internalId;
+  private boolean refreshCurrentResult;
 
   public RunMacroAction(MainWindow macroClient, MacroDefinition def, int index)
   {
@@ -101,6 +102,11 @@ public class RunMacroAction
     setMenuItemName(ResourceMgr.MNU_TXT_MACRO);
     setIcon(null);
     setEnabled(macro != null && client != null);
+  }
+
+  public void setRefreshCurrentResult(boolean flag)
+  {
+    this.refreshCurrentResult = flag;
   }
 
   public void setDataTable(WbTable table, Map<String, String> colMap)
@@ -185,7 +191,7 @@ public class RunMacroAction
     if (rowData == null) return;
 
     MacroRunner runner = new MacroRunner();
-    runner.runDataMacro(macro, ds.getResultInfo(), rowData, sql, this.client.getVariablePoolID(), columnMap);
+    runner.runDataMacro(macro, ds.getResultInfo(), rowData, sql, this.client.getVariablePoolID(), columnMap, refreshCurrentResult);
   }
 
   @Override

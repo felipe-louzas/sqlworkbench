@@ -69,12 +69,6 @@ public class DataDisplayOptions
     rowHeightPanel.setBorder(WbSwingUtilities.createTitleBorderByKey(this, "TxtRowHeightSettings", 0));
     nullFontStyle.setModel(new FontStyleComboBoxModel());
 
-    WbSwingUtilities.setMinimumSizeFromCols(defMaxRows);
-    WbSwingUtilities.setMinimumSizeFromCols(nullString);
-    WbSwingUtilities.setMinimumSizeFromCols(maxRowHeight);
-    WbSwingUtilities.setMinimumSizeFromCols(multiLineThreshold);
-    WbSwingUtilities.setMinimumSizeFromCols(minColSizeField);
-    WbSwingUtilities.setMinimumSizeFromCols(maxColSizeField);
     WbSwingUtilities.makeEqualWidth(nullString, defMaxRows, alignmentDropDown);
   }
 

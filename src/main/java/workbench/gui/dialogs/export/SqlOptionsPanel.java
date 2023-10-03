@@ -53,7 +53,6 @@ import workbench.db.TableIdentifier;
 import workbench.db.exporter.BlobMode;
 import workbench.db.exporter.ExportType;
 
-import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ColumnSelectorPanel;
 import workbench.gui.components.KeyColumnSelectorPanel;
 
@@ -93,8 +92,6 @@ public class SqlOptionsPanel
     ComboBoxModel blobModel = new DefaultComboBoxModel(bTypes.toArray());
     blobTypes.setModel(blobModel);
     blobTypes.setSelectedItem(BlobMode.SaveToFile.toString());
-
-    WbSwingUtilities.setMinimumSizeFromCols(commitCount);
   }
 
   public final void setResultInfo(ResultInfo info)
@@ -608,7 +605,7 @@ public class SqlOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     extOptionsPanel.add(commitLabel, gridBagConstraints);
 
-    commitCount.setColumns(4);
+    commitCount.setColumns(6);
     commitCount.setMinimumSize(new Dimension(32, 20));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;

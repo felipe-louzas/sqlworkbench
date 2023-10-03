@@ -47,10 +47,6 @@ import workbench.util.StringUtil;
  */
 public class MacroRunner
 {
-  private String selectedTextKey = Settings.getInstance().getProperty("workbench.macro.key.selection", "${selection}$");
-  private String selectedStatementKey = Settings.getInstance().getProperty("workbench.macro.key.selectedstmt", "${selected_statement}$");
-  private String currentStatementKey = Settings.getInstance().getProperty("workbench.macro.key.currentstatement", "${current_statement}$");
-  private String editorTextKey = Settings.getInstance().getProperty("workbench.macro.key.editortext", "${text}$");
 
   public void runMacro(MacroDefinition macro, MacroClient client, boolean replaceEditorText)
   {
@@ -59,7 +55,7 @@ public class MacroRunner
     String sql = handleReplacement(macro.getText(), client, true);
     if (sql != null)
     {
-      client.executeMacroSql(sql, replaceEditorText, macro.isAppendResult());
+      client.executeMacroSql(sql, replaceEditorText, macro.isAppendResult(), false);
     }
   }
 
@@ -99,54 +95,55 @@ public class MacroRunner
   protected boolean hasTextKey(String sql)
   {
     if (sql == null) return false;
-    return (sql.contains(editorTextKey));
+    return (sql.contains(getEditorTextKey()));
   }
 
   protected boolean hasSelectedKey(String sql)
   {
     if (sql == null) return false;
-    return (sql.contains(selectedTextKey)) || (sql.contains(selectedStatementKey));
+    return (sql.contains(getSelectedTextKey())) || (sql.contains(getSelectedStatementKey()));
   }
 
   protected boolean hasCurrentKey(String sql)
   {
     if (sql == null) return false;
-    return (sql.contains(currentStatementKey));
+    return (sql.contains(getCurrentStatementKey()));
   }
 
   protected String replaceCurrent(String sql, String statementAtCursor)
   {
     if (statementAtCursor == null || sql == null) return sql;
-    return StringUtil.replace(sql, currentStatementKey, statementAtCursor);
+    return StringUtil.replace(sql, getCurrentStatementKey(), statementAtCursor);
   }
 
   protected String replaceEditorText(String sql, String text)
   {
     if (text == null || sql == null) return sql;
-    return StringUtil.replace(sql, editorTextKey, text);
+    return StringUtil.replace(sql, getEditorTextKey(), text);
   }
 
   protected String replaceSelected(String sql, String selectedText)
   {
     if (selectedText == null || sql == null) return sql;
 
-    if (sql.contains(selectedTextKey))
+    if (sql.contains(getSelectedTextKey()))
     {
-      return StringUtil.replace(sql, selectedTextKey, selectedText);
+      return StringUtil.replace(sql, getSelectedTextKey(), selectedText);
     }
-    else if (sql.contains(selectedStatementKey))
+    else if (sql.contains(getSelectedStatementKey()))
     {
       String stmt = selectedText.trim();
       if (stmt.endsWith(";"))
       {
         stmt = stmt.substring(0, stmt.length() - 1);
       }
-      return StringUtil.replace(sql, selectedStatementKey, stmt);
+      return StringUtil.replace(sql, getSelectedStatementKey(), stmt);
     }
     return sql;
   }
 
-  public void runDataMacro(MacroDefinition macro, ResultInfo info, RowData row, MacroClient client, String poolID, Map<String, String> columnMap)
+  public void runDataMacro(MacroDefinition macro, ResultInfo info, RowData row, MacroClient client, String poolID,
+                           Map<String, String> columnMap, boolean refreshCurrentResult)
   {
     if (macro == null) return;
     if (info == null) return;
@@ -175,7 +172,27 @@ public class MacroRunner
       }
     }
     String sql = macro.getText();
-    client.executeMacroSql(sql, false, true);
+    client.executeMacroSql(sql, false, true, refreshCurrentResult);
+  }
+
+  private String getSelectedTextKey()
+  {
+    return Settings.getInstance().getProperty("workbench.macro.key.selection", "${selection}$");
+  }
+
+  private String getSelectedStatementKey()
+  {
+    return Settings.getInstance().getProperty("workbench.macro.key.selectedstmt", "${selected_statement}$");
+  }
+
+  private String getCurrentStatementKey()
+  {
+    return Settings.getInstance().getProperty("workbench.macro.key.currentstatement", "${current_statement}$");
+  }
+
+  private String getEditorTextKey()
+  {
+    return Settings.getInstance().getProperty("workbench.macro.key.editortext", "${text}$");
   }
 
 }

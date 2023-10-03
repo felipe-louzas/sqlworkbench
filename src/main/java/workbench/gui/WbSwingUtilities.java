@@ -1386,13 +1386,6 @@ public class WbSwingUtilities
     }
   }
 
-  public static void setMinimumSizeFromCols(JTextField component)
-  {
-    int columns = component.getColumns();
-    component.setColumns(0);
-    calculatePreferredSize(component, columns);
-  }
-
   /**
    * Sets preferred size based on the number of characters.
    */
@@ -1401,8 +1394,7 @@ public class WbSwingUtilities
     Dimension min = calculateMinSize(component, numChars);
     if (min != null)
     {
-      Dimension d = new Dimension(min.width, component.getHeight());
-      component.setPreferredSize(d);
+      component.setPreferredSize(min);
     }
   }
 
@@ -1428,6 +1420,7 @@ public class WbSwingUtilities
     if (font == null) return null;
 
     int addWidth = 0;
+    int addHeight = 0;
     Border b = component.getBorder();
     if (b != null)
     {
@@ -1436,13 +1429,17 @@ public class WbSwingUtilities
       {
         addWidth = insets.left + insets.right;
       }
+      if (insets != null)
+      {
+        addHeight = insets.top + insets.bottom;
+      }
     }
 
     FontMetrics fm = component.getFontMetrics(font);
     Rectangle2D bounds = font.getStringBounds(M_CHAR, 0, 1, fm.getFontRenderContext());
-    int width = (int)Math.ceil(bounds.getWidth());
+    int width = (int)Math.ceil(bounds.getWidth()) * numChars;
     int height = (int)Math.ceil(bounds.getHeight());
-    return new Dimension(width + addWidth, height);
+    return new Dimension(width + addWidth, height + addHeight);
   }
 
   public static int calculateCharWidth(JComponent component, int numChars)

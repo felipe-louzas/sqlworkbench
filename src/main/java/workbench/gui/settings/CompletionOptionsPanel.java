@@ -64,8 +64,6 @@ public class CompletionOptionsPanel
 
     DefaultComboBoxModel model = new DefaultComboBoxModel(ObjectCacheStorage.values());
     localStorageType.setModel(model);
-
-    WbSwingUtilities.setMinimumSizeFromCols(maxAgeField);
   }
 
   @Override
@@ -288,7 +286,7 @@ public class CompletionOptionsPanel
     gridBagConstraints.insets = new Insets(9, 0, 0, 0);
     add(maxAgeLabel, gridBagConstraints);
 
-    maxAgeField.setColumns(6);
+    maxAgeField.setColumns(8);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 3;

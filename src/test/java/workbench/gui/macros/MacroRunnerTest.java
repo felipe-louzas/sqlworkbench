@@ -53,7 +53,7 @@ public class MacroRunnerTest
     MacroClient p = new MacroClient()
     {
       @Override
-      public void executeMacroSql(String sql, boolean replaceText, boolean append)
+      public void executeMacroSql(String sql, boolean replaceText, boolean append, boolean refresh)
       {
         assertEquals(macro.getText(), sql);
       }
@@ -99,7 +99,7 @@ public class MacroRunnerTest
     MacroClient p = new MacroClient()
     {
       @Override
-      public void executeMacroSql(String sql, boolean replaceText, boolean append)
+      public void executeMacroSql(String sql, boolean replaceText, boolean append, boolean refresh)
       {
         assertEquals("select 42 from dual;", sql);
       }
@@ -145,7 +145,7 @@ public class MacroRunnerTest
     MacroClient p = new MacroClient()
     {
       @Override
-      public void executeMacroSql(String sql, boolean replaceText, boolean append)
+      public void executeMacroSql(String sql, boolean replaceText, boolean append, boolean refresh)
       {
         assertEquals("explain select * from person;", sql);
       }
@@ -191,7 +191,7 @@ public class MacroRunnerTest
     MacroClient p = new MacroClient()
     {
       @Override
-      public void executeMacroSql(String sql, boolean replaceText, boolean append)
+      public void executeMacroSql(String sql, boolean replaceText, boolean append, boolean refresh)
       {
         assertEquals("explain select * from person", sql);
       }
@@ -237,7 +237,7 @@ public class MacroRunnerTest
     MacroClient p = new MacroClient()
     {
       @Override
-      public void executeMacroSql(String sql, boolean replaceText, boolean append)
+      public void executeMacroSql(String sql, boolean replaceText, boolean append, boolean refresh)
       {
         assertEquals("explain select * from person where x = 5;", sql);
       }
