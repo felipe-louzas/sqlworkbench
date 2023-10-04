@@ -266,6 +266,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="selectionBlend">
           <Properties>
+            <Property name="columns" type="int" value="6"/>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="language/wbstrings.properties" key="d_LblSelectionBlend" replaceFormat="ResourceMgr.getString(&quot;{key}&quot;)"/>
             </Property>
@@ -278,6 +279,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="alternateBlend">
           <Properties>
+            <Property name="columns" type="int" value="6"/>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="language/wbstrings.properties" key="d_LblAlternateBlend" replaceFormat="ResourceMgr.getString(&quot;{key}&quot;)"/>
             </Property>

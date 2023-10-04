@@ -117,20 +117,20 @@ public class LookupValuePicker
   implements KeyListener, ValidatingComponent, MouseListener, Restoreable, Reloadable, ActionListener
 {
   private JTextField filterValue;
-  private JRadioButton doFilter;
-  private JRadioButton doSearch;
-  private ButtonGroup buttonGroup;
+  private final JRadioButton doFilter;
+  private final JRadioButton doSearch;
+  private final ButtonGroup buttonGroup;
   private NumberField maxRows;
   private WbTable lookupData;
   private final LookupDataLoader lookupLoader;
-  private WbScrollPane scroll;
-  private JPanel statusPanel;
+  private final WbScrollPane scroll;
+  private final JPanel statusPanel;
   private JLabel statusBar;
   private JLabel rowCount;
   private WbConnection dbConnection;
   private ValidatingDialog dialog;
   private final Map<String, Object> currentValues = new HashMap<>();
-  private SelectionHandler selectionHandler;
+  private final SelectionHandler selectionHandler;
   private boolean multiSelect;
 
   public LookupValuePicker(WbConnection conn, LookupDataLoader loader, Map<String, Object> values, boolean allowMultiSelect)

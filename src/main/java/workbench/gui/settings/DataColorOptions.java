@@ -51,8 +51,6 @@ public class DataColorOptions
   {
     super();
     initComponents();
-    WbSwingUtilities.calculatePreferredSize(alternateBlend, 5);
-    WbSwingUtilities.calculatePreferredSize(selectionBlend, 5);
   }
 
   @Override
@@ -324,6 +322,7 @@ public class DataColorOptions
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     jPanel7.add(jLabel8, gridBagConstraints);
 
+    selectionBlend.setColumns(6);
     selectionBlend.setToolTipText(ResourceMgr.getString("d_LblSelectionBlend")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -333,6 +332,7 @@ public class DataColorOptions
     gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
     jPanel7.add(selectionBlend, gridBagConstraints);
 
+    alternateBlend.setColumns(6);
     alternateBlend.setToolTipText(ResourceMgr.getString("d_LblAlternateBlend")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;

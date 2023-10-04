@@ -50,7 +50,6 @@ import workbench.resource.Settings;
 
 import workbench.db.DbDriver;
 
-import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ClassFinderGUI;
 import workbench.gui.components.FlatButton;
 import workbench.gui.components.TextComponentMouseListener;
@@ -103,8 +102,6 @@ public class DriverEditorPanel
     tfClassName.getDocument().addDocumentListener(this);
     classpathEditor.setLastDirProperty("workbench.drivers.lastlibdir");
     classpathEditor.addActionListener(this);
-    WbSwingUtilities.calculatePreferredSize(tfName, 40);
-    WbSwingUtilities.calculatePreferredSize(tfClassName, 50);
   }
 
   public void setValidator(Validator nameValidator)

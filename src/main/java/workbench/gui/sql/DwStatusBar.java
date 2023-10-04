@@ -63,15 +63,15 @@ public class DwStatusBar
   extends JPanel
   implements StatusBar, EditorStatusbar, ActionListener
 {
-  private JLabel tfRowCount;
-  private WbTextLabel tfStatus;
+  private final JLabel tfRowCount;
+  private final WbTextLabel tfStatus;
 
   private final JTextField tfMaxRows;
   private String readyMsg;
   private JTextField tfTimeout;
   private final JLabel execTime;
   private JLabel editorStatus;
-  private JLabel maxRowsLabel;
+  private final JLabel maxRowsLabel;
   private final JPanel infoPanel;
 
   private final int timerInterval = Settings.getInstance().getIntProperty("workbench.gui.execution.timer.interval", 1000);
@@ -132,7 +132,7 @@ public class DwStatusBar
     }
 
     execTime = new JLabel();
-    execTime.setBorder(new CompoundBorder(new DividerBorder(DividerBorder.RIGHT, c), new EmptyBorder(0,6,0,6)));
+    execTime.setBorder(new CompoundBorder(new DividerBorder(DividerBorder.RIGHT, c), new EmptyBorder(0,2,0,0)));
     execTime.setHorizontalAlignment(SwingConstants.RIGHT);
     execTime.setToolTipText(ResourceMgr.getString("MsgTotalSqlTime"));
 

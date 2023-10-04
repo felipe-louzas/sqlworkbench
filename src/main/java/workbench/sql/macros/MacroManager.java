@@ -128,15 +128,15 @@ public class MacroManager
   {
     if (!macroFile.isAbsolute())
     {
-      macroFile = new WbFile(Settings.getInstance().getMacroBaseDirectory());
+      macroFile = new WbFile(Settings.getInstance().getMacroBaseDirectory(), macroFile.getFullPath());
     }
 
     MacroStorage storage = findLoadedMacros(macroFile);
     if (storage == null)
     {
       storage = new MacroStorage(macroFile);
-      macroClients.put(clientId, storage);
     }
+    macroClients.put(clientId, storage);
     LogMgr.logDebug(new CallerInfo(){}, "Loaded " + storage.getSize() + " macros from file " + macroFile.getFullpathForLogging() + " for clientId:  " + clientId);
   }
 

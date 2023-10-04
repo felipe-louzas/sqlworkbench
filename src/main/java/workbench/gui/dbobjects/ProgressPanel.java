@@ -59,7 +59,7 @@ public class ProgressPanel
   extends JPanel
   implements RowActionMonitor
 {
-  private Interruptable task;
+  private final Interruptable task;
 
   private JDialog parent;
   private int monitorType = RowActionMonitor.MONITOR_PLAIN;

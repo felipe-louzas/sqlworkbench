@@ -50,6 +50,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -129,7 +130,7 @@ public class WbSwingUtilities
   public static final int IGNORE_ONE = 3042;
   public static final int EXECUTE_ALL = 4042;
 
-  private static final char[] M_CHAR = new char[]{'M'};
+  private static final char[] M_CHAR = new char[]{'M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M','M'};
 
   public static Insets getEmptyInsets()
   {
@@ -1436,8 +1437,18 @@ public class WbSwingUtilities
     }
 
     FontMetrics fm = component.getFontMetrics(font);
-    Rectangle2D bounds = font.getStringBounds(M_CHAR, 0, 1, fm.getFontRenderContext());
-    int width = (int)Math.ceil(bounds.getWidth()) * numChars;
+    char[] filler;
+    if (numChars > M_CHAR.length)
+    {
+      filler = new char[numChars];
+      Arrays.fill(filler, 'M');
+    }
+    else
+    {
+       filler = M_CHAR;
+    }
+    Rectangle2D bounds = font.getStringBounds(filler, 0, numChars, fm.getFontRenderContext());
+    int width = (int)Math.ceil(bounds.getWidth());
     int height = (int)Math.ceil(bounds.getHeight());
     return new Dimension(width + addWidth, height + addHeight);
   }

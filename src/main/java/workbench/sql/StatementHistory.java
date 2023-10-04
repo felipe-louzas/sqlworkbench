@@ -55,6 +55,7 @@ public class StatementHistory
     doAppend(true);
   }
 
+  @Override
   public synchronized boolean add(String statement)
   {
     if (StringUtil.isEmpty(statement)) return false;
