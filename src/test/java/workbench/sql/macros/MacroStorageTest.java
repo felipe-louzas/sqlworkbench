@@ -65,6 +65,7 @@ public class MacroStorageTest
 
     TestUtil util = new TestUtil("SaveMacros");
     WbFile f = new WbFile(util.getBaseDir(), "macros.xml");
+    macros.applyFilter("bla");
     macros.saveMacros(f);
     MacroStorage newStorage = new MacroStorage(f);
     MacroDefinition m2 = newStorage.getMacro("sessions");
@@ -100,7 +101,7 @@ public class MacroStorageTest
     def2.setText("sp_who");
 
     copy.addMacro("Default", "new", "select 42 from dual");
-
+    copy.applyFilter("Bla");
     macros.copyFrom(copy);
     assertTrue(macros.isModified());
 
@@ -115,7 +116,6 @@ public class MacroStorageTest
 
     MacroDefinition exp = macros.getMacro("explain ora");
     assertNotNull(exp);
-
   }
 
   @Test

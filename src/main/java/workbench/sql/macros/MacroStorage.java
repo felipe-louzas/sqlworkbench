@@ -42,6 +42,7 @@ import workbench.resource.ShortcutManager;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.FileWatcherFactory;
+import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
 /**
@@ -157,17 +158,29 @@ public class MacroStorage
 
   public synchronized void copyFrom(MacroStorage source)
   {
-    synchronized (lock)
+    String filter = source.currentFilter;
+    try
     {
-      this.allMacros.clear();
-      this.groups.clear();
-      for (MacroGroup group : source.groups)
+      synchronized (lock)
       {
-        groups.add(group.createCopy());
+        source.resetFilter();
+        this.allMacros.clear();
+        this.groups.clear();
+        for (MacroGroup group : source.groups)
+        {
+          groups.add(group.createCopy());
+        }
+        currentFilter = null;
+        modified = source.isModified();
+        updateMap();
       }
-      currentFilter = null;
-      modified = source.isModified();
-      updateMap();
+    }
+    finally
+    {
+      if (filter != null)
+      {
+        source.applyFilter(filter);
+      }
     }
     fireMacroListChanged();
   }
@@ -610,7 +623,13 @@ public class MacroStorage
 
   public void applyFilter(String filter)
   {
-    this.currentFilter = filter;
+    this.currentFilter = StringUtil.trimToNull(filter);
+    if (currentFilter == null)
+    {
+      resetFilter();
+      return;
+    }
+
     for (MacroGroup group : groups)
     {
       group.applyFilter(filter);
