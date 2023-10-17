@@ -85,7 +85,6 @@ public class DeleteScriptGenerator
   private final List<String> statements = new ArrayList<>();
   private final SqlLiteralFormatter formatter;
   private boolean formatSql = true;
-  private boolean showFkNames;
   private List<TableIdentifier> excludeTables = new ArrayList<>();
   private TextOutput output;
   private boolean endTransaction;
@@ -133,11 +132,6 @@ public class DeleteScriptGenerator
     {
       this.excludeTables = new ArrayList<>(toExclude);
     }
-  }
-
-  public void setShowConstraintNames(boolean flag)
-  {
-    this.showFkNames = flag;
   }
 
   public void setFormatSql(boolean flag)
@@ -244,8 +238,6 @@ public class DeleteScriptGenerator
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving dependency hierarchy for " +  dependency.getRootNode().getTable() + " took: " + duration + "ms");
 
     Map<Integer, Set<DependencyNode>> levels = buildLevelsTopDown(dependency.getRootNode(), 1);
-
-//    TableDependency.dumpTree("c:/temp/wfm_tree.txt", dependency.getRootNode(), false);
 
     if (this.monitor != null)
     {
@@ -355,13 +347,6 @@ public class DeleteScriptGenerator
     Set<DependencyNode> processed = new HashSet<>(nodes.size());
     StringBuilder sql = new StringBuilder(nodes.size() * 200);
 
-    if (showFkNames)
-    {
-      for (DependencyNode node : nodes)
-      {
-        sql.append("-- ").append(node.getFkName()).append('\n');
-      }
-    }
     sql.append("DELETE FROM ");
     sql.append(table.getTableExpression(this.connection));
     sql.append(" \nWHERE");

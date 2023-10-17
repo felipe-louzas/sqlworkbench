@@ -364,10 +364,11 @@ public class TableDeleter
   public CharSequence generateScript(List<TableIdentifier> objectNames, CommitType commit, boolean useTruncate, boolean cascadedTruncate)
   {
     boolean commitTruncate = connection.getDbSettings().truncateNeedsCommit();
-    if (commit != CommitType.never && !commitTruncate)
+    if (useTruncate && !commitTruncate)
     {
-
+      commit = CommitType.never;
     }
+
     StringBuilder script = new StringBuilder(objectNames.size() * 30);
     int count = objectNames.size();
 

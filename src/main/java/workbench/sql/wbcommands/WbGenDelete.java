@@ -53,6 +53,9 @@ import workbench.util.WbFile;
  * A SqlCommand to create a script of DELETE statement to delete specific rows from a table respecting FK constraints.
  *
  * @author Thomas Kellerer
+ * 
+ * @see DeleteScriptGenerator
+ * @see TableDeleter
  */
 public class WbGenDelete
   extends SqlCommand
@@ -65,7 +68,6 @@ public class WbGenDelete
   public static final String ARG_DO_FORMAT = "formatSql";
   public static final String ARG_INCLUDE_COMMIT = "includeCommit";
   public static final String ARG_APPEND = "appendFile";
-  public static final String ARG_SHOW_FK_NAMES = "showConstraints";
   public static final String ARG_EXCLUDE_TABLES = "excludeTables";
   public static final String ARG_USE_TRUNCATE = "useTruncate";
   public static final String ARG_RESOLVE_SYNS = "resolveSynonyms";
@@ -84,7 +86,6 @@ public class WbGenDelete
     cmdLine.addArgument(ARG_COLUMN_VAL, ArgumentType.Repeatable);
     cmdLine.addArgument(ARG_INCLUDE_COMMIT, ArgumentType.BoolSwitch);
     cmdLine.addArgument(ARG_APPEND, ArgumentType.BoolSwitch);
-    cmdLine.addArgument(ARG_SHOW_FK_NAMES, ArgumentType.BoolSwitch);
     cmdLine.addArgument(ARG_RESOLVE_SYNS, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_EXCLUDE_TABLES, ArgumentType.TableArgument);
   }
@@ -143,8 +144,6 @@ public class WbGenDelete
       return result;
     }
 
-    generator = new DeleteScriptGenerator(this.currentConnection);
-
     String script = null;
     CommitType commit = CommitType.never;
     if (cmdLine.getBoolean(ARG_INCLUDE_COMMIT))
@@ -155,9 +154,9 @@ public class WbGenDelete
     if (tables.size() == 1 && CollectionUtil.isNonEmpty(values))
     {
       SourceTableArgument exclude = new SourceTableArgument(cmdLine.getValue(ARG_EXCLUDE_TABLES), currentConnection);
+      generator = new DeleteScriptGenerator(this.currentConnection);
       generator.setTable(tables.get(0));
       generator.setExcludedTables(exclude.getTables());
-      generator.setShowConstraintNames(cmdLine.getBoolean(ARG_SHOW_FK_NAMES, false));
       generator.setFormatSql(cmdLine.getBoolean(ARG_DO_FORMAT, false));
       script = generator.getScriptForValues(values, commit);
 
