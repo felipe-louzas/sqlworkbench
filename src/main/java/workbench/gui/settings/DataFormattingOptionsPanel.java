@@ -53,14 +53,6 @@ public class DataFormattingOptionsPanel
     super();
     initComponents();
     jPanel2.setBorder(new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(6, 0, 0, 0)));
-    WbSwingUtilities.calculatePreferredSize(decimalField, 5);
-    WbSwingUtilities.calculatePreferredSize(groupSeparator, 5);
-    WbSwingUtilities.calculatePreferredSize(maxDigitsField, 5);
-    WbSwingUtilities.calculatePreferredSize(intFormat, 25);
-    WbSwingUtilities.calculatePreferredSize(decimalFormat, 25);
-    WbSwingUtilities.calculatePreferredSize(timeFormat, 25);
-    WbSwingUtilities.calculatePreferredSize(timestampFormatTextField, 25);
-    WbSwingUtilities.calculatePreferredSize(dateFormatTextField, 25);
   }
 
   @Override
@@ -234,7 +226,9 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(0, 7, 0, 11);
     add(dateFormatTextField, gridBagConstraints);
 
@@ -249,7 +243,9 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(7, 7, 0, 11);
     add(timestampFormatTextField, gridBagConstraints);
 
@@ -264,7 +260,9 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 2;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(7, 7, 11, 11);
     add(timeFormat, gridBagConstraints);
 
@@ -278,7 +276,6 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
     add(oraDateFix, gridBagConstraints);
@@ -306,13 +303,17 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 9);
     jPanel2.add(decimalField, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 9);
     jPanel2.add(groupSeparator, gridBagConstraints);
 
@@ -353,7 +354,9 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 4;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 9);
     jPanel2.add(decimalFormat, gridBagConstraints);
 
@@ -361,13 +364,17 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 9);
     jPanel2.add(intFormat, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 9);
     jPanel2.add(maxDigitsField, gridBagConstraints);
 
@@ -377,8 +384,7 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 3;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     jPanel2.add(numberFormatHelp, gridBagConstraints);
 

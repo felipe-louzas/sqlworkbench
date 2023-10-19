@@ -164,22 +164,34 @@ public class WbDateFormatter
     {
       Pattern p = Pattern.compile("\\.S{1,6}");
       Matcher matcher = p.matcher(pattern);
-      // Make any millisecond/microsecond definition optional
+      ChronoField field = null;
+
+      // Make any millisecond/microsecond/nanosecond definition optional
       // so that inputs with a variable length of milli/microseconds can be parsed
       if (matcher.find())
       {
+        field = ChronoField.MICRO_OF_SECOND;
+      }
+      else
+      {
+        p = Pattern.compile("\\.n{1,9}");
+        matcher = p.matcher(pattern);
+        if (matcher.find())
+        {
+          field = ChronoField.NANO_OF_SECOND;
+        }
+      }
+
+      if (field != null)
+      {
         int start = matcher.start();
         int end = matcher.end();
-        // remove the .SSSSS from the pattern so that we can re-add it with a variable length using appendFraction
         String patternStart = pattern.substring(0, start);
         String patternEnd = pattern.substring(end);
         builder = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(patternStart);
         int len = end - start;
-        builder.appendFraction(ChronoField.MICRO_OF_SECOND, 0, len - 1, true);
-        if (patternEnd != null)
-        {
-          builder.appendPattern(patternEnd);
-        }
+        builder.appendFraction(field, 0, len - 1, true);
+        builder.appendPattern(patternEnd);
       }
     }
 

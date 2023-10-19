@@ -220,6 +220,10 @@ public class WbDateFormatterTest
     format.applyPattern("dd.MM.yyyy HH:mm:ss.SSSSSSSSS");
     ts = Timestamp.valueOf("2015-03-27 20:21:22.789");
     assertEquals("27.03.2015 20:21:22.789000000", format.formatTimestamp(ts));
+
+    LocalDateTime ldt = LocalDateTime.of(2015,1,1,20,21,22,987654321);
+    format.applyPattern("dd.MM.yyyy HH:mm:ss.nnnnnnnnn");
+    assertEquals("01.01.2015 20:21:22.987654321", format.formatTimestamp(ldt));
   }
 
   @Test
