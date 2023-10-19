@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>ISO-8859-15</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <poi.version>5.2.3</poi.version>
+    <poi.version>5.2.4</poi.version>
     <log4j.version>2.20.0</log4j.version>
     <surefire.plugin.version>2.22.2</surefire.plugin.version>
   </properties>
@@ -34,7 +34,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
         <configuration>
           <sourceFileExcludes>
             <exclude>**/BorderLessWindowsTabbedPaneUI.java</exclude>
@@ -120,9 +120,6 @@
 
     <profile>
       <id>test-default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <build>
         <plugins>
           <plugin>
@@ -313,7 +310,7 @@
     <dependency>
       <groupId>com.github.miachm.sods</groupId>
       <artifactId>SODS</artifactId>
-      <version>1.6.2</version>
+      <version>1.6.4</version>
       <scope>compile</scope>
     </dependency>
 

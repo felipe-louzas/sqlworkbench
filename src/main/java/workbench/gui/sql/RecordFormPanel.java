@@ -25,7 +25,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -49,7 +48,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableModel;
@@ -166,28 +164,21 @@ public class RecordFormPanel
     GridBagConstraints c = new GridBagConstraints();
     c.gridx = 0;
     c.gridy = 0;
-    c.anchor = GridBagConstraints.NORTHWEST;
+    c.anchor = GridBagConstraints.FIRST_LINE_START;
     c.weighty = 0.0;
 
     inputControls = new JComponent[fieldDef.getColumnCount()];
     blobHandlers = new BlobHandler[inputControls.length];
     Color requiredColor = GuiSettings.getRequiredFieldColor();
-    Insets labelInsets = new Insets(5, 0,5,0);
+    Insets labelInsets = new Insets(0,0,5,0);
     Insets fieldInsets = new Insets(0,10,5,5);
 
     Font displayFont = Settings.getInstance().getDataFont(true);
-    if (displayFont == null)
-    {
-      displayFont = UIManager.getFont("TextField.font");
-    }
     FontMetrics fm = getFontMetrics(displayFont);
-    int numChars = GuiSettings.getDefaultFormFieldWidth();
-    int charWidth = (fm != null ? fm.getMaxAdvance() : 12);
-    int charHeight = (fm != null ? fm.getHeight() + 5 : 16);
-    int fieldWidth = charWidth * numChars;
-    int areaHeight = charHeight * GuiSettings.getDefaultFormFieldLines();
 
-    Dimension areaSize = new Dimension(fieldWidth, areaHeight);
+    int charHeight = (fm != null ? fm.getHeight() + 5 : 16);
+    int numChars = GuiSettings.getDefaultFormFieldWidth();
+    int lines = GuiSettings.getDefaultFormFieldLines();
 
     boolean editable = isEditingAllow();
     boolean showRequired = GuiSettings.getHighlightRequiredFields() && requiredColor != null;
@@ -197,8 +188,8 @@ public class RecordFormPanel
       c.gridx = 0;
       c.fill = GridBagConstraints.NONE;
       c.weightx = 0.0;
+      c.weighty = 0.0;
       c.insets = labelInsets;
-      c.anchor = GridBagConstraints.NORTHEAST;
 
       ColumnIdentifier col = fieldDef.getColumn(i);
       JLabel label = new JLabel(col.getColumnName());
@@ -208,7 +199,6 @@ public class RecordFormPanel
       c.gridx = 1;
       c.weightx = 1.0;
       c.insets = fieldInsets;
-      c.anchor = GridBagConstraints.NORTHWEST;
 
       Component toAdd = null;
       if (SqlUtil.isMultiLineColumn(col))
@@ -250,6 +240,8 @@ public class RecordFormPanel
           area.setWrapStyleWord(flag);
         };
         area.setEditable(editable);
+        area.setRows(lines);
+        area.setColumns(numChars);
         TextComponentMouseListener contextMenu = new TextComponentMouseListener();
         contextMenu.addAction(new MultilineWrapAction(wrap, area, null));
 
@@ -259,8 +251,6 @@ public class RecordFormPanel
         inputControls[i] = area;
 
         JScrollPane scroll = new WbScrollPane(area, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scroll.setMinimumSize(areaSize);
-        scroll.setPreferredSize(areaSize);
         inputControls[i].setFont(displayFont);
         c.fill = GridBagConstraints.BOTH;
         c.weighty = 1.0;
@@ -285,11 +275,6 @@ public class RecordFormPanel
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weighty = 0.0;
         toAdd = inputControls[i];
-      }
-
-      if (i == fieldDef.getColumnCount() - 1)
-      {
-        c.weighty = 1.0;
       }
       formPanel.add(toAdd, c);
       if (showRequired && !col.isNullable())
