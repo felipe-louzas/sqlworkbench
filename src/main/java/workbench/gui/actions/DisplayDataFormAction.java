@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
@@ -32,12 +33,22 @@ import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
+
+import workbench.db.ConnectionProfile;
+import workbench.db.TableIdentifier;
+import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbTable;
 import workbench.gui.sql.RecordFormPanel;
+
+import workbench.util.Alias;
+import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 
 /**
  * Display a modal dialog showing a single row in a form, rather then a table.
@@ -79,7 +90,13 @@ public class DisplayDataFormAction
 
     Frame window = (Frame)SwingUtilities.getWindowAncestor(client);
 
-    ValidatingDialog dialog = new ValidatingDialog(window, ResourceMgr.getString("TxtWindowTitleForm"), panel);
+    String name = client.getDataStore().getResultName();
+    if (StringUtil.isNotBlank(name))
+    {
+      name = "(" + name + ")";
+    }
+    String windowTitle = ResourceMgr.getFormattedString("TxtWindowTitleForm", StringUtil.coalesce(name, ""));
+    ValidatingDialog dialog = new ValidatingDialog(window, windowTitle, panel);
     Dimension d = dialog.getPreferredSize();
     Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -105,27 +122,66 @@ public class DisplayDataFormAction
       d.width += scrollwidth + 2;
     }
 
-    if (d.width > maxSize.width)
+    boolean sizeRestored = false;
+    if (GuiSettings.getStoreFormRecordDialogSize())
     {
-      doLimit = true;
+      sizeRestored = Settings.getInstance().restoreWindowSize(dialog, getSizeKey());
     }
 
-    if (doLimit)
+    if (!sizeRestored)
     {
-      dialog.setPreferredSize(maxSize);
-    }
+      if (d.width > maxSize.width)
+      {
+        doLimit = true;
+      }
 
-    dialog.pack();
+      if (doLimit)
+      {
+        dialog.setPreferredSize(maxSize);
+      }
+      dialog.pack();
+    }
 
     try
     {
       WbSwingUtilities.center(dialog, window);
       dialog.setVisible(true);
+      if (GuiSettings.getStoreFormRecordDialogSize())
+      {
+        Settings.getInstance().storeWindowSize(dialog, getSizeKey());
+      }
     }
     finally
     {
       dialog.dispose();
     }
+  }
+
+  private String getSizeKey()
+  {
+    String key = "workbench.dataform.dialog";
+    if (client != null && client.getDataStore() != null)
+    {
+      WbConnection conn = client.getDataStore().getOriginalConnection();
+      if (conn != null)
+      {
+        key += "." + ConnectionProfile.makeFilename(conn.getUrl(), null);
+      }
+      TableIdentifier tbl = client.getDataStore().getUpdateTable();
+      if (tbl != null)
+      {
+        key += "." + tbl.getFullyQualifiedName(conn);
+      }
+      else
+      {
+        List<Alias> tables = SqlUtil.getTables(client.getDataStore().getGeneratingSql(), false, conn);
+        if (tables.size() > 0)
+        {
+          key += "." + tables.get(0).getObjectName();
+        }
+      }
+    }
+    return key;
   }
 
   public void setTable(WbTable table)

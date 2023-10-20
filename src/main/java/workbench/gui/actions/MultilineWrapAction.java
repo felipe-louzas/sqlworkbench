@@ -34,7 +34,7 @@ import workbench.gui.renderer.WrapEnabledEditor;
 public class MultilineWrapAction
   extends CheckBoxAction
 {
-  private WrapEnabledEditor client;
+  private final WrapEnabledEditor client;
 
   public MultilineWrapAction(WrapEnabledEditor wrappable, JTextComponent editor, String property)
   {

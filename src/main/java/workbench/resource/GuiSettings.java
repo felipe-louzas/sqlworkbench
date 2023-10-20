@@ -675,7 +675,7 @@ public class GuiSettings
 
   public static int getDefaultFormFieldWidth()
   {
-    return Settings.getInstance().getIntProperty("workbench.gui.form.fieldwidth", 30);
+    return Settings.getInstance().getIntProperty("workbench.gui.form.fieldwidth", 40);
   }
 
   public static void setDefaultFormFieldWidth(int chars)
@@ -691,6 +691,11 @@ public class GuiSettings
   public static void setDefaultFormFieldLines(int lines)
   {
     Settings.getInstance().setProperty("workbench.gui.form.fieldlines", lines);
+  }
+
+  public static boolean getStoreFormRecordDialogSize()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.form.store.dialog.size", true);
   }
 
   public static boolean getConfirmTabClose()

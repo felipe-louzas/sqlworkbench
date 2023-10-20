@@ -70,10 +70,12 @@ import workbench.gui.actions.WbAction;
 import workbench.gui.components.BlobHandler;
 import workbench.gui.components.DataStoreTableModel;
 import workbench.gui.components.TextComponentMouseListener;
+import workbench.gui.components.TextContainerWrapper;
 import workbench.gui.components.WbDocument;
 import workbench.gui.components.WbScrollPane;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbTraversalPolicy;
+import workbench.gui.editor.SearchAndReplace;
 import workbench.gui.renderer.ButtonDisplayPanel;
 import workbench.gui.renderer.DateColumnRenderer;
 import workbench.gui.renderer.NumberColumnRenderer;
@@ -203,7 +205,7 @@ public class RecordFormPanel
       Component toAdd = null;
       if (SqlUtil.isMultiLineColumn(col))
       {
-        final JTextArea area = new JTextArea(new WbDocument())
+        final TextContainerWrapper area = new TextContainerWrapper(new WbDocument())
         {
           @Override
           protected Document createDefaultModel()
@@ -243,7 +245,14 @@ public class RecordFormPanel
         area.setRows(lines);
         area.setColumns(numChars);
         TextComponentMouseListener contextMenu = new TextComponentMouseListener();
+        SearchAndReplace replacer = new SearchAndReplace(this, area);
+        contextMenu.addAction(replacer.getFindAction());
+        contextMenu.addAction(replacer.getFindNextAction());
+        contextMenu.addAction(replacer.getReplaceAction());
         contextMenu.addAction(new MultilineWrapAction(wrap, area, null));
+        replacer.getFindAction().addToInputMap(area);
+        replacer.getFindNextAction().addToInputMap(area);
+        replacer.getReplaceAction().addToInputMap(area);
 
         area.addMouseListener(contextMenu);
         area.setLineWrap(false);

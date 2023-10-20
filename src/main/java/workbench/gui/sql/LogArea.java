@@ -27,27 +27,26 @@ import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
 import workbench.console.TextPrinter;
 import workbench.interfaces.FontChangedListener;
 import workbench.interfaces.ResultLogger;
-import workbench.interfaces.TextContainer;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
 import workbench.gui.actions.ClearMessagesAction;
 import workbench.gui.components.TextComponentMouseListener;
+import workbench.gui.components.TextContainerWrapper;
 import workbench.gui.editor.SearchAndReplace;
 
 /**
  * @author Thomas Kellerer
  */
 public class LogArea
-  extends JTextArea
-  implements FontChangedListener, PropertyChangeListener, TextContainer, ResultLogger, TextPrinter
+  extends TextContainerWrapper
+  implements FontChangedListener, PropertyChangeListener, ResultLogger, TextPrinter
 {
   private final TextComponentMouseListener contextMenu;
   private int maxLines = Integer.MAX_VALUE;
@@ -131,24 +130,6 @@ public class LogArea
     }
   }
 
-  @Override
-  public void setSelectedText(String text)
-  {
-    super.replaceSelection(text);
-  }
-
-  @Override
-  public boolean isTextSelected()
-  {
-    return getSelectionEnd() > getSelectionStart();
-  }
-
-  @Override
-  public String getWordAtCursor(String wordChars)
-  {
-    return null;
-  }
-
   public void dispose()
   {
     setText("");
@@ -213,49 +194,6 @@ public class LogArea
       deleteLine(0);
     }
     append(line + "\n");
-  }
-
-  @Override
-  public int getStartInLine(int offset)
-  {
-    try
-    {
-      int line = getLineOfOffset(offset);
-      int start = getLineStartOffset(line);
-      return offset - start;
-    }
-    catch (BadLocationException ex)
-    {
-      return -1;
-    }
-  }
-
-  @Override
-  public String getLineText(int line)
-  {
-    try
-    {
-      int start = getLineStartOffset(line);
-      int end = getLineEndOffset(line);
-      return getText(end, start - end);
-    }
-    catch (BadLocationException ble)
-    {
-      return null;
-    }
-  }
-
-  @Override
-  public int getLineOfOffset(int offset)
-  {
-    try
-    {
-      return super.getLineOfOffset(offset);
-    }
-    catch (BadLocationException ex)
-    {
-      return -1;
-    }
   }
 
 }
