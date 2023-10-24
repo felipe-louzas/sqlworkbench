@@ -56,7 +56,7 @@ public class EncodingDropDown
   public EncodingDropDown(final String encoding, boolean showLabel)
   {
     super();
-    String[] charsets = EncodingUtil.getEncodings();
+    String[] charsets = EncodingUtil.getEncodings().toArray(String[]::new);
 
     DefaultComboBoxModel model = new DefaultComboBoxModel(charsets);
     if (encoding != null)

@@ -21,9 +21,12 @@
  */
 package workbench.util;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+
 import workbench.WbTestCase;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -41,14 +44,15 @@ public class MessageBufferTest
   @Test
   public void testMaxSize()
   {
-    int max = 5;
-    MessageBuffer b = new MessageBuffer(5);
-    for (int i = 0; i < max * 2; i++)
+    int max = 10;
+    MessageBuffer b = new MessageBuffer(30);
+    for (int i = 0; i < max; i++)
     {
-      b.append("Line" + i + "\n");
+      String line = "Line" + i + "\n";
+      b.append(line);
     }
     String content = b.getBuffer().toString();
-    String expected = "(...)\nLine5\nLine6\nLine7\nLine8\nLine9\n";
+    String expected = "(...)\nLine6\nLine7\nLine8\nLine9\n";
     assertEquals(expected, content);
   }
 

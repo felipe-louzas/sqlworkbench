@@ -130,11 +130,6 @@ public class SqlCommand
     this.useMessageLoggerForResults = flag;
   }
 
-  protected StatementRunnerResult createResult()
-  {
-    return createResult(null);
-  }
-
   protected StatementRunnerResult createResult(String sql)
   {
     StatementRunnerResult result;
@@ -142,10 +137,13 @@ public class SqlCommand
     {
       result = new StatementRunnerResult(sql, messageLogger);
     }
-    result = new StatementRunnerResult(sql);
-    if (bufferMessages)
+    else
     {
-      result.enableMessageBuffering();
+      result = new StatementRunnerResult(sql);
+      if (bufferMessages)
+      {
+        result.enableMessageBuffering();
+      }
     }
     return result;
   }
@@ -1142,7 +1140,7 @@ public class SqlCommand
   {
     return evaluateFileArgument(fileName, false);
   }
-  
+
   public WbFile evaluateFileArgument(String fileName, boolean replaceCommonPlaceholders)
   {
     if (StringUtil.isEmpty(fileName)) return null;

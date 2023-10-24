@@ -365,7 +365,7 @@ public class WbExport
     {
       result.addMessageByKey("MsgAvailableEncodings");
       result.addMessageNewLine();
-      String[] encodings = EncodingUtil.getEncodings();
+      List<String> encodings = EncodingUtil.getEncodings();
       for (String encoding : encodings)
       {
         result.addMessage(encoding);

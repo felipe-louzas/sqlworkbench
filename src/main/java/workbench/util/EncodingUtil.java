@@ -35,7 +35,8 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.regex.Matcher;
@@ -52,7 +53,7 @@ import workbench.resource.Settings;
  */
 public class EncodingUtil
 {
-  private static String[] charsets;
+  private static List<String> charsets;
 
   /**
    *  Create a BufferedReader for the given file and encoding
@@ -121,7 +122,10 @@ public class EncodingUtil
   }
 
   /**
-   * Allow some common other names for encodings (e.g. UTF for UTF-8)
+   * Allow some common other names for encodings.
+   *
+   * This is used to make providing encoding names easier
+   * for the end user, e.g. UTF can be used instead of UTF-8.
    */
   public static String cleanupEncoding(String input)
   {
@@ -148,9 +152,14 @@ public class EncodingUtil
   }
 
   /**
-   * Return all available encodings.
+   * Return available enocdings.
+   *
+   * If a custom list of encodings is configured, this is returned,
+   * otherwise all available system encodings are returned.
+   *
+   * @see Settings#getEncodingsToUse()
    */
-  public synchronized static String[] getEncodings()
+  public synchronized static List<String> getEncodings()
   {
     if (charsets == null)
     {
@@ -161,17 +170,11 @@ public class EncodingUtil
       }
       else
       {
-        charsets = new String[toUse.size()];
-        int i=0;
-        for (String encoding : toUse)
-        {
-          charsets[i] = encoding;
-          i++;
-        }
+        charsets = toUse;
       }
-      Arrays.sort(charsets, new NaturalOrderComparator(true));
+      charsets.sort(new NaturalOrderComparator(true));
     }
-    return charsets;
+    return Collections.unmodifiableList(charsets);
   }
 
   public static boolean isMultibyte(String encoding)
@@ -187,17 +190,11 @@ public class EncodingUtil
     }
   }
 
-  private static String[] getSystemCharsets()
+  private static List<String> getSystemCharsets()
   {
     long start = System.currentTimeMillis();
     SortedMap<String, Charset> sets = java.nio.charset.Charset.availableCharsets();
-    String[] result = new String[sets.size()];
-    int i = 0;
-    for (String name : sets.keySet())
-    {
-      result[i] = name;
-      i++;
-    }
+    List<String> result = new ArrayList<>(sets.keySet());
     long duration = System.currentTimeMillis() - start;
     LogMgr.logDebug(new CallerInfo(){}, "Retrieving encodings took: " + duration + "ms");
     return result;

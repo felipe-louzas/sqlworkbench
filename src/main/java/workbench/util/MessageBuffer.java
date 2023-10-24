@@ -31,8 +31,9 @@ import workbench.resource.Settings;
 
 /**
  * A class to store messages efficiently.
+ *
  * The messages are internally stored in a LinkedList, but only up to
- * a specified maximum number of entries (not total size in bytes)
+ * a specified maximum total size (in characters) of all messages.
  *
  * If the maximum is reached {@link #getBuffer()} will add "(...)" at the beginning
  * of the generated result to indicate that messages have been cut off.
@@ -47,7 +48,7 @@ public class MessageBuffer
   private final Deque<CharSequence> messages = new ArrayDeque<>();
   private int length = 0;
   private final String newLine = "\n";
-  private final int maxSize;
+  private final int maxLength;
   private boolean trimmed = false;
 
   /**
@@ -57,17 +58,17 @@ public class MessageBuffer
    */
   public MessageBuffer()
   {
-    this(Settings.getInstance().getIntProperty("workbench.messagebuffer.maxentries", 2500));
+    this(Settings.getInstance().getIntProperty("workbench.messagebuffer.maxsize", 1024 * 1024 * 10));
   }
 
   /**
-   * Create a new MessageBuffer holding a maximum number of <tt>maxEntries</tt>
-   * Entries in its internal list
-   * @param maxEntries the max. number of entries to hold in the internal list
+   * Create a new MessageBuffer limiting the total size of all messages to <tt>maxSizeInBytes</tt>.
+
+   * @param maxSizeInBytes the max. size in bytes of all entries to hold in the internal list
    */
-  public MessageBuffer(int maxEntries)
+  public MessageBuffer(int maxSizeInBytes)
   {
-    maxSize = maxEntries;
+    maxLength = maxSizeInBytes;
   }
 
   public synchronized void clear()
@@ -85,13 +86,25 @@ public class MessageBuffer
   public synchronized int appendTo(ResultLogger log)
   {
     int size = 0;
-    while (messages.size() > 0)
+
+    // Write everything as a single string if it's small enough
+    // That looks more "snappy" for the user if the message contains many lines, but isn't that large
+    if (length <= Settings.getInstance().getIntProperty("workbench.resultlog.single.string", 1024 * 1024))
     {
-      CharSequence s = messages.removeFirst();
-      size += s.length();
-      log.appendToLog(s.toString());
+      CharSequence msg = getMessage();
+      log.appendToLog(msg);
+      size = msg.length();
     }
-    length = 0;
+    else
+    {
+      while (messages.size() > 0)
+      {
+        CharSequence s = messages.removeFirst();
+        size += s.length();
+        log.appendToLog(s.toString());
+      }
+    }
+    clear();
     return size;
   }
 
@@ -135,10 +148,10 @@ public class MessageBuffer
 
   private synchronized void trimSize()
   {
-    if (maxSize > 0 && messages.size() >= maxSize)
+    if (maxLength > 0 && length >= maxLength)
     {
       trimmed = true;
-      while (messages.size() >= maxSize)
+      while (length >= maxLength)
       {
         CharSequence s = messages.removeFirst();
         if (s != null) this.length -= s.length();
@@ -148,7 +161,7 @@ public class MessageBuffer
 
   /**
    * Returns the total length in characters of all messages
-   * that are currently kept in this MessageBuffer
+   * that are currently kept in this MessageBuffer.
    */
   public synchronized int getLength()
   {
@@ -160,24 +173,19 @@ public class MessageBuffer
     if (buff == null) return;
     int count = buff.messages.size();
     if (count == 0) return;
-    this.length += buff.length;
-    while (this.messages.size() + count > maxSize)
-    {
-      CharSequence s = messages.removeFirst();
-      if (s != null) this.length -= s.length();
-    }
+
     for (CharSequence s : buff.messages)
     {
-      this.messages.add(s);
+      append(s);
     }
   }
 
   public synchronized void append(CharSequence s)
   {
     if (StringUtil.isEmpty(s)) return;
-    trimSize();
     this.messages.add(s);
     length += s.length();
+    trimSize();
   }
 
   public synchronized void appendMessageKey(String key)
@@ -193,7 +201,7 @@ public class MessageBuffer
   @Override
   public String toString()
   {
-    return "[" + getLength() + " messages]";
+    return "[" + messages.size() + " messages]";
   }
 
 }

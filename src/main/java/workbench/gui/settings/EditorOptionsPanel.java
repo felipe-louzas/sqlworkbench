@@ -133,7 +133,7 @@ public class EditorOptionsPanel
     }
     WbSwingUtilities.makeEqualWidth(externalLineEnding, internalLineEnding);
 
-    String[] charsets = EncodingUtil.getEncodings();
+    String[] charsets = EncodingUtil.getEncodings().toArray(String[]::new);
 
     DefaultComboBoxModel model = new DefaultComboBoxModel(charsets);
     encodings.setModel(model);

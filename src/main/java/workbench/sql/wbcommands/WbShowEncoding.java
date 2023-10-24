@@ -21,6 +21,7 @@
 package workbench.sql.wbcommands;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
@@ -83,7 +84,7 @@ public class WbShowEncoding
     {
       result.addMessageByKey("MsgAvailableEncodings");
       result.addMessageNewLine();
-      String[] encodings = EncodingUtil.getEncodings();
+      List<String> encodings = EncodingUtil.getEncodings();
       for (String encoding : encodings)
       {
         result.addMessage(encoding);
