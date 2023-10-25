@@ -21,6 +21,8 @@
  */
 package workbench.gui;
 
+import workbench.resource.ResourceMgr;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -34,6 +36,15 @@ public class WindowTitleBuilderTest
 
   public WindowTitleBuilderTest()
   {
+  }
+
+  @Test
+  public void testTemplate()
+  {
+    WindowTitleBuilder builder = new WindowTitleBuilder();
+    builder.setTitleTemplate("{conn} - ({wksp})");
+    String title = builder.getWindowTitle(null, null, null);
+    assertEquals(ResourceMgr.getString("TxtNotConnected"), title);
   }
 
   @Test

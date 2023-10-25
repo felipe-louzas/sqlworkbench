@@ -190,6 +190,8 @@ public class WindowTitleBuilder
       title = title.replace(DELIM + param, "");
       title = title.replace(param + DELIM, "");
       title = title.replaceFirst("\\s{0,1}" + StringUtil.quoteRegexMeta(param), "");
+      title = title.replace(DELIM + "()", "");
+      title = title.replace("()" + DELIM, "");
       return title;
     }
     return title.replace(param, value);

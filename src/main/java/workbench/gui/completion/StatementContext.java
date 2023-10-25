@@ -116,6 +116,10 @@ public class StatementContext
     {
       verbAnalyzer = new InsertAnalyzer(conn, sql, pos);
     }
+    else if ("LOCK".equalsIgnoreCase(verb) || "LOCK TABLE".equalsIgnoreCase(verb))
+    {
+      verbAnalyzer = new LockStatementAnalyzer(conn, sql, pos);
+    }
     else if ("CREATE".equalsIgnoreCase(verb) || "CREATE OR REPLACE".equalsIgnoreCase(verb))
     {
       verbAnalyzer = new CreateAnalyzer(conn, sql, pos);

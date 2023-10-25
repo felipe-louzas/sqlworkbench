@@ -49,8 +49,7 @@ public class InsertColumnMatcher
 {
   private List<InsertColumnInfo> columns;
   private boolean isInsert;
-  private String noValue = "<" + ResourceMgr.getString("TxtNoValue") + ">";
-
+  private final String noValue = "<" + ResourceMgr.getString("TxtNoValue") + ">";
 
   public InsertColumnMatcher(WbConnection conn, String sql)
   {

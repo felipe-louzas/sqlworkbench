@@ -571,7 +571,7 @@
         <replacetoken>StandardLexer</replacetoken>
         <replacevalue>MySQLLexer</replacevalue>
       </replacefilter>
-      <replacefilter token="XXXX_DBMS_XXXX|" value="(LOGFILE{wsp}GROUP)|"/>
+      <replacefilter token="XXXX_DBMS_XXXX|" value="(LOGFILE{wsp}GROUP)|(LOCK{wsp}TABLES)|(UNLOCK{wsp}INSTANCE)|(LOCK{wsp}TABLES)|(UNLOCK{wsp}INSTANCE)"/>
       <replacefilter token="XXXX_DBMS2_XXXX|"/>
       <replacefilter token="(BEGIN{wsp}ATOMIC)|"/>
       <replacefilter token="(SIMILAR{wsp}TO)|"/>

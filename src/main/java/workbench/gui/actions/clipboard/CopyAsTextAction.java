@@ -306,6 +306,7 @@ public class CopyAsTextAction
       printer.setNullString(dialog.getBasicExportOptions().getNullString());
       printer.setFormatColumns(true);
       printer.setPrintRowCount(false);
+      printer.setPrintHeader(dialog.getFormattedTextOptions().includeHeaders());
       printer.setUseMarkdownFormatting(dialog.getFormattedTextOptions().useGitHubMarkdown());
       printer.setShowResultName(GuiSettings.copyToClipboardFormattedTextWithResultName());
       List<ColumnIdentifier> columnsToCopy = dialog.getColumnsToExport();

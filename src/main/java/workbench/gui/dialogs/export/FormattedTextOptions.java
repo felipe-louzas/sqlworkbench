@@ -28,22 +28,4 @@ public interface FormattedTextOptions
 {
   boolean useGitHubMarkdown();
   boolean includeHeaders();
-
-  public static FormattedTextOptions createOptions(final boolean useMarkdown, final boolean includeHeader)
-  {
-    return new FormattedTextOptions()
-    {
-      @Override
-      public boolean useGitHubMarkdown()
-      {
-        return useMarkdown;
-      }
-
-      @Override
-      public boolean includeHeaders()
-      {
-        return includeHeader;
-      }
-    };
-  }
 }
