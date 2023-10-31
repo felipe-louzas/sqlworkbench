@@ -43,7 +43,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
@@ -104,10 +103,10 @@ public class LnFDefinitionPanel
       }
     });
 
-    Font f = UIManager.getDefaults().getFont("Label.font");
+    Font f = infoText.getFont();
     if (f != null)
     {
-      f = f.deriveFont(Font.BOLD, (float)(f.getSize() * 1.2));
+      f = f.deriveFont(Font.BOLD);
       infoText.setFont(f);
     }
     String button = changeLnfButton.getText();
@@ -120,6 +119,9 @@ public class LnFDefinitionPanel
     Font bigger = font.deriveFont((float)(font.getSize() * 1.10));
     currentLabel.setFont(bigger);
     classpathEditor.addActionListener((ActionEvent e) -> { selectClass(); });
+    Dimension p1 = changeLnfButton.getPreferredSize();
+    Dimension p2 = new Dimension((int)(p1.width * 1.25), (int)(p1.height * 1.25));
+    changeLnfButton.setPreferredSize(p2);
   }
 
   public void setStatusMessage(String message)
@@ -317,7 +319,6 @@ public class LnFDefinitionPanel
     add(infoText, gridBagConstraints);
 
     changeLnfButton.setText(ResourceMgr.getString("LblActivateLnf")); // NOI18N
-    changeLnfButton.setPreferredSize(new Dimension(140, 30));
     ((WbButton)changeLnfButton).setResourceKey("LblSwitchLnF");
     changeLnfButton.addActionListener(this);
     gridBagConstraints = new GridBagConstraints();

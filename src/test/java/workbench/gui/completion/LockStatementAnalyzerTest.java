@@ -34,14 +34,14 @@ public class LockStatementAnalyzerTest
   @Test
   public void testAnalyzer()
   {
-      String sql = "lock  in exclusive mode;";
-      LockStatementAnalyzer analyzer = new LockStatementAnalyzer(null, sql, 5);
-      analyzer.checkContext();
-      assertEquals(BaseAnalyzer.CONTEXT_TABLE_LIST, analyzer.getContext());
+    String sql = "lock  in exclusive mode;";
+    LockStatementAnalyzer analyzer = new LockStatementAnalyzer(null, sql, 5);
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_TABLE_LIST, analyzer.getContext());
 
-      analyzer = new LockStatementAnalyzer(null, sql, sql.indexOf("in") + 2);
-      analyzer.checkContext();
-       assertEquals(BaseAnalyzer.CONTEXT_KW_LIST, analyzer.getContext());
+    analyzer = new LockStatementAnalyzer(null, sql, sql.indexOf("in") + 2);
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_KW_LIST, analyzer.getContext());
   }
 
 }
