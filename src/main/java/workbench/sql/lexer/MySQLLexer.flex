@@ -151,7 +151,7 @@ import workbench.util.CharSequenceReader;
 wsp = [ \r\n\t\f]+
 
 keyword=(
-(LOGFILE{wsp}GROUP)|
+(LOGFILE{wsp}GROUP)|(LOCK{wsp}TABLES)|(UNLOCK{wsp}INSTANCE)|(LOCK{wsp}TABLES)|(UNLOCK{wsp}INSTANCE)
 
 (ALTER{wsp}SESSION)|
 (PRIMARY{wsp}KEY)|

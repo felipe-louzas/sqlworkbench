@@ -317,8 +317,6 @@ public class LnFDefinitionPanel
     add(infoText, gridBagConstraints);
 
     changeLnfButton.setText(ResourceMgr.getString("LblActivateLnf")); // NOI18N
-    changeLnfButton.setMaximumSize(new Dimension(200, 50));
-    changeLnfButton.setMinimumSize(new Dimension(140, 30));
     changeLnfButton.setPreferredSize(new Dimension(140, 30));
     ((WbButton)changeLnfButton).setResourceKey("LblSwitchLnF");
     changeLnfButton.addActionListener(this);
