@@ -273,7 +273,7 @@ public class WbCopy
       return result;
     }
 
-    if (tablesToExport.size() > 1 || sourceTables.wasWildcardArgument())
+    if (tablesToExport.size() > 1 || sourceTables.wasWildcardArgument() || cmdLine.isArgPresent(PARAM_SOURCESCHEMA))
     {
       String targetTable = cmdLine.getValue(PARAM_TARGETTABLE);
       if (StringUtil.isNotBlank(targetTable))
