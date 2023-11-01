@@ -276,7 +276,7 @@ public class WbCopy
     if (tablesToExport.size() > 1 || sourceTables.wasWildcardArgument() || cmdLine.isArgPresent(PARAM_SOURCESCHEMA))
     {
       String targetTable = cmdLine.getValue(PARAM_TARGETTABLE);
-      if (StringUtil.isNotBlank(targetTable))
+      if (tablesToExport.size() > 1 && StringUtil.isNotBlank(targetTable))
       {
         result.addErrorMessageByKey("ErrCopyMultiSrcNoTarget");
         return result;
