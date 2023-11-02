@@ -59,6 +59,8 @@ public class PostgresSequenceAdjusterTest
 
     TestUtil.executeScript(con,
       "CREATE table table_one (id serial not null);\n" +
+      "CREATE schema \"other schema\";" +
+      "create table \"other schema\".\"table two\" (id serial not null);\n" +
       "COMMIT; \n");
   }
 
@@ -78,6 +80,7 @@ public class PostgresSequenceAdjusterTest
 
     TestUtil.executeScript(con,
       "insert into table_one (id) values (1), (2), (7), (41);\n" +
+      "insert into \"other schema\".\"table two\" (id) values (1), (2), (7), (41);\n" +
       "commit;" );
 
     DbObjectFinder finder = new DbObjectFinder(con);
@@ -86,6 +89,11 @@ public class PostgresSequenceAdjusterTest
     PostgresSequenceAdjuster sync = new PostgresSequenceAdjuster();
     sync.adjustTableSequences(con, tbl, true);
     Number value = (Number)TestUtil.getSingleQueryValue(con, "select nextval(pg_get_serial_sequence('sync_test.table_one', 'id'))");
+    assertEquals(42, value.intValue());
+
+    TableIdentifier other = finder.findTable(new TableIdentifier("\"other schema\"", "\"table two\""));
+    sync.adjustTableSequences(con, other, true);
+    value = (Number)TestUtil.getSingleQueryValue(con, "select nextval(pg_get_serial_sequence('\"other schema\".\"table two\"', 'id'))");
     assertEquals(42, value.intValue());
   }
 

@@ -31,11 +31,12 @@ import java.util.Map;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.SequenceAdjuster;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.db.JdbcUtils;
+import workbench.util.SqlUtil;
 
 /**
  * A class to sync the sequences related to the columns of a table with the current values.
@@ -75,6 +76,8 @@ public class PostgresSequenceAdjuster
     Statement stmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
+    column = SqlUtil.quoteObjectname(column);
+
     String sql =
       "select setval('" + sequence + "', (select max(" + column + ") from " + table.getTableExpression(dbConnection) + "))";
 
@@ -112,22 +115,21 @@ public class PostgresSequenceAdjuster
       "select * \n" +
       "from ( \n" +
       "  select column_name,  \n" +
-      "         pg_catalog.pg_get_serial_sequence(?, column_name) as sequence_name \n" +
+      "         pg_catalog.pg_get_serial_sequence(format('%I.%I',table_schema,table_name), column_name) as sequence_name \n" +
       "  from information_schema.columns \n" +
       "  where table_name = ? \n" +
       "  and table_schema = ? \n" +
       ") t \n" +
       "where sequence_name is not null";
 
-    LogMgr.logMetadataSql(new CallerInfo(){}, "column sequences", sql, table.getRawTableName(), table.getRawTableName(), table.getRawSchema());
+    LogMgr.logMetadataSql(new CallerInfo(){}, "column sequences", sql, table.getRawTableName(), table.getRawSchema());
 
     Map<String, String> result = new HashMap<>();
     try
     {
       pstmt = dbConnection.getSqlConnection().prepareStatement(sql);
       pstmt.setString(1, table.getRawTableName());
-      pstmt.setString(2, table.getRawTableName());
-      pstmt.setString(3, table.getRawSchema());
+      pstmt.setString(2, table.getRawSchema());
 
       rs = pstmt.executeQuery();
       while (rs.next())
