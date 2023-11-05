@@ -29,12 +29,10 @@ import java.util.List;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
 import workbench.util.CollectionUtil;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.StringUtil;
 
 /**
@@ -54,6 +52,14 @@ public class SqlServerUtil
     String url = conn.getUrl();
     if (url == null) return false;
     return url.startsWith("jdbc:sqlserver:");
+  }
+
+  /**
+   * Returns true if the connection is to a SQL Server 2022 or later.
+   */
+  public static boolean isSqlServer2022(WbConnection conn)
+  {
+    return JdbcUtils.hasMinimumServerVersion(conn, "16.0");
   }
 
   /**
@@ -121,6 +127,14 @@ public class SqlServerUtil
   }
 
   /**
+   * Returns true if the connection is to a SQL Server 2000 or later.
+   */
+  public static boolean isSqlServer2000(WbConnection conn)
+  {
+    return JdbcUtils.hasMinimumServerVersion(conn, "8.0");
+  }
+
+  /**
    * Returns true if the current connection is to a SQL Server version that supports partitioning.
    */
   public static boolean supportsPartitioning(WbConnection conn)
@@ -170,14 +184,6 @@ public class SqlServerUtil
     }
     conn.setSessionProperty(IS_ENTERPRISE_PROP, Boolean.toString(isEnterprise));
     return isEnterprise;
-  }
-
-  /**
-   * Returns true if the connection is to a SQL Server 2000 or later.
-   */
-  public static boolean isSqlServer2000(WbConnection conn)
-  {
-    return JdbcUtils.hasMinimumServerVersion(conn, "8.0");
   }
 
   public static void setLockTimeout(WbConnection conn, int millis)
