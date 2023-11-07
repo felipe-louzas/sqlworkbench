@@ -314,12 +314,13 @@ public class OraclePackageParser
     int bracketCount = 0;
     while (t != null)
     {
-      if (t.getText().equals("("))
+      String text = t.getText();
+      if (text.equals("("))
       {
         bracketCount ++;
       }
 
-      if (t.getText().equals(")"))
+      if (text.equals(")"))
       {
         if (bracketCount == 0)
         {
@@ -330,12 +331,12 @@ public class OraclePackageParser
 
       if (nextIsName)
       {
-        params.add(t.getText());
+        params.add(text);
         nextIsName = false;
       }
       else
       {
-        nextIsName = t.getText().equals(",");
+        nextIsName = text.equals(",") && bracketCount == 0;
       }
       t = lexer.getNextToken(false, false);
     }

@@ -132,6 +132,38 @@ public class OraclePackageParserTest
   }
 
   @Test
+  public void testFindProcWithFunctionDefault()
+    throws Exception
+  {
+    String source =
+      "create or replace package my_package\n" +
+      "as\n" +
+      "  procedure some_procedure(p_name varchar default 'IMP_EXP', p_suffix varchar default to_char(sysdate, 'yyyy_mm_dd_hh24mi'), p_flag boolean default TRUE);\n" +
+      "end my_package;\n" +
+      "/\n" +
+      "\n" +
+      "create or replace package body my_package\n" +
+      "as\n" +
+      "  procedure some_procedure(p_name varchar default 'IMP_EXP',\n" +
+      "                           p_suffix varchar default to_char(sysdate, 'yyyy_mm_dd_hh24mi'),\n" +
+      "                           p_flag boolean default TRUE);\n" +
+      "  as\n" +
+      "    l_full_name      VARCHAR(500);\n" +
+      "  begin\n" +
+      "    l_full_name := 'EXPORT_'||p_name||'_'||p_suffix;\n" +
+      "  end some_procedure;\n" +
+      "\n" +
+      "\n" +
+      "end my_package;\n" +
+      "/\n";
+
+    ProcedureDefinition proc = new ProcedureDefinition("some_procedure", RoutineType.procedure);
+    CharSequence proSource = OraclePackageParser.getProcedureSource(source, proc, List.of("P_NAME", "P_SUFFIX", "P_FLAG"));
+    assertNotNull(proSource);
+    assertTrue(proSource.toString().trim().endsWith("some_procedure;"));
+  }
+
+  @Test
   public void testFindProc()
   {
     String script = decl + "\n/\n/" + body + "\n/\n";
