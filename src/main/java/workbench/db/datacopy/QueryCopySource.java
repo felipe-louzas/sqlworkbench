@@ -32,6 +32,7 @@ import workbench.interfaces.JobErrorHandler;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.db.JdbcUtils;
 import workbench.db.ResultBufferingController;
 import workbench.db.WbConnection;
 import workbench.db.importer.DataReceiver;
@@ -45,9 +46,6 @@ import workbench.storage.reader.RowDataReader;
 import workbench.storage.reader.RowDataReaderFactory;
 
 import workbench.util.MessageBuffer;
-
-import workbench.db.JdbcUtils;
-
 import workbench.util.SqlUtil;
 import workbench.util.ValueConverter;
 
@@ -127,7 +125,7 @@ public class QueryCopySource
   public void start()
     throws Exception
   {
-    LogMgr.logDebug(new CallerInfo(){}, "Using SQL: " + this.retrieveSql);
+    LogMgr.logInfo(new CallerInfo(){}, "Retrieving source data using:\n" + this.retrieveSql);
 
     ResultSet rs = null;
     this.keepRunning = true;
