@@ -29,17 +29,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 
 import workbench.db.DefaultFKHandler;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.log.LogMgr;
 
 import workbench.storage.DataStore;
 
 import workbench.util.CollectionUtil;
-import workbench.db.JdbcUtils;
 
 /**
  *
@@ -48,7 +47,7 @@ import workbench.db.JdbcUtils;
 public class SqlServerFKHandler
   extends DefaultFKHandler
 {
-  private Map<TableIdentifier, Map<String, FkStatusInfo>> fkStatusInfo = new ConcurrentHashMap<>();
+  private final Map<TableIdentifier, Map<String, FkStatusInfo>> fkStatusInfo = new ConcurrentHashMap<>();
 
   public SqlServerFKHandler(WbConnection conn)
   {
@@ -91,12 +90,15 @@ public class SqlServerFKHandler
       "from sys.foreign_keys with (nolock) \n" +
       "where parent_object_id = object_id(?)";
 
+    final CallerInfo ci = new CallerInfo(){};
+    String tableName = table.getFullyQualifiedName(getConnection());
     Map<String, FkStatusInfo> info = new HashMap<>();
+    LogMgr.logMetadataSql(ci, "fk status", sql, tableName);
 
     try
     {
       stmt = getConnection().getSqlConnection().prepareStatement(sql);
-      stmt.setString(1, table.getFullyQualifiedName(getConnection()));
+      stmt.setString(1, tableName);
       rs = stmt.executeQuery();
       while (rs.next())
       {
@@ -109,7 +111,7 @@ public class SqlServerFKHandler
     }
     catch (Exception e)
     {
-      LogMgr.logError(new CallerInfo(){}, "Could not read FK status", e);
+      LogMgr.logMetadataError(ci, e, "fk status", sql, tableName);
     }
     finally
     {

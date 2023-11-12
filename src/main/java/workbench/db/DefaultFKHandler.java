@@ -28,6 +28,7 @@ import java.sql.Types;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.Settings;
 
 import workbench.storage.DataStore;
 
@@ -151,14 +152,21 @@ public class DefaultFKHandler
     ResultSet rs;
     if (exported)
     {
+      if (Settings.getInstance().getDebugMetadataSql())
+      {
+        LogMgr.logInfo(new CallerInfo(){}, "Calling DatabaseMetaData.getExportedKeys() for " + table.getFullyQualifiedName(dbConnection));
+      }
       rs = meta.getExportedKeys(table.getRawCatalog(), table.getRawSchema(), table.getRawTableName());
     }
     else
     {
+      if (Settings.getInstance().getDebugMetadataSql())
+      {
+        LogMgr.logInfo(new CallerInfo(){}, "Calling DatabaseMetaData.getImportedKeys()  for " + table.getFullyQualifiedName(dbConnection));
+      }
       rs = meta.getImportedKeys(table.getRawCatalog(), table.getRawSchema(), table.getRawTableName());
     }
     return processResult(rs);
-
   }
 
   protected DataStore processResult(ResultSet rs)

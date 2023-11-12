@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * A collection of utility methods around String handling.
@@ -1125,21 +1126,21 @@ public class StringUtil
   public static String listToString(Collection aList, String aDelimiter, boolean quoteEntries, char quote)
   {
     if (aList == null || aList.isEmpty()) return EMPTY_STRING;
-    int numElements = 0;
-    StringBuilder result = new StringBuilder(aList.size() * 50);
-    for (Object o : aList)
+    if (quoteEntries)
     {
-      if (o == null) continue;
-      if (numElements > 0)
-      {
-        result.append(aDelimiter);
-      }
-      if (quoteEntries) result.append(quote);
-      result.append(o.toString());
-      if (quoteEntries) result.append(quote);
-      numElements ++;
+      return (String)aList.
+          stream().
+          filter(o -> o != null).
+          map(o -> quote + o.toString() + quote).
+          collect(Collectors.joining(aDelimiter));
     }
-    return result.toString();
+    else
+    {
+      return (String)aList.
+          stream().
+          filter(o -> o != null).
+          collect(Collectors.joining(aDelimiter));
+    }
   }
 
   /**

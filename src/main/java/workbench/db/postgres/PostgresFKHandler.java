@@ -22,6 +22,9 @@ package workbench.db.postgres;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -99,18 +102,19 @@ public class PostgresFKHandler
       "  and s.nspname = ? \n" +
       "  and conname in (";
 
+    // The DataStore contains one row per column that is part of a FK.
+    // But we only need each FK name once in the query for the details
+    Set<String> fkNames = new HashSet<>();
     for (int row = 0; row < keys.getRowCount(); row++)
     {
-      if (row > 0)
-      {
-        sql += ',';
-      }
-      String fkName = keys.getValueAsString(row, nameColumn);
-      sql += "'" + SqlUtil.escapeQuotes(fkName) + "'";
+      String fkName = SqlUtil.escapeQuotes(keys.getValueAsString(row, nameColumn));
+      fkNames.add(fkName);
     }
-    sql += ")";
+    String condition = fkNames.stream().collect(Collectors.joining(","));
+    sql += condition + ")";
 
-    LogMgr.logMetadataSql(new CallerInfo(){}, "foreign key details", sql, tbl.getRawSchema());
+    String type = "foreign key details for table " + tbl.getTableExpression(dbConnection);
+    LogMgr.logMetadataSql(new CallerInfo(){}, type, sql, tbl.getRawSchema());
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -135,7 +139,7 @@ public class PostgresFKHandler
     }
     catch (Throwable th)
     {
-      LogMgr.logMetadataError(new CallerInfo(){}, th, "foreign key details", sql, tbl.getRawSchema());
+      LogMgr.logMetadataError(new CallerInfo(){}, th, type, sql, tbl.getRawSchema());
     }
     finally
     {
