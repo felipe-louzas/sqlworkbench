@@ -25,6 +25,8 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
@@ -34,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.text.JTextComponent;
 
 import workbench.WbManager;
 import workbench.interfaces.Restoreable;
@@ -61,6 +64,7 @@ public class EditWindow
   private Restoreable componentSettings;
   private final JButton okButton = new WbButton(ResourceMgr.getString("LblOK"));
   private final JButton cancelButton = new WbButton(ResourceMgr.getString("LblCancel"));
+  private final JButton copyButton = new WbButton(ResourceMgr.getString("MnuTxtCopy"));
   private boolean isCancelled = true;
   private String settingsId;
 
@@ -147,17 +151,24 @@ public class EditWindow
     }
 
     this.getContentPane().add(editor, BorderLayout.CENTER);
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    JPanel buttonPanel = new JPanel(new BorderLayout());
+
+    JPanel closePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    JPanel copyPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+    copyPanel.add(this.copyButton);
     if (!showCloseButtonOnly)
     {
-      buttonPanel.add(this.okButton);
+      closePanel.add(this.okButton);
     }
     else
     {
       this.cancelButton.setText(ResourceMgr.getString("LblClose"));
     }
-    buttonPanel.add(this.cancelButton);
+    closePanel.add(this.cancelButton);
+    buttonPanel.add(copyPanel, BorderLayout.LINE_START);
+    buttonPanel.add(closePanel, BorderLayout.CENTER);
+
     this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
     if (GuiSettings.getUseReaderForMultilineRenderer() && editor instanceof PlainEditor)
@@ -182,10 +193,12 @@ public class EditWindow
 
     this.okButton.addActionListener(this);
     this.cancelButton.addActionListener(this);
+    this.copyButton.addActionListener(this);
 
     WbTraversalPolicy pol = new WbTraversalPolicy();
     pol.setDefaultComponent(editor);
     pol.addComponent(editor);
+    pol.addComponent(this.copyButton);
     pol.addComponent(this.okButton);
     pol.addComponent(this.cancelButton);
     this.setFocusTraversalPolicy(pol);
@@ -211,6 +224,24 @@ public class EditWindow
     }
   }
 
+  private void copyToClipboard()
+  {
+    String text = null;
+    if (editor instanceof JTextComponent)
+    {
+      text = ((JTextComponent)editor).getText();
+    }
+    else if (editor instanceof TextContainer)
+    {
+      text = ((TextContainer)editor).getText();
+    }
+    if (text != null)
+    {
+      Clipboard clipboard = getToolkit().getSystemClipboard();
+      clipboard.setContents(new StringSelection(text), null);
+    }
+  }
+
   public void hideCancelButton()
   {
     this.cancelButton.removeActionListener(this);
@@ -220,6 +251,12 @@ public class EditWindow
   @Override
   public void actionPerformed(ActionEvent e)
   {
+    if (e.getSource() == this.copyButton)
+    {
+      copyToClipboard();
+      return;
+    }
+
     if (e.getSource() == this.okButton)
     {
       this.isCancelled = false;
