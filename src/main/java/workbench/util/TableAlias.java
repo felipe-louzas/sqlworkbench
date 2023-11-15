@@ -64,12 +64,13 @@ public class TableAlias
 
   /**
    * Compares the given name to this TableAlias checking
-   * if the name either references this table or its alias
+   * if the name either references this table or its alias.
    */
   public boolean isTableOrAlias(String name, char catalogSeparator, char schemaSeparator)
   {
     if (StringUtil.isEmpty(name)) return false;
     if (name.trim().equalsIgnoreCase(getAlias())) return true;
+    if (this.table == null) return false;
 
     TableIdentifier tbl = new TableIdentifier(name, catalogSeparator, schemaSeparator);
     return table.getTableExpression().equalsIgnoreCase(tbl.getTableExpression());

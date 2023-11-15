@@ -127,6 +127,36 @@ public class TableListParserTest
   }
 
   @Test
+  public void testGetTablesSRF()
+  {
+    TableListParser parser = new TableListParser(ParserType.Postgres);
+    String sql =
+      "select t1.id, dd. \n" +
+      "from table_one t1\n" +
+      "  join xmltable('/Info' \n" +
+      "                 passing t1.content\n" +
+      "                 columns \n" +
+      "                   last_name text path 'person/name',\n" +
+      "                   first_name text path 'person/firstName'\n" +
+      "   ) as p on true\n" +
+      "   join other_table t2 on t2.col = t1.t2_col \n" +
+      "   left join lateral (\n" +
+      "      select array_agg(col4) as list\n" +
+      "      from third_table\n" +
+      "      where c5 = t1.id\n" +
+      "   ) as ddr on true\n" +
+      "where t1.type = 'foo';";
+    List<Alias> tables = parser.getTables(sql, true);
+    assertEquals(4, tables.size());
+    assertEquals("t1", tables.get(0).getAlias());
+    assertEquals("table_one", tables.get(0).getObjectName());
+    assertEquals("p", tables.get(1).getAlias());
+    assertEquals("t2", tables.get(2).getAlias());
+    assertEquals("other_table", tables.get(2).getObjectName());
+    assertEquals("ddr", tables.get(3).getAlias());
+  }
+
+  @Test
   public void testGetTables()
   {
     TableListParser parser = new TableListParser();
@@ -394,7 +424,8 @@ public class TableListParserTest
       "  )\n" +
       ") as diff_table";
 
-    List<Alias> tables = SqlUtil.getTables(sql, true, '.', '.', ParserType.Standard);
+    TableListParser parser = new TableListParser('.', '.', ParserType.Standard);
+    List<Alias> tables = parser.getTables(sql, true);
     assertNotNull(tables);
     assertEquals(1, tables.size());
     assertEquals("diff_table", tables.get(0).getAlias());

@@ -1139,6 +1139,7 @@ public class StringUtil
       return (String)aList.
           stream().
           filter(o -> o != null).
+          map(Object::toString).
           collect(Collectors.joining(aDelimiter));
     }
   }

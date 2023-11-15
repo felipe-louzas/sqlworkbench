@@ -118,6 +118,14 @@ public class TableListParser
           {
             t = skipAliasColumns(lexer, t);
             lastTokenWasAlias = false;
+            if (t != null && t.getContents().equals("AS"))
+            {
+              collectTable = true;
+            }
+            else
+            {
+              collectTable = bracketCount == 0;
+            }
             continue;
           }
           else
@@ -170,7 +178,13 @@ public class TableListParser
 
             if (!t.getContents().equals("AS"))
             {
+              SQLToken lt = t;
               t = collectToWhiteSpace(lexer, t, table);
+              if (t != null && "(".equals(t.getContents()))
+              {
+                table.setEndPositionInQuery(lt.getCharEnd());
+                continue;
+              }
             }
 
             if (t != null && t.isWhiteSpace())
@@ -227,11 +241,21 @@ public class TableListParser
     if (current == null) return current;
     if (!current.getText().equals("(")) return current;
     SQLToken next = lexer.getNextToken(false, false);
+    int bracketCount = 1;
     while (next != null)
     {
-      if (next.getText().equals(")"))
+      String t = next.getText();
+      if ("(".equals(t))
       {
-        return lexer.getNextToken(false, false);
+        bracketCount++;
+      }
+      else if (t.equals(")"))
+      {
+        bracketCount--;
+        if (bracketCount == 0)
+        {
+          return lexer.getNextToken(false, false);
+        }
       }
       next = lexer.getNextToken(false, false);
     }
@@ -248,7 +272,11 @@ public class TableListParser
     while (token != null)
     {
       String text = token.getContents();
-      if (!isSeparator(text) && (token.isWhiteSpace() || token.isOperator() || token.isReservedWord() || text.equals(",")))
+      if (!isSeparator(text) && (token.isWhiteSpace() ||
+                                 token.isOperator() ||
+                                 token.isReservedWord() ||
+                                 text.equals(",") ||
+                                 text.equals("(")))
       {
         break;
       }

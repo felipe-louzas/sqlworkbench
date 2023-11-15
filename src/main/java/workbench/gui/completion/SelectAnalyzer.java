@@ -298,7 +298,7 @@ public class SelectAnalyzer
       }
 
 
-      if (tableForColumnList == null)
+      if (tableForColumnList == null && currentAlias == null)
       {
         this.context = CONTEXT_FROM_LIST;
         this.addAllMarker = false;
@@ -337,7 +337,6 @@ public class SelectAnalyzer
     for (Alias element : possibleTables)
     {
       TableAlias tbl = new TableAlias(element.getObjectName(), element.getAlias(), catalogSep, schemaSeparator);
-      tbl.setAlias(element.getAlias());
 
       if (tbl.isTableOrAlias(toSearch, catalogSep, schemaSeparator))
       {
@@ -568,8 +567,10 @@ public class SelectAnalyzer
     List<TableAlias> result = new ArrayList<>(tables.size());
     for (Alias s : tables)
     {
-      TableAlias tbl = TableAlias.createFrom(s);
-      result.add(tbl);
+      if (s.getObjectName() != null)
+      {
+        result.add(TableAlias.createFrom(s));
+      }
     }
     return result;
   }

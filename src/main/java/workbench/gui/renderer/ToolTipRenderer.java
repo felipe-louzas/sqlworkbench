@@ -111,7 +111,7 @@ public class ToolTipRenderer
 
   protected RowHighlighter filter;
 
-  private int valign = SwingConstants.CENTER;
+  private final int valign = SwingConstants.TOP;
   private int halign = SwingConstants.LEFT;
 
   private boolean isAlternatingRow;
@@ -179,7 +179,7 @@ public class ToolTipRenderer
     }
     if (result == null)
     {
-      result = new Insets(1,0,0,0);
+      result = new Insets(3,0,0,0);
     }
     return result;
   }

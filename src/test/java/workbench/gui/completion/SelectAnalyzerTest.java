@@ -46,6 +46,31 @@ public class SelectAnalyzerTest
     super("SelectAnalyzerTest");
   }
 
+  @Test
+  public void testSRFJoin()
+  {
+    String sql =
+      "select t1.id, dd. \n" +
+      "from table_one t1\n" +
+      "  join xmltable('/Info' \n" +
+      "                 passing t1.content\n" +
+      "                 columns \n" +
+      "                   last_name text path 'person/name',\n" +
+      "                   first_name text path 'person/firstName'\n" +
+      "   ) as p on true\n" +
+      "   join other_table t2 on t2.col = t1.t2_col \n" +
+      "   left join lateral (\n" +
+      "      select array_agg(col4) as list\n" +
+      "      from third_table\n" +
+      "      where c5 = t1.id\n" +
+      "   ) as dd on true\n" +
+      "where t1.type = 'foo';";
+    int pos = sql.indexOf("dd.") + 3;
+    StatementContext context = new StatementContext(null, sql, pos, false);
+    BaseAnalyzer analyzer = context.getAnalyzer();
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, analyzer.getContext());
+  }
 
   @Test
   public void testSelfJoin()

@@ -21,8 +21,11 @@
  */
 package workbench.util;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import workbench.db.TableIdentifier;
 
 import org.junit.Test;
 
@@ -35,6 +38,19 @@ import static org.junit.Assert.*;
  */
 public class StringUtilTest
 {
+
+  @Test
+  public void testListToString()
+  {
+    List<String> items = List.of("One", "Two", "Three");
+    assertEquals("One,Two,Three", StringUtil.listToString(items, ','));
+    assertEquals("'One','Two','Three'", StringUtil.listToString(items, ",", true, '\''));
+    List<TableIdentifier> tables = new ArrayList<>();
+    tables.add(new TableIdentifier("public", "person"));
+    tables.add(new TableIdentifier("public", "address"));
+    String s = StringUtil.listToString(tables, ",", false);
+    assertEquals("public.person,public.address", s);
+  }
 
   @Test
   public void testTrimAfterLineFeed()

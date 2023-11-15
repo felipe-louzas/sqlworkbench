@@ -107,7 +107,7 @@ public class PostgresFKHandler
     Set<String> fkNames = new HashSet<>();
     for (int row = 0; row < keys.getRowCount(); row++)
     {
-      String fkName = SqlUtil.escapeQuotes(keys.getValueAsString(row, nameColumn));
+      String fkName = SqlUtil.quoteLiteral(keys.getValueAsString(row, nameColumn));
       fkNames.add(fkName);
     }
     String condition = fkNames.stream().collect(Collectors.joining(","));

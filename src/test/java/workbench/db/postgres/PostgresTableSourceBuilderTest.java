@@ -91,7 +91,8 @@ public class PostgresTableSourceBuilderTest
     if (!JdbcUtils.hasMinimumServerVersion(con, "12")) return;
     assertNotNull(con);
     TestUtil.executeScript(con,
-      "create table x (c1 integer, c2 integer, c3 integer generated always as (c1 * c2) stored);");
+      "create table x (c1 integer, c2 integer, c3 integer generated always as (c1 * c2) stored);" +
+      "commit;");
 
     TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("x"));
     String ddl = tbl.getSource(con).toString();
@@ -109,7 +110,9 @@ public class PostgresTableSourceBuilderTest
     String sql = tbl.getSource(con).toString();
     assertTrue(sql.contains("INHERITS (base_table)"));
 
-    TestUtil.executeScript(con, "create table child_fill (foo_data text) inherits (base_table) with (fillfactor=40);");
+    TestUtil.executeScript(con,
+      "create table child_fill (foo_data text) inherits (base_table) with (fillfactor=40);" +
+      "commit;");
     tbl = new DbObjectFinder(con).findTable(new TableIdentifier("child_fill"));
     String source = tbl.getSource(con).toString();
     assertTrue(source.contains("INHERITS (base_table)\nWITH (fillfactor=40)"));
