@@ -25,6 +25,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.ObjectScripter;
 import workbench.db.PostgresDbTest;
 import workbench.db.TableIdentifier;
@@ -91,7 +92,14 @@ public class PgObjectScripterTest
     parser.setScript(script);
 //    System.out.println("****\n" + script);
     assertEquals(4, parser.getSize()); // three statements and a COMMIT
-    assertTrue(parser.getCommand(0).startsWith("CREATE SEQUENCE IF NOT EXISTS code_seq"));
+    if (JdbcUtils.hasMinimumServerVersion(con, "9.5"))
+    {
+      assertTrue(parser.getCommand(0).startsWith("CREATE SEQUENCE IF NOT EXISTS code_seq"));
+    }
+    else
+    {
+      assertTrue(parser.getCommand(0).startsWith("CREATE SEQUENCE code_seq"));
+    }
     assertTrue(parser.getCommand(1).contains("nextval('code_seq'"));
     String seq = SqlUtil.makeCleanSql(parser.getCommand(2), true, false);
     assertTrue(seq.equals("ALTER SEQUENCE code_seq OWNED BY base_table.code"));

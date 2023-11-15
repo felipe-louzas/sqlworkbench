@@ -61,7 +61,7 @@ public class PostgresSequenceReader
       "       pg_catalog.quote_ident(tab.relname)||'.'||quote_ident(col.attname) as owned_by, \n" +
       "       seq.relname as sequence_name, \n" +
       "       sn.nspname as sequence_schema, \n" +
-      "       array_to_string(seq.relacl, ',') as acl \n" +
+      "       array_to_string(seq.relacl, ',') as acl, \n" +
       "       'p' as relpersistence \n" +
       "FROM pg_catalog.pg_class seq \n" +
       "  JOIN pg_catalog.pg_namespace sn ON sn.oid = seq.relnamespace \n" +

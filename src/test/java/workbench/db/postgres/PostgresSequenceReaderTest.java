@@ -26,6 +26,7 @@ import java.util.List;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.JdbcUtils;
 import workbench.db.PostgresDbTest;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
@@ -96,6 +97,10 @@ public class PostgresSequenceReaderTest
       "       CACHE 1\n" +
       "       NO CYCLE\n" +
       "       OWNED BY seq_table.id;";
+    if (!JdbcUtils.hasMinimumServerVersion(con, "9.5"))
+    {
+      expected = expected.replace("IF NOT EXISTS ", "");
+    }
 //    System.out.println(sql + "\n-------------\n" + expected);
 
     assertEquals(expected, sql.trim());
@@ -108,6 +113,10 @@ public class PostgresSequenceReaderTest
              "       MINVALUE 100\n" +
              "       CACHE 25\n" +
              "       NO CYCLE;";
+    if (!JdbcUtils.hasMinimumServerVersion(con, "9.5"))
+    {
+      expected = expected.replace("IF NOT EXISTS ", "");
+    }
     assertEquals(expected, sql.trim());
   }
 

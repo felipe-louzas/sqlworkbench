@@ -460,7 +460,7 @@ public class PostgresProcedureReaderTest
     TestUtil.executeScript(con,
       "create schema foo;\n" +
       "create function foo.bar(p_in integer) returns integer as $$ select 42; $$ language sql;\n" +
-      "comment on function foo.bar is 'Some smart comment'; \n"  +
+      "comment on function foo.bar(integer) is 'Some smart comment'; \n"  +
       "commit;");
 
     TableIdentifier object = new TableIdentifier("foo.bar(integer)", con);
