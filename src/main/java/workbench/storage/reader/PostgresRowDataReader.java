@@ -62,6 +62,7 @@ class PostgresRowDataReader
   private static boolean strategyLogged = false;
 
   private final boolean useJava8Time;
+  private boolean useOffsetDateTime;
   private int timeTzStrategy = PARSE_STRING;
 
   private final DateTimeFormatter timeParser = new DateTimeFormatterBuilder()
@@ -94,6 +95,7 @@ class PostgresRowDataReader
     useJava8Time = TimestampTZHandler.Factory.supportsJava8Time(conn);
     if (useJava8Time)
     {
+      useOffsetDateTime = conn.getDbSettings().useOffsetDateTimeForTimestampTZ();
       useGetObjectForTime = true;
       useGetObjectForTimestamps = true;
       useGetObjectForTimestampTZ = true;
@@ -207,25 +209,30 @@ class PostgresRowDataReader
   {
     if (useJava8Time)
     {
-      return readZonedDateTime(rs, column);
+      return readTimestampTZ(rs, column);
     }
     return super.readTimestampTZValue(rs, column);
   }
 
-  private ZonedDateTime readZonedDateTime(ResultHolder rs, int column)
+  private Object readTimestampTZ(ResultHolder rs, int column)
     throws SQLException
   {
     initTimeZone();
 
     OffsetDateTime odt = rs.getObject(column, OffsetDateTime.class);
     if (odt == null) return null;
+
     // This is how the JDBC returns Infinity values
     if (odt.equals(OffsetDateTime.MAX) || odt.equals(OffsetDateTime.MIN))
     {
-      //TODO: is returning ZondedDateTime better,  or simply returning the OffsetDateTime directly?
-      return odt.atZoneSimilarLocal(ZoneId.of("+0"));
+      return odt;
     }
-    return odt.atZoneSameInstant(sessionTimeZone);
+    ZonedDateTime zdt = odt.atZoneSameInstant(sessionTimeZone);
+    if (useOffsetDateTime)
+    {
+      zdt.toOffsetDateTime();
+    }
+    return zdt;
   }
 
   private void initTimeZone()

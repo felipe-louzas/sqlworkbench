@@ -54,4 +54,9 @@ public interface DataTypeResolver
    * @return null if the driver default should be used, a fully qualified classname otherwise
    */
   String getColumnClassName(int type, String dbmsType);
+
+  default void configure(DbSettings settings)
+  {
+
+  }
 }

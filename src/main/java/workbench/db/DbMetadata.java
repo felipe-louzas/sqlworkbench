@@ -589,6 +589,7 @@ public class DbMetadata
 
     this.catalogInfoReader = new GenericCatalogInformationReader(this.dbConnection, dbSettings);
     this.supportsGetSchema = dbSettings.isGetSchemaImplemented();
+    this.dataTypeResolver.configure(dbSettings);
     logConfiguredTableTypes();
   }
 

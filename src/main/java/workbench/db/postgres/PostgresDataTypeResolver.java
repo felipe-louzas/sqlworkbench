@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import workbench.db.DataTypeResolver;
+import workbench.db.DbSettings;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -41,6 +42,7 @@ public class PostgresDataTypeResolver
   private static final Map<String, String> DISPLAY_TO_TYPE = new HashMap<>();
 
   private boolean fixTimestampTZ;
+  private boolean useOffsetDateTime;
 
   static
   {
@@ -68,6 +70,15 @@ public class PostgresDataTypeResolver
     DISPLAY_TO_TYPE.put("timestamp with time zone[]", "_timestamptz");
     DISPLAY_TO_TYPE.put("time without time zone[]", "_time");
     DISPLAY_TO_TYPE.put("time with time zone[]", "_timetz");
+  }
+
+  @Override
+  public void configure(DbSettings settings)
+  {
+    if (settings != null)
+    {
+      useOffsetDateTime = settings.useOffsetDateTimeForTimestampTZ();
+    }
   }
 
   public void setFixTimestampTZ(boolean flag)
@@ -132,7 +143,11 @@ public class PostgresDataTypeResolver
   {
     if (fixTimestampTZ && type == Types.TIMESTAMP_WITH_TIMEZONE && "timestamptz".equals(dbmsType))
     {
-      return "java.time.ZonedDateTime";
+      if (useOffsetDateTime)
+      {
+        return java.time.OffsetDateTime.class.getName();
+      }
+      return java.time.ZonedDateTime.class.getName();
     }
 
     if ("citext".equals(dbmsType))
