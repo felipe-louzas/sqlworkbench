@@ -136,7 +136,22 @@ public class MavenDownloadPanel
   public void startDownload()
   {
     String version = versionList.getSelectedValue();
-    if (version == null) return;
+    File dir = this.downloadDir.getSelectedFile();
+    if (version == null || dir == null) return;
+
+    MavenArtefact mvn = new MavenArtefact(artefact.getGroupId(), artefact.getArtefactId(), version);
+    WbFile target = new WbFile(dir, mvn.buildFilename());
+
+    if (target.exists())
+    {
+      String msg = ResourceMgr.getFormattedString("ErrDownloadFileExists", target.getAbsolutePath());
+      boolean ok = WbSwingUtilities.getYesNo(this, msg);
+      if (!ok)
+      {
+        return;
+      }
+    }
+
     this.downloadSelected.setText(ResourceMgr.getString("LblCancelPlain"));
     this.downloadSelected.setEnabled(true);
     WbThread th = new WbThread("Download Driver")
@@ -152,25 +167,13 @@ public class MavenDownloadPanel
 
   private void downloadFile()
   {
-    long bytes = -1;
-
     File dir = this.downloadDir.getSelectedFile();
     String version = versionList.getSelectedValue();
-    if (version == null) return;
+    if (version == null || dir == null) return;
 
     this.artefact.setVersion(version);
-    WbFile target = new WbFile(dir, artefact.buildFilename());
 
-    if (target.exists())
-    {
-      String msg = ResourceMgr.getFormattedString("ErrDownloadFileExists", target.getAbsolutePath());
-      boolean ok = WbSwingUtilities.getYesNo(this, msg);
-      if (!ok)
-      {
-        return;
-      }
-    }
-
+    long bytes = -1;
     try
     {
       WbSwingUtilities.showWaitCursorOnWindow(this);
