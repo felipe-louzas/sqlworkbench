@@ -54,6 +54,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -67,6 +68,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
+import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
@@ -85,6 +87,8 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
 
 import workbench.WbManager;
 import workbench.interfaces.SimplePropertyEditor;
@@ -1816,4 +1820,13 @@ public class WbSwingUtilities
     table.setRowHeight(height);
   }
 
+  public static Point getTreeContextLocation(JTree tree, TreePath path)
+  {
+    if (path == null) return null;
+    Rectangle r = tree.getPathBounds(path);
+    DefaultTreeCellRenderer  renderer = (DefaultTreeCellRenderer)tree.getCellRenderer();
+    Icon icon = renderer.getDefaultLeafIcon();
+    int offset = icon.getIconWidth() + renderer.getIconTextGap();
+    return new Point(r.x + offset, r.y + r.height);
+  }
 }

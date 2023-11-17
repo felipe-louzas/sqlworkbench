@@ -31,6 +31,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -87,7 +89,7 @@ import workbench.util.StringUtil;
 public class ProfileTree
   extends JTree
   implements TreeModelListener, MouseListener, ClipboardSupport, ActionListener, TreeSelectionListener,
-             GroupTree, ExpandableTree
+             GroupTree, ExpandableTree, KeyListener
 {
   private ProfileListModel profileModel;
   private final CutCopyPastePopup popup;
@@ -110,7 +112,7 @@ public class ProfileTree
     addMouseListener(this);
     getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
     addTreeSelectionListener(this);
-
+    addKeyListener(this);
     InputMap im = this.getInputMap(WHEN_FOCUSED);
     ActionMap am = this.getActionMap();
 
@@ -468,23 +470,53 @@ public class ProfileTree
   }
 
   @Override
+  public void keyTyped(KeyEvent e)
+  {
+  }
+
+  @Override
+  public void keyPressed(KeyEvent e)
+  {
+    if (e.getSource() == this && e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU)
+    {
+      TreePath path = getSelectionPath();
+      Point p = WbSwingUtilities.getTreeContextLocation(this, path);
+      if (p != null)
+      {
+        showContextMenu(path, p.x, p.y);
+      }
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e)
+  {
+  }
+
+  @Override
   public void mouseClicked(MouseEvent e)
   {
     if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1)
     {
       TreePath p = this.getPathForLocation(e.getX(), e.getY());
-      checkActions();
-      if (p == null)
-      {
-        newGroupAction.setEnabled(true);
-      }
-      else if (p.getLastPathComponent() instanceof TreeNode)
-      {
-        TreeNode node = (TreeNode)p.getLastPathComponent();
-        newGroupAction.setEnabled(node.getAllowsChildren());
-      }
-      popup.show(this, e.getX(), e.getY());
+      showContextMenu(p, e.getX(), e.getY());
     }
+  }
+
+  private void showContextMenu(TreePath p, int x, int y)
+  {
+    checkActions();
+    if (p == null)
+    {
+      newGroupAction.setEnabled(true);
+    }
+    else if (p.getLastPathComponent() instanceof TreeNode)
+    {
+      TreeNode node = (TreeNode)p.getLastPathComponent();
+      newGroupAction.setEnabled(node.getAllowsChildren());
+    }
+    popup.show(this, x, y);
+
   }
 
   /**

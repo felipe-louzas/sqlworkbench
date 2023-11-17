@@ -27,6 +27,7 @@ import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -143,6 +144,7 @@ public class DbTreePanel
     tree = new DbObjectsTree(statusBar);
     tree.addMouseListener(this);
     tree.addTreeSelectionListener(this);
+    tree.addKeyListener(this);
     JScrollPane scroll = new JScrollPane(tree);
     scroll.setBorder(WbSwingUtilities.EMPTY_BORDER);
     createToolbar();
@@ -965,6 +967,21 @@ public class DbTreePanel
   @Override
   public void keyPressed(KeyEvent e)
   {
+    if (e.getSource() == tree && e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU)
+    {
+      TreePath path = tree.getSelectionPath();
+      Point p = WbSwingUtilities.getTreeContextLocation(tree, path);
+      if (p != null)
+      {
+        JPopupMenu popup = ContextMenuFactory.createContextMenu(this, getSelectionModel());
+        if (popup != null)
+        {
+          popup.show(tree, p.x, p.y);
+        }
+      }
+      return;
+    }
+
     if (e.getSource() != this.filterValue || e.getModifiersEx() != 0) return;
 
     switch (e.getKeyCode())

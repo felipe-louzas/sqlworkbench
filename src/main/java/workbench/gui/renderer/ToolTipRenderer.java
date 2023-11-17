@@ -148,7 +148,7 @@ public class ToolTipRenderer
     return value;
   }
 
-  static Insets getDefaultInsets()
+  public static Insets getDefaultInsets()
   {
     UIDefaults def = UIManager.getDefaults();
     // This used by FlatLaf

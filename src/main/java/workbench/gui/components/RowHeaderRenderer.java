@@ -21,18 +21,23 @@
  */
 package workbench.gui.components;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Insets;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import workbench.resource.GuiSettings;
+
+import workbench.gui.renderer.ToolTipRenderer;
 
 import workbench.util.NumberStringCache;
 
@@ -42,15 +47,18 @@ import workbench.util.NumberStringCache;
  * @author Thomas Kellerer
  */
 public class RowHeaderRenderer
-  extends DefaultTableCellRenderer
+  extends JLabel
+  implements TableCellRenderer
 {
   private final JTable table;
-  private TableRowHeader rowHeader;
+  private final TableRowHeader rowHeader;
   private int colWidth = -1;
-  private int rightMargin;
+  private final int rightMargin;
+  private final Insets insets = ToolTipRenderer.getDefaultInsets();
 
   public RowHeaderRenderer(TableRowHeader rowHeader, JTable client)
   {
+    super();
     this.table = client;
     this.rowHeader = rowHeader;
 
@@ -58,12 +66,32 @@ public class RowHeaderRenderer
     setFont(header.getFont());
     setOpaque(true);
     setHorizontalAlignment(SwingConstants.RIGHT);
-
+    setVerticalAlignment(SwingConstants.TOP);
+    setVerticalTextPosition(SwingConstants.BOTTOM);
     setForeground(header.getForeground());
     setBackground(header.getBackground());
 
     rightMargin = GuiSettings.getRowNumberMargin();
     calculateWidth();
+  }
+
+  @Override
+  public Insets getInsets(Insets ins)
+  {
+    return this.insets;
+  }
+
+  @Override
+  public Insets getInsets()
+  {
+    return insets;
+  }
+
+  @Override
+  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+  {
+    this.setText((String)value);
+    return this;
   }
 
   @Override

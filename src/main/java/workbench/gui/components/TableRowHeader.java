@@ -26,10 +26,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import workbench.gui.WbSwingUtilities;
 
 /**
  *
@@ -37,7 +33,7 @@ import workbench.gui.WbSwingUtilities;
  */
 public class TableRowHeader
   extends JTable
-  implements ChangeListener, PropertyChangeListener
+  implements PropertyChangeListener
 {
   private final RowHeaderRenderer renderer;
   private final JTable clientTable;
@@ -52,7 +48,6 @@ public class TableRowHeader
     setSelectionModel(client.getSelectionModel());
     setBackground(client.getBackground());
     setOpaque(false);
-    setBorder(WbSwingUtilities.EMPTY_BORDER);
     setRowSelectionAllowed(false);
     setAutoscrolls(false);
     setFocusable(false);
@@ -75,15 +70,6 @@ public class TableRowHeader
   public void addNotify()
   {
     super.addNotify();
-
-    Component c = getParent();
-
-    //  Keep scrolling of the row table in sync with the main table.
-    if (c instanceof JViewport)
-    {
-      JViewport viewport = (JViewport)c;
-      viewport.addChangeListener(this);
-    }
     setRowHeight(clientTable.getRowHeight());
   }
 
@@ -170,20 +156,6 @@ public class TableRowHeader
         scrollPane.setRowHeader(null);
       }
     }
-  }
-
-  @Override
-  public void stateChanged(ChangeEvent e)
-  {
-    JViewport viewport = (JViewport) e.getSource();
-    if (viewport == null) return;
-
-    JScrollPane scrollPane = (JScrollPane)viewport.getParent();
-    if (scrollPane == null) return;
-
-    JScrollBar bar = scrollPane.getVerticalScrollBar();
-    if (bar == null) return;
-    bar.setValue(viewport.getViewPosition().y);
   }
 
   @Override
