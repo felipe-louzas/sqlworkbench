@@ -2789,9 +2789,12 @@ public class DbSettings
   public boolean showSuccessMessageForVerb(String verb)
   {
     if (verb == null) return false;
-    String key = "show.success." + verb.toLowerCase();
-    boolean global = Settings.getInstance().getBoolProperty("workbench.db." + key, true);
-    return getBoolProperty(key, global);
+    if (!Settings.getInstance().getBoolProperty("workbench.db.sql.show.success", true)) return false;
+    if (!getBoolProperty("show.success", true)) return false;
+
+    String key = "show.success." + verb.trim().toLowerCase();
+    boolean globalVerb = Settings.getInstance().getBoolProperty("workbench.db." + key, true);
+    return getBoolProperty(key, globalVerb);
   }
 
   public Collection<String> getTypesNeedingQuotes()
