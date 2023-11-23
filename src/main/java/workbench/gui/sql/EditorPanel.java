@@ -747,10 +747,6 @@ public class EditorPanel
       {
         this.saveCurrentFile();
       }
-      else
-      {
-        result = YesNoCancel.cancel;
-      }
     }
     return result;
   }
