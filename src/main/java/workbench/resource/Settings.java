@@ -3958,7 +3958,17 @@ public class Settings
     renameProperty("drivers.lastlibdir", "workbench.drivers.lastlibdir");
     renameProperty("workbench.db.debugger", "workbench.db.previewsql");
     renameProperty("workbench.gui.display.multilinethreshold", "workbench.gui.display.multiline.threshold");
-    renameProperty("workbench.gui.display.showpworkspace", "workbench.gui.display.show.workspace");
+    renameProperty("workbench.gui.display.showpworkspace", "workbench.gui.display.title.show.workspace");
+    renameProperty("workbench.gui.display.titlegroupbracket", "workbench.gui.display.title.group.enclose");
+    renameProperty("workbench.gui.display.showlastgroup", "workbench.gui.display.title.showlastgroup");
+    renameProperty("workbench.gui.display.showprofilegroup", "workbench.gui.display.title.showprofilegroup");
+    renameProperty("workbench.gui.display.name_at_end", "workbench.gui.display.title.name_at_end");
+    renameProperty("workbench.gui.display.showfilename", "workbench.gui.display.title.showfilename");
+    renameProperty("workbench.gui.display.show.workspace", "workbench.gui.display.title.show.workspace");
+    renameProperty("workbench.gui.display.showurl", "workbench.gui.display.title.showurl");
+    renameProperty("workbench.gui.display.showurl.includeuser", "workbench.gui.display.title.showurl.includeuser");
+    renameProperty("workbench.gui.display.showurl.cleanup", "workbench.gui.display.title.showurl.cleanup");
+    renameProperty("workbench.gui.display.showurl.removeproduct", "workbench.gui.display.title.showurl.removeproduct");
 
     renameProperty("workbench.db.objecttype.data.postgres", "workbench.db.objecttype.data.postgresql");
     renameProperty("workbench.db.objecttype.selectable.postgres", "workbench.db.objecttype.selectable.postgresql");
@@ -4097,6 +4107,7 @@ public class Settings
       this.props.remove("workbench.db.hxtt_dbf.dropindex.needstable");
       this.props.remove("workbench.db.microsoft_sql_server.dropindex.needstable");
 
+      this.props.remove("workbench.gui.display.titlegroupsep");
       this.props.remove("workbench.ignoretypes.postgresql");
       this.props.remove("workbench.ignoretypes.mysql");
       props.remove("workbench.db.syntax.functions");

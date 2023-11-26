@@ -132,6 +132,12 @@ public class WbConnection
   private final List<Integer> usedSavepoints = new ArrayList<>(2);
   private final List<PropertyChangeEvent> pendingEvents = new ArrayList<>();
 
+  public WbConnection(String id, ConnectionProfile profile)
+  {
+    this.id = id;
+    this.profile = profile;
+  }
+  
   /**
    * Create a new wrapper connection around the original SQL connection.
    *

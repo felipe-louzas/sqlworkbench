@@ -71,18 +71,17 @@ public class GuiSettings
   public static final String PROPERTY_MACRO_SOURCE_TOOLTIP_LENGTH = "workbench.gui.macro.source.tooltip.length";
   public static final String PROPERTY_MACRO_MENU_USE_SOURCE_TOOLTIP = "workbench.gui.macro.menuitem.tooltip.usesource";
 
-  public static final String PROP_TITLE_SHOW_WKSP = "workbench.gui.display.show.workspace";
-  public static final String PROP_TITLE_SHOW_URL = "workbench.gui.display.showurl";
-  public static final String PROP_TITLE_SHOW_URL_USER = "workbench.gui.display.showurl.includeuser";
-  public static final String PROP_TITLE_SHOW_URL_CLEANUP = "workbench.gui.display.showurl.cleanup";
-  public static final String PROP_TITLE_REMOVE_URL_PRODUCT = "workbench.gui.display.showurl.removeproduct";
-  public static final String PROP_TITLE_SHOW_PROF_GROUP = "workbench.gui.display.showprofilegroup";
-  public static final String PROP_TITLE_SHOW_LAST_GROUP = "workbench.gui.display.showlastgroup";
-  public static final String PROP_TITLE_APP_AT_END = "workbench.gui.display.name_at_end";
+  public static final String PROP_TITLE_SHOW_WKSP = "workbench.gui.display.title.show.workspace";
+  public static final String PROP_TITLE_SHOW_URL = "workbench.gui.display.title.showurl";
+  public static final String PROP_TITLE_SHOW_URL_USER = "workbench.gui.display.title.showurl.includeuser";
+  public static final String PROP_TITLE_SHOW_URL_CLEANUP = "workbench.gui.display.title.showurl.cleanup";
+  public static final String PROP_TITLE_REMOVE_URL_PRODUCT = "workbench.gui.display.title.showurl.removeproduct";
+  public static final String PROP_TITLE_SHOW_PROF_GROUP = "workbench.gui.display.title.showprofilegroup";
+  public static final String PROP_TITLE_APP_AT_END = "workbench.gui.display.title.name_at_end";
   public static final String PROP_TITLE_TEMPLATE = "workbench.gui.display.title.template";
-  public static final String PROP_TITLE_SHOW_EDITOR_FILE = "workbench.gui.display.showfilename";
-  public static final String PROP_TITLE_GROUP_SEP = "workbench.gui.display.titlegroupsep";
-  public static final String PROP_TITLE_GROUP_BRACKET = "workbench.gui.display.titlegroupbracket";
+  public static final String PROP_TITLE_SHOW_EDITOR_FILE = "workbench.gui.display.title.showfilename";
+  public static final String PROP_TITLE_GROUP_BRACKET = "workbench.gui.display.title.group.enclose";
+  public static final String PROP_TITLE_WKSP_BRACKET = "workbench.gui.display.title.wksp.enclose";
   public static final String PROP_TITLE_ABBREV_WKSP = "workbench.gui.display.title.abbreviate.wksp";
 
   public static final String PROP_FONT_ZOOM_WHEEL = "workbench.gui.fontzoom.mousewheel";
@@ -97,7 +96,7 @@ public class GuiSettings
 
   public static final Set<String> WINDOW_TITLE_PROPS = CollectionUtil.treeSet(
     PROP_TITLE_APP_AT_END, PROP_TITLE_SHOW_WKSP, PROP_TITLE_SHOW_URL, PROP_TITLE_SHOW_PROF_GROUP,
-    PROP_TITLE_SHOW_EDITOR_FILE, PROP_TITLE_GROUP_SEP, PROP_TITLE_GROUP_BRACKET);
+    PROP_TITLE_SHOW_EDITOR_FILE, PROP_TITLE_GROUP_BRACKET, PROP_TITLE_WKSP_BRACKET);
 
   public static final String PROP_TABLE_HEADER_BOLD = "workbench.gui.table.header.bold";
   public static final String PROP_TABLE_HEADER_DATATYPE = "workbench.gui.table.header.include.type";
@@ -866,19 +865,6 @@ public class GuiSettings
     return SHOW_NO_FILENAME;
   }
 
-  public static String getTitleGroupSeparator()
-  {
-    String sep = Settings.getInstance().getProperty(PROP_TITLE_GROUP_SEP, "/");
-    if ("XXX".equals(sep)) return "";
-    return sep;
-  }
-
-  public static void setTitleGroupSeparator(String sep)
-  {
-    if (StringUtil.isBlank(sep)) sep = "XXX";
-    Settings.getInstance().setProperty(PROP_TITLE_GROUP_SEP, sep);
-  }
-
   public static String getTitleGroupBracket()
   {
     return Settings.getInstance().getProperty(PROP_TITLE_GROUP_BRACKET, null);
@@ -887,6 +873,16 @@ public class GuiSettings
   public static void setTitleGroupBracket(String bracket)
   {
     Settings.getInstance().setProperty(PROP_TITLE_GROUP_BRACKET, bracket);
+  }
+
+  public static String getTitleWorkspaceBracket()
+  {
+    return Settings.getInstance().getProperty(PROP_TITLE_WKSP_BRACKET, null);
+  }
+
+  public static void setTitleWkspBracket(String bracket)
+  {
+    Settings.getInstance().setProperty(PROP_TITLE_WKSP_BRACKET, bracket);
   }
 
   public static void setShowWorkspaceInWindowTitle(boolean flag)
@@ -950,11 +946,6 @@ public class GuiSettings
   public static boolean getShowProfileGroupInWindowTitle()
   {
     return Settings.getInstance().getBoolProperty(PROP_TITLE_SHOW_PROF_GROUP, false);
-  }
-
-  public static boolean getShowLastGroupInWindowTitle()
-  {
-    return Settings.getInstance().getBoolProperty(PROP_TITLE_SHOW_LAST_GROUP, false);
   }
 
   public static String getTitleTemplate()

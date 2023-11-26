@@ -1328,7 +1328,7 @@ public class DbSettings
     {
       return SetObjectStrategy.Always;
     }
-    if ("fasle".equals(value))
+    if ("false".equals(value))
     {
       return SetObjectStrategy.Never;
     }

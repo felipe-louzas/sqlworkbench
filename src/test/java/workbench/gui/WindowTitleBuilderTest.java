@@ -21,7 +21,12 @@
  */
 package workbench.gui;
 
+import java.util.List;
+
 import workbench.resource.ResourceMgr;
+
+import workbench.db.ConnectionProfile;
+import workbench.db.WbConnection;
 
 import org.junit.Test;
 
@@ -39,10 +44,70 @@ public class WindowTitleBuilderTest
   }
 
   @Test
+  public void testBuilder()
+    throws Exception
+  {
+    ConnectionProfile profile = new ConnectionProfile();
+    profile.setGroups(List.of("Postgres", "Production", "Shop"));
+    profile.setName("Shop-DWH");
+    profile.setUrl("jdbc:postgresql://prod-db/shop");
+    WbConnection conn = new WbConnection("one", profile)
+    {
+      @Override
+      public String getDisplayCatalog()
+      {
+        return "postgres";
+      }
+
+      @Override
+      public String getDisplayString(boolean useDisplaySchema)
+      {
+        return getDisplayString();
+      }
+
+      @Override
+      public String getDisplayString()
+      {
+        return "postgres@shop-db";
+      }
+
+      @Override
+      public String getDisplayUser()
+      {
+        return "postgres";
+      }
+
+      @Override
+      public String getDisplaySchema()
+      {
+        return "public";
+      }
+    };
+    WindowTitleBuilder builder = new WindowTitleBuilder();
+    builder.setShowProfileGroup(true);
+    builder.setShowWorkspace(false);
+    builder.setShowAppNameAtEnd(false);
+    String title = builder.getWindowTitle(conn);
+    assertEquals("SQL Workbench/J - Postgres/Production/Shop/Shop-DWH", title);
+    builder.setShowAppNameAtEnd(true);
+    title = builder.getWindowTitle(conn);
+    assertEquals("Postgres/Production/Shop/Shop-DWH - SQL Workbench/J", title);
+    builder.setEncloseGroup("[]");
+    title = builder.getWindowTitle(conn);
+    assertEquals("[Postgres/Production/Shop/Shop-DWH] - SQL Workbench/J", title);
+    builder.setShowURL(true);
+    builder.setRemoveJDBCProductFromURL(false);
+    builder.setEncloseGroup(null);
+    title = builder.getWindowTitle(conn);
+    assertEquals("postgresql://prod-db/shop - SQL Workbench/J", title);
+  }
+
+  @Test
   public void testTemplate()
   {
     WindowTitleBuilder builder = new WindowTitleBuilder();
-    builder.setTitleTemplate("{conn} - ({wksp})");
+    builder.setEncloseWksp("[");
+    builder.setTitleTemplate("{conn} - {wksp}");
     String title = builder.getWindowTitle(null, null, null);
     assertEquals(ResourceMgr.getString("TxtNotConnected"), title);
   }

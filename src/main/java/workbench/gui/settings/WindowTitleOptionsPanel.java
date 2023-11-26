@@ -42,18 +42,23 @@ public class WindowTitleOptionsPanel
     // It is important to add these in the correct order
     // which is defined by the numeric values from Settings.SHOW_NO_FILENAME
     // SHOW_FILENAME and SHOW_FULL_PATH
-    this.windowTitleComboBox.addItem(ResourceMgr.getString("TxtShowNone"));
-    this.windowTitleComboBox.addItem(ResourceMgr.getString("TxtShowName"));
-    this.windowTitleComboBox.addItem(ResourceMgr.getString("TxtShowPath"));
+    this.showFilename.addItem(ResourceMgr.getString("TxtShowNone"));
+    this.showFilename.addItem(ResourceMgr.getString("TxtShowName"));
+    this.showFilename.addItem(ResourceMgr.getString("TxtShowPath"));
 
     WbTraversalPolicy policy = new WbTraversalPolicy();
+    policy.addComponent(showUrl);
+    policy.addComponent(includeUser);
     policy.addComponent(productAtEnd);
-    policy.addComponent(showProfileGroup);
     policy.addComponent(showWorkspace);
-    policy.addComponent(windowTitleComboBox);
-    policy.setDefaultComponent(productAtEnd);
+    policy.addComponent(encloseWksp.getSelector());
+    policy.addComponent(showProfileGroup);
+    policy.addComponent(encloseProfile.getSelector());
+    policy.addComponent(showFilename);
+    policy.setDefaultComponent(showUrl);
 
-    this.encloseChar.insertItemAt(ResourceMgr.getString("TxtNothingItem"), 0);
+    encloseProfile.setLabelKey("LblEncloseGroupChar");
+    encloseWksp.setLabelKey("LblEncloseWkspChar");
     this.setFocusTraversalPolicy(policy);
     this.setFocusCycleRoot(false);
     this.restoreSettings();
@@ -65,7 +70,7 @@ public class WindowTitleOptionsPanel
     int type = GuiSettings.getShowFilenameInWindowTitle();
     if (type >= GuiSettings.SHOW_NO_FILENAME && type <= GuiSettings.SHOW_FULL_PATH)
     {
-      this.windowTitleComboBox.setSelectedIndex(type);
+      this.showFilename.setSelectedIndex(type);
     }
     this.showProfileGroup.setSelected(GuiSettings.getShowProfileGroupInWindowTitle());
     this.showWorkspace.setSelected(GuiSettings.getShowWorkspaceInWindowTitle());
@@ -73,54 +78,22 @@ public class WindowTitleOptionsPanel
     this.showUrl.setSelected(GuiSettings.getShowURLinWindowTitle());
     this.includeUser.setSelected(GuiSettings.getIncludeUserInTitleURL());
     this.includeUser.setEnabled(showUrl.isSelected());
-    String enclose = GuiSettings.getTitleGroupBracket();
-    if (enclose == null)
-    {
-      encloseChar.setSelectedIndex(0);
-    }
-    else
-    {
-      int count = encloseChar.getItemCount();
-      for (int i = 1; i < count; i++)
-      {
-        String item = (String) encloseChar.getItemAt(i);
-        if (item.startsWith(enclose.trim()))
-        {
-          encloseChar.setSelectedIndex(i);
-          break;
-        }
-      }
-    }
-    checkShowProfile();
-    this.titleGroupSep.setText(GuiSettings.getTitleGroupSeparator());
+    encloseProfile.setSelectedItem(GuiSettings.getTitleGroupBracket());
+    encloseWksp.setSelectedItem(GuiSettings.getTitleWorkspaceBracket());
+    encloseWksp.setEnabled(this.showWorkspace.isSelected());
   }
 
   @Override
   public void saveSettings()
   {
-    GuiSettings.setShowFilenameInWindowTitle(this.windowTitleComboBox.getSelectedIndex());
+    GuiSettings.setShowFilenameInWindowTitle(this.showFilename.getSelectedIndex());
     GuiSettings.setShowProfileGroupInWindowTitle(showProfileGroup.isSelected());
     GuiSettings.setShowWorkspaceInWindowTitle(showWorkspace.isSelected());
     GuiSettings.setShowProductNameAtEnd(productAtEnd.isSelected());
-    GuiSettings.setTitleGroupSeparator(titleGroupSep.getText());
     GuiSettings.setShowURLinWindowTitle(showUrl.isSelected());
     GuiSettings.setIncludeUserInTitleURL(includeUser.isSelected());
-    int index = this.encloseChar.getSelectedIndex();
-    if (index == 0)
-    {
-      GuiSettings.setTitleGroupBracket(null);
-    }
-    else
-    {
-      String bracket = (String) this.encloseChar.getSelectedItem();
-      GuiSettings.setTitleGroupBracket(bracket.substring(0, 1));
-    }
-  }
-
-  protected void checkShowProfile()
-  {
-    this.encloseChar.setEnabled(this.showProfileGroup.isSelected());
-    this.titleGroupSep.setEnabled(this.showProfileGroup.isSelected());
+    GuiSettings.setTitleGroupBracket(encloseProfile.getSelectedBrackets());
+    GuiSettings.setTitleWkspBracket(encloseWksp.getSelectedBrackets());
   }
 
   /** This method is called from within the constructor to
@@ -137,14 +110,12 @@ public class WindowTitleOptionsPanel
     showProfileGroup = new javax.swing.JCheckBox();
     showWorkspace = new javax.swing.JCheckBox();
     windowTitleLabel = new javax.swing.JLabel();
-    windowTitleComboBox = new javax.swing.JComboBox();
-    encloseCharLabel = new javax.swing.JLabel();
-    encloseChar = new javax.swing.JComboBox();
+    showFilename = new javax.swing.JComboBox();
     jPanel1 = new javax.swing.JPanel();
-    titleGroupSepLabel = new javax.swing.JLabel();
-    titleGroupSep = new javax.swing.JTextField();
     showUrl = new javax.swing.JCheckBox();
     includeUser = new javax.swing.JCheckBox();
+    encloseWksp = new workbench.gui.settings.BracketSelector();
+    encloseProfile = new workbench.gui.settings.BracketSelector();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -156,7 +127,7 @@ public class WindowTitleOptionsPanel
     gridBagConstraints.gridy = 2;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(6, 0, 2, 11);
+    gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
     add(productAtEnd, gridBagConstraints);
 
     showProfileGroup.setText(ResourceMgr.getString("LblShowProfileGroup")); // NOI18N
@@ -165,19 +136,11 @@ public class WindowTitleOptionsPanel
     showProfileGroup.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
     showProfileGroup.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
     showProfileGroup.setIconTextGap(5);
-    showProfileGroup.addChangeListener(new javax.swing.event.ChangeListener()
-    {
-      public void stateChanged(javax.swing.event.ChangeEvent evt)
-      {
-        showProfileGroupStateChanged(evt);
-      }
-    });
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 4;
-    gridBagConstraints.gridwidth = 4;
+    gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 11);
     add(showProfileGroup, gridBagConstraints);
 
     showWorkspace.setText(ResourceMgr.getString("LblShowWorkspace")); // NOI18N
@@ -189,70 +152,34 @@ public class WindowTitleOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
-    gridBagConstraints.gridwidth = 4;
+    gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 1);
+    gridBagConstraints.insets = new java.awt.Insets(3, 0, 2, 0);
     add(showWorkspace, gridBagConstraints);
 
-    windowTitleLabel.setLabelFor(windowTitleComboBox);
+    windowTitleLabel.setLabelFor(showFilename);
     windowTitleLabel.setText(ResourceMgr.getString("LblShowEditorInfo")); // NOI18N
     windowTitleLabel.setToolTipText(ResourceMgr.getString("d_LblShowEditorInfo")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new java.awt.Insets(16, 0, 0, 0);
+    gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
     add(windowTitleLabel, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    gridBagConstraints.insets = new java.awt.Insets(15, 4, 0, 11);
-    add(windowTitleComboBox, gridBagConstraints);
-
-    encloseCharLabel.setText(ResourceMgr.getString("LblEncloseGroupChar")); // NOI18N
-    encloseCharLabel.setToolTipText(ResourceMgr.getString("d_LblEncloseGroupChar")); // NOI18N
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(10, 0, 2, 0);
-    add(encloseCharLabel, gridBagConstraints);
-
-    encloseChar.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "( )", "{ }", "[ ]", "< >" }));
-    encloseChar.setToolTipText(ResourceMgr.getDescription("LblEncloseGroupChar"));
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(10, 4, 0, 11);
-    add(encloseChar, gridBagConstraints);
+    gridBagConstraints.insets = new java.awt.Insets(8, 4, 0, 11);
+    add(showFilename, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 6;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(jPanel1, gridBagConstraints);
-
-    titleGroupSepLabel.setText(ResourceMgr.getString("LblGroupSeparator")); // NOI18N
-    titleGroupSepLabel.setToolTipText(ResourceMgr.getString("d_LblGroupSeparator")); // NOI18N
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 2;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(10, 2, 2, 0);
-    add(titleGroupSepLabel, gridBagConstraints);
-
-    titleGroupSep.setColumns(5);
-    titleGroupSep.setToolTipText(ResourceMgr.getDescription("LblGroupSeparator"));
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 5;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(10, 5, 2, 11);
-    add(titleGroupSep, gridBagConstraints);
 
     showUrl.setText(ResourceMgr.getString("LblUrlInTitle")); // NOI18N
     showUrl.setToolTipText(ResourceMgr.getString("d_LblUrlInTitle")); // NOI18N
@@ -280,13 +207,21 @@ public class WindowTitleOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(6, 21, 2, 11);
+    gridBagConstraints.insets = new java.awt.Insets(1, 20, 5, 11);
     add(includeUser, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 3;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(3, 7, 2, 0);
+    add(encloseWksp, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 3;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(0, 7, 0, 0);
+    add(encloseProfile, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
-
-private void showProfileGroupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_showProfileGroupStateChanged
-  checkShowProfile();
-}//GEN-LAST:event_showProfileGroupStateChanged
 
   private void showUrlActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showUrlActionPerformed
   {//GEN-HEADEREND:event_showUrlActionPerformed
@@ -294,17 +229,15 @@ private void showProfileGroupStateChanged(javax.swing.event.ChangeEvent evt) {//
   }//GEN-LAST:event_showUrlActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox encloseChar;
-  private javax.swing.JLabel encloseCharLabel;
+  private workbench.gui.settings.BracketSelector encloseProfile;
+  private workbench.gui.settings.BracketSelector encloseWksp;
   private javax.swing.JCheckBox includeUser;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JCheckBox productAtEnd;
+  private javax.swing.JComboBox showFilename;
   private javax.swing.JCheckBox showProfileGroup;
   private javax.swing.JCheckBox showUrl;
   private javax.swing.JCheckBox showWorkspace;
-  private javax.swing.JTextField titleGroupSep;
-  private javax.swing.JLabel titleGroupSepLabel;
-  private javax.swing.JComboBox windowTitleComboBox;
   private javax.swing.JLabel windowTitleLabel;
   // End of variables declaration//GEN-END:variables
 }

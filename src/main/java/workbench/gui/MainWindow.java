@@ -365,8 +365,8 @@ public class MainWindow
       GuiSettings.PROP_TITLE_SHOW_URL,
       GuiSettings.PROP_TITLE_SHOW_PROF_GROUP,
       GuiSettings.PROP_TITLE_SHOW_EDITOR_FILE,
-      GuiSettings.PROP_TITLE_GROUP_SEP,
       GuiSettings.PROP_TITLE_GROUP_BRACKET,
+      GuiSettings.PROP_TITLE_WKSP_BRACKET,
       GuiSettings.PROP_TITLE_SHOW_URL_USER
     );
     ShortcutManager.getInstance().addChangeListener(this);

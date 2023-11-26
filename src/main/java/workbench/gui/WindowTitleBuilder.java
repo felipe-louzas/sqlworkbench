@@ -22,7 +22,6 @@
 package workbench.gui;
 
 import java.io.File;
-import java.util.List;
 
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
@@ -47,15 +46,43 @@ public class WindowTitleBuilder
   public static final String DELIM = " - ";
 
   private boolean showProfileGroup = GuiSettings.getShowProfileGroupInWindowTitle();
-  private boolean showLastGroupName = GuiSettings.getShowLastGroupInWindowTitle();
   private boolean showURL = GuiSettings.getShowURLinWindowTitle();
   private boolean includeUser = GuiSettings.getIncludeUserInTitleURL();
   private boolean showWorkspace = GuiSettings.getShowWorkspaceInWindowTitle();
   private boolean showNotConnected = true;
+  private boolean showAppNameAtEnd = GuiSettings.getShowProductNameAtEnd();
+  private boolean cleanupURL = GuiSettings.getCleanupURLParametersInWindowTitle();
+  private boolean removeJDBCProduct = GuiSettings.getRemoveJDBCProductInWindowTitle();
   private String titleTemplate;
+  private String encloseWksp = GuiSettings.getTitleWorkspaceBracket();
+  private String encloseGroup = GuiSettings.getTitleGroupBracket();
 
   public WindowTitleBuilder()
   {
+  }
+
+  public void setRemoveJDBCProductFromURL(boolean flag)
+  {
+    removeJDBCProduct = flag;
+  }
+  public void setCleanupURL(boolean flag)
+  {
+    this.cleanupURL = flag;
+  }
+
+  public void setShowAppNameAtEnd(boolean flag)
+  {
+    this.showAppNameAtEnd = flag;
+  }
+
+  public void setEncloseWksp(String encloseWksp)
+  {
+    this.encloseWksp = encloseWksp;
+  }
+
+  public void setEncloseGroup(String encloseGroup)
+  {
+    this.encloseGroup = encloseGroup;
   }
 
   public final void setTitleTemplate(String template)
@@ -70,11 +97,6 @@ public class WindowTitleBuilder
   public void setShowProfileGroup(boolean flag)
   {
     this.showProfileGroup = flag;
-  }
-
-  public void setShowLastGroup(boolean flag)
-  {
-    this.showLastGroupName = flag;
   }
 
   public void setShowURL(boolean flag)
@@ -147,6 +169,7 @@ public class WindowTitleBuilder
     {
       connInfo = ResourceMgr.getString("TxtNotConnected");
     }
+    connInfo = enclose(connInfo, encloseGroup);
 
     String wksp = null;
     if (StringUtil.isNotBlank(workspaceFile) && showWorkspace)
@@ -160,6 +183,7 @@ public class WindowTitleBuilder
         WbFile f = new WbFile(workspaceFile);
         wksp = f.getFullPath();
       }
+      wksp = enclose(wksp, encloseWksp);
     }
 
     String fname = null;
@@ -190,8 +214,6 @@ public class WindowTitleBuilder
       title = title.replace(DELIM + param, "");
       title = title.replace(param + DELIM, "");
       title = title.replaceFirst("\\s{0,1}" + StringUtil.quoteRegexMeta(param), "");
-      title = title.replace(DELIM + "()", "");
-      title = title.replace("()" + DELIM, "");
       return title;
     }
     return title.replace(param, value);
@@ -204,33 +226,22 @@ public class WindowTitleBuilder
 
     if (showProfileGroup)
     {
-      String enclose = GuiSettings.getTitleGroupBracket();
-      String sep = GuiSettings.getTitleGroupSeparator();
-
-      char open = getOpeningBracket(enclose);
-      char close = getClosingBracket(enclose);
-
-      if (open != 0 && close != 0)
-      {
-        name += open;
-      }
-      if (showLastGroupName)
-      {
-        List<String> groups = profile.getGroups();
-        name += groups.get(groups.size() - 1);
-      }
-      else
-      {
-        name += profile.getGroupPathString();
-      }
-      if (open != 0 && close != 0)
-      {
-        name += close;
-      }
-      if (sep != null) name += sep;
+      name += profile.getGroupPathString() + "/";
     }
     name += profile.getName();
     return name;
+  }
+
+  private String enclose(String value, String enclose)
+  {
+    if (value == null || StringUtil.isBlank(enclose)) return value;
+    char open = getOpeningBracket(enclose);
+    char close = getClosingBracket(enclose);
+    if (open != 0 && close != 0)
+    {
+      return open + value + close;
+    }
+    return value;
   }
 
   private char getOpeningBracket(String settingsValue)
@@ -257,7 +268,7 @@ public class WindowTitleBuilder
     url = url.replace("jdbc:", "");
 
     // remove URL parameters
-    if (GuiSettings.getCleanupURLParametersInWindowTitle())
+    if (cleanupURL)
     {
       int pos = url.indexOf('&');
       if (pos > 0)
@@ -282,7 +293,7 @@ public class WindowTitleBuilder
       url = url.replaceFirst("(?i)(integratedSecurity=true);*", "");
     }
 
-    if (GuiSettings.getRemoveJDBCProductInWindowTitle())
+    if (removeJDBCProduct)
     {
       if (url.contains("oracle:"))
       {
@@ -313,7 +324,7 @@ public class WindowTitleBuilder
     String template = GuiSettings.getTitleTemplate();
     if (template != null) return template;
 
-    if (GuiSettings.getShowProductNameAtEnd())
+    if (showAppNameAtEnd)
     {
       return PARM_CONN + DELIM + PARM_WKSP + DELIM + PARM_FNAME + DELIM + PARM_APP_NAME;
     }
