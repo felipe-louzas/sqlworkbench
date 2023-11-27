@@ -112,7 +112,7 @@ public class ObjectScripterUI
 
     WbSwingUtilities.invoke(() ->
     {
-      editor.appendLine(text.toString());
+      editor.appendText(text.toString());
     });
   }
 

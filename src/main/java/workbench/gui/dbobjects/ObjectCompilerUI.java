@@ -132,7 +132,7 @@ public class ObjectCompilerUI
   {
     EventQueue.invokeLater(() ->
     {
-      log.appendLine(msg);
+      log.appendText(msg);
       log.validate();
       log.updateScrollBars();
     });

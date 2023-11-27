@@ -1548,7 +1548,7 @@ public class JEditTextArea
 
   }
 
-  public void appendLine(String aLine)
+  public void appendText(String aLine)
   {
     if (MemoryWatcher.isMemoryLow(true))
     {

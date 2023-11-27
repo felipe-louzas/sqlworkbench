@@ -240,7 +240,7 @@ public class EditConnectionFiltersPanel
     if (filter.getFilterExpressions() == null) return;
     for (String s : filter.getFilterExpressions())
     {
-      editor.appendLine(s + "\n");
+      editor.appendText(s + "\n");
     }
   }
 

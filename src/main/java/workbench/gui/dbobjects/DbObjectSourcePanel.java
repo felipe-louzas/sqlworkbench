@@ -396,7 +396,7 @@ public class DbObjectSourcePanel
     if (StringUtil.isEmpty(text)) return;
     WbSwingUtilities.invoke(() ->
     {
-      sourceEditor.appendLine(text);
+      sourceEditor.appendText(text);
       sourceEditor.invalidate();
       sourceEditor.doLayout();
     });

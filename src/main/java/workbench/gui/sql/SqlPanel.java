@@ -1711,9 +1711,9 @@ public class SqlPanel
 
   public void appendStatementText(String text)
   {
-    this.editor.appendLine("\n");
+    this.editor.appendText("\n");
     int pos = this.editor.getText().length();
-    this.editor.appendLine(text);
+    this.editor.appendText(text);
     this.editor.setCaretPosition(pos);
     this.editor.scrollToCaret();
   }
@@ -4132,16 +4132,16 @@ public class SqlPanel
       {
         if (StringUtil.isNotBlank(comment))
         {
-          if (pos > 1) this.editor.appendLine("\n");
-          this.editor.appendLine(comment + "\n");
+          if (pos > 1) this.editor.appendText("\n");
+          this.editor.appendText(comment + "\n");
         }
         else
         {
-          this.editor.appendLine("\n\n");
+          this.editor.appendText("\n\n");
         }
         pos = this.editor.getDocumentLength();
       }
-      this.editor.appendLine(sql + ";\n");
+      this.editor.appendText(sql + ";\n");
       this.editor.setCaretPosition(pos);
       this.editor.scrollToCaret();
     }

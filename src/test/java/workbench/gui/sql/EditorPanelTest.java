@@ -95,13 +95,13 @@ public class EditorPanelTest
 
       ActionEvent evt = new ActionEvent(p, 1, "break");
       p.setAutoIndent(false);
-      p.appendLine("Line1");
+      p.appendText("Line1");
 
       ActionListener insert = new InputHandler.InsertBreak();
       insert.actionPerformed(evt);
-      p.appendLine("Line2");
+      p.appendText("Line2");
       insert.actionPerformed(evt);
-      p.appendLine("Line3");
+      p.appendText("Line3");
       insert.actionPerformed(evt);
 
       String content = p.getText();
@@ -125,11 +125,11 @@ public class EditorPanelTest
       p = EditorPanel.createTextEditor();
       evt = new ActionEvent(p, 1, "break");
       p.setAutoIndent(false);
-      p.appendLine("Line1");
+      p.appendText("Line1");
       insert.actionPerformed(evt);
-      p.appendLine("Line2");
+      p.appendText("Line2");
       insert.actionPerformed(evt);
-      p.appendLine("Line3");
+      p.appendText("Line3");
       insert.actionPerformed(evt);
 
       content = p.getText();

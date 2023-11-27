@@ -481,7 +481,8 @@ public class WbDateFormatter
     }
 
     // shouldn't happen
-    LogMgr.logError(new CallerInfo(){}, "formatDateTimeValue() called with an instance that is not a date/time value", new Exception("Backtrace"));
+    LogMgr.logError(new CallerInfo(){}, "formatDateTimeValue() called with an instance that is not a date/time value. " +
+      "Class: [" + value.getClass().getName() + "], Value: " + value, new Exception("Backtrace"));
     return value.toString();
   }
 

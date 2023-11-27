@@ -308,8 +308,8 @@ public class TableSearchPanel
   {
     EventQueue.invokeLater(() ->
     {
-      sqlDisplay.appendLine(msg);
-      sqlDisplay.appendLine("\n\n");
+      sqlDisplay.appendText(msg);
+      sqlDisplay.appendText("\n\n");
     });
   }
 
@@ -324,7 +324,7 @@ public class TableSearchPanel
       if (sql == null)
       {
         String msg = ResourceMgr.getFormattedString("MsgNoCharCols", table);
-        sqlDisplay.appendLine("-- " + msg);
+        sqlDisplay.appendText("-- " + msg);
       }
       else
       {
@@ -337,9 +337,9 @@ public class TableSearchPanel
         info.append(NumberStringCache.getNumberString(totalObjects));
         info.append(')');
         statusInfo.setText(info.toString());
-        sqlDisplay.appendLine(sql + ";");
+        sqlDisplay.appendText(sql + ";");
       }
-      sqlDisplay.appendLine("\n\n");
+      sqlDisplay.appendText("\n\n");
     });
   }
 

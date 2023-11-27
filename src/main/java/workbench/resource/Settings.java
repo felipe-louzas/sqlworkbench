@@ -1874,8 +1874,8 @@ public class Settings
   }
 
   /**
-   * The real setting for the external line ending property
-   * to be used by the options dialog
+   * The display value for the external line ending property
+   * to be used by the options dialog.
    */
   public String getExternalLineEndingValue()
   {
@@ -1883,8 +1883,8 @@ public class Settings
   }
 
   /**
-   * The real setting for the internal line ending property
-   * to be used by the options dialog
+   * The display value for the internal line ending property
+   * to be used by the options dialog.
    */
   public String getInteralLineEndingValue()
   {

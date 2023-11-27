@@ -77,7 +77,7 @@ public class DuplicateCurrentLine
 
     if (doAppend)
     {
-      textArea.appendLine(dupeText);
+      textArea.appendText(dupeText);
     }
     else
     {
