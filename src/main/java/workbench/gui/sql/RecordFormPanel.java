@@ -335,6 +335,13 @@ public class RecordFormPanel
     String tsFormat = sett.getDefaultTimestampFormat();
     WbRenderer tsRenderer = new DateColumnRenderer(tsFormat, variableFractions);
 
+    String tsTZFormat = sett.getDefaultTimestampTZFormat();
+    WbRenderer tsTZRenderer = null;
+    if (tsTZFormat != null)
+    {
+      tsTZRenderer = new DateColumnRenderer(tsTZFormat, variableFractions);
+    }
+
     int maxDigits = sett.getMaxFractionDigits();
     char sep = sett.getDecimalSymbol().charAt(0);
 
@@ -349,6 +356,10 @@ public class RecordFormPanel
       else if (type == Types.DATE)
       {
         renderer[i] = dateRenderer;
+      }
+      else if (type == Types.TIMESTAMP_WITH_TIMEZONE && tsTZRenderer != null)
+      {
+        renderer[i] = tsTZRenderer;
       }
       else if (type == Types.TIMESTAMP)
       {

@@ -9,8 +9,12 @@ array_fill
 array_length
 array_lower
 array_ndims
+array_position
+array_positions
 array_prepend
 array_remove
+array_sample
+array_shuffle
 array_to_json
 array_to_string
 array_upper

@@ -62,6 +62,8 @@ public class DataFormattingOptionsPanel
     dateFormatTextField.setCaretPosition(0);
     timestampFormatTextField.setText(Settings.getInstance().getDefaultTimestampFormat());
     timestampFormatTextField.setCaretPosition(0);
+    timestampTZFormat.setText(Settings.getInstance().getDefaultTimestampTZFormat());
+    timestampTZFormat.setCaretPosition(0);
     decimalField.setText(Settings.getInstance().getDecimalSymbol());
     timeFormat.setText(Settings.getInstance().getDefaultTimeFormat());
     maxDigitsField.setText(Integer.toString(Settings.getInstance().getMaxFractionDigits()));
@@ -77,6 +79,7 @@ public class DataFormattingOptionsPanel
     Settings.getInstance().setDefaultDateFormat(this.dateFormatTextField.getText());
     Settings.getInstance().setDefaultTimeFormat(this.timeFormat.getText());
     Settings.getInstance().setDefaultTimestampFormat(this.timestampFormatTextField.getText());
+    Settings.getInstance().setDefaultTimestampTZFormat(this.timestampTZFormat.getText());
     Settings.getInstance().setMaxFractionDigits(((NumberField)this.maxDigitsField).getValue());
     Settings.getInstance().setDecimalSymbol(StringUtil.trimToNull(this.decimalField.getText()));
     Settings.getInstance().setDecimalGroupCharacter(groupSeparator.getText());
@@ -213,6 +216,8 @@ public class DataFormattingOptionsPanel
     intFormat = new javax.swing.JTextField();
     maxDigitsField = new NumberField();
     numberFormatHelp = new javax.swing.JLabel();
+    jLabel1 = new javax.swing.JLabel();
+    timestampTZFormat = new javax.swing.JTextField();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -233,7 +238,7 @@ public class DataFormattingOptionsPanel
     add(dateFormatTextField, gridBagConstraints);
 
     timestampFormatLabel.setText(ResourceMgr.getString("LblTimestampFormat")); // NOI18N
-    timestampFormatLabel.setToolTipText(ResourceMgr.getDescription("LblTimestampFormat"));
+    timestampFormatLabel.setToolTipText(ResourceMgr.getString("d_LblTimestampFormat")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
@@ -253,13 +258,13 @@ public class DataFormattingOptionsPanel
     timeFormatLabel.setToolTipText(ResourceMgr.getDescription("LblTimeFormat"));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(8, 0, 11, 0);
     add(timeFormatLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
     gridBagConstraints.weightx = 1.0;
@@ -286,6 +291,7 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
     add(helpLabel, gridBagConstraints);
@@ -384,19 +390,38 @@ public class DataFormattingOptionsPanel
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 3;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+    gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
     jPanel2.add(numberFormatHelp, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(jPanel2, gridBagConstraints);
+
+    jLabel1.setText(ResourceMgr.getString("LblTimestampTZFormat")); // NOI18N
+    jLabel1.setToolTipText(ResourceMgr.getString("d_LblTimestampTZFormat")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+    add(jLabel1, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(7, 7, 0, 11);
+    add(timestampTZFormat, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -452,6 +477,7 @@ public class DataFormattingOptionsPanel
   private javax.swing.JLabel helpLabel;
   private javax.swing.JTextField intFormat;
   private javax.swing.JLabel intFormatLabel;
+  private javax.swing.JLabel jLabel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JTextField maxDigitsField;
   private javax.swing.JLabel maxDigitsLabel;
@@ -461,6 +487,7 @@ public class DataFormattingOptionsPanel
   private javax.swing.JLabel timeFormatLabel;
   private javax.swing.JLabel timestampFormatLabel;
   private javax.swing.JTextField timestampFormatTextField;
+  private javax.swing.JTextField timestampTZFormat;
   // End of variables declaration//GEN-END:variables
 
 }

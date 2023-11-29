@@ -101,6 +101,7 @@ public abstract class RowDataConverter
   protected WbNumberFormatter defaultNumberFormatter;
   protected WbNumberFormatter defaultIntegerFormatter;
   protected WbDateFormatter defaultTimestampFormatter;
+  protected WbDateFormatter defaultTimestampTZFormatter;
   protected boolean needsUpdateTable;
   protected OutputFactory factory;
   private boolean compressExternalFiles;
@@ -249,6 +250,10 @@ public abstract class RowDataConverter
   {
     this.defaultDateFormatter.setInfinityLiterals(infinityLiterals);
     this.defaultTimestampFormatter.setInfinityLiterals(infinityLiterals);
+    if (this.defaultTimestampTZFormatter != null)
+    {
+      this.defaultTimestampTZFormatter.setInfinityLiterals(infinityLiterals);
+    }
   }
 
   public void setWriteHeader(boolean writeHeader)
@@ -759,6 +764,13 @@ public abstract class RowDataConverter
     syncInfinityLiterals();
   }
 
+  public void setDefaultTimestampTZFormatter(WbDateFormatter formatter)
+  {
+    if (formatter == null) return;
+    this.defaultTimestampTZFormatter = formatter;
+    syncInfinityLiterals();
+  }
+
   public void setDefaultTimeFormatter(WbDateFormatter formatter)
   {
     if (formatter == null) return;
@@ -914,6 +926,10 @@ public abstract class RowDataConverter
           result = this.defaultTimestampFormatter.formatUtilDate((java.util.Date)value);
         }
       }
+      else if (this.defaultTimestampTZFormatter != null && WbDateFormatter.isTimestampTZValue(value))
+      {
+        result = this.defaultTimestampTZFormatter.formatDateTimeValue(value);
+      }
       else if (this.defaultTimestampFormatter != null && WbDateFormatter.isTimestampValue(value))
       {
         result = this.defaultTimestampFormatter.formatDateTimeValue(value);
@@ -952,7 +968,7 @@ public abstract class RowDataConverter
       {
         try
         {
-          result = blobFormatter.getBlobLiteral(value).toString();
+          result = blobFormatter.getBlobLiteral(value);
         }
         catch (SQLException e)
         {

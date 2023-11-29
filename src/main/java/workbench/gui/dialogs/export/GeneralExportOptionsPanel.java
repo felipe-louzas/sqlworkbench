@@ -138,6 +138,18 @@ public class GeneralExportOptionsPanel
   }
 
   @Override
+  public void setTimestampTZFormat(String format)
+  {
+    timestampTZFormat.setText(StringUtil.trim(format));
+  }
+
+  @Override
+  public String getTimestampTZFormat()
+  {
+    return timestampTZFormat.getText().trim();
+  }
+
+  @Override
   public void setNullString(String value)
   {
     nullString.setText(value);
@@ -243,6 +255,8 @@ public class GeneralExportOptionsPanel
     nullStringLabel = new JLabel();
     nullString = new JTextField();
     selectedRows = new JCheckBox();
+    timestampTZFormatLabel = new JLabel();
+    timestampTZFormat = new JTextField();
 
     setLayout(new GridBagLayout());
     gridBagConstraints = new GridBagConstraints();
@@ -271,6 +285,7 @@ public class GeneralExportOptionsPanel
     add(dateFormat, gridBagConstraints);
 
     timestampFormatLabel.setText(ResourceMgr.getString("LblTimestampFormat")); // NOI18N
+    timestampFormatLabel.setToolTipText(ResourceMgr.getString("d_LblTimestampFormat")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
@@ -290,7 +305,7 @@ public class GeneralExportOptionsPanel
     selectColumnsButton.setToolTipText(ResourceMgr.getString("d_LblSelectColumns")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weighty = 1.0;
@@ -301,7 +316,7 @@ public class GeneralExportOptionsPanel
     nullStringLabel.setToolTipText(ResourceMgr.getString("d_LblNullString")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new Insets(4, 0, 7, 0);
     add(nullStringLabel, gridBagConstraints);
@@ -309,7 +324,7 @@ public class GeneralExportOptionsPanel
     nullString.setToolTipText(ResourceMgr.getString("d_LblNullString")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
@@ -321,10 +336,27 @@ public class GeneralExportOptionsPanel
     selectedRows.setMargin(new Insets(2, 0, 2, 2));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
     add(selectedRows, gridBagConstraints);
+
+    timestampTZFormatLabel.setText(ResourceMgr.getString("LblTimestampTZFormat")); // NOI18N
+    timestampTZFormatLabel.setToolTipText(ResourceMgr.getString("d_LblTimestampTZFormat")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.insets = new Insets(4, 0, 7, 0);
+    add(timestampTZFormatLabel, gridBagConstraints);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 3;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(0, 4, 7, 4);
+    add(timestampTZFormat, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
@@ -338,6 +370,8 @@ public class GeneralExportOptionsPanel
   private JCheckBox selectedRows;
   private JTextField timestampFormat;
   private JLabel timestampFormatLabel;
+  private JTextField timestampTZFormat;
+  private JLabel timestampTZFormatLabel;
   // End of variables declaration//GEN-END:variables
 
 }

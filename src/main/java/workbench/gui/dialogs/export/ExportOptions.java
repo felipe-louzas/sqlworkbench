@@ -31,6 +31,8 @@ public interface ExportOptions
   String getDateFormat();
   void setTimestampFormat(String format);
   String getTimestampFormat();
+  void setTimestampTZFormat(String format);
+  String getTimestampTZFormat();
   void setEncoding(String enc);
   String getEncoding();
   String getNullString();

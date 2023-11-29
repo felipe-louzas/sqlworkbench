@@ -126,7 +126,6 @@ public class WbExport
   public static final String ARG_CONCAT_FUNCTION = "concatFunc";
   public static final String ARG_CONCAT_OPERATOR = "concat";
   public static final String ARG_CREATEFULL_HTML_PAGE = "createFullHTML";
-  public static final String ARG_DATEFORMAT = "dateFormat";
   public static final String ARG_DECIMAL_SYMBOL = "decimal";
   public static final String ARG_DECIMAL_FORMAT = "decimalFormat";
   public static final String ARG_DECIMAL_GROUP = "decimalGroup";
@@ -143,7 +142,6 @@ public class WbExport
   public static final String ARG_SHOW_ENCODINGS = "showEncodings";
   public static final String ARG_TABLE = "table";
   public static final String ARG_TIMEFORMAT = "timeFormat";
-  public static final String ARG_TIMESTAMP_FORMAT = "timestampFormat";
   public static final String ARG_INFINITY_LITERALS = "infinityLiterals";
   public static final String ARG_MERGE_TYPE = "mergeType";
   public static final String ARG_NULL_STRING = "nullString";
@@ -194,8 +192,9 @@ public class WbExport
     cmdLine.addArgument(WbImport.ARG_SHEET_NAME);
     cmdLine.addArgument(ARG_TABLE);
     cmdLine.addArgument(CommonArgs.ARG_QUOTE_CHAR);
-    cmdLine.addArgument(ARG_DATEFORMAT);
-    cmdLine.addArgument(ARG_TIMESTAMP_FORMAT);
+    cmdLine.addArgument(CommonArgs.ARG_DATE_FORMAT);
+    cmdLine.addArgument(CommonArgs.ARG_TIMESTAMP_FORMAT);
+    cmdLine.addArgument(CommonArgs.ARG_TIMESTAMP_TZ_FORMAT);
     cmdLine.addArgument(CommonArgs.ARG_LOCALE);
     cmdLine.addArgument(ARG_TIMEFORMAT);
     cmdLine.addArgument(ARG_DECIMAL_SYMBOL);
@@ -514,11 +513,14 @@ public class WbExport
     // The locale needs to be set before setting the formats!
     exporter.setLocale(CommonArgs.getLocale(cmdLine, result));
 
-    String format = cmdLine.getValue(ARG_DATEFORMAT);
+    String format = cmdLine.getValue(CommonArgs.ARG_DATE_FORMAT);
     if (format != null) exporter.setDateFormat(format);
 
-    format = cmdLine.getValue(ARG_TIMESTAMP_FORMAT);
+    format = cmdLine.getValue(CommonArgs.ARG_TIMESTAMP_FORMAT);
     if (format != null) exporter.setTimestampFormat(format);
+
+    format = cmdLine.getValue(CommonArgs.ARG_TIMESTAMP_TZ_FORMAT);
+    if (format != null) exporter.setTimestampTZFormat(format);
 
     format = cmdLine.getValue(ARG_TIMEFORMAT);
     if (format != null) exporter.setTimeFormat(format);

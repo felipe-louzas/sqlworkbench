@@ -78,11 +78,12 @@ public class BracketSelector
     }
     else
     {
+      item = item.trim();
       int count = selector.getItemCount();
       for (int i = 1; i < count; i++)
       {
-        String element = (String)selector.getItemAt(i);
-        if (element.startsWith(item.trim()))
+        String element = getValueAt(i);
+        if (element.equals(item))
         {
           selector.setSelectedIndex(i);
           break;
@@ -92,10 +93,17 @@ public class BracketSelector
     }
   }
 
+  private String getValueAt(int index)
+  {
+    if (index <= 0) return null;
+    String item = selector.getItemAt(index);
+    return item.replace(" ", "");
+  }
+
   public String getSelectedBrackets()
   {
-    if (selector.getSelectedIndex() == 0) return null;
-    return selector.getSelectedItem().toString().substring(0,1);
+    int index = selector.getSelectedIndex();
+    return getValueAt(index);
   }
 
 }

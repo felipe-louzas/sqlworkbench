@@ -112,6 +112,7 @@ public class Settings
   public static final String PROPERTY_TRIM_PWD = "workbench.profiles.trimpassword";
   public static final String PROPERTY_DATE_FORMAT = "workbench.gui.display.dateformat";
   public static final String PROPERTY_DATETIME_FORMAT = "workbench.gui.display.datetimeformat";
+  public static final String PROPERTY_TIMESTAMP_TZ_FORMAT = "workbench.gui.display.tiemstamptzformat";
   public static final String PROPERTY_VARIABLE_LENGTH_TS_FRACTION = "workbench.gui.display.datetimeformat.fractions.variable";
   public static final String PROPERTY_TIME_FORMAT = "workbench.gui.display.timeformat";
   public static final String PROPERTY_SHOW_TOOLBAR = "workbench.gui.mainwindow.showtoolbar";
@@ -3094,6 +3095,16 @@ public class Settings
   public void setDefaultTimestampFormat(String aFormat)
   {
     this.props.setProperty(PROPERTY_DATETIME_FORMAT, aFormat);
+  }
+
+  public String getDefaultTimestampTZFormat()
+  {
+    return getProperty(PROPERTY_TIMESTAMP_TZ_FORMAT, StringUtil.ISO_TZ_TIMESTAMP_FORMAT);
+  }
+
+  public void setDefaultTimestampTZFormat(String format)
+  {
+    setProperty(PROPERTY_TIMESTAMP_TZ_FORMAT, StringUtil.trimToNull(format));
   }
 
   public void setDefaultTimeFormat(String format)

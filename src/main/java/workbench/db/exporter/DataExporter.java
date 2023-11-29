@@ -149,9 +149,11 @@ public class DataExporter
   private String dateFormat;
   private String timeFormat;
   private String dateTimeFormat;
+  private String timestampTZFormat;
   private WbDateFormatter timeFormatter;
   private WbDateFormatter dateFormatter;
   private WbDateFormatter dateTimeFormatter;
+  private WbDateFormatter timestampTZFormatter;
 
   private WbNumberFormatter numberFormatter;
   private WbNumberFormatter integerFormatter;
@@ -159,6 +161,7 @@ public class DataExporter
   private boolean decimalFormatWasSet = false;
   private boolean dateFormatWasSet = false;
   private boolean dateTimeFormatWasSet = false;
+  private boolean timestampTZFormatWasSet = false;
   private boolean timeFormatWasSet = false;
   private boolean integerFormatWasSet = false;
 
@@ -1076,6 +1079,33 @@ public class DataExporter
   public String getTimestampFormat()
   {
     return dateTimeFormat;
+  }
+
+  @Override
+  public void setTimestampTZFormat(String aFormat)
+  {
+    timestampTZFormat = StringUtil.isBlank(aFormat) ? null : aFormat;
+    try
+    {
+      timestampTZFormatter = new WbDateFormatter(timestampTZFormat == null ? Settings.getInstance().getDefaultTimestampTZFormat() : timestampTZFormat, localeToUse);
+      timestampTZFormatWasSet = true;
+    }
+    catch (Exception e)
+    {
+      this.addWarning(ResourceMgr.getFormattedString("MsgIllegalDateFormatIgnored", this.timestampTZFormat));
+      timestampTZFormatter = null;
+    }
+  }
+
+  @Override
+  public String getTimestampTZFormat()
+  {
+    return dateTimeFormat;
+  }
+
+  public WbDateFormatter getTimestampTZFormatter()
+  {
+    return this.timestampTZFormatter;
   }
 
   public WbDateFormatter getTimestampFormatter()

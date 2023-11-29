@@ -44,7 +44,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1968,10 +1967,22 @@ public class WbTable
     this.setDefaultRenderer(java.util.Date.class, dateRenderer);
 
     DateColumnRenderer tsRenderer = new DateColumnRenderer(sett.getDefaultTimestampFormat(), variableFractions);
+
     this.setDefaultRenderer(java.sql.Timestamp.class, tsRenderer);
     this.setDefaultRenderer(java.time.LocalDateTime.class, tsRenderer);
-    this.setDefaultRenderer(java.time.ZonedDateTime.class, tsRenderer);
-    this.setDefaultRenderer(java.time.OffsetDateTime.class, tsRenderer);
+
+    String tsTZFormat = sett.getDefaultTimestampTZFormat();
+    if (StringUtil.isNotBlank(tsTZFormat))
+    {
+      DateColumnRenderer tsTZRenderer = new DateColumnRenderer(tsTZFormat, variableFractions);
+      this.setDefaultRenderer(java.time.ZonedDateTime.class, tsTZRenderer);
+      this.setDefaultRenderer(java.time.OffsetDateTime.class, tsTZRenderer);
+    }
+    else
+    {
+      this.setDefaultRenderer(java.time.ZonedDateTime.class, tsRenderer);
+      this.setDefaultRenderer(java.time.OffsetDateTime.class, tsRenderer);
+    }
 
     DateColumnRenderer timeRenderer = new DateColumnRenderer(sett.getDefaultTimeFormat(), variableFractions);
     this.setDefaultRenderer(java.sql.Time.class, timeRenderer);
@@ -2158,7 +2169,6 @@ public class WbTable
       {
         TableColumn col = colMod.getColumn(i);
         if (col == null) continue;
-        int type = dwModel.getColumnType(i);
         if (GuiSettings.getEnableMultilineRenderer() && isMultiLineColumn(i))
         {
           col.setCellRenderer(this.multiLineRenderer);
@@ -2170,14 +2180,6 @@ public class WbTable
         else if (isMapColumn(i))
         {
           col.setCellRenderer(new MapColumnRenderer());
-        }
-        else if (type == Types.TIMESTAMP_WITH_TIMEZONE)
-        {
-          // This is mainly for Oracle
-          // Timestamp columns are returned as a specific Oracle class and not as java.sql.Timestamp
-          // So the default renderer by class does not work
-          boolean variableFractions = Settings.getInstance().useVariableLengthTimeFractions();
-          col.setCellRenderer(new DateColumnRenderer(Settings.getInstance().getDefaultTimestampFormat(), variableFractions));
         }
       }
     }

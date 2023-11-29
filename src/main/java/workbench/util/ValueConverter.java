@@ -103,10 +103,12 @@ public class ValueConverter
 
   private String defaultDateFormat;
   private String defaultTimestampFormat;
+  private boolean timestampTZFormatSet = false;
   private char decimalCharacter = '.';
   private String decimalGroupingChar;
   private final WbDateFormatter dateFormatter = new WbDateFormatter();
   private final WbDateFormatter timestampFormatter = new WbDateFormatter();
+  private final WbDateFormatter timestampTZFormatter = new WbDateFormatter();
   private final WbDateFormatter formatter = new WbDateFormatter();
   private boolean autoConvertBooleanNumbers = true;
   private final Map<String, Boolean> booleanValues = new HashMap<>();
@@ -235,6 +237,15 @@ public class ValueConverter
     }
   }
 
+  public final void setTimestampTZFormat(String format)
+  {
+    if (StringUtil.isNotBlank(format))
+    {
+      this.timestampTZFormatSet = true;
+      this.timestampTZFormatter.applyPattern(format, true);
+    }
+  }
+
   public final void setDefaultTimestampFormat(String tsFormat)
     throws IllegalArgumentException
   {
@@ -261,7 +272,6 @@ public class ValueConverter
       this.defaultTimestampFormat = tsFormat;
       this.timestampFormatter.applyPattern(tsFormat, true);
     }
-
   }
 
   public void setNumericBooleanValues(int falseValue, int trueValue)
@@ -527,7 +537,7 @@ public class ValueConverter
         try
         {
           Object tzValue = null;
-          if (timestampFormatter.patternContainesTimeZoneInformation())
+          if (timestampTZFormatSet || timestampFormatter.patternContainesTimeZoneInformation())
           {
             tzValue = this.parseTimestampTZ(strValue);
           }
@@ -684,10 +694,26 @@ public class ValueConverter
       return ZonedDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT, ZoneId.systemDefault());
     }
 
-    timestampFormatter.setIllegalDateIsNull(illegalDateIsNull);
     Temporal result = null;
-    if (this.defaultTimestampFormat != null)
+    if (timestampTZFormatSet)
     {
+      timestampTZFormatter.setIllegalDateIsNull(illegalDateIsNull);
+      try
+      {
+        result = this.timestampFormatter.parseTimestampTZ(timestampInput);
+      }
+      catch (Exception ex)
+      {
+        if (logWarnings)
+        {
+          LogMgr.logWarning(new CallerInfo(){}, "Could not parse '" + timestampInput + "' as a timestamp with time zone using the format: " + this.timestampTZFormatter.toPattern(), null);
+        }
+        throw new ParseException("Could not convert [" + timestampInput + "] to a timestamp with timezone value!", 0);
+      }
+    }
+    else if (this.defaultTimestampFormat != null)
+    {
+      timestampFormatter.setIllegalDateIsNull(illegalDateIsNull);
       try
       {
         if (FORMAT_MILLIS.equalsIgnoreCase(defaultTimestampFormat))

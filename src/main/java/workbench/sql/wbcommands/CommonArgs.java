@@ -78,6 +78,7 @@ public class CommonArgs
   public static final String ARG_DATE_FORMAT = "dateFormat";
   public static final String ARG_LOCALE = "locale";
   public static final String ARG_TIMESTAMP_FORMAT = "timestampFormat";
+  public static final String ARG_TIMESTAMP_TZ_FORMAT = "timestampTZFormat";
   public static final String ARG_DECIMAL_CHAR = "decimal";
   public static final String ARG_DECIMAL_GROUPING = "decimalGroup";
   public static final String ARG_NUMERIC_TRUE = "numericTrue";
@@ -337,6 +338,7 @@ public class CommonArgs
     {
       cmdLine.addArgument(ARG_DATE_FORMAT);
       cmdLine.addArgument(ARG_TIMESTAMP_FORMAT);
+      cmdLine.addArgument(ARG_TIMESTAMP_TZ_FORMAT);
     }
     cmdLine.addArgument(ARG_FALSE_LITERALS);
     cmdLine.addArgument(ARG_TRUE_LITERALS);
@@ -402,6 +404,12 @@ public class CommonArgs
       addMonthWarning(format, result);
       if (format != null) converter.setDefaultTimestampFormat(format);
 
+      format = cmdLine.getValue(ARG_TIMESTAMP_TZ_FORMAT);
+      if (format != null)
+      {
+        addMonthWarning(format, result);
+        converter.setTimestampTZFormat(format);
+      }
     }
     catch (Exception e)
     {
@@ -433,7 +441,7 @@ public class CommonArgs
 
   private static void addMonthWarning(String format, StatementRunnerResult result)
   {
-    if (format == null) return;
+    if (StringUtil.isBlank(format)) return;
     if (result == null) return;
 
     Set<String> patterns = Set.of("yyyy-mm-dd", "yyyy/mm/dd", "yyyy.mm.dd",

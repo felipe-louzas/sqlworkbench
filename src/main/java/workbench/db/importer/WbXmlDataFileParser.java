@@ -26,6 +26,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,11 +75,11 @@ public class WbXmlDataFileParser
 
   private int currentColIndex = 0;
   private int realColIndex = 0;
-  private long columnLongValue = 0;
+  private Long columnLongValue;
   private String columnDataFile = null;
   private boolean isNull = false;
+  private boolean useLongValue = false;
   private StringBuilder chars;
-
   private String rowTag = XmlRowDataConverter.LONG_ROW_TAG;
   private String columnTag = XmlRowDataConverter.LONG_COLUMN_TAG;
 
@@ -106,6 +110,11 @@ public class WbXmlDataFileParser
   {
     super.setColumns(cols);
     checkImportColumns();
+  }
+
+  public void setUseLongValueForDateTime(boolean flag)
+  {
+    this.useLongValue = flag;
   }
 
   /**
@@ -411,7 +420,7 @@ public class WbXmlDataFileParser
     ignoreCurrentRow = false;
     currentColIndex = 0;
     realColIndex = 0;
-    columnLongValue = 0;
+    columnLongValue = null;
     isNull = false;
     chars = null;
     columns = null;
@@ -495,18 +504,27 @@ public class WbXmlDataFileParser
           this.currentRow[this.realColIndex] = blobDecoder.decodeBlob(value, getDefaultBlobMode());
         }
       }
-      else if (SqlUtil.isDateType(type))
+      else if (SqlUtil.isDateType(type) && columnLongValue != null && useLongValue)
       {
-        // For Date types we don't need the ValueConverter as we already
-        // have a suitable long value that doesn't need parsing
-        java.sql.Date d = new java.sql.Date(this.columnLongValue);
-        if (type == Types.TIMESTAMP)
+        switch (type)
         {
-          this.currentRow[this.realColIndex] = new java.sql.Timestamp(d.getTime());
-        }
-        else
-        {
-          this.currentRow[this.realColIndex] = d;
+          case Types.TIMESTAMP:
+            this.currentRow[this.realColIndex] = new java.sql.Timestamp(columnLongValue);
+            break;
+          case Types.DATE:
+            this.currentRow[this.realColIndex] = new java.sql.Date(columnLongValue);
+            break;
+          case Types.TIMESTAMP_WITH_TIMEZONE:
+            Instant instant  = Instant.ofEpochMilli(columnLongValue);
+            if (this.connection.getDbSettings().useOffsetDateTimeForTimestampTZ())
+            {
+              this.currentRow[this.realColIndex] = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
+            }
+            else
+            {
+              this.currentRow[this.realColIndex] = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+            }
+            break;
         }
       }
       else
@@ -647,20 +665,21 @@ public class WbXmlDataFileParser
       else if (qName.equals(columnTag))
       {
         chars = new StringBuilder();
-        String attrValue = attrs.getValue(XmlRowDataConverter.ATTR_LONGVALUE);
-        if (attrValue != null)
+        String tsValue = attrs.getValue(XmlRowDataConverter.ATTR_LONGVALUE);
+        if (tsValue != null)
         {
           try
           {
-            columnLongValue = Long.parseLong(attrValue);
+            columnLongValue = Long.valueOf(tsValue);
           }
           catch (NumberFormatException e)
           {
-            LogMgr.logError(new CallerInfo(){}, "Error converting longvalue", e);
+            columnLongValue = null;
+            LogMgr.logError(new CallerInfo(){}, "Error converting longvalue " + tsValue, e);
           }
         }
-        attrValue = attrs.getValue(XmlRowDataConverter.ATTR_NULL);
-        isNull = "true".equals(attrValue);
+        String nullMarker = attrs.getValue(XmlRowDataConverter.ATTR_NULL);
+        isNull = "true".equals(nullMarker);
         columnDataFile = attrs.getValue(XmlRowDataConverter.ATTR_DATA_FILE);
       }
       else

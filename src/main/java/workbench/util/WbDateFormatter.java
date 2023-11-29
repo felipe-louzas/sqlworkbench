@@ -412,6 +412,13 @@ public class WbDateFormatter
            value instanceof OffsetDateTime ||
            value instanceof ZonedDateTime;
   }
+
+  public static boolean isTimestampTZValue(Object value)
+  {
+    return value instanceof OffsetDateTime ||
+           value instanceof ZonedDateTime;
+  }
+  
   public static boolean isDateValue(Object value)
   {
     return value instanceof java.sql.Date ||

@@ -24,12 +24,14 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import workbench.WbTestCase;
 
 import workbench.db.JdbcUtils;
+import workbench.db.PostgresDbTest;
 import workbench.db.WbConnection;
 import workbench.db.postgres.PostgresTestUtil;
 
@@ -40,6 +42,7 @@ import workbench.util.WbDateFormatter;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
@@ -47,6 +50,7 @@ import static org.junit.Assert.*;
  *
  * @author Thomas Kellerer
  */
+@Category(PostgresDbTest.class)
 public class PostgresRowDataReaderTest
   extends WbTestCase
 {
@@ -99,12 +103,12 @@ public class PostgresRowDataReaderTest
       WbDateFormatter wdt = new WbDateFormatter();
 
       Object inf = row.getValue(5);
-      assertTrue(inf instanceof ZonedDateTime);
+      assertTrue(inf instanceof OffsetDateTime);
       String f = wdt.formatDateTimeValue(inf);
       assertEquals("infinity", f);
 
       Object inf2 = row.getValue(6);
-      assertTrue(inf2 instanceof ZonedDateTime);
+      assertTrue(inf2 instanceof OffsetDateTime);
       f = f = wdt.formatDateTimeValue(inf2);
       assertEquals("-infinity", f);
 
