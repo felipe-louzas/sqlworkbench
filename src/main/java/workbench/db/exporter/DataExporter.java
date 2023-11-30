@@ -1070,7 +1070,7 @@ public class DataExporter
     }
     catch (Exception e)
     {
-      this.addWarning(ResourceMgr.getFormattedString("MsgIllegalDateFormatIgnored", this.dateTimeFormat));
+      this.addWarning(ResourceMgr.getFormattedString("MsgIllegalTSFormatIgnored", this.dateTimeFormat));
       dateTimeFormatter = null;
     }
   }
@@ -1085,6 +1085,7 @@ public class DataExporter
   public void setTimestampTZFormat(String aFormat)
   {
     timestampTZFormat = StringUtil.isBlank(aFormat) ? null : aFormat;
+    timestampTZFormatter = null;
     try
     {
       timestampTZFormatter = new WbDateFormatter(timestampTZFormat == null ? Settings.getInstance().getDefaultTimestampTZFormat() : timestampTZFormat, localeToUse);
@@ -1092,7 +1093,7 @@ public class DataExporter
     }
     catch (Exception e)
     {
-      this.addWarning(ResourceMgr.getFormattedString("MsgIllegalDateFormatIgnored", this.timestampTZFormat));
+      this.addWarning(ResourceMgr.getFormattedString("MsgIllegalTSTZFormatIgnored", this.timestampTZFormat));
       timestampTZFormatter = null;
     }
   }

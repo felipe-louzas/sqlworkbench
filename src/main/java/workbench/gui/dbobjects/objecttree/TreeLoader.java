@@ -239,6 +239,7 @@ public class TreeLoader
 
   public void setSelectedTypes(List<String> types)
   {
+    LogMgr.logDebug(new CallerInfo(){}, "Changing selected object types to: " + types);
     typesToShow.clear();
     if (types != null && availableTypes != null)
     {
@@ -519,6 +520,12 @@ public class TreeLoader
     }
   }
 
+  private boolean shouldShowType(String type)
+  {
+    if (type == null) return false;
+    return (typesToShow.isEmpty() || typesToShow.contains("*") || typesToShow.contains(type));
+  }
+
   private void addTypeNodes(ObjectTreeNode parentNode)
   {
     if (parentNode == null) return;
@@ -526,7 +533,7 @@ public class TreeLoader
     for (String type : availableTypes)
     {
       if (type.equalsIgnoreCase(TriggerReader.TYPE_NAME) || type.equalsIgnoreCase(ProcedureReader.TYPE_NAME_PROC)) continue;
-      if (typesToShow.isEmpty() || typesToShow.contains(type))
+      if (shouldShowType(type))
       {
         ObjectTreeNode node = new ObjectTreeNode(type, TYPE_DBO_TYPE_NODE);
         node.setAllowsChildren(true);
@@ -534,7 +541,7 @@ public class TreeLoader
       }
     }
 
-    if (typesToShow.isEmpty() || typesToShow.contains(ProcedureReader.TYPE_NAME_PROC))
+    if (shouldShowType(ProcedureReader.TYPE_NAME_PROC))
     {
       String label = ResourceMgr.getString("TxtDbExplorerProcs");
       if (DBID.Postgres.isDB(connection) && !JdbcUtils.hasMinimumServerVersion(connection, "11.0"))
@@ -548,7 +555,7 @@ public class TreeLoader
     }
 
     // always add triggers at the end
-    if (typesToShow.isEmpty() || typesToShow.contains(TriggerReader.TYPE_NAME))
+    if (shouldShowType(TriggerReader.TYPE_NAME))
     {
       ObjectTreeNode node = new ObjectTreeNode(ResourceMgr.getString("TxtDbExplorerTriggers"), TYPE_TRIGGERS_NODE);
       node.setAllowsChildren(true);
