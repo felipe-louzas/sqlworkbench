@@ -38,6 +38,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
@@ -2809,7 +2810,7 @@ public class WbImportTest
              " \n" +
              "    <generating-sql> \n" +
              "    <![CDATA[ \n" +
-             "    select id, lastname, firstname from person \n" +
+             "    select id, lastname, firstname, created_at from junit_test2 \n" +
              "    ]]> \n" +
              "    </generating-sql> \n" +
              " \n" +
@@ -2817,8 +2818,8 @@ public class WbImportTest
              "  </meta-data> \n" +
              " \n" +
              "  <table-def> \n" +
-             "    <table-name>junit_test</table-name> \n" +
-             "    <column-count>3</column-count> \n" +
+             "    <table-name>junit_test2</table-name> \n" +
+             "    <column-count>4</column-count> \n" +
              " \n" +
              "    <column-def index=\"0\"> \n" +
              "      <column-name>NR</column-name> \n" +
@@ -2841,25 +2842,32 @@ public class WbImportTest
              "      <java-sql-type>12</java-sql-type> \n" +
              "      <dbms-data-type>VARCHAR(100)</dbms-data-type> \n" +
              "    </column-def> \n" +
+             "    <column-def index=\"3\"> \n" +
+             "      <column-name>CREATED_AT</column-name> \n" +
+             "      <java-class>java.sql.Timestamp</java-class> \n" +
+             "      <java-sql-type-name>TIMESTAMP</java-sql-type-name> \n" +
+             "      <java-sql-type>93</java-sql-type> \n" +
+             "      <dbms-data-type>TIMESTAMP</dbms-data-type> \n" +
+             "    </column-def> \n" +
              "  </table-def> \n" +
              " \n" +
              "<data> \n" +
-             "<rd><cd>1</cd><cd>Dent</cd><cd>Arthur</cd></rd> \n" +
-             "<rd><cd>2</cd><cd>Beeblebrox</cd><cd>Zaphod</cd></rd> \n" +
+             "<rd><cd>1</cd><cd>Dent</cd><cd>Arthur</cd><cd longValue=\"1289564055000\">2010-11-12 13:14:15</cd></rd> \n" +
+             "<rd><cd>2</cd><cd>Beeblebrox</cd><cd>Zaphod</cd><cd longValue=\"1255255994000\">2009-10-11 12:13:14</cd></rd> \n" +
              "</data> \n" +
              "</wb-export>";
     File xmlFile = new File(this.basedir, "xml_import.xml");
     TestUtil.writeFile(xmlFile, xml, "UTF-8");
 
-    String cmd = "wbimport -encoding='UTF-8' -file='" + xmlFile.getAbsolutePath() + "' -type=xml -table=junit_test";
-//    System.out.println("cmd=" + cmd);
+    String cmd = "wbimport -encoding='UTF-8' " +
+      "-file='" + xmlFile.getAbsolutePath() + "' " +
+      "-type=xml -timestampFormat='yyyy-MM-dd HH:mm:ss' " +
+      "-table=junit_test2";
     StatementRunnerResult result = importCmd.execute(cmd);
-//    String msg = result.getMessages().toString();
-//    System.out.println(msg);
     assertEquals(true, result.isSuccess());
 
     try (Statement stmt = this.connection.createStatementForQuery();
-        ResultSet rs = stmt.executeQuery("select nr, firstname, lastname from junit_test"))
+        ResultSet rs = stmt.executeQuery("select nr, firstname, lastname, created_at from junit_test2"))
     {
       int rowCount = 0;
       while (rs.next())
@@ -2867,6 +2875,16 @@ public class WbImportTest
         rowCount ++;
         int nr = rs.getInt(1);
         assertEquals("Wrong data imported", rowCount, nr);
+        LocalDateTime ldt = rs.getObject(4, LocalDateTime.class);
+        switch (nr)
+        {
+          case 1:
+            assertEquals(LocalDateTime.of(2010,11,12,13,14,15), ldt);
+            break;
+          case 2:
+            assertEquals(LocalDateTime.of(2009,10,11,12,13,14), ldt);
+            break;
+        }
       }
       assertEquals("Wrong number of rows", rowCount, 2);
       rs.close();
@@ -4485,6 +4503,7 @@ public class WbImportTest
 
     TestUtil.executeScript(wb,
       "CREATE TABLE junit_test (nr integer, firstname varchar(100), lastname varchar(100));\n" +
+      "CREATE TABLE junit_test2 (nr integer, firstname varchar(100), lastname varchar(100), created_at timestamp);\n" +
       "CREATE TABLE junit_test_pk (nr integer primary key, firstname varchar(100), lastname varchar(100));\n" +
       "CREATE TABLE numeric_test (nr integer primary key, amount double, prod_name varchar(50));\n" +
       "CREATE TABLE datatype_test (int_col integer, double_col double, char_col varchar(50), date_col date, time_col time, ts_col timestamp, nchar_col nvarchar(10));\n" +

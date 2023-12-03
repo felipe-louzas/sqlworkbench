@@ -75,6 +75,13 @@ public class WbExportPostgresTest
       " (1, date '2012-01-01', 'infinity', time '18:00'); \n" +
       "commit;\n"
       );
+    TestUtil.executeScript(con,
+      "create table ts_test (ts_col timestamp, ts_tz_col timestamp with time zone);\n" +
+      "insert into ts_test (ts_col, ts_tz_col) " +
+      "values " +
+      " (timestamp '2012-10-01 14:00:00', timestamp '2012-10-01 14:00:00'); \n" +
+      "commit;\n"
+      );
   }
 
   @AfterClass
@@ -82,6 +89,47 @@ public class WbExportPostgresTest
     throws Exception
   {
     PostgresTestUtil.cleanUpTestCase();
+  }
+
+  @Test
+  public void testFormatTimestampTZ()
+    throws Exception
+  {
+    WbConnection con = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(con);
+
+    StatementRunner runner = getTestUtil().createConnectedStatementRunner(con);
+
+    WbFile output = new WbFile(getTestUtil().getBaseDir(), "ts_test.txt");
+    try
+    {
+      runner.runStatement("WbExport -file='" + output.getAbsolutePath() + "' -type=text " +
+        "-header=false -type=text -delimiter=, -sourceTable=ts_test " +
+        "-timestampFormat='yyyy-MM-dd HH:mm:ss' -timestampTZFormat='yyyy-MM-dd HH:mm:ss Z'");
+      assertTrue(output.exists());
+      List<String> lines = TestUtil.readLines(output);
+      assertEquals(1, lines.size());
+      List<String> elements = StringUtil.stringToList(lines.get(0), ",");
+      assertEquals(2, elements.size());
+      String ts = elements.get(0);
+      String tsTZ = elements.get(1);
+      assertEquals("2012-10-01 14:00:00", ts);
+      assertTrue(tsTZ.startsWith(ts));
+      assertTrue(tsTZ.length() > ts.length());
+
+      runner.runStatement("WbExport -file='" + output.getAbsolutePath() + "' -type=text " +
+        "-header=false -type=text -delimiter=, -sourceTable=ts_test " +
+        "-timestampFormat='yyyy-MM-dd HH:mm:ss'");
+      List<String> lines2 = TestUtil.readLines(output);
+      List<String> elements2 = StringUtil.stringToList(lines2.get(0), ",");
+      String ts2 = elements2.get(0);
+      String tsTZ2 = elements2.get(1);
+      assertEquals(ts2, tsTZ2);
+    }
+    finally
+    {
+      output.delete();
+    }
   }
 
   @Test

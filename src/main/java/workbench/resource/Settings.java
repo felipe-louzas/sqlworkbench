@@ -3099,7 +3099,7 @@ public class Settings
 
   public String getDefaultTimestampTZFormat()
   {
-    return getProperty(PROPERTY_TIMESTAMP_TZ_FORMAT, StringUtil.ISO_TZ_TIMESTAMP_FORMAT);
+    return getProperty(PROPERTY_TIMESTAMP_TZ_FORMAT, null);
   }
 
   public void setDefaultTimestampTZFormat(String format)

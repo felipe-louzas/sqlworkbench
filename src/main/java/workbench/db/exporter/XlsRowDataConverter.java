@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
@@ -45,7 +45,6 @@ import workbench.storage.RowData;
 import workbench.util.FileUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
-import workbench.util.WbDateFormatter;
 import workbench.util.WbFile;
 
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
@@ -676,7 +675,7 @@ public class XlsRowDataConverter
   private boolean applyTimestampFormat()
   {
     if (this.targetSheetIndex < 0) return true;
-    return exporter.timeFormatWasSet();
+    return exporter.timestampFormatWasSet();
   }
 
   private boolean applyDecimalFormat()
@@ -699,7 +698,7 @@ public class XlsRowDataConverter
       // must be done based on the JDBC type
       cellStyle = getBaseStyleForColumn(column, isHead, multiline);
       int type = metaData.getColumnType(column);
-      if (type == Types.TIMESTAMP)
+      if (type == Types.TIMESTAMP || type == Types.TIMESTAMP_WITH_TIMEZONE)
       {
         useFormat = useFormat || applyTimestampFormat();
       }
@@ -765,28 +764,33 @@ public class XlsRowDataConverter
     {
       OffsetDateTime odt = (OffsetDateTime)value;
       cellStyle = excelFormat.tsCellStyle;
-      cell.setCellValue(java.util.Date.from(odt.toInstant()));
+      cell.setCellValue(odt.toLocalDateTime());
       useFormat = useFormat || applyTimestampFormat();
     }
     else if (value instanceof ZonedDateTime)
     {
       ZonedDateTime zdt = (ZonedDateTime)value;
       cellStyle = excelFormat.tsCellStyle;
-      cell.setCellValue(java.util.Date.from(zdt.toInstant()));
+      cell.setCellValue(zdt.toLocalDateTime());
       useFormat = useFormat || applyTimestampFormat();
     }
     else if (value instanceof LocalDateTime)
     {
-      LocalDateTime zdt = (LocalDateTime)value;
-      Instant inst = zdt.toInstant(WbDateFormatter.getSystemDefaultOffset());
       cellStyle = excelFormat.tsCellStyle;
-      cell.setCellValue(java.util.Date.from(inst));
+      cell.setCellValue((LocalDateTime)value);
       useFormat = useFormat || applyTimestampFormat();
+    }
+    else if (value instanceof LocalDate)
+    {
+      cellStyle = excelFormat.dateCellStyle;
+      cell.setCellValue((LocalDate)value);
+      useFormat = useFormat || applyDateFormat();
     }
     else if (value instanceof java.sql.Timestamp)
     {
+      java.sql.Timestamp ts = (java.sql.Timestamp)value;
       cellStyle = excelFormat.tsCellStyle;
-      cell.setCellValue((java.util.Date)value);
+      cell.setCellValue(ts.toLocalDateTime());
       useFormat = useFormat || applyTimestampFormat();
     }
     else if (value instanceof java.util.Date)

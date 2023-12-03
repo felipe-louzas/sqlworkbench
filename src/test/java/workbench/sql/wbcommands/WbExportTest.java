@@ -93,7 +93,7 @@ public class WbExportTest
   public void tearDown()
     throws Exception
   {
-    connection.disconnect();
+    ConnectionMgr.getInstance().disconnectAll();
     util.emptyBaseDirectory();
   }
 
@@ -925,7 +925,6 @@ public class WbExportTest
     assertTrue(lines.get(3).contains(" FIRSTNAME"));
     assertTrue(lines.get(4).contains(" LASTNAME"));
     assertTrue(lines.get(4).contains(" \"\\n\""));
-
   }
 
   @Test

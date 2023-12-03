@@ -161,8 +161,6 @@ public class DataExporter
   private boolean decimalFormatWasSet = false;
   private boolean dateFormatWasSet = false;
   private boolean dateTimeFormatWasSet = false;
-  private boolean timestampTZFormatWasSet = false;
-  private boolean timeFormatWasSet = false;
   private boolean integerFormatWasSet = false;
 
   private boolean append;
@@ -1011,14 +1009,12 @@ public class DataExporter
   }
 
 
-  public void setTimeFormat(String aFormat)
+  public void setTimeFormat(String format)
   {
-    timeFormat = StringUtil.isBlank(aFormat) ? null : aFormat;
+    timeFormat = StringUtil.trimToNull(format);
     try
     {
-      Locale l = localeToUse == null ? Locale.getDefault(Locale.Category.FORMAT) : localeToUse;
-      timeFormatter = new WbDateFormatter(timeFormat == null ? Settings.getInstance().getDefaultTimeFormat() : timeFormat, l);
-      timeFormatWasSet = true;
+      timeFormatter = new WbDateFormatter(timeFormat == null ? Settings.getInstance().getDefaultTimeFormat() : timeFormat, localeToUse);
     }
     catch (IllegalArgumentException i)
     {
@@ -1033,9 +1029,9 @@ public class DataExporter
   }
 
   @Override
-  public void setDateFormat(String aFormat)
+  public void setDateFormat(String format)
   {
-    dateFormat = StringUtil.isBlank(aFormat) ? null : aFormat;
+    dateFormat = StringUtil.trimToNull(format);
     try
     {
       dateFormatter = new WbDateFormatter(this.dateFormat == null ? Settings.getInstance().getDefaultDateFormat() : dateFormat, localeToUse);
@@ -1060,9 +1056,9 @@ public class DataExporter
   }
 
   @Override
-  public void setTimestampFormat(String aFormat)
+  public void setTimestampFormat(String format)
   {
-    dateTimeFormat = StringUtil.isBlank(aFormat) ? null : aFormat;
+    dateTimeFormat = StringUtil.trimToNull(format);
     try
     {
       dateTimeFormatter = new WbDateFormatter(dateTimeFormat == null ? Settings.getInstance().getDefaultTimestampFormat() : dateTimeFormat, localeToUse);
@@ -1082,14 +1078,14 @@ public class DataExporter
   }
 
   @Override
-  public void setTimestampTZFormat(String aFormat)
+  public void setTimestampTZFormat(String format)
   {
-    timestampTZFormat = StringUtil.isBlank(aFormat) ? null : aFormat;
     timestampTZFormatter = null;
+    timestampTZFormat = StringUtil.coalesce(StringUtil.trimToNull(format),  Settings.getInstance().getDefaultTimestampTZFormat());
+    if (timestampTZFormat == null) return;
     try
     {
-      timestampTZFormatter = new WbDateFormatter(timestampTZFormat == null ? Settings.getInstance().getDefaultTimestampTZFormat() : timestampTZFormat, localeToUse);
-      timestampTZFormatWasSet = true;
+      timestampTZFormatter = new WbDateFormatter(timestampTZFormat, localeToUse);
     }
     catch (Exception e)
     {
@@ -1270,11 +1266,6 @@ public class DataExporter
   public boolean timestampFormatWasSet()
   {
     return dateTimeFormatWasSet;
-  }
-
-  public boolean timeFormatWasSet()
-  {
-    return timeFormatWasSet;
   }
 
   public boolean integerFormatWasSet()

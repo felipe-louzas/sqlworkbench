@@ -23,6 +23,9 @@ package workbench.db.exporter;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +38,9 @@ import workbench.db.ConnectionMgr;
 import workbench.db.DbObjectFinder;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
+import workbench.db.importer.ExcelReader;
 
+import workbench.gui.dialogs.export.SpreadSheetOptions;
 import workbench.gui.dialogs.export.SqlOptions;
 import workbench.gui.dialogs.export.TextOptions;
 
@@ -127,10 +132,12 @@ public class DataExporterTest
 
       String script =
         "CREATE TABLE person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (1, 'Arthur', 'Dent');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (2, 'Zaphod', 'Beeblebrox');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (3, 'Ford', 'Prefect');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (4, 'Tricia', 'McMillian');\n" +
+        "INSERT INTO person (nr, firstname, lastname) " +
+        "VALUES " +
+        "(1, 'Arthur', 'Dent'),\n" +
+        "(2, 'Zaphod', 'Beeblebrox'),\n" +
+        "(3, 'Ford', 'Prefect'),\n" +
+        "(4, 'Tricia', 'McMillian');\n" +
         "commit;\n";
 
       TestUtil.executeScript(con, script);
@@ -155,6 +162,215 @@ public class DataExporterTest
     }
   }
 
+  @Test
+  public void testReplaceValues()
+    throws Exception
+  {
+    TestUtil util = new TestUtil("DataExporterTest");
+    util.emptyBaseDirectory();
+    try
+    {
+      WbConnection con = util.getConnection();
+
+      String script =
+        "CREATE TABLE person (nr integer, name varchar(20), description varchar(200));\n" +
+        "INSERT INTO person (nr, name, description) VALUES (1, 'Arthur Dent', 'this\nshould\r\n\r\nbe\none\n\nline\t');\n" +
+        "INSERT INTO person (nr, name, description) VALUES (2, 'Zaphod Beeblebrox', 'Some\tother stuff');\n" +
+        "commit;\n";
+
+      TestUtil.executeScript(con, script);
+
+      DataExporter exporter = new DataExporter(con);
+      exporter.setOutputType(ExportType.TEXT);
+      ExportDataModifier modifier = new RegexReplacingModifier("(\\n|\\r\\n)+", "*");
+      exporter.setDataModifier(modifier);
+      exporter.setTextOptions(getTextOptions(true, ","));
+
+      WbFile exportFile = new WbFile(util.getBaseDir(), "replaced.txt");
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
+      exporter.addTableExportJob(exportFile, tbl);
+
+      long rowCount = exporter.startExport();
+      assertEquals(2, rowCount);
+      List<String> lines = TestUtil.readLines(exportFile);
+      assertEquals(3, lines.size());
+      assertEquals("NR,NAME,DESCRIPTION", lines.get(0));
+      assertEquals("1,Arthur Dent,this*should*be*one*line\\t", lines.get(1));
+      assertEquals("2,Zaphod Beeblebrox,Some\\tother stuff", lines.get(2));
+    }
+    finally
+    {
+      ConnectionMgr.getInstance().disconnectAll();
+    }
+  }
+
+  @Test
+  public void testExportWhere()
+    throws Exception
+  {
+    TestUtil util = new TestUtil("DataExporterTest");
+    util.emptyBaseDirectory();
+    try
+    {
+      WbConnection con = util.getConnection();
+
+      String script =
+        "CREATE TABLE person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
+        "INSERT INTO person (nr, firstname, lastname) \n" +
+        "VALUES \n" +
+        "(1, 'Arthur', 'Dent'),\n" +
+        "(2, 'Zaphod', 'Beeblebrox'),\n" +
+        "(3, 'Ford', 'Prefect'),\n" +
+        "(4, 'Tricia', 'McMillian');\n" +
+        "commit;\n";
+
+      TestUtil.executeScript(con, script);
+
+      DataExporter exporter = new DataExporter(con);
+      exporter.setOutputType(ExportType.TEXT);
+      exporter.setTextOptions(getTextOptions());
+
+      WbFile exportFile = new WbFile(util.getBaseDir(), "query_export.txt");
+      //exporter.addQueryJob("SELECT * FROM person ORDER BY nr;", exportFile);
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
+      exporter.addTableExportJob(exportFile, tbl, "WHERE nr < 3");
+
+      long rowCount = exporter.startExport();
+      assertEquals(2, rowCount);
+      List<String> lines = TestUtil.readLines(exportFile);
+      assertEquals(3, lines.size());
+      assertEquals("NR\tFIRSTNAME\tLASTNAME", lines.get(0));
+      assertEquals("1\tArthur\tDent", lines.get(1));
+    }
+    finally
+    {
+      ConnectionMgr.getInstance().disconnectAll();
+    }
+  }
+
+  @Test
+  public void testExportColumns()
+    throws Exception
+  {
+    TestUtil util = new TestUtil("DataExporterTest");
+    util.emptyBaseDirectory();
+
+    util.disableSqlFormatting();
+    try
+    {
+      WbConnection con = util.getConnection();
+
+      String script =
+        "CREATE TABLE person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
+        "INSERT INTO person (nr, firstname, lastname) \n" +
+        "VALUES \n" +
+        "(1, 'Arthur', 'Dent'),\n" +
+        "(2, 'Zaphod', 'Beeblebrox'),\n" +
+        "(3, 'Ford', 'Prefect'),\n" +
+        "(4, 'Tricia', 'McMillian');\n" +
+        "commit;\n";
+
+      TestUtil.executeScript(con, script);
+
+      DataExporter exporter = new DataExporter(con);
+      exporter.setOutputType(ExportType.TEXT);
+      exporter.setTextOptions(getTextOptions());
+
+      Statement stmt = con.createStatement();
+      ResultSet rs = stmt.executeQuery("select nr, firstname, lastname from person");
+
+      DataStore ds = new DataStore(rs, con, true);
+      ds.setUpdateTable(new TableIdentifier("PERSON"));
+      List<ColumnIdentifier> cols = CollectionUtil.arrayList(new ColumnIdentifier("FIRSTNAME"));
+
+      WbFile exportFile = new WbFile(util.getBaseDir(), "column_export.txt");
+      long rowCount = exporter.startExport(exportFile, ds, cols);
+
+      assertEquals(4, rowCount);
+      List<String> lines = TestUtil.readLines(exportFile);
+      assertEquals(5, lines.size());
+      assertEquals("FIRSTNAME", lines.get(0));
+      assertEquals("Arthur", lines.get(1));
+
+      exporter.setOutputType(ExportType.SQL_INSERT);
+      exporter.setSqlOptions(getSqlOptions());
+      WbFile sqlFile = new WbFile(util.getBaseDir(), "column_export.sql");
+      rowCount = exporter.startExport(sqlFile, ds, cols);
+      assertEquals(4, rowCount);
+      String inserts = FileUtil.readFile(sqlFile, "ISO-8859-1");
+      ScriptParser p = new ScriptParser(inserts);
+      assertEquals(5, p.getSize()); // 4 inserts + 1 commit
+      String sql = SqlUtil.makeCleanSql(p.getCommand(0), false);
+      assertTrue(sql.contains("(FIRSTNAME)"));
+    }
+    finally
+    {
+      util.restoreSqlFormatting();
+      ConnectionMgr.getInstance().disconnectAll();
+    }
+  }
+
+  @Test
+  public void testXLSXExport()
+    throws Exception
+  {
+    TestUtil util = new TestUtil("XLSXExporterTest");
+    util.emptyBaseDirectory();
+    try
+    {
+      WbConnection con = util.getConnection();
+
+      String script =
+        "CREATE TABLE data_test (c1 integer, c2 varchar(20), c3 date, c4 timestamp, c5 decimal(14,4));\n" +
+        "INSERT INTO data_test (c1, c2, c3, c4, c5) " +
+        "VALUES " +
+        "(1, 'One', date '2010-11-12', timestamp '2020-01-01 14:15:16', 1234.5678);\n" +
+        "commit;\n";
+      TestUtil.executeScript(con, script);
+      
+      DataExporter exporter = new DataExporter(con);
+      exporter.setTimestampFormat("yyyy-MM-dd HH:mm:ss");
+      exporter.setDateFormat("yyyy-MM-dd");
+      exporter.setDecimalDigits(4, ",", false);
+      exporter.setOutputType(ExportType.XLSX);
+      exporter.setXlsXOptions(getXlsOptions());
+
+      Statement stmt = con.createStatement();
+      ResultSet rs = stmt.executeQuery("select c1, c2, c3, c4, c5 from data_test");
+
+      WbFile output = new WbFile(util.getBaseDir(), "data_test.xlsx");
+      exporter.exportResultSet(output, rs, script);
+
+      ExcelReader reader = new ExcelReader(output, 0, null);
+      reader.load();
+      int rowCount = reader.getRowCount();
+      assertEquals(2, rowCount); // header + data row
+      List<Object> values = reader.getRowValues(1);
+      assertEquals(5, values.size());
+      Number c1 = (Number)values.get(0);
+      assertEquals(1, c1.intValue());
+      String c2 = (String)values.get(1);
+      assertEquals("One", c2);
+      java.util.Date c3 = (java.util.Date)values.get(2);
+      Instant i = Instant.ofEpochMilli(c3.getTime());
+      LocalDate ld = LocalDate.ofInstant(i, ZoneId.systemDefault());
+      assertEquals(2010, ld.getYear());
+      assertEquals(11, ld.getMonthValue());
+      assertEquals(12, ld.getDayOfMonth());
+
+      Object c4 = values.get(3);
+      System.out.println("TS: " + c4.getClass());
+      Object c5 = values.get(4);
+
+      reader.done();
+    }
+    finally
+    {
+      ConnectionMgr.getInstance().disconnectAll();
+    }
+  }
+
+  // <editor-fold defaultstate="collapsed" desc=" Text Options ">
   private TextOptions getTextOptions()
   {
     return getTextOptions(false, "\t");
@@ -231,7 +447,9 @@ public class DataExporterTest
       }
     };
   }
+  // </editor-fold>
 
+  // <editor-fold defaultstate="collapsed" desc=" SQL Options ">
   private SqlOptions getSqlOptions()
   {
     return new SqlOptions() {
@@ -302,149 +520,86 @@ public class DataExporterTest
       }
     };
   }
+  // </editor-fold>
 
-  @Test
-  public void testReplaceValues()
-    throws Exception
+  // <editor-fold defaultstate="collapsed" desc=" XLSX Options ">
+  private SpreadSheetOptions getXlsOptions()
   {
-    TestUtil util = new TestUtil("DataExporterTest");
-    util.emptyBaseDirectory();
-    try
+    return new SpreadSheetOptions()
     {
-      WbConnection con = util.getConnection();
+      @Override
+      public String getPageTitle()
+      {
+        return "Export Test";
+      }
 
-      String script =
-        "CREATE TABLE person (nr integer, name varchar(20), description varchar(200));\n" +
-        "INSERT INTO person (nr, name, description) VALUES (1, 'Arthur Dent', 'this\nshould\r\n\r\nbe\none\n\nline\t');\n" +
-        "INSERT INTO person (nr, name, description) VALUES (2, 'Zaphod Beeblebrox', 'Some\tother stuff');\n" +
-        "commit;\n";
+      @Override
+      public void setPageTitle(String title)
+      {
+      }
 
-      TestUtil.executeScript(con, script);
+      @Override
+      public boolean getExportHeaders()
+      {
+        return true;
+      }
 
-      DataExporter exporter = new DataExporter(con);
-      exporter.setOutputType(ExportType.TEXT);
-      ExportDataModifier modifier = new RegexReplacingModifier("(\\n|\\r\\n)+", "*");
-      exporter.setDataModifier(modifier);
-      exporter.setTextOptions(getTextOptions(true, ","));
+      @Override
+      public void setExportHeaders(boolean flag)
+      {
+      }
 
-      WbFile exportFile = new WbFile(util.getBaseDir(), "replaced.txt");
-      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
-      exporter.addTableExportJob(exportFile, tbl);
+      @Override
+      public boolean getCreateInfoSheet()
+      {
+        return false;
+      }
 
-      long rowCount = exporter.startExport();
-      assertEquals(2, rowCount);
-      List<String> lines = TestUtil.readLines(exportFile);
-      assertEquals(3, lines.size());
-      assertEquals("NR,NAME,DESCRIPTION", lines.get(0));
-      assertEquals("1,Arthur Dent,this*should*be*one*line\\t", lines.get(1));
-      assertEquals("2,Zaphod Beeblebrox,Some\\tother stuff", lines.get(2));
+      @Override
+      public void setCreateInfoSheet(boolean flag)
+      {
+      }
 
-    }
-    finally
-    {
-      ConnectionMgr.getInstance().disconnectAll();
-    }
+      @Override
+      public boolean getCreateFixedHeaders()
+      {
+        return false;
+      }
+
+      @Override
+      public void setCreateFixedHeaders(boolean flag)
+      {
+      }
+
+      @Override
+      public boolean getCreateAutoFilter()
+      {
+        return false;
+      }
+
+      @Override
+      public void setCreateAutoFilter(boolean flag)
+      {
+      }
+
+      @Override
+      public boolean getOptimizeColumns()
+      {
+        return true;
+      }
+
+      @Override
+      public void setOptimizeColumns(boolean flag)
+      {
+      }
+
+      @Override
+      public boolean getIncludeComments()
+      {
+        return false;
+      }
+
+    };
   }
-
-  @Test
-  public void testExportWhere()
-    throws Exception
-  {
-    TestUtil util = new TestUtil("DataExporterTest");
-    util.emptyBaseDirectory();
-    try
-    {
-      WbConnection con = util.getConnection();
-
-      String script =
-        "CREATE TABLE person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (1, 'Arthur', 'Dent');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (2, 'Zaphod', 'Beeblebrox');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (3, 'Ford', 'Prefect');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (4, 'Tricia', 'McMillian');\n" +
-        "commit;\n";
-
-      TestUtil.executeScript(con, script);
-
-      DataExporter exporter = new DataExporter(con);
-      exporter.setOutputType(ExportType.TEXT);
-      exporter.setTextOptions(getTextOptions());
-
-      WbFile exportFile = new WbFile(util.getBaseDir(), "query_export.txt");
-      //exporter.addQueryJob("SELECT * FROM person ORDER BY nr;", exportFile);
-      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("PERSON"));
-      exporter.addTableExportJob(exportFile, tbl, "WHERE nr < 3");
-
-      long rowCount = exporter.startExport();
-      assertEquals(2, rowCount);
-      List<String> lines = TestUtil.readLines(exportFile);
-      assertEquals(3, lines.size());
-      assertEquals("NR\tFIRSTNAME\tLASTNAME", lines.get(0));
-      assertEquals("1\tArthur\tDent", lines.get(1));
-    }
-    finally
-    {
-      ConnectionMgr.getInstance().disconnectAll();
-    }
-  }
-
-  @Test
-  public void testExportColumns()
-    throws Exception
-  {
-    TestUtil util = new TestUtil("DataExporterTest");
-    util.emptyBaseDirectory();
-
-    util.disableSqlFormatting();
-    try
-    {
-      WbConnection con = util.getConnection();
-
-      String script =
-        "CREATE TABLE person (nr integer, firstname varchar(20), lastname varchar(20));\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (1, 'Arthur', 'Dent');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (2, 'Zaphod', 'Beeblebrox');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (3, 'Ford', 'Prefect');\n" +
-        "INSERT INTO person (nr, firstname, lastname) VALUES (4, 'Tricia', 'McMillian');\n" +
-        "commit;\n";
-
-      TestUtil.executeScript(con, script);
-
-      DataExporter exporter = new DataExporter(con);
-      exporter.setOutputType(ExportType.TEXT);
-      exporter.setTextOptions(getTextOptions());
-
-      Statement stmt = con.createStatement();
-      ResultSet rs = stmt.executeQuery("select nr, firstname, lastname from person");
-
-      DataStore ds = new DataStore(rs, con, true);
-      ds.setUpdateTable(new TableIdentifier("PERSON"));
-      List<ColumnIdentifier> cols = CollectionUtil.arrayList(new ColumnIdentifier("FIRSTNAME"));
-
-      WbFile exportFile = new WbFile(util.getBaseDir(), "column_export.txt");
-      long rowCount = exporter.startExport(exportFile, ds, cols);
-
-      assertEquals(4, rowCount);
-      List<String> lines = TestUtil.readLines(exportFile);
-      assertEquals(5, lines.size());
-      assertEquals("FIRSTNAME", lines.get(0));
-      assertEquals("Arthur", lines.get(1));
-
-      exporter.setOutputType(ExportType.SQL_INSERT);
-      exporter.setSqlOptions(getSqlOptions());
-      WbFile sqlFile = new WbFile(util.getBaseDir(), "column_export.sql");
-      rowCount = exporter.startExport(sqlFile, ds, cols);
-      assertEquals(4, rowCount);
-      String inserts = FileUtil.readFile(sqlFile, "ISO-8859-1");
-      ScriptParser p = new ScriptParser(inserts);
-      assertEquals(5, p.getSize()); // 4 inserts + 1 commit
-      String sql = SqlUtil.makeCleanSql(p.getCommand(0), false);
-      assertTrue(sql.contains("(FIRSTNAME)"));
-    }
-    finally
-    {
-      util.restoreSqlFormatting();
-      ConnectionMgr.getInstance().disconnectAll();
-    }
-  }
+  // </editor-fold>
 }

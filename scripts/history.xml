@@ -4,6 +4,8 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2023-11-19">
+    <entry dev-build="1" type="enh">It's now possible to specify the format of column defined as TIMESTAMP WITH TIME ZONE separately</entry>
+    <entry dev-build="1" type="fix">TIMESTAMP or TIMESTAMP WITH TIME ZONE columns were not imported correctly from XML files</entry>
     <entry dev-build="1" type="fix">It was no longer possible to quit SQL Workbench without saving modified files</entry>
   </release>
   <release build="130" date="2023-11-19">
