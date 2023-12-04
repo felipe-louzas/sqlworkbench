@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import workbench.db.ColumnIdentifier;
+
 import workbench.gui.actions.WbAction;
 
 /**
@@ -34,9 +35,9 @@ import workbench.gui.actions.WbAction;
 public class SortColumnsAction
   extends WbAction
 {
-  private ObjectTreeNode columnsNode;
-  private DbObjectsTree client;
-  private boolean sortByName;
+  private final ObjectTreeNode columnsNode;
+  private final DbObjectsTree client;
+  private final boolean sortByName;
 
   public SortColumnsAction(DbObjectsTree tree, ObjectTreeNode node, boolean byName)
   {

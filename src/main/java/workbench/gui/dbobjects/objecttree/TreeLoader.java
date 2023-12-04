@@ -1077,6 +1077,11 @@ public class TreeLoader
       connection.getObjectCache().addTable(new TableDefinition(tbl, columns));
     }
 
+    if (DbTreeSettings.sortColumnsByName())
+    {
+      DbObjectSorter.sort(columns, true);
+    }
+
     for (ColumnIdentifier col : columns)
     {
       ObjectTreeNode node = new ObjectTreeNode(col);

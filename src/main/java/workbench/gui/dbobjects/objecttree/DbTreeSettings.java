@@ -34,6 +34,16 @@ public class DbTreeSettings
 {
   public static final String SETTINGS_PREFIX = "workbench.gui.dbtree.";
 
+  public static boolean sortColumnsByName()
+  {
+    return Settings.getInstance().getBoolProperty(SETTINGS_PREFIX + "columns.sort.name", false);
+  }
+
+  public static void setSortColumnsByName(boolean flag)
+  {
+    Settings.getInstance().setProperty(SETTINGS_PREFIX + "columns.sort.name", flag);
+  }
+
   public static String getRowCountFormatString()
   {
     return StringUtil.trimToNull(Settings.getInstance().getProperty(SETTINGS_PREFIX + "rowcount.formatstring", null));

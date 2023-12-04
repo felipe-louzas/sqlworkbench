@@ -65,6 +65,7 @@ public class DbTreeOptionsPanel
   {
     useTabConnection.setSelected(DbTreeSettings.useTabConnection());
     searchAsYouType.setSelected(DbTreeSettings.getFilterWhileTyping());
+    sortColumnsByName.setSelected(DbTreeSettings.sortColumnsByName());
     ComponentPosition position = DbTreeSettings.getDbComponentPosition();
     switch (position)
     {
@@ -82,6 +83,7 @@ public class DbTreeOptionsPanel
   {
     DbTreeSettings.setUseTabConnection(useTabConnection.isSelected());
     DbTreeSettings.setFilterWhileTyping(searchAsYouType.isSelected());
+    DbTreeSettings.setSortColumnsByName(sortColumnsByName.isSelected());
     int selected = treePosition.getSelectedIndex();
     switch (selected)
     {
@@ -109,6 +111,7 @@ public class DbTreeOptionsPanel
     jLabel1 = new JLabel();
     treePosition = new JComboBox<>();
     jPanel1 = new JPanel();
+    sortColumnsByName = new JCheckBox();
 
     setLayout(new GridBagLayout());
 
@@ -136,13 +139,13 @@ public class DbTreeOptionsPanel
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(10, 0, 10, 0);
+    gridBagConstraints.insets = new Insets(10, 0, 0, 0);
     add(searchAsYouType, gridBagConstraints);
 
     jLabel1.setText(ResourceMgr.getString("LblTreePosition")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     gridBagConstraints.insets = new Insets(0, 0, 0, 10);
     add(jLabel1, gridBagConstraints);
@@ -150,16 +153,27 @@ public class DbTreeOptionsPanel
     treePosition.setModel(new DefaultComboBoxModel<>(new String[] { "Left", "Right" }));
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
     add(treePosition, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 3;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     add(jPanel1, gridBagConstraints);
+
+    sortColumnsByName.setText(ResourceMgr.getString("LblTreeSortColumnsByName")); // NOI18N
+    sortColumnsByName.setToolTipText(ResourceMgr.getString("d_LblTreeSortColumnsByName")); // NOI18N
+    sortColumnsByName.setBorder(null);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(10, 0, 10, 0);
+    add(sortColumnsByName, gridBagConstraints);
   }
 
   // Code for dispatching events from components to event handlers.
@@ -181,6 +195,7 @@ public class DbTreeOptionsPanel
   private JLabel jLabel1;
   private JPanel jPanel1;
   private JCheckBox searchAsYouType;
+  private JCheckBox sortColumnsByName;
   private JComboBox<String> treePosition;
   private JCheckBox useTabConnection;
   // End of variables declaration//GEN-END:variables

@@ -77,7 +77,7 @@ public class DbObjectSorter
     String name2 = SqlUtil.removeObjectQuotes(o2.getObjectName());
     if (useNaturalSort)
     {
-      return comparator.compare(name2, name2);
+      return comparator.compare(name1, name2);
     }
     return StringUtil.compareStrings(name1, name2, true);
   }
