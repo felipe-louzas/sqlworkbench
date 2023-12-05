@@ -90,7 +90,7 @@ public class EditorTabSelectMenu
   {
     this(label, tooltipKeyNewTab, tooltipKeyTab, parent, null, includeClipboard);
   }
-  
+
   public EditorTabSelectMenu(String label, String tooltipKeyNewTab, String tooltipKeyTab, MainWindow parent, ResultReceiver receiver, boolean includeClipboard)
   {
     super(label);
@@ -287,7 +287,7 @@ public class EditorTabSelectMenu
 
       EventQueue.invokeLater(() ->
       {
-        sender.sendContent(sql, panelIndex, type);
+        sender.sendContent(sql, panelIndex, type, false);
       });
     }
     catch (Exception ex)

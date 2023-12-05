@@ -39,8 +39,8 @@ public class PanelContentSender
 {
   public static final int NEW_PANEL = -1;
 
-  private MainWindow target;
-  private String newTabName;
+  private final MainWindow target;
+  private final String newTabName;
 
   public PanelContentSender(MainWindow window, String objectName)
   {
@@ -53,8 +53,8 @@ public class PanelContentSender
     if (sql == null) return;
 
     // This should not be done in the background thread
-    // to make sure it's running on the EDT (otherwise the new panel will not be initialized correctly)
-    final SqlPanel panel = selectPanel(panelIndex);
+    // to make sure it's running on the EDT (otherwise a potential new panel will not be initialized correctly)
+    final SqlPanel panel = selectPanel(panelIndex, false);
 
     if (panel == null) return;
 
@@ -91,11 +91,11 @@ public class PanelContentSender
     t.start();
   }
 
-  public void sendContent(final String text, final int panelIndex, final PasteType type)
+  public void sendContent(final String text, final int panelIndex, final PasteType type, final boolean setName)
   {
     if (text == null) return;
 
-    final SqlPanel panel = selectPanel(panelIndex);
+    final SqlPanel panel = selectPanel(panelIndex, setName);
     if (panel == null) return;
 
     EventQueue.invokeLater(() ->
@@ -119,7 +119,7 @@ public class PanelContentSender
     });
   }
 
-  private SqlPanel selectPanel(int index)
+  private SqlPanel selectPanel(int index, boolean setName)
   {
     SqlPanel panel;
 
@@ -134,6 +134,10 @@ public class PanelContentSender
     {
        panel = this.target.getSqlPanel(index).orElse(null);
        target.selectTab(index);
+       if (setName)
+       {
+         panel.setTabName(newTabName);
+       }
     }
     return panel;
   }

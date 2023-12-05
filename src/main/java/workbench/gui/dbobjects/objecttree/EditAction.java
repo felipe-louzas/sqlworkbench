@@ -28,17 +28,17 @@ import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
 
 import workbench.db.DbObject;
 import workbench.db.WbConnection;
 
 import workbench.gui.MainWindow;
+import workbench.gui.actions.WbAction;
 import workbench.gui.dbobjects.EditorTabSelectMenu;
 import workbench.gui.sql.PanelContentSender;
 import workbench.gui.sql.PasteType;
-
-import workbench.log.LogMgr;
-import workbench.resource.ResourceMgr;
 
 import workbench.util.WbThread;
 
@@ -49,7 +49,7 @@ import workbench.util.WbThread;
 public class EditAction
   implements ActionListener
 {
-  private DbTreePanel dbTree;
+  private final DbTreePanel dbTree;
 
   public EditAction(DbTreePanel tree)
   {
@@ -69,35 +69,31 @@ public class EditAction
 
     String command = e.getActionCommand();
     final int panelIndex = Integer.parseInt(command.substring(EditorTabSelectMenu.PANEL_CMD_PREFIX.length()));
-
+    final boolean changeTabName = WbAction.isCtrlPressed(e);
     WbThread worker = new WbThread("DbTree source retrieval")
     {
 
       @Override
       public void run()
       {
-        retrieveAndShow(dbo, panelIndex);
+        retrieveAndShow(dbo, panelIndex, changeTabName);
       }
     };
     worker.start();
   }
 
-  private void retrieveAndShow(DbObject dbo, final int index)
+  private void retrieveAndShow(DbObject dbo, final int index, boolean changeTabName)
   {
     final String source = retrieveSource(dbo);
     if (source == null) return;
 
-    SwingUtilities.invokeLater(new Runnable()
+    SwingUtilities.invokeLater(() ->
     {
-      @Override
-      public void run()
+      Window w = SwingUtilities.getWindowAncestor(dbTree);
+      if (w instanceof MainWindow)
       {
-        Window w = SwingUtilities.getWindowAncestor(dbTree);
-        if (w instanceof MainWindow)
-        {
-          PanelContentSender sender = new PanelContentSender((MainWindow)w, dbo.getObjectName());
-          sender.sendContent(source, index, PasteType.overwrite);
-        }
+        PanelContentSender sender = new PanelContentSender((MainWindow)w, dbo.getObjectName());
+        sender.sendContent(source, index, PasteType.overwrite, changeTabName);
       }
     });
   }

@@ -296,12 +296,12 @@ public class DbObjectSourcePanel
       try
       {
         final int panelIndex = Integer.parseInt(command.substring(EditorTabSelectMenu.PANEL_CMD_PREFIX.length()));
-
+        final boolean changeTabName = WbAction.isCtrlPressed(e);
         // Allow the selection change to finish so that
         // we have the correct table name in the instance variables
         EventQueue.invokeLater(() ->
         {
-          editText(panelIndex);
+          editText(panelIndex, changeTabName);
         });
       }
       catch (Exception ex)
@@ -311,12 +311,12 @@ public class DbObjectSourcePanel
     }
   }
 
-  private void editText(final int panelIndex)
+  private void editText(int panelIndex, boolean changeTabName)
   {
     if (this.parentWindow != null)
     {
       PanelContentSender sender = new PanelContentSender(this.parentWindow, this.objectName);
-      sender.sendContent(getText(), panelIndex, PasteType.overwrite);
+      sender.sendContent(getText(), panelIndex, PasteType.overwrite, changeTabName);
     }
   }
 

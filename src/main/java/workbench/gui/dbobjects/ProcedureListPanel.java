@@ -425,7 +425,6 @@ public class ProcedureListPanel
         {
           final int panelIndex = Integer.parseInt(command.substring(EditorTabSelectMenu.PANEL_CMD_PREFIX.length()));
           final PasteType type = WbAction.isCtrlPressed(e) ? PasteType.append : PasteType.overwrite;
-
           // Allow the selection change to finish so that
           // we have the correct table name in the instance variables
           EventQueue.invokeLater(() ->
@@ -1135,7 +1134,7 @@ public class ProcedureListPanel
     String sql = buildProcedureCallForTable();
     if (sql != null)
     {
-      sender.sendContent(sql, panelIndex, type);
+      sender.sendContent(sql, panelIndex, type, false);
     }
   }
 
