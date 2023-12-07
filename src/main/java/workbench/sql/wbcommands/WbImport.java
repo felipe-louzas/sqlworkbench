@@ -121,6 +121,7 @@ public class WbImport
   public static final String ARG_IGNORE_MISSING_COLS = "ignoreMissingColumns";
   public static final String ARG_ADJUST_SEQ = "adjustSequences";
   public static final String ARG_RECALC_FORMULAS = "recalculateFormulas";
+  public static final String ARG_SHEET_TABLE_NAME_MAP = "sheetTableName";
   public static final String ARG_XML_ROW_TAG = "xmlRowTag";
   public static final String ARG_XML_ATT_MAPPING = "xmlAttCol";
   public static final String ARG_XML_COL_TAGS = "xmlTagCol";
@@ -220,6 +221,7 @@ public class WbImport
     cmdLine.addArgument(ARG_XML_COL_TAGS, ArgumentType.Repeatable);
     cmdLine.addArgument(ARG_COLUMN_EXPR, ArgumentType.Repeatable);
     cmdLine.addArgument(CommonArgs.ARG_COLUMN_BLOB_MODE, ArgumentType.Repeatable);
+    cmdLine.addArgument(ARG_SHEET_TABLE_NAME_MAP, ArgumentType.Repeatable);
 
     ModifierArguments.addArguments(cmdLine);
     ConditionCheck.addParameters(cmdLine);
@@ -744,6 +746,8 @@ public class WbImport
       spreadSheetParser.setAbortOnError(!continueOnError);
       spreadSheetParser.setIgnoreMissingColumns(ignoreMissingCols);
       spreadSheetParser.setRecalcFormulas(cmdLine.getBoolean(ARG_RECALC_FORMULAS, true));
+      Map<String, String> sheetToTableNames = cmdLine.getMapValue(ARG_SHEET_TABLE_NAME_MAP);
+      spreadSheetParser.setSheetTableMap(sheetToTableNames);
 
       if (inputFile != null)
       {
@@ -761,7 +765,7 @@ public class WbImport
         else
         {
           int index = cmdLine.getIntValue(ARG_SHEET_NR, 1);
-          // the index is zero-based, but the user supplies a one-based index
+          // the index is zero-based in POI and ODS, but the user supplies a one-based index
           spreadSheetParser.setSheetIndex(index - 1);
         }
         spreadSheetParser.setInputFile(inputFile);

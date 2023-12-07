@@ -268,6 +268,21 @@ public class WbCommandAnalyzer
         this.elements = getSheetnames(cmd, args, false);
         changeCase = false;
       }
+      else if (parameter.equalsIgnoreCase(WbImport.ARG_SHEET_TABLE_NAME_MAP))
+      {
+        String val = StringUtil.getWordLeftOfCursor(sql, cursorPos, "-=\t");
+        if (StringUtil.isBlank(val))
+        {
+          this.useSheetIndex = false;
+          this.elements = getSheetnames(cmd, args, false);
+          changeCase = false;
+        }
+        else if (val.trim().endsWith(":"))
+        {
+          context = CONTEXT_TABLE_LIST;
+          elements = null;
+        }
+      }
       else
       {
         this.context = NO_CONTEXT;

@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import workbench.interfaces.JobErrorHandler;
 import workbench.interfaces.ScriptGenerationMonitor;
@@ -47,6 +48,7 @@ import workbench.db.TableIdentifier;
 
 import workbench.storage.RowActionMonitor;
 
+import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.SqlUtil;
@@ -78,6 +80,7 @@ public class SpreadsheetFileParser
   protected List<Object> dataRowValues;
   private TableDependencySorter tableSorter;
   private boolean tableNameSpecified;
+  private final Map<String, String> sheetToTableMap = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
 
   public SpreadsheetFileParser()
   {
@@ -91,6 +94,15 @@ public class SpreadsheetFileParser
   {
     super.setTableName(aName);
     this.tableNameSpecified = StringUtil.isNotBlank(aName);
+  }
+
+  public void setSheetTableMap(Map<String, String> sheetNameMap)
+  {
+    sheetToTableMap.clear();
+    if (sheetNameMap != null)
+    {
+      sheetToTableMap.putAll(sheetNameMap);
+    }
   }
 
   public void setRecalcFormulas(boolean flag)
@@ -525,7 +537,7 @@ public class SpreadsheetFileParser
 
           if (!tableNameSpecified)
           {
-            tableName = sheetName;
+            tableName = getTableNameForSheet(sheetName, sheetIndex);
             targetTable = null;
           }
 
@@ -551,6 +563,18 @@ public class SpreadsheetFileParser
     {
       done();
     }
+  }
+
+  protected String getTableNameForSheet(String name, int index)
+  {
+    String table = sheetToTableMap.get(name);
+    if (table == null)
+    {
+      // No table mapping found, check if the mapping was done using the sheet index
+      // the index is zero-based internally, but the user supplies a one-based index
+      table = sheetToTableMap.get(Integer.toString(index + 1));
+    }
+    return table == null ? name : table;
   }
 
   protected void processOneSheet()

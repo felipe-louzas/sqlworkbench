@@ -99,6 +99,7 @@ public class WbImportTest
   public void setUp()
     throws Exception
   {
+    util.emptyBaseDirectory();
     connection = prepareDatabase();
     importCmd = new WbImport();
     importCmd.setConnection(this.connection);
@@ -631,75 +632,83 @@ public class WbImportTest
   public void testExcel()
     throws Exception
   {
-
-    ResultSet rs = null;
-    Statement stmt = null;
     File importFile = createExcelFile("person.xls");
+    StatementRunnerResult result = importCmd.execute("wbimport " +
+      "-file='" + importFile.getAbsolutePath() + "' " +
+      "-type=xls " +
+      "-header=true " +
+      "-continueonerror=false " +
+      "-table=junit_test");
 
-    try
-    {
+    assertTrue(importFile.delete());
 
-      StatementRunnerResult result = importCmd.execute("wbimport " +
-        "-file='" + importFile.getAbsolutePath() + "' " +
-        "-type=xls " +
-        "-header=true " +
-        "-continueonerror=false " +
-        "-table=junit_test");
+    assertTrue(result.getMessages().toString(), result.isSuccess());
+    Number count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
+    assertEquals(2, count.intValue());
 
-      assertTrue(importFile.delete());
+    TestUtil.executeScript(connection,
+      "delete from junit_test;\n" +
+      "commit;\n"
+    );
 
-      assertTrue(result.getMessages().toString(), result.isSuccess());
-      Number count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
-      assertEquals(2, count.intValue());
+    importFile = createExcelFile("person.xls");
+    result = importCmd.execute("wbimport " +
+      "-file='" + importFile.getAbsolutePath() + "' " +
+      "-type=xls " +
+      "-header=true " +
+      "-sheetNumber=2 " +
+      "-continueonerror=false " +
+      "-table=junit_test");
 
-      TestUtil.executeScript(connection,
-        "delete from junit_test;\n" +
-        "commit;\n"
-      );
+    assertTrue(importFile.delete());
 
-      importFile = createExcelFile("person.xls");
-      result = importCmd.execute("wbimport " +
-        "-file='" + importFile.getAbsolutePath() + "' " +
-        "-type=xls " +
-        "-header=true " +
-        "-sheetNumber=2 " +
-        "-continueonerror=false " +
-        "-table=junit_test");
+    assertTrue(result.getMessages().toString(), result.isSuccess());
+    count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
+    assertEquals(5, count.intValue());
 
-      assertTrue(importFile.delete());
+    TestUtil.executeScript(connection,
+      "delete from junit_test;\n" +
+      "delete from junit_test_pk;\n" +
+      "commit;\n"
+    );
 
-      assertTrue(result.getMessages().toString(), result.isSuccess());
-      count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
-      assertEquals(5, count.intValue());
+    util.emptyBaseDirectory();
 
-      TestUtil.executeScript(connection,
-        "delete from junit_test;\n" +
-        "delete from junit_test_pk;\n" +
-        "commit;\n"
-      );
+    createExcelFile("junit_test.xls");
+    createExcelFile("junit_test_pk.xls");
 
-      util.emptyBaseDirectory();
+    result = importCmd.execute("wbimport " +
+      "-sourceDir='" + util.getBaseDir() + "' " +
+      "-type=xls " +
+      "-extension=xls " +
+      "-header=true " +
+      "-continueonerror=false");
+    String msg = result.getMessages().toString();
+    assertTrue(msg, result.isSuccess());
+    count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
+    assertEquals(2, count.intValue());
+    count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test_pk");
+    assertEquals(2, count.intValue());
+  }
 
-      createExcelFile("junit_test.xls");
-      createExcelFile("junit_test_pk.xls");
-
-      result = importCmd.execute("wbimport " +
-        "-sourceDir='" + util.getBaseDir() + "' " +
-        "-type=xls " +
-        "-extension=xls " +
-        "-header=true " +
-        "-continueonerror=false");
-      String msg = result.getMessages().toString();
-      assertTrue(msg, result.isSuccess());
-      count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
-      assertEquals(2, count.intValue());
-      count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test_pk");
-      assertEquals(2, count.intValue());
-    }
-    finally
-    {
-      JdbcUtils.closeAll(rs, stmt);
-    }
+  @Test
+  public void testExcelSheetMap()
+    throws Exception
+  {
+    WbFile f1 = createExcelFile("junit_test.xlsx");
+    StatementRunnerResult result = importCmd.execute("wbimport " +
+      "-file='" + f1.getFullPath() + "' " +
+      "-sheetName=* \n" +
+      "-sheetTableName=\"Sheet One\":junit_test \n " +
+      "-sheetTableName=Sheet Two:junit_test_pk \n " +
+      "-header=true " +
+      "-continueonerror=false");
+    String msg = result.getMessages().toString();
+    assertTrue(msg, result.isSuccess());
+    Number count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test");
+    assertEquals(2, count.intValue());
+    count = (Number)TestUtil.getSingleQueryValue(connection, "select count(*) from junit_test_pk");
+    assertEquals(5, count.intValue());
   }
 
   private WbFile createExcelFile(String filename)
