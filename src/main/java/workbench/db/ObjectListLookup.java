@@ -34,6 +34,7 @@ public class ObjectListLookup
 {
   private final Map<Pair, Integer> lookup;
   private boolean caseSensitive = true;
+
   public ObjectListLookup(ObjectListDataStore ds)
   {
     this(ds, ds.getSchemaColumnName(), ds.getObjectColumnName());
@@ -59,6 +60,7 @@ public class ObjectListLookup
   {
     this.caseSensitive = flag;
   }
+
   public int findObject(String s1, String s2)
   {
     Integer row = lookup.get(new Pair(s1, s2));

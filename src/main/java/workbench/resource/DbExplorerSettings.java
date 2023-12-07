@@ -49,6 +49,16 @@ public class DbExplorerSettings
   public static final String PROP_INSTANT_FILTER = "workbench.dbexplorer.instantfilter";
   public static final String PROP_ASSUME_WILDCARDS = "workbench.dbexplorer.assumewildcards";
 
+  public static boolean sortColumnsByName()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.dbexplorer.columns.sort.name", false);
+  }
+
+  public static void setSortColumnsByName(boolean flag)
+  {
+    Settings.getInstance().setProperty("workbench.dbexplorer.columns.sort.name", flag);
+  }
+
   public static boolean showApplyDDLHint()
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.apply.ddl.hint", true);

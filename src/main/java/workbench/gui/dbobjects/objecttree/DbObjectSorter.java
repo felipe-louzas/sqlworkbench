@@ -38,11 +38,20 @@ public class DbObjectSorter
 {
   private boolean includeType;
   private boolean useNaturalSort;
+  private boolean ignoreCase = true;
   private final NaturalOrderComparator comparator = new NaturalOrderComparator(true);
 
   public DbObjectSorter(boolean naturalSort)
   {
     useNaturalSort = naturalSort;
+  }
+
+  /**
+   * Case-insensitive sorting is only applied when natural sort is disabled.
+   */
+  public void setIgnoreCase(boolean flag)
+  {
+    this.ignoreCase = flag;
   }
 
   public void setIncludeType(boolean flag)
@@ -66,7 +75,7 @@ public class DbObjectSorter
     {
       String t1 = o1.getObjectType();
       String t2 = o2.getObjectType();
-      int compare = StringUtil.compareStrings(t1, t2, true);
+      int compare = StringUtil.compareStrings(t1, t2, ignoreCase);
       if (compare != 0)
       {
         return compare;
@@ -79,18 +88,32 @@ public class DbObjectSorter
     {
       return comparator.compare(name1, name2);
     }
-    return StringUtil.compareStrings(name1, name2, true);
+    return StringUtil.compareStrings(name1, name2, ignoreCase);
   }
 
   public static void sort(List<? extends DbObject> objects, boolean useNaturalSort)
   {
-    sort(objects, useNaturalSort, false);
+    sort(objects, useNaturalSort, false, true);
   }
 
-  public static void sort(List<? extends DbObject> objects, boolean useNaturalSort, boolean includeType)
+  public static void sort(List<? extends DbObject> objects, boolean useNaturalSort, boolean ignoreCase)
   {
-    if (objects == null) return;
+    sort(objects, useNaturalSort, false, ignoreCase);
+  }
+
+  /**
+   * Sorts the given list of DbObjects.
+   *
+   * @param objects          the objects to sort
+   * @param useNaturalSort   if true, use natural sort when comparing object names
+   * @param includeType      include the object's types when comparing only needed for list with different types
+   * @param ignoreCase       if natural sort is disable, controls case sensitive comparison
+   */
+  public static void sort(List<? extends DbObject> objects, boolean useNaturalSort, boolean includeType, boolean ignoreCase)
+  {
+    if (objects == null || objects.isEmpty()) return;
     DbObjectSorter sorter = new DbObjectSorter(useNaturalSort);
+    sorter.setIgnoreCase(ignoreCase);
     sorter.setIncludeType(includeType);
     objects.sort(sorter);
   }

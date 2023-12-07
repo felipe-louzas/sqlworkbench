@@ -150,6 +150,8 @@ public class TableDefinitionPanel
     this.tableDefinition.setSelectOnRightButtonClick(true);
     this.tableDefinition.getExportAction().setEnabled(true);
     this.tableDefinition.setRendererSetup(RendererSetup.getBaseSetup());
+    this.tableDefinition.setSortIgnoreCase(Settings.getInstance().sortColumnListIgnoreCase());
+    this.tableDefinition.setUseNaturalSort(Settings.getInstance().useNaturalSortForColumnList());
 
     updateReadOnlyState();
     Settings.getInstance().addPropertyChangeListener(this, DbExplorerSettings.PROP_ALLOW_ALTER_TABLE);
@@ -171,7 +173,6 @@ public class TableDefinitionPanel
 
     columnFilter.setFilterOnType(DbExplorerSettings.getFilterDuringTyping());
     columnFilter.setAlwaysUseContainsFilter(DbExplorerSettings.getUsePartialMatch());
-
 
     DbData db = new DbData()
     {
@@ -412,6 +413,12 @@ public class TableDefinitionPanel
           List<ColumnIdentifier> cols = TableColumnsDatastore.createColumnIdentifiers(meta, def);
           TableDefinition tbl = new TableDefinition(currentTable, cols);
           dbConnection.getObjectCache().addTable(tbl);
+        }
+
+        if (DbExplorerSettings.sortColumnsByName())
+        {
+          int colNameIndex = dsModel.findColumn(TableColumnsDatastore.COLUMN_NAME_COL_NAME);
+          dsModel.sortByColumn(colNameIndex, true, false);
         }
       }
 

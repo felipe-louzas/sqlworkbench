@@ -2586,9 +2586,19 @@ public class Settings
     return Settings.getInstance().getBoolProperty("workbench.db.tablelist.sort.ignorecase", true);
   }
 
+  public boolean sortColumnListIgnoreCase()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.db.columnist.sort.ignorecase", true);
+  }
+
   public boolean useNaturalSortForTableList()
   {
     return Settings.getInstance().getBoolProperty("workbench.db.tablelist.sort.natural", true);
+  }
+
+  public boolean useNaturalSortForColumnList()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.db.columnlist.sort.natural", true);
   }
 
   public boolean getUseGenericExecuteForSelect()

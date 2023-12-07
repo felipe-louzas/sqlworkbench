@@ -33,12 +33,12 @@ import workbench.interfaces.Restoreable;
 import workbench.resource.DbExplorerSettings;
 import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
 
 import workbench.db.DropType;
 
 import workbench.gui.components.WbTabbedPane;
 import workbench.gui.dbobjects.TableListPanel;
-import workbench.resource.Settings;
 
 /**
  *
@@ -80,6 +80,7 @@ public class DbExplorerOptionsPanel
     DbExplorerSettings.setFilterDuringTyping(filterWhileTyping.isSelected());
     DbExplorerSettings.setUsePartialMatch(partialMatchSearch.isSelected());
     DbExplorerSettings.setGenerateTableGrants(generateTableGrants.isSelected());
+    DbExplorerSettings.setSortColumnsByName(sortColumnsByName.isSelected());
     int index = dropTypesCombo.getSelectedIndex();
     switch (index)
     {
@@ -123,7 +124,7 @@ public class DbExplorerOptionsPanel
         dropTypesCombo.setSelectedIndex(2);
         break;
     }
-
+    sortColumnsByName.setSelected(DbExplorerSettings.sortColumnsByName());
     filterRetrieval.setSelected(DbExplorerSettings.getUseFilterForRetrieve());
     autogeneratePK.setSelected(DbExplorerSettings.getAutoGeneratePKName());
     partialMatchSearch.setSelected(DbExplorerSettings.getUsePartialMatch());
@@ -174,6 +175,7 @@ public class DbExplorerOptionsPanel
     jPanel2 = new javax.swing.JPanel();
     tabPlacement = new PlacementChooser();
     jLabel1 = new javax.swing.JLabel();
+    sortColumnsByName = new javax.swing.JCheckBox();
     objectList = new javax.swing.JPanel();
     retrieveDbExplorer = new javax.swing.JCheckBox();
     useQuickFilterRegex = new javax.swing.JCheckBox();
@@ -314,13 +316,24 @@ public class DbExplorerOptionsPanel
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 20);
     generalPanel.add(jPanel2, gridBagConstraints);
+
+    sortColumnsByName.setText(ResourceMgr.getString("LblTreeSortColumnsByName")); // NOI18N
+    sortColumnsByName.setToolTipText(ResourceMgr.getString("d_LblTreeSortColumnsByName")); // NOI18N
+    sortColumnsByName.setBorder(null);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+    generalPanel.add(sortColumnsByName, gridBagConstraints);
 
     optionsPane.addTab(ResourceMgr.getString("LblSettingsGeneral"), generalPanel); // NOI18N
 
@@ -622,6 +635,7 @@ public class DbExplorerOptionsPanel
   private javax.swing.JCheckBox showSynDetails;
   private javax.swing.JCheckBox showTableHistory;
   private javax.swing.JCheckBox showTriggerPanel;
+  private javax.swing.JCheckBox sortColumnsByName;
   private javax.swing.JPanel sqlSourcePanel;
   private javax.swing.JComboBox tabPlacement;
   private javax.swing.JCheckBox useQuickFilterRegex;

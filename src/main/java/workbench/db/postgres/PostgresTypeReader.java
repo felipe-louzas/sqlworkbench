@@ -41,6 +41,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.ObjectListDataStore;
 import workbench.db.ObjectListEnhancer;
 import workbench.db.ObjectListExtender;
+import workbench.db.ObjectListLookup;
 import workbench.db.TableColumnsDatastore;
 import workbench.db.TableDefinition;
 import workbench.db.TableIdentifier;
@@ -53,9 +54,8 @@ import workbench.util.CollectionUtil;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
-
 /**
- * A class to read information about "structure" Types in Postgres.
+ * A class to read information about "structure" types in Postgres.
  *
  * This class will read information about types, created using e.g.:
  *
@@ -78,11 +78,6 @@ public class PostgresTypeReader
       // this assumes that the 9.3 server is used together with a 9.x driver!
       replacement = DbMetadata.MVIEW_NAME;
     }
-    else if (!JdbcUtils.hasMiniumDriverVersion(con, "9.0"))
-    {
-      // pre-9.0 drivers did no handle types correctly
-      replacement = "TYPE";
-    }
 
     if (DbMetadata.typeIncluded(replacement, requestedTypes))
     {
@@ -104,37 +99,34 @@ public class PostgresTypeReader
     boolean retrieveTypes = DbMetadata.typeIncluded("TYPE", requestedTypes);
     boolean retrieveRangeTypes = JdbcUtils.hasMinimumServerVersion(con, "9.2") && PostgresRangeTypeReader.retrieveRangeTypes();
 
-    if (JdbcUtils.hasMiniumDriverVersion(con, "9.0"))
-    {
-      // nothing to do, the 9.0 driver will correctly return the TYPE entries
-      retrieveTypes = false;
-    }
-
-    if (requestedTypes == null)
-    {
-      // if all objects were selected, even the old driver will already return the types
-      retrieveTypes = false;
-    }
-
-    List<BaseObjectType> types = new ArrayList<>();
     if (retrieveTypes)
     {
-      // this is only needed for pre 9.0 drivers as they did not return
-      // any object types, if that was specifically requested
-      types.addAll(getTypes(con, schemaPattern, objectPattern));
+      List<BaseObjectType> types = getTypes(con, schemaPattern, objectPattern);
+
+      ObjectListLookup finder = new ObjectListLookup(result);
+      finder.setCaseSensitive(false);
+
+      for (BaseObjectType type : types)
+      {
+        // Just in case the JDBC driver decides to return TYPE objects
+        String tschema = SqlUtil.removeObjectQuotes(type.getSchema());
+        String tname = SqlUtil.removeObjectQuotes(type.getObjectName());
+        int existing = finder.findObject(tschema, tname);
+        if (existing > -1)
+        {
+          // remove the "generic" entry that was created while retrieving the "tables"
+          result.deleteRow(existing);
+        }
+        result.addDbObject(type);
+      }
     }
 
     if (retrieveRangeTypes)
     {
       List<PgRangeType> rangeTypes = rangeReader.getRangeTypes(con, schemaPattern, objectPattern);
-      types.addAll(rangeTypes);
+      result.addObjects(rangeTypes);
     }
 
-    for (BaseObjectType type : types)
-    {
-      int row = result.addRow();
-      result.setDbObject(row, type);
-    }
     return true;
   }
 

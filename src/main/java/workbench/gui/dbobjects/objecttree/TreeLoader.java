@@ -1079,7 +1079,7 @@ public class TreeLoader
 
     if (DbTreeSettings.sortColumnsByName())
     {
-      DbObjectSorter.sort(columns, true);
+      DbObjectSorter.sort(columns, Settings.getInstance().useNaturalSortForColumnList(), Settings.getInstance().sortColumnListIgnoreCase());
     }
 
     for (ColumnIdentifier col : columns)
