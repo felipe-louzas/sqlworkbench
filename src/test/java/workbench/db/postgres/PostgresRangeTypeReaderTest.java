@@ -56,7 +56,6 @@ public class PostgresRangeTypeReaderTest
     PostgresTestUtil.cleanUpTestCase();
   }
 
-
   @Test
   public void testRetrieveRangeTypes()
     throws Exception
@@ -77,7 +76,16 @@ public class PostgresRangeTypeReaderTest
     assertEquals("timerange", type.getObjectName());
     CharSequence source = type.getSource(con);
     assertNotNull(source);
-    assertEquals("CREATE TYPE timerange AS RANGE\n(\n  SUBTYPE = time without time zone\n);", source.toString());
+    String expected;
+    if (JdbcUtils.hasMinimumServerVersion(con, "14"))
+    {
+      expected = "CREATE TYPE timerange AS RANGE\n(\n  SUBTYPE = time without time zone,\n  MULTIRANGE_TYPE_NAME = timemultirange\n);";
+    }
+    else
+    {
+      expected = "CREATE TYPE timerange AS RANGE\n(\n  SUBTYPE = time without time zone\n);";
+    }
+    assertEquals(expected, source.toString());
   }
 
 }

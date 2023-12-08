@@ -99,6 +99,12 @@ public class PostgresTypeReader
     boolean retrieveTypes = DbMetadata.typeIncluded("TYPE", requestedTypes);
     boolean retrieveRangeTypes = JdbcUtils.hasMinimumServerVersion(con, "9.2") && PostgresRangeTypeReader.retrieveRangeTypes();
 
+    if (JdbcUtils.hasMiniumDriverVersion(con, "9.0") || requestedTypes == null)
+    {
+      // nothing to do, starting with driver version 9.0 the driver will correctly return the TYPE entries
+      retrieveTypes = false;
+    }
+
     if (retrieveTypes)
     {
       List<BaseObjectType> types = getTypes(con, schemaPattern, objectPattern);
@@ -108,7 +114,7 @@ public class PostgresTypeReader
 
       for (BaseObjectType type : types)
       {
-        // Just in case the JDBC driver decides to return TYPE objects
+        // Just in case the JDBC driver did return TYPE objects
         String tschema = SqlUtil.removeObjectQuotes(type.getSchema());
         String tname = SqlUtil.removeObjectQuotes(type.getObjectName());
         int existing = finder.findObject(tschema, tname);
@@ -147,7 +153,7 @@ public class PostgresTypeReader
        "  JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace \n" +
        "WHERE (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid)) \n" +
        " AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid) \n" +
-       " AND t.typtype <> 'e' \n" + 
+       " AND t.typtype NOT IN ('e', 'd', 'r', 'm') \n" +
        " AND n.nspname <> 'pg_catalog' \n" +
        " AND n.nspname <> 'information_schema' \n";
 

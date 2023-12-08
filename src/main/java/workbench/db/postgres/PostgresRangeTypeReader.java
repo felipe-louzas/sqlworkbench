@@ -81,17 +81,28 @@ public class PostgresRangeTypeReader
 
     StringBuilder select = new StringBuilder(100);
 
+    String mrangeType;
+    if (JdbcUtils.hasMinimumServerVersion(con, "14"))
+    {
+      mrangeType = "       pg_catalog.format_type(rg.rngmultitypid, NULL) as multi_range_type \n";
+    }
+    else
+    {
+      mrangeType = "       null::text as multi_range_type";
+    }
+
     String baseSelect =
       "-- SQL Workbench/J \n" +
       "select t.typname as type_name,  \n" +
       "       n.nspname as type_schema, \n" +
       "       pg_catalog.obj_description(t.oid, 'pg_type') as remarks, \n" +
-      "       pg_catalog.format_type(rg.rngsubtype, NULL) as data_type \n" +
+      "       pg_catalog.format_type(rg.rngsubtype, NULL) as data_type, \n" +
+      mrangeType +
       "FROM pg_catalog.pg_type t \n" +
       "   join pg_catalog.pg_namespace n on t.typnamespace = n.oid \n" +
       "   join pg_catalog.pg_range rg on t.oid = rg.rngtypid \n" +
-      "WHERE n.nspname NOT IN ('pg_catalog', 'information_schema') " +
-      "  AND t.typtype = 'r' \n";
+      "WHERE n.nspname NOT IN ('pg_catalog', 'information_schema') \n" +
+      "  AND t.typtype IN ('r') \n";
 
     select.append(baseSelect);
     SqlUtil.appendAndCondition(select, "n.nspname", schemaPattern, con);
@@ -115,9 +126,11 @@ public class PostgresRangeTypeReader
         String name = rs.getString("type_name");
         String remarks = rs.getString("remarks");
         String dataType = rs.getString("data_type");
+        String multiRangeType = rs.getString("multi_range_type");
         PgRangeType pgtype = new PgRangeType(schema, name);
         pgtype.setDataType(dataType);
         pgtype.setComment(remarks);
+        pgtype.setMultirangeType(multiRangeType);
         result.add(pgtype);
       }
       con.releaseSavepoint(sp);
@@ -217,13 +230,18 @@ public class PostgresRangeTypeReader
     }
 
     if (type == null) return null;
-    StringBuilder sql = new StringBuilder(50 + type.getNumberOfAttributes() * 50);
+    StringBuilder sql = new StringBuilder(250);
     sql.append("CREATE TYPE ");
     sql.append(type.getObjectName());
     sql.append(" AS RANGE\n");
     sql.append("(\n");
     sql.append("  SUBTYPE = ");
     sql.append(type.getDataType());
+    if (type.getMultirangeType() != null)
+    {
+      sql.append(",\n  MULTIRANGE_TYPE_NAME = ");
+      sql.append(type.getMultirangeType());
+    }
     sql.append("\n);");
 
     String comment = type.getComment();

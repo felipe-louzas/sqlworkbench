@@ -40,10 +40,21 @@ public class PgRangeType
 {
   public static final String RANGE_TYPE_NAME = "RANGE TYPE";
   private String dataType;
+  private String multirangeType;
 
   public PgRangeType(String schema, String typeName)
   {
     super(schema, typeName);
+  }
+
+  public String getMultirangeType()
+  {
+    return multirangeType;
+  }
+
+  public void setMultirangeType(String multirangeType)
+  {
+    this.multirangeType = multirangeType;
   }
 
   public String getDataType()
