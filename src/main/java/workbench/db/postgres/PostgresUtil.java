@@ -211,6 +211,7 @@ public class PostgresUtil
 
   public static String getCurrentDatabase(WbConnection conn)
   {
+    if (conn == null || conn.getSqlConnection() == null) return null;
     try
     {
       // The Postgres JDBC driver uses an internally cached value

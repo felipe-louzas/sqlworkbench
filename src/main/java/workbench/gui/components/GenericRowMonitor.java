@@ -40,12 +40,12 @@ import workbench.util.NumberStringCache;
 public class GenericRowMonitor
   implements RowActionMonitor
 {
-  private StatusBar statusBar;
+  private final StatusBar statusBar;
   private String updateMsg;
   private String currentMonitorObject;
   private int monitorType;
-  private String objectMsg = ResourceMgr.getString("MsgProcessObject") + " ";
-  private Map<String, TypeEntry> typeStack = new HashMap<>();
+  private final String objectMsg = ResourceMgr.getString("MsgProcessObject") + " ";
+  private final Map<String, TypeEntry> typeStack = new HashMap<>();
 
   public GenericRowMonitor(StatusBar status)
   {

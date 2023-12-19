@@ -31,7 +31,7 @@ import workbench.util.MessageBuffer;
 public class StringResultLogger
   implements ResultLogger
 {
-  private MessageBuffer messages = new MessageBuffer();
+  private final MessageBuffer messages = new MessageBuffer();
 
   @Override
   public void clearLog()

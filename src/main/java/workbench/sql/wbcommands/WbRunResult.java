@@ -128,7 +128,7 @@ public class WbRunResult
     batchRunner.showResultSets(true);
     batchRunner.setShowProgress(showProgress);
     batchRunner.setRowMonitor(this.rowMonitor);
-    batchRunner.setShowStatementWithResult(showStmts);
+    batchRunner.setPrintStatements(showStmts);
     batchRunner.setShowStatementSummary(false);
     batchRunner.setShowRowCounts(true);
 

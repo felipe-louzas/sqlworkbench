@@ -590,6 +590,15 @@ public class BatchRunner
 
   protected void runScript()
   {
+
+    String typeKey = "batchRunnerScriptLoop";
+
+    if (this.rowMonitor  != null)
+    {
+      this.rowMonitor.setMonitorType(RowActionMonitor.MONITOR_PLAIN);
+      this.rowMonitor.saveCurrentType(typeKey);
+    }
+
     try
     {
       status = runScript(command);
@@ -601,6 +610,13 @@ public class BatchRunner
       if (showProgress) printMessage(""); // force newline in case progress reporting was turned on
       printMessage(ResourceMgr.getString("TxtError") + ": " + msg);
       status = ExecutionStatus.Error;
+    }
+    finally
+    {
+      if (rowMonitor != null)
+      {
+        rowMonitor.restoreType(typeKey);
+      }
     }
   }
 
@@ -908,9 +924,20 @@ public class BatchRunner
           }
         }
 
+        int monitorType = 0;
+        if (rowMonitor != null)
+        {
+          monitorType = rowMonitor.getMonitorType();
+        }
+
         long verbstart = System.currentTimeMillis();
         StatementRunnerResult result = this.stmtRunner.runStatement(sql);
         long verbend = System.currentTimeMillis();
+
+        if (rowMonitor != null)
+        {
+          rowMonitor.setMonitorType(monitorType);
+        }
 
         status = ExecutionStatus.Success;
 

@@ -22,6 +22,7 @@ package workbench.sql.wbcommands;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
+import workbench.resource.Settings;
 
 import workbench.db.ConnectionMgr;
 import workbench.db.WbConnection;
@@ -51,19 +52,26 @@ public class WbRunResultTest
     throws Exception
   {
     TestUtil util = getTestUtil();
-    WbConnection con = util.getHSQLConnection("quoteheader");
+    WbConnection con = util.getHSQLConnection("WbRunResultTest");
+
+    String prop = "workbench.db.sql.show.success";
+    boolean oldFlag = Settings.getInstance().getBoolProperty(prop, true);
+
     try
     {
+      Settings.getInstance().setProperty(prop, false);
       TestUtil.executeScript(con,
         "create table run_result_test (id integer, some_value varchar(20)); \n" +
         "insert into run_result_test values (1, 'foo'), (2, 'bar'); \n" +
         "commit;");
 
+      StringResultLogger logger = new StringResultLogger();
       StatementRunner runner = new StatementRunner();
+      runner.setMessageLogger(logger);
       runner.setConnection(con);
 
       StatementRunnerResult result = null;
-      result = runner.runStatement(WbRunResult.VERB);
+      result = runner.runStatement(WbRunResult.VERB + " -dryRun=false -printStatements=true");
       assertTrue(result.isSuccess());
       assertNotNull(runner.getConsumer());
       result = runner.runStatement(
@@ -74,10 +82,14 @@ public class WbRunResultTest
       assertNull(runner.getConsumer());
       int count = TestUtil.getNumberValue(con, "select count(*) from run_result_test");
       assertEquals(0, count);
+
+      String messages = logger.getMessages().getMessage().toString();
+      assertTrue(messages.contains("delete from RUN_RESULT_TEST"));
     }
     finally
     {
       ConnectionMgr.getInstance().disconnectAll();
+      Settings.getInstance().setProperty(prop, oldFlag);
     }
   }
 
