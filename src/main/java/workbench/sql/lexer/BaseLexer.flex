@@ -1,12 +1,3 @@
-/* StandardLexer.java is a generated file.  You probably want to
- * edit StandardLexer.lex to make changes.  Use JFlex to generate it.
- * To generate StandardLexer.java
- * Install <a href="http://jflex.de/">JFlex</a> v1.3.2 or later.
- * Once JFlex is in your classpath run<br>
- * <code>java JFlex.Main StandardLexer.lex</code><br>
- * You will then have a file called StandardLexer.java
- */
-
 /*
  * This file is part of a <a href="http://ostermiller.org/syntax/">syntax
  * highlighting</a> package.
@@ -29,6 +20,8 @@
 package workbench.sql.lexer;
 
 import java.io.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import workbench.util.CharSequenceReader;
 
 /**
@@ -63,54 +56,54 @@ import workbench.util.CharSequenceReader;
 	private int lastToken;
 	private int nextState=YYINITIAL;
 	private StringBuilder commentBuffer = new StringBuilder();
-  private int commentStartChar = 0;
+    private int commentStartChar = 0;
 
 	/**
-	 * next Token method that allows you to control if whitespace and comments are
+	 * NextToken method that allows to control if whitespace and comments are
 	 * returned as tokens.
 	 */
 	public SQLToken getNextToken(boolean returnComments, boolean returnWhiteSpace)
 	{
-		try
-		{
-			SQLToken t = getNextToken();
-			if (returnComments && returnWhiteSpace) return t;
+      try
+      {
+        SQLToken t = getNextToken();
+        if (returnComments && returnWhiteSpace) return t;
 
-			while (t != null && ((!returnWhiteSpace && t.isWhiteSpace()) || (!returnComments && t.isComment())))
-			{
-				t = getNextToken();
-			}
-			return (t);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+        while (t != null && ((!returnWhiteSpace && t.isWhiteSpace()) || (!returnComments && t.isComment())))
+        {
+          t = getNextToken();
+        }
+        return t;
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+        return null;
+      }
 	}
 
-	/**
-	 * Closes the current input stream, and resets the scanner to read from a new input stream.
-	 * All internal variables are reset, the old input stream  cannot be reused
-	 * (content of the internal buffer is discarded and lost).
+  /**
+   * Closes the current input stream, and resets the scanner to read from a new input stream.
+   * All internal variables are reset, the old input stream  cannot be reused
+   * (content of the internal buffer is discarded and lost).
 
-	 * The lexical state is set to the initial state.
-	 * Subsequent tokens read from the lexer will start with the line, char, and column
-	 * values given here.
-	 *
-	 * @param reader The new input.
-	 * @param yyline The line number of the first token.
-	 * @param yychar The position (relative to the start of the stream) of the first token.
-	 * @param yycolumn The position (relative to the line) of the first token.
-	 * @throws IOException if an IOExecption occurs while switching readers.
-	 */
-	public void reset(java.io.Reader reader, int yychar, int yycolumn)
-		throws IOException
-	{
-		yyreset(reader);
-		this.yychar = yychar;
-		this.yycolumn = yycolumn;
-	}
+   * The lexical state is set to the initial state.
+   * Subsequent tokens read from the lexer will start with the line, char, and column
+   * values given here.
+   *
+   * @param reader The new input.
+   * @param yyline The line number of the first token.
+   * @param yychar The position (relative to the start of the stream) of the first token.
+   * @param yycolumn The position (relative to the line) of the first token.
+   * @throws IOException if an IOExecption occurs while switching readers.
+   */
+  public void reset(java.io.Reader reader, int yychar, int yycolumn)
+    throws IOException
+  {
+    yyreset(reader);
+    this.yychar = yychar;
+    this.yycolumn = yycolumn;
+  }
 
   public void setInput(String sql)
   {
@@ -136,15 +129,15 @@ import workbench.util.CharSequenceReader;
     }
   }
 
-	StandardLexer(String source)
-	{
-		this(new StringReader(source));
-	}
+  StandardLexer(String source)
+  {
+    this(new StringReader(source));
+  }
 
-	StandardLexer(CharSequence source)
-	{
-		this(new CharSequenceReader(source));
-	}
+  StandardLexer(CharSequence source)
+  {
+    this(new CharSequenceReader(source));
+  }
 %}
 
 
@@ -200,8 +193,10 @@ XXXX_DBMS2_XXXX|
 (WITHIN{wsp}GROUP)|
 (GROUPING{wsp}SETS)|
 (OWNED{wsp}BY)|
-(FETCH{wsp}FIRST)|(FETCH{wsp}NEXT)|
+(FETCH{wsp}FIRST)|
+(FETCH{wsp}NEXT)|
 (NEXT{wsp}VALUE{wsp}FOR)|
+(NOT{wsp}MATCHED)|
 "AFTER"|
 "AGGREGATE"|
 "ALL"|
@@ -335,6 +330,7 @@ XXXX_DBMS2_XXXX|
 "LOWER"|
 "MAP"|
 "MATCH"|
+"MATCHED"|
 "MAX"|
 "MAXVALUE"|
 "MERGE"|

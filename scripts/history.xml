@@ -3,7 +3,8 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2023-11-19">
+
+  <release build="-1" date="2023-12-19">
     <entry dev-build="1" type="enh">When importing spreadsheets it's now possible to provide a sheet name to table name mapping, if the sheet names don't reflect the target tables</entry>
     <entry dev-build="1" type="enh">In the DbTree and DbExplorer it's now possible to set the default sort order for table columns by name rather than by position</entry>
     <entry dev-build="1" type="enh">It's now possible to specify the format of column defined as TIMESTAMP WITH TIME ZONE separately</entry>

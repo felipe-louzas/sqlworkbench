@@ -153,6 +153,10 @@ public class StatementContext
     {
       verbAnalyzer = new UseAnalyzer(conn, sql, pos);
     }
+    else if ("MERGE".equalsIgnoreCase(verb))
+    {
+      verbAnalyzer = MergeAnalyzer.createAnalyzer(conn, sql, pos);
+    }
     else if ("SHOW".equalsIgnoreCase(verb) || "SET".equalsIgnoreCase(verb) || "RESET".equalsIgnoreCase(verb))
     {
       if (DBID.fromConnection(conn).isAny(DBID.Postgres, DBID.Greenplum))
@@ -216,6 +220,9 @@ public class StatementContext
       int lastStart = 0;
       int lastEnd = 0;
       String verb = t.getContents();
+
+      // MERGE is handled separately
+      if ("MERGE".equalsIgnoreCase(verb)) return null;
 
       // Will contain each "union" token to find the start and end of each sub-statement
       List<SQLToken> unionStarts = new ArrayList<>();

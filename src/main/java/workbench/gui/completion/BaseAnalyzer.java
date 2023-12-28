@@ -48,9 +48,11 @@ import workbench.db.WbConnection;
 import workbench.db.objectcache.DbObjectCache;
 import workbench.db.objectcache.Namespace;
 
+import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLToken;
 import workbench.sql.syntax.SqlKeywordHelper;
 
+import workbench.util.Alias;
 import workbench.util.CollectionUtil;
 import workbench.util.SelectColumn;
 import workbench.util.SqlParsingUtil;
@@ -348,7 +350,6 @@ public abstract class BaseAnalyzer
   }
   protected Namespace getNamespaceFromCurrentWord()
   {
-//    String word = getCurrentWord();
     String name = getQualifierLeftOfCursor();
     Namespace key = Namespace.fromExpression(dbConnection, name);
     if (!key.isValid())
@@ -411,7 +412,7 @@ public abstract class BaseAnalyzer
 
   protected boolean between(int toTest, int start, int end)
   {
-    return (toTest > getPos(start) && toTest < getPos(end));
+    return (toTest >= getPos(start) && toTest <= getPos(end));
   }
 
   public int getContext()
@@ -520,6 +521,21 @@ public abstract class BaseAnalyzer
       this.elements.add(0, this.allColumnsMarker);
     }
   }
+
+  protected TableAlias findAlias(String toSearch, List<Alias> possibleTables)
+  {
+    for (Alias element : possibleTables)
+    {
+      TableAlias tbl = new TableAlias(element.getObjectName(), element.getAlias(), catalogSeparator, schemaSeparator);
+
+      if (tbl.isTableOrAlias(toSearch, catalogSeparator, schemaSeparator))
+      {
+        return tbl;
+      }
+    }
+    return null;
+  }
+
 
   private List<String> readKeywords()
   {
@@ -750,6 +766,25 @@ public abstract class BaseAnalyzer
       setOverwriteCurrentWord(currentWord.charAt(currentWord.length() - 1) != separator);
     }
   }
+
+  /**
+   * Advances the lexer until the given verb is found.
+   *
+   * @return the token of the verb of null if the verb wasn't found
+   */
+  protected SQLToken skipUntil(SQLLexer lexer, String verb)
+  {
+    SQLToken token = lexer.getNextToken(false, false);
+    while (token != null)
+    {
+      if (verb.equalsIgnoreCase(token.getText()))
+      {
+        return token;
+      }
+    }
+    return null;
+  }
+
 
   protected SelectFKValueMarker checkFkLookup()
   {

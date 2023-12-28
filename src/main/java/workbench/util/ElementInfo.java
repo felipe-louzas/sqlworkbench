@@ -27,7 +27,7 @@ package workbench.util;
  */
 public class ElementInfo
 {
-  private String elementValue;
+  private final String elementValue;
   private int startInStatement;
   private int endInStatement;
 

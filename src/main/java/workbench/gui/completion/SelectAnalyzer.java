@@ -245,7 +245,7 @@ public class SelectAnalyzer
 
       if (table != null)
       {
-        currentAlias = findAlias(table, tables, catalogSeparator, schemaSeparator);
+        currentAlias = findAlias(table, tables);
 
         if (currentAlias != null)
         {
@@ -332,20 +332,6 @@ public class SelectAnalyzer
     return columns.get(0).equals("*");
   }
 
-  private TableAlias findAlias(String toSearch, List<Alias> possibleTables, char catalogSep, char schemaSeparator)
-  {
-    for (Alias element : possibleTables)
-    {
-      TableAlias tbl = new TableAlias(element.getObjectName(), element.getAlias(), catalogSep, schemaSeparator);
-
-      if (tbl.isTableOrAlias(toSearch, catalogSep, schemaSeparator))
-      {
-        return tbl;
-      }
-    }
-    return null;
-  }
-
   private int inJoinONPart(List<Alias> tablesInSelect)
   {
     int result = NO_JOIN_ON;
@@ -395,8 +381,7 @@ public class SelectAnalyzer
             if (word != null && word.endsWith(".") && word.length() > 1)
             {
               word = word.substring(0, word.length() - 1);
-              char schemaSep = SqlUtil.getSchemaSeparator(dbConnection);
-              TableAlias tbl = findAlias(word, tablesInSelect, catalogSeparator, schemaSep);
+              TableAlias tbl = findAlias(word, tablesInSelect);
               if (tbl == null)
               {
                 // no alias found, assume the current word is a schema name

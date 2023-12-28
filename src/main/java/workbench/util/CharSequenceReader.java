@@ -30,14 +30,13 @@ import java.io.Reader;
  * Copied from the JDK's StringReader as that does not
  * support a CharSequence as the input.
  *
- * @author Thomas Kellerer
  */
 public class CharSequenceReader
   extends Reader
 {
   private final Object readLock = new Object();
   private CharSequence str;
-  private int length;
+  private final int length;
   private int next = 0;
   private int mark = 0;
 

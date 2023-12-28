@@ -49,6 +49,11 @@ public class TableAlias
     checkTable(catalogSeparator, schemaSeparator);
   }
 
+  public void setTableIdentifier(TableIdentifier tbl)
+  {
+    this.table = tbl;
+  }
+
   private void checkTable(char catalogSeparator, char schemaSeparator)
   {
     if (getObjectName() != null)
@@ -69,7 +74,7 @@ public class TableAlias
   public boolean isTableOrAlias(String name, char catalogSeparator, char schemaSeparator)
   {
     if (StringUtil.isEmpty(name)) return false;
-    if (name.trim().equalsIgnoreCase(getAlias())) return true;
+    if (name.trim().equalsIgnoreCase(getNameToUse())) return true;
     if (this.table == null) return false;
 
     TableIdentifier tbl = new TableIdentifier(name, catalogSeparator, schemaSeparator);

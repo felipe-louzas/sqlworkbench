@@ -44,7 +44,7 @@ public class CteParser
 
   private String baseSql;
   private int baseSqlStart;
-  private List<CteDefinition> cteList = new ArrayList<>();
+  private final List<CteDefinition> cteList = new ArrayList<>();
 
   CteParser(String sql)
   {

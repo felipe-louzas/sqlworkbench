@@ -211,13 +211,14 @@ public class SQLToken
   }
 
   /**
-   * Get the contents of this token. Reserved words (keywords)
-   * will be returned in upper case and with multiple whitespaces
+   * Returns a parsed conten of the this token.
+   *
+   * Reserved words (keywords) will be returned in upper case and with multiple whitespaces
    * replaced by a single whitespace to make comparisons easier.
    * "is    Null" will be returned as "IS NULL".
    * To get the real text from the underlying SQL, use getText().
    * For all tokens where isReservedWord() == false getText and
-   * getContents() will return exactly the same.
+   * getContents() will return the same value.
    *
    * @return A string representing the text of the token
    * @see #getText()

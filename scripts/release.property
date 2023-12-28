@@ -1,4 +1,7 @@
-#Sun, 19 Nov 2023 17:52:29 +0100
+#Tue, 19 Dec 2023 22:16:29 +0100
 
 release.build.number=130
 release.build.date=2023-11-19
+
+dev.build.date=2023-12-19
+dev.build.number=130.1
