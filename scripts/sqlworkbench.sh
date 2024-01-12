@@ -22,13 +22,13 @@ elif [ -x "$SCRIPT_PATH/jre/Contents/Home/bin/java" ]
 then
   # MacOS
   JAVACMD="$SCRIPT_PATH/jre/Contents/Home/bin/java"
-elif [ -x "$WORKBENCH_JDK/bin/java" ]
+elif [ -x "$WORKBENCH_JDK/bin/java" ] && [ -n "${WORKBENCH_JDK}" ]
 then
   JAVACMD="$WORKBENCH_JDK/bin/java"
-elif [ -x "$JAVA_HOME/jre/bin/java" ]
+elif [ -x "$JAVA_HOME/jre/bin/java" ] && [ -n "${JAVA_HOME}" ]
 then
   JAVACMD="$JAVA_HOME/jre/bin/java"
-elif [ -x "$JAVA_HOME/bin/java" ]
+elif [ -x "$JAVA_HOME/bin/java" ] && [ -n "${JAVA_HOME}" ]
 then
   JAVACMD="$JAVA_HOME/bin/java"
 fi

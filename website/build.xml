@@ -7,9 +7,9 @@
     <pathelement location="js.jar"/>
   </path>
 
-  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="../../manual/libs/xmltask-v1.16.jar"/>
+  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="../scripts/xmltask-v1.16.jar"/>
 
-  <property file="..\scripts\release.property"/>
+  <property file="../scripts/release.property"/>
 
   <target name="update-rss">
     <tstamp>
@@ -96,6 +96,8 @@
     <delete failonerror="false">
       <fileset dir=".">
         <include name="*.html"/>
+        <exclude name="stop_war.html"/>
+        <exclude name="artist_letter.html"/>
         <include name="history_rss.txt"/>
       </fileset>
     </delete>

@@ -13,9 +13,11 @@
     <title>SQL Workbench/J Homepage</title>
     <subtitle>The free DBMS-independent SQL Tool</subtitle>
     <content>
-    <not-mysql/>
+
+    <no-nazis/>
+    
     <p>
-    SQL Workbench/J is a free, DBMS-independent, cross-platform SQL query tool. It is written in Java and
+    SQL Workbench/J is a DBMS-independent, cross-platform SQL query tool. It is written in Java and
     should run on any operating system that provides a Java Runtime Environment.
     </p>
 
@@ -100,14 +102,14 @@ WHERE id=42;</p>
   <page name="databases" title="Compatible DBMS"  toc="main">
     <title>Compatible DBMS</title>
     <content>
-    <not-mysql/>
+    <no-nazis/>
     <p style="margin-top:10px">
       SQL Workbench/J mainly uses standard Java/JDBC calls to the database and thus should work against any DBMS that has a JDBC driver. But not all features
       might work correctly with unknown databases, especially if the JDBC driver only implements a small subset of the JDBC API.
     </p>
     <p>SQL Workbench/J has been specifically tested with the following DBMS:</p>
     <ul>
-      <li><a target="_blank" href="https://www.postgresql.org/">PostgreSQL</a> (8.4 or later)<a target="_blank" href="https://jdbc.postgresql.org/download.html">(Download JDBC driver)</a></li>
+      <li><a target="_blank" href="https://www.postgresql.org/">PostgreSQL</a> 8.4 or later <a target="_blank" href="https://jdbc.postgresql.org/download/">(Download JDBC driver)</a></li>
       <li><a target="_blank" href="http://hsqldb.org">HSQLDB</a></li>
       <li><a target="_blank" href="https://www.h2database.com">H2 Database Engine</a></li>
       <li><a target="_blank" href="https://www.firebirdsql.org">Firebird SQL</a> <a target="_blank" href="http://www.firebirdsql.org/en/jdbc-driver/">(Download JDBC driver)</a></li>
@@ -116,25 +118,24 @@ WHERE id=42;</p>
       <li><a target="_blank" href="https://www.microsoft.com/sql">Microsoft SQL Server</a> (<a target="_blank" href="https://github.com/Microsoft/mssql-jdbc">Download JDBC driver</a>)</li>
       <li><a target="_blank" href="https://www.ibm.com/software/data/db2/">IBM DB2</a></li>
       <li><a target="_blank" href="https://greenplum.org/">Pivotal Greenplum</a></li>
-      <li><a target="_blank" href="https://www.vertica.com/">HP Vertica</a> (<a target="_blank" href="https://my.vertica.com/download/vertica/client-drivers/">Download JDBC driver)</a></li>
       <li><a target="_blank" href="http://www.mysql.com/">MySQL</a> <a target="_blank" href="http://www.mysql.com/products/connector/j">(Download JDBC Driver)</a></li>
     </ul>
     <p>The following DBMS have been reported to work with SQL Workbench/J but have not been tested</p>
     <ul>
-      <li><a target="_blank" href="https://mariadb.org/">MariaDB</a> <a target="_blank" href="https://downloads.mariadb.org/">(Download JDBC Driver)</a></li>
-      <li><a target="_blank" href="http://www.cubrid.org/">Cubrid</a></li>
+      <li><a target="_blank" href="https://www.vertica.com/">HP Vertica</a> (<a target="_blank" href="https://my.vertica.com/download/vertica/client-drivers/">Download JDBC driver)</a></li>
+      <li><a target="_blank" href="https://mariadb.org/">MariaDB</a> <a target="_blank" href="https://mariadb.org/connector-c/all-releases/">(Download JDBC Driver)</a></li>
       <li><a target="_blank" href="http://www-01.ibm.com/software/data/informix">Informix</a></li>
       <li><a target="_blank" href="http://www.ingres.com/">Ingres</a></li>
-      <li><a target="_blank" href="http://www.sqlite.org/">SQLite</a> (with <a target="_blank" href="https://bitbucket.org/xerial/sqlite-jdbc">SQLiteJDBC</a>)</li>
-      <li><a target="_blank" href="http://www.teradata.com">Teradata</a> (<a target="_blank" href="http://www.teradata.com/DownloadCenter/Forum158-1.aspx">Download JDBC driver</a>)</li>
+      <li><a target="_blank" href="http://www.sqlite.org/">SQLite</a> (with <a target="_blank" href="https://github.com/xerial/sqlite-jdbc">SQLiteJDBC</a>)</li>
+      <!-- <li><a target="_blank" href="http://www.teradata.com">Teradata</a> (<a target="_blank" href="https://downloads.teradata.com/download/connectivity/jdbc-driver">Download JDBC driver</a>)</li> -->
     </ul>
-    <p>If you find that not all features (especially in the DbExplorer) work for your DBMS, please feel free to contact me.</p>
     </content>
   </page>
 
   <page name="screenshots" title="Screenshots" toc="main">
     <title>Screenshots</title>
     <content>
+      <no-nazis/>
       <h3>Screenshots</h3>
       <ul style="margin-top:10px">
       <li><image-link title="Main window" name="MainWindow.png" back="screenshots" next="mainwindow_dbtree.png">Main Window</image-link><br/></li>
@@ -179,7 +180,7 @@ WHERE id=42;</p>
     <title>SQL Workbench/J</title>
     <subtitle>Getting started</subtitle>
     <content>
-      <not-mysql/>
+      <no-nazis/>
       <h3>Prerequisites</h3>
       <p>
         SQL Workbench/J needs a Java runtime (it also works with a JDK - "Java Development Kit").<br/><br/>
@@ -285,13 +286,14 @@ WHERE id=42;</p>
     <title>SQL Workbench/J</title>
     <subtitle>Support</subtitle>
     <content>
-      <not-mysql/>
+      <no-nazis/>
       <p>There are three ways how you can get support for SQL Workbench/J</p>
       <ul>
         <li>Read the <a href="manual/workbench-manual.html" target="_blank">manual</a></li>
         <li>Check out the SQL Workbench/J <a href="http://groups.google.com/group/sql-workbench" target="_blank">google group</a></li>
         <li>Send an email to <mail-to/> (or use <span style="padding:2px;background-color:lightgray">Help &raquo; Contact the author</span> from within the application)</li>
       </ul>
+      
       <p>
         When reporting a problem, always include the build number of SQL Workbench/J you are using together with the DBMS, its version
         and the JDBC driver you are using. This information is shown in the connection info dialog, that can be obtained
@@ -304,47 +306,11 @@ WHERE id=42;</p>
     </content>
   </page>
 
-  <!-- ======================== Support ========================== -->
-  <page name="laf" title="Alternative Look &amp; Feel" toc="main">
-    <title>SQL Workbench/J</title>
-    <subtitle>Alternative Look &amp; Feel</subtitle>
-    <content>
-      <h3>Installing a Look &amp; Feel</h3>
-      <p>It's possible to use an alternative Look &amp; Feel apart from the default built-in available in the Java runtime.</p>
-      <p>
-        To use an alternative Look &amp; Feel, download the necessary JAR file(s). The JAR file(s) can be saved in
-        any directory.
-      </p>
-      <p>
-        To register and activate the Look &amp; Feel, go to <tt>Tools &gt; Options &gt; Look and Feel</tt>.
-      </p>
-      <p>
-        When creating a new Look &amp; Feel, you need to select the downloaded JAR file(s). Once you have selected
-        the JAR file(s), you can select the class that provides the Look &amp; Feel.
-      </p>
-      <br/>
-      <h3>Compatible Look &amp; Feels</h3>
-
-      <p>
-        The following Look &amp; Feels are compatible with SQL Workbench/J.
-      </p>
-      <ul>
-        <li><a href="https://www.formdev.com/flatlaf" target="_blank">FlatLaf</a></li>
-        <li><a href="https://www.pagosoft.com/projects/pgslookandfeel/" target="_blank">PGS</a></li>
-        <li><a href="http://www.jtattoo.net" target="_blank">JTattoo</a></li>
-        <li><a href="http://www.jgoodies.com/freeware/libraries/looks/" target="_blank">JGoodies Looks</a></li>
-      </ul>
-      <p>
-        When using a "dark" Look &amp; Feel, you need to change the background color of the editor and the message area
-        manually. Those two colors are not influenced by the colors defined by the Look &amp; Feel.
-      </p>
-    </content>
-  </page>
-
   <!-- ======================== XSLT Files ========================== -->
   <page name="xslt" title="XSLT" toc="main">
     <title>Sample XSL transformations</title>
     <content>
+      <no-nazis/>
       <p>Several SQL Workbench/J commands produce XML output (e.g. <a href="manual/wb-commands.html#command-schema-report">WbSchemaReport</a>
       or <a href="manual/wb-commands.html#command-schema-diff">WbSchemaDiff</a>).
       </p>
@@ -399,75 +365,74 @@ WHERE id=42;</p>
 
   <!-- ======================== Downloads ========================== -->
   <page name="downloads" title="Downloads" toc="main">
-        <title>SQL Workbench/J</title>
-        <subtitle>Available Downloads</subtitle>
-        <content>
-        <not-mysql/>
-        <p style="margin-top:15px;font-weight:bold;margin-bottom:0px">
-            SQL Workbench/J requires <b>Java 11</b> or later. Using Java 17 is recommended.
-        </p>
-        <h3 style="margin-top:20px">Stable release</h3>
-        <p>
-          Current stable release: Build <build-number/>, <build-date/> (<a href="history.html">Release History</a>)
-        </p>
-        <p>
-          The generic package contains the jar file, the manual (HTML and PDF), shell scripts for Linux/Unix
-          based systems (including MacOS) to start the application as well as a Windows<SUP>&reg;</SUP> <a href="manual/install.html#launcher-using">launcher</a>
-          and sample <a href="xslt.html">XSLT</a> scripts.
-        </p>
-        <p>
-          The download includes the language files for English and German. The application's language can be changed
-          from within the options dialog (Tools -&gt; Options).
-        </p>
-        <p>
-          If you want to import or export Microsoft Excel files (XLS, XLSX) or import OpenOffice Calc documents, download the "Generic package
-          including all optional libraries" (approx. 30MB). If you are in doubt which one to use, download that.
-        </p>
-        <p>
-          Please see <a href="macos-binary.html">Creating a macOS executable</a> for a short description on how to build a macOS executable
-          using "Automator".
-        </p>
+      <title>SQL Workbench/J</title>
+      <subtitle>Available Downloads</subtitle>
+      <content>
+      <no-nazis/>
 
-        <div style="padding-left:1.5em;padding-right:1.5em;border-style:solid;border-width:2px;border-color:gray;margin-bottom:2em;margin-top:2em">
-          <p style="font-size:125%;font-weight:bold;margin-top:1em;">Change in the directory layout!</p>
-          <div style="margin:10px;display:flex;flex-direction:row;justify-content:space-around;">
-            <div style="display:flex;flex-direction:column;margin-right:0.5em;padding-top:4px">
-              <img style="vertical-align:middle;" src="images/warning.png"/>
-            </div>
-            <div style="display:flex;flex-direction:column;">
-              <p>
-                Starting with build 125 all additional libraries (e.g. for Excel exports) are expected in the sub-directory <tt>ext</tt>
-                relative to the directory where <tt>sqlworkbench.jar</tt> is located. The location of the JDBC drivers is not affected by this.
-              </p>
-              <p>
-                If you download the archive "with optional libraries", the libraries will automatically be extracted into the <tt>ext</tt>
-                subdirectory and you can remove the existing libraries from directory where <tt>sqlworkbench.jar</tt>
-                is located.
-              </p>
-            </div>
-          </div>
-        </div>
+      <div style="padding-top:1em;padding-bottom:1em;padding-left:1.5em;padding-right:1.5em;border-style:solid;border-width:3px;border-color:red;margin-bottom:2em;margin-top:2em">
+        After downloading this software, please contact your local Russian embassy and ask them to stop <a href="stop_war.html">the war</a> and the terror against the Ukrainian people.
+      </div>
 
-        <ul>
-            <li><zip-office-link/></li>
-            <li><zip-link/></li>
-            <li><source-link/></li>
-        </ul>
+      <h3 style="margin-top:20px">Stable release</h3>
+      <p style="margin-top:15px;margin-bottom:10px">
+          SQL Workbench/J requires <b>Java 11</b> or later. Using Java 17 is recommended.
+      </p>
+      
+      <p>
+        Current stable release: Build <build-number/>, <build-date/> (<a href="history.html">Release History</a>)
+      </p>
+      <p>
+        The generic package contains the jar file, the manual (HTML and PDF), shell scripts for Linux/Unix
+        based systems (including MacOS) to start the application as well as a Windows<SUP>&reg;</SUP> <a href="manual/install.html#launcher-using">launcher</a>
+        and sample <a href="xslt.html">XSLT</a> scripts.
+      </p>
+      <p>
+        The download includes the language files for English and German. The application's language can be changed
+        from within the options dialog (Tools -&gt; Options).
+      </p>
+      <p>
+        If you want to import or export Microsoft Excel files (XLS, XLSX) or import OpenOffice Calc documents, download the "Generic package
+        including all optional libraries" (approx. 30MB). If you are in doubt which one to use, download that.
+      </p>
+      <p>
+        Please see <a href="macos-binary.html">Creating a macOS executable</a> for a short description on how to build a macOS executable
+        using "Automator".
+      </p>
 
-        <p style="font-weight:bold">Please note:</p>
-        <p style="margin-left:15px;margin-right:25px">
-           Please delete all existing files from the <tt>ext</tt> sub-directory before
-           extracting the new archive, to make sure that only correct and up-to-date libraries are used.
-        </p>
+      <h3 style="margin-top:2em">Change in directory layout</h3>
+      <p>
+        Starting with build 125 all additional libraries (e.g. for Excel exports) are expected in the sub-directory <tt>ext</tt>
+        relative to the directory where <tt>sqlworkbench.jar</tt> is located. The location of the JDBC drivers is not affected by this.
+      </p>
+      <p>
+        If you download the archive "with optional libraries", the libraries will automatically be extracted into the <tt>ext</tt>
+        subdirectory and you can remove the existing libraries from directory where <tt>sqlworkbench.jar</tt>
+        is located.
+      </p>
 
-        <p style="margin-top:25px">
-          Older versions can be downloaded from the <a href="download-archive.html">download archive</a>
-        </p>
-        <p style="margin-top:25px">
-            You can subscribe to the <a href="wb_news.xml">RSS Feed</a> to receive information about new releases
-        </p>
-        <p>If you are having problems unzipping the distribution archive with WinZip, please read <a href="winzip.html">this</a>.</p>
-        <dev-build-info/>
+      <h3 style="margin-top:2em">Download links</h3>
+
+      <ul>
+          <li><zip-office-link/></li>
+          <li><zip-link/></li>
+          <li><source-link/></li>
+      </ul>
+
+      <p style="font-weight:bold">Please note:</p>
+      <p style="margin-left:15px;margin-right:25px">
+         Please delete all existing files from the <tt>ext</tt> sub-directory before
+         extracting the new archive, to make sure that only correct and up-to-date libraries are used.
+      </p>
+
+      <p style="margin-top:25px">
+        Older versions can be downloaded from the <a href="download-archive.html">download archive</a>
+      </p>
+      <p style="margin-top:25px">
+          You can subscribe to the <a href="wb_news.xml">RSS Feed</a> to receive information about new releases
+      </p>
+      <!-- <p>If you are having problems unzipping the distribution archive with WinZip, please read <a href="winzip.html">this</a>.</p> -->
+      <dev-build-info/>
     </content>
   </page>
 
@@ -475,7 +440,19 @@ WHERE id=42;</p>
     <title>SQL Workbench/J</title>
     <subtitle>Development build download</subtitle>
     <content>
-      <not-mysql/>
+      <no-nazis/>
+
+      <div style="padding-top:1em;padding-bottom:1em;padding-left:1.5em;padding-right:1.5em;border-style:solid;border-width:3px;border-color:red;margin-bottom:2em;margin-top:2em">
+          After downloading this software, please contact your local Russian embassy and ask them to stop <a href="stop_war.html">the war</a> and the terror against the Ukrainian people.
+      </div>
+
+      <h3 style="margin-top:2em">Change in profile storage</h3>
+      <p>
+        Starting with build 129.1 it's possible to create nested profile groups. If this feature is used,
+        the profiles can not be loaded with older versions properly. Make sure you have a backup of
+        your profiles file (<tt>wb-profiles.properties</tt> or <tt>WbProfiles.xml</tt>).
+      </p>
+
       <h3 id="dev_build" style="margin-top:20px">Development build</h3>
       <p>
         A development build is generated while testing and implementing new features for the next stable build.
@@ -515,17 +492,40 @@ WHERE id=42;</p>
     <title>SQL Workbench/J</title>
     <subtitle>Release Archive</subtitle>
     <content>
+      <no-nazis/>
+      
       <p>Download archive for SQL Workbench/J</p>
+
+        <div style="padding-top:1em;padding-bottom:1em;padding-left:1.5em;padding-right:1.5em;border-style:solid;border-width:3px;border-color:red;margin-bottom:2em;margin-top:2em">
+          After downloading this software, please contact your local Russian embassy and ask them to stop <a href="stop_war.html">the war</a> and the terror against the Ukrainian people.
+        </div>
+
       <ul class="archive-list">
+        <li>Build 129 (requires Java 11)<br/>
+          <ul>
+            <li><a href="archive/Workbench-Build129.zip">All Platforms</a></li>
+            <li><a href="archive/Workbench-Build129-with-optional-libs.zip">With optional libraries</a></li>
+            <li><a href="archive/WorkbenchSrc-Build129.zip">Source Code</a></li>
+          </ul>
+        </li>
+        <li>Build 128 (requires Java 11)<br/>
+          <ul>
+            <li><a href="archive/Workbench-Build128.zip">All Platforms</a></li>
+            <li><a href="archive/Workbench-Build128-with-optional-libs.zip">With optional libraries</a></li>
+            <li><a href="archive/WorkbenchSrc-Build128.zip">Source Code</a></li>
+          </ul>
+        </li>
         <li>Build 127 (requires Java 8)<br/>
           <ul>
             <li><a href="archive/Workbench-Build127.zip">All Platforms</a></li>
+            <li><a href="archive/Workbench-Build127-with-optional-libs.zip">With optional libraries</a></li>
             <li><a href="archive/WorkbenchSrc-Build127.zip">Source Code</a></li>
           </ul>
         </li>
         <li>Build 125 (requires Java 8)<br/>
           <ul>
             <li><a href="archive/Workbench-Build125.zip">All Platforms</a></li>
+            <li><a href="archive/Workbench-Build125-with-optional-libs.zip">With optional libraries</a></li>
             <li><a href="archive/WorkbenchSrc-Build125.zip">Source Code</a></li>
           </ul>
         </li>
@@ -609,34 +609,6 @@ WHERE id=42;</p>
             <li><a href="archive/WorkbenchSrc-Build114.zip">Source Code</a></li>
           </ul>
         </li>
-        <li>Build 113<br/>
-          <ul>
-            <li><a href="archive/Workbench-Build113.zip">All Platforms</a></li>
-            <li><a href="archive/Workbench-Build113-Mac.tgz">Mac Package</a></li>
-            <li><a href="archive/WorkbenchSrc-Build113.zip">Source Code</a></li>
-          </ul>
-        </li>
-        <li>Build 112<br/>
-          <ul>
-            <li><a href="archive/Workbench-Build112.zip">All Platforms</a></li>
-            <li><a href="archive/Workbench-Build112-Mac.tgz">Mac Package</a></li>
-            <li><a href="archive/WorkbenchSrc-Build112.zip">Source Code</a></li>
-          </ul>
-        </li>
-        <li>Build 111<br/>
-          <ul>
-            <li><a href="archive/Workbench-Build111.zip">All Platforms</a></li>
-            <li><a href="archive/Workbench-Build111-Mac.tgz">Mac Package</a></li>
-            <li><a href="archive/WorkbenchSrc-Build111.zip">Source Code</a></li>
-          </ul>
-        </li>
-        <li>Build 110<br/>
-          <ul>
-            <li><a href="archive/Workbench-Build110.zip">All Platforms</a></li>
-            <li><a href="archive/Workbench-Build110-Mac.tgz">Mac Package</a></li>
-            <li><a href="archive/WorkbenchSrc-Build110.zip">Source Code</a></li>
-          </ul>
-        </li>
       </ul>
     </content>
   </page>
@@ -646,6 +618,7 @@ WHERE id=42;</p>
     <title>SQL Workbench/J</title>
     <subtitle>Release History</subtitle>
     <content>
+      <no-nazis/>
       <full-history/>
     </content>
   </page>
@@ -653,6 +626,7 @@ WHERE id=42;</p>
   <page id="dev-history" title="Change Log" toc="false">
     <title>SQL Workbench/J</title>
     <content>
+      <no-nazis/>
       <dev-history/>
     </content>
   </page>
@@ -694,34 +668,6 @@ WHERE id=42;</p>
 
   <page link="manual/license.html" title="License" toc="small"/>
 
-  <!-- ======================== About the author ========================== -->
-  <page name="author" title="About the author" toc="small">
-    <title>SQL Workbench/J</title>
-    <subtitle>About the author</subtitle>
-    <content>
-      <p>My name is Thomas Kellerer, I live in Munich, Germany.</p>
-      <p>SQL Workbench/J came into existance because I didn't want to learn a new SQL
-      tool for every DBMS I had to use. I use this tool on a regular (daily) basis
-      in my own work. I also wanted to have a tool that could do basic data migration between
-      different kinds of DBMS systems.
-      </p>
-
-      <p>If you have any suggestions on how to enhance the application, if you find a bug or if you are missing
-      support for a DDBMS, feel free to write me an email.
-      </p>
-
-      <p>I will try to add support (beyond what JDBC offers) for any DBMS that I have free access to (e.g. a free
-      trial download).
-      </p>
-
-      <p>
-        Some of the DBMS specific support in the <a target="_blank" href="manual/dbexplorer.html">Database Explorer</a>
-      (e.g. display of stored procedure source, view source) can be configured without building a new
-      distribution. If you have questions regarding this, feel free to write me an email.
-      </p>
-      <a href="https://blog.sql-workbench.eu">My blog about SQL topics.</a>
-    </content>
-  </page>
   <page link="dbms_comparison.html" title="DBMS comparison" toc="small"  target="_blank"/>
   <page link="https://blog.sql-workbench.eu" title="My blog about SQL" toc="small" target="_blank"/>
 
@@ -767,7 +713,7 @@ WHERE id=42;</p>
         <p class="programlisting" style="line-height:1.2em"><![CDATA[cd "/Applications/SQL Workbench"
 r=$(java \
 	--add-opens java.desktop/com.apple.laf=ALL-UNNAMED \
-	-cp sqlworkbench.jar:ext/* \
+	-cp "sqlworkbench.jar:ext/*" \
 	-Dawt.useSystemAAFontSettings=on \
 	-Dapple.awt.showGrowBoxtrue=true \
 	-Dapple.laf.useScreenMenuBar=true \
@@ -795,6 +741,7 @@ $r]]></p>
   <page name="build-from-source" title="Building from Source" toc="main">
     <title>Building SQL Workbench/J from Source</title>
     <content>
+      <no-nazis/>
       <h3>Building the jar file</h3>
 
       <p>
@@ -804,9 +751,16 @@ $r]]></p>
       </p>
 
       <p>
-        To build the jar file, use <tt>ant</tt> while the <tt>scripts</tt> directory
-        is your current directory. If the build is successful, <tt>dist/sqlworkbench.jar</tt>
-        will be created.
+        To only build the jar file for testing purposes, run Maven in the directory where <tt>pom.xml</tt> is located:<br/>
+        <tt>mvn package -DskipTests=true</tt>.<br/>
+        To run run the non-DBMS unit tests, it is necessary to specify the Maven profile "test-default":<br/>
+        <tt>mvn test -Ptest-default</tt>.<br/>
+      </p>
+
+      <p>
+        The Ant script in the <tt>scripts</tt> directory is intended to build a jar file for a release.
+        Its main purpose is to set the build number correctly. <br/>
+        If the build is successful, <tt>dist/sqlworkbench.jar</tt> will be created.
       </p>
 
       <p>

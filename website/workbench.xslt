@@ -48,16 +48,16 @@
               <xsl:with-param name="currentPage" select="$currentPage"/>
             </xsl:call-template>
         </xsl:for-each>
-        
+
         <li class="toclist" id="manual">
           <a class="list" title="Display the online manual of the current stable release" href="manual/workbench-manual.html">Manual</a>
         </li>
         <li class="toclist" id="problems">
           <a class="list" title="FAQ, Problems" href="manual/troubleshooting.html">Common Problems</a>
         </li>
-        
-        <li class="toclist" id="google">
-          <a class="list" href="http://groups.google.com/group/sql-workbench" title="Jump to forum">Forum@Google
+
+        <li class="toclist" id="forum">
+          <a class="list" target="_new" href="http://forum.sql-workbench.eu" title="Jump to forum">Forum
             <img src="images/outlink.gif" alt="Link Arrow" title="Jump to forum" border="0"/>
           </a>
         </li>
@@ -72,9 +72,9 @@
         </xsl:for-each>
       </ul>
 
-      <div id="pulseofeurope">
-        <a target="_blank" href="https://pulseofeurope.eu">
-          <img border="0" width="180" height="100" style="margin-left:2px;margin-top:30px;margin-bottom:10px" src="pulseofeurope.jpg" alt="PulseofEurope"/>
+      <div id="noafd">
+        <a target="_blank" href="https://afd-verbot.de/beweise">
+          <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/>
         </a>
       </div>
 
@@ -387,6 +387,41 @@
     <a href="Workbench-Build{$buildNumber}-Mac-with-optional-libs.tgz">MacOS including all optional libraries</a>
   </xsl:template>
 
+  <xsl:template match="no-nazis">
+    <div style="margin-bottom:1em;line-height:110%;border:2px;border-style:solid;border-color:red;padding:0.5em">
+    If you are a member or voter of the following political parties or agree with their despicable political views,
+      <br/>you are <b>NOT WELCOME</b> to use my software.
+    <div class="row" style="font-size:85%;margin-bottom:0">
+        <div class="column" >
+          <ul class="compact" >
+            <li>AfD (Germany)</li>
+            <li>Die Heimat (Germany)</li>
+            <li>Die Basis (Germany)</li>
+            <li>BündnisDeutschland (Germany)</li>
+            <li>Freie Wähler (Germany, Bavaria)</li>
+            <li>CDU aka "AfD mit Substanz" (Germany)</li>
+            <li>CSU (Germany, Bavaria)</li>
+            <li>FPÖ (Austria)</li>
+          </ul>
+        </div>
+        <div class="column">
+          <ul class="compact">
+            <li>Fratelli d’Italia (Italy)</li>
+            <li>Party for Freedom (Netherlands)</li>
+            <li>Lega Nord (Italy)</li>
+            <li>Rassemblement National (France)</li>
+            <li>ITN (Bulgaria)</li>
+            <li>Vazrazhdane (Bulgaria)</li>
+            <li>Vox (Spain)</li>
+            <li>Prawo i Sprawiedliwość (Poland)</li>
+            <li>Fidesz (Hungary)</li>
+            <li>Adalet ve Kalkınma Partis (T&#252;rkiye)</li>
+            <li>Republican Party (USA)</li>
+          </ul>
+        </div>
+    </div>
+    </div>
+  </xsl:template>
   <xsl:template match="build-number">
     <xsl:value-of select="$buildNumber"/>
   </xsl:template>
@@ -543,9 +578,9 @@
       <xsl:apply-templates select="@*"/>
       <xsl:apply-templates/>
     </xsl:copy>
-    <xsl:if test="substring($ref,1,4) = 'http'">
+<!--    <xsl:if test="substring($ref,1,4) = 'http'">
       <img src="images/outlink.gif" alt="Link Arrow" title="{$ref}" border="0"/>
-    </xsl:if>
+    </xsl:if>-->
   </xsl:template>
   <xsl:template match="tt">
     <xsl:copy>
@@ -578,6 +613,9 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template match="hr">
+    <hr/>
+  </xsl:template>
   <xsl:template match="div">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>

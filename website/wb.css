@@ -1,3 +1,11 @@
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+}
+
 body
 {
   margin-top: 0px;
@@ -179,12 +187,12 @@ li.toclist#manual
   margin-top: 10%;
 }
 
-li.toclist#google
+li.toclist#forum
 {
   border-bottom-color: #666633;
   border-bottom-style: solid;
   border-bottom-width: 1px;
-  padding-bottom: 1em;
+  padding-bottom: 0.5em;
   margin-bottom: 1em;
 }
 
@@ -278,11 +286,16 @@ ol > li
   font-weight: normal;
 }
 
+ul.compact 
+{
+  margin:0;
+  padding-top:0.5em;
+}
 ul.compact > li 
 {
   list-style: square;
   margin-bottom: 1px;
-  padding-bottom:2px;
+  padding-bottom: 2px;
   font-weight: normal;
   line-height: 105%;
 }
