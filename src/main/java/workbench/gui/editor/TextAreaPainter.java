@@ -646,7 +646,7 @@ public class TextAreaPainter
       this.calculateTabSize();
     }
     int offset = textArea.getHorizontalOffset();
-    int ntabs = (int) ((x - offset) / tabSize);
+    float ntabs = ((x - offset) / tabSize);
     return ((ntabs + 1) * tabSize) + offset;
   }
 
