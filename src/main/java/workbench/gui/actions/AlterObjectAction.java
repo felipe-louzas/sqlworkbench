@@ -35,8 +35,8 @@ import workbench.resource.ResourceMgr;
 import workbench.db.DbObject;
 import workbench.db.DbObjectChanger;
 import workbench.db.DbSettings;
-import workbench.db.TableIdentifier;
 import workbench.db.ObjectListDataStore;
+import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
@@ -55,7 +55,7 @@ public class AlterObjectAction
   extends WbAction
   implements TableModelListener
 {
-  private WbTable tableList;
+  private final WbTable tableList;
   private WbConnection dbConnection;
   private Reloadable client;
 

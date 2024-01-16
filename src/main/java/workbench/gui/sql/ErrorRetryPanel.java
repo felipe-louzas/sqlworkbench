@@ -73,7 +73,7 @@ public class ErrorRetryPanel
 
   public ErrorRetryPanel(WbConnection conn, String variablePoolId)
   {
-    super(conn, variablePoolId);
+    super(conn, null, variablePoolId);
   }
 
   public void setEnableReplace(boolean flag)

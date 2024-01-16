@@ -348,7 +348,7 @@ public class WbGenImpTable
       // The panel will refuse to start the script if the connection is marked as busy
       currentConnection.setBusy(false);
 
-      RunScriptPanel panel = new RunScriptPanel(currentConnection, ddl);
+      RunScriptPanel panel = new RunScriptPanel(currentConnection, ddl, getVariablePoolID());
       panel.openWindow(WbManager.getInstance().getCurrentWindow(), ResourceMgr.getString("TxtWindowTitleGeneratedScript"), null);
 
       if (!panel.wasRun())

@@ -57,7 +57,7 @@ public class ColumnAlterAction
   extends WbAction
   implements TableModelListener
 {
-  private WbTable definition;
+  private final WbTable definition;
   private TableIdentifier sourceTable;
   private WbConnection dbConnection;
   private Reloadable client;

@@ -80,17 +80,18 @@ public abstract class ExecuteSqlPanel
   private AutoCompletionAction autoComplete;
   protected int choice = JOptionPane.CANCEL_OPTION;
   private WbStatusLabel statusBar;
-  private String sqlToUse;
+  private final String sqlToUse;
   private boolean initialized;
   private WbThread runThread;
   private ExecutionStatus execStatus;
 
-  public ExecuteSqlPanel(WbConnection conn, String variablePoolId)
+  public ExecuteSqlPanel(WbConnection conn, String sql, String variablePoolId)
   {
     super(new GridBagLayout());
     runner = new BatchRunner();
     runner.setConnection(conn);
     runner.setVariablePoolID(variablePoolId);
+    sqlToUse = sql;
   }
 
   protected void showLastError()

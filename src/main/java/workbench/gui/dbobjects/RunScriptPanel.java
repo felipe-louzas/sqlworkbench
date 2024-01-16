@@ -59,7 +59,12 @@ public class RunScriptPanel
 
   public RunScriptPanel(WbConnection connection, String sql)
   {
-    super(connection, sql);
+    this(connection, sql, null);
+  }
+
+  public RunScriptPanel(WbConnection connection, String sql, String variablePoolId)
+  {
+    super(connection, sql, variablePoolId);
   }
 
   @Override
