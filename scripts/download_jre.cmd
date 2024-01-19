@@ -10,8 +10,8 @@ if exist "%~dp0jre" (
 )
 set /P continue="Do you want to continue? (Y/N) "
 
-if /I "%continue%"=="y" goto make_jre
-if /I "%continue%"=="yes" goto make_jre
+for %%i in (y yes) do if /i [%%i]==[%continue%] goto make_jre
+
 
 goto :eof
 
@@ -20,15 +20,30 @@ goto :eof
 
 setlocal
 
-set zipfile=OpenJDK.zip
+if exist jdk* for /d %%i in (jdk*) do @echo jdkdir exists: [%%~nxi] -^> renaming to [jre] & ren "%%i" jre
 
-FOR /F " usebackq delims==" %%i IN (`dir /ad /b jdk*`) DO set jdkdir=%%i
-rem echo %jdkdir%
+if Not exist jre (
+      echo Error: No JRE created in %~dp0jre! 
+	  pause 
+	  goto :eof
+	  )
 
-ren %jdkdir% jre
+
+set zipfile=
+
 
 echo.
 echo JRE created in %~dp0jre
-echo You can delete the ZIP archive %zipfile% now
 echo.
+if exist "OpenJDK*.zip" call :handle_zipfiles "OpenJDK*.zip"
+
+goto :eof
+
+:handle_zipfiles
+
+ echo You can delete the ZIP archive [%~1] now.
+ set /P continue="Do you want to delete now? (Y/N) "
+ for %%i in (y yes) do if /i [%%i]==[%continue%] del %1 >nul && echo %1 deleted.
+      
+ echo.
 
