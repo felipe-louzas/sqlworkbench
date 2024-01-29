@@ -383,7 +383,7 @@ public class WbCellEditor
     @Override
     public Insets getInsets()
     {
-      return new Insets(0, 0, 0, 0);
+      return new Insets(1, 0, 0, 0);
     }
 
     @Override

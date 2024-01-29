@@ -22,6 +22,11 @@
  */
 package workbench.gui.components;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +34,8 @@ import java.util.List;
 import workbench.db.ColumnIdentifier;
 
 import workbench.storage.DataStore;
+
+import workbench.util.WbDateFormatter;
 
 import org.dbunit.dataset.Column;
 import org.dbunit.dataset.DataSetException;
@@ -45,11 +52,15 @@ public class DBUnitTableAdapter
   implements ITable
 {
   private int[] selectedRows;
-  private DataStore dataStore;
+  private final DataStore dataStore;
+  private final WbDateFormatter timestampFormatter;
+  private final WbDateFormatter dateFormatter;
 
   public DBUnitTableAdapter(DataStore dataStore)
   {
     this.dataStore = dataStore;
+    dateFormatter = new WbDateFormatter("yyyy-MM-dd");
+    timestampFormatter = new WbDateFormatter("yyyy-MM-dd HH:mm:ss.SSS");
   }
 
   @Override
@@ -65,7 +76,28 @@ public class DBUnitTableAdapter
     {
       row = selectedRows[row];
     }
-    return dataStore.getValue(row, column);
+    Object value = dataStore.getValue(row, column);
+    if (value instanceof LocalDate)
+    {
+      return dateFormatter.formatDate((LocalDate)value);
+    }
+    if (value instanceof Timestamp)
+    {
+      return timestampFormatter.formatTimestamp((Timestamp)value);
+    }
+    if (value instanceof LocalDateTime)
+    {
+      return timestampFormatter.formatTimestamp((LocalDateTime)value);
+    }
+    if (value instanceof OffsetDateTime)
+    {
+      return timestampFormatter.formatTimestamp((OffsetDateTime)value);
+    }
+    if (value instanceof ZonedDateTime)
+    {
+      return timestampFormatter.formatTimestamp((ZonedDateTime)value);
+    }
+    return value;
   }
 
   public void setSelectedRows(int[] rowsToCopy)
@@ -129,7 +161,7 @@ public class DBUnitTableAdapter
         }
         if (pkCols.isEmpty()) return null;
 
-        Column[] result = pkCols.toArray(new Column[]{});
+        Column[] result = pkCols.toArray(Column[]::new);
         return result;
       }
 
@@ -145,7 +177,7 @@ public class DBUnitTableAdapter
           Column column = new Column(columnName, columnType);
           columns.add(column);
         }
-        return columns.toArray(new Column[columns.size()]);
+        return columns.toArray(Column[]::new);
       }
 
       @Override

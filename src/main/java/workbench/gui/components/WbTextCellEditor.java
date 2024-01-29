@@ -34,6 +34,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -93,7 +94,9 @@ public class WbTextCellEditor
     defaultBackground = field.getBackground();
     parentTable = parent;
     textField = field;
-    textField.setBorder(WbSwingUtilities.EMPTY_BORDER);
+    int spacing = (int)parent.getIntercellSpacing().getHeight();
+    int rm = parent.getRowMargin();
+    textField.setBorder(new EmptyBorder(spacing + rm,0,0,0));
     textField.addMouseListener(this);
     restoreValue = new RestoreDataAction(this);
     contextMenu = new TextComponentMouseListener(textField);
