@@ -25,6 +25,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.sql.Types;
+import java.time.LocalDateTime;
 
 import workbench.WbTestCase;
 import workbench.resource.GuiSettings;
@@ -66,36 +67,6 @@ public class DbUnitCopierTest
     clp.setContents(sel, sel);
   }
 
-  private DataStore createDataStore()
-  {
-    ColumnIdentifier id = new ColumnIdentifier("id", Types.INTEGER);
-    id.setIsPkColumn(true);
-    ColumnIdentifier fname = new ColumnIdentifier("firstname", Types.VARCHAR);
-    ColumnIdentifier lname = new ColumnIdentifier("lastname", Types.VARCHAR);
-    ResultInfo info = new ResultInfo(new ColumnIdentifier[] {id, fname, lname});
-
-    IndexColumn col = new IndexColumn("id", 1);
-    PkDefinition pk = new PkDefinition("pk_person", CollectionUtil.arrayList(col));
-    TableIdentifier tbl = new TableIdentifier("person");
-    tbl.setPrimaryKey(pk);
-
-    info.setUpdateTable(tbl);
-    DataStore ds = new DataStore(info);
-    int row = ds.addRow();
-    ds.setValue(row, 0, 1);
-    ds.setValue(row, 1, "Arthur");
-    ds.setValue(row, 2, "Dent");
-
-    row = ds.addRow();
-    ds.setValue(row, 0, 2);
-    ds.setValue(row, 1, "Ford");
-    ds.setValue(row, 2, "Prefect");
-
-    ds.setUpdateTableToBeUsed(tbl);
-    return ds;
-  }
-
-
   @Test
   public void testCopyAsDBUnitXML()
     throws Exception
@@ -114,8 +85,8 @@ public class DbUnitCopierTest
       String xml = copier.createDBUnitXMLDataString(ds, null).trim();
       String expected =
         "<dataset>\n" +
-        "  <person id=\"1\" firstname=\"Arthur\" lastname=\"Dent\"/>\n" +
-        "  <person id=\"2\" firstname=\"Ford\" lastname=\"Prefect\"/>\n" +
+        "  <person id=\"1\" firstname=\"Arthur\" lastname=\"Dent\" created_at=\"2024-01-21 14:00:00.000\"/>\n" +
+        "  <person id=\"2\" firstname=\"Ford\" lastname=\"Prefect\" created_at=\"2024-01-21 14:00:00.000\"/>\n" +
         "  <person id=\"1\" firstname=\"Marvin\"/>\n" +
         "</dataset>";
 //      System.out.println(expected + "\n*****************\n" + xml);
@@ -126,4 +97,39 @@ public class DbUnitCopierTest
       GuiSettings.setDisplayNullString(null);
     }
   }
+
+  private DataStore createDataStore()
+  {
+    ColumnIdentifier id = new ColumnIdentifier("id", Types.INTEGER);
+    id.setIsPkColumn(true);
+    ColumnIdentifier fname = new ColumnIdentifier("firstname", Types.VARCHAR);
+    ColumnIdentifier lname = new ColumnIdentifier("lastname", Types.VARCHAR);
+    ColumnIdentifier created = new ColumnIdentifier("created_at", Types.TIMESTAMP);
+    ResultInfo info = new ResultInfo(new ColumnIdentifier[] {id, fname, lname, created});
+
+    IndexColumn col = new IndexColumn("id", 1);
+    PkDefinition pk = new PkDefinition("pk_person", CollectionUtil.arrayList(col));
+    TableIdentifier tbl = new TableIdentifier("person");
+    tbl.setPrimaryKey(pk);
+
+    LocalDateTime ldt = LocalDateTime.of(2024,1,21,14,0,0);
+    info.setUpdateTable(tbl);
+    DataStore ds = new DataStore(info);
+    int row = ds.addRow();
+    ds.setValue(row, 0, 1);
+    ds.setValue(row, 1, "Arthur");
+    ds.setValue(row, 2, "Dent");
+    ds.setValue(row, 3, ldt);
+
+    row = ds.addRow();
+    ds.setValue(row, 0, 2);
+    ds.setValue(row, 1, "Ford");
+    ds.setValue(row, 2, "Prefect");
+    ds.setValue(row, 3, ldt);
+
+    ds.setUpdateTableToBeUsed(tbl);
+    return ds;
+  }
+
+
 }

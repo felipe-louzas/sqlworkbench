@@ -22,6 +22,8 @@
 package workbench.gui.components;
 
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import workbench.WbTestCase;
 
@@ -58,7 +60,9 @@ public class DBUnitTableAdapterTest
     id.setIsPkColumn(true);
     ColumnIdentifier fname = new ColumnIdentifier("FIRSTNAME", Types.VARCHAR);
     ColumnIdentifier lname = new ColumnIdentifier("LASTNAME", Types.VARCHAR);
-    ColumnIdentifier[] c = {id, fname, lname};
+    ColumnIdentifier sdt = new ColumnIdentifier("SOME_DATE", Types.DATE);
+    ColumnIdentifier created = new ColumnIdentifier("CREATED", Types.TIMESTAMP);
+    ColumnIdentifier[] c = {id, fname, lname, sdt, created};
 
     DataStore ds = new DataStore(new ResultInfo(c));
     ds.setUpdateTableToBeUsed(new TableIdentifier("PERSON"));
@@ -66,6 +70,8 @@ public class DBUnitTableAdapterTest
     ds.setValue(row, 0, Integer.valueOf(42));
     ds.setValue(row, 1, "Arthur");
     ds.setValue(row, 2, "Dent");
+    ds.setValue(row, 3, LocalDate.of(2003,11,3));
+    ds.setValue(row, 4, LocalDateTime.of(2000,01,2,3,4,5));
 
     DBUnitTableAdapter adapter = new DBUnitTableAdapter(ds);
     assertEquals(1, adapter.getRowCount());
@@ -74,7 +80,8 @@ public class DBUnitTableAdapterTest
     assertEquals("PERSON", meta.getTableName());
     Column[] cols = meta.getColumns();
     assertNotNull(cols);
-    assertEquals(3, cols.length);
+    assertEquals(5, cols.length);
+
     assertEquals("FIRSTNAME", cols[1].getColumnName());
     assertEquals(0, meta.getColumnIndex("ID"));
     assertEquals(1, meta.getColumnIndex("FIRSTNAME"));
@@ -84,6 +91,12 @@ public class DBUnitTableAdapterTest
     assertEquals("ID", pk[0].getColumnName());
     Object name = adapter.getValue(0, "FIRSTNAME");
     assertEquals("Arthur", name);
+
+    Object dat = adapter.getValue(0, "SOME_DATE");
+    assertEquals("2003-11-03", dat);
+    Object cr = adapter.getValue(0, "CREATED");
+    assertEquals("2000-01-02 03:04:05.000", cr);
+
   }
 
   @Test
