@@ -64,7 +64,7 @@ public class ProfileManager
   {
     if (CollectionUtil.isEmpty(files))
     {
-      // this should only happend during unit testing.
+      // this should only happen during unit testing.
       setProfileSource(Collections.singletonList(Settings.getInstance().getDefaultProfileStorage()));
     }
     else

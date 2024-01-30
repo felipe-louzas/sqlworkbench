@@ -1681,6 +1681,10 @@ public class GuiSettings
     return Settings.getInstance().getBoolProperty("workbench.gui.table.delete.multi.column", true);
   }
 
+  public static boolean getCheckFontDisplayCapability()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.font.monospaced.check.capability", true);
+  }
   public static int getCaretWidth()
   {
     return Settings.getInstance().getIntProperty("workbench.gui.editor.caret.width", 1);

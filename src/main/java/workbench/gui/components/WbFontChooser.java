@@ -55,6 +55,7 @@ import javax.swing.text.StyleContext;
 import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -259,7 +260,7 @@ public class WbFontChooser
     long canDisplayDuration = 0;
 
     boolean checkMonospace = monospacedOnly;
-    long maxDuration = Settings.getInstance().getIntProperty("workbench.gui.font.filter.maxduration", 2500);
+    long maxDuration = Settings.getInstance().getIntProperty("workbench.gui.font.filter.maxduration", 3000);
     List<String> ignoredFonts = new ArrayList<>();
 
     start = System.currentTimeMillis();
@@ -273,8 +274,9 @@ public class WbFontChooser
         boolean canDisplay = f.canDisplay('A');
         canDisplayDuration += (System.currentTimeMillis() - st);
 
-        if (!canDisplay)
+        if (!canDisplay && GuiSettings.getCheckFontDisplayCapability())
         {
+          LogMgr.logDebug(ci, "Ignoring font " + font + " because it reports that it can't display the character A");
           ignoredFonts.add(font);
           continue;
         }
@@ -290,7 +292,12 @@ public class WbFontChooser
 
         charWidthDuration += (System.currentTimeMillis() - st);
 
-        if (iWidth != mWidth) continue;
+        if (iWidth != mWidth)
+        {
+          LogMgr.logDebug(ci, "Excluding font " + font + " because it does not appear to be a monospaced font. " +
+            "Width of M: " + mWidth + ", width of i: " + iWidth);
+          continue;
+        }
 
         if ((System.currentTimeMillis() - start) >= maxDuration)
         {
