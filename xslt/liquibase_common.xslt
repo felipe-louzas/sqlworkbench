@@ -40,7 +40,7 @@
     </xsl:variable>
 
     <xsl:for-each select="column-def">
-      <xsl:sort select="dbms-position"/>
+      <xsl:sort select="dbms-position" data-type="number"/>
 
       <xsl:variable name="column-name" select="@name"/>
 
@@ -62,7 +62,6 @@
       <xsl:element name="column">
         <xsl:attribute name="name"><xsl:value-of select="$column-name"/></xsl:attribute>
         <xsl:attribute name="type"><xsl:value-of select="$data-type"/></xsl:attribute>
-
         <xsl:variable name="pk-flag" select="primary-key"/>
         <xsl:variable name="nullable" select="nullable"/>
         <xsl:variable name="type-id" select="java-sql-type"/>

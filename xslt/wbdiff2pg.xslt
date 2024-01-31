@@ -126,7 +126,7 @@ Supported parameters:
     <xsl:text>(</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:for-each select="column-def">
-      <xsl:sort select="dbms-position"/>
+      <xsl:sort select="dbms-position" data-type="number"/>
       <xsl:call-template name="write-column-definition"/>
       <xsl:if test="position() &lt; last()">
         <xsl:text>,</xsl:text>
@@ -781,7 +781,7 @@ Supported parameters:
   <xsl:text>(</xsl:text>
   <xsl:value-of select="$newline"/>
   <xsl:for-each select="column-def">
-    <xsl:sort select="dbms-position"/>
+    <xsl:sort select="dbms-position" data-type="number"/>
 
     <xsl:call-template name="write-column-definition"/>
 

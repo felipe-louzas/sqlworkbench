@@ -134,7 +134,7 @@ ALTER TABLE <xsl:value-of select="$table"/> DROP PRIMARY KEY;
 CREATE VIEW <xsl:value-of select="view-name"/>
 (
   <xsl:for-each select="column-def">
-    <xsl:sort select="dbms-position"/>
+    <xsl:sort select="dbms-position" data-type="number"/>
     <xsl:variable name="colname">
       <xsl:choose>
         <xsl:when test="contains(column-name,' ')">
@@ -159,7 +159,7 @@ AS
 CREATE TABLE <xsl:value-of select="table-name"/>
 (
   <xsl:for-each select="column-def">
-    <xsl:sort select="dbms-position"/>
+    <xsl:sort select="dbms-position" data-type="number"/>
     <xsl:variable name="colname">
       <xsl:choose>
         <xsl:when test="contains(column-name,' ')">

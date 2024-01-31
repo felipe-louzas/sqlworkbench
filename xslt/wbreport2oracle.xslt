@@ -42,7 +42,7 @@
   <xsl:value-of select="$newline"/>
 
   <xsl:for-each select="column-def">
-    <xsl:sort select="dbms-position"/>
+    <xsl:sort select="dbms-position" data-type="number"/>
     <xsl:variable name="colname">
       <xsl:choose>
         <xsl:when test="contains(column-name,' ')">
@@ -274,7 +274,7 @@
   <xsl:value-of select="$newline"/>
 
   <xsl:for-each select="column-def">
-    <xsl:sort select="dbms-position"/>
+    <xsl:sort select="dbms-position" data-type="number"/>
     <xsl:variable name="orgname" select="column-name"/>
     <xsl:variable name="uppername">
     <xsl:value-of select="translate(column-name,
