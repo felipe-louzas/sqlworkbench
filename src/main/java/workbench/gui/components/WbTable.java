@@ -264,6 +264,7 @@ public class WbTable
   private boolean sortIgnoreCase;
   private boolean useNaturalSort;
   private boolean honorLNFRowHeight;
+  private boolean useMultilineEditor = true;
 
   // </editor-fold>
 
@@ -416,6 +417,11 @@ public class WbTable
     fixCopyShortcut();
   }
 
+  public void setUseMultiLineEditor(boolean flag)
+  {
+    useMultilineEditor = flag;
+  }
+  
   public void setAutoAdjustColumnWidths(boolean flag)
   {
     autoAdjustColumnWidths = flag;
@@ -2263,7 +2269,7 @@ public class WbTable
       {
         col.setCellEditor(new MapColumnRenderer());
       }
-      else if (isMultiLineColumn(i))
+      else if (isMultiLineColumn(i) && useMultilineEditor)
       {
         col.setCellEditor(this.multiLineEditor);
       }

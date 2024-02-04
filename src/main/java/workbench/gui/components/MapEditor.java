@@ -108,6 +108,7 @@ public class MapEditor
     this.propData = createDataStore();
     this.propData.setAllowUpdates(true);
     this.propTable = new WbTable();
+    this.propTable.setUseMultiLineEditor(false);
     this.propTable.setRendererSetup(new RendererSetup(false));
 
     this.propTable.setModel(new DataStoreTableModel(this.propData));
