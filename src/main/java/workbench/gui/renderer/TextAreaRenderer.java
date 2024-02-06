@@ -37,7 +37,6 @@ import workbench.gui.WbSwingUtilities;
 
 import workbench.util.StringUtil;
 
-import static workbench.gui.renderer.ToolTipRenderer.*;
 
 /**
  * A renderer to display multi-line character data.
@@ -61,12 +60,10 @@ public class TextAreaRenderer
     useOwnPaint = false;
     textDisplay = new JTextArea()
     {
-      private final Insets insets = getDefaultInsets();
-
       @Override
       public Insets getInsets()
       {
-        return insets;
+        return regularInsets;
       }
 
       @Override

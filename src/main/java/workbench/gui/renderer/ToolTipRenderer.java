@@ -104,6 +104,7 @@ public class ToolTipRenderer
 
   protected final Insets focusedInsets;
   protected final Insets regularInsets;
+  protected boolean useInsetsFromLnF = false;
 
   protected boolean isSelected;
   protected boolean hasFocus;
@@ -127,7 +128,7 @@ public class ToolTipRenderer
     setOpaque(true);
     regularInsets = getDefaultInsets();
     int thick = WbSwingUtilities.FOCUSED_CELL_BORDER.getThickness();
-
+    useInsetsFromLnF = UIManager.getDefaults().getInsets("Table.cellMargins") != null;
     // if the regular inserts were changed, reflect this with the focused insets
     focusedInsets = new Insets(thick + regularInsets.top - 1, thick + regularInsets.left - 1, thick + regularInsets.bottom - 1, thick + regularInsets.right - 1);
 
@@ -136,6 +137,21 @@ public class ToolTipRenderer
     showTooltip = Settings.getInstance().getBoolProperty("workbench.gui.renderer.showtooltip", true);
     selectionBlendFactor = retrieveBlendFactor("selection");
     alternateBlendFactor = retrieveBlendFactor("alternate");
+  }
+
+  private void adjustInsets(Font f)
+  {
+    if (useInsetsFromLnF || f == null) return;
+    FontMetrics fm = getFontMetrics(f);
+    if (fm == null) return;
+
+    int top = fm.getLeading();
+    if (top != regularInsets.top)
+    {
+      regularInsets.set(top, regularInsets.left, regularInsets.bottom, regularInsets.right);
+      int thick = WbSwingUtilities.FOCUSED_CELL_BORDER.getThickness();
+      focusedInsets.set(thick + top - 1, thick + regularInsets.left - 1, thick + regularInsets.bottom - 1, thick + regularInsets.right - 1);
+    }
   }
 
   private int retrieveBlendFactor(String type)
@@ -179,7 +195,7 @@ public class ToolTipRenderer
     }
     if (result == null)
     {
-      result = new Insets(3,0,0,0);
+      result = new Insets(0,0,0,0);
     }
     return result;
   }
@@ -233,6 +249,8 @@ public class ToolTipRenderer
     this.currentRow = row;
     this.isSelected = selected;
     this.currentValue = value;
+
+    adjustInsets(table.getFont());
 
     try
     {
@@ -374,7 +392,6 @@ public class ToolTipRenderer
 
     Font f = getFont();
     FontMetrics fm = g.getFontMetrics(f);
-
     final Insets insets = hasFocus ? focusedInsets : regularInsets;
 
     paintViewR.x = insets.left;
