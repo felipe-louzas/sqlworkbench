@@ -83,7 +83,6 @@ import workbench.gui.actions.FilterPickerAction;
 import workbench.gui.actions.ReloadAction;
 import workbench.gui.actions.SelectionFilterAction;
 import workbench.gui.actions.StopAction;
-import workbench.gui.actions.UpdateDatabaseAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.ColumnOrderMgr;
 import workbench.gui.components.DividerBorder;
@@ -151,7 +150,7 @@ public class TableDataPanel
   private WbButton enableRefreshButton;
   private FilteredProperties workspaceSettings;
 
-  private AutomaticRefreshMgr refreshMgr = new AutomaticRefreshMgr();
+  private final AutomaticRefreshMgr refreshMgr = new AutomaticRefreshMgr();
   private List<JButton> additionalButtons;
   private WbTabbedPane tabPane;
   private WbSplitPane splitPane;
@@ -330,31 +329,34 @@ public class TableDataPanel
     toolbar = new WbToolbar();
     reloadAction = new ReloadAction(this);
     reloadAction.setTooltip(ResourceMgr.getDescription("TxtLoadTableData", true));
-    reloadAction.addToInputMap(this.dataDisplay.getTable());
-    toolbar.add(this.reloadAction);
+    addActionToToolbar(reloadAction);
     toolbar.addSeparator();
     cancelRetrieve = new StopAction(this);
     cancelRetrieve.setEnabled(false);
-    toolbar.add(this.cancelRetrieve);
+    addActionToToolbar(this.cancelRetrieve);
     toolbar.addSeparator();
-    UpdateDatabaseAction updateAction = this.dataDisplay.getUpdateDatabaseAction();
-    updateAction.addToInputMap(this.dataDisplay.getTable());
-    toolbar.add(updateAction);
-    toolbar.add(this.dataDisplay.getSelectKeysAction());
+    addActionToToolbar(this.dataDisplay.getUpdateDatabaseAction());
+    addActionToToolbar(this.dataDisplay.getSelectKeysAction());
     toolbar.addSeparator();
-    toolbar.add(this.dataDisplay.getInsertRowAction());
-    toolbar.add(this.dataDisplay.getCopyRowAction());
-    toolbar.add(this.dataDisplay.getDeleteRowAction());
+    addActionToToolbar(this.dataDisplay.getInsertRowAction());
+    addActionToToolbar(this.dataDisplay.getCopyRowAction());
+    addActionToToolbar(this.dataDisplay.getDeleteRowAction());
     toolbar.addSeparator();
     SelectionFilterAction a = new SelectionFilterAction();
     a.setClient(this.dataDisplay.getTable());
-    toolbar.add(a);
+    addActionToToolbar(a);
     toolbar.addSeparator();
-    toolbar.add(this.dataDisplay.getTable().getFilterAction());
+    addActionToToolbar(this.dataDisplay.getTable().getFilterAction());
     FilterPickerAction p = new FilterPickerAction(dataDisplay.getTable());
-    toolbar.add(p);
+    addActionToToolbar(p);
     toolbar.addSeparator();
-    toolbar.add(this.dataDisplay.getTable().getResetFilterAction());
+    addActionToToolbar(this.dataDisplay.getTable().getResetFilterAction());
+  }
+
+  private void addActionToToolbar(WbAction action)
+  {
+    toolbar.add(action);
+    action.addToInputMap(this.dataDisplay.getTable());
   }
 
   @Override

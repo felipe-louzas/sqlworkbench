@@ -78,7 +78,7 @@ class PostgresRowDataReader
 
   private long tzOffset;
   private ZoneId sessionTimeZone;
-  private WbConnection dbConnection;
+  private final WbConnection dbConnection;
 
   PostgresRowDataReader(ResultInfo info, WbConnection conn)
   {
@@ -103,7 +103,9 @@ class PostgresRowDataReader
       if (!java8InfoLogged)
       {
         java8InfoLogged = true;
-        LogMgr.logInfo(new CallerInfo(){}, "Using ZonedDateTime to read TIMESTAMP WITH TIME ZONE columns");
+        LogMgr.logInfo(new CallerInfo(){},
+          "Using " + (useOffsetDateTime ? "OffsetDateTime" : "ZonedDatetime") +
+           " to read TIMESTAMP WITH TIME ZONE columns");
       }
     }
   }
