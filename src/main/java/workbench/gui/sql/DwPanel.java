@@ -840,7 +840,7 @@ public class DwPanel
   public void setSortDefinition(NamedSortDefinition sort)
   {
     DataStoreTableModel model = this.dataTable.getDataStoreTableModel();
-    if (model != null)
+    if (model != null && sort != null)
     {
       try
       {
@@ -880,22 +880,24 @@ public class DwPanel
     String generatingSql = ds.getGeneratingSql();
     if (generatingSql == null) return;
 
-    NamedSortDefinition sort = this.dataTable.getCurrentSort();
+    final NamedSortDefinition sort = this.dataTable.getCurrentSort();
     runQuery(generatingSql, respectMaxRows, logger);
     if (sort != null)
     {
-      dataTable.getDataStoreTableModel().setSortDefinition(sort);
-      dataTable.adjustColumns();
-    }
-    if (GuiSettings.getShowMaxRowsReached())
-    {
-      checkLimitReachedDisplay();
+      setSortDefinition(sort);
     }
 
-    if (showSQLAsTooltip)
+    WbSwingUtilities.invokeLater(() ->
     {
-      showGeneratingSQLAsTooltip(); // re-create the tooltip because it contains the last execution time
-    }
+      if (GuiSettings.getShowMaxRowsReached())
+      {
+        checkLimitReachedDisplay();
+      }
+      if (showSQLAsTooltip)
+      {
+        showGeneratingSQLAsTooltip(); // re-create the tooltip because it contains the last execution time
+      }
+    });
   }
 
   /**

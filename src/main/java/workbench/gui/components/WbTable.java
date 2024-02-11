@@ -421,7 +421,7 @@ public class WbTable
   {
     useMultilineEditor = flag;
   }
-  
+
   public void setAutoAdjustColumnWidths(boolean flag)
   {
     autoAdjustColumnWidths = flag;
@@ -1900,13 +1900,7 @@ public class WbTable
     final Container c = (this.scrollPane == null ? this : scrollPane);
     EventQueue.invokeLater(() ->
     {
-      adjustRowHeight();
-
-      if (GuiSettings.getAutomaticOptimalWidth() && GuiSettings.getIncludeHeaderInOptimalWidth())
-      {
-        ColumnWidthOptimizer optimizer = new ColumnWidthOptimizer(WbTable.this);
-        optimizer.optimizeHeader();
-      }
+      adjustRowsAndColumns();
 
       WbSwingUtilities.showDefaultCursor(c.getParent());
       WbSwingUtilities.showDefaultCursor(getTableHeader());
