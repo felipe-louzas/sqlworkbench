@@ -44,7 +44,7 @@ public interface ConnectionPropertiesReader
    */
   Map<String, String> getConnectionProperties(WbConnection conn);
 
-  public static class Fatory
+  public static class Factory
   {
     public static ConnectionPropertiesReader getReader(WbConnection conn)
     {

@@ -50,7 +50,7 @@ public class PostgresConnectionPropsReaderTest
     assertNotNull(conn);
 
     String pid = TestUtil.getSingleQueryValue(conn, "select pg_backend_pid()").toString();
-    ConnectionPropertiesReader reader = ConnectionPropertiesReader.Fatory.getReader(conn);
+    ConnectionPropertiesReader reader = ConnectionPropertiesReader.Factory.getReader(conn);
     Map<String, String> props = reader.getConnectionProperties(conn);
     String pid2 = props.get("Backend PID");
     assertEquals(pid, pid2);

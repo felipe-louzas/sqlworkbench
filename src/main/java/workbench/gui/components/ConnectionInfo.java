@@ -295,7 +295,7 @@ public class ConnectionInfo
       tip.append("&nbsp;&nbsp;</p><p>");
       tip.append(ResourceMgr.getFormattedString("TxtDrvVersion", conn.getDriverVersion()));
       tip.append("&nbsp;&nbsp;</p>");
-      ConnectionPropertiesReader reader = ConnectionPropertiesReader.Fatory.getReader(conn);
+      ConnectionPropertiesReader reader = ConnectionPropertiesReader.Factory.getReader(conn);
       if (reader != null)
       {
         Map<String, String> info = reader.getConnectionProperties(conn);
