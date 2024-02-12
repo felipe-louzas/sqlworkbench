@@ -118,7 +118,7 @@ public class ConnectionInfoBuilder
       {
         content.append(lineStart + boldStart + "SSH:" + boldEnd + ssh.getInfoString() + lineEnd);
       }
-      ConnectionPropertiesReader reader = ConnectionPropertiesReader.Fatory.getReader(conn);
+      ConnectionPropertiesReader reader = ConnectionPropertiesReader.Factory.getReader(conn);
       Map<String, String> info = reader.getConnectionProperties(conn);
       for (Map.Entry<String, String> entry : info.entrySet())
       {

@@ -3,11 +3,12 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-
   <release build="-1" date="2024-02-04">
     <entry dev-build="1" type="enh">When importing spreadsheets it's now possible to provide a sheet name to table name mapping, if the sheet names don't reflect the target tables</entry>
     <entry dev-build="1" type="enh">In the DbTree and DbExplorer it's now possible to set the default sort order for table columns by name rather than by position</entry>
     <entry dev-build="1" type="enh">It's now possible to specify the format of column defined as TIMESTAMP WITH TIME ZONE separately</entry>
+    <entry dev-build="3" type="fix">With certain Look & Feels, the context menu on the editor tabs did not reflect the tab on which the menu is displayed, but reflecte the currently active tab.</entry>
+    <entry dev-build="3" type="fix">When reloading a result that was sorted, the column widths would not always be restored correctly.</entry>
     <entry dev-build="2" type="fix">Better handle errors when loading profiles during startup</entry>
     <entry dev-build="2" type="fix">When copying data as DbUnit XML, timestamp values were not formatted properly.</entry>
     <entry dev-build="2" type="fix">Changing a table's definition in the DbExplorer would not generate the corresponding DDL any more.</entry>

@@ -25,27 +25,26 @@ import java.util.Optional;
 
 import javax.swing.JPopupMenu;
 
+import workbench.interfaces.MainPanel;
+
 import workbench.gui.MainWindow;
 import workbench.gui.actions.AddTabAction;
 import workbench.gui.actions.CloseOtherTabsAction;
-import workbench.gui.actions.clipboard.CopyFileNameAction;
 import workbench.gui.actions.FileDiscardAction;
-import workbench.gui.actions.NewDbExplorerPanelAction;
-import workbench.gui.actions.RemoveTabAction;
-import workbench.gui.actions.RenameTabAction;
-import workbench.gui.actions.RestoreClosedTabAction;
-import workbench.gui.sql.EditorPanel;
-import workbench.gui.sql.SqlPanel;
-
-import workbench.interfaces.MainPanel;
-
 import workbench.gui.actions.InsertTabAction;
 import workbench.gui.actions.LockPanelAction;
 import workbench.gui.actions.MoveSqlTabLeft;
 import workbench.gui.actions.MoveSqlTabRight;
+import workbench.gui.actions.NewDbExplorerPanelAction;
 import workbench.gui.actions.OpenFileAction;
 import workbench.gui.actions.OpenFileDirAction;
+import workbench.gui.actions.RemoveTabAction;
+import workbench.gui.actions.RenameTabAction;
+import workbench.gui.actions.RestoreClosedTabAction;
 import workbench.gui.actions.ToggleExtraConnection;
+import workbench.gui.actions.clipboard.CopyFileNameAction;
+import workbench.gui.sql.EditorPanel;
+import workbench.gui.sql.SqlPanel;
 
 /**
  * @author  Thomas Kellerer
@@ -53,35 +52,40 @@ import workbench.gui.actions.ToggleExtraConnection;
 public class SqlTabPopup
   extends JPopupMenu
 {
-  public SqlTabPopup(MainWindow aClient)
+  public SqlTabPopup(MainWindow mainWindow, int forIndex)
   {
     super();
-    AddTabAction add = new AddTabAction(aClient);
+    AddTabAction add = new AddTabAction(mainWindow);
     this.add(add);
-    InsertTabAction insert = new InsertTabAction(aClient);
+    InsertTabAction insert = new InsertTabAction(mainWindow);
     this.add(insert);
 
-    NewDbExplorerPanelAction newDbExp = new NewDbExplorerPanelAction(aClient, "MnuTxtAddExplorerPanel");
+    NewDbExplorerPanelAction newDbExp = new NewDbExplorerPanelAction(mainWindow, "MnuTxtAddExplorerPanel");
     newDbExp.removeIcon();
     add(newDbExp);
 
     addSeparator();
-
-    RemoveTabAction remove = new RemoveTabAction(aClient);
-    remove.setEnabled(aClient.canCloseTab());
+    int currentPanel = mainWindow.getCurrentPanelIndex();
+    RemoveTabAction remove = new RemoveTabAction(mainWindow);
+    if (currentPanel != forIndex)
+    {
+      remove.setAccelerator(null);
+      remove.setAlternateAccelerator(null);
+    }
+    remove.setEnabled(mainWindow.canCloseTab(forIndex));
     this.add(remove);
 
-    Optional<MainPanel> panel = aClient.getCurrentPanel();
+    Optional<MainPanel> panel = mainWindow.getPanel(forIndex);
 
-    CloseOtherTabsAction closeOthers = new CloseOtherTabsAction(aClient);
+    CloseOtherTabsAction closeOthers = new CloseOtherTabsAction(mainWindow, forIndex);
     this.add(closeOthers);
 
-    RestoreClosedTabAction restoreClosedTabAction = new RestoreClosedTabAction(aClient);
+    RestoreClosedTabAction restoreClosedTabAction = new RestoreClosedTabAction(mainWindow);
     this.add(restoreClosedTabAction.getMenuItem());
 
-    if (aClient.canRenameTab())
+    if (mainWindow.canRenameTab())
     {
-      RenameTabAction rename = new RenameTabAction(aClient);
+      RenameTabAction rename = new RenameTabAction(mainWindow);
       this.add(rename);
     }
 
@@ -92,25 +96,24 @@ public class SqlTabPopup
 
     this.addSeparator();
 
-    int currentIndex = aClient.getCurrentPanelIndex();
-    MoveSqlTabLeft moveLeft = new MoveSqlTabLeft(aClient);
-    moveLeft.setEnabled(currentIndex > 0);
+    MoveSqlTabLeft moveLeft = new MoveSqlTabLeft(mainWindow);
+    moveLeft.setEnabled(forIndex > 0);
     this.add(moveLeft);
-    int lastIndex = aClient.getTabCount();
-    MoveSqlTabRight moveRight = new MoveSqlTabRight(aClient);
-    moveRight.setEnabled(currentIndex < lastIndex);
+    int lastIndex = mainWindow.getTabCount();
+    MoveSqlTabRight moveRight = new MoveSqlTabRight(mainWindow);
+    moveRight.setEnabled(forIndex < lastIndex);
     this.add(moveRight);
 
-    if (aClient.canUseSeparateConnection())
+    if (mainWindow.canUseSeparateConnection())
     {
       this.addSeparator();
-      ToggleExtraConnection toggle = new ToggleExtraConnection(aClient);
+      ToggleExtraConnection toggle = new ToggleExtraConnection(mainWindow);
       this.add(toggle.getMenuItem());
     }
 
     this.addSeparator();
 
-    MainPanel mpanel = panel.get();
+    MainPanel mpanel = panel.orElse(null);
     if (mpanel instanceof SqlPanel)
     {
       SqlPanel spanel = (SqlPanel)mpanel;
@@ -119,7 +122,7 @@ public class SqlTabPopup
 
       this.add(editor.getFileSaveAction());
       this.add(editor.getFileSaveAsAction());
-      this.add(new OpenFileAction(aClient));
+      this.add(new OpenFileAction(mainWindow));
 
       if (editor.hasFileLoaded())
       {
@@ -135,7 +138,7 @@ public class SqlTabPopup
     }
     else
     {
-      this.add(new OpenFileAction(aClient));
+      this.add(new OpenFileAction(mainWindow));
     }
   }
 

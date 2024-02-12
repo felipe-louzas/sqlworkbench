@@ -32,7 +32,7 @@ import workbench.gui.tabhistory.ClosedTabManager;
 public class RestoreClosedTabAction
   extends WbAction
 {
-  private MainWindow client;
+  private final MainWindow client;
 
   public RestoreClosedTabAction(MainWindow aClient)
   {

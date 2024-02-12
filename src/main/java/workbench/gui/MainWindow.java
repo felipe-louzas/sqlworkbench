@@ -4303,15 +4303,15 @@ public class MainWindow
 
       if (e.getButton() == MouseEvent.BUTTON2)
       {
-        if (this.canCloseTab())
+        if (this.canCloseTab(index))
         {
-          this.removeCurrentTab();
+          this.tabCloseButtonClicked(index);
         }
       }
 
       if (e.getButton() == MouseEvent.BUTTON3)
       {
-        SqlTabPopup pop = new SqlTabPopup(this);
+        SqlTabPopup pop = new SqlTabPopup(this, index);
         pop.show(this.sqlTab, e.getX(), e.getY());
       }
       else if (index == -1 && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)

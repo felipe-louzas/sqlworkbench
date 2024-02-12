@@ -32,7 +32,7 @@ import workbench.log.LogMgr;
 import workbench.gui.WbSwingUtilities;
 
 /**
- * An action to open the directory of the currently loaded file in the system.
+ * An action to open the directory of the currently loaded editor file.
  *
  * @see Desktop#open(java.io.File)
  *
@@ -41,7 +41,7 @@ import workbench.gui.WbSwingUtilities;
 public class OpenFileDirAction
   extends WbAction
 {
-  private TextFileContainer editor;
+  private final TextFileContainer editor;
 
   public OpenFileDirAction(TextFileContainer textContainer)
   {
