@@ -40,24 +40,21 @@ import workbench.storage.DataStore;
 public class AutomaticReloadAction
   extends WbAction
 {
-  private SqlPanel client;
+  private final SqlPanel client;
+  private final int tabIndex;
 
-  public AutomaticReloadAction(SqlPanel panel)
+  public AutomaticReloadAction(SqlPanel panel, int resultIndex)
   {
     initMenuDefinition("MnuTxtReloadAutomatic");
-    setClient(panel);
-  }
-
-  public final void setClient(SqlPanel panel)
-  {
-    client = panel;
+    this.tabIndex = resultIndex;
+    this.client = panel;
     checkEnabled();
   }
 
   public void checkEnabled()
   {
     boolean canRefresh = false;
-    DwPanel dw = client.getCurrentResult();
+    DwPanel dw = client.getResultAt(tabIndex);
     if (dw != null)
     {
       DataStore ds = dw.getDataStore();
@@ -69,7 +66,7 @@ public class AutomaticReloadAction
   @Override
   public void executeAction(ActionEvent evt)
   {
-    DwPanel dw = client.getCurrentResult();
+    DwPanel dw = client.getResultAt(tabIndex);
     String lastValue = Settings.getInstance().getProperty("workbench.gui.result.refresh.last_interval", null);
     String interval = WbSwingUtilities.getUserInput(client, ResourceMgr.getString("LblRefreshIntv"), lastValue);
     if (interval == null) return;

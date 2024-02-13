@@ -36,12 +36,14 @@ import workbench.gui.sql.SqlPanel;
 public class DetachResultTabAction
   extends WbAction
 {
-  private SqlPanel panel;
+  private final SqlPanel panel;
+  private final int tabIndex;
 
-  public DetachResultTabAction(SqlPanel sqlPanel)
+  public DetachResultTabAction(SqlPanel sqlPanel, int index)
   {
     super();
     panel = sqlPanel;
+    tabIndex = index;
     this.initMenuDefinition("MnuTxtDetachResult");
     this.setIcon(null);
     this.setEnabled(panel.getCurrentResult() != null);
@@ -50,7 +52,7 @@ public class DetachResultTabAction
   @Override
   public void executeAction(ActionEvent e)
   {
-    final DwPanel result = panel.getCurrentResult();
+    final DwPanel result = panel.getResultAt(tabIndex);
     if (result == null) return;
 
     if (result.getTable() == null) return;

@@ -37,19 +37,16 @@ import workbench.storage.DataStore;
 public class SqlPanelReloadAction
   extends WbAction
 {
-  private SqlPanel client;
+  private final SqlPanel client;
+  private final int tabIndex;
 
-  public SqlPanelReloadAction(SqlPanel panel)
+  public SqlPanelReloadAction(SqlPanel panel, int index)
   {
     initMenuDefinition("TxtReloadResult");
     setMenuItemName(ResourceMgr.MNU_TXT_DATA);
     setIcon("refresh");
-    setClient(panel);
-  }
-
-  public final void setClient(SqlPanel panel)
-  {
     client = panel;
+    tabIndex = index;
     checkEnabled();
   }
 
@@ -58,7 +55,7 @@ public class SqlPanelReloadAction
     boolean enable = false;
     if (getSql() != null)
     {
-      DwPanel dw = client.getCurrentResult();
+      DwPanel dw = tabIndex == -1 ? client.getCurrentResult() : client.getResultAt(tabIndex);
       if (dw != null)
       {
         DataStore ds = dw.getDataStore();
@@ -70,19 +67,13 @@ public class SqlPanelReloadAction
 
   protected String getSql()
   {
-    if (client == null) return null;
-    if (client.getCurrentResult() == null) return null;
-    DataStore ds = client.getCurrentResult().getDataStore();
-    if (ds == null) return null;
-
-    String sql = ds.getGeneratingSql();
-    return sql;
+    return client.getSourceQuery(tabIndex);
   }
 
   @Override
   public void executeAction(ActionEvent evt)
   {
-    client.reloadCurrent();
+    client.reloadResult(tabIndex);
   }
 
 }

@@ -53,18 +53,20 @@ public class ShowSourceQueryAction
   extends WbAction
 {
   private final SqlPanel panel;
+  private final int tabIndex;
 
-  public ShowSourceQueryAction(SqlPanel handler)
+  public ShowSourceQueryAction(SqlPanel handler, int index)
   {
     panel = handler;
     isConfigurable = false;
+    tabIndex = index;
     initMenuDefinition("MnuTxtShowQuery");
   }
 
   @Override
   public boolean isEnabled()
   {
-    return (panel != null && panel.getSourceQuery() != null);
+    return (panel != null && panel.getSourceQuery(tabIndex) != null);
   }
 
   @Override
@@ -79,7 +81,7 @@ public class ShowSourceQueryAction
     editor.setBorder(WbSwingUtilities.EMPTY_BORDER);
     WbTabbedPane tab = new WbTabbedPane();
 
-    String sql = panel.getSourceQuery();
+    String sql = panel.getSourceQuery(tabIndex);
 
     JPanel display = new JPanel(new BorderLayout(0, 5));
     display.setBorder(WbSwingUtilities.createLineBorder(display));
@@ -98,7 +100,7 @@ public class ShowSourceQueryAction
       f = WbManager.getInstance().getCurrentWindow();
     }
 
-    String loadedAt = StringUtil.ISO_TIMESTAMP_FORMATTER.format(panel.getLoadedAt());
+    String loadedAt = StringUtil.ISO_TIMESTAMP_FORMATTER.format(panel.getLoadedAt(tabIndex));
 
     DwPanel result = panel.getCurrentResult();
     DurationFormatter formatter = new DurationFormatter();

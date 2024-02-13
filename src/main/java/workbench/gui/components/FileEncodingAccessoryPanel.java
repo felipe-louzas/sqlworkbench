@@ -62,10 +62,10 @@ public class FileEncodingAccessoryPanel
     c.gridy = 0;
     c.anchor = GridBagConstraints.NORTHEAST;
     c.fill = GridBagConstraints.HORIZONTAL;
-    add(autoDetectEncoding, c);
+    add(encodingDropDown, c);
 
     c.gridy++;
-    add(encodingDropDown, c);
+    add(autoDetectEncoding, c);
 
     if (window != null)
     {
@@ -74,9 +74,8 @@ public class FileEncodingAccessoryPanel
 
       if (window.getCurrentSqlPanel() == null)
       {
-        // DbExplorer is open, force open in new tab!
-        openInNewTab.setSelected(true);
-        openInNewTab.setEnabled(false);
+        // DbExplorer is open, so force open in new tab!
+        disableOpenInCurrentTab();
       }
       else
       {
@@ -84,12 +83,21 @@ public class FileEncodingAccessoryPanel
       }
 
       c.gridy++;
-      c.insets = new Insets(5, 0, 0, 0);
+      c.insets = new Insets(16, 0, 0, 0);
       c.weighty = 1.0;
       add(openInNewTab, c);
     }
 
     encodingDropDown.setEncoding(Settings.getInstance().getDefaultFileEncoding());
+  }
+
+  public void disableOpenInCurrentTab()
+  {
+    if (openInNewTab != null)
+    {
+      openInNewTab.setSelected(true);
+      openInNewTab.setEnabled(false);
+    }
   }
 
   @Override

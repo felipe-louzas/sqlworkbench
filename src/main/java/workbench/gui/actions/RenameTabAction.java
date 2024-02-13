@@ -38,35 +38,33 @@ public class RenameTabAction
   extends WbAction
   implements ChangeListener
 {
-  private RenameableTab client;
+  private final RenameableTab client;
+  private final int tabIndex;
 
-  public RenameTabAction(RenameableTab aClient)
+  public RenameTabAction(RenameableTab aClient, int index)
   {
     super();
     this.client = aClient;
+    this.tabIndex = index;
     this.initMenuDefinition("MnuTxtRenameTab");
     this.setMenuItemName(ResourceMgr.MNU_TXT_VIEW);
     client.addTabChangeListener(this);
-    setEnabled(client.canRenameTab());
+    setEnabled(client.canRenameTab(tabIndex));
     this.setIcon(null);
   }
 
   @Override
   public void executeAction(ActionEvent e)
   {
-    String oldName = client.getCurrentTabTitle();
+    String oldName = client.getTabTitle(tabIndex);
     String newName = WbSwingUtilities.getUserInput(client.getComponent(), ResourceMgr.getString("MsgEnterNewTabName"), oldName);
-
-    if (newName != null)
-    {
-      client.setCurrentTabTitle(newName);
-    }
+    client.setTabTitle(tabIndex, newName);
   }
 
   @Override
   public void stateChanged(ChangeEvent e)
   {
-    setEnabled(client.canRenameTab());
+    setEnabled(client.canRenameTab(tabIndex));
   }
 
   @Override

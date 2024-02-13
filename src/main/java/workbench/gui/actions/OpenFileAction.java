@@ -29,6 +29,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
+import workbench.interfaces.MainPanel;
 import workbench.interfaces.TextFileContainer;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -67,10 +68,12 @@ public class OpenFileAction
   private static final String TOOLNAME = "directories";
   private static final String LAST_DIR_KEY = "last.script.dir";
   private File fileToLoad;
+  private int forTabIndex = -1;
 
-  public OpenFileAction(MainWindow mainWindow)
+  public OpenFileAction(MainWindow mainWindow, int tabIndex)
   {
     this(mainWindow, (TextFileContainer)null);
+    forTabIndex = tabIndex;
   }
 
   public OpenFileAction(TextFileContainer client)
@@ -149,8 +152,11 @@ public class OpenFileAction
       WbFileChooser fc = new WbFileChooser(lastDir);
       fc.setSettingsID("workbench.editor.file.opendialog");
       fc.setMultiSelectionEnabled(true);
-
       FileEncodingAccessoryPanel acc = new FileEncodingAccessoryPanel(window);
+      if (currentPanel == null)
+      {
+        acc.disableOpenInCurrentTab();
+      }
 
       fc.addEncodingPanel(acc);
       fc.addChoosableFileFilter(ExtensionFileFilter.getSqlFileFilter());
@@ -241,9 +247,18 @@ public class OpenFileAction
 
   private SqlPanel getCurrentPanel()
   {
-    if (getWindow() != null)
+    MainWindow main = getWindow();
+    if (main != null)
     {
-      return getWindow().getCurrentSqlPanel();
+      if (forTabIndex == -1)
+      {
+        return main.getCurrentSqlPanel();
+      }
+      MainPanel panel = main.getPanel(forTabIndex).orElse(null);
+      if (panel instanceof SqlPanel)
+      {
+        return (SqlPanel)panel;
+      }
     }
     return null;
   }

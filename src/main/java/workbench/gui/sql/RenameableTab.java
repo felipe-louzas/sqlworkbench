@@ -22,6 +22,7 @@
 package workbench.gui.sql;
 
 import java.awt.Component;
+
 import javax.swing.event.ChangeListener;
 
 /**
@@ -31,8 +32,10 @@ import javax.swing.event.ChangeListener;
 public interface RenameableTab
 {
   void setCurrentTabTitle(String newName);
+  void setTabTitle(int index, String newName);
   String getCurrentTabTitle();
-  boolean canRenameTab();
+  String getTabTitle(int index);
+  boolean canRenameTab(int index);
   void addTabChangeListener(ChangeListener listener);
   Component getComponent();
 }

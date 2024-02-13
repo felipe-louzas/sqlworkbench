@@ -23,6 +23,7 @@ package workbench.gui.actions;
 
 import java.awt.event.ActionEvent;
 
+import workbench.gui.sql.DwPanel;
 import workbench.gui.sql.SqlPanel;
 
 /**
@@ -33,20 +34,23 @@ import workbench.gui.sql.SqlPanel;
 public class LockResultTabAction
   extends CheckBoxAction
 {
-  private SqlPanel panel;
+  private final SqlPanel panel;
+  private final int tabIndex;
 
-  public LockResultTabAction(SqlPanel sqlPanel)
+  public LockResultTabAction(SqlPanel sqlPanel, int index)
   {
     super("MnuTxtKeepResult");
     panel = sqlPanel;
-    boolean isLocked = panel.getCurrentResult() != null && panel.getCurrentResult().isLocked();
+    this.tabIndex = index;
+    DwPanel result = panel.getResultAt(tabIndex);
+    boolean isLocked = result != null && result.isLocked();
     setSwitchedOn(isLocked);
   }
 
   @Override
   public void executeAction(ActionEvent e)
   {
-    boolean locked = panel.toggleLockedResult();
+    boolean locked = panel.toggleLockedResult(tabIndex);
     this.setSwitchedOn(locked);
   }
 

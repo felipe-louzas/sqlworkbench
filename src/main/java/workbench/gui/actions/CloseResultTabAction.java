@@ -40,9 +40,13 @@ import workbench.gui.sql.SqlPanel;
 public class CloseResultTabAction
   extends WbAction
 {
-  private SqlPanel panel;
-
+  private final SqlPanel panel;
+  private final int tabIndex;
   public CloseResultTabAction(SqlPanel sqlPanel)
+  {
+    this(sqlPanel, -1);
+  }
+  public CloseResultTabAction(SqlPanel sqlPanel, int index)
   {
     super();
     panel = sqlPanel;
@@ -50,12 +54,20 @@ public class CloseResultTabAction
     this.setMenuItemName(ResourceMgr.MNU_TXT_DATA);
     this.setIcon(null);
     this.setEnabled(panel.getCurrentResult() != null);
+    this.tabIndex = index;
   }
 
   @Override
   public void executeAction(ActionEvent e)
   {
-    panel.closeCurrentResult();
+    if (tabIndex == -1)
+    {
+      panel.closeCurrentResult();
+    }
+    else
+    {
+      panel.closeResult(tabIndex);
+    }
   }
 
 }

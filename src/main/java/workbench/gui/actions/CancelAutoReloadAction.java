@@ -33,24 +33,21 @@ import workbench.gui.sql.SqlPanel;
 public class CancelAutoReloadAction
   extends WbAction
 {
-  private SqlPanel client;
+  private final SqlPanel client;
+  private final int tabIndex;
 
-  public CancelAutoReloadAction(SqlPanel panel)
+  public CancelAutoReloadAction(SqlPanel panel, int index)
   {
     initMenuDefinition("MnuTxtRemoveRefresh");
-    setClient(panel);
-  }
-
-  public final void setClient(SqlPanel panel)
-  {
-    client = panel;
+    this.client = panel;
+    this.tabIndex = index;
     checkEnabled();
   }
 
   public void checkEnabled()
   {
     boolean isRegistered = false;
-    DwPanel dw = client.getCurrentResult();
+    DwPanel dw = client.getResultAt(tabIndex);
     if (dw != null)
     {
       isRegistered = client.getRefreshMgr().isRegistered(dw);
@@ -61,7 +58,7 @@ public class CancelAutoReloadAction
   @Override
   public void executeAction(ActionEvent evt)
   {
-    DwPanel dw = client.getCurrentResult();
+    DwPanel dw = client.getResultAt(tabIndex);
     client.getRefreshMgr().removeRefresh(dw);
     client.checkAutoRefreshIndicator(dw);
   }

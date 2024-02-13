@@ -22,6 +22,7 @@
 package workbench.gui.sql;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -52,8 +53,8 @@ import workbench.util.StringUtil;
 public class ResultTabHandler
   implements MouseListener, RenameableTab
 {
-  private JTabbedPane resultTab;
-  private SqlPanel client;
+  private final JTabbedPane resultTab;
+  private final SqlPanel client;
 
   public ResultTabHandler(JTabbedPane tab, SqlPanel sqlPanel)
   {
@@ -67,19 +68,20 @@ public class ResultTabHandler
   {
     if (e.getSource() != this.resultTab) return;
 
-    int index = resultTab.getSelectedIndex();
+    Point p = e.getPoint();
+    int index = resultTab.indexAtLocation(p.x, p.y);
     boolean isResultTab = (index != resultTab.getTabCount() - 1);
 
     if (!isResultTab) return;
 
     if (e.getButton() == MouseEvent.BUTTON3)
     {
-      JPopupMenu menu = createPopup();
+      JPopupMenu menu = createPopup(index);
       menu.show(resultTab, e.getX(), e.getY());
     }
     else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)
     {
-      ShowSourceQueryAction action = new ShowSourceQueryAction(client);
+      ShowSourceQueryAction action = new ShowSourceQueryAction(client, index);
       action.showQuery();
     }
   }
@@ -104,24 +106,24 @@ public class ResultTabHandler
   {
   }
 
-  private JPopupMenu createPopup()
+  private JPopupMenu createPopup(int forIndex)
   {
     JPopupMenu menu = new JPopupMenu();
-    menu.add(new RenameTabAction(this));
-    menu.add(new ShowSourceQueryAction(client));
-    menu.add(new SqlPanelReloadAction(client));
+    menu.add(new RenameTabAction(this, forIndex));
+    menu.add(new ShowSourceQueryAction(client, forIndex));
+    menu.add(new SqlPanelReloadAction(client, forIndex));
     menu.addSeparator();
-    menu.add(new CloseResultTabAction(client));
-    menu.add(new CloseOtherResultsAction(client));
+    menu.add(new CloseResultTabAction(client, forIndex));
+    menu.add(new CloseOtherResultsAction(client, forIndex));
     menu.add(new CloseEmptyResultsAction(client));
     menu.add(new CloseAllResultsAction(client));
     menu.addSeparator();
-    menu.add(new AutomaticReloadAction(client));
-    menu.add(new CancelAutoReloadAction(client));
+    menu.add(new AutomaticReloadAction(client, forIndex));
+    menu.add(new CancelAutoReloadAction(client, forIndex));
     menu.addSeparator();
-    LockResultTabAction lock = new LockResultTabAction(client);
+    LockResultTabAction lock = new LockResultTabAction(client, forIndex);
     menu.add(lock.getMenuItem());
-    menu.add(new DetachResultTabAction(client));
+    menu.add(new DetachResultTabAction(client, forIndex));
     return menu;
   }
 
@@ -135,12 +137,19 @@ public class ResultTabHandler
   public void setCurrentTabTitle(String newName)
   {
     int index = this.resultTab.getSelectedIndex();
+    setTabTitle(index, newName);
+  }
+
+  @Override
+  public void setTabTitle(int index, String newName)
+  {
     if (StringUtil.isBlank(newName))
     {
       newName = ResourceMgr.getString("LblTabResult");
     }
     resultTab.setTitleAt(index, newName);
   }
+
 
   @Override
   public String getCurrentTabTitle()
@@ -150,7 +159,13 @@ public class ResultTabHandler
   }
 
   @Override
-  public boolean canRenameTab()
+  public String getTabTitle(int index)
+  {
+    return resultTab.getTitleAt(index);
+  }
+
+  @Override
+  public boolean canRenameTab(int index)
   {
     return true;
   }

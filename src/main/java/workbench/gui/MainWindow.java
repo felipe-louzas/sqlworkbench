@@ -802,7 +802,7 @@ public class MainWindow
     newWindowAction = new FileNewWindowAction();
     newWindowAction.addToMenu(fileMenu);
 
-    fileOpenAction = new OpenFileAction(this);
+    fileOpenAction = new OpenFileAction(this,-1);
     fileMenu.addSeparator();
     fileOpenAction.addToMenu(fileMenu);
 
@@ -948,7 +948,7 @@ public class MainWindow
 
     RemoveTabAction rem = new RemoveTabAction(this);
     viewMenu.add(rem);
-    viewMenu.add(new RenameTabAction(this));
+    viewMenu.add(new RenameTabAction(this, -1));
     viewMenu.addSeparator();
     ViewLineNumbers v = new ViewLineNumbers();
     v.addToMenu(viewMenu);
@@ -3911,6 +3911,7 @@ public class MainWindow
    *
    * @see MainPanel#getTabTitle()
    */
+  @Override
   public String getTabTitle(int index)
   {
     return getPanel(index).map(MainPanel::getTabTitle).orElse(null);
@@ -3961,17 +3962,14 @@ public class MainWindow
   public void setCurrentTabTitle(String newName)
   {
     int index = this.sqlTab.getSelectedIndex();
-
-    if (newName != null)
-    {
-      this.setTabTitle(index, newName);
-    }
+    setTabTitle(index, newName);
   }
 
   /**
    * Sets the title of a tab and appends the index number to
    * the title, so that a shortcut Ctrl-n can be defined
    */
+  @Override
   public void setTabTitle(int anIndex, String aName)
   {
     this.getPanel(anIndex).ifPresent(p ->
@@ -4029,7 +4027,7 @@ public class MainWindow
   }
 
   @Override
-  public boolean canRenameTab()
+  public boolean canRenameTab(int index)
   {
     return (this.currentWorkspace != null);
   }

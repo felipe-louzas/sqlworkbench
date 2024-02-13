@@ -899,7 +899,7 @@ public class SqlPanel
     this.duplicateRow = new CopyRowAction(null);
     this.selectKeys = new SelectKeyColumnsAction(null);
     this.showFormAction = new DisplayDataFormAction(null);
-    reloadAction = new SqlPanelReloadAction(this);
+    reloadAction = new SqlPanelReloadAction(this, -1);
     showObjectInfoAction = new ShowObjectInfoAction(this);
     editor.addPopupMenuItem(showObjectInfoAction, true);
 
@@ -1640,9 +1640,10 @@ public class SqlPanel
       resultTab.setTitleAt(index, HtmlUtil.cleanHTML(title));
     }
   }
-  public boolean toggleLockedResult()
+
+  public boolean toggleLockedResult(int resultIndex)
   {
-    DwPanel result = getCurrentResult();
+    DwPanel result = getResultAt(resultIndex);
     if (result == null) return false;
 
     result.setLocked(!result.isLocked());
@@ -1692,14 +1693,7 @@ public class SqlPanel
   @Override
   public void setTabName(String aName)
   {
-    if (StringUtil.isBlank(aName))
-    {
-      this.tabName = null;
-    }
-    else
-    {
-      this.tabName = aName;
-    }
+    this.tabName = StringUtil.trimToNull(aName);
     this.fireFilenameChanged(aName);
   }
 
@@ -2311,10 +2305,25 @@ public class SqlPanel
    */
   public void reloadCurrent()
   {
-    if (isConnectionBusy()) return;
-    if (currentData == null) return;
+    reloadResult(-1);
+  }
 
-    startReloadPanel(currentData);
+  /**
+   * Re-run the SQL for the specified result in the background.
+   */
+  public void reloadResult(int index)
+  {
+    if (isConnectionBusy()) return;
+    if (index < 0)
+    {
+      index = resultTab.getSelectedIndex();
+    }
+
+    DwPanel result = getResultAt(index);
+    if (result != null)
+    {
+      startReloadPanel(result);
+    }
   }
 
   @Override
@@ -2937,18 +2946,32 @@ public class SqlPanel
     return null;
   }
 
-  public LocalDateTime getLoadedAt()
+  public DwPanel getResultAt(int index)
   {
-    if (currentData == null) return LocalDateTime.MIN;
-    DataStore ds = currentData.getDataStore();
+    if (index < 0 || index > getResultTabCount()) return null;
+
+    Component comp = resultTab.getComponentAt(index);
+    if (comp instanceof DwPanel)
+    {
+      return (DwPanel)comp;
+    }
+    return null;
+  }
+
+  public LocalDateTime getLoadedAt(int index)
+  {
+    DwPanel result = getResultAt(index);
+    if (result == null) return LocalDateTime.MIN;
+    DataStore ds = result.getDataStore();
     if (ds == null) return LocalDateTime.MIN;
     return ds.getLoadedAt();
   }
 
-  public String getSourceQuery()
+  public String getSourceQuery(int index)
   {
-    if (currentData == null) return null;
-    DataStore ds = currentData.getDataStore();
+    DwPanel panel = getResultAt(index);
+    if (panel == null) return null;
+    DataStore ds = panel.getDataStore();
     if (ds != null) return ds.getGeneratingSql();
     return null;
   }

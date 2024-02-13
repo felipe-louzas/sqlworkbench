@@ -83,9 +83,9 @@ public class SqlTabPopup
     RestoreClosedTabAction restoreClosedTabAction = new RestoreClosedTabAction(mainWindow);
     this.add(restoreClosedTabAction.getMenuItem());
 
-    if (mainWindow.canRenameTab())
+    if (mainWindow.canRenameTab(forIndex))
     {
-      RenameTabAction rename = new RenameTabAction(mainWindow);
+      RenameTabAction rename = new RenameTabAction(mainWindow, forIndex);
       this.add(rename);
     }
 
@@ -122,7 +122,7 @@ public class SqlTabPopup
 
       this.add(editor.getFileSaveAction());
       this.add(editor.getFileSaveAsAction());
-      this.add(new OpenFileAction(mainWindow));
+      this.add(new OpenFileAction(mainWindow, forIndex));
 
       if (editor.hasFileLoaded())
       {
@@ -138,7 +138,7 @@ public class SqlTabPopup
     }
     else
     {
-      this.add(new OpenFileAction(mainWindow));
+      this.add(new OpenFileAction(mainWindow, forIndex));
     }
   }
 
