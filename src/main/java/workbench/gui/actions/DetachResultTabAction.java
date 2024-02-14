@@ -61,15 +61,14 @@ public class DetachResultTabAction
     final int timer = panel.getRefreshMgr().getRefreshPeriod(result);
     panel.removeCurrentResult();
 
-    EventQueue.invokeLater(()
-      ->
+    EventQueue.invokeLater(() ->
+    {
+      DetachedResultWindow window = new DetachedResultWindow(result, panel);
+      if (timer > 0)
       {
-        DetachedResultWindow window = new DetachedResultWindow(result, panel);
-        if (timer > 0)
-        {
-          window.refreshAutomatically(timer);
-        }
-        window.showWindow();
+        window.refreshAutomatically(timer);
+      }
+      window.showWindow();
     });
 
   }

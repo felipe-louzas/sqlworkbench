@@ -82,6 +82,7 @@ public class ShowSourceQueryAction
     WbTabbedPane tab = new WbTabbedPane();
 
     String sql = panel.getSourceQuery(tabIndex);
+    String title = panel.getResultTitle(tabIndex);
 
     JPanel display = new JPanel(new BorderLayout(0, 5));
     display.setBorder(WbSwingUtilities.createLineBorder(display));
@@ -119,7 +120,7 @@ public class ShowSourceQueryAction
     tab.addTab("SQL", display);
     tab.addTab(ResourceMgr.getString("LblResultMeta"), resultInfo);
 
-    ValidatingDialog d = new ValidatingDialog(f, panel.getCurrentResultTitle(), tab, false);
+    ValidatingDialog d = new ValidatingDialog(f, title, tab, false);
     if (!Settings.getInstance().restoreWindowSize(d, "workbench.resultquery.display"))
     {
       d.setSize(500, 350);

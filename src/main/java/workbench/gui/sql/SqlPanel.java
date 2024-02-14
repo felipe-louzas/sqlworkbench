@@ -2930,9 +2930,9 @@ public class SqlPanel
     checkResultSetActions();
   }
 
-  public String getCurrentResultTitle()
+  public String getResultTitle(int index)
   {
-    int index = resultTab.getSelectedIndex();
+    if (index == -1) index = resultTab.getSelectedIndex();
     return resultTab.getTitleAt(index);
   }
 
@@ -2948,7 +2948,12 @@ public class SqlPanel
 
   public DwPanel getResultAt(int index)
   {
-    if (index < 0 || index > getResultTabCount()) return null;
+    if (index > getResultTabCount()) return null;
+
+    if (index < 0)
+    {
+      index = resultTab.getSelectedIndex();
+    }
 
     Component comp = resultTab.getComponentAt(index);
     if (comp instanceof DwPanel)
@@ -2969,6 +2974,10 @@ public class SqlPanel
 
   public String getSourceQuery(int index)
   {
+    if (index < 0)
+    {
+      index = resultTab.getSelectedIndex();
+    }
     DwPanel panel = getResultAt(index);
     if (panel == null) return null;
     DataStore ds = panel.getDataStore();

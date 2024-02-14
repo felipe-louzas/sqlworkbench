@@ -3914,6 +3914,10 @@ public class MainWindow
   @Override
   public String getTabTitle(int index)
   {
+    if (index < 0)
+    {
+      index = getCurrentPanelIndex();
+    }
     return getPanel(index).map(MainPanel::getTabTitle).orElse(null);
   }
 
@@ -3972,11 +3976,12 @@ public class MainWindow
   @Override
   public void setTabTitle(int anIndex, String aName)
   {
-    this.getPanel(anIndex).ifPresent(p ->
+    final int realIndex = anIndex == -1 ? this.sqlTab.getSelectedIndex() : anIndex;
+    this.getPanel(realIndex).ifPresent(p ->
     {
       p.setTabName(aName);
-      p.setTabTitle(this.sqlTab, anIndex);
-      updateViewMenu(anIndex, p.getTabTitle());
+      p.setTabTitle(this.sqlTab, realIndex);
+      updateViewMenu(realIndex, p.getTabTitle());
     });
   }
 

@@ -147,6 +147,10 @@ public class ResultTabHandler
     {
       newName = ResourceMgr.getString("LblTabResult");
     }
+    if (index == -1)
+    {
+      index = resultTab.getSelectedIndex();
+    }
     resultTab.setTitleAt(index, newName);
   }
 
