@@ -53,7 +53,7 @@ public class WbWorkspace
 {
   public static final String TAB_PROP_PREFIX = "tab";
   public static final String TABINFO_FILENAME = "tabs.properties";
-  
+
   private static final String VARIABLES_FILENAME = "variables.properties";
   private static final String TOOL_ENTRY_PREFIX = "toolprop_";
 
@@ -83,15 +83,6 @@ public class WbWorkspace
   public WbWorkspace(String archiveName)
   {
     setFilename(archiveName);
-  }
-
-  private boolean isDirectory(WbFile f)
-  {
-    if (f.exists())
-    {
-      return f.isDirectory();
-    }
-    return StringUtil.isBlank(f.getExtension());
   }
 
   /**
@@ -174,20 +165,11 @@ public class WbWorkspace
       LogMgr.logError(new CallerInfo(){}, "setFilename() called although workspace is not closed!", new Exception("Backtrace"));
     }
     filename = archiveName;
-    WbFile f = new WbFile(filename);
     if (persistence != null)
     {
       persistence.close();
     }
-
-    if (isDirectory(f))
-    {
-      persistence = new DirectoryWorkspacePersistence(filename);
-    }
-    else
-    {
-      persistence = new ZipWorkspacePersistence(filename);
-    }
+    persistence = createPersistence(filename);
   }
 
   public String getFilename()
@@ -631,5 +613,28 @@ public class WbWorkspace
   public File createBackup()
   {
     return persistence.createBackup();
+  }
+
+  private static boolean isDirectory(WbFile f)
+  {
+    if (f.exists())
+    {
+      return f.isDirectory();
+    }
+    return StringUtil.isBlank(f.getExtension());
+  }
+
+  public static WorkspacePersistence createPersistence(String workspaceFile)
+  {
+    return createPersistence(new WbFile(workspaceFile));
+  }
+
+  public static WorkspacePersistence createPersistence(WbFile workspaceFile)
+  {
+    if (isDirectory(workspaceFile))
+    {
+      return new DirectoryWorkspacePersistence(workspaceFile.getFullPath());
+    }
+    return new ZipWorkspacePersistence(workspaceFile.getFullPath());
   }
 }

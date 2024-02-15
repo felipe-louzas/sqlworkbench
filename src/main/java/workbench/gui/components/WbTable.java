@@ -264,7 +264,7 @@ public class WbTable
   private boolean sortIgnoreCase;
   private boolean useNaturalSort;
   private boolean honorLNFRowHeight;
-  private boolean useMultilineEditor = true;
+  private boolean useMultilineEditor = GuiSettings.getEnableMultilineRenderer();
 
   // </editor-fold>
 

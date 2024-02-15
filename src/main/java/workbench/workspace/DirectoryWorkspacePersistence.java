@@ -125,12 +125,15 @@ public class DirectoryWorkspacePersistence
   }
 
   @Override
-  public File createBackup()
+  public String getBackupBasename()
   {
-    int maxVersions = Settings.getInstance().getMaxBackupFiles();
-    File backupDir = Settings.getInstance().getBackupDir();
-    char sep = Settings.getInstance().getFileVersionDelimiter();
+    return workspaceDir.getName() + "_backup.zip";
+  }
 
+  @Override
+  public File getBackupDir()
+  {
+    File backupDir = Settings.getInstance().getBackupDir();
     if (backupDir == null)
     {
       backupDir = workspaceDir.getParentFile();
@@ -139,6 +142,15 @@ public class DirectoryWorkspacePersistence
     {
       backupDir = new File(backupDir, "workspaces");
     }
+    return backupDir;
+  }
+
+  @Override
+  public File createBackup()
+  {
+    File backupDir = getBackupDir();
+    int maxVersions = Settings.getInstance().getMaxBackupFiles();
+    char sep = Settings.getInstance().getFileVersionDelimiter();
     FileVersioner version = new FileVersioner(maxVersions, backupDir, sep);
     File zip = new File(backupDir, workspaceDir.getName() + "_backup.zip");
     File backup = version.getNextBackupFile(zip);

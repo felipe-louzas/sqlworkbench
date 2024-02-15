@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
@@ -94,8 +95,10 @@ public class WbCellEditor
     boolean wrap = GuiSettings.getWrapMultilineEditor();
     editor.setLineWrap(wrap);
     editor.setWrapStyleWord(wrap);
+    int spacing = (int)parent.getIntercellSpacing().getHeight();
+    EmptyBorder b = new EmptyBorder(spacing,0,0,0);
+    scroll.setBorder(b);
     editor.setBorder(WbSwingUtilities.EMPTY_BORDER);
-    scroll.setBorder(WbSwingUtilities.EMPTY_BORDER);
     restoreValue = new RestoreDataAction(this);
     contextMenu = new TextComponentMouseListener(editor);
     setNull = new SetNullAction(this);
@@ -383,13 +386,13 @@ public class WbCellEditor
     @Override
     public Insets getInsets()
     {
-      return new Insets(1, 0, 0, 0);
+      return new Insets(0, 0, 0, 0);
     }
 
     @Override
     public Insets getMargin()
     {
-      return new Insets(1, 0, 0, 0);
+      return new Insets(0, 0, 0, 0);
     }
 
     @Override

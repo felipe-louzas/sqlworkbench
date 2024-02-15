@@ -47,8 +47,6 @@ import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
@@ -129,7 +127,6 @@ public class EditorPanel
   implements FontChangedListener, DropTargetListener,
              SqlTextContainer, TextFileContainer, FormattableSql
 {
-  private static final Border DEFAULT_BORDER = WbSwingUtilities.createLineBorder(UIManager.getColor("Label.background"));
   private AnsiSQLTokenMarker sqlTokenMarker;
   private static final int SQL_EDITOR = 0;
   private static final int TEXT_EDITOR = 1;
@@ -188,7 +185,7 @@ public class EditorPanel
   {
     super();
     this.setDoubleBuffered(true);
-    this.setBorder(DEFAULT_BORDER);
+    this.setBorder(WbSwingUtilities.EMPTY_BORDER);
 
     this.setTabSize(Settings.getInstance().getEditorTabWidth());
     this.setCaretBlinkEnabled(true);

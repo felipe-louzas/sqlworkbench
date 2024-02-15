@@ -192,6 +192,8 @@ public abstract class WorkspacePersistence
   public abstract void restoreBackup(File backup)
     throws IOException;
 
+  public abstract File getBackupDir();
+  public abstract String getBackupBasename();
   public abstract File createBackup();
 
   public abstract boolean isOutputValid();

@@ -71,7 +71,6 @@ public class DwUpdatePreview
 
       preview.setEditable(false);
       preview.showFindOnPopupMenu();
-      preview.setBorder(WbSwingUtilities.EMPTY_BORDER);
       JPanel display = new JPanel(new BorderLayout(0, 8));
       JScrollPane scroll = new JScrollPane(preview);
       SqlLiteralFormatter f = new SqlLiteralFormatter(dbConn);

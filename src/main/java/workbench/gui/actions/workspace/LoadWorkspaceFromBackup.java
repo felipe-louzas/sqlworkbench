@@ -46,7 +46,7 @@ public class LoadWorkspaceFromBackup
   extends WbAction
 {
   private final String CONFIG_PROP = "workbench.gui.restore.wksp.backup.dialog";
-  private MainWindow client;
+  private final MainWindow client;
 
   public LoadWorkspaceFromBackup(MainWindow aClient)
   {
@@ -89,7 +89,9 @@ public class LoadWorkspaceFromBackup
     options[1] = ResourceMgr.getString("LblClose");
 
     ValidatingDialog dialog = new ValidatingDialog(client, workspace.getName(), panel, options, true);
-
+    dialog.setCancelOption(1);
+    dialog.setButtonEnabled(0, false);
+    
     Settings.getInstance().restoreWindowSize(dialog, CONFIG_PROP);
     WbSwingUtilities.center(dialog, client);
     dialog.setVisible(true);

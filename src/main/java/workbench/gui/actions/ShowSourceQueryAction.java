@@ -77,6 +77,9 @@ public class ShowSourceQueryAction
 
   public void showQuery()
   {
+    DwPanel result = panel.getResultAt(tabIndex);
+    if (result == null) return;
+    
     EditorPanel editor = EditorPanel.createSqlEditor();
     editor.setBorder(WbSwingUtilities.EMPTY_BORDER);
     WbTabbedPane tab = new WbTabbedPane();
@@ -103,7 +106,6 @@ public class ShowSourceQueryAction
 
     String loadedAt = StringUtil.ISO_TIMESTAMP_FORMATTER.format(panel.getLoadedAt(tabIndex));
 
-    DwPanel result = panel.getCurrentResult();
     DurationFormatter formatter = new DurationFormatter();
     long millis = result.getLastExecutionTime();
     String duration = formatter.formatDuration(millis);

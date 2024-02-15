@@ -37,18 +37,13 @@ import workbench.util.FileVersioner;
  */
 public class WorkspaceBackupList
 {
-  private File backupDir;
-  private File workspace;
+  private final File backupDir;
+  private final String basename;
 
-  public WorkspaceBackupList(File workspace)
-  {
-    this(workspace, new File(Settings.getInstance().getBackupDirName()));
-  }
-
-  public WorkspaceBackupList(File workspace, File backupDir)
+  public WorkspaceBackupList(String basename, File backupDir)
   {
     this.backupDir = backupDir;
-    this.workspace = workspace;
+    this.basename = basename;
   }
 
   public List<File> getBackups()
@@ -65,12 +60,10 @@ public class WorkspaceBackupList
 
     List<File> result = new ArrayList<>(Settings.getInstance().getMaxBackupFiles());
 
-    String baseName = workspace.getName();
-
     String[] files = this.backupDir.list((File dir, String name) ->
     {
       name = FileVersioner.stripVersion(name, versionDelimiter);
-      return name.equalsIgnoreCase(baseName);
+      return name.equalsIgnoreCase(basename);
     });
 
     if (files == null) return result;

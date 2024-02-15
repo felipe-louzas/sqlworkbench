@@ -397,7 +397,6 @@ public class SqlPanel
     setBorder(WbSwingUtilities.EMPTY_BORDER);
 
     editor = EditorPanel.createSqlEditor();
-    editor.setBorder(WbSwingUtilities.EMPTY_BORDER);
     highlighter = new Highlighter(editor);
 
     statusBar = new DwStatusBar(true, true);

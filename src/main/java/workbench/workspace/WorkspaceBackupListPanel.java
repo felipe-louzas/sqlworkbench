@@ -40,7 +40,6 @@ import workbench.interfaces.ValidatingComponent;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
-import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ValidatingDialog;
@@ -52,6 +51,7 @@ import workbench.gui.sql.EditorHistoryEntry;
 import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.PanelType;
 
+import workbench.util.WbFile;
 import workbench.util.WorkspaceSelector;
 
 /**
@@ -63,7 +63,7 @@ public class WorkspaceBackupListPanel
   extends JPanel
   implements ListSelectionListener, ActionListener, ValidatingComponent
 {
-  private File workspaceFile;
+  private WbFile workspaceFile;
   private FileListTableModel backups;
   private EditorPanel editor;
   private WbTable filesTable;
@@ -112,15 +112,17 @@ public class WorkspaceBackupListPanel
 
   private void setWorkspacefile(File workspace)
   {
-    this.workspaceFile = workspace;
-    if (this.workspaceFile == null)
+    if (workspace == null)
     {
+      workspaceFile = null;
       workspaceFileName.setText(ResourceMgr.getString("LblSelectWksp"));
     }
     else
     {
+      this.workspaceFile = new WbFile(workspace);
+      WorkspacePersistence persistence = WbWorkspace.createPersistence(workspaceFile);
       String fname = workspaceFile.getName();
-      String dir = Settings.getInstance().getBackupDirName();
+      String dir = persistence.getBackupDir().getAbsolutePath();
       workspaceFileName.setText(ResourceMgr.getFormattedString("LblWkspBackups", fname, dir));
     }
   }
@@ -130,9 +132,10 @@ public class WorkspaceBackupListPanel
     try
     {
       WbSwingUtilities.showWaitCursor(this);
+      WorkspacePersistence persistence = WbWorkspace.createPersistence(workspaceFile);
       firePropertyChange(ValidatingDialog.PROPERTY_VALID_STATE, false, false);
       resetTabList();
-      WorkspaceBackupList list = new WorkspaceBackupList(workspaceFile);
+      WorkspaceBackupList list = new WorkspaceBackupList(persistence.getBackupBasename(), persistence.getBackupDir());
       List<File> files = list.getBackups();
       backups = new FileListTableModel(files);
       filesTable.setModel(backups);

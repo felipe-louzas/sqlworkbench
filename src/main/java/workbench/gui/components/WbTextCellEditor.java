@@ -95,8 +95,7 @@ public class WbTextCellEditor
     parentTable = parent;
     textField = field;
     int spacing = (int)parent.getIntercellSpacing().getHeight();
-    int rm = parent.getRowMargin();
-    textField.setBorder(new EmptyBorder(spacing + rm,0,0,0));
+    textField.setBorder(new EmptyBorder(spacing,0,0,0));
     textField.addMouseListener(this);
     restoreValue = new RestoreDataAction(this);
     contextMenu = new TextComponentMouseListener(textField);

@@ -29,6 +29,7 @@ import workbench.resource.GuiSettings;
 
 import workbench.gui.MainWindow;
 import workbench.gui.PanelReloader;
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.RowHeightOptimizer;
 import workbench.gui.components.WbMenu;
 import workbench.gui.components.WbTable;
@@ -74,6 +75,7 @@ public class TableAnnotationProcessor
 
     boolean optimizeRowHeight = ds.getOptimizeRowHeight();
     int rowHeightLines = optimizeRowHeight ? GuiSettings.getAutRowHeightMaxLines() : -1;
+    boolean doScroll = false;
     boolean scrollToEnd = false;
     int line = -1;
 
@@ -85,6 +87,7 @@ public class TableAnnotationProcessor
     {
       if (annotation.is(ScrollAnnotation.ANNOTATION))
       {
+        doScroll = true;
         String scrollValue = annotation.getValue();
         if (scrollValue != null)
         {
@@ -138,13 +141,28 @@ public class TableAnnotationProcessor
       optimizer.optimizeAllRows(rowHeightLines);
     }
 
-    if (scrollToEnd)
+    if (doScroll)
     {
-      tbl.scrollToRow(tbl.getRowCount() - 1);
+      final int targetLine;
+      if (scrollToEnd)
+      {
+        targetLine = tbl.getRowCount() - 1;
+      }
+      else if (line > 0)
+      {
+        targetLine = line - 1;
+      }
+      else
+      {
+        targetLine = 0;
+      }
+
+      // For FlatLaf it is necessary to postpone the scrolling
+      WbSwingUtilities.invokeLater(() ->
+      {
+        tbl.scrollToRow(targetLine);
+      });
     }
-    else if (line > 0)
-    {
-      tbl.scrollToRow(line - 1);
-    }
+
   }
 }

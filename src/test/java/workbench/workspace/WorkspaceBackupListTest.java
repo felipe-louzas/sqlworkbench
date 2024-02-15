@@ -84,7 +84,7 @@ public class WorkspaceBackupListTest
     time -= 1000 * 60 * 10;
     backup1.setLastModified(time);
 
-    WorkspaceBackupList list = new WorkspaceBackupList(workspaceFile, backupDir);
+    WorkspaceBackupList list = new WorkspaceBackupList(workspaceFile.getName(), backupDir);
     List<File> backups = list.getBackups();
     assertEquals(2, backups.size());
     assertTrue(backups.get(0).getName().endsWith(".2"));

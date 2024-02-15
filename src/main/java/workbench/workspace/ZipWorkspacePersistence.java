@@ -204,6 +204,19 @@ public class ZipWorkspacePersistence
   }
 
   @Override
+  public String getBackupBasename()
+  {
+    if (filename == null) return null;
+    return new WbFile(filename).getName();
+  }
+
+  @Override
+  public File getBackupDir()
+  {
+    return Settings.getInstance().getBackupDir();
+  }
+
+  @Override
   public File createBackup()
   {
     return FileUtil.createBackup(new WbFile(filename));
