@@ -75,8 +75,9 @@ public class CommonArgs
   public static final String ARG_QUOTE_CHAR= "quotechar";
   public static final String ARG_QUOTE_ESCAPE = "quoteCharEscaping";
   public static final String ARG_AUTO_BOOLEAN = "booleanToNumber";
-  public static final String ARG_DATE_FORMAT = "dateFormat";
   public static final String ARG_LOCALE = "locale";
+  public static final String ARG_DATE_FORMAT = "dateFormat";
+  public static final String ARG_TIME_FORMAT = "timeFormat";
   public static final String ARG_TIMESTAMP_FORMAT = "timestampFormat";
   public static final String ARG_TIMESTAMP_TZ_FORMAT = "timestampTZFormat";
   public static final String ARG_DECIMAL_CHAR = "decimal";
@@ -337,6 +338,7 @@ public class CommonArgs
     if (includeDateFormats)
     {
       cmdLine.addArgument(ARG_DATE_FORMAT);
+      cmdLine.addArgument(ARG_TIME_FORMAT);
       cmdLine.addArgument(ARG_TIMESTAMP_FORMAT);
       cmdLine.addArgument(ARG_TIMESTAMP_TZ_FORMAT);
     }
@@ -409,6 +411,11 @@ public class CommonArgs
       {
         addMonthWarning(format, result);
         converter.setTimestampTZFormat(format);
+      }
+      format = cmdLine.getValue(ARG_TIME_FORMAT);
+      if (format != null)
+      {
+        converter.setDefaultTimeFormat(format);
       }
     }
     catch (Exception e)

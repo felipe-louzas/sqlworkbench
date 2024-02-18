@@ -23,8 +23,6 @@
  */
 package workbench.storage.filter;
 
-import workbench.resource.ResourceMgr;
-
 /**
  * @author Thomas Kellerer
  */

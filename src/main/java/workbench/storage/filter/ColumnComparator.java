@@ -23,6 +23,8 @@
  */
 package workbench.storage.filter;
 
+import workbench.storage.ColumnData;
+import workbench.storage.SqlLiteralFormatter;
 /**
  * @author Thomas Kellerer
  */
@@ -83,4 +85,9 @@ public interface ColumnComparator
   boolean validateInput(Object input);
 
   boolean comparesEquality();
+
+  default String getSQLLiteral(ColumnData data, SqlLiteralFormatter formatter)
+  {
+    return formatter.getDefaultLiteral(data);
+  }
 }

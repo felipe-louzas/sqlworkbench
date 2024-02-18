@@ -67,16 +67,15 @@ public class ColumnExpressionPanel
   implements ActionListener
 {
   private final ComparatorFactory factory = new ComparatorFactory();
-  private JComboBox comparatorDropDown;
-  private JCheckBox ignoreCase;
+  private final JComboBox comparatorDropDown;
+  private final JCheckBox ignoreCase;
   protected JComboBox columnSelector;
-  private List<ComparatorListItem> comparatorItems;
-  private ListComboBoxModel activeItems;
-  private ValueProvider filterData;
+  private final List<ComparatorListItem> comparatorItems;
+  private final ListComboBoxModel activeItems;
+  private final ValueProvider filterData;
   protected JTextField valueField;
   protected JButton selectValueButton;
-
-  private ValueConverter converter = new ValueConverter();
+  private final ValueConverter converter = new ValueConverter();
   private boolean ignoreComparatorChange;
 
   public ColumnExpressionPanel(ValueProvider data, ExpressionValue filter)

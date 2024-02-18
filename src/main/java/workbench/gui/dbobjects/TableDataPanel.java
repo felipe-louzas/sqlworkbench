@@ -671,7 +671,7 @@ public class TableDataPanel
   }
 
   /**
-   * Define the table for which the data should be displayed
+   * Define the table for which the data should be displayed.
    */
   public void setTable(TableIdentifier aTable)
   {
@@ -868,21 +868,8 @@ public class TableDataPanel
       return;
     }
 
-    if (this.tableDefinition != null)
-    {
-      // no need to retrieve the definition again (in e.g. Oracle this can be quite costly!)
-      if (this.table.equals(this.tableDefinition.getTable())) return;
-    }
-
-    try
-    {
-      tableDefinition = dbConnection.getMetadata().getTableDefinition(table, true);
-    }
-    catch (SQLException sql)
-    {
-      tableDefinition = null;
-      LogMgr.logError(new CallerInfo(){}, "Could not retrieve table definition", sql);
-    }
+    List<ColumnIdentifier> columns = dbConnection.getObjectCache().getColumns(table);
+    tableDefinition = new TableDefinition(table, columns);
   }
 
   protected void doRetrieve(boolean respectMaxRows)

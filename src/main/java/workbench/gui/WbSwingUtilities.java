@@ -30,6 +30,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -303,6 +304,17 @@ public class WbSwingUtilities
       location = getLocationToCenter(aWinToCenter, null);
     }
     aWinToCenter.setLocation(location);
+  }
+
+  public static Frame getParentFrame(Component caller)
+  {
+    Window w = SwingUtilities.getWindowAncestor(caller);
+    Frame f = null;
+    if (w instanceof Frame)
+    {
+      return (Frame)w;
+    }
+    return WbManager.getInstance().getCurrentWindow();
   }
 
   public static MainWindow getMainWindow(Component caller)
@@ -1013,13 +1025,6 @@ public class WbSwingUtilities
     }
   }
 
-  private enum UserInputType
-  {
-    TEXT,
-    NUMBER,
-    HIDDEN
-  }
-
   public static String passwordPrompt(Component caller, String title, String message)
   {
     final JTextField input = new JPasswordField();
@@ -1042,65 +1047,50 @@ public class WbSwingUtilities
 
   public static String getUserInput(Component caller, String title, String initialValue)
   {
-    return getUserInput(caller, title, initialValue, UserInputType.TEXT, 40);
-  }
-
-  public static String getUserInputHidden(Component caller, String title, String initialValue)
-  {
-    return getUserInput(caller, title, initialValue, UserInputType.HIDDEN, 40);
+    return getUserInput(caller, title, initialValue, false, 40);
   }
 
   public static String getUserInputNumber(Component caller, String title, String initialValue)
   {
-    return getUserInput(caller, title, initialValue, UserInputType.NUMBER, 40);
+    return getUserInput(caller, title, initialValue, true, 40);
   }
 
-  private static String getUserInput(Component caller, String title, String initialValue, UserInputType inputType, int textSize)
+  private static String getUserInput(Component caller, String title, String initialValue, boolean numberInput, int textSize)
   {
     Window parent = getWindowAncestor(caller);
 
-    final JTextField input;
-    switch (inputType)
+    final JTextField input = new JTextField();
+    if (numberInput)
     {
-      case NUMBER:
-        input = new JTextField();
-        Document document = input.getDocument();
-        if (document instanceof AbstractDocument)
+      Document document = input.getDocument();
+      if (document instanceof AbstractDocument)
+      {
+        AbstractDocument abDocument = (AbstractDocument)document;
+        abDocument.setDocumentFilter(new DocumentFilter()
         {
-          AbstractDocument abDocument = (AbstractDocument)document;
-          abDocument.setDocumentFilter(new DocumentFilter()
+          @Override
+          public void insertString(FilterBypass fb, int offset, String text, AttributeSet attr)
+            throws BadLocationException
           {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String text, AttributeSet attr)
-              throws BadLocationException
+            int len = text.length();
+            if (Character.isDigit(text.charAt(len - 1)))
             {
-              int len = text.length();
-              if (Character.isDigit(text.charAt(len - 1)))
-              {
-                super.insertString(fb, offset, text, attr);
-              }
+              super.insertString(fb, offset, text, attr);
             }
+          }
 
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
-              throws BadLocationException
+          @Override
+          public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+            throws BadLocationException
+          {
+            int len = text.length();
+            if (Character.isDigit(text.charAt(len - 1)))
             {
-              int len = text.length();
-              if (Character.isDigit(text.charAt(len - 1)))
-              {
-                super.replace(fb, offset, length, text, attrs);
-              }
+              super.replace(fb, offset, length, text, attrs);
             }
-          });
-        }
-        break;
-      case HIDDEN:
-        input = new JPasswordField();
-        break;
-      case TEXT:
-      default:
-        input = new JTextField();
-        break;
+          }
+        });
+      }
     }
 
     input.setColumns(textSize);
@@ -1116,8 +1106,7 @@ public class WbSwingUtilities
     {
       return null;
     }
-    String value = input.getText();
-    return value;
+    return input.getText();
   }
 
   public static String getKeyName(int keyCode)

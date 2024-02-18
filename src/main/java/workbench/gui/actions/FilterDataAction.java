@@ -42,7 +42,7 @@ public class FilterDataAction
   implements TableModelListener
 {
   private WbTable client;
-  private FilterDefinitionManager filterMgr;
+  private final FilterDefinitionManager filterMgr;
 
   public FilterDataAction(WbTable aClient, FilterDefinitionManager filterManager)
   {

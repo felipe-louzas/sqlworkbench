@@ -22,6 +22,7 @@
 package workbench.gui.filter;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -32,6 +33,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -49,6 +51,11 @@ import workbench.interfaces.ValidatingComponent;
 import workbench.interfaces.ValueProvider;
 import workbench.resource.IconMgr;
 import workbench.resource.ResourceMgr;
+import workbench.resource.Settings;
+
+import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
+import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ExtensionFileFilter;
@@ -57,6 +64,7 @@ import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbFileChooser;
 import workbench.gui.components.WbTable;
 import workbench.gui.components.WbToolbar;
+import workbench.gui.sql.EditorPanel;
 
 import workbench.storage.DataStore;
 import workbench.storage.DataStoreValueProvider;
@@ -67,6 +75,7 @@ import workbench.storage.filter.ComplexExpression;
 import workbench.storage.filter.ExpressionValue;
 import workbench.storage.filter.FilterExpression;
 import workbench.storage.filter.OrExpression;
+import workbench.storage.filter.SQLFilterGenerator;
 
 import workbench.util.ExceptionUtil;
 import workbench.util.StringUtil;
@@ -80,29 +89,27 @@ public class DefineFilterExpressionPanel
   extends JPanel
   implements ActionListener, ValidatingComponent
 {
-  private ValueProvider data;
-  private List<PanelEntry> panels = new ArrayList<>();
-  private JButton addLineButton;
-  private JRadioButton andButton;
-  private JRadioButton orButton;
-  private JPanel expressions;
-  private JScrollPane scroll;
-  private JButton saveButton = new JButton();
-  private JButton loadButton = new JButton();
-  private FilterDefinitionManager filterMgr;
+  private final ValueProvider data;
+  private final List<PanelEntry> panels = new ArrayList<>();
+  private final JButton addLineButton;
+  private final JRadioButton andButton;
+  private final JRadioButton orButton;
+  private final JPanel expressions;
+  private final JScrollPane scroll;
+  private final JButton saveButton = new JButton();
+  private final JButton loadButton = new JButton();
+  private final JButton generateSQL = new JButton();
+  private final FilterDefinitionManager filterMgr;
+  private final WbConnection dbConnection;
 
-  public DefineFilterExpressionPanel(ValueProvider source)
-  {
-    this(source, FilterDefinitionManager.getDefaultInstance());
-  }
-
-  public DefineFilterExpressionPanel(ValueProvider source, FilterDefinitionManager filterManager)
+  public DefineFilterExpressionPanel(ValueProvider source, FilterDefinitionManager filterManager, WbConnection conn)
   {
     super();
     data = source;
     expressions = new JPanel();
     this.expressions.setLayout(new GridBagLayout());
     filterMgr = filterManager;
+    this.dbConnection = conn;
 
     this.setLayout(new BorderLayout(0,2));
 
@@ -142,12 +149,21 @@ public class DefineFilterExpressionPanel
     loadButton.setIcon(IconMgr.getInstance().getLabelIcon("Open"));
     loadButton.setMargin(new Insets(0,0,0,0));
     loadButton.setToolTipText(ResourceMgr.getDescription("MnuTxtLoadFilter"));
+    loadButton.setMargin(ins);
+
+    //generateSQL.setText(ResourceMgr.getString("LblFilterGenSQL"));
+    generateSQL.setIcon(IconMgr.getInstance().getLabelIcon("gen-sql"));
+    generateSQL.setToolTipText(ResourceMgr.getDescription("LblFilterGenSQL"));
 
     loadButton.addActionListener(this);
     saveButton.addActionListener(this);
+    generateSQL.addActionListener(this);
+
     bar.add(loadButton);
-    bar.addSeparator();
     bar.add(saveButton);
+    bar.addSeparator();
+    bar.add(generateSQL);
+
     p.add(bar, c);
 
     c.anchor = GridBagConstraints.EAST;
@@ -295,6 +311,7 @@ public class DefineFilterExpressionPanel
     List<FilterExpression> expList = cExp.getExpressions();
     int count = expList.size();
     int height = 0;
+    int addHeight = 0;
     for (int i=0; i < count; i++)
     {
       try
@@ -304,7 +321,8 @@ public class DefineFilterExpressionPanel
         PanelEntry item = this.panels.get(this.panels.size() - 1);
         ColumnExpressionPanel panel = item.expressionPanel;
         panel.setExpressionValue(exp);
-        if (i <= 10)
+        addHeight = panelSize.height;
+        if (i <= 15)
         {
           height += panelSize.height;
         }
@@ -314,6 +332,8 @@ public class DefineFilterExpressionPanel
         // ignore this as we cannot handle other expressions anyway...
       }
     }
+    // add two empty lines
+    height += (addHeight * 2);
     Dimension preferred = new Dimension(expressions.getPreferredSize().width, (int)(height * 1.15));
     this.expressions.setPreferredSize(preferred);
     WbSwingUtilities.repaintLater(this);
@@ -344,22 +364,80 @@ public class DefineFilterExpressionPanel
     return true;
   }
 
+  private void showSQLCondition()
+  {
+    String sql = createSQLExpression();
+    if (sql == null) return;
+
+    WbSwingUtilities.invokeLater(() ->
+    {
+      EditorPanel editor = EditorPanel.createSqlEditor();
+      editor.setText(sql);
+      Dialog dlg = (Dialog)SwingUtilities.getWindowAncestor(this);
+      ValidatingDialog d = new ValidatingDialog(dlg, "SQL", editor, false);
+      if (!Settings.getInstance().restoreWindowSize(d, "workbench.filterexpression.sql.dialog"))
+      {
+        d.setSize(450, 300);
+      }
+      WbSwingUtilities.center(d,dlg);
+      d.setVisible(true);
+      Settings.getInstance().storeWindowSize(d, "workbench.filterexpression.sql.dialog");
+    });
+  }
+
+  private String createSQLExpression()
+  {
+    List<String> conditions = new ArrayList<>();
+    SQLFilterGenerator generator = new SQLFilterGenerator(dbConnection);
+
+    DBID id = DBID.fromConnection(dbConnection);
+    List<ColumnIdentifier> columns = this.data.getResultInfo().getColumnList();
+    for (PanelEntry entry : panels)
+    {
+      ExpressionValue expression = entry.expressionPanel.getExpressionValue();
+      String filterColumn = expression.getColumnName();
+      if ("*".equals(filterColumn))
+      {
+        String sql = generator.getSQLConditionForAll(expression.getComparator(), columns, expression.getFilterValue(), expression.isIgnoreCase());
+        if (StringUtil.isNotBlank(sql))
+        {
+          conditions.add(sql);
+        }
+      }
+      else
+      {
+        ColumnIdentifier column = ColumnIdentifier.findColumnInList(columns, expression.getColumnName());
+        String sql = generator.getSQLCondition(expression.getComparator(), column, expression.getFilterValue(), expression.isIgnoreCase());
+        if (StringUtil.isNotBlank(sql))
+        {
+          conditions.add(sql);
+        }
+        else
+        {
+          conditions.add(
+            "-- No SQL could be generated for column " +  column.getColumnName()
+            + " and operator " + expression.getComparator().getUserDisplay() + " (" + id.getProductName() + ")");
+        }
+      }
+    }
+
+    String operator = andButton.isSelected() ? "\nAND " : "\nOR ";
+    String result = conditions.
+      stream().
+      collect(Collectors.joining(operator));
+    return result;
+  }
+
   public FilterExpression getExpression()
   {
-    ComplexExpression exp = null;
+    if (panels.isEmpty()) return null;
 
+    ComplexExpression exp = andButton.isSelected() ? new AndExpression() : new OrExpression();
     for (PanelEntry entry : panels)
     {
       FilterExpression f = (FilterExpression)entry.expressionPanel.getExpressionValue();
       if (f != null)
       {
-        if (exp == null)
-        {
-          if (andButton.isSelected())
-            exp = new AndExpression();
-          else
-            exp = new OrExpression();
-        }
         exp.addExpression(f);
       }
     }
@@ -411,9 +489,10 @@ public class DefineFilterExpressionPanel
       l.setConstraints(entry.container, cons);
     }
     this.expressions.add(p,c);
-    this.invalidate();
+    //this.invalidate();
     this.validate();
-    this.repaint();
+    WbSwingUtilities.repaintLater(this);
+
     Dimension ps = exp.getPreferredSize();
     Dimension bs = b.getPreferredSize();
     Dimension prefSize = new Dimension((int)(ps.getWidth() + bs.getWidth()), (int)ps.getHeight());
@@ -434,6 +513,10 @@ public class DefineFilterExpressionPanel
     else if (e.getSource() == addLineButton)
     {
       addExpressionPanel();
+    }
+    else if (e.getSource() == generateSQL)
+    {
+      showSQLCondition();
     }
     else if (e.getSource() instanceof JButton)
     {
@@ -460,11 +543,6 @@ public class DefineFilterExpressionPanel
     }
   }
 
-  public static void showDialog(WbTable source)
-  {
-    showDialog(source, FilterDefinitionManager.getDefaultInstance());
-  }
-
   public static void showDialog(WbTable source, FilterDefinitionManager filterMgr)
   {
     DataStore ds = source.getDataStore();
@@ -473,7 +551,7 @@ public class DefineFilterExpressionPanel
     if (info == null) return;
 
     ValueProvider data = new DataStoreValueProvider(ds);
-    DefineFilterExpressionPanel panel = new DefineFilterExpressionPanel(data, filterMgr);
+    DefineFilterExpressionPanel panel = new DefineFilterExpressionPanel(data, filterMgr, ds.getOriginalConnection());
     int col = source.getSelectedColumn();
 
     FilterExpression lastFilter = source.getLastFilter();

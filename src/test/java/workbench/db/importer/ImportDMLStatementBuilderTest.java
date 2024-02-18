@@ -151,4 +151,35 @@ public class ImportDMLStatementBuilderTest
     assertEquals(expected, sql);
   }
 
+  @Test
+  public void testMySQLUpsert()
+  {
+    ColumnIdentifier pk1 = new ColumnIdentifier("pk1", Types.INTEGER);
+    pk1.setIsNullable(false);
+    pk1.setIsPkColumn(true);
+
+    ColumnIdentifier pk2 = new ColumnIdentifier("pk2", Types.INTEGER);
+    pk2.setIsNullable(false);
+    pk2.setIsPkColumn(true);
+
+    ColumnIdentifier c1 = new ColumnIdentifier("c1", Types.VARCHAR);
+    ColumnIdentifier c2 = new ColumnIdentifier("c2", Types.VARCHAR);
+    ColumnIdentifier c3 = new ColumnIdentifier("c3", Types.INTEGER);
+    List<ColumnIdentifier> columns = CollectionUtil.arrayList(pk1, pk2, c1, c2, c3);
+
+    TableIdentifier tbl = new TableIdentifier("public", "some_table");
+    ImportDMLStatementBuilder builder = new ImportDMLStatementBuilder(null, tbl, columns, null, false);
+    builder.setKeyColumns(CollectionUtil.arrayList(pk1, pk2));
+    String sql = builder.createMySQLUpsert(null, null, false);
+    String expected =
+      "INSERT INTO public.some_table (pk1,pk2,c1,c2,c3)\n" +
+      "VALUES \n" +
+      "(?,?,?,?,?)\n" +
+      "ON DUPLICATE KEY UPDATE \n" +
+      "  c1 = VALUES(c1),\n" +
+      "  c2 = VALUES(c2),\n" +
+      "  c3 = VALUES(c3)";
+    assertEquals(expected, sql);
+  }
+
 }

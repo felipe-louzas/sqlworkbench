@@ -23,6 +23,7 @@ package workbench.db.importer.detector;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -404,6 +405,7 @@ public abstract class TableDetector
   {
     if (value instanceof java.sql.Timestamp) return true;
     if (value instanceof java.util.Date) return true;
+    if (value instanceof LocalDateTime) return true;
     try
     {
       converter.parseTimestamp(value.toString());

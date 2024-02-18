@@ -122,10 +122,10 @@ public class XlsXMLRowDataConverterTest
     assertEquals(data.getValue(1).toString(), colValue);
 
     colValue = TestUtil.getXPathValue(xml, "/mso:Workbook/mso:Worksheet/mso:Table/mso:Row[2]/mso:Cell[3]/mso:Data/text()", nsMap);
-    assertEquals("2008-07-23T00:00:00", colValue);
+    assertEquals("2008-07-23", colValue);
 
     colValue = TestUtil.getXPathValue(xml, "/mso:Workbook/mso:Worksheet/mso:Table/mso:Row[2]/mso:Cell[4]/mso:Data/text()", nsMap);
-    assertEquals("2008-07-23T13:42:01", colValue);
+    assertEquals("2008-07-23 13:42:01", colValue);
   }
 
   @Test

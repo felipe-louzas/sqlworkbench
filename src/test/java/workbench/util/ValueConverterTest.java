@@ -22,10 +22,10 @@
 package workbench.util;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Types;
 import java.time.LocalDate;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Locale;
 
 import workbench.WbTestCase;
@@ -288,14 +288,12 @@ public class ValueConverterTest
   {
     ValueConverter converter = new ValueConverter("yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss");
     Object o = converter.convertValue("infinity", Types.DATE);
-    assertTrue(o instanceof Date);
-    java.sql.Date d = new java.sql.Date(WbDateFormatter.DATE_POSITIVE_INFINITY);
-    assertEquals(d, o);
+    assertTrue(o instanceof LocalDate);
+    assertEquals(LocalDate.MAX, o);
 
     o = converter.convertValue("-infinity", Types.DATE);
-    assertTrue(o instanceof Date);
-    d = new java.sql.Date(WbDateFormatter.DATE_NEGATIVE_INFINITY);
-    assertEquals(d, o);
+    assertTrue(o instanceof LocalDate);
+    assertEquals(LocalDate.MIN, o);
   }
 
   @Test
@@ -316,39 +314,30 @@ public class ValueConverterTest
   {
     String aDate = "2007-04-01";
     ValueConverter converter = new ValueConverter("yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss");
-    Calendar c = Calendar.getInstance();
-    c.clear();
-    c.set(2007, 3, 1);
-    Date expResult = new java.sql.Date(c.getTime().getTime());
-    Date result = converter.parseDate(aDate);
+    LocalDate expResult = LocalDate.of(2007,4,1);
+    LocalDate result = converter.parseDate(aDate);
 
     assertEquals(expResult, result);
 
     Object data = converter.convertValue(aDate, Types.DATE);
     assertEquals(expResult, data);
 
-    c = Calendar.getInstance();
-    c.set(Calendar.HOUR_OF_DAY, 0);
-    c.set(Calendar.HOUR, 0);
-    c.clear(Calendar.SECOND);
-    c.clear(Calendar.MINUTE);
-    c.clear(Calendar.MILLISECOND);
-    java.sql.Date now = java.sql.Date.valueOf(LocalDate.now());
-    data = converter.convertValue("today", Types.DATE);
-    assertEquals(0, now.compareTo((java.sql.Date)data));
+    LocalDate ld = (LocalDate)converter.convertValue("today", Types.DATE);
+    assertEquals(0, LocalDate.now().compareTo(ld));
 
     data = converter.convertValue("now", Types.TIME);
-    assertTrue(data instanceof java.sql.Time);
+    assertTrue(data instanceof LocalTime);
 
-    long justnow = System.currentTimeMillis();
     data = converter.convertValue("current_timestamp", Types.TIMESTAMP);
-    assertTrue(data instanceof java.sql.Timestamp);
-    java.sql.Timestamp sql = (java.sql.Timestamp)data;
+    assertTrue(data instanceof LocalDateTime);
+    LocalDateTime ldt = (LocalDateTime)data;
+    ldt = ldt.withNano(0).withSecond(0);
 
+    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
     // I cannot compare for equality, but the whole call should not take longer
     // than 250ms so the difference should not be greater than that.
-    assertEquals("Not really 'now': ", true, (sql.getTime() - justnow) < 250);
-
+    //assertEquals("Not really 'now': ", true, ldt.(sql.getTime() - justnow) < 250);
+    assertEquals(now, ldt);
 
     try
     {

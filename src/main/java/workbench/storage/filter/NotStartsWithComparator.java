@@ -25,6 +25,11 @@ package workbench.storage.filter;
 
 import workbench.resource.ResourceMgr;
 
+import workbench.storage.ColumnData;
+import workbench.storage.SqlLiteralFormatter;
+
+import workbench.util.SqlUtil;
+
 /**
  * @author Thomas Kellerer
  */
@@ -111,4 +116,12 @@ public class NotStartsWithComparator
   {
     return (other.getClass().equals(this.getClass()));
   }
+
+  @Override
+  public String getSQLLiteral(ColumnData data, SqlLiteralFormatter formatter)
+  {
+    if (data.getValue() == null) return null;
+    return SqlUtil.quoteLiteral(data.getValue().toString() + "%");
+  }
+
 }

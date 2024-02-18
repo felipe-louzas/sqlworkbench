@@ -58,7 +58,10 @@ public class RenameTabAction
   {
     String oldName = client.getTabTitle(tabIndex);
     String newName = WbSwingUtilities.getUserInput(client.getComponent(), ResourceMgr.getString("MsgEnterNewTabName"), oldName);
-    client.setTabTitle(tabIndex, newName);
+    if (newName != null)
+    {
+      client.setTabTitle(tabIndex, newName);
+    }
   }
 
   @Override

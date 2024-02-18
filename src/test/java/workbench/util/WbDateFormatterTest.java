@@ -62,9 +62,9 @@ public class WbDateFormatterTest
     assertEquals(InfinityLiterals.PG_POSITIVE_LITERAL, formatter.formatDateTimeValue(LocalDateTime.MAX));
     assertEquals(InfinityLiterals.PG_NEGATIVE_LITERAL, formatter.formatDateTimeValue(LocalDateTime.MIN));
 
-    java.sql.Date dt = formatter.parseDate(InfinityLiterals.PG_POSITIVE_LITERAL);
+    LocalDate dt = formatter.parseDate(InfinityLiterals.PG_POSITIVE_LITERAL);
     assertNotNull(dt);
-    assertEquals(dt, new java.sql.Date(WbDateFormatter.DATE_POSITIVE_INFINITY));
+    assertEquals(LocalDate.MAX, dt);
   }
 
   @Test
@@ -73,7 +73,7 @@ public class WbDateFormatterTest
     WbDateFormatter formatter = new WbDateFormatter();
     formatter.setLocale(Locale.GERMAN);
     formatter.applyPattern("EE, dd.MM.yy");
-    LocalDate dt = formatter.parseDate("Mo., 12.06.17").toLocalDate();
+    LocalDate dt = formatter.parseDate("Mo., 12.06.17");
     assertNotNull(dt);
     assertEquals(2017, dt.getYear());
     assertEquals(6, dt.getMonthValue());
@@ -86,7 +86,7 @@ public class WbDateFormatterTest
     WbDateFormatter formatter = new WbDateFormatter();
     formatter.setLocale(Locale.ENGLISH);
     formatter.applyPattern("dd-MMM-yyyy");
-    LocalDate dt = formatter.parseDate("19-JAN-2020").toLocalDate();
+    LocalDate dt = formatter.parseDate("19-JAN-2020");
     assertNotNull(dt);
     assertEquals(2020, dt.getYear());
     assertEquals(1, dt.getMonthValue());
@@ -126,10 +126,9 @@ public class WbDateFormatterTest
     WbDateFormatter formatter = new WbDateFormatter("yyyy-MM-dd");
 
     LocalDate expected = LocalDate.of(2012, Month.JANUARY, 1);
-    LocalDate result = formatter.parseDate(source).toLocalDate();
+    LocalDate result = formatter.parseDate(source);
     assertEquals(expected, result);
-    java.sql.Date infinity = new java.sql.Date(WbDateFormatter.DATE_POSITIVE_INFINITY);
-    assertEquals(infinity, formatter.parseDate(InfinityLiterals.PG_POSITIVE_LITERAL));
+    assertEquals(LocalDate.MAX, formatter.parseDate(InfinityLiterals.PG_POSITIVE_LITERAL));
 
     LocalDateTime ts = formatter.parseTimestamp(source).toLocalDateTime();
     assertEquals(expected.atTime(0, 0, 0), ts);

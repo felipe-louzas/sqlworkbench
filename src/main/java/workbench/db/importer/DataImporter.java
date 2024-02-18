@@ -689,6 +689,7 @@ public class DataImporter
    */
   public boolean setMode(String mode)
   {
+    System.out.println("Setting mode to: " + mode);
     return setMode(mode, dbConn);
   }
 
@@ -2101,6 +2102,7 @@ public class DataImporter
     boolean adjustColumnNames = !verifyTargetTable;
 
     ImportDMLStatementBuilder builder = new ImportDMLStatementBuilder(dbConn, targetTable, targetColumns, this, adjustColumnNames);
+    builder.setMessageBuffer(messages);
     builder.setColumnExpressions(columnExpressions);
     builder.setOverrideStrategy(overrideIdentity);
 

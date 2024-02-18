@@ -23,15 +23,12 @@ package workbench.gui.actions;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import workbench.WbManager;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -79,7 +76,7 @@ public class ShowSourceQueryAction
   {
     DwPanel result = panel.getResultAt(tabIndex);
     if (result == null) return;
-    
+
     EditorPanel editor = EditorPanel.createSqlEditor();
     editor.setBorder(WbSwingUtilities.EMPTY_BORDER);
     WbTabbedPane tab = new WbTabbedPane();
@@ -93,16 +90,7 @@ public class ShowSourceQueryAction
     editor.setText(sql);
     editor.setCaretPosition(0);
     editor.setEditable(false);
-    Window w = SwingUtilities.getWindowAncestor(panel);
-    Frame f = null;
-    if (w instanceof Frame)
-    {
-      f = (Frame)w;
-    }
-    else
-    {
-      f = WbManager.getInstance().getCurrentWindow();
-    }
+    Frame f = WbSwingUtilities.getParentFrame(panel);
 
     String loadedAt = StringUtil.ISO_TIMESTAMP_FORMATTER.format(panel.getLoadedAt(tabIndex));
 

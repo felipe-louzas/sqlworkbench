@@ -418,7 +418,7 @@ public class WbDateFormatter
     return value instanceof OffsetDateTime ||
            value instanceof ZonedDateTime;
   }
-  
+
   public static boolean isDateValue(Object value)
   {
     return value instanceof java.sql.Date ||
@@ -493,7 +493,7 @@ public class WbDateFormatter
     return value.toString();
   }
 
-  public java.sql.Time parseTimeQuitely(String source)
+  public LocalTime parseTimeQuitely(String source)
   {
     try
     {
@@ -505,14 +505,13 @@ public class WbDateFormatter
     }
   }
 
-  public java.sql.Time parseTime(String source)
+  public LocalTime parseTime(String source)
     throws ParseException
   {
-    LocalTime lt = LocalTime.parse(source, formatter);
-    return java.sql.Time.valueOf(lt);
+    return LocalTime.parse(source, formatter);
   }
 
-  public java.sql.Date parseDateQuietely(String source)
+  public LocalDate parseDateQuietely(String source)
   {
     source = StringUtil.trimToNull(source);
     if (source == null) return null;
@@ -527,7 +526,7 @@ public class WbDateFormatter
     }
   }
 
-  public java.sql.Date parseDate(String source)
+  public LocalDate parseDate(String source)
     throws DateTimeParseException
   {
     source = StringUtil.trimToNull(source);
@@ -537,18 +536,18 @@ public class WbDateFormatter
     {
       if (source.equalsIgnoreCase(infinityLiterals.getPositiveInfinity()))
       {
-        return new java.sql.Date(DATE_POSITIVE_INFINITY);
+        return LocalDate.MAX;
       }
       if (source.equalsIgnoreCase(infinityLiterals.getNegativeInfinity()))
       {
-        return new java.sql.Date(DATE_NEGATIVE_INFINITY);
+        return LocalDate.MIN;
       }
     }
 
     try
     {
       LocalDate ld = LocalDate.parse(source, formatter);
-      return java.sql.Date.valueOf(ld);
+      return ld;
     }
     catch (DateTimeParseException ex)
     {
@@ -557,11 +556,11 @@ public class WbDateFormatter
     }
   }
 
-  public java.sql.Timestamp parseTimestampQuietly(String source)
+  public LocalDateTime parseLocalDateTimeQuietly(String source)
   {
     try
     {
-      return parseTimestamp(source);
+      return parseLocalDateTime(source);
     }
     catch (DateTimeParseException ex)
     {
@@ -586,12 +585,12 @@ public class WbDateFormatter
     {
       if (source.trim().equalsIgnoreCase(infinityLiterals.getPositiveInfinity()))
       {
-        return java.time.ZonedDateTime.of(LocalDateTime.MAX, ZoneId.ofOffset("", ZoneOffset.UTC));
+        return java.time.ZonedDateTime.of(LocalDateTime.MAX, ZoneId.of(ZoneOffset.UTC.getId()));
       }
 
       if (source.trim().equalsIgnoreCase(infinityLiterals.getNegativeInfinity()))
       {
-        return java.time.ZonedDateTime.of(LocalDateTime.MIN, ZoneId.ofOffset("", ZoneOffset.UTC));
+        return java.time.ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of(ZoneOffset.UTC.getId()));
       }
     }
 
@@ -627,33 +626,41 @@ public class WbDateFormatter
   public java.sql.Timestamp parseTimestamp(String source)
     throws DateTimeParseException
   {
+    return java.sql.Timestamp.valueOf(parseLocalDateTime(source));
+  }
+
+  public java.time.LocalDateTime parseLocalDateTime(String source)
+    throws DateTimeParseException
+  {
     if (source == null) return null;
 
     if (!containsTimeFields)
     {
       // a format mask that does not include time values cannot be parsed using LocalDateTime
       // it must be done through LocalDate
-      java.sql.Date dt = parseDate(source);
-      return new java.sql.Timestamp(dt.getTime());
+      java.time.LocalDate dt = parseDate(source);
+      return java.time.LocalDateTime.of(dt, LocalTime.of(0, 0));
     }
 
     if (infinityLiterals != null)
     {
       if (source.trim().equalsIgnoreCase(infinityLiterals.getPositiveInfinity()))
       {
-        return new java.sql.Timestamp(DATE_POSITIVE_INFINITY);
+        java.sql.Timestamp sql = new java.sql.Timestamp(DATE_POSITIVE_INFINITY);
+        return sql.toLocalDateTime();
       }
 
       if (source.trim().equalsIgnoreCase(infinityLiterals.getNegativeInfinity()))
       {
-        return new java.sql.Timestamp(DATE_NEGATIVE_INFINITY);
+        java.sql.Timestamp sql = new java.sql.Timestamp(DATE_NEGATIVE_INFINITY);
+        return sql.toLocalDateTime();
       }
     }
 
     try
     {
       LocalDateTime ldt = LocalDateTime.parse(source, formatter);
-      return java.sql.Timestamp.valueOf(ldt);
+      return ldt;
     }
     catch (DateTimeParseException ex)
     {

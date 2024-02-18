@@ -4449,33 +4449,32 @@ public class WbImportTest
   public void testPKConstant()
     throws Exception
   {
-    WbConnection hsql = util.getHSQLConnection("pk_constant");
+    WbConnection con = util.getConnection("pk_constant");
     WbImport cmd = new WbImport();
     try
     {
-      TestUtil.executeScript(hsql,
+      TestUtil.executeScript(con,
           "drop table if exists booking cascade; \n" +
           "create table booking \n" +
           "( \n" +
           "  cust_id            integer not null, \n" +
           "  reservation_date   date not null, \n" +
           "  start_time         time not null, \n" +
-          "  end_time           time \n" +
+          "  end_time           time, \n" +
+          "  primary key (cust_id, reservation_date, start_time) \n" +
           "); \n" +
-          " \n" +
-          "alter table booking \n" +
-          "  add constraint hours_pkey  \n" +
-          "  primary key (cust_id, reservation_date, start_time);\n" +
           "commit;", true);
 
       String sql =
-        "insert into booking (cust_id,reservation_date,start_time,end_time) values (1, DATE '2015-01-09',TIME '18:30:00', TIME '19:00:00'); \n" +
-        "insert into booking (cust_id,reservation_date,start_time,end_time) values (1, DATE '2015-01-20',TIME '18:30:00', TIME '19:00:00'); \n" +
-        "insert into booking (cust_id,reservation_date,start_time,end_time) values (2, DATE '2015-01-09',TIME '18:30:00', TIME '19:00:00'); \n" +
-        "insert into booking (cust_id,reservation_date,start_time,end_time) values (2, DATE '2015-01-26',TIME '18:30:00', TIME '19:00:00'); \n" +
+        "insert into booking (cust_id,reservation_date,start_time,end_time) \n" +
+        "values \n" +
+        "(1, DATE '2015-01-09',TIME '18:30:00', TIME '19:00:00'), \n" +
+        "(1, DATE '2015-01-20',TIME '18:30:00', TIME '19:00:00'), \n" +
+        "(2, DATE '2015-01-09',TIME '18:30:00', TIME '19:00:00'), \n" +
+        "(2, DATE '2015-01-26',TIME '18:30:00', TIME '19:00:00'); \n" +
         "commit;";
 
-      TestUtil.executeScript(hsql, sql);
+      TestUtil.executeScript(con, sql);
 
       File c1 = new File(util.getBaseDir(), "c1.txt");
       TestUtil.writeFile(c1,
@@ -4484,7 +4483,7 @@ public class WbImportTest
         "2015-01-20,18:30,19:00\n" +
         "2015-01-21,18:30,19:00\n");
 
-      cmd.setConnection(hsql);
+      cmd.setConnection(con);
 
       StatementRunnerResult result = cmd.execute(
           "wbimport -header=true -continueonerror=false -table=booking -file='" + c1.getAbsolutePath() + "' -type=text " +
@@ -4495,12 +4494,12 @@ public class WbImportTest
           "-constantValues='cust_id=1'");
       String msg = result.getMessages().toString();
       assertTrue(msg, result.isSuccess());
-      int count = TestUtil.getNumberValue(hsql, "select count(*) from booking where cust_id = 1");
+      int count = TestUtil.getNumberValue(con, "select count(*) from booking where cust_id = 1");
       assertEquals(3, count);
     }
     finally
     {
-      hsql.disconnect();
+      con.disconnect();
     }
   }
 

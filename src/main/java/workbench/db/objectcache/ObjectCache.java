@@ -671,7 +671,7 @@ class ObjectCache
       try
       {
         LogMgr.logDebug(new CallerInfo(){}, "Table not in cache, retrieving columns for " + toSearch.getTableExpression());
-        cols = dbConnection.getMetadata().getTableColumns(toSearch);
+        cols = dbConnection.getMetadata().getTableColumns(toSearch, true);
       }
       catch (Throwable e)
       {

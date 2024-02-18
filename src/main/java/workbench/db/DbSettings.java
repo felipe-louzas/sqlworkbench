@@ -2786,6 +2786,17 @@ public class DbSettings
     return getBoolProperty("use.specific.rowdatareader", true);
   }
 
+  public String getCastToString(String dbmsType)
+  {
+    String globalCast = Settings.getInstance().getProperty("workbench.db.cast.as.string", null);
+    String cast = getProperty("cast.as.string", globalCast);
+    if (StringUtil.isNotBlank(dbmsType))
+    {
+      cast = getProperty("cast." + dbmsType.trim().toLowerCase() + ".as.string", cast);
+    }
+    return cast;
+  }
+
   public boolean showSuccessMessageForVerb(String verb)
   {
     if (verb == null) return false;

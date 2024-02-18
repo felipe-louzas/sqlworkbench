@@ -131,7 +131,7 @@ public class ColumnExpression
   }
 
   @Override
-  public boolean evaluate(Map columnValues)
+  public boolean evaluate(Map<String, Object> columnValues)
   {
     if ("*".equals(this.columnName))
     {

@@ -33,8 +33,10 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
+import workbench.util.FileDialogUtil;
 import workbench.util.FileUtil;
 import workbench.util.FileVersioner;
+import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.ZipUtil;
 
@@ -46,11 +48,11 @@ import workbench.util.ZipUtil;
 public class DirectoryWorkspacePersistence
   extends WorkspacePersistence
 {
-  private final File workspaceDir;
+  private final WbFile workspaceDir;
 
   public DirectoryWorkspacePersistence(String directoryName)
   {
-    this.workspaceDir = new File(directoryName);
+    this.workspaceDir = new WbFile(directoryName);
   }
 
   @Override
@@ -141,6 +143,13 @@ public class DirectoryWorkspacePersistence
     else
     {
       backupDir = new File(backupDir, "workspaces");
+      // Make the backup directory relative to the "base workspace" backup directory
+      // so that the structure of the directories is reflected in the backup directory structure
+      String relativeDir = FileDialogUtil.removeBaseDir(workspaceDir, Settings.getInstance().getWorkspaceDir());
+      if (StringUtil.isNotBlank(relativeDir))
+      {
+        backupDir = new File(backupDir, relativeDir);
+      }
     }
     return backupDir;
   }

@@ -22,6 +22,7 @@
 package workbench.db.importer;
 
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class ConstantColumnValuesTest
     assertEquals(7, values.getColumnCount());
     assertEquals(42, values.getValue(0));
     assertEquals("hello, world", values.getValue(1));
-    assertEquals(true, values.getValue(2) instanceof java.sql.Timestamp);
+    assertEquals(true, values.getValue(2) instanceof LocalDateTime);
     assertEquals("bla", values.getValue(3));
     assertEquals("'bla'", values.getValue(4));
     assertEquals("current_timestamp", values.getFunctionLiteral(5));

@@ -21,13 +21,9 @@
  */
 package workbench.db.exporter;
 
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import workbench.TestUtil;
 import workbench.WbTestCase;
@@ -35,7 +31,6 @@ import workbench.WbTestCase;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowData;
 
-import workbench.util.StringUtil;
 import workbench.util.ValueConverter;
 
 import org.junit.Test;
@@ -80,9 +75,9 @@ public class XmlRowDataConverterTest
     data.setValue(0, "char_column_data");
     data.setValue(1, 42);
     ValueConverter valueConverter = new ValueConverter("yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss");
-    Date d1 = (Date)valueConverter.convertValue("2008-07-23", Types.DATE);
+    LocalDate d1 = (LocalDate)valueConverter.convertValue("2008-07-23", Types.DATE);
     data.setValue(2, d1);
-    Timestamp ts1 = (Timestamp)valueConverter.convertValue("2008-07-23 13:42:01", Types.TIMESTAMP);
+    LocalDateTime ts1 = (LocalDateTime)valueConverter.convertValue("2008-07-23 13:42:01", Types.TIMESTAMP);
     data.setValue(3, ts1);
 
     StringBuilder converted = converter.convertRowData(data, 0);
@@ -98,22 +93,8 @@ public class XmlRowDataConverterTest
     colValue = TestUtil.getXPathValue(xml, "/row-data[@row-num='1']/column-data[@index='2']/text()");
     assertEquals("2008-07-23", colValue);
 
-    colValue = TestUtil.getXPathValue(xml, "/row-data[@row-num='1']/column-data[@index='2']/@longValue");
-    long l = Long.parseLong(colValue);
-    Date d2 = new Date(l);
-    assertEquals(d1, d2);
-
     colValue = TestUtil.getXPathValue(xml, "/row-data[@row-num='1']/column-data[@index='3']/text()");
     assertEquals("2008-07-23 13:42:01", colValue);
-
-    colValue = TestUtil.getXPathValue(xml, "/row-data[@row-num='1']/column-data[@index='3']/@longValue");
-    l = Long.parseLong(colValue);
-
-    LocalDateTime ldt = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern(StringUtil.ISO_TIMESTAMP_FORMAT);
-    
-    assertEquals("2008-07-23 13:42:01.000", dtf.format(ldt));
-    assertEquals(ts1.toLocalDateTime(), ldt);
 
     String head = converter.getStart().toString();
     head += converter.getEnd(1).toString();

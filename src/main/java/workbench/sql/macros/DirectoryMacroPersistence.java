@@ -36,6 +36,7 @@ import workbench.resource.Settings;
 import workbench.resource.StoreableKeyStroke;
 
 import workbench.util.CollectionUtil;
+import workbench.util.FileDialogUtil;
 import workbench.util.FileUtil;
 import workbench.util.FileVersioner;
 import workbench.util.StringUtil;
@@ -439,14 +440,16 @@ public class DirectoryMacroPersistence
   {
     int maxVersions = Settings.getInstance().getMaxBackupFiles();
     File dir = Settings.getInstance().getBackupDir();
-    File backupDir = null;
+    File backupDir;
     if (dir == null)
     {
       backupDir = sourceDir.getParentFile();
     }
     else
     {
-      backupDir = new File(dir, "macros");
+      File baseBackupDir = new File(dir, "macros");
+      String relativeDir = FileDialogUtil.removeBaseDir(new WbFile(sourceDir), Settings.getInstance().getMacroBaseDirectory());
+      backupDir = new File(baseBackupDir, relativeDir);
     }
     char sep = Settings.getInstance().getFileVersionDelimiter();
 

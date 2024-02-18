@@ -28,6 +28,7 @@ import java.util.TreeMap;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
+import workbench.resource.ResourceMgr;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.DBID;
@@ -42,6 +43,7 @@ import workbench.db.mssql.SqlServerUtil;
 
 import workbench.util.CaseInsensitiveComparator;
 import workbench.util.CollectionUtil;
+import workbench.util.MessageBuffer;
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
@@ -63,12 +65,18 @@ public class ImportDMLStatementBuilder
 
   private final Map<String, String> columnExpressions = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
   private OverrideIdentityType overrideIdentity;
+  private MessageBuffer messages;
 
   ImportDMLStatementBuilder(WbConnection connection, TableIdentifier target, List<ColumnIdentifier> columns, ColumnFilter filter, boolean adjustColumnNameCase)
   {
     dbConn = connection;
     targetTable = target;
     targetColumns = createColumnList(columns, filter, adjustColumnNameCase);
+  }
+
+  public void setMessageBuffer(MessageBuffer buffer)
+  {
+    messages = buffer;
   }
 
   public void setOverrideStrategy(OverrideIdentityType strategy)
@@ -216,7 +224,12 @@ public class ImportDMLStatementBuilder
       boolean hasPK = hasRealPK();
       if (!hasPK)
       {
-        LogMgr.logInfo(new CallerInfo(){}, "Cannot use upsert without a primary key.");
+        LogMgr.logInfo(new CallerInfo(){}, "Cannot use upsert on table " + this.targetTable.getTableExpression() + " without a primary key.");
+        if (messages != null)
+        {
+          messages.append(ResourceMgr.getFormattedString("ErrImportModeNoPK", ImportMode.upsert.toString()));
+          messages.appendNewLine();
+        }
       }
       return hasPK;
     }
@@ -246,6 +259,11 @@ public class ImportDMLStatementBuilder
           if (!hasPK)
           {
             LogMgr.logInfo(new CallerInfo(){}, "Cannot use insertIgnore without a primary key.");
+            if (messages != null)
+            {
+              messages.append(ResourceMgr.getFormattedString("ErrImportModeNoPK", ImportMode.insertIgnore.toString()));
+              messages.appendNewLine();
+            }
           }
           return hasPK;
         }
@@ -814,7 +832,7 @@ public class ImportDMLStatementBuilder
     return false;
   }
 
-  private String createMySQLUpsert(ConstantColumnValues columnConstants, String insertSqlStart, boolean useIgnore)
+  protected String createMySQLUpsert(ConstantColumnValues columnConstants, String insertSqlStart, boolean useIgnore)
   {
     String insert = createInsertStatement(columnConstants, insertSqlStart);
     QuoteHandler quoter = getQuoteHandler();
@@ -830,12 +848,16 @@ public class ImportDMLStatementBuilder
     }
     else
     {
-      for (int i=0; i < targetColumns.size(); i++)
+      int colIndex = 0;
+      for (ColumnIdentifier col : targetColumns)
       {
-        if (i > 0) insert += ",\n  ";
-        String colname = targetColumns.get(i).getDisplayName();
-        colname = quoter.quoteObjectname(colname);
-        insert += colname + " = VALUES(" + colname + ")";
+        if (!col.isPkColumn())
+        {
+          if (colIndex > 0) insert += ",\n  ";
+          String colname = quoter.quoteObjectname(col.getDisplayName());
+          insert += colname + " = VALUES(" + colname + ")";
+          colIndex ++;
+        }
       }
     }
     return insert;

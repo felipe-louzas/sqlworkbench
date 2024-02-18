@@ -37,8 +37,8 @@ import workbench.db.ColumnIdentifier;
  */
 public class ColumnData
 {
-  final private Object data;
-  final private ColumnIdentifier column;
+  private Object data;
+  private final ColumnIdentifier column;
 
   /**
    * Creates a new instance of ColumnData
@@ -52,6 +52,11 @@ public class ColumnData
     column = colid;
   }
 
+  public void setValue(Object value)
+  {
+    this.data = value;
+  }
+  
   public Object getValue()
   {
     return data;

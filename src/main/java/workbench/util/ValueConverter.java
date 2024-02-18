@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.Temporal;
@@ -45,6 +46,7 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.WbConnection;
+import workbench.db.exporter.InfinityLiterals;
 
 import workbench.storage.reader.TimestampTZHandler;
 
@@ -103,6 +105,8 @@ public class ValueConverter
 
   private String defaultDateFormat;
   private String defaultTimestampFormat;
+  private String defaultTimeFormat;
+
   private boolean timestampTZFormatSet = false;
   private char decimalCharacter = '.';
   private String decimalGroupingChar;
@@ -207,6 +211,11 @@ public class ValueConverter
   public void setCheckBuiltInFormats(boolean flag)
   {
     this.checkBuiltInFormats = flag;
+  }
+
+  public void setDefaultTimeFormat(String format)
+  {
+    this.defaultTimeFormat = StringUtil.trimToNull(format);
   }
 
   public final void setDefaultDateFormat(String dtFormat)
@@ -649,15 +658,26 @@ public class ValueConverter
     return this.defaultTimestampFormat;
   }
 
-  public java.sql.Time parseTime(String time)
+  public LocalTime parseTime(String time)
     throws ParseException
   {
     if (isCurrentTime(time))
     {
-      return java.sql.Time.valueOf(LocalTime.now());
+      return LocalTime.now();
     }
 
-    java.sql.Time parsed = null;
+    LocalTime parsed = null;
+    if (defaultTimeFormat != null)
+    {
+      formatter.applyPattern(defaultTimeFormat);
+      parsed = this.formatter.parseTime(time);
+    }
+
+    if (parsed != null)
+    {
+      return parsed;
+    }
+
     for (String timeFormat : timeFormats)
     {
       try
@@ -692,6 +712,12 @@ public class ValueConverter
     if (isCurrentDate(timestampInput))
     {
       return ZonedDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT, ZoneId.systemDefault());
+    }
+
+    ZonedDateTime zdt = getInfinity(timestampInput);
+    if (zdt != null)
+    {
+      return zdt;
     }
 
     Temporal result = null;
@@ -738,21 +764,26 @@ public class ValueConverter
     return result;
   }
 
-  public java.sql.Timestamp parseTimestamp(String timestampInput)
+  public LocalDateTime parseTimestamp(String timestampInput)
     throws ParseException, NumberFormatException
   {
     if (isCurrentTimestamp(timestampInput))
     {
-      java.sql.Timestamp ts = new java.sql.Timestamp(System.currentTimeMillis());
-      return ts;
+      return LocalDateTime.now();
     }
 
     if (isCurrentDate(timestampInput))
     {
-      return java.sql.Timestamp.valueOf(LocalDateTime.now());
+      return LocalDateTime.now();
     }
 
-    java.sql.Timestamp result = null;
+    ZonedDateTime zdt = getInfinity(timestampInput);
+    if (zdt != null)
+    {
+      return zdt.toLocalDateTime();
+    }
+
+    LocalDateTime result = null;
     timestampFormatter.setIllegalDateIsNull(illegalDateIsNull);
 
     if (this.defaultTimestampFormat != null)
@@ -762,11 +793,11 @@ public class ValueConverter
         if (FORMAT_MILLIS.equalsIgnoreCase(defaultTimestampFormat))
         {
           long value = Long.parseLong(timestampInput);
-          result = new java.sql.Timestamp(value);
+          result = new java.sql.Timestamp(value).toLocalDateTime();
         }
         else
         {
-          result = this.timestampFormatter.parseTimestamp(timestampInput);
+          result = this.timestampFormatter.parseLocalDateTime(timestampInput);
         }
       }
       catch (Exception e)
@@ -789,7 +820,7 @@ public class ValueConverter
         try
         {
           this.formatter.applyPattern(format, true);
-          result = this.formatter.parseTimestamp(timestampInput);
+          result = this.formatter.parseLocalDateTime(timestampInput);
           LogMgr.logDebug(new CallerInfo(){}, "Succeeded parsing '" + timestampInput + "' using the format: " + format);
           if (useFirstMatching)
           {
@@ -812,20 +843,20 @@ public class ValueConverter
     throw new ParseException("Could not convert [" + timestampInput + "] to a timestamp value!", 0);
   }
 
-  public java.sql.Date parseDate(String dateInput)
+  public LocalDate parseDate(String dateInput)
     throws ParseException
   {
     if (isCurrentDate(dateInput))
     {
-      return java.sql.Date.valueOf(LocalDate.now());
+      return LocalDate.now();
     }
 
     if (isCurrentTimestamp(dateInput))
     {
-      return new java.sql.Date(System.currentTimeMillis());
+      return LocalDate.now();
     }
 
-    java.sql.Date result = null;
+    LocalDate result = null;
 
     final CallerInfo ci = new CallerInfo(){};
     dateFormatter.setIllegalDateIsNull(illegalDateIsNull);
@@ -837,7 +868,7 @@ public class ValueConverter
         if (FORMAT_MILLIS.equalsIgnoreCase(defaultTimestampFormat))
         {
           long value = Long.parseLong(dateInput);
-          result = new java.sql.Date(value);
+          result = new java.sql.Date(value).toLocalDate();
         }
         else
         {
@@ -894,10 +925,10 @@ public class ValueConverter
         for (String format : timestampFormats)
         {
           this.formatter.applyPattern(format, false);
-          java.sql.Timestamp ts = this.formatter.parseTimestampQuietly(dateInput);
-          if (ts != null)
+          LocalDateTime ldt = this.formatter.parseLocalDateTimeQuietly(dateInput);
+          if (ldt != null)
           {
-            result = new java.sql.Date(ts.getTime());
+            result = ldt.toLocalDate();
             if (useFirstMatching)
             {
               this.defaultDateFormat = format;
@@ -1014,4 +1045,17 @@ public class ValueConverter
     return bool;
   }
 
+  private ZonedDateTime getInfinity(String input)
+  {
+    if (InfinityLiterals.PG_POSITIVE_LITERAL.equals(input))
+    {
+      return java.time.ZonedDateTime.of(LocalDateTime.MAX, ZoneId.ofOffset("", ZoneOffset.UTC));
+    }
+
+    if (InfinityLiterals.PG_NEGATIVE_LITERAL.equals(input))
+    {
+      return java.time.ZonedDateTime.of(LocalDateTime.MIN, ZoneId.ofOffset("", ZoneOffset.UTC));
+    }
+    return null;
+  }
 }
