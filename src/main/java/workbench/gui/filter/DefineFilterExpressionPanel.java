@@ -113,13 +113,13 @@ public class DefineFilterExpressionPanel
 
     this.setLayout(new BorderLayout(0,2));
 
-    Insets ins = new Insets(0,0,0,0);
+    Insets emptyInsets = new Insets(0,0,0,0);
     orButton = new JRadioButton(ResourceMgr.getString("LblFilterOrOption"));
     orButton.setToolTipText(ResourceMgr.getDescription("LblFilterOrOption"));
-    orButton.setMargin(ins);
+    orButton.setMargin(emptyInsets);
     andButton = new JRadioButton(ResourceMgr.getString("LblFilterAndOption"));
     andButton.setToolTipText(ResourceMgr.getDescription("LblFilterAndOption"));
-    andButton.setMargin(ins);
+    andButton.setMargin(emptyInsets);
     ButtonGroup g = new ButtonGroup();
     g.add(orButton);
     g.add(andButton);
@@ -127,7 +127,6 @@ public class DefineFilterExpressionPanel
 
     JPanel radioPanel = new JPanel();
     radioPanel.setLayout(new FlowLayout(FlowLayout.RIGHT,0,0));
-    radioPanel.setBorder(BorderFactory.createEtchedBorder());
     radioPanel.add(andButton);
     radioPanel.add(orButton);
 
@@ -141,19 +140,20 @@ public class DefineFilterExpressionPanel
     c.weightx = 0;
 
     WbToolbar bar = new WbToolbar();
-    bar.setBorder(BorderFactory.createEtchedBorder());
-    saveButton.setIcon(IconMgr.getInstance().getLabelIcon(IconMgr.IMG_SAVE));
-    saveButton.setMargin(ins);
-    saveButton.setToolTipText(ResourceMgr.getDescription("SaveFilter"));
+    bar.setBorder(WbSwingUtilities.createLineBorder(p));
 
     loadButton.setIcon(IconMgr.getInstance().getLabelIcon("Open"));
-    loadButton.setMargin(new Insets(0,0,0,0));
+    loadButton.setMargin(emptyInsets);
     loadButton.setToolTipText(ResourceMgr.getDescription("MnuTxtLoadFilter"));
-    loadButton.setMargin(ins);
+
+    saveButton.setIcon(IconMgr.getInstance().getLabelIcon(IconMgr.IMG_SAVE));
+    saveButton.setMargin(new Insets(0,4,0,4));
+    saveButton.setToolTipText(ResourceMgr.getDescription("SaveFilter"));
 
     //generateSQL.setText(ResourceMgr.getString("LblFilterGenSQL"));
     generateSQL.setIcon(IconMgr.getInstance().getLabelIcon("gen-sql"));
     generateSQL.setToolTipText(ResourceMgr.getDescription("LblFilterGenSQL"));
+    generateSQL.setMargin(new Insets(0,4,0,0));
 
     loadButton.addActionListener(this);
     saveButton.addActionListener(this);
@@ -374,10 +374,11 @@ public class DefineFilterExpressionPanel
       EditorPanel editor = EditorPanel.createSqlEditor();
       editor.setText(sql);
       Dialog dlg = (Dialog)SwingUtilities.getWindowAncestor(this);
-      ValidatingDialog d = new ValidatingDialog(dlg, "SQL", editor, false);
+      ValidatingDialog d = new ValidatingDialog(dlg, "SQL", editor, new String[] { ResourceMgr.getString("LblClose") }, false);
+      d.setCancelOption(0);
       if (!Settings.getInstance().restoreWindowSize(d, "workbench.filterexpression.sql.dialog"))
       {
-        d.setSize(450, 300);
+        d.setSize(500, 350);
       }
       WbSwingUtilities.center(d,dlg);
       d.setVisible(true);
@@ -551,39 +552,30 @@ public class DefineFilterExpressionPanel
     if (info == null) return;
 
     ValueProvider data = new DataStoreValueProvider(ds);
-    DefineFilterExpressionPanel panel = new DefineFilterExpressionPanel(data, filterMgr, ds.getOriginalConnection());
-    int col = source.getSelectedColumn();
+    WbSwingUtilities.invoke(() ->
+    {
+      DefineFilterExpressionPanel panel = new DefineFilterExpressionPanel(data, filterMgr, ds.getOriginalConnection());
+      int col = source.getSelectedColumn();
 
-    FilterExpression lastFilter = source.getLastFilter();
-    if (lastFilter != null)
-    {
-      panel.setFilter(lastFilter);
-      panel.doLayout();
-    }
-    else if (col > -1)
-    {
-      String colname = info.getColumnName(col);
-      panel.selectColumn(colname);
-    }
-    String title = ResourceMgr.getString("MsgFilterWindowTitle");
-    boolean showDialog = true;
-    while (showDialog)
-    {
-      boolean result = ValidatingDialog.showConfirmDialog(SwingUtilities.getWindowAncestor(source), panel, title);
-      if (result)
+      FilterExpression lastFilter = source.getLastFilter();
+      if (lastFilter != null)
       {
-        if (panel.validateInput())
-        {
-          FilterExpression filter = panel.getExpression();
-          source.applyFilter(filter);
-          showDialog = false;
-        }
+        panel.setFilter(lastFilter);
+        panel.doLayout();
       }
-      else
+      else if (col > -1)
       {
-        showDialog = false;
+        String colname = info.getColumnName(col);
+        panel.selectColumn(colname);
       }
-    }
+      String title = ResourceMgr.getString("MsgFilterWindowTitle");
+      boolean ok = ValidatingDialog.showConfirmDialog(SwingUtilities.getWindowAncestor(source), panel, title);
+      if (ok)
+      {
+        FilterExpression filter = panel.getExpression();
+        source.applyFilter(filter);
+      }
+    });
   }
 
   public void stateChanged(javax.swing.event.ChangeEvent changeEvent)
@@ -610,8 +602,8 @@ public class DefineFilterExpressionPanel
 
 class PanelEntry
 {
-  JPanel container;
-  ColumnExpressionPanel expressionPanel;
+  final JPanel container;
+  final ColumnExpressionPanel expressionPanel;
   PanelEntry(JPanel p, ColumnExpressionPanel ep)
   {
     container = p;

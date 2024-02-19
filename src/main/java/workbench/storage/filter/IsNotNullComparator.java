@@ -23,8 +23,6 @@
  */
 package workbench.storage.filter;
 
-import workbench.resource.ResourceMgr;
-
 /**
  * @author Thomas Kellerer
  */
@@ -41,13 +39,13 @@ public class IsNotNullComparator
   @Override
   public String getOperator()
   {
-    return "not null";
+    return "IS NOT NULL";
   }
 
   @Override
   public String getUserDisplay()
   {
-    return ResourceMgr.getString("TxtOpNotNull");
+    return getOperator();
   }
 
   @Override

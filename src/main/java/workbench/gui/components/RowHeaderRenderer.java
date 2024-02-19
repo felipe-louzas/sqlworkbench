@@ -31,6 +31,7 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -55,18 +56,20 @@ public class RowHeaderRenderer
   private int colWidth = -1;
   private final int rightMargin;
   private final Insets insets = ToolTipRenderer.getDefaultInsets();
+  protected boolean useInsetsFromLnF = false;
 
   public RowHeaderRenderer(TableRowHeader rowHeader, JTable client)
   {
     super();
     this.table = client;
     this.rowHeader = rowHeader;
+    useInsetsFromLnF = UIManager.getDefaults().getInsets("Table.cellMargins") != null;
 
     JTableHeader header = table.getTableHeader();
     setFont(header.getFont());
     setOpaque(true);
     setHorizontalAlignment(SwingConstants.RIGHT);
-    setVerticalAlignment(SwingConstants.TOP);
+    setVerticalAlignment(SwingConstants.CENTER);
     setVerticalTextPosition(SwingConstants.BOTTOM);
     setForeground(header.getForeground());
     setBackground(header.getBackground());
@@ -90,6 +93,7 @@ public class RowHeaderRenderer
   @Override
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
   {
+    adjustInsets(table.getFont());
     this.setText((String)value);
     return this;
   }
@@ -145,6 +149,19 @@ public class RowHeaderRenderer
     catch (Exception e)
     {
       e.printStackTrace();
+    }
+  }
+
+  private void adjustInsets(Font f)
+  {
+    if (useInsetsFromLnF || f == null) return;
+    FontMetrics fm = getFontMetrics(f);
+    if (fm == null) return;
+
+    int top = fm.getLeading() + 1;
+    if (top != insets.top)
+    {
+      insets.set(top, insets.left, insets.bottom, insets.right);
     }
   }
 

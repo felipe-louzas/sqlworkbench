@@ -46,7 +46,7 @@ public interface ConnectionPropertiesReader
 
   public static class Factory
   {
-    public static ConnectionPropertiesReader getReader(WbConnection conn)
+    public static synchronized ConnectionPropertiesReader getReader(WbConnection conn)
     {
       if (conn == null) return null;
       DBID db = DBID.fromConnection(conn);

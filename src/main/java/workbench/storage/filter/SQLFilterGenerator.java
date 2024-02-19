@@ -93,7 +93,7 @@ public class SQLFilterGenerator
   {
     if (column == null || comp == null) return null;
 
-    String template = getSQLTemplate(comp, ignoreCase);
+    String template = getSQLTemplate(comp, comp.supportsIgnoreCase() ? ignoreCase : false);
     if (StringUtil.isBlank(template))
     {
       return null;
@@ -109,8 +109,13 @@ public class SQLFilterGenerator
   private String getSQLTemplate(ColumnComparator comp, boolean ignoreCase)
   {
     String dbKey = "filterexpressions.template." + comp.getClass().getSimpleName();
+
     String baseName = "workbench.db." + dbKey;
-    String defaultValue = Settings.getInstance().getProperty(baseName , null);
+    if (ignoreCase)
+    {
+      baseName += ".ignoreCase";
+    }
+    String defaultValue = Settings.getInstance().getProperty(baseName, null);
 
     String template = dbSettings.getProperty(dbKey, defaultValue);
     if (ignoreCase)

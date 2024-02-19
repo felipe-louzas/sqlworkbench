@@ -25,6 +25,7 @@ package workbench.storage.filter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import workbench.resource.ResourceMgr;
 
 /**
@@ -109,14 +110,14 @@ public class RegExComparator
   @Override
   public boolean validateInput(Object value)
   {
-    if (!(value instanceof String))
+    if (value == null)
     {
       return false;
     }
 
     try
     {
-      Pattern.compile((String) value);
+      Pattern.compile(value.toString());
       return true;
     }
     catch (Exception e)

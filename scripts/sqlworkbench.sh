@@ -52,6 +52,9 @@ fi
 # For MacOS,
 #   OPTS="$OPTS -Dapple.awt.brushMetalLook=true"
 # might be needed to get a more "native" look and feel
-
+#
+# If font rendering is bad, the following option might fix that:
+#   OPTS="$OPTS -Dawt.useSystemAAFontSettings=on"
+#
 exec "$JAVACMD"  $OPTS \
                 -Dvisualvm.display.name=SQLWorkbench/J -cp "$cp" workbench.WbStarter "$@"

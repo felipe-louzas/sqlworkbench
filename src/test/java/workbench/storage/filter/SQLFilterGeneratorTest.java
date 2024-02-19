@@ -102,6 +102,26 @@ public class SQLFilterGeneratorTest
   }
 
   @Test
+  public void testOracleTemplates()
+  {
+    SqlLiteralFormatter formatter = new SqlLiteralFormatter(DBID.Oracle.getId());
+    DbSettings dbs = new DbSettings(DBID.Oracle.getId());
+
+    ContainsComparator contains = new ContainsComparator();
+    GreaterThanComparator gt = new GreaterThanComparator();
+
+    ColumnIdentifier name = new ColumnIdentifier("first_name", Types.VARCHAR);
+    ColumnIdentifier nr = new ColumnIdentifier("nr", Types.INTEGER);
+
+    SQLFilterGenerator gen = new SQLFilterGenerator(formatter, dbs);
+    String sql = gen.getSQLCondition(contains, name, "arthur", true);
+    assertEquals("lower(first_name) LIKE lower('%arthur%')", sql);
+
+    sql = gen.getSQLCondition(gt, nr, 42, true);
+    assertEquals("nr > 42", sql);
+  }
+
+  @Test
   public void testGeneration()
   {
     ContainsComparator contains = new ContainsComparator();

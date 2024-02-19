@@ -27,6 +27,7 @@ import workbench.storage.ColumnData;
 import workbench.storage.SqlLiteralFormatter;
 
 import workbench.util.SqlUtil;
+import workbench.util.StringUtil;
 
 /**
  * @author Thomas Kellerer
@@ -98,7 +99,7 @@ public class ContainsComparator
   @Override
   public boolean validateInput(Object value)
   {
-    return true;
+    return value != null && StringUtil.isNotEmpty(value.toString());
   }
 
   @Override

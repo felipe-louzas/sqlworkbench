@@ -61,7 +61,7 @@ public class LnFHelper
   public static final String MENU_FONT_KEY = "MenuItem.font";
   public static final String LABEL_FONT_KEY = "Label.font";
 
-  private LnFManager lnfManager = new LnFManager();
+  private final LnFManager lnfManager = new LnFManager();
 
   // Font properties that are automatically scaled by Java
   private final Set<String> noScale = CollectionUtil.treeSet(

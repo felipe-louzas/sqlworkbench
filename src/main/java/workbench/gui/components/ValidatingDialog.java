@@ -52,6 +52,7 @@ import workbench.resource.ResourceMgr;
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.actions.EscAction;
 import workbench.gui.actions.WbAction;
+import workbench.gui.editor.JEditTextArea;
 
 /**
  * @author  Thomas Kellerer
@@ -184,6 +185,11 @@ public class ValidatingDialog
     root.setDefaultButton(optionButtons[0]);
 
     esc = new EscAction(this, this);
+    if (editor instanceof JEditTextArea)
+    {
+      JEditTextArea edit = (JEditTextArea)editor;
+      edit.addKeyBinding(esc);
+    }
 
     JPanel content = new JPanel();
     content.setLayout(new BorderLayout());
