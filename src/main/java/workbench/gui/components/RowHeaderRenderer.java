@@ -36,6 +36,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 
 import workbench.gui.renderer.ToolTipRenderer;
@@ -43,7 +45,7 @@ import workbench.gui.renderer.ToolTipRenderer;
 import workbench.util.NumberStringCache;
 
 /**
- * A TableRowHeader to show row numbers in a JTable
+ * A TableCellRenderer to show row numbers in a JTable.
  *
  * @author Thomas Kellerer
  */
@@ -55,21 +57,31 @@ public class RowHeaderRenderer
   private final TableRowHeader rowHeader;
   private int colWidth = -1;
   private final int rightMargin;
-  private final Insets insets = ToolTipRenderer.getDefaultInsets();
-  protected boolean useInsetsFromLnF = false;
+  private final Insets insets;
+  protected final boolean adjustInsets;
 
   public RowHeaderRenderer(TableRowHeader rowHeader, JTable client)
   {
     super();
     this.table = client;
     this.rowHeader = rowHeader;
-    useInsetsFromLnF = UIManager.getDefaults().getInsets("Table.cellMargins") != null;
+    Insets lafInsets = UIManager.getDefaults().getInsets("Table.cellMargins");
+    if (lafInsets == null)
+    {
+      adjustInsets = true;
+      insets = ToolTipRenderer.getDefaultInsets();
+    }
+    else
+    {
+      adjustInsets = false;
+      insets = lafInsets;
+    }
 
     JTableHeader header = table.getTableHeader();
     setFont(header.getFont());
     setOpaque(true);
     setHorizontalAlignment(SwingConstants.RIGHT);
-    setVerticalAlignment(SwingConstants.CENTER);
+    setVerticalAlignment(SwingConstants.TOP);
     setVerticalTextPosition(SwingConstants.BOTTOM);
     setForeground(header.getForeground());
     setBackground(header.getBackground());
@@ -148,17 +160,17 @@ public class RowHeaderRenderer
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LogMgr.logError(new CallerInfo(){}, "Could not calculate row header width", e);
     }
   }
 
   private void adjustInsets(Font f)
   {
-    if (useInsetsFromLnF || f == null) return;
+    if (!adjustInsets || f == null) return;
     FontMetrics fm = getFontMetrics(f);
     if (fm == null) return;
 
-    int top = fm.getLeading() + 1;
+    int top = fm.getLeading();
     if (top != insets.top)
     {
       insets.set(top, insets.left, insets.bottom, insets.right);
