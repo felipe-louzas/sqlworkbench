@@ -120,6 +120,7 @@ public class ToolTipRenderer
 
   protected boolean showTooltip = true;
   private final Map renderingHints;
+  protected int clipLimit;
 
   public ToolTipRenderer()
   {
@@ -127,6 +128,7 @@ public class ToolTipRenderer
     setDoubleBuffered(true);
     setOpaque(true);
     regularInsets = getDefaultInsets();
+    clipLimit = GuiSettings.getClipLongRendererValues();
     int thick = WbSwingUtilities.FOCUSED_CELL_BORDER.getThickness();
     useInsetsFromLnF = UIManager.getDefaults().getInsets("Table.cellMargins") != null;
     // if the regular inserts were changed, reflect this with the focused insets
@@ -288,8 +290,18 @@ public class ToolTipRenderer
 
     if (value != null)
     {
+      String originalValue = null;
+      if (this.clipLimit > 0 && value instanceof String)
+      {
+        originalValue = (String)value;
+        value = StringUtil.getMaxSubstring((String)value, clipLimit, null);
+      }
       setFont(f);
       prepareDisplay(value);
+      if (originalValue != null)
+      {
+        setTooltip(originalValue);
+      }
     }
     else
     {

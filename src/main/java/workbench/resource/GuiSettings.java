@@ -104,6 +104,9 @@ public class GuiSettings
   public static final String PROP_TABLE_HEADER_FULL_TYPE_INFO = "workbench.gui.table.header.typeinfo.full";
   public static final String PROP_WRAP_MULTILINE_RENDERER = "workbench.gui.display.multiline.renderer.wrap";
   public static final String PROP_MULTILINE_RENDERER_USE_READER = "workbench.gui.display.multiline.renderer.use.reader";
+  public static final String PROP_RENDERER_CLIP_TEXT = "workbench.gui.display.renderer.clip";
+  public static final String PROP_MULTILINE_RENDERER_CLIP_TEXT = "workbench.gui.display.multiline.renderer.clip";
+  public static final String PROP_MULTILINE_RENDERER_SHOW_FIRST_LINE = "workbench.gui.display.multiline.renderer.clip.firstline";
   public static final String PROP_WRAP_MULTILINE_EDITOR = "workbench.gui.display.multiline.editor.wrap";
 
   public static final String PROP_FILE_RELOAD_TYPE = "workbench.gui.editor.file.reloadtype";
@@ -635,6 +638,21 @@ public class GuiSettings
   public static void setWrapMultilineEditor(boolean flag)
   {
     Settings.getInstance().setProperty(PROP_WRAP_MULTILINE_EDITOR, flag);
+  }
+
+  public static int getClipLongRendererValues()
+  {
+    return Settings.getInstance().getIntProperty(PROP_RENDERER_CLIP_TEXT, 0);
+  }
+
+  public static int getClipLongMultiRendererValues()
+  {
+    return Settings.getInstance().getIntProperty(PROP_MULTILINE_RENDERER_CLIP_TEXT, 0);
+  }
+
+  public static boolean getMultilineRendererClipToFirstLine()
+  {
+    return Settings.getInstance().getBoolProperty(PROP_MULTILINE_RENDERER_SHOW_FIRST_LINE, false);
   }
 
   public static boolean getWrapMultilineRenderer()

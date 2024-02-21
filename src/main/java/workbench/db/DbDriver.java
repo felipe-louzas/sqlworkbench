@@ -470,34 +470,15 @@ public class DbDriver
 
       conn = this.driverClassInstance.connect(url, props);
 
-      if (doSetAppName(url))
+      if (url.startsWith("jdbc:firebirdsql:"))
       {
         // The system property for the Firebird driver is only needed when the connection is created
         // so after the connect was successful, we can clean up the system properties
-        if (url.startsWith("jdbc:firebirdsql:"))
-        {
-          System.clearProperty("org.firebirdsql.jdbc.processName");
-        }
-
-        // PostgreSQL 9.0 allows to set an application name, but currently only by executing a SQL statement
-        if (url.startsWith("jdbc:postgresql") && !props.containsKey(PostgresUtil.APP_NAME_PROPERTY))
-        {
-          PostgresUtil.setApplicationName(conn, getProgramName() + " (" + id + ")");
-        }
-
-        // Set client info for HANA
-        if (url.startsWith("jdbc:sap:") && doSetAppName(url))
-        {
-          conn.setClientInfo("APPLICATION", StringUtil.coalesce(getAppName(), ResourceMgr.TXT_PRODUCT_NAME));
-          conn.setClientInfo("APPLICATIONSOURCE", id);
-          conn.setClientInfo("APPLICATIONVERSION", ResourceMgr.getBuildNumber().toString());
-          String username = System.getProperty("user.name");
-          if (username != null)
-          {
-            conn.setClientInfo("APPLICATIONUSER", username);
-          }
-        }
+        System.clearProperty("org.firebirdsql.jdbc.processName");
       }
+
+      JdbcClientInfoBuilder clientInfo = new JdbcClientInfoBuilder(user, id);
+      clientInfo.setClientInfo(conn, url);
     }
     catch (ClassNotFoundException | UnsupportedClassVersionError | ThreadDeath e )
     {

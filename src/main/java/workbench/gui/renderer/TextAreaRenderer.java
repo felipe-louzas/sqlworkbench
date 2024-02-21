@@ -22,6 +22,8 @@
 package workbench.gui.renderer;
 
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Insets;
 import java.io.StringReader;
 
@@ -29,6 +31,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
@@ -36,7 +39,6 @@ import workbench.resource.Settings;
 import workbench.gui.WbSwingUtilities;
 
 import workbench.util.StringUtil;
-
 
 /**
  * A renderer to display multi-line character data.
@@ -53,10 +55,12 @@ public class TextAreaRenderer
 {
   private final JTextArea textDisplay;
   protected boolean useStringReader;
+  private final boolean clipToFirstLine = GuiSettings.getMultilineRendererClipToFirstLine();
 
   public TextAreaRenderer()
   {
     super();
+    clipLimit = GuiSettings.getClipLongMultiRendererValues();
     useOwnPaint = false;
     textDisplay = new JTextArea()
     {
@@ -107,7 +111,31 @@ public class TextAreaRenderer
       this.textDisplay.setBorder(WbSwingUtilities.EMPTY_BORDER);
     }
 
+    Font f = table.getFont();
+    TableColumn column = table.getColumnModel().getColumn(col);
+    int colWidth = column == null ? -1 : column.getWidth();
+    String originalValue = null;
+    boolean clipped = false;
+    if (value instanceof String)
+    {
+      originalValue = (String)value;
+      if (this.clipToFirstLine && colWidth > 0)
+      {
+        value = clipToFirstLine((String)value, colWidth, f);
+        clipped = true;
+      }
+
+      if (this.clipLimit > 0)
+      {
+        value = StringUtil.getMaxSubstring((String)value, clipLimit, null);
+        clipped = true;
+      }
+    }
     prepareDisplay(value);
+    if (clipped)
+    {
+      setTooltip(originalValue);
+    }
 
     this.textDisplay.setBackground(getBackgroundColor());
     this.textDisplay.setForeground(getForegroundColor());
@@ -162,6 +190,32 @@ public class TextAreaRenderer
     {
       textDisplay.setText(displayValue);
     }
+  }
+
+  protected String clipToFirstLine(String value, int columnWidth, Font f)
+  {
+    if (f == null) return value;
+    FontMetrics fm = getFontMetrics(f);
+    if (fm == null) return value;
+    int clippedStringLength = (fm.charWidth('M') * columnWidth) + 10;
+    int pos = findNewLine(value, clippedStringLength);
+    if (pos > 0)
+    {
+      return value.substring(0, pos);
+    }
+    return value;
+  }
+
+  protected int findNewLine(String value, int maxLength)
+  {
+    if (value == null) return -1;
+    int end = Math.min(maxLength, value.length());
+    for (int pos=0; pos < end; pos ++)
+    {
+      char ch = value.charAt(pos);
+      if (ch == '\n' || ch == '\r') return pos;
+    }
+    return -1;
   }
 
 }

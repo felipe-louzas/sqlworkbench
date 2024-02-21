@@ -24,6 +24,7 @@ package workbench.db;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -86,6 +87,7 @@ public class ConnectionInfoBuilder
       String driverName;
       String autocommit;
       String fetchsize;
+      String url = conn.getUrl();
       if (busy)
       {
         username = conn.getDisplayUser();
@@ -147,6 +149,20 @@ public class ConnectionInfoBuilder
       content.append(space + boldStart + s + ":" + boldEnd + nvl(busy ? "n/a" : conn.getCurrentCatalog()) + newLine);
       content.append(space + boldStart + "Workbench DBID:" + boldEnd + wbmeta.getDbId() + newLine);
       content.append(space + boldStart + "Workbench connection: " + boldEnd + conn.getId());
+
+      JdbcClientInfoBuilder builder = new JdbcClientInfoBuilder(username, "");
+      Properties definedProps = builder.getClientInfo(conn.getUrl());
+      if (definedProps.size() > 0)
+      {
+        Properties clientInfo = conn.getSqlConnection().getClientInfo();
+        content.append(newLine + newLine + space + boldStart + "JDBC ClientInfo" + boldEnd + newLine);
+        content.append("---------------" + newLine);
+        for (String key : definedProps.stringPropertyNames())
+        {
+          content.append(space + boldStart + key + ":" + boldEnd + clientInfo.getProperty(key) + newLine);
+        }
+      }
+
       if (useHtml) content.append("</html>");
       return content.toString();
     }

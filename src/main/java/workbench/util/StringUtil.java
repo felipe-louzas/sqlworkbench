@@ -1244,17 +1244,12 @@ public class StringUtil
     if (s == null) return EMPTY_STRING;
     if (maxLen < 1) return s;
     if (s.length() < maxLen) return s;
-    if (add == null)
+    String result = s.substring(0, maxLen);
+    if (add != null)
     {
-      return s.substring(0, maxLen);
+      result += add;
     }
-    else
-    {
-      StringBuilder result = new StringBuilder(maxLen + add.length());
-      result.append(s, 0, maxLen);
-      result.append(add);
-      return result.toString();
-    }
+    return result;
   }
 
   public static String getMaxSubstring(String s, int maxLen)
