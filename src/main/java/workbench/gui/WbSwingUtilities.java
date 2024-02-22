@@ -224,13 +224,18 @@ public class WbSwingUtilities
   public static String displayString(Dimension d)
   {
     if (d == null) return "";
-    return "[w:" + (int)d.getWidth() + ", h:" + (int)d.getHeight() + "]";
+    return "[w:" + d.width + ", h:" + d.height + "]";
   }
 
   public static String displayString(Rectangle d)
   {
     if (d == null) return "";
     return "[x:" + d.x + ", y:" + d.y + ", w:" + (int)d.getWidth() + ", h:" + (int)d.getHeight() + "]";
+  }
+
+  public static String displayString(Point pos)
+  {
+    return "[x:" + pos.x + ", y:" + pos.y + "]";
   }
 
   public static String displayString(int x, int y)

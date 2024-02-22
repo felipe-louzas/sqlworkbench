@@ -290,17 +290,17 @@ public class ToolTipRenderer
 
     if (value != null)
     {
+      setFont(f);
       String originalValue = null;
       if (this.clipLimit > 0 && value instanceof String)
       {
         originalValue = (String)value;
-        value = StringUtil.getMaxSubstring((String)value, clipLimit, null);
-      }
-      setFont(f);
-      prepareDisplay(value);
-      if (originalValue != null)
-      {
+        displayValue = StringUtil.getMaxSubstring((String)value, clipLimit, null);
         setTooltip(originalValue);
+      }
+      else
+      {
+        prepareDisplay(value);
       }
     }
     else
@@ -477,7 +477,7 @@ public class ToolTipRenderer
   {
     if (showTooltip && tip != null && tip.length() > 0)
     {
-      tooltip = StringUtil.getMaxSubstring(tip, maxTooltipSize, null);
+      tooltip = StringUtil.getMaxSubstring(tip, maxTooltipSize, " ...");
     }
     else
     {

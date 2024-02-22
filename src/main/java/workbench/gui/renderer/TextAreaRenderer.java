@@ -31,7 +31,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
@@ -56,6 +55,7 @@ public class TextAreaRenderer
   private final JTextArea textDisplay;
   protected boolean useStringReader;
   private final boolean clipToFirstLine = GuiSettings.getMultilineRendererClipToFirstLine();
+  private final int maxColumnWidth = GuiSettings.getMaxColumnWidth();
 
   public TextAreaRenderer()
   {
@@ -111,31 +111,25 @@ public class TextAreaRenderer
       this.textDisplay.setBorder(WbSwingUtilities.EMPTY_BORDER);
     }
 
-    Font f = table.getFont();
-    TableColumn column = table.getColumnModel().getColumn(col);
-    int colWidth = column == null ? -1 : column.getWidth();
     String originalValue = null;
-    boolean clipped = false;
-    if (value instanceof String)
+    if (value instanceof String && (clipToFirstLine || clipLimit > 0))
     {
-      originalValue = (String)value;
-      if (this.clipToFirstLine && colWidth > 0)
+      Font f = table.getFont();
+      String clipped = (String)value;
+      originalValue = clipped;
+      if (this.clipToFirstLine)
       {
-        value = clipToFirstLine((String)value, colWidth, f);
-        clipped = true;
+        clipped = clipToFirstLine(clipped, f);
       }
 
       if (this.clipLimit > 0)
       {
-        value = StringUtil.getMaxSubstring((String)value, clipLimit, null);
-        clipped = true;
+        clipped = StringUtil.getMaxSubstring(clipped, clipLimit, null);
       }
+      value = clipped;
     }
-    prepareDisplay(value);
-    if (clipped)
-    {
-      setTooltip(originalValue);
-    }
+
+    prepareDisplay(value, originalValue);
 
     this.textDisplay.setBackground(getBackgroundColor());
     this.textDisplay.setForeground(getForegroundColor());
@@ -145,6 +139,11 @@ public class TextAreaRenderer
 
   @Override
   public void prepareDisplay(Object value)
+  {
+    prepareDisplay(value, null);
+  }
+
+  protected void prepareDisplay(Object value, String tip)
   {
     this.isNull = (value == null);
     if (this.isNull)
@@ -170,7 +169,7 @@ public class TextAreaRenderer
       {
         this.displayValue = value.toString();
       }
-      setTooltip(displayValue);
+      setTooltip(tip == null ? displayValue : tip);
     }
     textDisplay.setToolTipText(tooltip);
 
@@ -192,13 +191,14 @@ public class TextAreaRenderer
     }
   }
 
-  protected String clipToFirstLine(String value, int columnWidth, Font f)
+  protected String clipToFirstLine(String value, Font f)
   {
     if (f == null) return value;
     FontMetrics fm = getFontMetrics(f);
     if (fm == null) return value;
-    int clippedStringLength = (fm.charWidth('M') * columnWidth) + 10;
-    int pos = findNewLine(value, clippedStringLength);
+
+    int maxSearch = (maxColumnWidth / fm.charWidth('M')) + 50;
+    int pos = findNewLine(value, maxSearch);
     if (pos > 0)
     {
       return value.substring(0, pos);

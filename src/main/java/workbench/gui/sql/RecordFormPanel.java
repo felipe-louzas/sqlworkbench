@@ -200,6 +200,14 @@ public class RecordFormPanel
 
       c.gridx = 1;
       c.weightx = 1.0;
+      if (i == fieldDef.getColumnCount() - 1)
+      {
+        c.weighty = 1.0;
+      }
+      else
+      {
+        c.weighty = 0.0;
+      }
       c.insets = fieldInsets;
 
       Component toAdd = null;
@@ -282,7 +290,6 @@ public class RecordFormPanel
         inputControls[i] = f;
         inputControls[i].setFont(displayFont);
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.weighty = 0.0;
         toAdd = inputControls[i];
       }
       formPanel.add(toAdd, c);
