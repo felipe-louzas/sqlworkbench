@@ -192,6 +192,7 @@ public class RecordFormPanel
       c.weightx = 0.0;
       c.weighty = 0.0;
       c.insets = labelInsets;
+      c.anchor = GridBagConstraints.FIRST_LINE_START;
 
       ColumnIdentifier col = fieldDef.getColumn(i);
       JLabel label = new JLabel(col.getColumnName());
@@ -213,6 +214,9 @@ public class RecordFormPanel
       Component toAdd = null;
       if (SqlUtil.isMultiLineColumn(col))
       {
+        // Create a TextArea that tracks the modification of the content through a WbDocument
+        // Overwriting the read() method is necessary in case GuiSettings.getUseReaderForMultilineRenderer()
+        // is enabled.
         final TextContainerWrapper area = new TextContainerWrapper(new WbDocument())
         {
           @Override
