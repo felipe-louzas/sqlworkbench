@@ -27,33 +27,56 @@ import workbench.db.WbConnection;
 
 import workbench.storage.DataStore;
 
+import workbench.sql.lexer.SQLLexer;
+import workbench.sql.lexer.SQLLexerFactory;
+import workbench.sql.lexer.SQLToken;
+
 import workbench.util.SqlUtil;
 
 /**
+ * A SQL analyzer for Postgres' SET and SHOW commands.
  *
  * @author Thomas Kellerer
  */
 public class PgShowAnalyzer
   extends BaseAnalyzer
 {
+  private final boolean isSetCommand;
+
   public PgShowAnalyzer(WbConnection conn, String statement, int cursorPos)
   {
     super(conn, statement, cursorPos);
+    isSetCommand = "SET".equalsIgnoreCase(verb);
   }
 
   @Override
   protected void checkContext()
   {
-    // Postgres' show and set commands have no additional options
-    // so the auto-completion should be invoked if the cursor is after the keyword
     if (this.cursorPos > verb.length())
     {
       context = CONTEXT_VALUE_LIST;
     }
-    else
+
+    if (isSetCommand)
     {
-      context = NO_CONTEXT;
+      SQLLexer lexer = SQLLexerFactory.createLexer(dbConnection, this.sql);
+      SQLToken token = lexer.getNextToken(false, false);
+      token = lexer.getNextToken(false, false);
+      if (token != null && "schema".equalsIgnoreCase(token.getText()) && this.cursorPos >= token.getCharEnd())
+      {
+        context = CONTEXT_SCHEMA_LIST;
+      }
     }
+  }
+
+  @Override
+  public String getPasteValue(Object value)
+  {
+    if (this.isSetCommand && context == CONTEXT_SCHEMA_LIST)
+    {
+      return "'" + value + "'";
+    }
+    return null;
   }
 
   @Override
@@ -67,6 +90,10 @@ public class PgShowAnalyzer
       {
         this.elements.add(names.getValueAsString(row, 0));
       }
+    }
+    else
+    {
+      super.buildResult();
     }
   }
 

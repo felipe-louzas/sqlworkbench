@@ -42,11 +42,11 @@ public class GenericSchemaInfoReader
   implements SchemaInformationReader, PropertyChangeListener
 {
   private WbConnection connection;
-  private String schemaQuery;
+  private final String schemaQuery;
   private final boolean useSavepoint;
-  private boolean reuseStmt;
-  private boolean isCacheable;
-
+  private final boolean reuseStmt;
+  private final boolean isCacheable;
+  private final boolean useJDBC;
   private PreparedStatement query;
   private String cachedSchema;
 
@@ -60,6 +60,7 @@ public class GenericSchemaInfoReader
     connection = conn;
     useSavepoint = settings.getBoolProperty("currentschema.query.usesavepoint", false);
     schemaQuery = settings.getProperty(queryProp, null);
+    useJDBC = StringUtil.isBlank(schemaQuery) && settings.isGetSchemaImplemented();
     reuseStmt = settings.getBoolProperty(reuseProp, false);
     isCacheable = settings.getBoolProperty(cacheProp, false);
     connection.addChangeListener(this);
@@ -69,12 +70,19 @@ public class GenericSchemaInfoReader
   @Override
   public boolean isSupported()
   {
-    return StringUtil.isNotEmpty(schemaQuery);
+    return StringUtil.isNotEmpty(schemaQuery) || useJDBC;
   }
 
   private void logSettings()
   {
-    LogMgr.logDebug(new CallerInfo(){}, connection.getId() + ": Re-Use statement: " + reuseStmt + ", cache current schema: "+ isCacheable + ", SQL: " + schemaQuery);
+    if (useJDBC)
+    {
+      LogMgr.logDebug(new CallerInfo(){}, connection.getId() + ": Using JDBC API to retrieve current schema, cache current schema: "+ isCacheable);
+    }
+    else
+    {
+      LogMgr.logDebug(new CallerInfo(){}, connection.getId() + ": Re-Use statement: " + reuseStmt + ", cache current schema: "+ isCacheable + ", SQL: " + schemaQuery);
+    }
   }
 
   @Override
@@ -121,12 +129,13 @@ public class GenericSchemaInfoReader
   public String getCurrentSchema()
   {
     if (this.connection == null) return null;
-    if (StringUtil.isEmpty(this.schemaQuery)) return null;
+
 
     if (isCacheable && cachedSchema != null)
     {
       return cachedSchema;
     }
+    if (StringUtil.isEmpty(this.schemaQuery) && !useJDBC) return null;
 
     String currentSchema = null;
 
@@ -142,27 +151,34 @@ public class GenericSchemaInfoReader
         sp = connection.setSavepoint(ci);
       }
 
-      if (reuseStmt)
+      if (useJDBC)
       {
-        if (query == null)
-        {
-          query = connection.getSqlConnection().prepareStatement(schemaQuery);
-        }
-        setQueryTimeout(query);
-        rs = query.executeQuery();
+        currentSchema = connection.getSqlConnection().getSchema();
       }
       else
       {
-        stmt = connection.createStatement();
-        setQueryTimeout(stmt);
-        rs = stmt.executeQuery(schemaQuery);
-      }
+        if (reuseStmt)
+        {
+          if (query == null)
+          {
+            query = connection.getSqlConnection().prepareStatement(schemaQuery);
+          }
+          setQueryTimeout(query);
+          rs = query.executeQuery();
+        }
+        else
+        {
+          stmt = connection.createStatement();
+          setQueryTimeout(stmt);
+          rs = stmt.executeQuery(schemaQuery);
+        }
 
-      if (rs != null && rs.next())
-      {
-        currentSchema = rs.getString(1);
+        if (rs != null && rs.next())
+        {
+          currentSchema = rs.getString(1);
+        }
       }
-      if (currentSchema != null) currentSchema = currentSchema.trim();
+      currentSchema = StringUtil.trim(currentSchema);
       connection.releaseSavepoint(sp, ci);
     }
     catch (Exception e)
@@ -173,7 +189,10 @@ public class GenericSchemaInfoReader
     }
     finally
     {
-      JdbcUtils.closeAll(rs, stmt);
+      if (!useJDBC)
+      {
+        JdbcUtils.closeAll(rs, stmt);
+      }
     }
 
     if (isCacheable)
