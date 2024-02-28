@@ -225,7 +225,6 @@ public class SetCommand
       String oldSchema = null;
       if (schemaChange)
       {
-        currentConnection.getMetadata().clearCachedSchemaInformation();
         newSchemaArg = param;
         oldSchema = currentConnection.getCurrentSchema();
       }
@@ -348,6 +347,8 @@ public class SetCommand
       // the StatementRunner will set it to busy when calling execute()
       // so we need to clear it here.
       currentConnection.setBusy(false);
+      currentConnection.getMetadata().clearCachedSchemaInformation();
+
       LogMgr.logDebug(new CallerInfo(){}, "Updating current schema");
 
       newSchema = currentConnection.getCurrentSchema();

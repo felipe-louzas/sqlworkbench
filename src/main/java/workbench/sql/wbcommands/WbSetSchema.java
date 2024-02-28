@@ -31,7 +31,6 @@ import workbench.util.StringUtil;
 
 /**
  * A workbench SQL command to change the current schema through JDBC.
- * <br/>
  *
  * @author Thomas Kellerer
  */
@@ -51,6 +50,7 @@ public class WbSetSchema
       String newSchema = getCommandLine(sql);
       String oldSchema = currentConnection.getCurrentSchema();
 
+      currentConnection.getMetadata().clearCachedSchemaInformation();
       currentConnection.getSqlConnection().setSchema(newSchema);
       appendWarnings(result, true);
 
