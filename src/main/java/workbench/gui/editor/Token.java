@@ -40,13 +40,13 @@ public class Token
    * Literal 1 token id. This can be used to mark a string
    * literal (eg, C mode uses this to mark "..." literals)
    */
-  public static final byte LITERAL1 = 3;
+  public static final byte STRING_LITERAL = 3;
 
   /**
    * Literal 2 token id. This can be used to mark an object
    * literal (eg, Java mode uses this to mark true, false, etc)
    */
-  public static final byte LITERAL2 = 4;
+  public static final byte QUOTED_IDENTIFIER = 4;
 
   /**
    * Label token id. This can be used to mark labels
@@ -155,7 +155,7 @@ public class Token
 
   public static boolean isLiteral(int tokenId)
   {
-    return (tokenId == LITERAL1 || tokenId == LITERAL2);
+    return (tokenId == STRING_LITERAL || tokenId == QUOTED_IDENTIFIER);
   }
 
   public String typeString()
@@ -174,10 +174,10 @@ public class Token
       case COMMENT2:
         type = "C2";
         break;
-      case LITERAL1:
+      case STRING_LITERAL:
         type = "L1";
         break;
-      case LITERAL2:
+      case QUOTED_IDENTIFIER:
         type = "L2";
         break;
       case KEYWORD1:

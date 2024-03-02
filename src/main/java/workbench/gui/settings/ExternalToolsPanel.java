@@ -65,8 +65,7 @@ public class ExternalToolsPanel
 
   public ExternalToolsPanel()
   {
-    super();
-    setLayout(new BorderLayout());
+    super(new BorderLayout());
 
     toolList = new JList();
     toolList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

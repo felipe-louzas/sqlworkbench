@@ -65,6 +65,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -1451,7 +1452,17 @@ public class WbSwingUtilities
     return new Dimension(width + addWidth, height + addHeight);
   }
 
-  public static int calculateCharWidth(JComponent component, int numChars)
+  public static void adjustSplitPane(JComponent left, JSplitPane split)
+  {
+    Dimension pref = left.getPreferredSize();
+    if (pref != null)
+    {
+      int width = (int)(pref.getWidth() * 1.2);
+      split.setDividerLocation(width);
+    }
+  }
+
+  public static int calculateMaxCharWidth(JComponent component, int numChars)
   {
     if (numChars < 0 || component == null) return 0;
 

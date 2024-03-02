@@ -85,7 +85,7 @@ public class SettingsPanel
   private JTextField filterValue;
   private WbAction resetFilter;
   private QuickFilterAction applyFilter;
-  
+
   public SettingsPanel()
   {
     super(new BorderLayout());
@@ -94,13 +94,13 @@ public class SettingsPanel
     // when changing the order of pages, or adding new pages
     pages.add(new OptionPanelPage("GeneralOptionsPanel", "LblSettingsGeneral"));
     pages.add(new OptionPanelPage("EditorOptionsPanel", "LblSettingsEditor"));
+    pages.add(new OptionPanelPage("EditorColorsPanel", "LblEditorColors"));
+    pages.add(new OptionPanelPage("HighlightSettingsPanel", "LblHighlightOptions"));
+    pages.add(new OptionPanelPage("CompletionOptionsPanel", "LblCompletionOptions"));
+    pages.add(new OptionPanelPage("FontOptionsPanel", "LblSettingsFonts"));
     pages.add(new OptionPanelPage("SqlExecOptionsPanel", "LblSqlExecOptions"));
     pages.add(new OptionPanelPage("MacroOptionsPanel", "LblMacros"));
     pages.add(new OptionPanelPage("BookmarkOptionsPanel", "LblBookmarkOptions"));
-    pages.add(new OptionPanelPage("EditorColorsPanel", "LblEditorColors"));
-    pages.add(new OptionPanelPage("HighlightSettingsPanel", "LblHighlightOptions"));
-    pages.add(new OptionPanelPage("FontOptionsPanel", "LblSettingsFonts"));
-    pages.add(new OptionPanelPage("CompletionOptionsPanel", "LblCompletionOptions"));
     pages.add(new OptionPanelPage("WorkspaceOptions", "LblSettingsWorkspace"));
     pages.add(new OptionPanelPage("BackupOptions", "LblBackups"));
     pages.add(new OptionPanelPage("DataDisplayOptions", "LblSettingsDataDisplay"));
@@ -168,6 +168,8 @@ public class SettingsPanel
     optionList.add(filterPanel, BorderLayout.NORTH);
     optionList.add(scroll, BorderLayout.CENTER);
     content.setLeftComponent(optionList);
+
+    WbSwingUtilities.adjustSplitPane(pageList, content);
 
     okButton = new WbButton(ResourceMgr.getString("LblOK"));
     cancelButton = new WbButton(ResourceMgr.getString("LblCancel"));
@@ -285,7 +287,7 @@ public class SettingsPanel
       int h = dialog.getSize().height;
 
       // the editor colors page is the widest page
-      pageList.setSelectedIndex(5);
+      pageList.setSelectedIndex(2);
       dialog.pack();
       int w = dialog.getSize().width;
 

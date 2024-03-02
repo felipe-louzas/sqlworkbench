@@ -22,7 +22,6 @@
 package workbench.gui.settings;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
@@ -53,6 +53,7 @@ import workbench.gui.actions.DeleteListEntryAction;
 import workbench.gui.actions.NewListEntryAction;
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.WbScrollPane;
+import workbench.gui.components.WbSplitPane;
 import workbench.gui.components.WbToolbar;
 import workbench.gui.profiles.SshHostConfigPanel;
 
@@ -68,27 +69,22 @@ public class GlobalSshHostsPanel
   implements Restoreable, ListSelectionListener, FileActions,
              PropertyChangeListener, ChangeListener, Validator
 {
-  private JList hostList;
-  private SshHostConfigPanel hostConfig;
-  private WbToolbar toolbar;
+  private final JList hostList;
+  private final SshHostConfigPanel hostConfig;
+  private final WbToolbar toolbar;
   private DefaultListModel<SshHostConfig> configs;
   private boolean ignoreValueChanged = false;
+  private final WbSplitPane split;
 
   public GlobalSshHostsPanel()
   {
-    super();
-    setLayout(new BorderLayout());
+    super(new BorderLayout());
 
     hostList = new JList();
     hostList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     hostList.setBorder(new EmptyBorder(2,2,2,2));
 
-    int width = WbSwingUtilities.calculateCharWidth(hostList, 16);
-    Dimension ps = hostList.getPreferredSize();
-
     JScrollPane scroll = new WbScrollPane(hostList);
-    scroll.setPreferredSize(new Dimension(width, ps.height));
-
     this.toolbar = new WbToolbar();
     this.toolbar.add(new NewListEntryAction(this));
     this.toolbar.add(new DeleteListEntryAction(this));
@@ -99,10 +95,12 @@ public class GlobalSshHostsPanel
     hostConfig.setEnabled(false);
     hostConfig.addNameChangeListener(this);
     hostConfig.setValidator(this);
+    hostConfig.setBorder(WbSwingUtilities.EMPTY_BORDER);
 
+    split = new WbSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, hostConfig);
+    split.setDividerBorder(WbSwingUtilities.EMPTY_BORDER);
     add(toolbar, BorderLayout.NORTH);
-    add(scroll, BorderLayout.WEST);
-    add(hostConfig, BorderLayout.CENTER);
+    add(split, BorderLayout.CENTER);
   }
 
 
@@ -165,13 +163,19 @@ public class GlobalSshHostsPanel
   {
     configs = new DefaultListModel();
     List<SshHostConfig> sshDefs = SshConfigMgr.getDefaultInstance().getGlobalConfigs();
+    int maxChars = 0;
     for (SshHostConfig config : sshDefs)
     {
       configs.addElement(config.createCopy());
+      if (maxChars < config.getConfigName().length())
+      {
+        maxChars = config.getConfigName().length();
+      }
     }
     hostList.setModel(configs);
     hostList.addListSelectionListener(this);
     hostList.setSelectedIndex(0);
+    WbSwingUtilities.adjustSplitPane(hostList, split);
   }
 
   private void applyConfig()

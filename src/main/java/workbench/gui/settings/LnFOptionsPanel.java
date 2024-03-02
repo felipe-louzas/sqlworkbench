@@ -74,11 +74,11 @@ public class LnFOptionsPanel
   implements Restoreable, ListSelectionListener, FileActions,
              PropertyChangeListener
 {
-  private JList lnfList;
-  private LnFDefinitionPanel definitionPanel;
-  protected LnFManager manager = new LnFManager();
-  private WbToolbar toolbar;
-  private DeleteListEntryAction deleteEntry = null;
+  private final JList lnfList;
+  private final LnFDefinitionPanel definitionPanel;
+  private final LnFManager manager = new LnFManager();
+  private final WbToolbar toolbar;
+  private final DeleteListEntryAction deleteEntry;
 
   public LnFOptionsPanel()
   {

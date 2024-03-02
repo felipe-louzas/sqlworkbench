@@ -239,7 +239,7 @@ public class TextAreaPainter
     gutterTextColor = Settings.getInstance().getColor(Settings.PROPERTY_EDITOR_LINENUMBER_COLOR, DEFAULT_GUTTER_TEXT_COLOR);
 
     setStyles(SyntaxUtilities.getDefaultSyntaxStyles());
-    caretColor = Settings.getInstance().getEditorCursorColor(UIManager.getColor("TextArea.foreground"));
+    caretColor = Settings.getInstance().getEditorCursorColor();
     currentLineColor = Settings.getInstance().getEditorCurrentLineColor();
     bracketHighlightColor = Settings.getInstance().getEditorBracketHighlightColor();
     occuranceHighlightColor = Settings.getInstance().geSelectionHighlightColor();

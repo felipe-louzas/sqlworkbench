@@ -120,7 +120,7 @@ public class SyntaxStyle
 
   public static final String INVALID = "invalid";
 
-  private Color color;
+  private final Color color;
   private final int style;
 
   /**

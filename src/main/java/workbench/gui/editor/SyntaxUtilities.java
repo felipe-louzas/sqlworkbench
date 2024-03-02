@@ -126,16 +126,13 @@ public class SyntaxUtilities
     styles[Token.KEYWORD2] = getStyle(KEYWORD2, Color.MAGENTA, Font.PLAIN);
 
     // functions
-    styles[Token.KEYWORD3] = getStyle(KEYWORD3, new Color(0x009600), Font.PLAIN);
+    styles[Token.KEYWORD3] = getStyle(KEYWORD3, new Color(0,150,0), Font.PLAIN);
 
-    // String literals
-    styles[Token.LITERAL1] = getStyle(LITERAL1, new Color(0x650099), Font.PLAIN);
+    styles[Token.STRING_LITERAL] = getStyle(LITERAL1, null, Font.PLAIN);
+    styles[Token.QUOTED_IDENTIFIER] = getStyle(LITERAL2, null, Font.PLAIN);
 
-    // Quoted identifiers
-    styles[Token.LITERAL2] = getStyle(LITERAL2, new Color(0x650099), Font.PLAIN);
-
-    styles[Token.DATATYPE] = getStyle(DATATYPE, new Color(0x990033), Font.PLAIN);
-    styles[Token.OPERATOR] = getStyle(OPERATOR, Color.BLACK, Font.PLAIN);
+    styles[Token.DATATYPE] = getStyle(DATATYPE, new Color(153,0,51), Font.PLAIN);
+    styles[Token.OPERATOR] = getStyle(OPERATOR, null, Font.PLAIN);
 
     // Not used
     styles[Token.INVALID] = getStyle(INVALID, Color.RED, Font.PLAIN);

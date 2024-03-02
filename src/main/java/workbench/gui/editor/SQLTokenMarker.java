@@ -35,20 +35,20 @@ public class SQLTokenMarker
     switch (literal)
     {
       case '\'':
-        return Token.LITERAL1;
+        return Token.STRING_LITERAL;
       case '"':
-        return Token.LITERAL2;
+        return Token.QUOTED_IDENTIFIER;
       case '[':
       case ']':
         if (isMicrosoft)
         {
-          return Token.LITERAL2;
+          return Token.QUOTED_IDENTIFIER;
         }
         return 0;
       case '`':
         if (isMySql)
         {
-          return Token.LITERAL2;
+          return Token.QUOTED_IDENTIFIER;
         }
     }
     return 0;
@@ -111,7 +111,7 @@ public class SQLTokenMarker
           if (isMicrosoft && token == Token.NULL)
           {
             searchBack(lineIndex, line, i, true);
-            token = Token.LITERAL2;
+            token = Token.QUOTED_IDENTIFIER;
             literalChar = '[';
             lastOffset = i;
           }
@@ -123,11 +123,11 @@ public class SQLTokenMarker
           }
           break;
         case ']':
-          if (isMicrosoft && token == Token.LITERAL2 && literalChar == '[')
+          if (isMicrosoft && token == Token.QUOTED_IDENTIFIER && literalChar == '[')
           {
             token = Token.NULL;
             literalChar = 0;
-            addToken(lineIndex, i1 - lastOffset, Token.LITERAL2);
+            addToken(lineIndex, i1 - lastOffset, Token.QUOTED_IDENTIFIER);
             lastOffset = i + 1;
           }
           break;

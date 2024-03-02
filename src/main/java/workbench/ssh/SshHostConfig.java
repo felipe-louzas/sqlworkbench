@@ -215,7 +215,7 @@ public class SshHostConfig
 
   public String getConfigName()
   {
-    return configName;
+    return configName == null ? "" : configName;
   }
 
   public void setConfigName(String configName)

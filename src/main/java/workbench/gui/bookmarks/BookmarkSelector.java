@@ -499,7 +499,7 @@ public class BookmarkSelector
     {
       ColumnWidthOptimizer optimizer = new ColumnWidthOptimizer(bookmarks);
       int maxChars = GuiSettings.getBookmarksMaxColumnWidth();
-      int maxWidth = WbSwingUtilities.calculateCharWidth(bookmarks, maxChars);
+      int maxWidth = WbSwingUtilities.calculateMaxCharWidth(bookmarks, maxChars);
       optimizer.optimizeAllColWidth(10, maxWidth, true);
     }
   }

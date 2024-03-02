@@ -142,7 +142,7 @@ public class SwitchDbComboBox
 
     clear();
 
-    int width = WbSwingUtilities.calculateCharWidth(this, 20);
+    int width = WbSwingUtilities.calculateMaxCharWidth(this, 20);
     Dimension d = getPreferredSize();
     d.setSize(width, d.height);
     this.setMaximumSize(d);

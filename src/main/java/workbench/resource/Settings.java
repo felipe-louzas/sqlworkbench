@@ -1712,6 +1712,14 @@ public class Settings
     return getColor(aColorKey, null);
   }
 
+  public Color getNonDefaultColor(String key)
+  {
+    String value = getProperty(key, null);
+    if (value == null) return null;
+    if (value.startsWith("$")) return null;
+    return getColor(key, null);
+  }
+
   public Color getColor(String aColorKey, Color defaultColor)
   {
     String value = getProperty(aColorKey, null);
@@ -1724,6 +1732,13 @@ public class Settings
   public static Color stringToColor(String value)
   {
     if (value == null) return null;
+
+    if (value.startsWith("$"))
+    {
+      String key = value.substring(1);
+      return UIManager.getColor(key);
+    }
+
     String[] colors = value.split(",");
     if (colors.length != 3) return null;
     try
@@ -2087,12 +2102,7 @@ public class Settings
 
   public Color getEditorCursorColor()
   {
-    return getEditorCursorColor(null);
-  }
-
-  public Color getEditorCursorColor(Color defaultColor)
-  {
-    return getColor(PROPERTY_EDITOR_CURSOR_COLOR, defaultColor);
+    return getColor(PROPERTY_EDITOR_CURSOR_COLOR, null);
   }
 
   public void setEditorSelectionColor(Color c)
@@ -2122,7 +2132,7 @@ public class Settings
 
   public Color getEditorCurrentStmtColor()
   {
-    return getColor(PROPERTY_EDITOR_CURRENT_STMT_COLOR, Color.GREEN.brighter());
+    return getColor(PROPERTY_EDITOR_CURRENT_STMT_COLOR, Color.GREEN);
   }
 
   public void setEditorErrorColor(Color c)
@@ -2132,7 +2142,7 @@ public class Settings
 
   public Color getEditorErrorColor()
   {
-    return getColor(PROPERTY_EDITOR_ERROR_STMT_COLOR, Color.RED.brighter());
+    return getColor(PROPERTY_EDITOR_ERROR_STMT_COLOR, Color.RED);
   }
 
   public Color getEditorCurrentLineColor()
@@ -3650,20 +3660,27 @@ public class Settings
 
   public void setColor(String key, Color c)
   {
-    this.setProperty(key, colorToString(c));
+    if (c != null)
+    {
+      this.setProperty(key, colorToString(c));
+    }
+    else
+    {
+      String current = getProperty(key, null);
+      if (current != null && current.startsWith("$"))
+      {
+        this.setProperty(key, null);
+      }
+    }
   }
 
   public static String colorToString(Color c)
   {
-    String value = null;
-    if (c != null)
-    {
-      int r = c.getRed();
-      int g = c.getGreen();
-      int b = c.getBlue();
-      value = Integer.toString(r) + "," + Integer.toString(g) + "," + Integer.toString(b);
-    }
-    return value;
+    if (c == null) return null;
+    int r = c.getRed();
+    int g = c.getGreen();
+    int b = c.getBlue();
+    return Integer.toString(r) + "," + Integer.toString(g) + "," + Integer.toString(b);
   }
 
   public int getWindowPosX(GraphicsConfiguration config, String windowClass)
