@@ -49,7 +49,6 @@ public class TextAreaPainter
 {
   public static final Color DEFAULT_GUTTER_TEXT_COLOR = UIManager.getColor("Label.foreground");
   public static final Color DEFAULT_GUTTER_BG  = UIManager.getColor("Label.background");;
-  public static final Color DEFAULT_SELECTION_COLOR = new Color(204,204,255);
   private static final Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
 
   private final Segment currentLine = new Segment();
@@ -58,7 +57,6 @@ public class TextAreaPainter
   protected SyntaxStyle[] styles;
   protected Color caretColor;
   protected Color selectionBackground;
-  protected Color selectionForeground;
   protected Color currentLineColor;
   protected Color bracketHighlightColor;
   protected Color occuranceHighlightColor;
@@ -109,7 +107,6 @@ public class TextAreaPainter
       Settings.PROPERTY_EDITOR_LINENUMBER_COLOR,
       Settings.PROPERTY_EDITOR_CURRENT_LINE_COLOR,
       Settings.PROPERTY_EDITOR_SELECTION_BG_COLOR,
-      Settings.PROPERTY_EDITOR_SELECTION_FG_COLOR,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_COLOR,
       Settings.PROPERTY_EDITOR_OCCURANCE_HIGHLIGHT_IGNORE_CASE,
       Settings.PROPERTY_EDITOR_BRACKET_HILITE,
@@ -240,18 +237,17 @@ public class TextAreaPainter
 
     setStyles(SyntaxUtilities.getDefaultSyntaxStyles());
     caretColor = Settings.getInstance().getEditorCursorColor();
+    if (caretColor == null)
+    {
+      caretColor = getDefaultColor("TextField.caretForeground", textColor);
+    }
     currentLineColor = Settings.getInstance().getEditorCurrentLineColor();
     bracketHighlightColor = Settings.getInstance().getEditorBracketHighlightColor();
     occuranceHighlightColor = Settings.getInstance().geSelectionHighlightColor();
     selectionBackground = Settings.getInstance().getEditorSelectionColor();
     if (selectionBackground == null)
     {
-      selectionBackground = getDefaultColor("TextArea.selectionBackground", DEFAULT_SELECTION_COLOR);
-    }
-    selectionForeground = Settings.getInstance().getEditorSelectedTextColor();
-    if (selectionForeground == null)
-    {
-      selectionForeground = getDefaultColor("TextArea.selectionForeground", null);
+      selectionBackground = getDefaultColor("TextArea.selectionBackground", null);
     }
   }
 

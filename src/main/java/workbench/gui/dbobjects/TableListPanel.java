@@ -257,7 +257,7 @@ public class TableListPanel
     this.parentWindow = aParent;
     this.setBorder(WbSwingUtilities.EMPTY_BORDER);
 
-    int location = PlacementChooser.getPlacementLocation();
+    int location = PlacementChooser.getDBExplorerTabLocation();
     displayTab = new WbTabbedPane(location);
     displayTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
     displayTab.setName("displaytab");
@@ -335,7 +335,7 @@ public class TableListPanel
     Settings.getInstance().addPropertyChangeListener(this,
       DbExplorerSettings.PROP_INSTANT_FILTER,
       DbExplorerSettings.PROP_ASSUME_WILDCARDS,
-      PlacementChooser.PLACEMENT_PROPERTY,
+      PlacementChooser.DBEXPLORER_LOCATION_PROPERTY,
       DbExplorerSettings.PROP_TABLE_HISTORY,
       DbExplorerSettings.PROP_USE_FILTER_RETRIEVE,
       DbExplorerSettings.PROP_ALLOW_SOURCE_EDITING
@@ -2638,11 +2638,11 @@ public class TableListPanel
     {
       configureFindPanel();
     }
-    else if (PlacementChooser.PLACEMENT_PROPERTY.equals(evt.getPropertyName()))
+    else if (PlacementChooser.DBEXPLORER_LOCATION_PROPERTY.equals(evt.getPropertyName()))
     {
       EventQueue.invokeLater(() ->
       {
-        int location = PlacementChooser.getPlacementLocation();
+        int location = PlacementChooser.getDBExplorerTabLocation();
         displayTab.setTabPlacement(location);
         displayTab.validate();
       });

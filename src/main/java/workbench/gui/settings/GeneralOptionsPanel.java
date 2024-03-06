@@ -62,6 +62,8 @@ import workbench.util.StringUtil;
 import workbench.util.WbFile;
 import workbench.util.WbLocale;
 
+import static workbench.gui.settings.PlacementChooser.*;
+
 /**
  *
  * @author  Thomas Kellerer
@@ -138,6 +140,7 @@ public class GeneralOptionsPanel
     showMenuIcons.setSelected(GuiSettings.showMenuIcons());
     varsPerWindow.setSelected(Settings.getInstance().useWindowSpecificVariables());
     restoreExpandedGroups.setSelected(GuiSettings.getRestoreExpandedProfileGroups());
+    ((PlacementChooser)tabLocation).showPlacement();
     String iconName = Settings.getInstance().getProperty(IconHandler.PROP_LOADING_IMAGE, IconHandler.DEFAULT_BUSY_IMAGE);
     LoadingImage img = new LoadingImage();
     img.setName(iconName);
@@ -197,6 +200,7 @@ public class GeneralOptionsPanel
     set.setProperty(IconHandler.PROP_CANCEL_IMAGE, cancelImg.getName());
     set.setUseWindowSpecificVariables(varsPerWindow.isSelected());
     applyMasterPassword();
+    ((PlacementChooser)tabLocation).saveSelection();
   }
 
   private void applyMasterPassword()
@@ -271,6 +275,8 @@ public class GeneralOptionsPanel
     busyIconLabel = new JLabel();
     cancelIconCombo = new IconListCombobox();
     cancelIconLabel = new JLabel();
+    jLabel1 = new JLabel();
+    tabLocation = new PlacementChooser(MAINWIN_TAB_PLACEMENT_PROPERTY);
     jPanel3 = new JPanel();
     jPanel5 = new JPanel();
     langLabel = new JLabel();
@@ -586,6 +592,20 @@ public class GeneralOptionsPanel
     gridBagConstraints.insets = new Insets(0, 12, 1, 0);
     tabOptionsPanel.add(imagePanel, gridBagConstraints);
 
+    jLabel1.setText("Position of editor tabs");
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    tabOptionsPanel.add(jLabel1, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.insets = new Insets(3, 16, 5, 0);
+    tabOptionsPanel.add(tabLocation, gridBagConstraints);
+
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
@@ -727,6 +747,7 @@ public class GeneralOptionsPanel
   private JCheckBox focusToQuickFilter;
   private JComboBox iconCombobox;
   private JPanel imagePanel;
+  private JLabel jLabel1;
   private JPanel jPanel2;
   private JPanel jPanel3;
   private JPanel jPanel5;
@@ -744,6 +765,7 @@ public class GeneralOptionsPanel
   private JCheckBox showTabIndex;
   private JCheckBox singlePageHelp;
   private JCheckBox tabLRUclose;
+  private JComboBox<String> tabLocation;
   private JPanel tabOptionsPanel;
   private JTextField updateInterval;
   private JCheckBox varsPerWindow;

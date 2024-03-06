@@ -126,7 +126,7 @@ public class VerticaProjectionPanel
     this.projectionColumns.setRendererSetup(RendererSetup.getBaseSetup());
     WbScrollPane scrollColumns = new WbScrollPane(this.projectionColumns);
 
-    int location = PlacementChooser.getPlacementLocation();
+    int location = PlacementChooser.getDBExplorerTabLocation();
     displayTab = new WbTabbedPane(location);
     displayTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
     displayTab.setName("displaytab");
@@ -200,7 +200,7 @@ public class VerticaProjectionPanel
   {
     if (table == null) return;
     initGui();
-    
+
     try
     {
       currentTable = table;

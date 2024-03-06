@@ -24,6 +24,7 @@ package workbench.gui.settings;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTabbedPane;
+
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
@@ -34,11 +35,20 @@ import workbench.resource.Settings;
 public class PlacementChooser
   extends JComboBox
 {
-  public static final String PLACEMENT_PROPERTY = "workbench.gui.dbobjects.tabletabs";
+  public static final String DBEXPLORER_LOCATION_PROPERTY = "workbench.gui.dbobjects.tabletabs";
+  public static final String MAINWIN_TAB_PLACEMENT_PROPERTY = "workbench.gui.mainwindow.tablocation";
+
+  private final String propertyName;
 
   public PlacementChooser()
   {
+    this(DBEXPLORER_LOCATION_PROPERTY);
+  }
+
+  public PlacementChooser(String propName)
+  {
     super();
+    this.propertyName = propName;
     String[] locations = new String[] {
       ResourceMgr.getString("TxtTabTop"),
       ResourceMgr.getString("TxtTabBottom"),
@@ -50,7 +60,7 @@ public class PlacementChooser
 
   public void showPlacement()
   {
-    String placement = getPlacementSettingValue();
+    String placement = getPlacementSettingValue(this.propertyName);
     if ("top".equals(placement))
     {
       setSelectedIndex(0);
@@ -69,14 +79,24 @@ public class PlacementChooser
     }
   }
 
-  private static String getPlacementSettingValue()
+  private static String getPlacementSettingValue(String property)
   {
-    return Settings.getInstance().getProperty(PLACEMENT_PROPERTY, "top");
+    return Settings.getInstance().getProperty(property, "top");
   }
 
-  public static int getPlacementLocation()
+  public static int getDBExplorerTabLocation()
   {
-    String tabLocation = getPlacementSettingValue();
+    return getPlacementLocation(DBEXPLORER_LOCATION_PROPERTY);
+  }
+
+  public static int getMainWindowTabsLocation()
+  {
+    return getPlacementLocation(MAINWIN_TAB_PLACEMENT_PROPERTY);
+  }
+
+  public static int getPlacementLocation(String property)
+  {
+    String tabLocation = getPlacementSettingValue(property);
     int location = JTabbedPane.TOP;
     if (tabLocation.equalsIgnoreCase("top"))
     {
@@ -100,7 +120,7 @@ public class PlacementChooser
   public void saveSelection()
   {
     String placement = getPlacement();
-    Settings.getInstance().setProperty(PLACEMENT_PROPERTY, placement);
+    Settings.getInstance().setProperty(this.propertyName, placement);
   }
 
   private String getPlacement()

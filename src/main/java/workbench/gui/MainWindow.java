@@ -175,6 +175,7 @@ import workbench.gui.macros.MacroPanel;
 import workbench.gui.menu.RecentFileManager;
 import workbench.gui.menu.SqlTabPopup;
 import workbench.gui.profiles.ConnectionGuiHelper;
+import workbench.gui.settings.PlacementChooser;
 import workbench.gui.sql.EditorPanel;
 import workbench.gui.sql.PanelType;
 import workbench.gui.sql.RenameableTab;
@@ -353,6 +354,7 @@ public class MainWindow
 
     dropHandler = new DropHandler(this, sqlTab);
     sqlTab.enableDragDropReordering(this);
+    sqlTab.setTabPlacement(PlacementChooser.getMainWindowTabsLocation());
 
     Settings.getInstance().addPropertyChangeListener(this,
       Settings.PROPERTY_SHOW_TOOLBAR,
@@ -367,7 +369,8 @@ public class MainWindow
       GuiSettings.PROP_TITLE_SHOW_EDITOR_FILE,
       GuiSettings.PROP_TITLE_GROUP_BRACKET,
       GuiSettings.PROP_TITLE_WKSP_BRACKET,
-      GuiSettings.PROP_TITLE_SHOW_URL_USER
+      GuiSettings.PROP_TITLE_SHOW_URL_USER,
+      PlacementChooser.MAINWIN_TAB_PLACEMENT_PROPERTY
     );
     ShortcutManager.getInstance().addChangeListener(this);
     this.worspaceBackupDaemon = new WorkspaceBackupDaemon(this);
@@ -392,6 +395,19 @@ public class MainWindow
 
     int tabPolicy = Settings.getInstance().getIntProperty(Settings.PROPERTY_TAB_POLICY, JTabbedPane.WRAP_TAB_LAYOUT);
     sqlTab.setTabLayoutPolicy(tabPolicy);
+  }
+
+  protected void updateTabPlacement()
+  {
+    final int location = PlacementChooser.getMainWindowTabsLocation();
+    final JComponent content = (JComponent)this.getContentPane();
+    WbSwingUtilities.invokeLater(() ->
+    {
+      sqlTab.setTabPlacement(location);
+      sqlTab.invalidate();
+      content.revalidate();
+      content.doLayout();
+    });
   }
 
   protected final void updateTabPolicy()
@@ -1121,6 +1137,10 @@ public class MainWindow
     else if (GuiSettings.WINDOW_TITLE_PROPS.contains(property))
     {
       updateWindowTitle();
+    }
+    else if (PlacementChooser.MAINWIN_TAB_PLACEMENT_PROPERTY.equals(property))
+    {
+      updateTabPlacement();
     }
   }
 

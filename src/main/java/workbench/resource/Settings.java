@@ -225,6 +225,7 @@ public class Settings
   private static final String TOOLS_PARAM = ".parameter";
   private static final String TOOLS_PREFIX = "workbench.tools.";
 
+  private final WbProperties builtInDefaults;
   private WbProperties props;
   private WbFile configfile;
 
@@ -250,6 +251,7 @@ public class Settings
 
   protected Settings()
   {
+    builtInDefaults = getDefaultProperties();
     initialize();
     renameOldProps();
     migrateProps();
@@ -535,12 +537,11 @@ public class Settings
 
   private void resetDefaults()
   {
-    WbProperties defaults = getDefaultProperties();
-    for (String key : defaults.stringPropertyNames())
+    for (String key : builtInDefaults.stringPropertyNames())
     {
       if (key.startsWith("workbench.db"))
       {
-        setProperty(key, defaults.getProperty(key));
+        setProperty(key, builtInDefaults.getProperty(key));
       }
     }
   }
@@ -2115,16 +2116,6 @@ public class Settings
     return getColor(PROPERTY_EDITOR_SELECTION_BG_COLOR, null);
   }
 
-  public void setEditorSelectedTextColor(Color c)
-  {
-    setColor(PROPERTY_EDITOR_SELECTION_FG_COLOR, c);
-  }
-
-  public Color getEditorSelectedTextColor()
-  {
-    return getColor(PROPERTY_EDITOR_SELECTION_FG_COLOR, null);
-  }
-
   public void setEditorCurrentStmtColor(Color c)
   {
     setColor(PROPERTY_EDITOR_CURRENT_STMT_COLOR, c);
@@ -3660,18 +3651,7 @@ public class Settings
 
   public void setColor(String key, Color c)
   {
-    if (c != null)
-    {
-      this.setProperty(key, colorToString(c));
-    }
-    else
-    {
-      String current = getProperty(key, null);
-      if (current != null && current.startsWith("$"))
-      {
-        this.setProperty(key, null);
-      }
-    }
+    this.setProperty(key, colorToString(c));
   }
 
   public static String colorToString(Color c)
@@ -3926,17 +3906,16 @@ public class Settings
       setProperty("workbench.db.oracle.exclude.synonyms", synRegex);
     }
 
-    WbProperties def = getDefaultProperties();
-    upgradeListProp(def, "workbench.db.oracle.syntax.functions");
+    upgradeListProp(builtInDefaults, "workbench.db.oracle.syntax.functions");
 
     // Adjust the patterns for SELECT ... INTO
-    upgradeProp(def, "workbench.db.postgresql.selectinto.pattern", "(?s)^SELECT\\s+.*INTO\\s+\\p{Print}*\\s*FROM.*");
-    upgradeProp(def, "workbench.db.informix_dynamic_server.selectinto.pattern", "(?s)^SELECT.*FROM.*INTO\\s*\\p{Print}*");
-    upgradeProp(def, "workbench.db.sql.comment.column", "COMMENT ON COLUMN %object_name%.%column% IS '%comment%';");
+    upgradeProp(builtInDefaults, "workbench.db.postgresql.selectinto.pattern", "(?s)^SELECT\\s+.*INTO\\s+\\p{Print}*\\s*FROM.*");
+    upgradeProp(builtInDefaults, "workbench.db.informix_dynamic_server.selectinto.pattern", "(?s)^SELECT.*FROM.*INTO\\s*\\p{Print}*");
+    upgradeProp(builtInDefaults, "workbench.db.sql.comment.column", "COMMENT ON COLUMN %object_name%.%column% IS '%comment%';");
 
-    upgradeProp(def, "workbench.db.oracle.add.column", "ALTER TABLE %table_name% ADD COLUMN %column_name% %datatype% %default_expression% %nullable%");
+    upgradeProp(builtInDefaults, "workbench.db.oracle.add.column", "ALTER TABLE %table_name% ADD COLUMN %column_name% %datatype% %default_expression% %nullable%");
 
-    upgradeListProp(def, "workbench.db.nonullkeyword");
+    upgradeListProp(builtInDefaults, "workbench.db.nonullkeyword");
   }
 
   private void upgradeProp(WbProperties defProps, String property, String originalvalue)
@@ -4198,19 +4177,7 @@ public class Settings
 
   private void fillDefaults()
   {
-    InputStream in = ResourceMgr.getDefaultSettings();
-    try
-    {
-      this.props.loadFromStream(in);
-    }
-    catch (IOException e)
-    {
-      LogMgr.logError(new CallerInfo(){}, "Could not read default settings", e);
-    }
-    finally
-    {
-      FileUtil.closeQuietely(in);
-    }
+    this.props.putAll(this.builtInDefaults);
   }
   // </editor-fold>
 
@@ -4317,9 +4284,8 @@ public class Settings
 
     try
     {
-      WbProperties defaults = getDefaultProperties();
       LogMgr.logDebug(new CallerInfo(){}, "Saving global settings to: " + configfile.getFullpathForLogging());
-      this.props.saveToFile(this.configfile, defaults);
+      this.props.saveToFile(this.configfile, builtInDefaults);
       fileTime = configfile.lastModified();
     }
     catch (Throwable th)
