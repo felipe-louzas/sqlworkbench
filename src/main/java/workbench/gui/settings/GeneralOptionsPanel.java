@@ -140,7 +140,8 @@ public class GeneralOptionsPanel
     showMenuIcons.setSelected(GuiSettings.showMenuIcons());
     varsPerWindow.setSelected(Settings.getInstance().useWindowSpecificVariables());
     restoreExpandedGroups.setSelected(GuiSettings.getRestoreExpandedProfileGroups());
-    ((PlacementChooser)tabLocation).showPlacement();
+    ((PlacementChooser)editorTabPlacement).showPlacement();
+    ((PlacementChooser)resultTabPlacement).showPlacement();
     String iconName = Settings.getInstance().getProperty(IconHandler.PROP_LOADING_IMAGE, IconHandler.DEFAULT_BUSY_IMAGE);
     LoadingImage img = new LoadingImage();
     img.setName(iconName);
@@ -200,7 +201,8 @@ public class GeneralOptionsPanel
     set.setProperty(IconHandler.PROP_CANCEL_IMAGE, cancelImg.getName());
     set.setUseWindowSpecificVariables(varsPerWindow.isSelected());
     applyMasterPassword();
-    ((PlacementChooser)tabLocation).saveSelection();
+    ((PlacementChooser)editorTabPlacement).saveSelection();
+    ((PlacementChooser)resultTabPlacement).saveSelection();
   }
 
   private void applyMasterPassword()
@@ -275,9 +277,11 @@ public class GeneralOptionsPanel
     busyIconLabel = new JLabel();
     cancelIconCombo = new IconListCombobox();
     cancelIconLabel = new JLabel();
+    jPanel1 = new JPanel();
     jLabel1 = new JLabel();
-    tabLocation = new PlacementChooser(MAINWIN_TAB_PLACEMENT_PROPERTY);
-    jPanel3 = new JPanel();
+    editorTabPlacement = new PlacementChooser(MAINWIN_TAB_PLACEMENT_PROPERTY);
+    jLabel2 = new JLabel();
+    resultTabPlacement = new PlacementChooser(RESULT_TAB_PLACEMENT_PROPERTY);
     jPanel5 = new JPanel();
     langLabel = new JLabel();
     languageDropDown = new JComboBox();
@@ -592,19 +596,51 @@ public class GeneralOptionsPanel
     gridBagConstraints.insets = new Insets(0, 12, 1, 0);
     tabOptionsPanel.add(imagePanel, gridBagConstraints);
 
-    jLabel1.setText("Position of editor tabs");
+    jPanel1.setLayout(new GridBagLayout());
+
+    jLabel1.setText(ResourceMgr.getString("LblEditorTabPos")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    tabOptionsPanel.add(jLabel1, gridBagConstraints);
+    jPanel1.add(jLabel1, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = GridBagConstraints.LINE_START;
-    gridBagConstraints.insets = new Insets(3, 16, 5, 0);
-    tabOptionsPanel.add(tabLocation, gridBagConstraints);
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(0, 9, 0, 0);
+    jPanel1.add(editorTabPlacement, gridBagConstraints);
+
+    jLabel2.setText(ResourceMgr.getString("LblResultTabPos")); // NOI18N
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
+    jPanel1.add(jLabel2, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(7, 9, 0, 0);
+    jPanel1.add(resultTabPlacement, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.gridwidth = 3;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
+    tabOptionsPanel.add(jPanel1, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
@@ -612,14 +648,9 @@ public class GeneralOptionsPanel
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(4, 0, 0, 0);
     add(tabOptionsPanel, gridBagConstraints);
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 10;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
-    add(jPanel3, gridBagConstraints);
 
     jPanel5.setLayout(new GridBagLayout());
 
@@ -674,17 +705,17 @@ public class GeneralOptionsPanel
     settingsfilename.setText("Settings");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 13;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
-    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
+    gridBagConstraints.insets = new Insets(10, 0, 0, 0);
     add(settingsfilename, gridBagConstraints);
 
     logfileLabel.setText("Logfile");
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 14;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
@@ -742,14 +773,16 @@ public class GeneralOptionsPanel
   private JCheckBox confirmTabClose;
   private JCheckBox consolidateLog;
   private JLabel daysLabel;
+  private JComboBox<String> editorTabPlacement;
   private JCheckBox enableQuickFilter;
   private JCheckBox exitOnConnectCancel;
   private JCheckBox focusToQuickFilter;
   private JComboBox iconCombobox;
   private JPanel imagePanel;
   private JLabel jLabel1;
+  private JLabel jLabel2;
+  private JPanel jPanel1;
   private JPanel jPanel2;
-  private JPanel jPanel3;
   private JPanel jPanel5;
   private JLabel langLabel;
   private JComboBox languageDropDown;
@@ -757,6 +790,7 @@ public class GeneralOptionsPanel
   private JButton masterPwdButton;
   private JCheckBox onlyActiveTab;
   private JCheckBox restoreExpandedGroups;
+  private JComboBox<String> resultTabPlacement;
   private JCheckBox scrollTabs;
   private JTextField settingsfilename;
   private JCheckBox showMenuIcons;
@@ -765,7 +799,6 @@ public class GeneralOptionsPanel
   private JCheckBox showTabIndex;
   private JCheckBox singlePageHelp;
   private JCheckBox tabLRUclose;
-  private JComboBox<String> tabLocation;
   private JPanel tabOptionsPanel;
   private JTextField updateInterval;
   private JCheckBox varsPerWindow;

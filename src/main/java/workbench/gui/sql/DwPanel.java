@@ -117,7 +117,7 @@ import workbench.util.WbThread;
 
 /**
  * A Panel which displays the result of a SELECT statement and
- * can save changes to the database
+ * can save changes to the database.
  *
  * @author Thomas Kellerer
  */

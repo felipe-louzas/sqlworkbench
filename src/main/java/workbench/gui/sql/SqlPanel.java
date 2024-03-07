@@ -212,6 +212,7 @@ import workbench.gui.filter.FilterDefinitionManager;
 import workbench.gui.macros.MacroClient;
 import workbench.gui.menu.TextPopup;
 import workbench.gui.preparedstatement.ParameterEditor;
+import workbench.gui.settings.PlacementChooser;
 import workbench.gui.toolbar.MainToolbar;
 import workbench.gui.toolbar.ToolbarBuilder;
 
@@ -254,7 +255,7 @@ import workbench.util.WbThread;
 
 /**
  * A panel with an SQL editor (EditorPanel), a log panel and
- * a panel for displaying SQL results (DwPanel)
+ * a panel for displaying SQL results (DwPanel).
  *
  * @see DwPanel
  * @see LogArea
@@ -423,7 +424,7 @@ public class SqlPanel
     }
 
     resultTab.setBorder(WbSwingUtilities.EMPTY_BORDER);
-    resultTab.setTabPlacement(JTabbedPane.TOP);
+    resultTab.setTabPlacement(PlacementChooser.getResultTabLocation());
     resultTab.setFocusable(false);
     resultTab.enableDragDropReordering(this);
     resultTab.hideDisabledButtons(true);
@@ -470,7 +471,8 @@ public class SqlPanel
     Settings.getInstance().addPropertyChangeListener(this,
       ToolbarBuilder.CONFIG_PROPERTY,
       GuiSettings.PROPERTY_RESULTTAB_CLOSE_BUTTON,
-      GuiSettings.PROP_SHOW_TEXT_SELECTION_INFO);
+      GuiSettings.PROP_SHOW_TEXT_SELECTION_INFO,
+      PlacementChooser.RESULT_TAB_PLACEMENT_PROPERTY);
 
     editor.setMacroExpansionEnabled(true, this);
     editor.setBracketCompletionEnabled(true);
@@ -4774,6 +4776,15 @@ public class SqlPanel
       {
         statusBar.removeTextSelectionDisplay(editor);
       }
+    }
+    else if (PlacementChooser.RESULT_TAB_PLACEMENT_PROPERTY.equals(prop))
+    {
+      WbSwingUtilities.invokeLater(() ->
+      {
+        resultTab.setTabPlacement(PlacementChooser.getResultTabLocation());
+        resultTab.invalidate();
+        doLayout();
+      });
     }
     else if (GuiSettings.PROPERTY_RESULTTAB_CLOSE_BUTTON.equals(prop))
     {

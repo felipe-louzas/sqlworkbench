@@ -420,7 +420,7 @@ public class EditorOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(6, 0, 0, 0);
+    gridBagConstraints.insets = new Insets(8, 0, 0, 0);
     jPanel1.add(followCurrentDir, gridBagConstraints);
 
     jLabel1.setText(ResourceMgr.getString("LblEditorDefaultDir")); // NOI18N
@@ -429,7 +429,7 @@ public class EditorOptionsPanel
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
-    gridBagConstraints.insets = new Insets(2, 0, 0, 11);
+    gridBagConstraints.insets = new Insets(4, 0, 0, 11);
     jPanel1.add(jLabel1, gridBagConstraints);
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -438,7 +438,7 @@ public class EditorOptionsPanel
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(5, 0, 0, 0);
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
     jPanel1.add(defaultDir, gridBagConstraints);
 
     storeDirInWksp.setText(ResourceMgr.getString("LblStoreScriptDirInWksp")); // NOI18N
@@ -449,17 +449,18 @@ public class EditorOptionsPanel
     gridBagConstraints.gridy = 0;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
+    gridBagConstraints.insets = new Insets(8, 0, 0, 0);
     jPanel1.add(storeDirInWksp, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 13;
+    gridBagConstraints.gridy = 11;
     gridBagConstraints.gridwidth = 4;
     gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(12, 0, 0, 15);
+    gridBagConstraints.insets = new Insets(0, 0, 0, 15);
     add(jPanel1, gridBagConstraints);
 
     jLabel2.setLabelFor(autoCloseBrackets);

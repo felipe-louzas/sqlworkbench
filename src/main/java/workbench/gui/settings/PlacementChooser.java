@@ -37,6 +37,7 @@ public class PlacementChooser
 {
   public static final String DBEXPLORER_LOCATION_PROPERTY = "workbench.gui.dbobjects.tabletabs";
   public static final String MAINWIN_TAB_PLACEMENT_PROPERTY = "workbench.gui.mainwindow.tablocation";
+  public static final String RESULT_TAB_PLACEMENT_PROPERTY = "workbench.gui.results.tablocation";
 
   private final String propertyName;
 
@@ -92,6 +93,11 @@ public class PlacementChooser
   public static int getMainWindowTabsLocation()
   {
     return getPlacementLocation(MAINWIN_TAB_PLACEMENT_PROPERTY);
+  }
+
+  public static int getResultTabLocation()
+  {
+    return getPlacementLocation(RESULT_TAB_PLACEMENT_PROPERTY);
   }
 
   public static int getPlacementLocation(String property)
