@@ -34,11 +34,10 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.IconMgr;
 
-import workbench.db.KeepAliveDaemon;
-
 import workbench.gui.PanelReloader;
 import workbench.gui.components.CompoundIcon;
 
+import workbench.util.DurationUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -48,7 +47,7 @@ import workbench.util.StringUtil;
 public class AutomaticRefreshMgr
   implements ActionListener
 {
-  private List<PanelEntry> panels = new ArrayList<>();
+  private final List<PanelEntry> panels = new ArrayList<>();
 
   public AutomaticRefreshMgr()
   {
@@ -88,14 +87,20 @@ public class AutomaticRefreshMgr
     return index > -1;
   }
 
-  public synchronized void addRefresh(PanelReloader loader, DwPanel panel, int milliSeconds)
+  public synchronized void addRefresh(PanelReloader loader, DwPanel panel, String interval)
+  {
+    long millis = parseInterval(interval);
+    addRefresh(loader, panel, millis);
+  }
+
+  public synchronized void addRefresh(PanelReloader loader, DwPanel panel, long milliSeconds)
   {
     if (panel == null) return;
     if (milliSeconds < 5) return;
 
     removeRefresh(panel);
 
-    Timer timer = new Timer(milliSeconds, this);
+    Timer timer = new Timer((int)milliSeconds, this);
     int id = panel.getId();
     timer.setActionCommand(Integer.toString(id));
     timer.setRepeats(true);
@@ -106,7 +111,7 @@ public class AutomaticRefreshMgr
     entry.reloader = loader;
     panels.add(entry);
     timer.start();
-    LogMgr.logDebug(new CallerInfo(){}, "Registered panel: " + panel.getName() + ", id=" + id + ", interval=" + KeepAliveDaemon.getTimeDisplay(milliSeconds));
+    LogMgr.logDebug(new CallerInfo(){}, "Registered panel: " + panel.getName() + ", id=" + id + ", interval=" + DurationUtil.getTimeDisplay(milliSeconds));
   }
 
   @Override
@@ -200,7 +205,7 @@ public class AutomaticRefreshMgr
     else
     {
       // not a plain number, assume a number with a unit, e.g. 5m or 30s
-      seconds = (int)KeepAliveDaemon.parseTimeInterval(interval);
+      seconds = (int)DurationUtil.parseDuration(interval);
     }
     return seconds;
   }
@@ -250,7 +255,6 @@ public class AutomaticRefreshMgr
     WeakReference<DwPanel> panel;
     Timer timer;
     final int panelId;
-    int numRepeats;
     PanelReloader reloader;
     PanelEntry(int id)
     {

@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Insets;
 
+import javax.swing.JComponent;
 import javax.swing.border.AbstractBorder;
 
 import workbench.gui.WbSwingUtilities;
@@ -46,12 +47,12 @@ public class DividerBorder
   public static final int VERTICAL_MIDDLE = 16;
   public static final int HORIZONTAL_MIDDLE = 32;
 
-  public static final DividerBorder BOTTOM_DIVIDER = new DividerBorder(BOTTOM);
-  public static final DividerBorder LEFT_DIVIDER = new DividerBorder(LEFT);
-  public static final DividerBorder RIGHT_DIVIDER = new DividerBorder(RIGHT);
-  public static final DividerBorder LEFT_RIGHT_DIVIDER = new DividerBorder(LEFT + RIGHT);
-  public static final DividerBorder TOP_DIVIDER = new DividerBorder(TOP);
-  public static final DividerBorder TOP_BOTTOM_DIVIDER = new DividerBorder(TOP + BOTTOM);
+  public static final DividerBorder BOTTOM_DIVIDER = new DividerBorder(BOTTOM, WbSwingUtilities.getLineBorderColor());
+  public static final DividerBorder LEFT_DIVIDER = new DividerBorder(LEFT, WbSwingUtilities.getLineBorderColor());
+  public static final DividerBorder RIGHT_DIVIDER = new DividerBorder(RIGHT, WbSwingUtilities.getLineBorderColor());
+  public static final DividerBorder LEFT_RIGHT_DIVIDER = new DividerBorder(LEFT + RIGHT, WbSwingUtilities.getLineBorderColor());
+  public static final DividerBorder TOP_DIVIDER = new DividerBorder(TOP, WbSwingUtilities.getLineBorderColor());
+  public static final DividerBorder TOP_BOTTOM_DIVIDER = new DividerBorder(TOP + BOTTOM, WbSwingUtilities.getLineBorderColor());
 
   private final int borderType;
   private Color lineColor;
@@ -71,6 +72,12 @@ public class DividerBorder
     super();
     this.borderType = type;
     this.lineColor= lineColor;
+  }
+
+  public static DividerBorder create(JComponent colorReference, int type)
+  {
+    Color lineColor = WbSwingUtilities.getLineBorderColor(colorReference);
+    return new DividerBorder(DividerBorder.TOP, lineColor);
   }
 
   @Override

@@ -23,14 +23,17 @@ package workbench.db;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
+import workbench.util.DurationUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.SqlUtil;
-import workbench.util.StringUtil;
-import workbench.util.WbThread;
 
 /**
  *
@@ -39,12 +42,12 @@ import workbench.util.WbThread;
 public class KeepAliveDaemon
   implements Runnable
 {
-  private long idleTime;
-  private WbThread idleThread;
-  private boolean stopThread;
-  private WbConnection dbConnection;
-  private String sqlScript;
-  private volatile long lastAction;
+  private final long idleTime;
+  private boolean stopDaemon;
+  private final WbConnection dbConnection;
+  private final String sqlScript;
+  private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+  private ScheduledFuture schedule;
 
   public KeepAliveDaemon(long idle, WbConnection con, String sql)
   {
@@ -55,125 +58,57 @@ public class KeepAliveDaemon
 
   public void startThread()
   {
-    if (this.idleThread != null)
+    if (schedule != null && !schedule.isDone())
     {
       LogMgr.logWarning(new CallerInfo(){}, "startThread() called on already running daemon", new Exception("Backtrace"));
       return;
     }
 
-    LogMgr.logInfo(new CallerInfo(){}, "Initializing keep alive every " + getTimeDisplay(idleTime) + " with sql: " + this.sqlScript);
-    this.idleThread = new WbThread(this, "KeepAlive/" + this.dbConnection.getId());
-    this.idleThread.setPriority(Thread.MIN_PRIORITY);
-    this.lastAction = 0;
-    this.stopThread = false;
-    this.idleThread.start();
+    LogMgr.logInfo(new CallerInfo(){}, "Initializing keep alive every " + DurationUtil.getTimeDisplay(idleTime) + " with sql: " + this.sqlScript);
+    scheduleTask();
+    stopDaemon = false;
   }
 
   public void shutdown()
   {
-    if (this.idleThread != null)
+    try
     {
-      try
-      {
-        this.stopThread = true;
-        this.dbConnection = null;
-        this.idleThread.interrupt();
-      }
-      catch (Exception e)
-      {
-        LogMgr.logWarning(new CallerInfo(){}, "Error when stopping thread", e);
-      }
+      this.stopDaemon = true;
+      this.schedule.cancel(true);
     }
-  }
-
-  public void setLastDbAction(long millis)
-  {
-    this.lastAction = millis;
+    catch (Exception e)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Error when stopping thread", e);
+    }
   }
 
   @Override
   public void run()
   {
-    while (!stopThread)
+    if (this.stopDaemon) return;
+
+    runSqlScript();
+
+    if (!this.stopDaemon)
     {
-      if (this.dbConnection == null)
-      {
-        stopThread = true;
-        break;
-      }
-
-      long now = System.currentTimeMillis();
-
-      try
-      {
-        long newSleep = idleTime - (now - lastAction);
-        if (newSleep <= 0)
-        {
-          newSleep = idleTime;
-        }
-        LogMgr.logDebug(new CallerInfo(){}, Thread.currentThread().getName() + ": sleeping for " + newSleep + "ms");
-        Thread.sleep(idleTime);
-      }
-      catch (InterruptedException e)
-      {
-        if (!this.stopThread)
-        {
-          LogMgr.logError(new CallerInfo(){}, Thread.currentThread().getName() + ": Thread was interrupted!", e);
-        }
-      }
-
-      if (stopThread) break;
-
-      now = System.currentTimeMillis();
-
-      if ((now - lastAction) > idleTime)
-      {
-        runSqlScript();
-        this.lastAction = now;
-      }
+      scheduleTask();
     }
   }
 
-  public static long parseTimeInterval(String interval)
+  public void setLastDbAction(long millis)
   {
-    if (StringUtil.isBlank(interval)) return 0;
-    long result = 0;
-
-    interval = interval.trim();
-
-    if (interval.endsWith("s"))
+    // Restart the schedule
+    if (schedule != null)
     {
-      interval = interval.substring(0, interval.length() - 1);
-      result = StringUtil.getLongValue(interval, 0) * 1000;
+      schedule.cancel(false);
     }
-    else if (interval.endsWith("m"))
-    {
-      interval = interval.substring(0, interval.length() - 1);
-      result = StringUtil.getLongValue(interval, 0) * 1000 * 60;
-    }
-    else if (interval.endsWith("h"))
-    {
-      interval = interval.substring(0, interval.length() - 1);
-      result = StringUtil.getLongValue(interval, 0) * 1000 * 60 * 60;
-    }
-    else
-    {
-      result = StringUtil.getLongValue(interval, 0);
-    }
-    return result;
+    scheduleTask();
   }
 
-  public static String getTimeDisplay(long millis)
+  private void scheduleTask()
   {
-    if (millis == 0) return "";
-
-    if (millis < 60 * 1000)
-    {
-      return Long.toString((millis / 1000)) + "s";
-    }
-    return Long.toString((millis / (60 * 1000))) + "m";
+    schedule = executor.schedule(this, idleTime, TimeUnit.MILLISECONDS);
   }
-
 
   private void runSqlScript()
   {
@@ -184,7 +119,7 @@ public class KeepAliveDaemon
     try
     {
       stmt = this.dbConnection.createStatement();
-      LogMgr.logInfo(new CallerInfo(){}, Thread.currentThread().getName() + " - executing SQL: " + this.sqlScript);
+      LogMgr.logInfo(new CallerInfo(){}, "Running keep alive for [" + dbConnection.getId() + "]: " + this.sqlScript);
       stmt.execute(sqlScript);
     }
     catch (SQLException sql)
@@ -200,4 +135,5 @@ public class KeepAliveDaemon
       JdbcUtils.closeStatement(stmt);
     }
   }
+
 }

@@ -139,7 +139,7 @@ public class DbTreePanel
     setName("dbtree");
     currentSchemaLabel = new WbLabelField();
     currentSchemaLabel.setBorder(new EmptyBorder(0,0,0,0));
-    DividerBorder d = new DividerBorder(DividerBorder.TOP, WbSwingUtilities.getLineBorderColor(currentSchemaLabel));
+    DividerBorder d = DividerBorder.create(currentSchemaLabel, DividerBorder.TOP);
     statusBar = new WbStatusLabel(new CompoundBorder(d, new EmptyBorder(2,2,2,0)));
     tree = new DbObjectsTree(statusBar);
     tree.addMouseListener(this);

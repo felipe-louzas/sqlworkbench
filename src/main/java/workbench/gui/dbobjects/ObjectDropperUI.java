@@ -21,7 +21,6 @@
  */
 package workbench.gui.dbobjects;
 
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
@@ -65,12 +64,11 @@ public class ObjectDropperUI
   extends JPanel
   implements RowActionMonitor, WindowListener
 {
-
   private JDialog dialog;
   private boolean cancelled;
   private boolean running;
   private boolean success;
-  private ObjectDropper dropper;
+  private final ObjectDropper dropper;
   private Thread checkThread;
   private Thread dropThread;
 
@@ -79,8 +77,7 @@ public class ObjectDropperUI
     super();
     dropper = drop;
     initComponents();
-    Color lineColor = WbSwingUtilities.getLineBorderColor(this);
-    statusLabel.setBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, lineColor));
+    statusLabel.setBorder(DividerBorder.TOP_BOTTOM_DIVIDER);
     if (!dropper.supportsFKSorting())
     {
       checkFKButton.setEnabled(false);

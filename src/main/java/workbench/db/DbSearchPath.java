@@ -28,6 +28,8 @@ import workbench.db.ibm.Db2SearchPath;
 import workbench.db.postgres.PostgresUtil;
 import workbench.db.redshift.RedshiftSearchPathHandler;
 
+import workbench.util.CollectionUtil;
+
 /**
  *
  * @author Thomas Kellerer
@@ -67,7 +69,7 @@ public interface DbSearchPath
     {
       if (defaultSchema != null && dbConn != null)
       {
-        return Collections.singletonList(dbConn.getMetadata().adjustSchemaNameCase(defaultSchema));
+        return CollectionUtil.arrayList(dbConn.getMetadata().adjustSchemaNameCase(defaultSchema));
       }
       return PostgresUtil.getSearchPath(dbConn);
     }

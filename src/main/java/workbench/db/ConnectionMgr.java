@@ -199,7 +199,10 @@ public class ConnectionMgr
 
     LogMgr.logInfo(ci, "Creating new connection for " + profile.debugString());
     WbConnection conn = this.connect(profile, connId);
+
+    profile.applyProfileVariables(variablePoolId);
     conn.runPostConnectScript(variablePoolId);
+
     String driverVersion = conn.getDriverVersion();
     String jdbcVersion = conn.getJDBCVersion();
     String dbVersion = conn.getDatabaseProductVersion();

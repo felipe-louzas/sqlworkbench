@@ -103,8 +103,7 @@ public class TableAnnotationProcessor
       else if (refreshMgr != null && annotation.is(RefreshAnnotation.ANNOTATION))
       {
         String interval = annotation.getValue();
-        int milliSeconds = AutomaticRefreshMgr.parseInterval(interval);
-        refreshMgr.addRefresh(reloader, panel, milliSeconds);
+        refreshMgr.addRefresh(reloader, panel, interval);
       }
       else if (annotation.is(MacroAnnotation.ANNOTATION))
       {

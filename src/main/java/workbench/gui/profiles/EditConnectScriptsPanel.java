@@ -28,7 +28,9 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -38,12 +40,13 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ConnectionProfile;
-import workbench.db.KeepAliveDaemon;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbTraversalPolicy;
 import workbench.gui.sql.EditorPanel;
+
+import workbench.util.DurationUtil;
 
 /**
  * @author Thomas Kellerer
@@ -52,33 +55,41 @@ public class EditConnectScriptsPanel
   extends JPanel
   implements ValidatingComponent
 {
-  private EditorPanel postConnectEditor;
-  private EditorPanel preDisconnectEditor;
-  private EditorPanel keepAliveScriptEditor;
-  private JTextField keepAliveInterval;
+  private final EditorPanel postConnectEditor;
+  private final EditorPanel preDisconnectEditor;
+  private final EditorPanel keepAliveScriptEditor;
+  private final JTextField keepAliveInterval;
+  private final JCheckBox echoStatementsCbx;
 
   public EditConnectScriptsPanel(ConnectionProfile profile)
   {
     super();
-    if (profile == null) throw new NullPointerException("Null profile specified!");
+    if (profile == null) throw new NullPointerException("No profile specified!");
 
     this.setLayout(new GridBagLayout());
+    this.echoStatementsCbx = new JCheckBox(ResourceMgr.getString("LblEchoConnectStmts"));
+    this.echoStatementsCbx.setToolTipText(ResourceMgr.getDescription("LblEchoConnectStmts"));
+    this.echoStatementsCbx.setBorder(WbSwingUtilities.EMPTY_BORDER);
+    this.echoStatementsCbx.setSelected(profile.getEchoConnectScriptStatements());
 
     JPanel p1 = new JPanel(new BorderLayout(0,5));
     JLabel l1 = new JLabel(ResourceMgr.getString("LblPostConnectScript"));
     postConnectEditor = EditorPanel.createSqlEditor();
     postConnectEditor.setText(profile.getPostConnectScript());
+    postConnectEditor.setBorder(WbSwingUtilities.createLineBorder(this));
     Dimension d = new Dimension(200,200);
     postConnectEditor.setPreferredSize(d);
     p1.add(l1, BorderLayout.NORTH);
     p1.add(postConnectEditor, BorderLayout.CENTER);
+    p1.add(echoStatementsCbx, BorderLayout.SOUTH);
 
     JPanel p2 = new JPanel(new BorderLayout(0,5));
     JLabel l2 = new JLabel(ResourceMgr.getString("LblPreDisconnectScript"));
     preDisconnectEditor = EditorPanel.createSqlEditor();
     preDisconnectEditor.setText(profile.getPreDisconnectScript());
     preDisconnectEditor.setPreferredSize(d);
-    preDisconnectEditor.setCaretVisible(false);
+
+    preDisconnectEditor.setBorder(WbSwingUtilities.createLineBorder(this));
     p2.add(preDisconnectEditor, BorderLayout.CENTER);
     p2.add(l2, BorderLayout.NORTH);
 
@@ -87,7 +98,8 @@ public class EditConnectScriptsPanel
     keepAliveScriptEditor = EditorPanel.createSqlEditor();
     keepAliveScriptEditor.setText(profile.getIdleScript());
     keepAliveScriptEditor.setPreferredSize(d);
-    keepAliveScriptEditor.setCaretVisible(false);
+    keepAliveScriptEditor.setBorder(WbSwingUtilities.createLineBorder(this));
+
     p3.add(keepAliveScriptEditor, BorderLayout.CENTER);
     p3.add(l3, BorderLayout.NORTH);
     JPanel p4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -96,7 +108,7 @@ public class EditConnectScriptsPanel
     p4.add(time);
 
     keepAliveInterval = new JTextField(8);
-    keepAliveInterval.setText(KeepAliveDaemon.getTimeDisplay(profile.getIdleTime()));
+    keepAliveInterval.setText(DurationUtil.getTimeDisplay(profile.getIdleTime()));
     p4.add(keepAliveInterval);
     p3.add(p4, BorderLayout.SOUTH);
 
@@ -106,23 +118,31 @@ public class EditConnectScriptsPanel
     c.weightx = 1.0;
     c.weighty = 0.5;
     c.fill = GridBagConstraints.BOTH;
+    c.insets = new Insets(0,0,16,0);
     this.add(p1, c);
 
     c.gridy ++;
-    c.insets = WbSwingUtilities.getEmptyInsets();
+    //c.insets = new Insets(0,0,8,0);
     this.add(p2, c);
 
     c.gridy ++;
+    c.insets = new Insets(0,0,0,0);
     this.add(p3, c);
 
     WbTraversalPolicy pol = new WbTraversalPolicy();
     pol.addComponent(this.postConnectEditor);
+    pol.addComponent(this.echoStatementsCbx);
     pol.addComponent(this.preDisconnectEditor);
     pol.addComponent(this.keepAliveScriptEditor);
     pol.addComponent(this.keepAliveInterval);
     pol.setDefaultComponent(this.postConnectEditor);
     this.setFocusTraversalPolicy(pol);
     this.setFocusCycleRoot(false);
+  }
+
+  public boolean getEchoConnectStatement()
+  {
+    return echoStatementsCbx.isSelected();
   }
 
   public String getKeepAliveScript()
@@ -132,8 +152,7 @@ public class EditConnectScriptsPanel
 
   private long getIdleTime()
   {
-    String s = this.keepAliveInterval.getText().trim().toLowerCase();
-    return KeepAliveDaemon.parseTimeInterval(s);
+    return DurationUtil.parseDuration(keepAliveInterval.getText());
   }
 
   public String getPostConnectScript()
@@ -167,6 +186,7 @@ public class EditConnectScriptsPanel
     profile.setPreDisconnectScript(p.getPreDisconnectScript());
     profile.setPostConnectScript(p.getPostConnectScript());
     profile.setIdleScript(p.getKeepAliveScript());
+    profile.setEchoConnectScriptStatements(p.getEchoConnectStatement());
     profile.setIdleTime(p.getIdleTime());
     return true;
   }

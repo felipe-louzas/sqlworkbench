@@ -117,12 +117,12 @@ public class DwStatusBar
       this.executionTimer = new Timer(timerInterval, this);
     }
 
-    Color c = WbSwingUtilities.getLineBorderColor(this);
+    Color lineBorderColor = WbSwingUtilities.getLineBorderColor(this);
     if (showEditorStatus)
     {
       this.editorStatus = new JLabel();
       this.editorStatus.setHorizontalAlignment(SwingConstants.CENTER);
-      Border d = new DividerBorder(DividerBorder.LEFT_RIGHT, c);
+      Border d = new DividerBorder(DividerBorder.LEFT_RIGHT, lineBorderColor);
       Border db = new CompoundBorder(d, new EmptyBorder(0,6,0,6));
       this.editorStatus.setBorder(db);
       this.editorStatus.setToolTipText(ResourceMgr.getDescription("LblEditorStatus"));
@@ -132,7 +132,7 @@ public class DwStatusBar
     }
 
     execTime = new JLabel();
-    execTime.setBorder(new CompoundBorder(new DividerBorder(DividerBorder.RIGHT, c), new EmptyBorder(0,2,0,0)));
+    execTime.setBorder(new CompoundBorder(new DividerBorder(DividerBorder.RIGHT, lineBorderColor), new EmptyBorder(0,2,0,0)));
     execTime.setHorizontalAlignment(SwingConstants.RIGHT);
     execTime.setToolTipText(ResourceMgr.getString("MsgTotalSqlTime"));
 

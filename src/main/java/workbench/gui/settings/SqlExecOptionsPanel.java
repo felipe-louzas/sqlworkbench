@@ -49,11 +49,11 @@ import workbench.resource.GuiSettings;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
-import workbench.db.KeepAliveDaemon;
-
 import workbench.gui.components.DividerBorder;
 import workbench.gui.components.TextFieldWidthAdjuster;
 import workbench.gui.help.HelpManager;
+
+import workbench.util.DurationUtil;
 
 /**
  *
@@ -72,7 +72,7 @@ public class SqlExecOptionsPanel
     adjuster.adjustAllFields(this);
     useSystemTray.setVisible(SystemTray.isSupported());
     useSystemTray.setEnabled(SystemTray.isSupported());
-    jPanel4.setBorder(new CompoundBorder(DividerBorder.TOP_DIVIDER, new EmptyBorder(5, 0, 0, 0)));
+    jPanel4.setBorder(new CompoundBorder(DividerBorder.create(this, DividerBorder.TOP), new EmptyBorder(5, 0, 0, 0)));
   }
 
   @Override
@@ -123,7 +123,7 @@ public class SqlExecOptionsPanel
     useSystemTray.setEnabled(SystemTray.isSupported() && GuiSettings.showScriptFinishedAlert());
     useSystemTray.setSelected(GuiSettings.useSystemTrayForAlert());
     long duration = GuiSettings.getScriptFinishedAlertDuration();
-    String durationDisplay = KeepAliveDaemon.getTimeDisplay(duration);
+    String durationDisplay = DurationUtil.getTimeDisplay(duration);
     alertDuration.setText(durationDisplay);
     alertDuration.setEnabled(showFinishAlert.isSelected());
   }
@@ -163,7 +163,7 @@ public class SqlExecOptionsPanel
 
     GuiSettings.setShowScriptFinishedAlert(showFinishAlert.isSelected());
     String v = alertDuration.getText().trim();
-    long duration = KeepAliveDaemon.parseTimeInterval(v);
+    long duration = DurationUtil.parseDuration(v);
     GuiSettings.setScriptFinishedAlertDuration(duration);
     if (SystemTray.isSupported())
     {

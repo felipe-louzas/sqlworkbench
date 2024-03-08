@@ -2012,11 +2012,10 @@ public class MainWindow
   @Override
   public void connected(WbConnection conn)
   {
-    conn.getProfile().applyProfileVariables(getVariablePoolID());
-
     Optional<MainPanel> panel = this.getCurrentPanel();
-    if (!panel.isPresent())
+    if (panel.isEmpty())
     {
+      // Just in case the connection thread isn't quite finished yet.
       Thread.yield();
       panel = this.getCurrentPanel();
       LogMgr.logError(new CallerInfo(){}, "Connection established but no current panel!", new NullPointerException("Backtrace"));

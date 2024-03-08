@@ -1770,6 +1770,11 @@ public class WbSwingUtilities
     return getLineBorderColor(background);
   }
 
+  public static Color getLineBorderColor()
+  {
+    return getLineBorderColor(UIManager.getColor("Panel.background"));
+  }
+  
   public static Color getLineBorderColor(Color background)
   {
     Color borderColor;

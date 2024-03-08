@@ -96,6 +96,7 @@ public class IniProfileStorage
   private static final String PROP_SCRIPT_IDLE = ".script.idle";
   private static final String PROP_SCRIPT_DISCONNECT = ".script.disconnect";
   private static final String PROP_SCRIPT_CONNECT = ".script.connect";
+  private static final String PROP_SCRIPT_ECHO = ".script.echo.statements";
   private static final String PROP_MACROFILE = ".macro.file";
   private static final String PROP_COPY_PROPS = ".copy.props";
   private static final String PROP_CONN_PROPS = ".connection.properties";
@@ -154,6 +155,7 @@ public class IniProfileStorage
 
   private ConnectionProfile readProfile(File baseDir, String key, WbProperties props)
   {
+    ConnectionProfile def = new ConnectionProfile();
     key = "." + key;
     String url = props.getProperty(PROP_PREFIX + key + PROP_URL, null);
     String tags = props.getProperty(PROP_PREFIX + key + PROP_TAGS, null);
@@ -180,25 +182,26 @@ public class IniProfileStorage
     Properties vars = toProperties(xmlVars);
     Color color = Settings.stringToColor(colorValue);
 
-    boolean autoCommit = props.getBoolProperty(PROP_PREFIX + key + PROP_AUTOCOMMMIT, false);
-    boolean storeCache = props.getBoolProperty(PROP_PREFIX + key + PROP_STORECACHE, false);
-    boolean storePwd = props.getBoolProperty(PROP_PREFIX + key + PROP_STORE_PWD, true);
-    boolean rollback = props.getBoolProperty(PROP_PREFIX + key + PROP_ROLLBACK_DISCONNECT, false);
-    boolean seperateConnection = props.getBoolProperty(PROP_PREFIX + key + PROP_SEPARATECONNECTION, false);
-    boolean ignoreDropError = props.getBoolProperty(PROP_PREFIX + key + PROP_IGNOREDROPERRORS, false);
-    boolean trimCharData  = props.getBoolProperty(PROP_PREFIX + key + PROP_TRIMCHARDATA, false);
-    boolean sysDBA  = props.getBoolProperty(PROP_PREFIX + key + PROP_ORACLESYSDBA, false);
-    boolean detectOpen = props.getBoolProperty(PROP_PREFIX + key + PROP_DETECTOPENTRANSACTION, false);
-    boolean readonly = props.getBoolProperty(PROP_PREFIX + key + PROP_READONLY, false);
-    boolean preventNoWhere = props.getBoolProperty(PROP_PREFIX + key + PROP_PREVENT_NO_WHERE, false);
-    boolean confirmUpdates = props.getBoolProperty(PROP_PREFIX + key + PROP_CONFIRM_UPDATES, false);
-    boolean promptUsername = props.getBoolProperty(PROP_PREFIX + key + PROP_PROMPTUSERNAME, false);
-    boolean emptyStringIsNull = props.getBoolProperty(PROP_PREFIX + key + PROP_EMPTY_STRING_IS_NULL, false);
-    boolean includeNullInInsert = props.getBoolProperty(PROP_PREFIX + key + PROP_INCLUDE_NULL_ON_INSERT, true);
-    boolean removeComments = props.getBoolProperty(PROP_PREFIX + key + PROP_REMOVE_COMMENTS, false);
-    boolean rememberExplorerSchema = props.getBoolProperty(PROP_PREFIX + key + PROP_REMEMEMBER_SCHEMA, false);
-    boolean hideWarnings = props.getBoolProperty(PROP_PREFIX + key + PROP_HIDE_WARNINGS, false);
-    boolean copyProps = props.getBoolProperty(PROP_PREFIX + key + PROP_COPY_PROPS, false);
+    boolean echoConnectStatements = props.getBoolProperty(PROP_PREFIX + key + PROP_SCRIPT_ECHO, def.getEchoConnectScriptStatements());
+    boolean autoCommit = props.getBoolProperty(PROP_PREFIX + key + PROP_AUTOCOMMMIT, def.getAutocommit());
+    boolean storeCache = props.getBoolProperty(PROP_PREFIX + key + PROP_STORECACHE, def.getStoreCacheLocally());
+    boolean storePwd = props.getBoolProperty(PROP_PREFIX + key + PROP_STORE_PWD, def.getStorePassword());
+    boolean rollback = props.getBoolProperty(PROP_PREFIX + key + PROP_ROLLBACK_DISCONNECT, def.getRollbackBeforeDisconnect());
+    boolean seperateConnection = props.getBoolProperty(PROP_PREFIX + key + PROP_SEPARATECONNECTION, def.getUseSeparateConnectionPerTab());
+    boolean ignoreDropError = props.getBoolProperty(PROP_PREFIX + key + PROP_IGNOREDROPERRORS, def.getIgnoreDropErrors());
+    boolean trimCharData  = props.getBoolProperty(PROP_PREFIX + key + PROP_TRIMCHARDATA, def.getTrimCharData());
+    boolean sysDBA  = props.getBoolProperty(PROP_PREFIX + key + PROP_ORACLESYSDBA, def.getOracleSysDBA());
+    boolean detectOpen = props.getBoolProperty(PROP_PREFIX + key + PROP_DETECTOPENTRANSACTION, def.getDetectOpenTransaction());
+    boolean readonly = props.getBoolProperty(PROP_PREFIX + key + PROP_READONLY, def.isReadOnly());
+    boolean preventNoWhere = props.getBoolProperty(PROP_PREFIX + key + PROP_PREVENT_NO_WHERE, def.getPreventDMLWithoutWhere());
+    boolean confirmUpdates = props.getBoolProperty(PROP_PREFIX + key + PROP_CONFIRM_UPDATES, def.getConfirmUpdates());
+    boolean promptUsername = props.getBoolProperty(PROP_PREFIX + key + PROP_PROMPTUSERNAME, def.getPromptForUsername());
+    boolean emptyStringIsNull = props.getBoolProperty(PROP_PREFIX + key + PROP_EMPTY_STRING_IS_NULL, def.getEmptyStringIsNull());
+    boolean includeNullInInsert = props.getBoolProperty(PROP_PREFIX + key + PROP_INCLUDE_NULL_ON_INSERT, def.getIncludeNullInInsert());
+    boolean removeComments = props.getBoolProperty(PROP_PREFIX + key + PROP_REMOVE_COMMENTS, def.getRemoveComments());
+    boolean rememberExplorerSchema = props.getBoolProperty(PROP_PREFIX + key + PROP_REMEMEMBER_SCHEMA, def.getStoreExplorerSchema());
+    boolean hideWarnings = props.getBoolProperty(PROP_PREFIX + key + PROP_HIDE_WARNINGS, def.isHideWarnings());
+    boolean copyProps = props.getBoolProperty(PROP_PREFIX + key + PROP_COPY_PROPS, def.getCopyExtendedPropsToSystem());
 
     int idleTime = props.getIntProperty(PROP_PREFIX + key + PROP_IDLE_TIME, -1);
     int size = props.getIntProperty(PROP_PREFIX + key + PROP_FETCHSIZE, -1);
@@ -296,6 +299,7 @@ public class IniProfileStorage
     profile.setAutocommit(autoCommit);
     profile.setPreDisconnectScript(preDisconnect);
     profile.setPostConnectScript(postConnect);
+    profile.setEchoConnectScriptStatements(echoConnectStatements);
     profile.setIdleScript(idleScript);
     profile.setIdleTime(idleTime);
     profile.setStorePassword(storePwd);
@@ -358,7 +362,7 @@ public class IniProfileStorage
 
   private void storeProfile(String key, ConnectionProfile profile, WbProperties props)
   {
-    ConnectionProfile defaultValues = new ConnectionProfile();
+    ConnectionProfile def = new ConnectionProfile();
 
     key = "." + key;
     props.setProperty(PROP_PREFIX + key + PROP_URL, profile.getUrl());
@@ -385,22 +389,23 @@ public class IniProfileStorage
 
     writeSshConfig(props, PROP_PREFIX, key, profile.getSshConfig());
 
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_STORECACHE, profile.getStoreCacheLocally(), defaultValues.getStoreCacheLocally());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_ROLLBACK_DISCONNECT, profile.getRollbackBeforeDisconnect(), defaultValues.getRollbackBeforeDisconnect());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_SEPARATECONNECTION, profile.getUseSeparateConnectionPerTab(), defaultValues.getUseSeparateConnectionPerTab());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_IGNOREDROPERRORS, profile.getIgnoreDropErrors(), defaultValues.getIgnoreDropErrors());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_TRIMCHARDATA, profile.getTrimCharData(), defaultValues.getTrimCharData());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_ORACLESYSDBA, profile.getOracleSysDBA(), defaultValues.getOracleSysDBA());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_DETECTOPENTRANSACTION, profile.getDetectOpenTransaction(), defaultValues.getDetectOpenTransaction());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_READONLY, profile.isReadOnly(), defaultValues.isReadOnly());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_PREVENT_NO_WHERE, profile.getPreventDMLWithoutWhere(), defaultValues.getPreventDMLWithoutWhere());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_CONFIRM_UPDATES, profile.getConfirmUpdates(), defaultValues.getConfirmUpdates());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_PROMPTUSERNAME, profile.getPromptForUsername(), defaultValues.getPromptForUsername());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_EMPTY_STRING_IS_NULL, profile.getEmptyStringIsNull(), defaultValues.getEmptyStringIsNull());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_INCLUDE_NULL_ON_INSERT, profile.getIncludeNullInInsert(), defaultValues.getIncludeNullInInsert());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_REMOVE_COMMENTS, profile.getRemoveComments(), defaultValues.getRemoveComments());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_REMEMEMBER_SCHEMA, profile.getStoreExplorerSchema(), defaultValues.getStoreExplorerSchema());
-    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_HIDE_WARNINGS, profile.isHideWarnings(), defaultValues.isHideWarnings());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_STORECACHE, profile.getStoreCacheLocally(), def.getStoreCacheLocally());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_ROLLBACK_DISCONNECT, profile.getRollbackBeforeDisconnect(), def.getRollbackBeforeDisconnect());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_SEPARATECONNECTION, profile.getUseSeparateConnectionPerTab(), def.getUseSeparateConnectionPerTab());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_IGNOREDROPERRORS, profile.getIgnoreDropErrors(), def.getIgnoreDropErrors());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_TRIMCHARDATA, profile.getTrimCharData(), def.getTrimCharData());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_ORACLESYSDBA, profile.getOracleSysDBA(), def.getOracleSysDBA());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_DETECTOPENTRANSACTION, profile.getDetectOpenTransaction(), def.getDetectOpenTransaction());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_READONLY, profile.isReadOnly(), def.isReadOnly());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_PREVENT_NO_WHERE, profile.getPreventDMLWithoutWhere(), def.getPreventDMLWithoutWhere());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_CONFIRM_UPDATES, profile.getConfirmUpdates(), def.getConfirmUpdates());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_PROMPTUSERNAME, profile.getPromptForUsername(), def.getPromptForUsername());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_EMPTY_STRING_IS_NULL, profile.getEmptyStringIsNull(), def.getEmptyStringIsNull());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_INCLUDE_NULL_ON_INSERT, profile.getIncludeNullInInsert(), def.getIncludeNullInInsert());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_REMOVE_COMMENTS, profile.getRemoveComments(), def.getRemoveComments());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_REMEMEMBER_SCHEMA, profile.getStoreExplorerSchema(), def.getStoreExplorerSchema());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_HIDE_WARNINGS, profile.isHideWarnings(), def.isHideWarnings());
+    setNonDefaultProperty(props, PROP_PREFIX + key + PROP_SCRIPT_ECHO, profile.getEchoConnectScriptStatements(), def.getEchoConnectScriptStatements());
 
     if (profile.getGroups().size() > 0)
     {
@@ -408,7 +413,7 @@ public class IniProfileStorage
     }
 
     props.setProperty(PROP_PREFIX + key + PROP_SCRIPT_IDLE, profile.getIdleScript());
-    if (profile.getIdleTime() != defaultValues.getIdleTime())
+    if (profile.getIdleTime() != def.getIdleTime())
     {
       props.setProperty(PROP_PREFIX + key + PROP_IDLE_TIME, Long.toString(profile.getIdleTime()));
     }

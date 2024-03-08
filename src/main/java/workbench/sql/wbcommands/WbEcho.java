@@ -133,6 +133,10 @@ public class WbEcho
         return result;
       }
     }
+    else
+    {
+      line = StringUtil.trimQuotes(line);
+    }
 
     if (line != null && line.startsWith("!!"))
     {

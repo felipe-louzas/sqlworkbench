@@ -54,11 +54,11 @@ public class ImportOptionsPanel
   extends JPanel
   implements EncodingSelector, ActionListener, ValidatingComponent
 {
-  private JPanel typePanel;
-  private CardLayout card;
-  private JComboBox typeSelector;
-  private GeneralImportOptionsPanel generalOptions;
-  private TextOptionsPanel textOptions;
+  private final JPanel typePanel;
+  private final CardLayout card;
+  private final JComboBox typeSelector;
+  private final GeneralImportOptionsPanel generalOptions;
+  private final TextOptionsPanel textOptions;
   private ProducerFactory.ImportType currentType = null;
 
   public ImportOptionsPanel()

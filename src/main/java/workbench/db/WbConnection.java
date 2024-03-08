@@ -62,6 +62,7 @@ import workbench.sql.StatementRunnerResult;
 import workbench.sql.parser.ParserType;
 import workbench.sql.parser.ScriptParser;
 import workbench.sql.preparedstatement.PreparedStatementPool;
+import workbench.sql.wbcommands.StringResultLogger;
 
 import workbench.util.DdlObjectInfo;
 import workbench.util.ExceptionUtil;
@@ -137,7 +138,7 @@ public class WbConnection
     this.id = id;
     this.profile = profile;
   }
-  
+
   /**
    * Create a new wrapper connection around the original SQL connection.
    *
@@ -542,7 +543,7 @@ public class WbConnection
     if (this.profile == null) return;
     if (this.sqlConnection == null) return;
     String sql = profile.getPreDisconnectScript();
-    runConnectScript(sql, "disconnect", variablePoolId);
+    runConnectScript(sql, "disconnect", variablePoolId, false);
   }
 
   void runPostConnectScript(String variablePoolId)
@@ -550,7 +551,7 @@ public class WbConnection
     if (this.profile == null) return;
     if (this.sqlConnection == null) return;
     String sql = profile.getPostConnectScript();
-    runConnectScript(sql, "connect", variablePoolId);
+    runConnectScript(sql, "connect", variablePoolId, profile.getEchoConnectScriptStatements());
     applyFilterReplacements(getSchemaFilter());
     applyFilterReplacements(getCatalogFilter());
   }
@@ -565,7 +566,7 @@ public class WbConnection
     filter.setReplacements(replacements);
   }
 
-  private synchronized void runConnectScript(String sql, String type, String variablePoolId)
+  private synchronized void runConnectScript(String sql, String type, String variablePoolId, boolean echoStatements)
   {
     if (StringUtil.isBlank(sql)) return;
 
@@ -576,6 +577,9 @@ public class WbConnection
     runner.setVariablePoolID(variablePoolId);
     runner.setConnection(this);
     runner.setErrorReportLevel(ErrorReportLevel.none);
+
+    StringResultLogger logger = new StringResultLogger();
+    runner.setMessageLogger(logger);
 
     ScriptParser p = new ScriptParser(sql);
     p.setParserType(ParserType.getTypeFromConnection(this));
@@ -600,8 +604,12 @@ public class WbConnection
         try
         {
           StatementRunnerResult result = runner.runStatement(command);
-          String msg = ResourceMgr.getString(resKey) + " " + stmtSql;
-          messages.append(msg);
+          if (echoStatements)
+          {
+            String msg = ResourceMgr.getString(resKey) + " " + stmtSql + "\n";
+            messages.append(msg);
+          }
+
           LogMgr.logDebug(ci, "  (" + getId() + ") Executed statement: " + stmtSql);
           if (!result.isSuccess())
           {
@@ -613,12 +621,19 @@ public class WbConnection
             {
               messages.append(error.getErrorMessage());
             }
-            else if (result.hasMessages())
-            {
-              messages.append(result.getMessages());
-            }
+            messages.append("\n");
           }
-          messages.append("\n");
+
+          if (result.hasMessages())
+          {
+            messages.append(result.getMessages());
+            messages.append("\n");
+          }
+          else if (logger.getMessages().getLength() > 0)
+          {
+            messages.append(logger.getMessages().getMessage());
+            messages.append("\n");
+          }
         }
         finally
         {
@@ -636,6 +651,7 @@ public class WbConnection
       messages.append(command);
       messages.append('\n');
       messages.append(e.getMessage());
+      messages.append('\n');
     }
     finally
     {

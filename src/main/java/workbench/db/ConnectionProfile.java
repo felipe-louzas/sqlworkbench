@@ -109,7 +109,7 @@ public class ConnectionProfile
   private boolean removeComments;
   private boolean rememberExplorerSchema;
   private boolean hideWarnings;
-
+  private boolean echoConnectScriptStatements = true;
   private String postConnectScript;
   private String preDisconnectScript;
   private String idleScript;
@@ -1208,6 +1208,7 @@ public class ConnectionProfile
     result.setDefaultDirectory(defaultDirectory);
     result.setPreDisconnectScript(preDisconnectScript);
     result.setPostConnectScript(postConnectScript);
+    result.setEchoConnectScriptStatements(echoConnectScriptStatements);
     result.setInfoDisplayColor(infoColor);
     result.setReadOnly(readOnly);
     result.setAlternateDelimiter(alternateDelimiter == null ? null : alternateDelimiter.createCopy());
@@ -1343,6 +1344,17 @@ public class ConnectionProfile
       this.defaultFetchSize = (newValue > 0 ? fetchSize : null);
       this.changed = true;
     }
+  }
+
+  public boolean getEchoConnectScriptStatements()
+  {
+    return echoConnectScriptStatements;
+  }
+
+  public void setEchoConnectScriptStatements(boolean flag)
+  {
+    this.changed = this.echoConnectScriptStatements != flag;
+    echoConnectScriptStatements = flag;
   }
 
   public boolean hasConnectScript()

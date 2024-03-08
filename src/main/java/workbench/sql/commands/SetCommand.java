@@ -31,6 +31,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DBID;
+import workbench.db.DbSearchPath;
 import workbench.db.DbSettings;
 import workbench.db.WbConnection;
 import workbench.db.firebird.FirebirdStatementHook;
@@ -52,7 +53,6 @@ import static workbench.sql.wbcommands.WbEnableOraOutput.*;
 
 /**
  * This class implements a wrapper for the SET command.
- * <br/>
  *
  * Oracle's SET command is only valid from within SQL*Plus.
  * By supplying an implementation for the Workbench, we can ignore the errors
@@ -60,8 +60,7 @@ import static workbench.sql.wbcommands.WbEnableOraOutput.*;
  * can also be run from within the workbench
  * <br/>
  * For other DBMS this enables the support for controlling autocommit
- * through a SQL command. All parameters except serveroutput and autocommit
- * are passed on to the server.
+ * through a SQL command.
  *
  * @author  Thomas Kellerer
  */
@@ -77,7 +76,6 @@ public class SetCommand
     StatementRunnerResult result = null;
 
     String command = null;
-    int commandEnd = -1;
     String param = null;
     try
     {
@@ -87,19 +85,18 @@ public class SetCommand
       if (t != null)
       {
         command = t.getContents();
-        commandEnd = t.getCharEnd();
       }
       t = l.getNextToken(false, false);
 
       // Ignore a possible equal sign
-      if (t != null && t.getContents().equals("="))
+      if (t != null && (t.getContents().equals("=") || t.getContents().equals("TO")))
       {
         t = l.getNextToken(false, false);
       }
 
       if (t != null)
       {
-        param = t.getContents();
+        param = userSql.substring(t.getCharBegin()).trim();
       }
     }
     catch (Exception e)
@@ -162,9 +159,8 @@ public class SetCommand
       }
       else if (command.equalsIgnoreCase("fetchsize"))
       {
-        String value = userSql.substring(commandEnd).trim();
         result = new StatementRunnerResult(userSql);
-        WbFetchSize.setFetchSize(value, result, currentConnection);
+        WbFetchSize.setFetchSize(param, result, currentConnection);
         execSql = false;
       }
       else if (command.equalsIgnoreCase("TERM") && DBID.Firebird.isDB(currentConnection))
@@ -190,7 +186,7 @@ public class SetCommand
         }
         else if (command.equalsIgnoreCase("autotrace"))
         {
-          result = handleAutotrace(userSql.substring(commandEnd).trim());
+          result = handleAutotrace(param.trim());
         }
         else if (allowed.contains(command))
         {
@@ -241,7 +237,7 @@ public class SetCommand
 
       if (schemaChange)
       {
-        String newSchema = handleSchemaChange(newSchemaArg, oldSchema);
+        String newSchema = handleSchemaChange(command, newSchemaArg, oldSchema);
         result.addMessageByKey("MsgSchemaChanged", newSchema);
       }
       else
@@ -337,10 +333,10 @@ public class SetCommand
     return false;
   }
 
-  private String handleSchemaChange(String schemaArg, String oldSchema)
+  private String handleSchemaChange(String what, String schemaArg, String oldSchema)
   {
     boolean busy = currentConnection.isBusy();
-    String newSchema = null;
+    String result = null;
     try
     {
       // getCurrentSchema() will not work if the connection is marked as busy
@@ -351,13 +347,37 @@ public class SetCommand
 
       LogMgr.logDebug(new CallerInfo(){}, "Updating current schema");
 
-      newSchema = currentConnection.getCurrentSchema();
+      String newSchema = null;
 
+      DbSearchPath pathHandler = DbSearchPath.Factory.getSearchPathHandler(currentConnection);
+      if ("search_path".equalsIgnoreCase(what) && pathHandler.isRealSearchPath())
+      {
+        List<String> path = pathHandler.getSearchPath(currentConnection, null);
+        if (path.size() > 1 && path.get(0).equals("pg_catalog") && !schemaArg.toLowerCase().contains("pg_catalog"))
+        {
+          path.remove("pg_catalog");
+        }
+
+        if (path.size() > 0)
+        {
+          newSchema = path.get(0);
+        }
+        result = StringUtil.listToString(path, ",", false);
+      }
+      if (newSchema == null)
+      {
+        newSchema = currentConnection.getCurrentSchema();
+      }
       // this is for DBMS and JDBC drivers that don't properly support getCurrentSchema()
       // mainly Progress OpenEdge. We simply assume the new schema is the one supplied in the command
       if (newSchema == null)
       {
         newSchema = schemaArg;
+      }
+
+      if (result == null)
+      {
+        result = newSchema;
       }
 
       // schemaChanged will trigger an update of the ConnectionInfo
@@ -368,7 +388,7 @@ public class SetCommand
     {
       currentConnection.setBusy(busy);
     }
-    return newSchema;
+    return result;
   }
 
   private StatementRunnerResult handleAutotrace(String parameter)

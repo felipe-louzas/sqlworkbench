@@ -62,8 +62,8 @@ public class DetachedResultWindow
   private final TableDataPanel data;
   private final int id;
   private JFrame window;
-  private SqlPanel sourcePanel;
-  private JButton attachButton;
+  private final SqlPanel sourcePanel;
+  private final JButton attachButton;
   private JButton closeButton;
 
   public DetachedResultWindow(DwPanel result, SqlPanel source)

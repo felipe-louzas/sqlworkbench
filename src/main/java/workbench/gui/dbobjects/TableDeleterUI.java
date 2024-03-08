@@ -22,7 +22,6 @@
 package workbench.gui.dbobjects;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
@@ -98,9 +97,8 @@ public class TableDeleterUI
   {
     super();
     initComponents();
-    Color lineColor = WbSwingUtilities.getLineBorderColor(this);
-    commitOptionsPanel.setBorder(new DividerBorder(DividerBorder.TOP, lineColor));
-    statusLabel.setBorder(new DividerBorder(DividerBorder.TOP + DividerBorder.BOTTOM, lineColor));
+    commitOptionsPanel.setBorder(DividerBorder.TOP_DIVIDER);
+    statusLabel.setBorder(DividerBorder.TOP_BOTTOM_DIVIDER);
     statusLabel.setText("  ");
   }
 

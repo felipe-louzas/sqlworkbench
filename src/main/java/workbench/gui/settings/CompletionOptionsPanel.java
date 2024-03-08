@@ -46,7 +46,7 @@ import workbench.db.objectcache.ObjectCacheStorage;
 
 import workbench.gui.WbSwingUtilities;
 
-import workbench.util.DurationNumber;
+import workbench.util.DurationUtil;
 
 /**
  *
@@ -117,9 +117,8 @@ public class CompletionOptionsPanel
   public boolean validateInput()
   {
     String duration = maxAgeField.getText();
-    DurationNumber n = new DurationNumber();
 
-    if (n.isValid(duration)) return true;
+    if (DurationUtil.isValid(duration)) return true;
 
     WbSwingUtilities.showErrorMessageKey(this, "ErrInvalidAge");
     maxAgeField.selectAll();

@@ -49,7 +49,7 @@ import workbench.db.ProcedureDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
-import workbench.util.DurationNumber;
+import workbench.util.DurationUtil;
 import workbench.util.WbFile;
 
 /**
@@ -75,8 +75,8 @@ class ObjectCachePersistence
     if (cacheFile == null || !cacheFile.exists() || cacheFile.length() == 0) return;
 
     String maxAgeValue = GuiSettings.getLocalStorageMaxAge();
-    DurationNumber number = new DurationNumber();
-    long maxAge = number.parseDefinition(maxAgeValue);
+    DurationUtil number = new DurationUtil();
+    long maxAge = number.parseDuration(maxAgeValue);
 
     long age = System.currentTimeMillis() - cacheFile.lastModified();
     if (age >= maxAge || age < 0)

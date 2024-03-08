@@ -22,7 +22,6 @@
 package workbench.gui.settings;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.util.Set;
 
@@ -40,7 +39,6 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 
-import workbench.gui.WbSwingUtilities;
 import workbench.gui.components.DividerBorder;
 
 import workbench.util.CollectionUtil;
@@ -115,8 +113,7 @@ public class OptionPanelPage
         float newSize = f.getSize2D() * 1.1f;
         title.setFont(f.deriveFont(Font.BOLD, newSize));
         panel = new JPanel(new BorderLayout());
-        Color c = WbSwingUtilities.getLineBorderColor(panel);
-        DividerBorder db = new DividerBorder(DividerBorder.TOP, c);
+        DividerBorder db = DividerBorder.create(panel, DividerBorder.TOP);
         Border pb;
         if (addPadding)
         {

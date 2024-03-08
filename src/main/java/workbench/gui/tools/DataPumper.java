@@ -210,8 +210,7 @@ public class DataPumper
     this.mapperPanel.setLayout(new BorderLayout());
     this.mapperPanel.add(this.columnMapper, BorderLayout.CENTER);
 
-    Border b = new DividerBorder(DividerBorder.LEFT, WbSwingUtilities.getLineBorderColor(optionsPanel));
-    this.updateOptionPanel.setBorder(b);
+    this.updateOptionPanel.setBorder(DividerBorder.LEFT_DIVIDER);
     this.checkQueryButton.addActionListener(this);
     this.showWbCommand.addActionListener(this);
     this.useQueryCbx.addActionListener(this);

@@ -21,6 +21,7 @@
 
 package workbench.util;
 
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -29,38 +30,32 @@ import static org.junit.Assert.*;
  *
  * @author Thomas Kellerer
  */
-public class DurationNumberTest
+public class DurationUtilTest
 {
-
-  public DurationNumberTest()
-  {
-  }
 
   @Test
   public void testGetTime()
   {
-    DurationNumber num = new DurationNumber();
-    assertEquals(50, num.parseDefinition("50"));
-    assertEquals(1000, num.parseDefinition(" 1s"));
-    assertEquals(1000 * 60, num.parseDefinition(" 1 m "));
-    assertEquals(1000 * 60 * 60 * 2, num.parseDefinition(" 2h"));
-    assertEquals(1000 * 60 * 60 * 24, num.parseDefinition("1d"));
-    assertEquals(1000 * 60 * 60 * 24 * 5, num.parseDefinition("5d"));
-    assertEquals(0, num.parseDefinition("x"));
-    assertEquals(0, num.parseDefinition(null));
+    assertEquals(50, DurationUtil.parseDuration("50"));
+    assertEquals(1000, DurationUtil.parseDuration(" 1s"));
+    assertEquals(1000 * 60, DurationUtil.parseDuration(" 1 m "));
+    assertEquals(1000 * 60 * 60 * 2, DurationUtil.parseDuration(" 2h"));
+    assertEquals(1000 * 60 * 60 * 24, DurationUtil.parseDuration("1d"));
+    assertEquals(1000 * 60 * 60 * 24 * 5, DurationUtil.parseDuration("5d"));
+    assertEquals(0, DurationUtil.parseDuration("x"));
+    assertEquals(0, DurationUtil.parseDuration(null));
   }
 
   @Test
   public void testIsValid()
   {
-    DurationNumber num = new DurationNumber();
-    assertTrue(num.isValid("5d"));
-    assertTrue(num.isValid("100s"));
-    assertTrue(num.isValid("2h"));
-    assertFalse(num.isValid("42x"));
-    assertFalse(num.isValid("xyz"));
-    assertFalse(num.isValid(" "));
-    assertFalse(num.isValid(""));
+    assertTrue(DurationUtil.isValid("5d"));
+    assertTrue(DurationUtil.isValid("100s"));
+    assertTrue(DurationUtil.isValid("2h"));
+    assertFalse(DurationUtil.isValid("42x"));
+    assertFalse(DurationUtil.isValid("xyz"));
+    assertFalse(DurationUtil.isValid(" "));
+    assertFalse(DurationUtil.isValid(""));
   }
 
 }

@@ -107,6 +107,7 @@ import workbench.util.CollectionUtil;
 import workbench.util.ExceptionUtil;
 import workbench.util.FilteredProperties;
 import workbench.util.LowMemoryException;
+import workbench.util.StringUtil;
 import workbench.util.WbThread;
 
 /**
@@ -1189,11 +1190,10 @@ public class TableDataPanel
     {
       String lastValue = Settings.getInstance().getProperty("workbench.gui.result.refresh.last_interval", null);
       String interval = WbSwingUtilities.getUserInput(this, ResourceMgr.getString("LblRefreshIntv"), lastValue);
-      if (interval == null) return;
+      if (StringUtil.isBlank(interval)) return;
       Settings.getInstance().setProperty("workbench.gui.result.refresh.last_interval", interval);
 
-      int milliSeconds = AutomaticRefreshMgr.parseInterval(interval);
-      refreshMgr.addRefresh(this, dataDisplay, milliSeconds);
+      refreshMgr.addRefresh(this, dataDisplay, interval);
     }
     checkRefreshButton();
     WbSwingUtilities.requestFocus(dataDisplay.getTable());
