@@ -86,6 +86,7 @@ public class ConnectionProfileTest
     old.setStorePassword(true);
     old.setCopyExtendedPropsToSystem(true);
     old.setIncludeNullInInsert(true);
+    old.setEchoConnectScriptStatements(false);
     old.setIdleTime(42);
     old.setTrimCharData(true);
     old.setIdleScript("select 12 from dual");
@@ -100,6 +101,7 @@ public class ConnectionProfileTest
     old.setGroups(groups);
     ObjectNameFilter filter = new ObjectNameFilter();
     filter.addExpression("^pg_toast.*");
+    assertTrue(old.isChanged());
     filter.resetModified();
     old.setCatalogFilter(filter);
 
@@ -172,6 +174,7 @@ public class ConnectionProfileTest
     assertEquals("true", profile.getConnectionProperties().getProperty("remarksReporting"));
     assertEquals(1, profile.getConnectionProperties().size());
     profile.setCopyExtendedPropsToSystem(true);
+    profile.setEchoConnectScriptStatements(true);
     assertTrue(profile.isChanged());
 
     profile.setAutocommit(true);

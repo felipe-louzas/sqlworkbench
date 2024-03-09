@@ -1864,13 +1864,13 @@ public class WbConnection
       this.keepAlive = null;
     }
 
-    if (this.profile == null) return;
+    if (this.profile == null || !this.profile.hasValidIdleSetup()) return;
+
     String sql = this.profile.getIdleScript();
-    if (StringUtil.isBlank(sql)) return;
     long idleTime = this.profile.getIdleTime();
-    if (idleTime <= 0) return;
+
     this.keepAlive = new KeepAliveDaemon(idleTime, this, sql);
-    this.keepAlive.startThread();
+    this.keepAlive.startDaemon();
   }
 
   public boolean isBusy()

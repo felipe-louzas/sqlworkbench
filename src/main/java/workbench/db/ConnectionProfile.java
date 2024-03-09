@@ -252,7 +252,7 @@ public class ConnectionProfile
   public void setTagList(String list)
   {
     Set<String> tagList = CollectionUtil.caseInsensitiveSet(StringUtil.stringToList(list, ",", true, true, false, false));
-    changed = !tags.equals(tagList);
+    changed = changed || !tags.equals(tagList);
     tags.clear();
     tags.addAll(tagList);
   }
@@ -264,7 +264,7 @@ public class ConnectionProfile
 
   public void setStoreCacheLocally(boolean flag)
   {
-    this.changed = (flag != storeCacheLocally);
+    if (flag != storeCacheLocally) changed = true;
     this.storeCacheLocally = flag;
   }
 
@@ -275,7 +275,7 @@ public class ConnectionProfile
 
   public void setPromptForUsername(boolean flag)
   {
-    changed = (flag != promptForUsername);
+    if (flag != promptForUsername) changed = true;
     this.promptForUsername = flag;
   }
 
@@ -314,7 +314,7 @@ public class ConnectionProfile
     }
     else
     {
-      changed = filter.isModified();
+      changed = changed || filter.isModified();
     }
     catalogFilter = filter;
   }
@@ -333,7 +333,7 @@ public class ConnectionProfile
     }
     else
     {
-      changed = filter.isModified();
+      changed = changed || filter.isModified();
     }
     schemaFilter = filter;
   }
@@ -393,7 +393,7 @@ public class ConnectionProfile
     if (this.infoColor == null && c == null) return;
     if (this.infoColor != null && c != null)
     {
-      this.changed = !this.infoColor.equals(c);
+      this.changed = changed || !this.infoColor.equals(c);
     }
     else
     {
@@ -577,9 +577,8 @@ public class ConnectionProfile
 
   public void setIcon(String icon)
   {
-    if (this.icon != null && StringUtil.equalString(this.icon, icon)) return;
+    if (StringUtil.stringsAreNotEqual(this.icon, icon)) changed = true;
     this.icon = icon;
-    this.changed = true;
   }
 
   public boolean isProfileForKey(ProfileKey key)
@@ -796,7 +795,7 @@ public class ConnectionProfile
   {
     if (this.getStorePassword())
     {
-      this.changed = !StringUtil.equalString(this.password, encrypted);
+      this.changed = changed || StringUtil.stringsAreNotEqual(this.password, encrypted);
       this.password = encrypted;
     }
   }
@@ -956,9 +955,9 @@ public class ConnectionProfile
 
   public final void setDriverName(String name)
   {
-    if (name != null && StringUtil.stringsAreNotEqual(name, this.driverName))
+    if (StringUtil.stringsAreNotEqual(name, this.driverName))
     {
-      this.driverName = name.trim();
+      this.driverName = StringUtil.trim(name);
       this.changed = true;
     }
   }
@@ -970,10 +969,10 @@ public class ConnectionProfile
 
   public final void setDriverclass(String drvClass)
   {
-    if (drvClass != null && StringUtil.stringsAreNotEqual(drvClass, driverclass))
+    if (StringUtil.stringsAreNotEqual(drvClass, driverclass))
     {
       changed = true;
-      this.driverclass = drvClass.trim();
+      driverclass = StringUtil.trim(drvClass);
     }
   }
 
@@ -1105,10 +1104,9 @@ public class ConnectionProfile
 
   public final void setUsername(String newName)
   {
-    if (newName != null) newName = newName.trim();
-    if (!StringUtil.equalString(newName, username) && !changed && !promptForUsername) changed = true;
+    if (StringUtil.stringsAreNotEqual(newName, username) && !promptForUsername) changed = true;
     this.temporaryUsername = null;
-    this.username = newName;
+    this.username = StringUtil.trim(newName);
   }
 
   public boolean getAutocommit()
@@ -1118,7 +1116,7 @@ public class ConnectionProfile
 
   public void setAutocommit(boolean aFlag)
   {
-    if (aFlag != this.autocommit && !changed)
+    if (aFlag != this.autocommit)
     {
       this.changed = true;
     }
@@ -1132,7 +1130,7 @@ public class ConnectionProfile
 
   public final void setName(String aName)
   {
-    if (!changed && !StringUtil.equalString(name, aName)) changed = true;
+    if (StringUtil.stringsAreNotEqual(name, aName)) changed = true;
     this.name = aName;
   }
 
@@ -1143,7 +1141,7 @@ public class ConnectionProfile
 
   public void setStorePassword(boolean aFlag)
   {
-    if (aFlag != this.storePassword && !this.changed)
+    if (aFlag != this.storePassword)
     {
       this.changed = true;
     }
@@ -1248,7 +1246,7 @@ public class ConnectionProfile
 
   public void setIgnoreDropErrors(boolean aFlag)
   {
-    changed = aFlag != this.ignoreDropErrors;
+    if (aFlag != this.ignoreDropErrors) changed = true;
     this.ignoreDropErrors = aFlag;
   }
 
@@ -1257,10 +1255,10 @@ public class ConnectionProfile
     return this.workspaceFile;
   }
 
-  public void setWorkspaceFile(String aWorkspaceFile)
+  public void setWorkspaceFile(String newFile)
   {
-    this.workspaceFile = aWorkspaceFile;
-    this.changed = true;
+    if (StringUtil.stringsAreNotEqual(workspaceFile, newFile)) changed = true;
+    this.workspaceFile = newFile;
   }
 
   public void addConnectionProperty(String key, String value)
@@ -1270,8 +1268,8 @@ public class ConnectionProfile
     {
       this.connectionProperties = new Properties();
     }
-    this.connectionProperties.put(key, value);
-    this.changed = true;
+    String old = (String)this.connectionProperties.put(key, value);
+    if (StringUtil.stringsAreNotEqual(old, value)) this.changed = true;
   }
 
   public Properties getConnectionProperties()
@@ -1353,7 +1351,7 @@ public class ConnectionProfile
 
   public void setEchoConnectScriptStatements(boolean flag)
   {
-    this.changed = this.echoConnectScriptStatements != flag;
+    if (echoConnectScriptStatements != flag) changed = true;
     echoConnectScriptStatements = flag;
   }
 
@@ -1373,7 +1371,7 @@ public class ConnectionProfile
 
   public void setPostConnectScript(String script)
   {
-    if (!StringUtil.equalStringOrEmpty(script, this.postConnectScript))
+    if (StringUtil.stringsAreNotEqual(script, this.postConnectScript))
     {
       this.postConnectScript = StringUtil.trimToNull(script);
       this.changed = true;
@@ -1387,7 +1385,7 @@ public class ConnectionProfile
 
   public void setPreDisconnectScript(String script)
   {
-    if (!StringUtil.equalStringOrEmpty(script, this.preDisconnectScript))
+    if (StringUtil.stringsAreNotEqual(script, this.preDisconnectScript))
     {
       this.preDisconnectScript = StringUtil.trimToNull(script);
       this.changed = true;
@@ -1401,7 +1399,7 @@ public class ConnectionProfile
 
   public void setIdleTime(long time)
   {
-    if (time != this.idleTime && !changed)
+    if (time != this.idleTime)
     {
       this.changed = true;
     }
@@ -1415,13 +1413,18 @@ public class ConnectionProfile
 
   public void setIdleScript(String script)
   {
-    if (!StringUtil.equalStringOrEmpty(script, this.idleScript))
+    if (StringUtil.stringsAreNotEqual(script, this.idleScript))
     {
       idleScript = StringUtil.trimToNull(script);
       this.changed = true;
     }
   }
 
+  public boolean hasValidIdleSetup()
+  {
+    return this.idleTime > 0 && StringUtil.isNotBlank(idleScript);
+  }
+  
   public static String makeFilename(String jdbcUrl, String userName)
   {
     Pattern invalidChars = Pattern.compile("[^a-zA-Z0-9$]+");

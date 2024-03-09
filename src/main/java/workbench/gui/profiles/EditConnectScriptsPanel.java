@@ -76,6 +76,7 @@ public class EditConnectScriptsPanel
     JLabel l1 = new JLabel(ResourceMgr.getString("LblPostConnectScript"));
     postConnectEditor = EditorPanel.createSqlEditor();
     postConnectEditor.setText(profile.getPostConnectScript());
+    postConnectEditor.setCaretPosition(0);
     postConnectEditor.setBorder(WbSwingUtilities.createLineBorder(this));
     Dimension d = new Dimension(200,200);
     postConnectEditor.setPreferredSize(d);
@@ -88,6 +89,7 @@ public class EditConnectScriptsPanel
     preDisconnectEditor = EditorPanel.createSqlEditor();
     preDisconnectEditor.setText(profile.getPreDisconnectScript());
     preDisconnectEditor.setPreferredSize(d);
+    preDisconnectEditor.setCaretPosition(0);
 
     preDisconnectEditor.setBorder(WbSwingUtilities.createLineBorder(this));
     p2.add(preDisconnectEditor, BorderLayout.CENTER);
@@ -98,6 +100,7 @@ public class EditConnectScriptsPanel
     keepAliveScriptEditor = EditorPanel.createSqlEditor();
     keepAliveScriptEditor.setText(profile.getIdleScript());
     keepAliveScriptEditor.setPreferredSize(d);
+    keepAliveScriptEditor.setCaretPosition(0);
     keepAliveScriptEditor.setBorder(WbSwingUtilities.createLineBorder(this));
 
     p3.add(keepAliveScriptEditor, BorderLayout.CENTER);

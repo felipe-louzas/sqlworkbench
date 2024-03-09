@@ -56,7 +56,7 @@ public class KeepAliveDaemon
     this.sqlScript = SqlUtil.trimSemicolon(sql);
   }
 
-  public void startThread()
+  public void startDaemon()
   {
     if (schedule != null && !schedule.isDone())
     {
