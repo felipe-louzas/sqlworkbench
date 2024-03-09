@@ -73,7 +73,7 @@
       </ul>
 
       <div id="noafd">
-        <a target="_blank" href="https://afd-verbot.de/beweise">
+        <a target="_blank" href="http://gesichertrechtsextrem.de">
           <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/>
         </a>
       </div>
@@ -395,28 +395,30 @@
         <div class="column" >
           <ul class="compact" >
             <li>AfD (Germany)</li>
+            <li>Werteunion (Germany)</li>
             <li>Die Heimat (Germany)</li>
             <li>Die Basis (Germany)</li>
-            <li>BündnisDeutschland (Germany)</li>
             <li>Freie Wähler (Germany, Bavaria)</li>
+            <li>BündnisDeutschland (Germany)</li>
             <li>CDU aka "AfD mit Substanz" (Germany)</li>
             <li>CSU (Germany, Bavaria)</li>
             <li>FPÖ (Austria)</li>
+            <li>Prawo i Sprawiedliwość (Poland)</li>
           </ul>
         </div>
         <div class="column">
           <ul class="compact">
+            <li>Republican Party (USA)</li>
+            <li>United Russia / Единая Россия (Russia)</li>
+            <li>Fidesz (Hungary)</li>
             <li>Fratelli d’Italia (Italy)</li>
-            <li>Party for Freedom (Netherlands)</li>
             <li>Lega Nord (Italy)</li>
             <li>Rassemblement National (France)</li>
+            <li>Party for Freedom (Netherlands)</li>
             <li>ITN (Bulgaria)</li>
             <li>Vazrazhdane (Bulgaria)</li>
             <li>Vox (Spain)</li>
-            <li>Prawo i Sprawiedliwość (Poland)</li>
-            <li>Fidesz (Hungary)</li>
             <li>Adalet ve Kalkınma Partis (T&#252;rkiye)</li>
-            <li>Republican Party (USA)</li>
           </ul>
         </div>
     </div>

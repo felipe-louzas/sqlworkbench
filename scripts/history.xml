@@ -3,7 +3,8 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-  <release build="-1" date="2024-02-04">
+
+  <release build="-1" date="2024-03-09">
     <entry dev-build="3" type="enh">It's now possible to hide the display of the statements in the profile's connect script.</entry>
     <entry dev-build="3" type="enh">For DB2 for i the JDBC ClientInfo is now initialized.</entry>
     <entry dev-build="3" type="enh">It's now possible to generate a SQL condition from a filter definition</entry>
