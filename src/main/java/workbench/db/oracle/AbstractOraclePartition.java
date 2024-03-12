@@ -32,16 +32,15 @@ import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 
 import workbench.db.DbObject;
+import workbench.db.JdbcUtils;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
-
-import workbench.db.JdbcUtils;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
- * An abstract class to read information about a partitioned tables or indexes in Oracle
+ * An abstract class to read information about partitioned tables or indexes in Oracle.
  *
  * @author Thomas Kellerer
  */
@@ -439,11 +438,7 @@ public abstract class AbstractOraclePartition
         String subPart = rs.getString("SUBPARTITION_NAME");
         String value = rs.getString("HIGH_VALUE");
         int position = rs.getInt("SUBPARTITION_POSITION");
-        String compress = null;
-        if (useCompression)
-        {
-          compress = rs.getString("COMPRESSION");
-        }
+        String compress = rs.getString("COMPRESSION");
         OraclePartitionDefinition subPartition = new OraclePartitionDefinition(subPart, subType, position);
         subPartition.setPartitionValue(value);
         subPartition.setCompressOption(compress);
@@ -498,11 +493,7 @@ public abstract class AbstractOraclePartition
         String name = rs.getString("PARTITION_NAME");
         String value = rs.getString("HIGH_VALUE");
         int position = rs.getInt("PARTITION_POSITION");
-        String compress = null;
-        if (useCompression)
-        {
-          compress = rs.getString("COMPRESSION");
-        }
+        String compress = rs.getString("COMPRESSION");
         OraclePartitionDefinition def = new OraclePartitionDefinition(name, type, position);
         def.setSubPartitionType(subType);
         def.setPartitionValue(value);

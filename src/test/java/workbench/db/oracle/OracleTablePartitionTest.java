@@ -60,6 +60,7 @@ public class OracleTablePartitionTest
   {
     System.setProperty("workbench.db.oracle.retrieve_tablespace", "false");
 
+    // <editor-fold defaultstate="collapsed" desc="DDL">
     // More examples: https://psoug.org/reference/partitions.html
     String sql =
       "CREATE TABLE wb_list_partition_test \n" +
@@ -89,6 +90,7 @@ public class OracleTablePartitionTest
       "  PARTITION wb_hash_part_4, \n" +
       "  PARTITION wb_hash_part_5 \n" +
       ");";
+    // </editor-fold>
 
     OracleTestUtil.initTestCase();
     WbConnection con = OracleTestUtil.getOracleConnection();
@@ -108,66 +110,96 @@ public class OracleTablePartitionTest
       }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="DDL">
     sql =
-      "CREATE TABLE RANGE_SUB_PART_HASH \n" +
-      "( \n" +
-      "  invoice_no    NUMBER NOT NULL, \n" +
-      "  invoice_date  DATE   NOT NULL \n" +
-      ") \n" +
-      "PARTITION BY RANGE (invoice_date) \n" +
-      "SUBPARTITION BY HASH (invoice_no) \n" +
-      "SUBPARTITIONS 8 \n" +
-      "( \n" +
-      "  PARTITION invoices_q1 VALUES LESS THAN (DATE '2010-01-01'), \n" +
-      "  PARTITION invoices_q2 VALUES LESS THAN (DATE '2010-04-01'), \n" +
-      "  PARTITION invoices_q3 VALUES LESS THAN (DATE '2010-09-01'), \n" +
-      "  PARTITION invoices_q4 VALUES LESS THAN (DATE '2011-01-01') \n" +
-      ");\n" +
-      " \n" +
-      "CREATE TABLE RANGE_SUB_PART_LIST \n" +
-      "( \n" +
-      "  CREATE_DATE  DATE, \n" +
-      "  OBJ_CAT      CHAR(1), \n" +
-      "  NODE_ID      NUMBER \n" +
-      " ) \n" +
-      "PARTITION BY RANGE (CREATE_DATE) \n" +
-      "SUBPARTITION BY LIST (OBJ_CAT) \n" +
-      "(   \n" +
-      "  PARTITION RSP_1 VALUES LESS THAN (TIMESTAMP '2010-01-30 21:00:00') \n" +
-      "  (  \n" +
-      "    SUBPARTITION RSP_1_SUB_1 VALUES ('N'), \n" +
-      "    SUBPARTITION RSP_1_SUB_2 VALUES ('L')  \n" +
-      "  ),   \n" +
-      "  PARTITION RSP_2 VALUES LESS THAN (TIMESTAMP '2010-01-30 21:15:00') \n" +
-      "  (  \n" +
-      "    SUBPARTITION RSP_2_SUB_1 VALUES ('N') , \n" +
-      "    SUBPARTITION RSP_2_SUB_2 VALUES ('L')  \n" +
-      "  ) \n" +
-      ");\n" +
-      "\n"+
-      "CREATE TABLE wb_ref_part_main\n" +
+       "CREATE TABLE RANGE_SUB_PART_HASH \n" +
+       "( \n" +
+       "  invoice_no    NUMBER NOT NULL, \n" +
+       "  invoice_date  DATE   NOT NULL \n" +
+       ") \n" +
+       "PARTITION BY RANGE (invoice_date) \n" +
+       "SUBPARTITION BY HASH (invoice_no) \n" +
+       "SUBPARTITIONS 8 \n" +
+       "( \n" +
+       "  PARTITION invoices_q1 VALUES LESS THAN (DATE '2010-01-01'), \n" +
+       "  PARTITION invoices_q2 VALUES LESS THAN (DATE '2010-04-01'), \n" +
+       "  PARTITION invoices_q3 VALUES LESS THAN (DATE '2010-09-01'), \n" +
+       "  PARTITION invoices_q4 VALUES LESS THAN (DATE '2011-01-01') \n" +
+       ");\n" +
+       " \n" +
+       "CREATE TABLE RANGE_SUB_PART_LIST \n" +
+       "( \n" +
+       "  CREATE_DATE  DATE, \n" +
+       "  OBJ_CAT      CHAR(1), \n" +
+       "  NODE_ID      NUMBER \n" +
+       " ) \n" +
+       "PARTITION BY RANGE (CREATE_DATE) \n" +
+       "SUBPARTITION BY LIST (OBJ_CAT) \n" +
+       "(   \n" +
+       "  PARTITION RSP_1 VALUES LESS THAN (TIMESTAMP '2010-01-30 21:00:00') \n" +
+       "  (  \n" +
+       "    SUBPARTITION RSP_1_SUB_1 VALUES ('N'), \n" +
+       "    SUBPARTITION RSP_1_SUB_2 VALUES ('L')  \n" +
+       "  ),   \n" +
+       "  PARTITION RSP_2 VALUES LESS THAN (TIMESTAMP '2010-01-30 21:15:00') \n" +
+       "  (  \n" +
+       "    SUBPARTITION RSP_2_SUB_1 VALUES ('N') , \n" +
+       "    SUBPARTITION RSP_2_SUB_2 VALUES ('L')  \n" +
+       "  ) \n" +
+       ");\n" +
+       "\n"+
+       "CREATE TABLE wb_ref_part_main\n" +
+       "(\n" +
+       "   id          integer not null,\n" +
+       "   part_key    integer not null,\n" +
+       "   data varchar(100), \n" +
+       "   constraint pk_main primary key (id)\n" +
+       ")\n" +
+       "partition by list (part_key) \n" +
+       "(\n" +
+       "  partition part_1 values (1),\n" +
+       "  partition part_2 values (2),\n" +
+       "  partition part_3 values (3),\n" +
+       "  partition part_4 values (4)\n" +
+       ");\n" +
+       "\n" +
+       "CREATE TABLE wb_ref_part_detail \n" +
+       "(\n" +
+       "   id integer,\n" +
+       "   main_id integer not null, \n" +
+       "   constraint pk_detail primary key (id),\n" +
+       "   CONSTRAINT fk_detail_main FOREIGN KEY (main_id) REFERENCES wb_ref_part_main(id) \n" +
+       ")\n" +
+       "partition by reference (fk_detail_main);";
+    // </editor-fold>
+
+    try
+    {
+      TestUtil.executeScript(con, sql, true);
+      partitioningAvailable = true;
+    }
+    catch (SQLException e)
+    {
+      if (e.getErrorCode() == 439)
+      {
+        partitioningAvailable = false;
+      }
+    }
+
+   // <editor-fold defaultstate="collapsed" desc="DDL">
+   sql =
+      "create table wb_int_partition_test\n" +
       "(\n" +
-      "   id          integer not null,\n" +
-      "   part_key    integer not null,\n" +
-      "   data varchar(100), \n" +
-      "   constraint pk_main primary key (id)\n" +
+      "  id           number not null,\n" +
+      "  create_date  date   not null,\n" +
+      "  data         varchar2(500)\n" +
       ")\n" +
-      "partition by list (part_key) \n" +
+      "partition by range (create_date)\n" +
+      "interval (interval '2' month)\n" +
       "(\n" +
-      "  partition part_1 values (1),\n" +
-      "  partition part_2 values (2),\n" +
-      "  partition part_3 values (3),\n" +
-      "  partition part_4 values (4)\n" +
-      ");\n" +
-      "\n" +
-      "CREATE TABLE wb_ref_part_detail \n" +
-      "(\n" +
-      "   id integer,\n" +
-      "   main_id integer not null, \n" +
-      "   constraint pk_detail primary key (id),\n" +
-      "   CONSTRAINT fk_detail_main FOREIGN KEY (main_id) REFERENCES wb_ref_part_main(id) \n" +
-      ")\n" +
-      "partition by reference (fk_detail_main);";
+      "  partition invoices_past values less than (date '2024-01-01')\n" +
+      ");\n";
+    // </editor-fold>
 
     try
     {
@@ -192,7 +224,7 @@ public class OracleTablePartitionTest
   }
 
   @Test
-  public void testRetrieveListPartition()
+  public void testRetrieveIntervalPartition()
     throws Exception
   {
     if (!partitioningAvailable) return;
@@ -200,6 +232,26 @@ public class OracleTablePartitionTest
     WbConnection con = OracleTestUtil.getOracleConnection();
     assertNotNull("Oracle not available", con);
 
+    TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("WB_INT_PARTITION_TEST"));
+    assertNotNull(tbl);
+    OracleTablePartition reader = new OracleTablePartition(con, false);
+    reader.retrieve(tbl, con);
+    assertTrue(reader.isPartitioned());
+    assertEquals("RANGE", reader.getPartitionType());
+    List<OraclePartitionDefinition> partitions = reader.getPartitions();
+    assertEquals(1, partitions.size());
+    String ddl = reader.getSourceForTableDefinition();
+    assertTrue(ddl.startsWith("PARTITION BY RANGE (CREATE_DATE) INTERVAL (INTERVAL '2' MONTH) "));
+   }
+
+  @Test
+  public void testRetrieveListPartition()
+    throws Exception
+  {
+    if (!partitioningAvailable) return;
+
+    WbConnection con = OracleTestUtil.getOracleConnection();
+    assertNotNull("Oracle not available", con);
 
     TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("WB_LIST_PARTITION_TEST"));
     assertNotNull(tbl);

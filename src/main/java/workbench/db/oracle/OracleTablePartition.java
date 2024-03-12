@@ -92,29 +92,24 @@ public class OracleTablePartition
   @Override
   protected String getRetrievePartitionsSql()
   {
-    if (useCompression)
+    String intervalPartitions = "";
+    if ("RANGE".equalsIgnoreCase(getPartitionType()) && this.intervalDefinition != null)
     {
-      return
-        "-- SQL Workbench/J \n" +
-        "SELECT partition_name,  \n" +
-        "       high_value,  \n" +
-        "       partition_position, \n" +
-        "       subpartition_count, \n" +
-        "       compression \n" +
-        "FROM all_tab_partitions \n" +
-        "WHERE table_owner = ?  \n" +
-        "  AND table_name = ? \n" +
-        "ORDER BY partition_position";
+      // only include the interval partitions that were created manually
+      // when the table was created. The others are maintained by Oracle,
+      // so they shouldn't be included.
+      intervalPartitions = "  AND interval = 'NO' \n";
     }
     return
       "-- SQL Workbench/J \n" +
       "SELECT partition_name,  \n" +
       "       high_value,  \n" +
       "       partition_position, \n" +
-      "       subpartition_count \n" +
+      "       subpartition_count, \n" +
+      "       " + (useCompression ? "compression" : "null as compression") +" \n" +
       "FROM all_tab_partitions \n" +
       "WHERE table_owner = ?  \n" +
-      "  AND table_name = ? \n" +
+      "  AND table_name = ? \n" + intervalPartitions +
       "ORDER BY partition_position";
   }
 
@@ -136,26 +131,13 @@ public class OracleTablePartition
   @Override
   protected String getRetrieveSubPartitionsSql()
   {
-    if (useCompression)
-    {
-      return
-        "-- SQL Workbench/J \n" +
-        "select partition_name,  \n" +
-        "       subpartition_name,  \n" +
-        "       high_value, \n" +
-        "       subpartition_position, \n" +
-        "       compression \n" +
-        "from all_tab_subpartitions \n" +
-        "where table_owner = ?  \n" +
-        "  and table_name = ?  \n" +
-        "order by subpartition_position";
-    }
     return
       "-- SQL Workbench/J \n" +
       "select partition_name,  \n" +
       "       subpartition_name,  \n" +
       "       high_value, \n" +
-      "       subpartition_position \n" +
+      "       subpartition_position, \n" +
+      "       " + (useCompression ? "compression" : "null as compression") +" \n" +
       "from all_tab_subpartitions \n" +
       "where table_owner = ?  \n" +
       "  and table_name = ?  \n" +

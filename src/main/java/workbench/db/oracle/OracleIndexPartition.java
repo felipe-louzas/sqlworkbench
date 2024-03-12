@@ -114,26 +114,13 @@ public class OracleIndexPartition
   @Override
   protected String getRetrievePartitionsSql()
   {
-    if (useCompression)
-    {
-      return
-        "-- SQL Workbench/J \n" +
-        "SELECT partition_name,  \n" +
-        "       high_value,  \n" +
-        "       partition_position, \n" +
-        "       subpartition_count, \n" +
-        "       compression \n" +
-        "FROM all_ind_partitions \n" +
-        "WHERE index_owner = ?  \n" +
-        "  AND index_name = ? \n" +
-        "ORDER BY partition_position";
-    }
     return
       "-- SQL Workbench/J \n" +
       "SELECT partition_name,  \n" +
       "       high_value,  \n" +
       "       partition_position, \n" +
-      "       subpartition_count \n" +
+      "       subpartition_count, \n" +
+      "       " + (useCompression ? "compression" : "null as compression") + " \n" +
       "FROM all_ind_partitions \n" +
       "WHERE index_owner = ?  \n" +
       "  AND index_name = ? \n" +
@@ -144,41 +131,28 @@ public class OracleIndexPartition
   protected String getRetrieveSubColumnsSql()
   {
     return
-    "-- SQL Workbench/J \n" +
-    "select name, \n" +
-    "       object_type, \n" +
-    "       column_name, \n" +
-    "       column_position \n" +
-    "from all_subpart_key_columns \n" +
-    "where object_type = 'INDEX' \n " +
-    "  and owner = ? \n" +
-    "  and name = ? \n" +
-    "order by column_position";
+      "-- SQL Workbench/J \n" +
+      "select name, \n" +
+      "       object_type, \n" +
+      "       column_name, \n" +
+      "       column_position \n" +
+      "from all_subpart_key_columns \n" +
+      "where object_type = 'INDEX' \n " +
+      "  and owner = ? \n" +
+      "  and name = ? \n" +
+      "order by column_position";
   }
 
   @Override
   protected String getRetrieveSubPartitionsSql()
   {
-    if (useCompression)
-    {
     return
       "-- SQL Workbench/J \n" +
       "select partition_name,  \n" +
       "       subpartition_name,  \n" +
       "       high_value, \n" +
       "       subpartition_position, \n" +
-      "       compression \n" +
-      "from all_ind_subpartitions \n" +
-      "where index_owner = ?  \n" +
-      "  and index_name = ?  \n" +
-      "order by subpartition_position";
-    }
-    return
-      "-- SQL Workbench/J \n" +
-      "select partition_name,  \n" +
-      "       subpartition_name,  \n" +
-      "       high_value, \n" +
-      "       subpartition_position \n" +
+      "       " + (useCompression ? "compression" : "null as compression") + " \n" +
       "from all_ind_subpartitions \n" +
       "where index_owner = ?  \n" +
       "  and index_name = ?  \n" +
