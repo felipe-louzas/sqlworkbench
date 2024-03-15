@@ -26,7 +26,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.Serializable;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -36,8 +35,8 @@ implements Transferable, Serializable
 {
   public static final DataFlavor DATA_FLAVOR = new DataFlavor(ObjectTreeNode.class, "DbObjectNode");
 
-  private ObjectTreeNode[] selection;
-  private String connectionId;
+  private final ObjectTreeNode[] selection;
+  private final String connectionId;
 
   public ObjectTreeTransferable(ObjectTreeNode[] nodes, String connId)
   {

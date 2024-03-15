@@ -231,7 +231,7 @@ public class TreeLoader
     int count = node.getChildCount();
     for (int i=0; i < count; i++)
     {
-      ObjectTreeNode child = (ObjectTreeNode)node.getChildAt(i);
+      ObjectTreeNode child = node.getChildAt(i);
       removeAllChildren(child);
     }
     node.removeAllChildren();
@@ -612,7 +612,7 @@ public class TreeLoader
     int count = node.getChildCount();
     for (int i=0; i < count; i++)
     {
-      ObjectTreeNode child = (ObjectTreeNode)node.getChildAt(i);
+      ObjectTreeNode child = node.getChildAt(i);
       if (!child.isLoaded())
       {
         loadObjectsForTypeNode(child);

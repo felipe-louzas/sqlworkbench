@@ -21,6 +21,9 @@
 package workbench.gui.dbobjects.objecttree;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import workbench.db.ColumnIdentifier;
 import workbench.db.ConnectionMgr;
@@ -29,6 +32,7 @@ import workbench.db.ProcedureDefinition;
 import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.sql.EditorPanel;
 
 import workbench.sql.formatter.FormatterUtil;
@@ -43,7 +47,7 @@ import workbench.util.StringUtil;
  */
 public class EditorDropHandler
 {
-  private EditorPanel editor;
+  private final EditorPanel editor;
 
   public EditorDropHandler(EditorPanel editor)
   {
@@ -122,7 +126,7 @@ public class EditorDropHandler
     {
       if (TreeLoader.TYPE_COLUMN_LIST.equals(node.getType()))
       {
-        return getColumnList(node, applyFormat);
+        return getColumnList(node, conn);
       }
       return node.getName();
     }
@@ -143,30 +147,39 @@ public class EditorDropHandler
     return name;
   }
 
-  private String getColumnList(ObjectTreeNode columns, boolean applyFormat)
+  private String getColumnList(ObjectTreeNode columnNode, WbConnection conn)
   {
-    int count = columns.getChildCount();
-    StringBuilder result = new StringBuilder(count * 10);
-    int colCount = 0;
-    for (int i=0; i < count; i++)
+    List<ColumnIdentifier> columns = new ArrayList<>();
+    if (columnNode.isLoaded())
     {
-      ObjectTreeNode col = (ObjectTreeNode)columns.getChildAt(i);
-      if (col != null && col.getDbObject() != null)
+      for (int i=0; i < columnNode.getChildCount(); i++)
       {
-        DbObject dbo = col.getDbObject();
-        if (dbo instanceof ColumnIdentifier)
+        ObjectTreeNode col = columnNode.getChildAt(i);
+        if (col != null && col.getDbObject() instanceof ColumnIdentifier)
         {
-          if (colCount > 0) result.append(", ");
-          result.append(dbo.getObjectName());
-          colCount++;
+          columns.add((ColumnIdentifier)col.getDbObject());
         }
       }
     }
-    String name = result.toString();
-    if (applyFormat)
+    else if (columnNode.getParent() != null)
     {
-      return FormatterUtil.getIdentifier(name);
+      try
+      {
+        WbSwingUtilities.showWaitCursor(editor);
+        DbObject dbo = columnNode.getParent().getDbObject();
+        if (dbo instanceof TableIdentifier)
+        {
+          columns = conn.getObjectCache().getColumns((TableIdentifier)dbo);
+        }
+      }
+      finally
+      {
+        WbSwingUtilities.showDefaultCursor(editor);
+      }
     }
-    return name;
+
+    return columns.stream().
+        map(col -> conn.getMetadata().quoteObjectname(col.getColumnName())).
+        collect(Collectors.joining(", "));
   }
 }

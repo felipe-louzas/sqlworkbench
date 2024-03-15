@@ -279,9 +279,14 @@ public class DbObjectsTree
 
           if (node != null)
           {
+            doLoad(node, false);
             EventQueue.invokeLater(() ->
             {
               expandNode(node);
+              if (node.getDbObject() instanceof TableIdentifier)
+              {
+                expandColumns(node);
+              }
             });
           }
         }
@@ -492,13 +497,23 @@ public class DbObjectsTree
     if (node == null) return;
     if (node.getDbObject() instanceof TableIdentifier && node.getChildCount() > 0)
     {
-      ObjectTreeNode columnNode = node.getChildAt(0);
-      if (columnNode.canHaveChildren())
+      ObjectTreeNode columnNode = node.getChildByType(TreeLoader.TYPE_COLUMN_LIST);
+      if (columnNode != null)
       {
-        TreeNode[] nodes = getTreeModel().getPathToRoot(columnNode);
-        TreePath path = new TreePath(nodes);
-        setExpandedState(path, true);
-        scrollPathToVisible(path);
+        if (!columnNode.isLoaded())
+        {
+          doLoad(columnNode, true);
+        }
+        expandNode(columnNode);
+
+        // scroll to the node after the columns, to ensure that all columns are visibile
+        ObjectTreeNode nextNode = (ObjectTreeNode)node.getChildAfter(columnNode);
+        if (nextNode != null)
+        {
+          TreeNode[] nodes = getTreeModel().getPathToRoot(nextNode);
+          TreePath path = new TreePath(nodes);
+          scrollPathToVisible(path);
+        }
       }
     }
   }
@@ -719,7 +734,7 @@ public class DbObjectsTree
     int childCount = parent.getChildCount();
     for (int i = 0; i < childCount; i++)
     {
-      ObjectTreeNode child = (ObjectTreeNode)parent.getChildAt(i);
+      ObjectTreeNode child = parent.getChildAt(i);
       if (child != null && child.getType().equals(type))
       {
         if (!child.isLoaded())

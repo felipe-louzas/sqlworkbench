@@ -652,7 +652,7 @@ public class DbTreePanel
     List<ColumnIdentifier> columns = new ArrayList<>(childCount);
     for (int i=0; i < childCount; i++)
     {
-      ObjectTreeNode column = (ObjectTreeNode)columnNode.getChildAt(i);
+      ObjectTreeNode column = columnNode.getChildAt(i);
       DbObject dboCol = column.getDbObject();
       if (dboCol instanceof ColumnIdentifier)
       {

@@ -67,7 +67,7 @@ public class DbObjectTreeModel
     int count = node.getChildCount();
     for (int i=0; i < count; i ++)
     {
-      ObjectTreeNode child = (ObjectTreeNode)node.getChildAt(i);
+      ObjectTreeNode child = node.getChildAt(i);
       ObjectTreeNode nd1 = findNodeByType(child, name, type);
       if (nd1 != null) return nd1;
     }
@@ -88,7 +88,7 @@ public class DbObjectTreeModel
     List<ObjectTreeNode> toDelete = new ArrayList<>();
     for (int i = 0; i < node.getChildCount(); i++)
     {
-      ObjectTreeNode child = (ObjectTreeNode)node.getChildAt(i);
+      ObjectTreeNode child = node.getChildAt(i);
       DbObject dbo = child.getDbObject();
       if (dbo != null && toRemove.contains(dbo))
       {

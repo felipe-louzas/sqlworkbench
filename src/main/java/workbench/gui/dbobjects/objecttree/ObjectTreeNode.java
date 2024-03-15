@@ -193,6 +193,16 @@ public class ObjectTreeNode
     return getType() != null && typesWithChildren.contains(getType());
   }
 
+  public ObjectTreeNode getChildByType(String nodeType)
+  {
+    for (int i=0; i < getChildCount(); i++)
+    {
+      ObjectTreeNode child = getChildAt(i);
+      if (child != null && nodeType.equals(child.getType())) return child;
+    }
+    return null;
+  }
+
   @Override
   public ObjectTreeNode getChildAt(int index)
   {
