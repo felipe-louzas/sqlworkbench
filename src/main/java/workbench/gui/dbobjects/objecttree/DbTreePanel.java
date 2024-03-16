@@ -955,11 +955,12 @@ public class DbTreePanel
   @Override
   public void keyTyped(final KeyEvent e)
   {
-    if (e.isConsumed()) return;
+    if (e.isConsumed() || e.getSource() != this.filterAction) return;
     if (Character.isISOControl(e.getKeyChar()) && isEditKey(e) == false) return;
 
     if (DbTreeSettings.getFilterWhileTyping())
     {
+      e.consume();
       EventQueue.invokeLater(this::applyQuickFilter);
     }
   }
@@ -976,6 +977,7 @@ public class DbTreePanel
         JPopupMenu popup = ContextMenuFactory.createContextMenu(this, getSelectionModel());
         if (popup != null)
         {
+          e.consume();
           popup.show(tree, p.x, p.y);
         }
       }
