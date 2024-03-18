@@ -676,7 +676,7 @@ class ObjectCache
       catch (Throwable e)
       {
         LogMgr.logError(new CallerInfo(){}, "Error retrieving columns for " + toSearch, e);
-        cols = null;
+        cols = new ArrayList<>();
       }
 
       if (toSearch != null && CollectionUtil.isNonEmpty(cols))

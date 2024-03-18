@@ -482,6 +482,11 @@ public class CommonArgs
     return dropType;
   }
 
+  public static void appendArgument(StringBuilder result, String arg, boolean value, CharSequence indent)
+  {
+    appendArgument(result, arg, Boolean.toString(value), indent);
+  }
+
   public static void appendArgument(StringBuilder result, String arg, String value, CharSequence indent)
   {
     if (StringUtil.isNotBlank(value))

@@ -31,6 +31,7 @@ import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 
 import workbench.sql.wbcommands.CommonArgs;
+import workbench.sql.wbcommands.WbExport;
 import workbench.sql.wbcommands.WbImport;
 
 import workbench.util.StringUtil;
@@ -239,6 +240,8 @@ public class ProducerFactory
     parser.setConnection(this.connection);
     parser.setQuoteEscaping(textOptions.getQuoteEscaping());
     parser.setAlwaysQuoted(textOptions.getQuoteAlways());
+    parser.setNullString(textOptions.getNullString());
+    parser.setEmptyStringIsNull(textOptions.getEmptyStringIsNull());
     ValueConverter converter = new ValueConverter(connection);
     converter.setDefaultDateFormat(this.generalOptions.getDateFormat());
     converter.setDefaultTimestampFormat(this.generalOptions.getTimestampFormat());
@@ -286,8 +289,8 @@ public class ProducerFactory
   private void appendTextOptions(StringBuilder command, StringBuilder indent)
   {
     if (this.textOptions == null) return;
-    appendArgument(command, WbImport.ARG_CONTAINSHEADER, textOptions.getContainsHeader(), indent);
-    appendArgument(command, WbImport.ARG_DECODE, textOptions.getDecode(), indent);
+    CommonArgs.appendArgument(command, WbImport.ARG_CONTAINSHEADER, textOptions.getContainsHeader(), indent);
+    CommonArgs.appendArgument(command, WbImport.ARG_DECODE, textOptions.getDecode(), indent);
     String delim = textOptions.getTextDelimiter();
     if ("\t".equals(delim)) delim = "\\t";
 
@@ -298,11 +301,11 @@ public class ProducerFactory
     CommonArgs.appendArgument(command, CommonArgs.ARG_DECIMAL_CHAR, textOptions.getDecimalChar(), indent);
     CommonArgs.appendArgument(command, WbImport.ARG_FILECOLUMNS, this.fileParser.getColumns(), indent);
     CommonArgs.appendArgument(command, CommonArgs.ARG_QUOTE_ESCAPE, textOptions.getQuoteEscaping().toString(), indent);
-  }
-
-  private void appendArgument(StringBuilder result, String arg, boolean value, StringBuilder indent)
-  {
-    CommonArgs.appendArgument(result, arg, Boolean.toString(value), indent);
+    CommonArgs.appendArgument(command, WbImport.ARG_EMPTY_STRING_IS_NULL, this.textOptions.getEmptyStringIsNull(), indent);
+    if (StringUtil.isNotBlank(textOptions.getNullString()))
+    {
+      CommonArgs.appendArgument(command, WbExport.ARG_NULL_STRING, this.textOptions.getNullString(), indent);
+    }
   }
 
   /**

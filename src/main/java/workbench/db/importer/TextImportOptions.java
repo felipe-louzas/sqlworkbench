@@ -43,4 +43,6 @@ public interface TextImportOptions
   boolean getQuoteAlways();
   String getNullString();
   void setNullString(String nullString);
+  void setEmptyStringIsNull(boolean flag);
+  boolean getEmptyStringIsNull();
 }

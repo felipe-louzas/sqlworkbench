@@ -22,6 +22,7 @@
 package workbench.gui.tools;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -100,6 +101,7 @@ import workbench.gui.components.RunningJobIndicator;
 import workbench.gui.components.WbButton;
 import workbench.gui.components.WbSplitPane;
 import workbench.gui.dialogs.dataimport.ImportFileDialog;
+import workbench.gui.dialogs.dataimport.ImportOptionsPanel;
 import workbench.gui.help.HelpManager;
 import workbench.gui.profiles.ProfileSelectionDialog;
 import workbench.gui.sql.EditorPanel;
@@ -153,9 +155,6 @@ public class DataPumper
   private long timerStarted;
   private final int timerInterval = 1000;
   private final DurationFormatter durationFormatter = new DurationFormatter();
-
-  // used in the Jemmy Unit Test to wait for the connection thread
-  boolean isConnecting = false;
 
   public DataPumper()
   {
@@ -224,6 +223,10 @@ public class DataPumper
 
     this.sourceTable.setTableDropDownName("sourceTable");
     this.targetTable.setTableDropDownName("targetTable");
+    syncTextOptions.addActionListener(this);
+    textImportOptionsPanel.removeImportMode();
+    textImportOptionsPanel.removeTypeSelector();
+    showSqlSourceOptions();
     WbSwingUtilities.makeEqualSize(openFileButton, selectSourceButton, selectTargetButton);
   }
 
@@ -232,7 +235,7 @@ public class DataPumper
   {
     return window;
   }
-
+  
   public void saveSettings()
   {
     Settings s = Settings.getInstance();
@@ -333,19 +336,27 @@ public class DataPumper
     {
       this.disconnectSource();
     }
+    showTextSourceOptions();
     this.sourceFile = dialog.getSelectedFile();
     this.sourceTable.reset();
     this.sourceTable.setEnabled(false);
-
-    this.useQueryCbx.setSelected(false);
-    this.useQueryCbx.setEnabled(false);
-    this.sqlEditor.setEnabled(false);
-
     this.fileImporter = new ProducerFactory(this.sourceFile);
-    this.fileImporter.setTextOptions(dialog.getTextOptions());
-    this.fileImporter.setGeneralOptions(dialog.getGeneralOptions());
-    this.fileImporter.setType(dialog.getImportType());
-    this.checkType();
+
+    ProducerFactory.ImportType type = dialog.getImportType();
+    this.fileImporter.setType(type);
+    if (type == ProducerFactory.ImportType.Text)
+    {
+      this.textImportOptionsPanel.setTypeText();
+      this.fileImporter.setTextOptions(dialog.getTextOptions());
+      this.textImportOptionsPanel.fromOptions(dialog.getGeneralOptions(), dialog.getTextOptions());
+    }
+    else
+    {
+      this.textImportOptionsPanel.setTypeXml();
+      this.fileImporter.setGeneralOptions(dialog.getGeneralOptions());
+      this.textImportOptionsPanel.fromOptions(dialog.getGeneralOptions(), null);
+    }
+
     modeComboBox.setSelectedItem(dialog.getGeneralOptions().getMode());
 
     this.updateSourceDisplay();
@@ -353,6 +364,28 @@ public class DataPumper
     {
       initColumnMapper();
     }
+  }
+
+  private void initTextOptions()
+  {
+    this.fileImporter.setGeneralOptions(textImportOptionsPanel.getGeneralOptions());
+    this.fileImporter.setTextOptions(textImportOptionsPanel.getTextOptions());
+    if (this.targetProfile != null)
+    {
+      initColumnMapper();
+    }
+  }
+
+  private void showTextSourceOptions()
+  {
+    CardLayout card = (CardLayout)sourceOptions.getLayout();
+    card.show(sourceOptions, "text");
+  }
+
+  private void showSqlSourceOptions()
+  {
+    CardLayout card = (CardLayout)sourceOptions.getLayout();
+    card.show(sourceOptions, "sql");
   }
 
   public void startTimer()
@@ -487,7 +520,6 @@ public class DataPumper
     this.disconnectSource();
 
     this.sourceProfile = profile;
-    this.isConnecting = true;
 
     String label = ResourceMgr.getFormattedString("MsgConnectingTo", this.sourceProfile.getName());
     this.sourceProfileLabel.setIcon(IconMgr.getInstance().getLabelIcon("wait"));
@@ -512,6 +544,7 @@ public class DataPumper
 
     this.sourceFile = null;
     this.fileImporter = null;
+    this.showSqlSourceOptions();
     this.checkType();
 
     if (this.useQueryCbx.isSelected())
@@ -529,23 +562,12 @@ public class DataPumper
         @Override
         public void run()
         {
-          try
-          {
-            LogMgr.logDebug(new CallerInfo(){}, "Source connection established retrieving tables.");
-            sourceTable.setConnection(sourceConnection);
-            completionAction.setConnection(sourceConnection);
-          }
-          finally
-          {
-            isConnecting = false;
-          }
+          LogMgr.logDebug(new CallerInfo(){}, "Source connection established retrieving tables.");
+          sourceTable.setConnection(sourceConnection);
+          completionAction.setConnection(sourceConnection);
         }
       };
       t.start();
-    }
-    else
-    {
-      isConnecting = false;
     }
   }
 
@@ -586,8 +608,6 @@ public class DataPumper
 
   private void doConnectTarget(ConnectionProfile profile)
   {
-    this.isConnecting = true;
-
     this.disconnectTarget();
     this.targetProfile = profile;
 
@@ -625,22 +645,11 @@ public class DataPumper
         @Override
         public void run()
         {
-          try
-          {
-            LogMgr.logDebug(new CallerInfo(){}, "Target connection established retrieving tables.");
-            targetTable.setConnection(targetConnection);
-          }
-          finally
-          {
-            isConnecting = false;
-          }
+          LogMgr.logDebug(new CallerInfo(){}, "Target connection established retrieving tables.");
+          targetTable.setConnection(targetConnection);
         }
       };
       t.start();
-    }
-    else
-    {
-      isConnecting = false;
     }
   }
 
@@ -672,12 +681,16 @@ public class DataPumper
     jSplitPane1 = new WbSplitPane();
     mapperPanel = new JPanel();
     optionsPanel = new JPanel();
-    jPanel2 = new JPanel();
+    sourceOptions = new JPanel();
     sqlPanel = new JPanel();
     wherePanel = new JPanel();
     sqlEditorLabel = new JLabel();
     useQueryCbx = new JCheckBox();
     checkQueryButton = new FlatButton();
+    textOptions = new JPanel();
+    textImportOptionsPanel = new ImportOptionsPanel();
+    textStatusPanel = new JPanel();
+    syncTextOptions = new JButton();
     updateOptionPanel = new JPanel();
     commitLabel = new JLabel();
     commitEvery = new JTextField();
@@ -713,7 +726,7 @@ public class DataPumper
 
     setLayout(new BorderLayout());
 
-    connectionPanel.setLayout(new GridLayout(1, 0, 2, 5));
+    connectionPanel.setLayout(new GridLayout(1, 2, 2, 5));
 
     sourcePanel.setLayout(new GridBagLayout());
 
@@ -758,6 +771,7 @@ public class DataPumper
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.BOTH;
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.insets = new Insets(0, 2, 0, 0);
     sourceProfilePanel.add(openFileButton, gridBagConstraints);
@@ -856,7 +870,7 @@ public class DataPumper
 
     optionsPanel.setLayout(new GridBagLayout());
 
-    jPanel2.setLayout(new GridBagLayout());
+    sourceOptions.setLayout(new CardLayout());
 
     sqlPanel.setLayout(new GridBagLayout());
 
@@ -874,7 +888,7 @@ public class DataPumper
     gridBagConstraints.anchor = GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(5, 0, 4, 1);
+    gridBagConstraints.insets = new Insets(0, 0, 4, 1);
     sqlPanel.add(wherePanel, gridBagConstraints);
 
     useQueryCbx.setText(ResourceMgr.getString("LblDPUseSQLSource")); // NOI18N
@@ -903,15 +917,46 @@ public class DataPumper
     gridBagConstraints.insets = new Insets(0, 0, 2, 0);
     sqlPanel.add(checkQueryButton, gridBagConstraints);
 
+    sourceOptions.add(sqlPanel, "sql");
+
+    textOptions.setLayout(new GridBagLayout());
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.fill = GridBagConstraints.BOTH;
+    gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    gridBagConstraints.insets = new Insets(0, 0, 0, 5);
+    textOptions.add(textImportOptionsPanel, gridBagConstraints);
+
+    textStatusPanel.setLayout(new GridBagLayout());
+
+    syncTextOptions.setText("Apply options");
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    textStatusPanel.add(syncTextOptions, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = GridBagConstraints.LAST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new Insets(0, 0, 10, 0);
+    textOptions.add(textStatusPanel, gridBagConstraints);
+
+    sourceOptions.add(textOptions, "text");
+
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 0.3;
     gridBagConstraints.weighty = 1.0;
-    gridBagConstraints.insets = new Insets(0, 0, 0, 5);
-    jPanel2.add(sqlPanel, gridBagConstraints);
+    gridBagConstraints.insets = new Insets(7, 0, 0, 0);
+    optionsPanel.add(sourceOptions, gridBagConstraints);
 
     updateOptionPanel.setLayout(new GridBagLayout());
 
@@ -1093,14 +1138,7 @@ public class DataPumper
     gridBagConstraints.weightx = 0.5;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new Insets(5, 5, 0, 0);
-    jPanel2.add(updateOptionPanel, gridBagConstraints);
-
-    gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.fill = GridBagConstraints.BOTH;
-    gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
-    optionsPanel.add(jPanel2, gridBagConstraints);
+    optionsPanel.add(updateOptionPanel, gridBagConstraints);
 
     jSplitPane1.setRightComponent(optionsPanel);
 
@@ -1234,7 +1272,6 @@ public class DataPumper
   protected JLabel jLabel2;
   protected JLabel jLabel3;
   protected JPanel jPanel1;
-  protected JPanel jPanel2;
   protected JPanel jPanel3;
   protected JPanel jPanel4;
   protected JPanel jPanel5;
@@ -1253,6 +1290,7 @@ public class DataPumper
   protected JButton showLogButton;
   protected JButton showWbCommand;
   protected JLabel sourceHeader;
+  protected JPanel sourceOptions;
   protected JPanel sourcePanel;
   protected JLabel sourceProfileLabel;
   protected JPanel sourceProfilePanel;
@@ -1262,11 +1300,15 @@ public class DataPumper
   protected JButton startButton;
   protected JLabel statusLabel;
   protected JPanel statusPanel;
+  protected JButton syncTextOptions;
   protected JLabel targetHeader;
   protected JPanel targetPanel;
   protected JLabel targetProfileLabel;
   protected JPanel targetProfilePanel;
   protected TableSelectorPanel targetTable;
+  protected ImportOptionsPanel textImportOptionsPanel;
+  protected JPanel textOptions;
+  protected JPanel textStatusPanel;
   protected JPanel updateOptionPanel;
   protected JCheckBox useQueryCbx;
   protected JPanel wherePanel;
@@ -1439,6 +1481,10 @@ public class DataPumper
   @Override
   public void actionPerformed(java.awt.event.ActionEvent e)
   {
+    if (e.getSource() == this.syncTextOptions)
+    {
+      this.initTextOptions();
+    }
     if (e.getSource() == this.closeButton)
     {
       this.closeWindow();
@@ -1499,19 +1545,29 @@ public class DataPumper
   }
 
   /**
-   *  Check the controls depending on the state of the useQuery CheckBox
+   *  Check the controls depending on the "import type".
    */
   private void checkType()
   {
+    boolean isCopy = (this.fileImporter == null);
     boolean useQuery = this.useQueryCbx.isSelected();
-    boolean allowSource = (!useQuery && this.fileImporter == null);
+    boolean allowSource = (!useQuery && isCopy);
 
     this.sourceTable.setEnabled(allowSource);
 
     TableIdentifier target = this.targetTable.getSelectedTable();
-    boolean isCopy = (this.fileImporter == null);
-    this.sqlEditor.setEnabled(isCopy);
-    this.checkQueryButton.setEnabled(isCopy && useQuery && target != null);
+
+    if (isCopy)
+    {
+      showSqlSourceOptions();
+      this.sqlEditor.setEnabled(isCopy);
+      this.checkQueryButton.setEnabled(isCopy && useQuery && target != null);
+    }
+    else
+    {
+      showTextSourceOptions();
+    }
+
     this.targetTable.allowNewTable(isCopy);
 
     if (useQuery)
@@ -1529,18 +1585,17 @@ public class DataPumper
     {
       this.statusLabel.setText("");
     }
-    this.useQueryCbx.setEnabled(isCopy);
-    this.useQueryCbx.setEnabled(isCopy);
 
     if (useQuery)
     {
       this.sqlEditorLabel.setText(ResourceMgr.getString("LblDPQueryText"));
     }
-    else
+    else if (isCopy)
     {
       this.sqlEditorLabel.setText(ResourceMgr.getString("LblDPAdditionalWhere"));
     }
-    if (!useQuery)
+
+    if (!useQuery && isCopy)
     {
       if (this.isSelectQuery())
       {
@@ -1790,7 +1845,7 @@ public class DataPumper
   private void appendGeneralImportOptions(StringBuilder sql, int indentSize)
   {
     String indent = StringUtil.padRight("", indentSize + 1);
-    CommonArgs.appendArgument(sql, CommonArgs.ARG_IGNORE_IDENTITY, Boolean.toString(ignoreIdentityCbx.isSelected()), indent);
+    CommonArgs.appendArgument(sql, CommonArgs.ARG_IGNORE_IDENTITY, ignoreIdentityCbx.isSelected(), indent);
 
     String mode = (String)this.modeComboBox.getSelectedItem();
     if (!"insert".equals(mode))
@@ -1812,8 +1867,8 @@ public class DataPumper
       }
     }
 
-    CommonArgs.appendArgument(sql, CommonArgs.ARG_DELETE_TARGET, Boolean.toString(this.deleteTargetCbx.isSelected()), indent);
-    CommonArgs.appendArgument(sql, CommonArgs.ARG_CONTINUE, Boolean.toString(this.continueOnErrorCbx.isSelected()), indent);
+    CommonArgs.appendArgument(sql, CommonArgs.ARG_DELETE_TARGET, this.deleteTargetCbx.isSelected(), indent);
+    CommonArgs.appendArgument(sql, CommonArgs.ARG_CONTINUE, this.continueOnErrorCbx.isSelected(), indent);
 
     int size = getBatchSize();
     if (size > 0)
@@ -2089,6 +2144,8 @@ public class DataPumper
     List<ColumnIdentifier> cols = columnMapper.getMappingForImport();
     this.fileImporter.setTargetTable(this.targetTable.getSelectedTable());
     this.fileImporter.setImportColumns(cols);
+    this.fileImporter.setGeneralOptions(textImportOptionsPanel.getGeneralOptions());
+    this.fileImporter.setTextOptions(textImportOptionsPanel.getTextOptions());
     ImportOptions options = fileImporter.getGeneralOptions();
     if (options != null)
     {

@@ -249,6 +249,17 @@ public class PgCopyImporterTest
       }
 
       @Override
+      public void setEmptyStringIsNull(boolean flag)
+      {
+      }
+
+      @Override
+      public boolean getEmptyStringIsNull()
+      {
+        return false;
+      }
+
+      @Override
       public QuoteEscapeType getQuoteEscaping()
       {
         return QuoteEscapeType.none;

@@ -53,12 +53,11 @@ public class ImportFileDialog
   private ProducerFactory.ImportType importType = null;
   private File selectedFile = null;
   private boolean isCancelled = false;
-  private Settings settings = Settings.getInstance();
-  private ImportOptionsPanel importOptions;
+  private final ImportOptionsPanel importOptions;
   private WbFileChooser chooser;
   private boolean filterChange = false;
   private String lastDirConfigKey = "workbench.import.lastdir";
-  private Component parentComponent;
+  private final Component parentComponent;
 
   public ImportFileDialog(Component caller)
   {
@@ -132,7 +131,7 @@ public class ImportFileDialog
     this.selectedFile = null;
     boolean result = false;
 
-    String lastDir = settings.getProperty(lastDirConfigKey, null);
+    String lastDir = Settings.getInstance().getProperty(lastDirConfigKey, null);
     this.chooser = new WbFileChooser(lastDir);
     chooser.setSettingsID("workbench." + configSection + ".selectfile");
     if (title != null) this.chooser.setDialogTitle(title);
@@ -191,7 +190,7 @@ public class ImportFileDialog
       }
       lastDir = chooser.getCurrentDirectory().getAbsolutePath();
 
-      settings.setProperty(this.lastDirConfigKey, lastDir);
+      Settings.getInstance().setProperty(this.lastDirConfigKey, lastDir);
       this.saveSettings(configSection);
       this.selectedFile = new File(filename);
       result = true;

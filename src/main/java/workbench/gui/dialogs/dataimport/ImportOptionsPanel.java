@@ -57,6 +57,8 @@ public class ImportOptionsPanel
   private final JPanel typePanel;
   private final CardLayout card;
   private final JComboBox typeSelector;
+  private final JPanel selectorPanel;
+  private final JPanel generalContainer;
   private final GeneralImportOptionsPanel generalOptions;
   private final TextOptionsPanel textOptions;
   private ProducerFactory.ImportType currentType = null;
@@ -67,21 +69,23 @@ public class ImportOptionsPanel
     setLayout(new BorderLayout(0,2));
     generalOptions = new GeneralImportOptionsPanel();
 
-    JPanel generalContainer = new JPanel();
+    generalContainer = new JPanel();
     generalContainer.setLayout(new BorderLayout(0,0));
     generalContainer.add(this.generalOptions, BorderLayout.CENTER);
     Border leftMargin = new EmptyBorder(0, 3, 0, 0);
     generalContainer.setBorder(leftMargin);
 
-    JPanel selectorPanel = new JPanel(new BorderLayout(2, 2));
-    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, 5, 0));
-    selectorPanel.setBorder(b);
+    selectorPanel = new JPanel(new BorderLayout(2, 2));
+
+
     typeSelector = new JComboBox();
     typeSelector.addItem("Text");
     typeSelector.addItem("XML");
     JLabel type = new JLabel("Type");
     selectorPanel.add(type, BorderLayout.WEST);
     selectorPanel.add(typeSelector, BorderLayout.CENTER);
+    Border b = new CompoundBorder(DividerBorder.BOTTOM_DIVIDER, new EmptyBorder(0, 0, 5, 0));
+    generalContainer.setBorder(b);
     generalContainer.add(selectorPanel, BorderLayout.SOUTH);
 
     this.add(generalContainer, BorderLayout.NORTH);
@@ -99,10 +103,25 @@ public class ImportOptionsPanel
     typeSelector.addActionListener(this);
   }
 
-  public void allowImportTypeSelection(boolean flag)
+  public void removeImportMode()
   {
-
+    generalOptions.removeModeSelection();
   }
+
+  public void removeTypeSelector()
+  {
+    generalContainer.remove(selectorPanel);
+  }
+
+  public void fromOptions(ImportOptions generalOptions, TextImportOptions textOptions)
+  {
+    this.generalOptions.fromOptions(generalOptions);
+    if (this.currentType == ProducerFactory.ImportType.Text)
+    {
+      this.textOptions.fromOptions(textOptions);
+    }
+  }
+
   public void allowImportModeSelection(boolean flag)
   {
     this.generalOptions.setModeSelectorEnabled(flag);

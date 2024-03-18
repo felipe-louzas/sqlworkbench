@@ -39,6 +39,7 @@ import workbench.sql.formatter.FormatterUtil;
 import workbench.sql.formatter.WbSqlFormatter;
 import workbench.sql.parser.ScriptParser;
 
+import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -176,6 +177,11 @@ public class EditorDropHandler
       {
         WbSwingUtilities.showDefaultCursor(editor);
       }
+    }
+
+    if (CollectionUtil.isEmpty(columns))
+    {
+      return "*";
     }
 
     return columns.stream().

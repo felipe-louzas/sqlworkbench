@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -186,10 +185,8 @@ public class ClassFinder
     {
       List<String> result = new ArrayList<>();
       ServiceLoader<Driver> serviceLoader = ServiceLoader.load(this.toFind, loader);
-      Iterator<Driver> iterator = serviceLoader.iterator();
-      while (iterator.hasNext())
+      for (Driver drv : serviceLoader)
       {
-        Driver drv = iterator.next();
         result.add(drv.getClass().getName());
       }
       return result;

@@ -121,7 +121,6 @@ public class WbSwingUtilities
 {
 
   public static final String PROP_ERROR_MSG_WRAP = "workbench.sql.error.wordwrap";
-  public static final LineBorder FOCUSED_CELL_BORDER = new LineBorder(Color.YELLOW);
   public static final Border DEFAULT_LINE_BORDER = createLineBorder(UIManager.getColor("Panel.background"));
   public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
   public static final KeyStroke CTRL_TAB = KeyStroke.getKeyStroke("control TAB");
@@ -1770,11 +1769,16 @@ public class WbSwingUtilities
     return getLineBorderColor(background);
   }
 
+  public static Border getFocusedCellBorder()
+  {
+    return UIManager.getBorder("Table.focusSelectedCellHighlightBorder");
+  }
+  
   public static Color getLineBorderColor()
   {
     return getLineBorderColor(UIManager.getColor("Panel.background"));
   }
-  
+
   public static Color getLineBorderColor(Color background)
   {
     Color borderColor;

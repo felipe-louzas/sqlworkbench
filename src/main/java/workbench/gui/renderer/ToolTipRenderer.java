@@ -41,6 +41,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 
 import workbench.log.CallerInfo;
@@ -102,6 +104,7 @@ public class ToolTipRenderer
   private final Rectangle paintTextR = new Rectangle();
   private final Rectangle paintViewR = new Rectangle();
 
+  protected Border focusedBorder;
   protected final Insets focusedInsets;
   protected final Insets regularInsets;
   protected boolean useInsetsFromLnF = false;
@@ -129,7 +132,13 @@ public class ToolTipRenderer
     setOpaque(true);
     regularInsets = getDefaultInsets();
     clipLimit = GuiSettings.getClipLongRendererValues();
-    int thick = WbSwingUtilities.FOCUSED_CELL_BORDER.getThickness();
+
+    focusedBorder = WbSwingUtilities.getFocusedCellBorder();
+    if (focusedBorder == null)
+    {
+      focusedBorder = new LineBorder(Color.YELLOW);
+    }
+    int thick = getFocusBorderThickness();
     useInsetsFromLnF = UIManager.getDefaults().getInsets("Table.cellMargins") != null;
     // if the regular inserts were changed, reflect this with the focused insets
     focusedInsets = new Insets(thick + regularInsets.top - 1, thick + regularInsets.left - 1, thick + regularInsets.bottom - 1, thick + regularInsets.right - 1);
@@ -151,9 +160,18 @@ public class ToolTipRenderer
     if (top != regularInsets.top)
     {
       regularInsets.set(top, regularInsets.left, regularInsets.bottom, regularInsets.right);
-      int thick = WbSwingUtilities.FOCUSED_CELL_BORDER.getThickness();
+      int thick = getFocusBorderThickness();
       focusedInsets.set(thick + top - 1, thick + regularInsets.left - 1, thick + regularInsets.bottom - 1, thick + regularInsets.right - 1);
     }
+  }
+
+  private int getFocusBorderThickness()
+  {
+    if (focusedBorder instanceof LineBorder)
+    {
+      return ((LineBorder)focusedBorder).getThickness();
+    }
+    return 1;
   }
 
   private int retrieveBlendFactor(String type)
@@ -440,7 +458,7 @@ public class ToolTipRenderer
 
     if (hasFocus)
     {
-      WbSwingUtilities.FOCUSED_CELL_BORDER.paintBorder(this, g, 0, 0, w, h);
+      focusedBorder.paintBorder(this, g, 0, 0, w, h);
     }
   }
 

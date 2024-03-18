@@ -54,10 +54,9 @@ public abstract class AbstractDialogRenderer
   protected WbTable currentTable;
   protected int currentRow;
   protected int currentColumn;
-  private Color alternateColor = GuiSettings.getAlternateRowColor();
-  private Color nullColor = GuiSettings.getNullColor();
-
-  private boolean useAlternatingColors = GuiSettings.getUseAlternateRowColor();
+  private final Color alternateColor = GuiSettings.getAlternateRowColor();
+  private final Color nullColor = GuiSettings.getNullColor();
+  private final boolean useAlternatingColors = GuiSettings.getUseAlternateRowColor();
 
   public AbstractDialogRenderer()
   {
@@ -112,7 +111,7 @@ public abstract class AbstractDialogRenderer
     }
     if (hasFocus)
     {
-      this.displayPanel.setBorder(WbSwingUtilities.FOCUSED_CELL_BORDER);
+      this.displayPanel.setBorder(WbSwingUtilities.getFocusedCellBorder());
     }
     else
     {

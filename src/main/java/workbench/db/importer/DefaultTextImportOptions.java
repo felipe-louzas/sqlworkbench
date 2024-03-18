@@ -22,7 +22,9 @@
 package workbench.db.importer;
 
 import workbench.resource.Settings;
+
 import workbench.util.QuoteEscapeType;
+import workbench.util.StringUtil;
 
 /**
  * @author Thomas Kellerer
@@ -30,10 +32,15 @@ import workbench.util.QuoteEscapeType;
 public class DefaultTextImportOptions
   implements TextImportOptions
 {
-
   private String delimiter;
   private String quoteChar;
+  private String decimalChar;
+  private String nullString;
+  private boolean quoteAlways = false;
   private boolean containsHeader = true;
+  private boolean emptyStringIsNull = false;
+  private QuoteEscapeType quoteEscape;
+  private boolean decodeUnicode;
 
   public DefaultTextImportOptions(String delim, String quote)
   {
@@ -56,7 +63,7 @@ public class DefaultTextImportOptions
   @Override
   public boolean getQuoteAlways()
   {
-    return false;
+    return quoteAlways;
   }
 
   @Override
@@ -68,24 +75,25 @@ public class DefaultTextImportOptions
   @Override
   public QuoteEscapeType getQuoteEscaping()
   {
-    return QuoteEscapeType.none;
+    return quoteEscape == null ? QuoteEscapeType.none : quoteEscape;
   }
 
   @Override
   public boolean getDecode()
   {
-    return false;
+    return decodeUnicode;
   }
 
   @Override
   public String getDecimalChar()
   {
-    return Settings.getInstance().getDecimalSymbol();
+    return StringUtil.coalesce(decimalChar, Settings.getInstance().getDecimalSymbol());
   }
 
   @Override
   public void setTextDelimiter(String delim)
   {
+    delimiter = delim;
   }
 
   @Override
@@ -97,27 +105,55 @@ public class DefaultTextImportOptions
   @Override
   public void setTextQuoteChar(String quote)
   {
+    quoteChar = quote;
   }
 
   @Override
   public void setDecode(boolean flag)
   {
+    this.decodeUnicode = flag;
   }
 
   @Override
-  public void setDecimalChar(String s)
+  public void setDecimalChar(String decimal)
   {
+    this.decimalChar = decimal;
   }
 
   @Override
   public String getNullString()
   {
-    return null;
+    return nullString;
   }
 
   @Override
   public void setNullString(String nullString)
   {
+    this.nullString = nullString;
   }
 
+  @Override
+  public void setEmptyStringIsNull(boolean flag)
+  {
+    emptyStringIsNull = flag;
+  }
+
+  @Override
+  public boolean getEmptyStringIsNull()
+  {
+    return emptyStringIsNull;
+  }
+
+  public static TextImportOptions fromOptions(TextImportOptions options)
+  {
+    DefaultTextImportOptions result = new DefaultTextImportOptions(options.getTextDelimiter(), options.getTextQuoteChar());
+    result.emptyStringIsNull = options.getEmptyStringIsNull();
+    result.nullString = options.getNullString();
+    result.decodeUnicode = options.getDecode();
+    result.decimalChar = options.getDecimalChar();
+    result.quoteAlways = options.getQuoteAlways();
+    result.quoteEscape = options.getQuoteEscaping();
+    result.containsHeader = options.getContainsHeader();
+    return result;
+  }
 }

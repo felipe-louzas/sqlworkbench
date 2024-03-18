@@ -21,6 +21,9 @@
  */
 package workbench.gui.dialogs.dataimport;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
 import javax.swing.JPanel;
 
 import workbench.interfaces.ValidatingComponent;
@@ -119,6 +122,22 @@ public class GeneralImportOptionsPanel
     }
     this.setEncoding(s.getProperty("workbench.export." + key + ".encoding", s.getDefaultDataEncoding()));
     this.setMode(s.getProperty("workbench.import." + key + ".mode", "insert"));
+  }
+
+  public void fromOptions(ImportOptions options)
+  {
+    setDateFormat(options.getDateFormat());
+    setTimestampFormat(options.getTimestampFormat());
+    setEncoding(options.getEncoding());
+  }
+
+  public void removeModeSelection()
+  {
+    GridBagLayout layout = (GridBagLayout)getLayout();
+    GridBagConstraints gc = layout.getConstraints(this.modeComboBox);
+    this.remove(modeComboBox);
+    this.remove(modeLabel);
+    layout.setConstraints(timestampFormat, gc);
   }
 
   @Override

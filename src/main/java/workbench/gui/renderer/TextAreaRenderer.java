@@ -104,7 +104,7 @@ public class TextAreaRenderer
 
     if (hasFocus)
     {
-      this.textDisplay.setBorder(WbSwingUtilities.FOCUSED_CELL_BORDER);
+      this.textDisplay.setBorder(focusedBorder);
     }
     else
     {

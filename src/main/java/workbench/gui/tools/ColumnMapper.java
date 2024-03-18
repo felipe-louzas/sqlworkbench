@@ -59,7 +59,7 @@ import workbench.util.StringUtil;
 public class ColumnMapper
   extends JPanel
 {
-  private JTable columnDisplay;
+  private final JTable columnDisplay;
   private List<ColumnIdentifier> sourceColumns;
   private List<ColumnIdentifier> targetColumns;
   private ColumnMapRow[] mapping;
@@ -96,12 +96,10 @@ public class ColumnMapper
     FontMetrics fm = this.columnDisplay.getTableHeader().getFontMetrics(f);
     String label = colMod.getColumn(2).getHeaderValue().toString();
     int width = fm.stringWidth(label);
-    int addWidth = fm.stringWidth("WWWW");
+    int addWidth = fm.stringWidth("MMMM");
     col.setMinWidth(width + addWidth);
     col.setMaxWidth(width + addWidth);
-    this.columnDisplay.setRowHeight(fm.getHeight());
   }
-
 
   public void resetData()
   {
@@ -144,12 +142,11 @@ public class ColumnMapper
   public void defineColumns(List<ColumnIdentifier> source, List<ColumnIdentifier> target, boolean syncDataTypes, boolean keepSourceOrder)
   {
     if (source == null || target == null) throw new IllegalArgumentException("Both column lists have to be specified");
-    this.sourceColumns = source;
-    this.targetColumns = target;
+    this.sourceColumns = new ArrayList<>(source);
+    this.targetColumns = new ArrayList<>(target);
 
     // we cannot have more mapping entries then the number of columns in the target
     int numTargetCols = this.targetColumns.size();
-    //int numSourceCols = this.sourceColumns.size();
     this.mapping = new ColumnMapRow[numTargetCols];
     for (int i=0; i < numTargetCols; i++)
     {

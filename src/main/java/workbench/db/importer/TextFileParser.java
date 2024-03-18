@@ -919,15 +919,13 @@ public class TextFileParser
     return importColumns.size();
   }
 
-  List<ImportFileColumn> getImportColumns()
+  @Override
+  public boolean getEmptyStringIsNull()
   {
-    return importColumns;
+    return emptyStringIsNull;
   }
 
-  /**
-   * Setter for property emptyStringIsNull.
-   * @param flag New value of property emptyStringIsNull.
-   */
+  @Override
   public void setEmptyStringIsNull(boolean flag)
   {
     this.emptyStringIsNull = flag;
