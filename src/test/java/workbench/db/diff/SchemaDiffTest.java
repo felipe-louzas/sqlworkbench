@@ -27,6 +27,7 @@ import java.sql.Statement;
 import workbench.TestUtil;
 import workbench.WbTestCase;
 
+import workbench.db.ConnectionMgr;
 import workbench.db.JdbcUtils;
 import workbench.db.WbConnection;
 
@@ -53,8 +54,7 @@ public class SchemaDiffTest
   @After
   public void tearDown()
   {
-    try { source.disconnect(); } catch (Throwable th) {}
-    try { target.disconnect(); } catch (Throwable th) {}
+    ConnectionMgr.getInstance().disconnectAll();
   }
 
   @Test
@@ -213,6 +213,52 @@ public class SchemaDiffTest
 
     count = TestUtil.getXPathValue(xml, "count(/schema-diff/modify-table[@name='ADDRESS']/drop-index)");
     assertEquals("Add index present", "0", count);
+  }
+
+  @Test
+  public void testFKRulesDiff()
+    throws Exception
+  {
+    setupBaseDatabase();
+
+    String sourceChange =
+      "alter table ref.person_address drop constraint ref.fk_pa_person;\n"+
+      "alter table ref.person_address drop constraint ref.fk_pa_address;\n"+
+      "alter table ref.person_address add constraint ref.fk_pa_person foreign key (person_id) references ref.person(person_id) on delete cascade;\n"+
+      "alter table ref.person_address add constraint ref.fk_pa_address foreign key (address_id) references ref.address(address_id) on delete cascade;\n"+
+      "commit;\n";
+    TestUtil.executeScript(source, sourceChange, true);
+
+
+    String targetChange =
+      "alter table old.person_address drop constraint old.fk_pa_person;\n"+
+      "alter table old.person_address add constraint old.fk_pa_person foreign key (person_id) references old.person(person_id) on delete set null;\n"+
+      "alter table old.person_address add constraint old.fk_pa_address foreign key (address_id) references old.address(address_id) on delete set null;" +
+      "commit\n";
+
+    TestUtil.executeScript(target, targetChange, true);
+
+    SchemaDiff diff = new SchemaDiff(source, target);
+    diff.setIncludeForeignKeys(true);
+    diff.setIncludeSequences(false);
+    diff.setCompareFKRules(true);
+    diff.setIncludeIndex(false);
+    diff.setIncludePrimaryKeys(false);
+    diff.setIncludeProcedures(false);
+    diff.setIncludeTableGrants(false);
+    diff.setIncludeTableConstraints(false);
+    diff.setIncludeViews(false);
+    diff.setSchemas("ref", "old");
+    String xml = diff.getMigrateTargetXml();
+//    System.out.println(xml);
+    String count = TestUtil.getXPathValue(xml, "count(/schema-diff/modify-table[@name='PERSON_ADDRESS']/alter-foreign-keys/foreign-key)");
+    assertEquals("2", count);
+    diff.setCompareFKRules(false);
+    diff.setSchemas("ref", "old");
+    xml = diff.getMigrateTargetXml();
+//    System.out.println(xml);
+    count = TestUtil.getXPathValue(xml, "count(/schema-diff/modify-table[@name='PERSON_ADDRESS']/alter-foreign-keys/foreign-key)");
+    assertEquals("0", count);
   }
 
   @Test
@@ -378,6 +424,5 @@ public class SchemaDiffTest
       "CREATE sequence old.seq_two;\n"+
       "CREATE sequence old.seq_to_be_deleted;\n" +
       "commit;", true);
-
   }
 }

@@ -1100,6 +1100,17 @@ public class WbConnection
     pendingEvents.clear();
   }
 
+  public void disconnectSilently()
+  {
+    try
+    {
+      disconnect();
+    }
+    catch (Exception ex)
+    {
+      LogMgr.logWarning(new CallerInfo(){}, "Could not disconnect connection: " + getId(), ex);
+    }
+  }
   /**
    * This will physically close the connection to the DBMS.
    *

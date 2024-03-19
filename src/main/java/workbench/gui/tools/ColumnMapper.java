@@ -177,6 +177,8 @@ public class ColumnMapper
     TableColumn col = colMod.getColumn(0);
 
     this.sourceDropDown = this.createDropDown(this.sourceColumns, true);
+    this.sourceDropDown.setBorder(WbSwingUtilities.EMPTY_BORDER);
+
     Component c = this.sourceDropDown.getEditor().getEditorComponent();
     if (c instanceof JComponent)
     {
@@ -195,6 +197,8 @@ public class ColumnMapper
     col.setCellEditor(edit);
 
     this.adjustKeyColumn();
+    int height = (int)(columnDisplay.getRowHeight() * 1.25);
+    columnDisplay.setRowHeight(height);
   }
 
   public ColumnIdentifier findSourceColumnByName(String aName)

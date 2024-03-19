@@ -227,7 +227,6 @@ public class ObjectDiff
       else
       {
         ColumnDiff d = new ColumnDiff(refCol, tcol);
-        d.setCompareForeignKeys(false);
         d.setCompareJdbcTypes(false);
         d.setIndent(myindent);
         StringBuilder diffXml = d.getMigrateTargetXml();

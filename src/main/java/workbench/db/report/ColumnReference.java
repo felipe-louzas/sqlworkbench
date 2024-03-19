@@ -35,9 +35,9 @@ public class ColumnReference
   public static final String TAG_DELETE_RULE = "delete-rule";
   public static final String TAG_DEFER_RULE = "deferrable";
 
-  private ForeignKeyDefinition fkDefinition;
+  private final ForeignKeyDefinition fkDefinition;
+  private final TagWriter tagWriter = new TagWriter();
   private String foreignColumn;
-  private TagWriter tagWriter = new TagWriter();
 
   public ColumnReference(ForeignKeyDefinition fk)
   {
@@ -47,11 +47,6 @@ public class ColumnReference
   public String getFkName()
   {
     return fkDefinition.getFkName();
-  }
-
-  public void setCompareFKRule(boolean flag)
-  {
-    if (this.fkDefinition != null) fkDefinition.setCompareFKRules(flag);
   }
 
   public ReportTable getForeignTable()

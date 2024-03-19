@@ -48,7 +48,6 @@ public class ForeignKeyDefinition
 
   private ReportTable foreignTable;
   private final TagWriter tagWriter = new TagWriter();
-  private boolean compareFKRules;
 
   public ForeignKeyDefinition(DependencyNode node)
   {
@@ -63,11 +62,6 @@ public class ForeignKeyDefinition
   public boolean isEnabled()
   {
     return fkDefinition.isEnabled();
-  }
-
-  public void setCompareFKRules(boolean flag)
-  {
-    compareFKRules = flag;
   }
 
   public int getUpdateRuleValue()
@@ -182,12 +176,9 @@ public class ForeignKeyDefinition
     int hash = 7;
     hash = 53 * hash + (this.getFkName() != null ? this.getFkName().hashCode() : 0);
     hash = 53 * hash + (this.foreignTable != null ? this.foreignTable.hashCode() : 0);
-    if (compareFKRules)
-    {
-      hash = 53 * hash + this.getUpdateRuleValue();
-      hash = 53 * hash + this.getDeleteRuleValue();
-      hash = 53 * hash + this.getDeferrableRuleValue();
-    }
+    hash = 53 * hash + this.getUpdateRuleValue();
+    hash = 53 * hash + this.getDeleteRuleValue();
+    hash = 53 * hash + this.getDeferrableRuleValue();
     return hash;
   }
 
@@ -245,14 +236,6 @@ public class ForeignKeyDefinition
     {
       boolean baseEqual = compareColumns(ref);
       baseEqual = baseEqual && SqlUtil.objectNamesAreEqual(this.foreignTable.getTable().getTableName(), ref.foreignTable.getTable().getTableName());
-
-      if (baseEqual && compareFKRules)
-      {
-        baseEqual = baseEqual &&
-              (this.getUpdateRuleValue() == ref.getUpdateRuleValue()) &&
-              (this.getDeleteRuleValue() == ref.getDeleteRuleValue()) &&
-              (this.getDeferrableRuleValue() == ref.getDeferrableRuleValue());
-      }
       return baseEqual;
     }
     catch (Exception e)
@@ -261,11 +244,24 @@ public class ForeignKeyDefinition
     }
   }
 
-  public boolean equals(ForeignKeyDefinition ref)
+  public boolean rulesAreEqual(ForeignKeyDefinition ref)
+  {
+    return
+      (this.getUpdateRuleValue() == ref.getUpdateRuleValue()) &&
+      (this.getDeleteRuleValue() == ref.getDeleteRuleValue()) &&
+      (this.getDeferrableRuleValue() == ref.getDeferrableRuleValue());
+  }
+  
+  public boolean equals(ForeignKeyDefinition ref, boolean compareFKRules)
   {
     try
     {
-      return isDefinitionEqual(ref) && isNameEqual(ref);
+      boolean definitionEqual = isDefinitionEqual(ref) && isNameEqual(ref);
+      if (compareFKRules)
+      {
+        definitionEqual = definitionEqual && rulesAreEqual(ref);
+      }
+      return definitionEqual;
     }
     catch (Exception e)
     {

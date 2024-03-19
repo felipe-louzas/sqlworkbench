@@ -105,6 +105,15 @@ public class ProducerFactory
     this.textOptions = options;
   }
 
+  public void resetOptions(ImportOptions generalOptions, TextImportOptions textOptions)
+  {
+    setGeneralOptions(generalOptions);
+    setTextOptions(textOptions);
+    this.inputColumns = null;
+    this.producer = null;
+    this.fileParser = null;
+  }
+  
   public TextImportOptions getTextOptions()
   {
     return this.textOptions;

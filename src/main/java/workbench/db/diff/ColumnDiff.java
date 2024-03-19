@@ -53,7 +53,6 @@ public class ColumnDiff
   private ReportColumn targetColumn;
   private StringBuilder indent;
   private final TagWriter writer = new TagWriter();
-  private boolean compareFK = true;
   private boolean compareComments = true;
   private boolean compareJdbcTypes = false;
 
@@ -66,11 +65,6 @@ public class ColumnDiff
     if (target == null) throw new NullPointerException("Target column may not be null");
     this.referenceColumn = reference;
     this.targetColumn = target;
-  }
-
-  public void setCompareForeignKeys(boolean flag)
-  {
-    this.compareFK = flag;
   }
 
   public void setCompareComments(boolean flag)
@@ -168,26 +162,7 @@ public class ColumnDiff
     ColumnReference refFk = this.referenceColumn.getForeignKey();
     ColumnReference targetFk = this.targetColumn.getForeignKey();
 
-    boolean fkDefinitionDifferent = false;
-    boolean fkNameDifferent = false;
     boolean collationsDifferent = StringUtil.stringsAreNotEqual(sId.getCollation(), tId.getCollation());
-
-    if (this.compareFK)
-    {
-      if (refFk != null && targetFk != null)
-      {
-        // when comparing only JDBC types, we should ignore FK rules as they differ extremely between DBMS
-        refFk.setCompareFKRule(!this.compareJdbcTypes);
-        targetFk.setCompareFKRule(!this.compareJdbcTypes);
-
-        fkDefinitionDifferent = !(refFk.isFkDefinitionEqual(targetFk));
-        fkNameDifferent = !(refFk.isFkNameEqual(targetFk));
-      }
-      else
-      {
-        fkDefinitionDifferent = (refFk != null || targetFk != null);
-      }
-    }
 
     String scomm = sId.getComment();
     String tcomm = tId.getComment();
@@ -201,7 +176,6 @@ public class ColumnDiff
         nullableDifferent ||
         defaultDifferent ||
         commentDifferent ||
-        fkNameDifferent || fkDefinitionDifferent ||
         computedColIsDifferent || collationsDifferent)
     {
       writer.appendOpenTag(result, this.indent, TAG_MODIFY_COLUMN, "name", SqlUtil.removeObjectQuotes(tId.getColumnName()));
@@ -279,42 +253,6 @@ public class ColumnDiff
       }
       writer.appendCloseTag(result, myindent, TAG_CHANGED_ATTRIBUTES);
 
-      if (fkDefinitionDifferent)
-      {
-        StringBuilder refIndent = new StringBuilder(myindent);
-        refIndent.append("  ");
-        if (refFk == null)
-        {
-          writer.appendOpenTag(result, myindent, TAG_DROP_FK);
-          result.append('\n');
-          result.append(targetFk.getInnerXml(refIndent));
-          writer.appendCloseTag(result, myindent, TAG_DROP_FK);
-        }
-        else
-        {
-          writer.appendOpenTag(result, myindent, TAG_ADD_FK);
-          result.append('\n');
-          result.append(refFk.getInnerXml(refIndent));
-          writer.appendCloseTag(result, myindent, TAG_ADD_FK);
-        }
-      }
-      else if (fkNameDifferent)
-      {
-        StringBuilder refIndent = new StringBuilder(myindent);
-        refIndent.append("  ");
-        writer.appendOpenTag(result, myindent, TAG_RENAME_FK);
-        result.append('\n');
-        result.append(myindent);
-        result.append("  <old-name>");
-        result.append(targetFk.getFkName());
-        result.append("</old-name>\n");
-
-        result.append(myindent);
-        result.append("  <new-name>");
-        result.append(refFk.getFkName());
-        result.append("</new-name>\n");
-        writer.appendCloseTag(result, myindent, TAG_RENAME_FK);
-      }
       writer.appendCloseTag(result, this.indent, TAG_MODIFY_COLUMN);
     }
     return result;

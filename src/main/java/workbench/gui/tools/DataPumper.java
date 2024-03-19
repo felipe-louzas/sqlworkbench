@@ -49,12 +49,15 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -235,7 +238,7 @@ public class DataPumper
   {
     return window;
   }
-  
+
   public void saveSettings()
   {
     Settings s = Settings.getInstance();
@@ -347,15 +350,14 @@ public class DataPumper
     if (type == ProducerFactory.ImportType.Text)
     {
       this.textImportOptionsPanel.setTypeText();
-      this.fileImporter.setTextOptions(dialog.getTextOptions());
       this.textImportOptionsPanel.fromOptions(dialog.getGeneralOptions(), dialog.getTextOptions());
     }
     else
     {
       this.textImportOptionsPanel.setTypeXml();
-      this.fileImporter.setGeneralOptions(dialog.getGeneralOptions());
       this.textImportOptionsPanel.fromOptions(dialog.getGeneralOptions(), null);
     }
+    applyTextOptions(false);
 
     modeComboBox.setSelectedItem(dialog.getGeneralOptions().getMode());
 
@@ -366,13 +368,19 @@ public class DataPumper
     }
   }
 
-  private void initTextOptions()
+  private void applyTextOptions(boolean showColumns)
   {
-    this.fileImporter.setGeneralOptions(textImportOptionsPanel.getGeneralOptions());
-    this.fileImporter.setTextOptions(textImportOptionsPanel.getTextOptions());
-    if (this.targetProfile != null)
+    this.fileImporter.resetOptions(textImportOptionsPanel.getGeneralOptions(),
+                                   textImportOptionsPanel.getTextOptions());
+    if (showColumns)
     {
-      initColumnMapper();
+      List<ColumnIdentifier> columns = this.fileImporter.getFileColumns();
+      DefaultListModel<ColumnIdentifier> model = new DefaultListModel();
+      model.addAll(columns);
+      JList<ColumnIdentifier> display = new JList(model);
+      JScrollPane scroll = new JScrollPane(display);
+      display.setVisibleRowCount(10);
+      WbSwingUtilities.showMessage(this, ResourceMgr.getString("MsgSrcCols"), scroll);
     }
   }
 
@@ -930,7 +938,8 @@ public class DataPumper
 
     textStatusPanel.setLayout(new GridBagLayout());
 
-    syncTextOptions.setText("Apply options");
+    syncTextOptions.setText(ResourceMgr.getString("LblApplyPumperTextOpts")); // NOI18N
+    syncTextOptions.setToolTipText(ResourceMgr.getString("d_LblApplyPumperTextOpts")); // NOI18N
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
@@ -1483,7 +1492,11 @@ public class DataPumper
   {
     if (e.getSource() == this.syncTextOptions)
     {
-      this.initTextOptions();
+      this.applyTextOptions(true);
+      if (this.targetProfile != null)
+      {
+        initColumnMapper();
+      }
     }
     if (e.getSource() == this.closeButton)
     {
@@ -2058,6 +2071,10 @@ public class DataPumper
       this.startButton.setEnabled(false);
       this.showWbCommand.setEnabled(false);
       return;
+    }
+
+    if (this.fileImporter != null)
+    {
     }
 
     boolean useQuery = this.useQueryCbx.isSelected();

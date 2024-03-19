@@ -67,6 +67,7 @@ public class WbSchemaDiff
   public static final String ARG_NAMESPACE = "namespace";
   public static final String ARG_INCLUDE_INDEX = "includeIndex";
   public static final String ARG_INCLUDE_FK = "includeForeignKeys";
+  public static final String ARG_COMPARE_FK_RULES = "compareForeignKeyRules";
   public static final String ARG_INCLUDE_PK = "includePrimaryKeys";
   public static final String ARG_INCLUDE_CONSTRAINTS = "includeConstraints";
   public static final String ARG_INCLUDE_VIEWS = "includeViews";
@@ -76,7 +77,7 @@ public class WbSchemaDiff
   public static final String ARG_ADD_TYPES = "additionalTypes";
 
   private SchemaDiff diff;
-  private CommonDiffParameters diffParams;
+  private final CommonDiffParameters diffParams;
 
   public WbSchemaDiff()
   {
@@ -85,6 +86,7 @@ public class WbSchemaDiff
     diffParams = new CommonDiffParameters(cmdLine, getBaseDir());
     cmdLine.addArgument(ARG_NAMESPACE);
     cmdLine.addArgument(ARG_INCLUDE_FK, ArgumentType.BoolArgument);
+    cmdLine.addArgument(ARG_COMPARE_FK_RULES, ArgumentType.BoolArgument);
     cmdLine.addArgument(WbSchemaReport.ARG_INCLUDE_SEQUENCES, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_INCLUDE_PK, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_INCLUDE_INDEX, ArgumentType.BoolArgument);
@@ -161,6 +163,7 @@ public class WbSchemaDiff
 
     // this needs to be set before the tables are defined!
     diff.setIncludeForeignKeys(cmdLine.getBoolean(ARG_INCLUDE_FK, true));
+    diff.setCompareFKRules(cmdLine.getBoolean(ARG_COMPARE_FK_RULES, true));
     diff.setIncludeIndex(cmdLine.getBoolean(ARG_INCLUDE_INDEX, true));
     diff.setIncludePrimaryKeys(cmdLine.getBoolean(ARG_INCLUDE_PK, true));
     diff.setIncludeTableConstraints(cmdLine.getBoolean(ARG_INCLUDE_CONSTRAINTS, true));
@@ -200,11 +203,11 @@ public class WbSchemaDiff
           result.addErrorMessageByKey("ErrDiffSameConnectionNoTableSelection");
           if (targetCon.getId().startsWith("Wb-Diff"))
           {
-            try { targetCon.disconnect(); } catch (Exception th) {}
+            targetCon.disconnectSilently();
           }
           if (referenceConnection.getId().startsWith("Wb-Diff"))
           {
-            try { referenceConnection.disconnect(); } catch (Exception th) {}
+            referenceConnection.disconnectSilently();
           }
           return result;
         }
@@ -284,11 +287,11 @@ public class WbSchemaDiff
       FileUtil.closeQuietely(out);
       if (referenceConnection.getId().startsWith("Wb-Diff"))
       {
-        referenceConnection.disconnect();
+        referenceConnection.disconnectSilently();
       }
       if (targetCon.getId().startsWith("Wb-Diff"))
       {
-        targetCon.disconnect();
+        targetCon.disconnectSilently();
       }
     }
 

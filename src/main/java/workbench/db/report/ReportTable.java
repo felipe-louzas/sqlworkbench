@@ -356,8 +356,6 @@ public class ReportTable
     for (DependencyNode node : keys)
     {
       ForeignKeyDefinition def = new ForeignKeyDefinition(node);
-      def.setCompareFKRules(true);
-
       TableIdentifier tbl = node.getTable().createCopy();
       if (tbl.getSchema() == null)
       {

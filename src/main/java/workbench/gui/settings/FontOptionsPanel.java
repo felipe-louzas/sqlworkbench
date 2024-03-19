@@ -39,8 +39,6 @@ import workbench.resource.Settings;
 
 import workbench.gui.components.WbFontPicker;
 
-import workbench.util.PlatformHelper;
-
 /**
  *
  * @author Thomas Kellerer
@@ -58,11 +56,6 @@ public class FontOptionsPanel
     editorFont.setListMonospacedOnly(true);
     dataFont.setAllowFontReset(true);
     msgLogFont.setAllowFontReset(true);
-    if (!PlatformHelper.isWindows())
-    {
-      scaleFonts.setVisible(false);
-      scaleFonts.setEnabled(false);
-    }
     String[] sizeValues = new String[]{ResourceMgr.getString("LblDefaultIndicator"), "16px", "24px", "32px"};
     DefaultComboBoxModel model = new DefaultComboBoxModel(sizeValues);
     iconSize.setModel(model);
@@ -77,10 +70,8 @@ public class FontOptionsPanel
     standardFont.setSelectedFont(Settings.getInstance().getStandardFont());
     wheelZoom.setSelected(GuiSettings.getZoomFontWithMouseWheel());
 
-    if (scaleFonts.isVisible())
-    {
-      scaleFonts.setSelected(Settings.getInstance().getScaleFonts());
-    }
+    scaleFonts.setSelected(Settings.getInstance().getScaleFonts());
+
     if (Settings.getInstance().getScaleMenuIcons())
     {
       iconSize.setSelectedIndex(0);
@@ -110,10 +101,7 @@ public class FontOptionsPanel
     Settings.getInstance().setDataFont(dataFont.getSelectedFont());
     Settings.getInstance().setStandardFont(standardFont.getSelectedFont());
     Settings.getInstance().setMsgLogFont(msgLogFont.getSelectedFont());
-    if (scaleFonts.isVisible())
-    {
-      Settings.getInstance().setScaleFonts(scaleFonts.isSelected());
-    }
+    Settings.getInstance().setScaleFonts(scaleFonts.isSelected());
     GuiSettings.setZoomFontWithMouseWheel(wheelZoom.isSelected());
     int selected = iconSize.getSelectedIndex();
     switch (selected)

@@ -112,6 +112,7 @@ public class SchemaDiff
   private boolean compareJdbcTypes;
   private boolean diffIndex = true;
   private boolean diffForeignKeys = true;
+  private boolean compareFKRules = true;
   private boolean diffPrimaryKeys = true;
   private boolean diffConstraints;
   private boolean diffGrants;
@@ -201,6 +202,9 @@ public class SchemaDiff
    */
   public void setIncludeForeignKeys(boolean flag) { this.diffForeignKeys = flag; }
   public boolean getIncludeForeignKeys() { return this.diffForeignKeys; }
+
+  public void setCompareFKRules(boolean flag) { this.compareFKRules = flag; }
+  public boolean getCompareFKRules() { return this.compareFKRules; }
 
   /**
    *  Control whether index definitions should be compared as well.

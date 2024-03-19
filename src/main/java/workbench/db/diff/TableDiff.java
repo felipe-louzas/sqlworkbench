@@ -26,8 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import workbench.resource.Settings;
-
 import workbench.db.IndexDefinition;
 import workbench.db.TableConstraint;
 import workbench.db.TableIdentifier;
@@ -113,8 +111,6 @@ public class TableDiff
       else
       {
         ColumnDiff d = new ColumnDiff(refCol, tcol);
-        boolean oldFormat = Settings.getInstance().getBoolProperty("workbench.tablediff.columnfk", false);
-        d.setCompareForeignKeys(oldFormat && this.diff.getIncludeForeignKeys());
         d.setCompareJdbcTypes(diff.getCompareJdbcTypes());
         d.setIndent(myindent);
         StringBuilder diffXml = d.getMigrateTargetXml();
@@ -158,6 +154,7 @@ public class TableDiff
 
     List<ForeignKeyDefinition> missingFK = getMissingForeignKeys();
     List<ForeignKeyDefinition> fkToDelete = getFKsToDelete();
+    List<ForeignKeyDefinition> fksToChange = getFKsToChange();
 
     List<TriggerDefinition> refTriggers = referenceTable.getTriggers();
     List<TriggerDefinition> tarTriggers = targetTable.getTriggers();
@@ -171,7 +168,7 @@ public class TableDiff
       triggersDifferent = trgDiff.hasChanges();
     }
 
-    boolean fksAreEqual = missingFK.isEmpty() && fkToDelete.isEmpty();
+    boolean fksAreEqual = missingFK.isEmpty() && fkToDelete.isEmpty() && fksToChange.isEmpty();
     boolean constraintsAreEqual = missingConstraints.isEmpty() && modifiedConstraints.isEmpty() && constraintsToDelete.isEmpty();
 
     List<String> refPk = this.referenceTable.getPrimaryKeyColumns();
@@ -275,6 +272,7 @@ public class TableDiff
     {
       writeFKs(fkToDelete, result, "drop-foreign-keys", myindent);
       writeFKs(missingFK, result, "add-foreign-keys", myindent);
+      writeFKs(fksToChange, result, "alter-foreign-keys", myindent);
     }
 
     if (!typesAreEquals)
@@ -371,29 +369,19 @@ public class TableDiff
     return null;
   }
 
-  private void adjustRuleCheck(Collection<ForeignKeyDefinition> fklist)
-  {
-    for (ForeignKeyDefinition fk : fklist)
-    {
-      fk.setCompareFKRules(false);
-    }
-  }
-
   private List<ForeignKeyDefinition> getMissingForeignKeys()
   {
-    if (!diff.getIncludeForeignKeys()) Collections.emptyList();
+    if (!diff.getIncludeForeignKeys()) return Collections.emptyList();
+
     Collection<ForeignKeyDefinition> sourceFK = referenceTable.getForeignKeys().values();
     Collection<ForeignKeyDefinition> targetFK = targetTable.getForeignKeys().values();
-
-    // we are only checking for missing FKs
-    // if we compared the actual "ON XXX" option on the FKs
-    // FK that reference the same tables but have different "ON XXX" rules would be reported as "missing"
-    adjustRuleCheck(sourceFK);
-    adjustRuleCheck(targetFK);
 
     List<ForeignKeyDefinition> missing = new ArrayList<>();
     for (ForeignKeyDefinition fk : sourceFK)
     {
+      // we are only checking for missing FKs
+      // if we compared the actual "ON XXX" option on the FKs
+      // FK that reference the same tables but have different "ON XXX" rules would be reported as "missing"
       ForeignKeyDefinition other = findFKByDefinition(targetFK, fk);
       if (other == null)
       {
@@ -403,9 +391,31 @@ public class TableDiff
     return missing;
   }
 
+  private List<ForeignKeyDefinition> getFKsToChange()
+  {
+    if (!diff.getIncludeForeignKeys() || !diff.getCompareFKRules())
+    {
+      return Collections.emptyList();
+    }
+
+    Collection<ForeignKeyDefinition> sourceFK = referenceTable.getForeignKeys().values();
+    Collection<ForeignKeyDefinition> targetFK = targetTable.getForeignKeys().values();
+
+    List<ForeignKeyDefinition> toChange = new ArrayList<>();
+    for (ForeignKeyDefinition fk : targetFK)
+    {
+      ForeignKeyDefinition other = findFKByDefinition(sourceFK, fk);
+      if (other != null && !fk.rulesAreEqual(other))
+      {
+        toChange.add(fk);
+      }
+    }
+    return toChange;
+  }
+
   private List<ForeignKeyDefinition> getFKsToDelete()
   {
-    if (!diff.getIncludeForeignKeys()) Collections.emptyList();
+    if (!diff.getIncludeForeignKeys()) return Collections.emptyList();
     Collection<ForeignKeyDefinition> sourceFK = referenceTable.getForeignKeys().values();
     Collection<ForeignKeyDefinition> targetFK = targetTable.getForeignKeys().values();
 

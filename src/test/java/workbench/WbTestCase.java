@@ -22,14 +22,13 @@
 package workbench;
 
 import java.io.File;
-
-import org.junit.Ignore;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
+
+import org.junit.Ignore;
 
 /**
  * @author Thomas Kellerer
@@ -37,7 +36,7 @@ import java.net.URI;
 @Ignore
 public class WbTestCase
 {
-  private String name;
+  private final String name;
   private boolean prepared;
 
   public WbTestCase()
