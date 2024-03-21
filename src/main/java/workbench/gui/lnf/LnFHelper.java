@@ -112,6 +112,7 @@ public class LnFHelper
   private static boolean isJGoodies;
   private static boolean isWindowsLnF;
   private static boolean isMetalLNF;
+  private final FontScaler scaler = new FontScaler();
 
   public static boolean isJGoodies()
   {
@@ -154,6 +155,7 @@ public class LnFHelper
 
   public void initUI()
   {
+    scaler.logSettings();
     initializeLookAndFeel();
 
     Settings settings = Settings.getInstance();
@@ -168,8 +170,7 @@ public class LnFHelper
       Font f = def.getFont("Menu.font");
 
       // new Font("Segoe UI") creates a font with the family "Dialog"
-      // that looks very different to a "Segoe UI" with the family "Segoe UI"
-      // which StyleContext.getFont() creates
+      // that looks very different to a "Segoe UI" with the family "Segoe UI" that is created by StyleContext.getFont()
       stdFont = StyleContext.getDefaultStyleContext().getFont("Segoe UI", Font.PLAIN, f.getSize());
     }
 
@@ -181,10 +182,13 @@ public class LnFHelper
       }
     }
 
+    if (configuredStdFont == null && Settings.getInstance().getScaleFonts() && !useFlatLafScaling())
+    {
+      scaleDefaultFonts();
+    }
+
     if (isWindowsLookAndFeel())
     {
-      // The default Windows look and feel does notx scale the fonts properly
-      if (configuredStdFont == null) scaleDefaultFonts();
       adjustWindowsLnF();
     }
 
@@ -242,13 +246,6 @@ public class LnFHelper
 
   private void scaleDefaultFonts()
   {
-    if (!Settings.getInstance().getScaleFonts())
-    {
-      return;
-    }
-    FontScaler scaler = new FontScaler();
-    scaler.logSettings();
-
     LogMgr.logInfo(new CallerInfo(){}, "Scaling default fonts by: " + scaler.getScaleFactor());
 
     UIDefaults def = UIManager.getDefaults();
@@ -399,10 +396,43 @@ public class LnFHelper
     }
   }
 
+  private boolean useFlatLafScaling()
+  {
+    if (!isFlatLaf) return false;
+
+    // Don't use the FlatLaf scaling if the user enabled Java or FlatLaf scaling
+    if (System.getProperty("sun.java2d.uiScale", null) != null) return false;
+    if (System.getProperty("flatlaf.uiScale", null) != null) return false;
+
+    if (PlatformHelper.isLinux())
+    {
+      return Settings.getInstance().getBoolProperty("workbench.gui.scale.flatlaf.linux", true);
+    }
+
+    if (PlatformHelper.isWindows())
+    {
+      return Settings.getInstance().getBoolProperty("workbench.gui.scale.flatlaf.windows", false);
+    }
+
+    if (PlatformHelper.isMacOS())
+    {
+      return Settings.getInstance().getBoolProperty("workbench.gui.scale.flatlaf.macos", false);
+    }
+    
+    return Settings.getInstance().getBoolProperty("workbench.gui.scale.flatlaf", true);
+  }
+
   private void configureFlatLaf(LnFLoader loader)
   {
     try
     {
+      if (scaler.isHiDPI() && useFlatLafScaling())
+      {
+        String scaleFactor = scaler.getCurrentDPI() + "dpi";
+        LogMgr.logInfo(new CallerInfo(){}, "Setting FlatLaf.uiSacle to: " + scaleFactor);
+        System.setProperty("flatlaf.uiScale", scaleFactor);
+      }
+
       Class flatLaf = loader.loadClass("com.formdev.flatlaf.FlatLaf", false);
       Method registerPackage = flatLaf.getMethod("registerCustomDefaultsSource", String.class, ClassLoader.class);
       registerPackage.invoke(null, "workbench.resource", getClass().getClassLoader());

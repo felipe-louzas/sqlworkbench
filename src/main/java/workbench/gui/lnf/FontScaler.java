@@ -82,6 +82,11 @@ public class FontScaler
     return scaleFont;
   }
 
+  public int getCurrentDPI()
+  {
+    return dpi;
+  }
+  
   public void logSettings()
   {
     LogMgr.logInfo(new CallerInfo(){}, "Current DPI: "  + dpi + ", Default DPI: " + defaultDPI + ", isHiDPI: " + isHiDPI());
