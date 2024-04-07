@@ -59,46 +59,38 @@ public class ButtonDisplayPanel
   {
     super();
     setLayout(new GridBagLayout());
-    Dimension d = new Dimension(BUTTON_WIDTH,BUTTON_WIDTH);
-    openButton.setPreferredSize(d);
-    openButton.setMinimumSize(d);
     openButton.setEnabled(true);
     openButton.setFocusable(false);
-    label.setHorizontalTextPosition(SwingConstants.LEFT);
-    label.setVerticalTextPosition(SwingConstants.TOP);
+    openButton.setIconTextGap(0);
+
+    Dimension d = new Dimension(BUTTON_WIDTH, BUTTON_WIDTH);
+    openButton.setPreferredSize(d);
+    openButton.setMaximumSize(d);
+    openButton.setMinimumSize(d);
+
+    label.setHorizontalTextPosition(SwingConstants.LEADING);
+    label.setVerticalTextPosition(SwingConstants.BOTTOM);
     GridBagConstraints c = new GridBagConstraints();
     c.gridx = 0;
     c.gridy = 0;
     c.weightx = 1;
     c.weighty = 1;
-    c.fill = GridBagConstraints.NONE;
+    c.fill = GridBagConstraints.BOTH;
     c.anchor = GridBagConstraints.LINE_START;
     add(label, c);
 
     c.gridx = 1;
-    c.anchor = GridBagConstraints.LINE_END;
     c.weightx = 0;
+    c.weighty = 1;
+    c.fill = GridBagConstraints.NONE;
+    c.anchor = GridBagConstraints.LINE_END;
     add(openButton, c);
-
-    openButton.setVisible(true);
   }
 
   @Override
   public Insets getInsets()
   {
     return ToolTipRenderer.getDefaultInsets();
-  }
-
-  public int getButtonWidth()
-  {
-    if (openButton != null && openButton.isVisible())
-    {
-      return BUTTON_WIDTH;
-    }
-    else
-    {
-      return 0;
-    }
   }
 
   public void setDisplayValue(String value)
@@ -157,7 +149,7 @@ public class ButtonDisplayPanel
   @Override
   public int addToDisplayWidth()
   {
-    return (int)(BUTTON_WIDTH * 1.2);
+    return (int)(openButton.getPreferredSize().width * 1.2);
   }
 
 }

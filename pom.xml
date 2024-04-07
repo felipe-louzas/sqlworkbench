@@ -13,8 +13,8 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <poi.version>5.2.5</poi.version>
-    <log4j.version>2.22.0</log4j.version>
-    <surefire.plugin.version>3.2.2</surefire.plugin.version>
+    <log4j.version>2.23.1</log4j.version>
+    <surefire.plugin.version>3.2.5</surefire.plugin.version>
   </properties>
 
   <build>
@@ -24,7 +24,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
+        <version>3.12.1</version>
         <configuration>
           <showDeprecation>false</showDeprecation>
           <useIncrementalCompilation>false</useIncrementalCompilation>
@@ -34,7 +34,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.6.2</version>
+        <version>3.6.3</version>
         <configuration>
           <sourceFileExcludes>
             <exclude>**/BorderLessWindowsTabbedPaneUI.java</exclude>
@@ -255,21 +255,21 @@
     <dependency>
       <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.2.13</version>
+      <version>0.2.17</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna-platform</artifactId>
-      <version>5.13.0</version>
+      <version>5.14.0</version>
       <scope>runtime</scope>
     </dependency>
 
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
       <scope>compile</scope>
     </dependency>
 
@@ -310,7 +310,7 @@
     <dependency>
       <groupId>com.github.miachm.sods</groupId>
       <artifactId>SODS</artifactId>
-      <version>1.6.4</version>
+      <version>1.6.7</version>
       <scope>compile</scope>
     </dependency>
 
@@ -383,7 +383,7 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.7.1</version>
+      <version>42.7.3</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>

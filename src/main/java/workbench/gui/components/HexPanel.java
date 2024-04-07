@@ -22,13 +22,14 @@
 package workbench.gui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Insets;
 
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.UIManager;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -39,6 +40,7 @@ import javax.swing.table.TableModel;
 import workbench.resource.Settings;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.renderer.ToolTipRenderer;
 
 import workbench.util.NumberStringCache;
 
@@ -58,6 +60,7 @@ public class HexPanel
     dataTable = new JTable();
     dataTable.setAutoCreateColumnsFromModel(true);
     dataTable.setCellSelectionEnabled(false);
+    dataTable.setRowSelectionAllowed(false);
     dataTable.setShowGrid(false);
     dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     Font dataFont = Settings.getInstance().getDataFont();
@@ -69,11 +72,11 @@ public class HexPanel
     JTableHeader header = dataTable.getTableHeader();
     header.setReorderingAllowed(false);
     DefaultTableCellRenderer rend = new DefaultTableCellRenderer();
-    rend.setBackground(new Color(238,240,238));
+    rend.setBackground(UIManager.getColor("Label.background"));
     header.setDefaultRenderer(rend);
     this.add(header, BorderLayout.NORTH);
     this.add(scroll, BorderLayout.CENTER);
-    
+
     WbSwingUtilities.adjustRowHeight(dataTable);
   }
 
@@ -92,6 +95,8 @@ public class HexPanel
     Font dataFont = dataTable.getFont();
     FontMetrics fm = dataTable.getFontMetrics(dataFont);
     int width = fm.stringWidth("000");
+    Insets insets = ToolTipRenderer.getDefaultInsets();
+    width += insets.left + insets.right;
     for (int i = 0; i < cols - 1; i++)
     {
       TableColumn col = tmod.getColumn(i);
@@ -101,6 +106,7 @@ public class HexPanel
     }
 
     width = fm.stringWidth("MMMMMMMMMMMMMMMMM");
+    width += insets.left + insets.right;
     TableColumn col = tmod.getColumn(cols - 1);
     col.setPreferredWidth(width);
     col.setMinWidth(width);
@@ -108,6 +114,7 @@ public class HexPanel
 
     String rowCount = NumberStringCache.getNumberString(model.getRowCount());
     width = fm.stringWidth(rowCount);
+    width += insets.left + insets.right;
     lines.setPreferredScrollableViewportSize(new Dimension(width + 5,32768));
   }
 

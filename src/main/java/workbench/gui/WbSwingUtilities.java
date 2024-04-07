@@ -108,6 +108,7 @@ import workbench.gui.components.ValidatingDialog;
 import workbench.gui.components.WbOptionPane;
 import workbench.gui.lnf.LnFHelper;
 import workbench.gui.renderer.ColorUtils;
+import workbench.gui.renderer.ToolTipRenderer;
 
 import workbench.util.StringUtil;
 import workbench.util.WbThread;
@@ -1773,7 +1774,7 @@ public class WbSwingUtilities
   {
     return UIManager.getBorder("Table.focusSelectedCellHighlightBorder");
   }
-  
+
   public static Color getLineBorderColor()
   {
     return getLineBorderColor(UIManager.getColor("Panel.background"));
@@ -1830,7 +1831,8 @@ public class WbSwingUtilities
     FontMetrics fm = table.getFontMetrics(f);
     if (fm == null) return;
 
-    int height = fm.getHeight();
+    Insets insets = ToolTipRenderer.getDefaultInsets();
+    int height = fm.getHeight() + insets.top + insets.bottom;
     table.setRowHeight(height);
   }
 

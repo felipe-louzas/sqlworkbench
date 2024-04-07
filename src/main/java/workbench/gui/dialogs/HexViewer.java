@@ -53,8 +53,8 @@ public class HexViewer
   extends JDialog
   implements ActionListener, WindowListener
 {
-  private HexPanel panel;
-  private JButton closeButton = new JButton(ResourceMgr.getString("LblClose"));
+  private final HexPanel panel;
+  private final JButton closeButton = new JButton(ResourceMgr.getString("LblClose"));
   private final String settingsId = "workbench.gui.imageviewer";
 
   public HexViewer(JDialog parent, String title)
