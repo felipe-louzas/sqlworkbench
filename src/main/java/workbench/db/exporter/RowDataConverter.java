@@ -129,7 +129,7 @@ public abstract class RowDataConverter
 
   protected DataExporter exporter;
   private Map<Integer, Boolean> multilineInfo;
-  protected Set<String> formulaColumns = CollectionUtil.caseInsensitiveSet();
+  protected final Set<String> formulaColumns = CollectionUtil.caseInsensitiveSet();
 
   private static final SimpleDateFormat ISO_TIMESTAMP_FORMATTER = new SimpleDateFormat(StringUtil.ISO_TIMESTAMP_FORMAT);
 

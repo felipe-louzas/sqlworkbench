@@ -21,6 +21,8 @@
  */
 package workbench.db.exporter;
 
+import workbench.resource.Settings;
+
 import workbench.db.TableIdentifier;
 
 import workbench.storage.RowData;
@@ -40,40 +42,86 @@ import workbench.util.WbNumberFormatter;
 public class JsonRowDataConverter
   extends RowDataConverter
 {
+  private boolean useResultName;
+
   public JsonRowDataConverter()
   {
     defaultDateFormatter = new WbDateFormatter(StringUtil.ISO_DATE_FORMAT);
     defaultTimestampFormatter = new WbDateFormatter(StringUtil.ISO_TIMESTAMP_FORMAT);
     defaultNumberFormatter = new WbNumberFormatter(-1, '.');
     defaultTimeFormatter = new WbDateFormatter("HH:mm:ss");
+    useResultName = Settings.getInstance().getBoolProperty("workbench.export.json.default.include.resultname", false);
+  }
+
+  public void setUseResultName(boolean flag)
+  {
+    useResultName = flag;
   }
 
   @Override
   public StringBuilder getStart()
   {
-    String resultName;
-    TableIdentifier updateTable = this.metaData.getUpdateTable();
-    if (updateTable != null)
+    String resultName = getResultName();
+
+    StringBuilder header = new StringBuilder(20);
+    if (StringUtil.isBlank(resultName))
     {
-      resultName = updateTable.getRawTableName();
+      // no result name, write an array directly, not wrapped into an object
+      header.append("[\n");
     }
     else
     {
-      WbFile f = new WbFile(getOutputFile());
-      resultName = f.getFileName();
+      header.append("{\n  \"");
+      header.append(resultName.toLowerCase());
+      header.append("\":\n  [\n");
+    }
+    return header;
+  }
+
+  private String getResultName()
+  {
+    if (!useResultName)
+    {
+      return null;
     }
 
-    StringBuilder header = new StringBuilder(20);
-    header.append("{\n  \"");
-    header.append(resultName.toLowerCase());
-    header.append("\":\n  [\n");
-    return header;
+    if (exporter != null && exporter.getResultName() != null)
+    {
+      return exporter.getResultName();
+    }
+
+    TableIdentifier updateTable = this.metaData.getUpdateTable();
+    if (updateTable != null)
+    {
+      return updateTable.getRawTableName();
+    }
+    else if (getOutputFile() != null)
+    {
+      WbFile f = new WbFile(getOutputFile());
+      return f.getFileName();
+    }
+    return null;
+  }
+
+  private boolean hasObjectWrapper()
+  {
+    return StringUtil.isNotBlank(getResultName());
   }
 
   @Override
   public StringBuilder getEnd(long totalRows)
   {
-    return new StringBuilder("\n  ]\n}");
+    StringBuilder end = new StringBuilder(10);
+
+    if (hasObjectWrapper())
+    {
+      end.append("\n  ]\n}");
+    }
+    else
+    {
+      end.append("\n]");
+    }
+    return end;
   }
 
   @Override
@@ -83,13 +131,15 @@ public class JsonRowDataConverter
 
     StringBuilder result = new StringBuilder(count * 30);
 
+    String indent = hasObjectWrapper() ? "    " : "  ";
     int currentColIndex = 0;
 
     if (rowIndex > 0)
     {
       result.append(",\n");
     }
-    result.append("    {");
+    result.append(indent);
+    result.append("{");
     for (int c=0; c < count; c++)
     {
       if (!this.includeColumnInExport(c)) continue;

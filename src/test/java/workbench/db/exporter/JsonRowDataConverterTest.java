@@ -24,8 +24,6 @@ import java.math.BigDecimal;
 import java.sql.Types;
 import java.time.LocalDateTime;
 
-import workbench.WbTestCase;
-
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
 
@@ -41,11 +39,44 @@ import static org.junit.Assert.*;
  * @author Thomas Kellerer
  */
 public class JsonRowDataConverterTest
-  extends WbTestCase
 {
-  public JsonRowDataConverterTest()
+
+  @Test
+  public void testConvertDataNoResultName()
   {
-    super("JsonRowDataConverterTest");
+    ColumnIdentifier id = new ColumnIdentifier("id", Types.INTEGER, true);
+    id.setPosition(1);
+
+    ColumnIdentifier fname = new ColumnIdentifier("firstname", Types.VARCHAR);
+    fname.setPosition(2);
+
+    ColumnIdentifier lname = new ColumnIdentifier("lastname", Types.VARCHAR);
+    lname.setPosition(3);
+
+    ResultInfo info = new ResultInfo(new ColumnIdentifier[] {id, fname, lname});
+    JsonRowDataConverter converter = new JsonRowDataConverter();
+    converter.setResultInfo(info);
+    converter.setUseResultName(false);
+
+    RowData data = new RowData(info);
+    data.setValue(0, 1);
+    data.setValue(1, "Arthur");
+    data.setValue(2, "Dent");
+
+    String result = converter.getStart().toString();
+    result += converter.convertRowData(data, 0).toString();
+
+    data.setValue(0, 2);
+    data.setValue(1, "Ford");
+    data.setValue(2, "Prefect");
+    result += converter.convertRowData(data, 1).toString();
+    result += converter.getEnd(2).toString();
+    String expected =
+      "[\n" +
+      "  {\"id\": \"1\", \"firstname\": \"Arthur\", \"lastname\": \"Dent\"},\n" +
+      "  {\"id\": \"2\", \"firstname\": \"Ford\", \"lastname\": \"Prefect\"}\n" +
+      "]";
+    assertEquals(expected, result);
   }
 
   @Test
@@ -71,6 +102,7 @@ public class JsonRowDataConverterTest
     info.setUpdateTable(new TableIdentifier("PERSON"));
     JsonRowDataConverter converter = new JsonRowDataConverter();
     converter.setResultInfo(info);
+    converter.setUseResultName(true);
 
     LocalDateTime login = LocalDateTime.of(2013,1,12,14,56,12,000);
 

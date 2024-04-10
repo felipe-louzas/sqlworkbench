@@ -46,6 +46,7 @@ public class JsonExportWriter
     super.configureConverter();
     JsonRowDataConverter conv = (JsonRowDataConverter)this.converter;
     conv.setNullString(exporter.getNullString());
+    conv.setUseResultName(exporter.getUseResultNameForJSON());
   }
 
 }

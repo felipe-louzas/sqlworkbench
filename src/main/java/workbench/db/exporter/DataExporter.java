@@ -139,6 +139,8 @@ public class DataExporter
   private String filenameColumn;
   private int commitEvery = 0;
   private boolean useSchemaInSql;
+  private String resultName;
+  private boolean useResultNameForJson;
 
   private boolean includeIdentityCols;
   private boolean includeReadOnlyCols;
@@ -206,8 +208,7 @@ public class DataExporter
   private Point dataOffset;
   private Locale localeToUse;
 
-  private Collection<String> formulaColumns;
-
+  private final Collection<String> formulaColumns = new ArrayList<>();
   private final ResultBufferingController bufferController;
 
   /**
@@ -380,7 +381,11 @@ public class DataExporter
 
   public void setFormulaColumns(Collection<String> columns)
   {
-    this.formulaColumns = columns;
+    this.formulaColumns.clear();
+    if (columns != null)
+    {
+      this.formulaColumns.addAll(columns);
+    }
   }
 
   public String getMergeType()
@@ -694,6 +699,26 @@ public class DataExporter
     SqlUtil.cancelStatement(new CallerInfo(){}, currentStatement);
     cancelCurrent();
     this.addWarning(ResourceMgr.getString("MsgExportCancelled"));
+  }
+
+  public void setUseResultNameForJSON(boolean flag)
+  {
+    this.useResultNameForJson = flag;
+  }
+
+  public boolean getUseResultNameForJSON()
+  {
+    return this.useResultNameForJson;
+  }
+
+  public void setResultName(String name)
+  {
+    this.resultName = StringUtil.trimToNull(name);
+  }
+
+  public String getResultName()
+  {
+    return resultName;
   }
 
   public void setTableName(String aTablename)

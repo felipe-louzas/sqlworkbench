@@ -2739,6 +2739,16 @@ public class Settings
     setProperty("workbench.blob.text.encoding", enc);
   }
 
+  public boolean getUseResultNameForJSON()
+  {
+    return getBoolProperty("workbench.export.json.default.include.resultname", false);
+  }
+
+  public boolean getUseResultNameForJSONClipboard()
+  {
+    return getBoolProperty("workbench.export.json.clipboard.include.resultname", getUseResultNameForJSON());
+  }
+
   public String getExportNullString()
   {
     return getProperty("workbench.export.general.nullstring", null);

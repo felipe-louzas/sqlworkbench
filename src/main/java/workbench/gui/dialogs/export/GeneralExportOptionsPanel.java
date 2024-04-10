@@ -55,9 +55,8 @@ public class GeneralExportOptionsPanel
   extends JPanel
   implements ExportOptions
 {
-
-  private GridBagConstraints encodingPanelConstraints;
-  private GridBagConstraints selectedRowsConstraints;
+  private final GridBagConstraints encodingPanelConstraints;
+  private final GridBagConstraints selectedRowsConstraints;
 
   public GeneralExportOptionsPanel()
   {

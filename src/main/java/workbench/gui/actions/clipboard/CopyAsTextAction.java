@@ -269,6 +269,12 @@ public class CopyAsTextAction
   private void writeExport(ExportFileDialog dialog, Writer out, int[] selectedRows)
   {
     DataExporter exporter = new DataExporter(client.getDataStore().getOriginalConnection());
+    exporter.setResultName(client.getDataStore().getResultName());
+    if (exporter.getExportType() == ExportType.JSON)
+    {
+      exporter.setUseResultNameForJSON(Settings.getInstance().getUseResultNameForJSONClipboard());
+    }
+
     if (progress != null)
     {
       exporter.setReportInterval(1);

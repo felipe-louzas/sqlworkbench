@@ -157,6 +157,8 @@ public class WbExport
   public static final String ARG_FALSE_LITERAL = "literalFalse";
   public static final String ARG_TRUE_LITERAL = "literalTrue";
 
+  // JSON option
+  public static final String ARG_NAMED_JSON_RESULT = "namedJsonResult";
 
   // </editor-fold>
 
@@ -264,6 +266,7 @@ public class WbExport
     cmdLine.addArgument(ARG_INCLUDE_READONLY, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_FALSE_LITERAL);
     cmdLine.addArgument(ARG_TRUE_LITERAL);
+    cmdLine.addArgument(ARG_NAMED_JSON_RESULT, ArgumentType.BoolArgument);
     cmdLine.addArgument(ARG_WRITE_ERROR_TO_OUTPUT, ArgumentType.BoolArgument);
     RegexModifierParameter.addArguments(cmdLine);
     ConditionCheck.addParameters(cmdLine);
@@ -794,6 +797,10 @@ public class WbExport
     else if ("json".equals(type))
     {
       exporter.setNullString(cmdLine.getValue(ARG_NULL_STRING, null));
+      if (cmdLine.isArgPresent(ARG_NAMED_JSON_RESULT))
+      {
+        exporter.setUseResultNameForJSON(cmdLine.getBoolean(ARG_NAMED_JSON_RESULT));
+      }
       defaultExtension = ".json";
     }
     else
