@@ -104,7 +104,7 @@ public class SshHostConfigPanel
     errorLabel = new JLabel(ResourceMgr.getString("ErrSshConfigNotUnique"));
     Border b = new CompoundBorder(new LineBorder(Color.RED.brighter(), 1), new EmptyBorder(3, 5, 3, 5));
     errorLabel.setBorder(b);
-    errorLabel.setFont(errorLabel.getFont().deriveFont(Font.BOLD));
+    WbSwingUtilities.makeBold(errorLabel);
     errorLabel.setBackground(new Color(255, 255, 220));
     errorLabel.setOpaque(true);
 

@@ -269,7 +269,7 @@ public class ConnectionInfo
         infoText.setForeground(foreground);
         if (GuiSettings.useBoldFontForConnectionInfo())
         {
-          infoText.setFont(infoText.getFont().deriveFont(Font.BOLD));
+          WbSwingUtilities.makeBold(infoText);
         }
       }
     });

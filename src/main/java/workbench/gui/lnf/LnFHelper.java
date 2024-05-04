@@ -146,11 +146,20 @@ public class LnFHelper
 
   private static int getFontHeight(String key)
   {
-    UIDefaults def = UIManager.getDefaults();
+    int defaultSize = Settings.getInstance().getDefaultFontSize();
     double factor = Toolkit.getDefaultToolkit().getScreenResolution() / 72.0;
-    Font font = def.getFont(key);
-    if (font == null) return 18;
-    return (int)Math.ceil((double)font.getSize() * factor);
+    UIDefaults def = UIManager.getDefaults();
+    int fontSize;
+    if (defaultSize > -1)
+    {
+      fontSize = defaultSize;
+    }
+    else
+    {
+      Font font = def.getFont(key);
+      fontSize = font == null ? 18 : font.getSize();
+    }
+    return (int)Math.ceil(fontSize * factor);
   }
 
   public void initUI()
@@ -418,7 +427,7 @@ public class LnFHelper
     {
       return Settings.getInstance().getBoolProperty("workbench.gui.scale.flatlaf.macos", false);
     }
-    
+
     return Settings.getInstance().getBoolProperty("workbench.gui.scale.flatlaf", true);
   }
 

@@ -24,7 +24,6 @@ package workbench.gui.tools;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -41,6 +40,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import workbench.gui.WbSwingUtilities;
 
 import workbench.resource.ResourceMgr;
 
@@ -68,8 +68,7 @@ public class VersionCheckDialog
     initComponents();
     setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     this.closeButton.addActionListener(this);
-    Font f = this.headingLabel.getFont().deriveFont(Font.BOLD);
-    this.headingLabel.setFont(f);
+    WbSwingUtilities.makeBold(this.headingLabel);
     this.headingLabel.setText(ResourceMgr.getString("LblReadingVersion"));
     this.headingLabel.addMouseListener(this);
     this.headingLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -292,14 +291,7 @@ public class VersionCheckDialog
         e.getButton() == MouseEvent.BUTTON1 &&
         e.getClickCount() == 1)
     {
-      try
-      {
-        BrowserLauncher.openURL("https://www.sql-workbench.eu");
-      }
-      catch (Exception ex)
-      {
-        ex.printStackTrace();
-      }
+      BrowserLauncher.openURL("https://www.sql-workbench.eu");
     }
   }
 

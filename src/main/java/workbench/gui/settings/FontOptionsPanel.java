@@ -72,25 +72,18 @@ public class FontOptionsPanel
 
     scaleFonts.setSelected(Settings.getInstance().getScaleFonts());
 
-    if (Settings.getInstance().getScaleMenuIcons())
+    int size = Settings.getInstance().getToolbarIconSize();
+    switch (size)
     {
-      iconSize.setSelectedIndex(0);
-    }
-    else
-    {
-      int size = Settings.getInstance().getToolbarIconSize();
-      switch (size)
-      {
-        case IconMgr.SMALL_ICON:
-          iconSize.setSelectedIndex(1);
-          break;
-        case IconMgr.MEDIUM_ICON:
-          iconSize.setSelectedIndex(2);
-          break;
-        case IconMgr.LARGE_ICON:
-          iconSize.setSelectedIndex(3);
-          break;
-      }
+      case IconMgr.SMALL_ICON:
+        iconSize.setSelectedIndex(1);
+        break;
+      case IconMgr.MEDIUM_ICON:
+        iconSize.setSelectedIndex(2);
+        break;
+      case IconMgr.LARGE_ICON:
+        iconSize.setSelectedIndex(3);
+        break;
     }
   }
 

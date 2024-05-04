@@ -22,7 +22,6 @@
 package workbench.gui.profiles;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,6 +48,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.DbDriver;
+import workbench.gui.WbSwingUtilities;
 
 import workbench.gui.components.ClassFinderGUI;
 import workbench.gui.components.FlatButton;
@@ -94,7 +94,7 @@ public class DriverEditorPanel
     errorLabel = new JLabel(ResourceMgr.getString("ErrDrvNameNotUnique"));
     Border b = new CompoundBorder(new LineBorder(Color.RED.brighter(), 1), new EmptyBorder(3, 5, 3, 5));
     errorLabel.setBorder(b);
-    errorLabel.setFont(errorLabel.getFont().deriveFont(Font.BOLD));
+    WbSwingUtilities.makeBold(errorLabel);
     errorLabel.setBackground(new Color(255, 255, 220));
     errorLabel.setOpaque(true);
 

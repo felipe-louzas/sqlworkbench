@@ -126,9 +126,7 @@ public class ConnectionEditorPanel
     Border b = new CompoundBorder(DividerBorder.TOP_BOTTOM_DIVIDER, new EmptyBorder(8, 0, 6, 0));
     wbOptionsPanel.setBorder(b);
 
-    Font f = groupNameLabel.getFont();
-    Font bold = f.deriveFont(Font.BOLD);
-    groupNameLabel.setFont(bold);
+    WbSwingUtilities.makeBold(groupNameLabel);
     groupNameLabel.setBackground(UIManager.getColor("TextArea.background"));
     groupNameLabel.setForeground(UIManager.getColor("TextArea.foreground"));
     echoChar = tfPwd.getEchoChar();

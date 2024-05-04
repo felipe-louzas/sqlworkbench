@@ -1845,4 +1845,13 @@ public class WbSwingUtilities
     int offset = icon.getIconWidth() + renderer.getIconTextGap();
     return new Point(r.x + offset, r.y + r.height);
   }
+  
+  public static void makeBold(JComponent comp)
+  {
+    if (comp == null) return;
+    Font f = comp.getFont();
+    if (f == null) return;
+    Font bold = f.deriveFont(Font.BOLD);
+    comp.setFont(bold);
+  }
 }

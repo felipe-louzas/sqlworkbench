@@ -26,19 +26,19 @@ import java.awt.Desktop.Action;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Optional;
 
 import workbench.log.CallerInfo;
+import workbench.log.LogMgr;
+import workbench.resource.GuiSettings;
+import workbench.resource.ResourceMgr;
 
 import workbench.db.ConnectionInfoBuilder;
 import workbench.db.WbConnection;
 
 import workbench.gui.WbSwingUtilities;
-
-import workbench.log.LogMgr;
-import workbench.resource.GuiSettings;
-import workbench.resource.ResourceMgr;
 
 import workbench.util.function.WbConsumer;
 
@@ -115,16 +115,29 @@ public class BrowserLauncher
   }
 
   public static void openURL(String url)
-    throws Exception
   {
-    openURL(new URI(url));
+    try
+    {
+      openURL(new URI(url));
+    }
+    catch (URISyntaxException ex)
+    {
+      LogMgr.logError(new CallerInfo() {}, "Invalid URL: " + url, ex);
+    }
   }
 
   private static Optional<Desktop> getDesktop(Action action)
   {
-    return Desktop.isDesktopSupported() ? Optional.ofNullable(Desktop.getDesktop())
-      .filter(desktop -> desktop.isSupported(action)) :
-      Optional.empty();
+    boolean supported = Desktop.isDesktopSupported();
+    if (supported)
+    {
+      Desktop desktop = Desktop.getDesktop();
+      if (desktop == null && desktop.isSupported(action))
+      {
+        return Optional.of(desktop);
+      }
+    }
+    return Optional.empty();
   }
 
   /**
@@ -141,29 +154,29 @@ public class BrowserLauncher
   }
 
   public static void openURL(final URI url)
-    throws Exception
   {
-    final URI realURI;
-
     String urlString = url.toString();
 
     if (urlString.indexOf('#') > -1 && GuiSettings.useHTMLRedirectForAnchor())
     {
-      File tmpfile = File.createTempFile("sqlwb_show_help", ".html");
-      tmpfile.deleteOnExit();
+      try
+      {
+        File tmpfile = File.createTempFile("sqlwb_show_help", ".html");
+        tmpfile.deleteOnExit();
 
-      String redirect =
-        "<html><head>\n" +
-        "<meta http-equiv=\"refresh\" content=\"0;url=" + urlString + "\"/>\n" +
-        "</head></html>";
+        String redirect =
+          "<html><head>\n" +
+          "<meta http-equiv=\"refresh\" content=\"0;url=" + urlString + "\"/>\n" +
+          "</head></html>";
 
-      FileUtil.writeString(tmpfile, redirect, "UTF-8", false);
-      realURI = tmpfile.toURI();
-      LogMgr.logDebug(new CallerInfo(){}, "Redirecting to an anchor using intermediate URL: " + realURI.toString());
-    }
-    else
-    {
-      realURI = url;
+        FileUtil.writeString(tmpfile, redirect, "UTF-8", false);
+        URI realURI = tmpfile.toURI();
+        LogMgr.logDebug(new CallerInfo(){}, "Redirecting to an anchor using intermediate URL: " + realURI.toString());
+      }
+      catch (IOException ex)
+      {
+        LogMgr.logError(new CallerInfo(){}, "Could not redirect using an intermediate URL", ex);
+      }
     }
 
     final Optional<Desktop> optDesktop = getDesktop(Action.BROWSE);

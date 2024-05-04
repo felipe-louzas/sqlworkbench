@@ -103,12 +103,7 @@ public class LnFDefinitionPanel
       }
     });
 
-    Font f = infoText.getFont();
-    if (f != null)
-    {
-      f = f.deriveFont(Font.BOLD);
-      infoText.setFont(f);
-    }
+    WbSwingUtilities.makeBold(infoText);
     String button = changeLnfButton.getText();
     String info = ResourceMgr.getString("TxtChangeLnFInfo").replace("%button%", button);
     infoText.setText(info);

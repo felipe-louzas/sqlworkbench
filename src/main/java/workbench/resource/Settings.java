@@ -123,6 +123,8 @@ public class Settings
   public static final String PROPERTY_DBEXP_REMEMBER_SORT = "workbench.dbexplorer.remembersort";
   public static final String PROPERTY_SHOW_TAB_INDEX = "workbench.gui.tabs.showindex";
 
+  public static final String PROPERTY_DEFAULT_FONT_SIZE = "workbench.gui.font.size";
+
   public static final String PROPERTY_EDITOR_FONT = "editor";
   public static final String PROPERTY_STANDARD_FONT = "std";
   public static final String PROPERTY_MSGLOG_FONT = "msglog";
@@ -1487,17 +1489,27 @@ public class Settings
     return getMonospacedFont(PROPERTY_DATA_FONT, returnDefault);
   }
 
+  public int getDefaultFontSize()
+  {
+    return getIntProperty(PROPERTY_DEFAULT_FONT_SIZE, -1);
+  }
+  
   private Font getMonospacedFont(String property, boolean returnDefault)
   {
     boolean isDefault = false;
+    int defaultSize = getDefaultFontSize(); 
     Font f = this.getFont(property);
     if (f == null && returnDefault)
     {
       UIDefaults def = UIManager.getDefaults();
       Font textFont = def.getFont("TextArea.font");
-      int size = textFont == null ? 12 : textFont.getSize();
+      int size = defaultSize;
+      if (size < 1) 
+      {
+        size = textFont == null ? 12 : textFont.getSize();
+      }
       f = StyleContext.getDefaultStyleContext().getFont("Monospaced", Font.PLAIN, size);
-      isDefault = true;
+      isDefault = defaultSize == -1;
     }
     if (getScaleFonts() && isDefault)
     {

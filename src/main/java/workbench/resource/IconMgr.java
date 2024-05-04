@@ -23,6 +23,7 @@ package workbench.resource;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
@@ -37,6 +38,8 @@ import workbench.log.LogMgr;
 
 import workbench.gui.WbSwingUtilities;
 import workbench.gui.lnf.LnFHelper;
+
+import workbench.util.PlatformHelper;
 
 /**
  *
@@ -75,7 +78,8 @@ public class IconMgr
     filepath = ResourcePath.ICONS.getPath() + "/";
     menuFontHeight = LnFHelper.getMenuFontHeight();
     labelFontHeight = LnFHelper.getLabelFontHeight();
-    scaleMenuIcons = Settings.getInstance().getScaleMenuIcons();
+    boolean isHiDPI = Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+    scaleMenuIcons = (isHiDPI && PlatformHelper.isLinux()) || Settings.getInstance().getScaleMenuIcons();
     toolbarIconSize = retrieveToolbarIconSize();
 
     scaleHints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -94,7 +98,7 @@ public class IconMgr
       Settings.getInstance().setToolbarIconSize(size);
     }
 
-    if (Settings.getInstance().getScaleMenuIcons())
+    if (scaleMenuIcons)
     {
       int menuSize = getSizeForMenuItem();
       if (menuSize > size) return menuSize;

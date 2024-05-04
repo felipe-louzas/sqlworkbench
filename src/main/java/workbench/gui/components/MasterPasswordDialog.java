@@ -21,7 +21,6 @@
 package workbench.gui.components;
 
 import java.awt.Dialog;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,7 +68,7 @@ public class MasterPasswordDialog
     initComponents();
     warningLabel.setIconTextGap(IconMgr.getInstance().getSizeForLabel() / 2);
     warningLabel.setIcon(IconMgr.getInstance().getLabelIcon("alert"));
-    warningLabel.setFont(warningLabel.getFont().deriveFont(Font.BOLD));
+    WbSwingUtilities.makeBold(warningLabel);
     pack();
     if (!allowRemove || !Settings.getInstance().getUseMasterPassword())
     {

@@ -31,6 +31,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicTextFieldUI;
+import workbench.gui.WbSwingUtilities;
 
 import workbench.gui.actions.WbAction;
 
@@ -108,10 +109,7 @@ public class WbLabelField
 
   public void useBoldFont()
   {
-    Font std = getFont();
-    if (std == null) return;
-    Font bold = std.deriveFont(Font.BOLD);
-    setFont(bold);
+    WbSwingUtilities.makeBold(this);
   }
 
   public void addPopupAction(WbAction a)
