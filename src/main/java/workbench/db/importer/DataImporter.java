@@ -689,7 +689,6 @@ public class DataImporter
    */
   public boolean setMode(String mode)
   {
-    System.out.println("Setting mode to: " + mode);
     return setMode(mode, dbConn);
   }
 

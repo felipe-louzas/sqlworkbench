@@ -73,8 +73,11 @@
       </ul>
 
       <div id="noafd">
-        <a target="_blank" href="http://gesichertrechtsextrem.de">
-          <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/>
+        <!-- <a target="_blank" href="http://gesichertrechtsextrem.de"> -->
+          <!-- <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/> -->
+        <!-- </a> -->
+        <a target="_blank" href="https://europawahl.pulseofeurope.eu/en/">
+          <img border="0" width="190" height="190" style="margin-left:25px;margin-top:30px;margin-bottom:10px" src="go-vote.jpg" alt="Vote for democratic parties!"/>
         </a>
       </div>
 
@@ -389,8 +392,8 @@
 
   <xsl:template match="no-nazis">
     <div style="margin-bottom:1em;line-height:110%;border:2px;border-style:solid;border-color:red;padding:0.5em">
-    If you are a member or voter of the following political parties or agree with their despicable political views,
-      <br/>you are <b>NOT WELCOME</b> to use my software.
+    If you are a member or voter of the following political parties or agree with their despicable and inhumane political views,
+    <br/>you are <b>NOT WELCOME</b> to use my software.
     <div class="row" style="font-size:85%;margin-bottom:0">
         <div class="column" >
           <ul class="compact" >
@@ -404,13 +407,13 @@
             <li>CSU (Germany, Bavaria)</li>
             <li>FPÖ (Austria)</li>
             <li>Prawo i Sprawiedliwość (Poland)</li>
+            <li>Fidesz (Hungary)</li>
           </ul>
         </div>
         <div class="column">
           <ul class="compact">
             <li>Republican Party (USA)</li>
             <li>United Russia / Единая Россия (Russia)</li>
-            <li>Fidesz (Hungary)</li>
             <li>Fratelli d’Italia (Italy)</li>
             <li>Lega Nord (Italy)</li>
             <li>Rassemblement National (France)</li>
@@ -418,6 +421,7 @@
             <li>ITN (Bulgaria)</li>
             <li>Vazrazhdane (Bulgaria)</li>
             <li>Vox (Spain)</li>
+            <li>Chega (Portugal)</li>
             <li>Adalet ve Kalkınma Partis (T&#252;rkiye)</li>
           </ul>
         </div>
