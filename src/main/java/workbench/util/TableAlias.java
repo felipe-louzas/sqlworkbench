@@ -70,15 +70,21 @@ public class TableAlias
   /**
    * Compares the given name to this TableAlias checking
    * if the name either references this table or its alias.
+   *
+   * @see TableIdentifier#compareNames(TableIdentifier, TableIdentifier, boolean)
    */
-  public boolean isTableOrAlias(String name, char catalogSeparator, char schemaSeparator)
+  public boolean isTableOrAlias(String name, char catalogSeparator, char schemaSeparator, boolean exactMatch)
   {
     if (StringUtil.isEmpty(name)) return false;
     if (name.trim().equalsIgnoreCase(getNameToUse())) return true;
     if (this.table == null) return false;
 
     TableIdentifier tbl = new TableIdentifier(name, catalogSeparator, schemaSeparator);
-    return table.getTableExpression().equalsIgnoreCase(tbl.getTableExpression());
+    if (exactMatch)
+    {
+      return table.getTableExpression().equalsIgnoreCase(tbl.getTableExpression());
+    }
+    return TableIdentifier.compareNames(tbl, table, true);
   }
 
   public static TableAlias createFrom(Alias a)

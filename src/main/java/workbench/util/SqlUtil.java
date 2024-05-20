@@ -917,7 +917,7 @@ public class SqlUtil
 
       if ("WITH".equals(word))
       {
-        t = skipCTE(lexer);
+        skipCTE(lexer);
         t = lexer.getNextToken(false, false);
       }
       else
@@ -989,7 +989,6 @@ public class SqlUtil
 
           if (WbSqlFormatter.SELECT_TERMINAL.contains(v))
           {
-            nextIsCol = false;
             lastColStart = -1;
             break;
           }
@@ -1168,6 +1167,58 @@ public class SqlUtil
     }
     return result.toString();
   }
+
+  public static List<String> getIdentifierParts(String expression)
+  {
+    return getIdentifierParts(expression, ParserType.Standard, '.');
+  }
+
+  public static List<String> getIdentifierParts(String expression, WbConnection conn)
+  {
+    return getIdentifierParts(expression, ParserType.getTypeFromConnection(conn), getSchemaSeparator(conn));
+  }
+
+  public static List<String> getIdentifierParts(String expression, ParserType dbms, char separator)
+  {
+    List<String> elements = new ArrayList<>();
+    if (StringUtil.isBlank(expression))
+    {
+      return elements;
+    }
+
+    if (expression.indexOf(separator) < 0)
+    {
+      elements.add(removeObjectQuotes(expression));
+      return elements;
+    }
+    String separatorString = Character.toString(separator);
+    SQLLexer lexer = SQLLexerFactory.createLexer(dbms, expression);
+    SQLToken token =  lexer.getNextToken(false, false);
+    // the lexer will return a.b.c as a single token,
+    // but "ab"."cd" will be returned as three tokens
+    while (token != null)
+    {
+      String s = token.getText();
+      if (s.length() == 1 && s.charAt(0) == separator)
+      {
+        token = lexer.getNextToken(false, false);
+        continue;
+      }
+
+      if (isQuotedIdentifier(s) || s.indexOf(separator) < 0)
+      {
+        elements.add(s);
+      }
+      else
+      {
+        List<String> items = StringUtil.stringToList(s, separatorString, true, true, false, true);
+        elements.addAll(items);
+      }
+      token = lexer.getNextToken(false, false);
+    }
+    return elements;
+  }
+
 
   public static List<Alias> getTables(String sql, boolean includeAlias, WbConnection conn)
   {
@@ -1646,7 +1697,7 @@ public class SqlUtil
       // the connection are retrieved
       Set<String> added = new HashSet<>();
       StringBuilder msg = null;
-      String s = null;
+      String s;
 
       int count = 0;
       int maxLoops = con.getDbSettings().getMaxWarnings();
@@ -1864,7 +1915,7 @@ public class SqlUtil
   {
     if (column == null) return false;
 
-    int charLength = 0;
+    int charLength;
     int sqlType = column.getDataType();
     String dbmsType = column.getDbmsType();
 

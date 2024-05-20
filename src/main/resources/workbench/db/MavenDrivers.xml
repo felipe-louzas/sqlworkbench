@@ -342,5 +342,22 @@
       </object>
     </void>
 
+    <void method="add">
+      <object class="workbench.util.download.MavenArtefact">
+        <void property="groupId">
+          <string>org.xerial</string>
+        </void>
+        <void property="artefactId">
+          <string>sqlite-jdbc</string>
+        </void>
+        <void property="productName">
+          <string>SQLite JDBC</string>
+        </void>
+        <void property="driverClassName">
+          <string>org.sqlite.JDBC</string>
+        </void>
+      </object>
+    </void>
+
   </object>
 </java>

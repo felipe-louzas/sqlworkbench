@@ -57,6 +57,26 @@ public class SqlUtilTest
   }
 
   @Test
+  public void testGetIdentifierParts()
+  {
+    List<String> items = SqlUtil.getIdentifierParts("a.b.c", ParserType.Standard, '.');
+    assertEquals(3, items.size());
+    assertTrue(items.containsAll(List.of("a", "b", "c")));
+
+    items = SqlUtil.getIdentifierParts("\"abc\".foo", ParserType.Standard, '.');
+    assertEquals(2, items.size());
+    assertTrue(items.containsAll(List.of("\"abc\"", "foo")));
+
+    items = SqlUtil.getIdentifierParts("\"abc\".foo.bar", ParserType.Standard, '.');
+    assertEquals(3, items.size());
+    assertTrue(items.containsAll(List.of("\"abc\"", "foo", "bar")));
+
+    items = SqlUtil.getIdentifierParts("\"abc\".\"foo\".\"bar\"", ParserType.Standard, '.');
+    assertEquals(3, items.size());
+    assertTrue(items.containsAll(List.of("\"abc\"", "\"foo\"", "\"bar\"")));
+  }
+
+  @Test
   public void testMakeList()
   {
     List<String> values = new ArrayList<>();

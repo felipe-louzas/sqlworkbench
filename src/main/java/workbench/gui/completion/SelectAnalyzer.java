@@ -240,35 +240,17 @@ public class SelectAnalyzer
       // check if the current qualifier is either one of the
       // tables in the table list or one of the aliases used
       // in the table list.
-      TableAlias currentAlias = null;
-      String table = getQualifierLeftOfCursor();
-
-      if (table != null)
+      String kw = getQualifierLeftOfCursor();
+      TableAlias currentAlias = getTableOrAliasLeftOfCursor(tables);
+      if (currentAlias == null && parentAnalyzer != null)
       {
-        currentAlias = findAlias(table, tables);
+        List<TableAlias> outerTables = this.parentAnalyzer.getTables();
+        currentAlias = getTableOrAliasLeftOfCursor(outerTables);
+      }
 
-        if (currentAlias != null)
-        {
-          tableForColumnList = currentAlias.getTable();
-        }
-        else if (this.parentAnalyzer != null)
-        {
-          // if we didn't find the alias in the current SELECT's
-          // tables we check the "parent" statement as we might be inside
-          // a sub-select
-          List<TableAlias> outerTables = this.parentAnalyzer.getTables();
-          if (outerTables != null)
-          {
-            for (TableAlias outer : outerTables)
-            {
-              if (outer.isTableOrAlias(table, catalogSeparator, schemaSeparator))
-              {
-                tableForColumnList = outer.getTable();
-                currentAlias = outer;
-              }
-            }
-          }
-        }
+      if (currentAlias != null)
+      {
+        tableForColumnList = currentAlias.getTable();
       }
       else if ((inWhere || inSelectList) && tableCount > 1)
       {

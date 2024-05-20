@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
@@ -522,13 +523,23 @@ public abstract class BaseAnalyzer
     }
   }
 
-  protected TableAlias findAlias(String toSearch, List<Alias> possibleTables)
+  protected TableAlias findAlias(String toSearch, List<? extends Alias> possibleTables)
+  {
+    TableAlias tbl = findAlias(toSearch, possibleTables, true);
+    if (tbl == null)
+    {
+      tbl = findAlias(toSearch, possibleTables, true);
+    }
+    return tbl;
+  }
+
+  protected TableAlias findAlias(String toSearch, List<? extends Alias> possibleTables, boolean exactMatch)
   {
     for (Alias element : possibleTables)
     {
       TableAlias tbl = new TableAlias(element.getObjectName(), element.getAlias(), catalogSeparator, schemaSeparator);
 
-      if (tbl.isTableOrAlias(toSearch, catalogSeparator, schemaSeparator))
+      if (tbl.isTableOrAlias(toSearch, catalogSeparator, schemaSeparator, exactMatch))
       {
         return tbl;
       }
@@ -722,6 +733,39 @@ public abstract class BaseAnalyzer
   {
     this.typeFilter = new ArrayList<>(filter);
   }
+
+  public TableAlias getTableOrAliasLeftOfCursor(List<? extends Alias> queryAliases)
+  {
+    String word = StringUtil.removeTrailing(getCurrentWord(), schemaSeparator);
+    if (StringUtil.isBlank(word)) return null;
+    if (dbConnection != null && dbConnection.getMetadata() != null)
+    {
+      if (dbConnection.getMetadata().isKeyword(word)) return null;
+    }
+
+    // Try the full qualifier first
+    TableAlias alias = findAlias(word, queryAliases);
+    if (alias != null)
+    {
+      return alias;
+    }
+    List<String> elements = SqlUtil.getIdentifierParts(word, dbConnection);
+    if (elements.size() == 1)
+    {
+      return findAlias(elements.get(0), queryAliases, true);
+    }
+
+    int elementCount = elements.size();
+    while (elementCount > 1)
+    {
+      String qualifier = elements.subList(0, elementCount - 1).stream().collect(Collectors.joining(String.valueOf(schemaSeparator)));
+      TableAlias tbl = findAlias(qualifier, queryAliases, true);
+      if (tbl != null) return tbl;
+      elementCount --;
+    }
+    return null;
+  }
+
 
   public String getQualifierLeftOfCursor()
   {

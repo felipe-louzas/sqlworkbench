@@ -294,7 +294,7 @@ public class MergeAnalyzer
 
   private boolean isTargetAlias(String word)
   {
-    return this.targetAlias != null && targetAlias.isTableOrAlias(word, catalogSeparator, schemaSeparator);
+    return this.targetAlias != null && targetAlias.isTableOrAlias(word, catalogSeparator, schemaSeparator, true);
   }
 
   private boolean isSourceAlias(String word)

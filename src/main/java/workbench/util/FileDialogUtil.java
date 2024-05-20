@@ -22,6 +22,7 @@
 package workbench.util;
 
 import java.awt.Component;
+import java.awt.HeadlessException;
 import java.awt.Window;
 import java.io.File;
 import java.nio.file.Path;
@@ -165,7 +166,7 @@ public class FileDialogUtil
       Window parent = SwingUtilities.getWindowAncestor(caller);
       String lastDir = Settings.getInstance().getLastBlobDir();
       JFileChooser fc = new WbFileChooser(lastDir);
-      int answer = JFileChooser.CANCEL_OPTION;
+      int answer;
       if (showSaveDialog)
       {
         answer = fc.showSaveDialog(parent);
@@ -183,7 +184,7 @@ public class FileDialogUtil
       }
       return filename;
     }
-    catch (Throwable e)
+    catch (HeadlessException e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
@@ -261,6 +262,13 @@ public class FileDialogUtil
     return file.getFullPath();
   }
 
+  public static String replaceWorkspaceDir(String pathname)
+  {
+    if (pathname == null) return null;
+    WbFile dir = new WbFile(Settings.getInstance().getWorkspaceDir());
+    return StringUtil.replace(pathname, WKSP_DIR_KEY, dir.getFullPath());
+  }
+
   public static String replaceConfigDir(String aPathname)
   {
     if (aPathname == null) return null;
@@ -279,7 +287,7 @@ public class FileDialogUtil
   {
     if (aPathname == null) return null;
 
-    String fullPath = replaceMacroDir(aPathname);
+    String fullPath = replaceWorkspaceDir(aPathname);
     fullPath = replaceConfigDir(fullPath);
     fullPath = replaceProgramDir(fullPath);
     return fullPath;
@@ -313,7 +321,7 @@ public class FileDialogUtil
   public static File selectPkMapFile(Component parent)
   {
     File mappingFile = Settings.getInstance().getPKMappingFile();
-    File dir = null;
+    File dir;
 
     if (mappingFile == null || mappingFile.getParentFile() == null)
     {
@@ -339,7 +347,7 @@ public class FileDialogUtil
       }
       return null;
     }
-    catch (Throwable e)
+    catch (HeadlessException e)
     {
       LogMgr.logError(new CallerInfo(){}, "Error selecting file", e);
       WbSwingUtilities.showErrorMessage(ExceptionUtil.getDisplay(e));
@@ -350,7 +358,7 @@ public class FileDialogUtil
   public static WbFile selectPngFile(JComponent parent, String lastDirProp)
   {
     String last = Settings.getInstance().getProperty(lastDirProp, null);
-    File lastDir = null;
+    File lastDir;
 
     if (StringUtil.isNotBlank(last))
     {

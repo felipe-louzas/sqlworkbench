@@ -21,9 +21,11 @@
  */
 package workbench.util;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
 import workbench.db.TableIdentifier;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class TableAliasTest
 {
@@ -67,12 +69,12 @@ public class TableAliasTest
   {
     String value = "table1";
     TableAlias ta = new TableAlias(value);
-    assertEquals("Not recognized as the same", true, ta.isTableOrAlias("table1", '.', '.'));
+    assertEquals("Not recognized as the same", true, ta.isTableOrAlias("table1", '.', '.', true));
 
     value = "table1 t1";
     ta = new TableAlias(value);
-    assertEquals("Not recognized as the same", true, ta.isTableOrAlias("table1", '.', '.'));
-    assertEquals("Not recognized as the same", true, ta.isTableOrAlias("t1", '.', '.'));
+    assertEquals("Not recognized as the same", true, ta.isTableOrAlias("table1", '.', '.', true));
+    assertEquals("Not recognized as the same", true, ta.isTableOrAlias("t1", '.', '.', true));
   }
 
 }

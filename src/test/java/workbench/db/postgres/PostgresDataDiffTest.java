@@ -253,8 +253,8 @@ public class PostgresDataDiffTest
     assertEquals(2, size);
 
     String expected =
-      "UPDATE two.the_table \n" +
-      "   SET data = '{one,two}' \n" +
+      "UPDATE two.the_table\n" +
+      "   SET data = '{one,two}'\n" +
       "WHERE id = 1";
     assertEquals(expected, parser.getCommand(0));
     assertEquals("COMMIT", parser.getCommand(1));

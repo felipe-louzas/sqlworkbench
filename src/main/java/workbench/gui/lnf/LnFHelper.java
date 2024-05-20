@@ -213,7 +213,7 @@ public class LnFHelper
       def.put("TableHeader.font", dataFont);
     }
 
-    def.put("Button.showMnemonics", Boolean.valueOf(GuiSettings.getShowMnemonics()));
+    def.put("Button.showMnemonics", GuiSettings.getShowMnemonics());
     UIManager.put("Synthetica.extendedFileChooser.rememberLastDirectory", false);
   }
 

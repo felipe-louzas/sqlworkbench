@@ -716,7 +716,7 @@ public class SqlCommand
     boolean fetchOnly = runner.getStatementHook().fetchResults() && !runner.getStatementHook().displayResults();
 
     int updateCount = -1;
-    boolean moreResults = false;
+    boolean moreResults;
 
     ResultProcessor processor = new ResultProcessor(currentStatement, firstResult, currentConnection);
 
@@ -752,7 +752,7 @@ public class SqlCommand
     int counter = 0;
     int maxLoops = currentConnection.getDbSettings().getMaxResults();
 
-    ResultSet rs = null;
+    ResultSet rs;
     while (moreResults || updateCount > -1)
     {
 
@@ -1152,6 +1152,10 @@ public class SqlCommand
       fname = FileDialogUtil.replaceProgramDir(fname);
     }
 
+    if (fname.startsWith("~"))
+    {
+      fname = "/" + System.getProperty("user.home") + fname.substring(1);
+    }
     WbFile f  = new WbFile(fname);
     if (f.isAbsolute()) return f;
 
@@ -1237,7 +1241,7 @@ public class SqlCommand
       // because for e.g. WbInclude the executedSql will be WbInclude
       // the sourceCommand() from the result will be the real SQL that generated the error
 
-      String sql = null;
+      String sql;
       if (result.getSourceCommand() == null)
       {
         sql = executedSql;
