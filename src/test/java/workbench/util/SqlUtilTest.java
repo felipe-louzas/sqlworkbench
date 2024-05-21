@@ -298,43 +298,32 @@ public class SqlUtilTest
     assertEquals("\"1,2\"", params.get(0));
   }
 
-
-
   @Test
   public void testGetCreateType()
   {
-    try
-    {
-      String sql = "create\n --comment\n table bla (nr integer);";
-      String type = SqlUtil.getCreateType(sql);
-      assertEquals("Wrong type returned", "TABLE", type);
+    String sql = "create\n --comment\n table bla (nr integer);";
+    String type = SqlUtil.getCreateType(sql);
+    assertEquals("Wrong type returned", "TABLE", type);
 
-      sql = "-- comment\ncreate view blub as select * from bla;";
-      type = SqlUtil.getCreateType(sql);
-      assertEquals("Wrong type returned", "VIEW", type);
+    sql = "-- comment\ncreate view blub as select * from bla;";
+    type = SqlUtil.getCreateType(sql);
+    assertEquals("Wrong type returned", "VIEW", type);
 
-      sql = "/* blubber */\ncreate \nor \nreplace -- comment\nview blub as select * from bla;";
-      type = SqlUtil.getCreateType(sql);
-      assertEquals("Wrong type returned", "VIEW", type);
+    sql = "/* blubber */\ncreate \nor \nreplace -- comment\nview blub as select * from bla;";
+    type = SqlUtil.getCreateType(sql);
+    assertEquals("Wrong type returned", "VIEW", type);
 
-      sql = "/* blubber */\nrecreate VIEW blub as select * from bla;";
-      type = SqlUtil.getCreateType(sql);
-      assertEquals("Wrong type returned", "VIEW", type);
+    sql = "/* blubber */\nrecreate VIEW blub as select * from bla;";
+    type = SqlUtil.getCreateType(sql);
+    assertEquals("Wrong type returned", "VIEW", type);
 
-      sql = "/* blubber */\ncreate package blub;";
-      type = SqlUtil.getCreateType(sql, ParserType.Oracle);
-      assertEquals("Wrong type returned", "PACKAGE", type);
+    sql = "/* blubber */\ncreate package blub;";
+    type = SqlUtil.getCreateType(sql, ParserType.Oracle);
+    assertEquals("Wrong type returned", "PACKAGE", type);
 
-      sql = "--- do something\ncreate\n or replace\n package body blub;";
-      type = SqlUtil.getCreateType(sql, ParserType.Oracle);
-      assertEquals("Wrong type returned", "PACKAGE BODY", type);
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-      fail(e.getMessage());
-    }
-
+    sql = "--- do something\ncreate\n or replace\n package body blub;";
+    type = SqlUtil.getCreateType(sql, ParserType.Oracle);
+    assertEquals("Wrong type returned", "PACKAGE BODY", type);
   }
 
   @Test
@@ -753,7 +742,6 @@ public class SqlUtilTest
     {
       ConnectionMgr.getInstance().disconnectAll();
     }
-
   }
 
   @Test
@@ -761,11 +749,11 @@ public class SqlUtilTest
     throws Exception
   {
     String sql = "select * from t where x = ? and y = ?";
-    String newSql = SqlUtil.replaceParameters(sql, Integer.valueOf(42), "two");
+    String newSql = SqlUtil.replaceParameters(sql, 42, "two");
     assertEquals("select * from t where x = 42 and y = 'two'", newSql);
 
     sql = "select * from t where x = ? and y = 42";
-    newSql = SqlUtil.replaceParameters(sql, Integer.valueOf(42));
+    newSql = SqlUtil.replaceParameters(sql, 42);
     assertEquals("select * from t where x = 42 and y = 42", newSql);
 
     sql = "select * from t where x = 1 and y = 42";

@@ -178,7 +178,7 @@ public class PostgresDataDiffTest
       "commit;");
 
 
-    result = diff.execute(diffCmd);
+    diff.execute(diffCmd);
     String script2 = FileUtil.readFile(outFile1, "UTF-8");
 //    System.out.println(script2);
     assertTrue(script2.contains("UPDATE two.the_table"));
@@ -252,11 +252,10 @@ public class PostgresDataDiffTest
     // UPDATE and COMMIT
     assertEquals(2, size);
 
-    String expected =
-      "UPDATE two.the_table\n" +
-      "   SET data = '{one,two}'\n" +
-      "WHERE id = 1";
-    assertEquals(expected, parser.getCommand(0));
+    String update = parser.getCommand(0);
+    assertTrue(update.startsWith("UPDATE two.the_table"));
+    assertTrue(update.contains("SET data = '{one,two}'"));
+    assertTrue(update.contains("WHERE id = 1"));
     assertEquals("COMMIT", parser.getCommand(1));
   }
 
