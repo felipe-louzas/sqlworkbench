@@ -3,7 +3,11 @@
 <?xml-stylesheet type="text/xsl" href="history2html.xslt"?>
 <history>
   <!-- build number must be set to -1 for development builds -->
-
+  <release build="-1" date="2024-05-05">
+    <entry dev-build="1" type="fix">When using stringNumber=true for Excel imports, formulas weren't evaluated correctly</entry>
+    <entry dev-build="1" type="fix">Improved the behaviour of code completion if it was invoked next to a partial column name</entry>
+    <entry dev-build="1" type="fix">When the column widths were manually adjusted, sorting of the result set would reset the column widths</entry>
+  </release>
   <release build="131" date="2024-05-05">
     <entry dev-build="3" type="enh">When using a file as the input for the DataPumper, it's now possible to change the option for the WbImport in the DataPumper dialog.</entry>
     <entry dev-build="3" type="enh">It's now possible to hide the display of the statements in the profile's connect script.</entry>

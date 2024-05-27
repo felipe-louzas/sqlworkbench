@@ -569,12 +569,14 @@ public class ExcelReader
   {
     if (cell == null) return null;
     CellType type = cell.getCellType();
+    boolean isFormula = false;
     if (type == CellType.FORMULA)
     {
+      isFormula = true;
       type = cell.getCachedFormulaResultType();
     }
 
-    Object value = null;
+    Object value;
 
     switch (type)
     {
@@ -589,7 +591,7 @@ public class ExcelReader
 
         if (isDate)
         {
-          if (useStringDates)
+          if (!isFormula && useStringDates)
           {
             value = dataFormatter.formatCellValue(cell);
           }
@@ -598,14 +600,13 @@ public class ExcelReader
             value = getDateValue(cell);
           }
         }
-        else if (useStringNumbers || (checkNumericFormat && isTextFormat(fmt)))
+        else if (!isFormula && (useStringNumbers || (checkNumericFormat && isTextFormat(fmt))))
         {
           value = dataFormatter.formatCellValue(cell);
         }
         else
         {
-          double dv = cell.getNumericCellValue();
-          value = Double.valueOf(dv);
+          value = cell.getNumericCellValue();
         }
         break;
       default:
