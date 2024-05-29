@@ -132,7 +132,7 @@ public class BrowserLauncher
     if (supported)
     {
       Desktop desktop = Desktop.getDesktop();
-      if (desktop == null && desktop.isSupported(action))
+      if (desktop != null && desktop.isSupported(action))
       {
         return Optional.of(desktop);
       }
