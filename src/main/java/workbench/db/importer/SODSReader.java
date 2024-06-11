@@ -51,13 +51,13 @@ public class SODSReader
 {
   private final Duration oneDay = Duration.of(1, ChronoUnit.DAYS);
   private String nullIndicator;
-  private File inputFile;
+  private final File inputFile;
   private SpreadSheet dataFile;
   private Sheet worksheet;
   private int worksheetIndex;
   private String worksheetName;
   private List<String> headerColumns;
-  private MessageBuffer messages = new MessageBuffer();
+  private final MessageBuffer messages = new MessageBuffer();
   private boolean emptyStringIsNull;
   private boolean numbersAsString;
 

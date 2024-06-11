@@ -69,7 +69,7 @@ public class ProcedureTreeLoader
     {
       catalog = grandParent.getName();
     }
-    
+
     List<ProcedureDefinition> procedures = procReader.getProcedureList(catalog, schemaName, null);
 
     Map<String, List<ProcedureDefinition>> procs = getPackageProcedures(procedures);
@@ -124,7 +124,7 @@ public class ProcedureTreeLoader
     model.nodeStructureChanged(procListNode);
   }
 
-  private void addParameterNode(ObjectTreeNode procNode)
+  public static void addParameterNode(ObjectTreeNode procNode)
   {
     ObjectTreeNode node = new ObjectTreeNode(ResourceMgr.getString("TxtDbExpProcParams"), TreeLoader.TYPE_PARAMETER_LIST);
     procNode.setAllowsChildren(true);

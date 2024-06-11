@@ -715,21 +715,27 @@ public class TreeLoader
     String catalog = info.getRawCatalog();
 
     boolean loaded = true;
-    List<TableIdentifier> objects = connection.getMetadata().getObjectList(null, catalog, schema, new String[] { typeNode.getName() });
+    List<DbObject> objects = connection.getMetadata().getDbObjectList(null, catalog, schema, new String[] { typeNode.getName() });
     DbObjectSorter.sort(objects, Settings.getInstance().useNaturalSortForTableList(), false);
 
-    for (TableIdentifier tbl : objects)
+    for (DbObject dbo : objects)
     {
-      ObjectTreeNode node = new ObjectTreeNode(tbl);
+      ObjectTreeNode node = new ObjectTreeNode(dbo);
       node.setAllowsChildren(false);
-      if (hasColumns(tbl))
+      if (hasColumns(dbo))
       {
         node.setAllowsChildren(true);
         addColumnsNode(node);
       }
-
-      if (isTable(tbl))
+      else if (dbo instanceof ProcedureDefinition)
       {
+        ProcedureTreeLoader.addParameterNode(node);
+        node.setChildrenLoaded(false);
+      }
+
+      if (isTable(dbo) && dbo instanceof TableIdentifier)
+      {
+        TableIdentifier tbl = (TableIdentifier)dbo;
         addTableSubNodes(node);
         connection.getObjectCache().addTable(new TableDefinition(tbl));
       }
@@ -744,8 +750,11 @@ public class TreeLoader
         addDependencyNodes(node);
       }
 
-      if (connection.getMetadata().isViewType(typeNode.getName()) && !tbl.getType().equals(DbMetadata.MVIEW_NAME))
+      if (connection.getMetadata().isViewType(typeNode.getName())
+          && dbo instanceof TableIdentifier
+          && !dbo.getObjectType().equals(DbMetadata.MVIEW_NAME))
       {
+        TableIdentifier tbl = (TableIdentifier)dbo;
         addViewTriggerNode(node);
         connection.getObjectCache().addTable(new TableDefinition(tbl));
       }
@@ -901,7 +910,7 @@ public class TreeLoader
     {
       String mode = col.getArgumentMode();
       ObjectTreeNode p = null;
-      if (mode.equals("RETURN"))
+      if ("RETURN".equals(mode))
       {
         if (proc.isTableFunction())
         {

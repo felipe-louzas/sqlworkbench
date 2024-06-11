@@ -148,16 +148,8 @@ public class OracleTablePartition
   protected void retrieveSubPartitions(DbObject object, WbConnection conn)
     throws SQLException
   {
+    super.retrieveSubPartitions(object, conn);
     this.retrieveSubPartitionTemplates(object, conn);
-    if (this.templateSubPartitions.isEmpty())
-    {
-      super.retrieveSubPartitions(object, conn);
-    }
-    for (OraclePartitionDefinition part : partitions)
-    {
-      part.setHasTemplateSubPartitions(this.templateSubPartitions.size() > 0);
-      part.setDefaultSubPartitionCount(defaultSubpartitionCount);
-    }
   }
 
   private void retrieveSubPartitionTemplates(DbObject object, WbConnection conn)

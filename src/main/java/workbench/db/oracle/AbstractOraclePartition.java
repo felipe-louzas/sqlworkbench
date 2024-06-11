@@ -217,7 +217,7 @@ public abstract class AbstractOraclePartition
         {
           result.append('\n');
           result.append(indent);
-          result.append("SUBPARTITIONS TEMPLATE\n(\n");
+          result.append("SUBPARTITION TEMPLATE\n(\n");
           int maxLength = forTable ? OraclePartitionDefinition.getMaxPartitionNameLength(templateSubPartitions): 0;
           for (int i=0; i < templateSubPartitions.size(); i++)
           {

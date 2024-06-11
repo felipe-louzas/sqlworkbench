@@ -44,6 +44,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.derby.DerbyTypeReader;
+import workbench.db.duckdb.DuckDbMacroReader;
 import workbench.db.firebird.FirebirdDomainReader;
 import workbench.db.firebird.FirebirdTypeResolver;
 import workbench.db.greenplum.GreenplumObjectListCleaner;
@@ -395,6 +396,11 @@ public class DbMetadata
       {
         extenders.add(new DerbyTypeReader());
       }
+    }
+    else if (productLower.equals("duckdb"))
+    {
+      dbId = DBID.DuckDB.getId();
+      extenders.add(new DuckDbMacroReader());
     }
     else if (productLower.equals("nuodb"))
     {
@@ -1277,7 +1283,7 @@ public class DbMetadata
   @Override
   public boolean isLegalIdentifier(String name)
   {
-    Matcher matcher = null;
+    Matcher matcher;
 
     if (identifierPattern == null)
     {
@@ -2366,6 +2372,20 @@ public class DbMetadata
       tables.add(tbl);
     }
     return tables;
+  }
+
+  public List<DbObject> getDbObjectList(String namePattern, String catalogPattern, String schemaPattern, String[] types)
+    throws SQLException
+  {
+    ObjectListDataStore ds = getObjects(catalogPattern, schemaPattern, namePattern, types);
+    int count = ds.getRowCount();
+    List<DbObject> objects = new ArrayList<>(count);
+    for (int i=0; i < count; i++)
+    {
+      DbObject dbo = ds.getUserObject(i, DbObject.class);
+      objects.add(dbo);
+    }
+    return objects;
   }
 
   public String getSchemaToUse(TableIdentifier tbl)

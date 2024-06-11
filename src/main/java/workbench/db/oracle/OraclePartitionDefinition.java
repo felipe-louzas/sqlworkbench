@@ -35,49 +35,34 @@ import workbench.util.StringUtil;
  */
 public class OraclePartitionDefinition
 {
-
-  private String type;
-  private String subPartitionType;
+  private final String type;
 
   /**
-   * The name of the partition
+   * The name of the partition.
    */
-  private String name;
+  private final String name;
 
   /**
-   * Stores the value for LIST partitions
+   * Stores the value for LIST partitions.
    */
   private String partitionValue;
 
   /**
-   * The position of this partition
+   * The position of this partition.
    */
-  private int position;
+  private final int position;
 
   private String compressOption;
 
+  private String subPartitionType;
   private List<OraclePartitionDefinition> subPartitions;
-  private boolean hasTemplateSubpartitions;
   private boolean isSubpartition;
-
-  // For hash sub-partitioining
-  private int defaultSubpartitionCount;
 
   public OraclePartitionDefinition(String partitionName, String partitionType, int partitionPosition)
   {
     name = partitionName;
     position = partitionPosition;
     type = partitionType;
-  }
-
-  public void setDefaultSubPartitionCount(int count)
-  {
-    this.defaultSubpartitionCount = count;
-  }
-
-  public void setHasTemplateSubPartitions(boolean flag)
-  {
-    this.hasTemplateSubpartitions = flag;
   }
 
   public boolean isSubpartition()
@@ -123,11 +108,6 @@ public class OraclePartitionDefinition
   public String getType()
   {
     return type;
-  }
-
-  public void setType(String type)
-  {
-    this.type = type;
   }
 
   public String getCompressOption()
@@ -206,7 +186,7 @@ public class OraclePartitionDefinition
       }
     }
 
-    boolean shouldAppendSubPartitions = !hasTemplateSubpartitions && CollectionUtil.isNonEmpty(subPartitions) && !subPartitionType.equals("HASH");
+    boolean shouldAppendSubPartitions = CollectionUtil.isNonEmpty(subPartitions) && !subPartitionType.equals("HASH");
     if (shouldAppendSubPartitions)
     {
       int maxLength = getMaxPartitionNameLength(subPartitions);

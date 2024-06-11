@@ -331,6 +331,11 @@ public class ObjectTreeNode
         name = SqlUtil.removeObjectQuotes(name);
       }
 
+      if (StringUtil.isBlank(type))
+      {
+        return name;
+      }
+
       if (!col.isNullable())
       {
         name = "<b>" + name + "</b>";

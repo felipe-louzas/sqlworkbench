@@ -102,7 +102,7 @@ public class ProcedureDefinition
   }
 
   public ProcedureDefinition(String name, RoutineType rType, int jdbcResultType)
-  {
+    {
     procName = name;
     resultType = jdbcResultType;
     routineType = rType;
