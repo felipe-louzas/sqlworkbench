@@ -51,7 +51,7 @@ import workbench.util.WbThread;
 public class ShowObjectInfoAction
   extends WbAction
 {
-  private SqlPanel display;
+  private final SqlPanel display;
 
   public ShowObjectInfoAction(SqlPanel panel)
   {
@@ -160,7 +160,7 @@ public class ShowObjectInfoAction
     }
   }
 
-  public void checkEnabled()
+  public final void checkEnabled()
   {
     setEnabled(display != null && display.isConnected());
   }

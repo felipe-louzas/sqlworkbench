@@ -35,6 +35,8 @@ import workbench.storage.DataStore;
 import workbench.storage.DmlStatement;
 import workbench.storage.RowData;
 
+import workbench.sql.wbcommands.WbListVars;
+
 /**
  *
  * @author Thomas Kellerer
@@ -52,18 +54,32 @@ public class VariablesDataStore
   {
     this(null);
   }
-  
+
   public VariablesDataStore(String variablePool)
   {
     super(cols, types, sizes);
     this.variablePoolID = variablePool;
     this.setUpdateTable(TABLE_ID);
+    setResultName(ResourceMgr.getString("TxtVariables"));
+    setGeneratingSql(WbListVars.VERB);
   }
 
   @Override
   public List<DmlStatement> getUpdateStatements(WbConnection aConn)
   {
     return Collections.emptyList();
+  }
+
+  @Override
+  public boolean pkColumnsComplete()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean needPkForUpdate()
+  {
+    return false;
   }
 
   @Override

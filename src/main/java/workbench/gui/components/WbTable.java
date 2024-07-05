@@ -511,7 +511,7 @@ public class WbTable
     DataStore ds = getDataStore();
     if (ds == null) return Collections.emptyList();
     int[] cols = cols = getSelectedColumns();
-    List<ColumnIdentifier> result = new ArrayList<>(cols.length);
+    List<ColumnIdentifier> result = new ArrayList<>();
     TableColumnModel model = getColumnModel();
     if (cols != null)
     {
@@ -1534,22 +1534,22 @@ public class WbTable
 
   protected boolean saveRowHeaderState()
   {
-    lastRowHeaderState = Boolean.valueOf(TableRowHeader.isRowHeaderVisible(this));
+    lastRowHeaderState = TableRowHeader.isRowHeaderVisible(this);
 
     // For some reason, the row header is removed when adding or deleting a row.
     // But as it gets removed anyway, I'm removing it manually
     // in order to clean up properly the registered listeners
-    if (lastRowHeaderState.booleanValue())
+    if (lastRowHeaderState)
     {
       TableRowHeader.removeRowHeader(this);
     }
-    return lastRowHeaderState.booleanValue();
+    return lastRowHeaderState;
   }
 
   protected void restoreRowHeaderState()
   {
     if (lastRowHeaderState == null) return;
-    if (lastRowHeaderState.booleanValue())
+    if (lastRowHeaderState)
     {
       TableRowHeader.showRowHeader(this);
     }
@@ -1924,7 +1924,7 @@ public class WbTable
     {
       TableColumn col = colMod.getColumn(i);
       String name = this.getColumnName(i);
-      savedColumnSizes.put(name, Integer.valueOf(col.getPreferredWidth()));
+      savedColumnSizes.put(name, col.getPreferredWidth());
     }
   }
 
@@ -1949,7 +1949,7 @@ public class WbTable
       TableColumn col = this.getColumn(entry.getKey());
       if (col != null)
       {
-        int width = entry.getValue().intValue();
+        int width = entry.getValue();
         col.setPreferredWidth(width);
       }
     }

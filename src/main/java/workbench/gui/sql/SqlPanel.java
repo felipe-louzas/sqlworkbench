@@ -165,6 +165,7 @@ import workbench.gui.actions.SelectMaxRowsAction;
 import workbench.gui.actions.SelectResultAction;
 import workbench.gui.actions.SelectionFilterAction;
 import workbench.gui.actions.ShowObjectInfoAction;
+import workbench.gui.actions.ShowUsedVariablesAction;
 import workbench.gui.actions.SpoolDataAction;
 import workbench.gui.actions.SqlPanelReloadAction;
 import workbench.gui.actions.StopAction;
@@ -329,6 +330,7 @@ public class SqlPanel
   protected AutoCompletionAction autoCompletion;
   protected SqlPanelReloadAction reloadAction;
   protected ShowObjectInfoAction showObjectInfoAction;
+  protected ShowUsedVariablesAction showUsedVariablesAction;
   protected JoinCompletionAction joinCompletion;
   protected CopyCurrentStatementAction copyStatementAction;
   protected IgnoreErrorsAction ignoreErrors;
@@ -489,6 +491,10 @@ public class SqlPanel
     contentPanel.setDividerLocation(0.5);
   }
 
+  public String getVariablePoolID()
+  {
+    return this.variablePoolID;
+  }
   public void setVariablePoolID(String variablePoolID)
   {
     this.variablePoolID = variablePoolID;
@@ -902,7 +908,9 @@ public class SqlPanel
     this.showFormAction = new DisplayDataFormAction(null);
     reloadAction = new SqlPanelReloadAction(this, -1);
     showObjectInfoAction = new ShowObjectInfoAction(this);
-    editor.addPopupMenuItem(showObjectInfoAction, true);
+    showUsedVariablesAction = new ShowUsedVariablesAction(this);
+    editor.addPopupMenuItem(showUsedVariablesAction, true);
+    editor.addPopupMenuItem(showObjectInfoAction, false);
 
     this.actions.add(this.showFormAction);
     this.actions.add(this.selectKeys);
@@ -1070,6 +1078,7 @@ public class SqlPanel
 
     this.clearCompletionCache = new ClearCompletionCacheAction();
     this.actions.add(clearCompletionCache);
+    this.actions.add(showUsedVariablesAction);
     this.actions.add(showObjectInfoAction);
 
     this.formatSql = this.editor.getFormatSqlAction();
@@ -1860,7 +1869,7 @@ public class SqlPanel
     DbSettings dbs = dbConnection.getDbSettings();
     if (dbs == null) return EndReadOnlyTrans.never;
 
-    EndReadOnlyTrans result = (dbs != null ? dbs.endTransactionAfterConnect() : null);
+    EndReadOnlyTrans result = dbs.endTransactionAfterConnect();
 
     if (dbConnection.isShared())
     {
@@ -4366,7 +4375,6 @@ public class SqlPanel
     {
       final List<DataStore> results = result.getDataStores();
       count += results.size();
-      final List<DwPanel> panels = new ArrayList<>(results.size());
       WbSwingUtilities.invoke(() ->
       {
         try
@@ -4403,7 +4411,6 @@ public class SqlPanel
             if (p != null)
             {
               p.showData(ds, genSql, time);
-              panels.add(p);
               p.setReUsed(true);
               p.showGeneratingSQLAsTooltip();
             }
@@ -4423,7 +4430,6 @@ public class SqlPanel
                 // leads to incorrect "optimize all columns" calculations
                 lastIndex = addResultTab(p, getResultName(ds));
                 showDataStoreInPanel(p, ds, time);
-                panels.add(p);
               }
             }
           }

@@ -4,6 +4,9 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
   <release build="-1" date="2024-05-05">
+    <entry dev-build="1" type="enh">It's now possible to show a list of all variables used in the current editor</entry>
+    <entry dev-build="1" type="enh">For DuckDB, macros are now shown in the DbExplorer and DbTree.</entry>
+    <entry dev-build="1" type="fix">In the DDL for partitioned tables, the sub-partitions weren't shown if a sub-partition template was defined.</entry>
     <entry dev-build="1" type="fix">When using stringNumber=true for Excel imports, formulas weren't evaluated correctly</entry>
     <entry dev-build="1" type="fix">Improved the behaviour of code completion if it was invoked next to a partial column name</entry>
     <entry dev-build="1" type="fix">When the column widths were manually adjusted, sorting of the result set would reset the column widths</entry>

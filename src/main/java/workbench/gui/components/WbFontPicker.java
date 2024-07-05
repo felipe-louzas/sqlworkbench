@@ -21,7 +21,6 @@
  */
 package workbench.gui.components;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -144,10 +143,6 @@ public class WbFontPicker
   {
     WbFontChooser chooser = new WbFontChooser(monospacedOnly);
     chooser.setSelectedFont(getSelectedFont());
-
-    Dimension d = new Dimension(320, 240);
-    chooser.setSize(d);
-    chooser.setPreferredSize(d);
 
     Font result = null;
     JDialog parent = null;
