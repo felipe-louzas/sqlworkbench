@@ -42,6 +42,7 @@ public class OracleDomain
   private String name;
   private String remarks;
   private String dataDisplay;
+  private String source;
   private List<ColumnIdentifier> columns;
 
   public OracleDomain()
@@ -132,7 +133,8 @@ public class OracleDomain
   public CharSequence getSource(WbConnection con)
     throws SQLException
   {
-    return null;
+    OracleDomainReader reader = new OracleDomainReader();
+    return reader.getObjectSource(con, this)    ;
   }
 
   @Override
