@@ -163,10 +163,12 @@ public class InputHandler
   private boolean enabled = true;
 
   private KeyStroke expandKey;
+  private final JEditTextArea textArea;
 
-  public InputHandler()
+  public InputHandler(JEditTextArea area)
   {
     initKeyBindings();
+    this.textArea = area;
     ShortcutManager.getInstance().addChangeListener(this);
     Settings.getInstance().addPropertyChangeListener(this, GuiSettings.PROPERTY_EXPAND_KEYSTROKE);
   }
@@ -319,7 +321,6 @@ public class InputHandler
   public void keyPressed(final KeyEvent evt)
   {
     if (!enabled) return;
-
     int keyCode = evt.getKeyCode();
 
     KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(evt);
@@ -332,15 +333,13 @@ public class InputHandler
     if (keyCode == KeyEvent.VK_CONTEXT_MENU)
     {
       evt.consume();
-      final JEditTextArea area = getTextArea(evt);
-      EventQueue.invokeLater(area::showContextMenu);
+      EventQueue.invokeLater(textArea::showContextMenu);
       return;
     }
 
     if (expandKey != null && expandKey.equals(keyStroke))
     {
-      JEditTextArea area = getTextArea(evt);
-      if (area.expandWordAtCursor())
+      if (textArea.expandWordAtCursor())
       {
         // setting sequencedMapped to true will prevent keyTyped() to do the expansion again
         // in case the triggering keystroke is a regular space character.
@@ -526,17 +525,13 @@ public class InputHandler
       {
         // find the parent text area
         Component c = (Component) o;
-        for (;;)
+        while (c != null)
         {
           if (c instanceof JEditTextArea)
           {
             return (JEditTextArea) c;
           }
-          else if (c == null)
-          {
-            break;
-          }
-          if (c instanceof JPopupMenu)
+          else if (c instanceof JPopupMenu)
           {
             c = ((JPopupMenu) c).getInvoker();
           }

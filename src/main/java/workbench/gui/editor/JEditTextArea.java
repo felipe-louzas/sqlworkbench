@@ -197,6 +197,7 @@ public class JEditTextArea
   private MacroExpander expander;
   private boolean autoQuoteSelection = false;
 
+  private boolean mouseWordSelection = false;
 
   /**
    * Creates a new JEditTextArea with the default settings.
@@ -240,7 +241,7 @@ public class JEditTextArea
     addFocusListener(this);
 
     // Load the defaults
-    this.inputHandler = new InputHandler();
+    this.inputHandler = new InputHandler(this);
     setDocument(new SyntaxDocument());
 
     // Let the focusGained() event display the caret
@@ -1526,7 +1527,7 @@ public class JEditTextArea
    */
   public final void setTabSize(int aSize)
   {
-    document.putProperty(PlainDocument.tabSizeAttribute, Integer.valueOf(aSize));
+    document.putProperty(PlainDocument.tabSizeAttribute, aSize);
   }
 
 
@@ -1539,7 +1540,7 @@ public class JEditTextArea
 
     if (tab != null)
     {
-      return tab.intValue();
+      return tab;
     }
     else
     {
@@ -2086,7 +2087,7 @@ public class JEditTextArea
    */
   public void setHighlightSelection(boolean flag)
   {
-    this.highlightSelection = Boolean.valueOf(flag);
+    this.highlightSelection = flag;
     updateOccuranceHilite();
   }
 
@@ -2096,7 +2097,7 @@ public class JEditTextArea
     {
       return Settings.getInstance().getHighlightCurrentSelection();
     }
-    return highlightSelection.booleanValue();
+    return highlightSelection;
   }
 
   private void updateOccuranceHilite()
@@ -2283,6 +2284,7 @@ public class JEditTextArea
   public void setSelectedText(String selectedText)
   {
     if (!editable) return;
+    if (selectedText == null) selectedText = "";
 
     try
     {
@@ -2342,10 +2344,7 @@ public class JEditTextArea
       {
         document.remove(selectionStart, selectionEnd - selectionStart);
 
-        if (selectedText != null)
-        {
-          document.insertString(selectionStart, selectedText, null);
-        }
+        document.insertString(selectionStart, selectedText, null);
         if (this.autoIndent)
         {
           int c = this.getCaretLine();
@@ -2353,7 +2352,7 @@ public class JEditTextArea
           {
             String s = this.getLineText(c - 1);
             String p = StringUtil.getStartingWhiteSpace(s);
-            if (p!= null && p.length() > 0)
+            if (p != null && p.length() > 0)
             {
               document.insertString(selectionEnd, p, null);
             }
@@ -3171,6 +3170,17 @@ public class JEditTextArea
 
       int x = evt.getX() - painter.getGutterWidth();
       int y = evt.getY();
+      if (mouseWordSelection)
+      {
+        int line = yToLine(y);
+        int pos = xToOffset(line, x);
+        String lineText = getLineText(line);
+        int nextWord = TextUtilities.findWordEnd(lineText, pos);
+        if (nextWord > 0)
+        {
+          x = (int)offsetToX(line, nextWord);
+        }
+      }
       select(getMarkPosition(),xyToOffset(x,y));
     }
 
@@ -3180,6 +3190,12 @@ public class JEditTextArea
 
   private class MouseHandler extends MouseAdapter
   {
+    @Override
+    public void mouseReleased(MouseEvent e)
+    {
+      mouseWordSelection = false;
+    }
+
     @Override
     public void mousePressed(MouseEvent evt)
     {
@@ -3214,6 +3230,7 @@ public class JEditTextArea
           // it can throw a BLE
           try
           {
+            mouseWordSelection = true;
             doDoubleClick(evt,line,offset,dot);
           }
           catch(BadLocationException bl)
@@ -3249,11 +3266,10 @@ public class JEditTextArea
       try
       {
         int bracket = TextUtilities.findMatchingBracket(document,Math.max(0,dot - 1));
-        if(bracket != -1)
+        if (bracket != -1)
         {
           int mark = getMarkPosition();
-          // Hack
-          if(bracket > mark)
+          if (bracket > mark)
           {
             bracket++;
             mark--;

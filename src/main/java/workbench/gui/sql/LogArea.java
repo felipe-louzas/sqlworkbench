@@ -60,6 +60,7 @@ public class LogArea
     setEditable(false);
     setLineWrap(true);
     setWrapStyleWord(true);
+    setTabSize(Settings.getInstance().getEditorTabWidth());
 
     initColors();
 
@@ -77,7 +78,10 @@ public class LogArea
       searcher.getFindNextAction().addToInputMap(this);
     }
 
-    Settings.getInstance().addPropertyChangeListener(this, Settings.PROPERTY_EDITOR_FG_COLOR, Settings.PROPERTY_EDITOR_BG_COLOR);
+    Settings.getInstance().addPropertyChangeListener(this,
+      Settings.PROPERTY_EDITOR_FG_COLOR,
+      Settings.PROPERTY_EDITOR_BG_COLOR,
+      Settings.PROPERTY_EDITOR_TAB_WIDTH);
     Settings.getInstance().addFontChangedListener(this);
   }
 
@@ -145,7 +149,14 @@ public class LogArea
   @Override
   public void propertyChange(PropertyChangeEvent evt)
   {
-    initColors();
+    if (Settings.PROPERTY_EDITOR_TAB_WIDTH.equals(evt.getPropertyName()))
+    {
+      setTabSize(Settings.getInstance().getEditorTabWidth());
+    }
+    else
+    {
+      initColors();
+    }
   }
 
   @Override

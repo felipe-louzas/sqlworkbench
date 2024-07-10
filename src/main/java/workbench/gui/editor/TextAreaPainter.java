@@ -183,10 +183,7 @@ public class TextAreaPainter
   {
     if (Settings.PROPERTY_EDITOR_TAB_WIDTH.equals(evt.getPropertyName()))
     {
-      if (textArea != null)
-      {
-        textArea.setTabSize(Integer.valueOf(Settings.getInstance().getEditorTabWidth()));
-      }
+      textArea.setTabSize(Settings.getInstance().getEditorTabWidth());
       WbSwingUtilities.invoke(this::calculateTabSize);
     }
     else if (Settings.PROPERTY_SHOW_LINE_NUMBERS.equals(evt.getPropertyName()))
