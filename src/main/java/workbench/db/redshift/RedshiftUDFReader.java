@@ -66,7 +66,7 @@ public class RedshiftUDFReader
   public DataStore getProcedures(String catalog, String schemaPattern, String procName)
     throws SQLException
   {
-    DataStore jdbcResult = super.getProcedures(catalog, procName, procName);
+    DataStore jdbcResult = super.getProcedures(catalog, schemaPattern, procName);
     if (connection.getDbSettings().getBoolProperty("procedurereader.use.jdbc", true))
     {
       return jdbcResult;
