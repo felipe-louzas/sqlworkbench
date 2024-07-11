@@ -146,9 +146,7 @@ public class AutomaticRefreshMgr
     int gap = (int)(refresh.getIconWidth() / 5);
     if (isRegistered(panel))
     {
-      // the comparison between currentIcon and refresh works,
-      // because IconMgr cashes the icons and always returns the same instance
-      if (currentIcon == null || currentIcon == refresh)
+      if (currentIcon == null)
       {
         return refresh;
       }
@@ -163,32 +161,20 @@ public class AutomaticRefreshMgr
         }
         else
         {
-          // this can't really happen
           return new CompoundIcon(CompoundIcon.Axis.X_AXIS, gap, cicon, refresh);
         }
       }
       return new CompoundIcon(CompoundIcon.Axis.X_AXIS, gap, currentIcon, refresh);
     }
-    else
+    else if (currentIcon instanceof CompoundIcon)
     {
-      // the comparison between currentIcon and refresh works,
-      // because IconMgr cashes the icons and always returns the same instance
-      if (currentIcon == null || currentIcon == refresh)
+      CompoundIcon cicon = (CompoundIcon)currentIcon;
+      int numIcons = cicon.getIconCount();
+      for (int i=0; i < numIcons; i++)
       {
-        return null;
+        if (cicon.getIcon(i) != refresh) return cicon.getIcon(i);
       }
-
-      if (currentIcon instanceof CompoundIcon)
-      {
-        // currently there are only two possible icons for a result tab
-        // and the refresh icon is always the last one, so it's safe
-        // to return the first icon from the compound icon
-        CompoundIcon cicon = (CompoundIcon)currentIcon;
-        if (cicon.contains(refresh))
-        {
-          return cicon.getIcon(0);
-        }
-      }
+      return null;
     }
     return currentIcon;
   }

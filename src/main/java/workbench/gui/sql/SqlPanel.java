@@ -2394,9 +2394,12 @@ public class SqlPanel
     {
       dataPanel.runCurrentSql(true, this);
       TableAnnotationProcessor processor = new TableAnnotationProcessor();
-      processor.handleAnnotations(this, dataPanel, null);
-      checkAutoRefreshIndicator(dataPanel);
-      updateLockedTitle(dataPanel);
+      WbSwingUtilities.invoke(() ->
+      {
+        processor.handleAnnotations(this, dataPanel, null);
+        checkAutoRefreshIndicator(dataPanel);
+        updateLockedTitle(dataPanel);
+      });
     }
     catch (Exception e)
     {
@@ -3466,7 +3469,6 @@ public class SqlPanel
         {
           realPos = editor.getLineStartOffset(editor.getCaretLine());
         }
-
 
         if (runType == RunType.RunFromCursor)
         {
