@@ -1993,7 +1993,7 @@ public class SqlUtil
       baseSql.append(" = '");
       baseSql.append(value);
     }
-    baseSql.append("'");
+    baseSql.append("' ");
     if (isLike)
     {
       appendEscapeClause(baseSql, con, value);

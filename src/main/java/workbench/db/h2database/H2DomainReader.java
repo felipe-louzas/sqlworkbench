@@ -61,8 +61,6 @@ public class H2DomainReader
     "       d.domain_schema, \n" +
     "       d.domain_name, \n" +
     "       data_type_sql(d.domain_schema, d.domain_name, 'DOMAIN', d.dtd_identifier) as type_name, \n" +
-    "       null as data_type, \n" +
-    "       null as nullable, \n" +
     "       d.domain_default as default_value, \n" +
     "       cc.check_clause as constraint_definition, \n" +
     "       d.remarks \n" +
@@ -74,20 +72,6 @@ public class H2DomainReader
     "         on cc.constraint_schema = dc.constraint_schema\n" +
     "        and cc.constraint_name = dc.constraint_name \n";
 
-  final String baseSql20 =
-    "SELECT d.domain_catalog,  \n" +
-    "       d.domain_schema, \n" +
-    "       d.domain_name, \n" +
-    "       d.type_name, \n" +
-    "       d.data_type, \n" +
-    "       d.precision, \n" +
-    "       d.scale, \n" +
-    "       d.is_nullable as nullable, \n" +
-    "       d.column_default as default_value, \n" +
-    "       d.check_constraint as constraint_definition, \n" +
-    "       d.remarks \n" +
-    "FROM information_schema.domains d\n";
-
   private String getSql(WbConnection connection, String schema, String name)
   {
     StringBuilder sql = new StringBuilder(baseSql.length() + 40);
@@ -97,19 +81,15 @@ public class H2DomainReader
     boolean whereAdded = false;
     if (StringUtil.isNotBlank(name))
     {
-      sql.append(" WHERE d.domain_name like '");
-      sql.append(connection.getMetadata().quoteObjectname(name));
-      sql.append("%' ");
+      sql.append("WHERE ");
+      SqlUtil.appendExpression(sql, "d.domain_name", SqlUtil.removeObjectQuotes(name), connection);
       whereAdded = true;
     }
 
     if (StringUtil.isNotBlank(schema))
     {
-      sql.append(whereAdded ? " AND " : " WHERE ");
-
-      sql.append(" d.domain_schema = '");
-      sql.append(connection.getMetadata().quoteObjectname(schema));
-      sql.append("'");
+      sql.append(whereAdded ? "\nAND " : " WHERE ");
+      SqlUtil.appendExpression(sql, "d.domain_schema", SqlUtil.removeObjectQuotes(schema), connection);
     }
     sql.append(" ORDER BY 1, 2 ");
 
@@ -142,25 +122,7 @@ public class H2DomainReader
           check = "(" + check + ")";
         }
         domain.setCheckConstraint(check);
-        String typeName = rs.getString("type_name");
-        int type = rs.getInt("data_type");
-        String dataType = null;
-        if (rs.wasNull())
-        {
-          dataType = typeName;
-        }
-        else
-        {
-          int precision = rs.getInt("precision");
-          int scale = rs.getInt("scale");
-          dataType = SqlUtil.getSqlTypeDisplay(typeName, type, scale, precision);
-        }
-        domain.setDataType(dataType);
-        boolean nullable = rs.getBoolean("nullable");
-        if (!rs.wasNull())
-        {
-          domain.setNullable(nullable);
-        }
+        domain.setDataType(rs.getString("type_name"));
         domain.setDefaultValue(rs.getString("default_value"));
         domain.setComment(rs.getString("remarks"));
         result.add(domain);
@@ -188,18 +150,23 @@ public class H2DomainReader
   @Override
   public DomainIdentifier getObjectDefinition(WbConnection connection, DbObject object)
   {
-    List<DomainIdentifier> domains = getDomainList(connection, object.getSchema(), object.getObjectName());
+    return getDomain(connection, object.getSchema(), object.getObjectName());
+  }
+
+  public DomainIdentifier getDomain(WbConnection connection, String schema, String domainName)
+  {
+    List<DomainIdentifier> domains = getDomainList(connection, schema, domainName);
     if (CollectionUtil.isEmpty(domains)) return null;
     return domains.get(0);
   }
 
-  public String getDomainSource(DomainIdentifier domain)
+  public String getDomainSource(DomainIdentifier domain, WbConnection conn)
   {
     if (domain == null) return null;
 
     StringBuilder result = new StringBuilder(50);
     result.append("CREATE DOMAIN ");
-    result.append(domain.getObjectName());
+    result.append(domain.getObjectExpression(conn));
     result.append(" AS ");
     result.append(domain.getDataType());
     if (domain.getDefaultValue() != null)
@@ -275,7 +242,7 @@ public class H2DomainReader
   @Override
   public String getObjectSource(WbConnection con, DbObject object)
   {
-    return getDomainSource(getObjectDefinition(con, object));
+    return getDomainSource(getObjectDefinition(con, object), con);
   }
 
   @Override

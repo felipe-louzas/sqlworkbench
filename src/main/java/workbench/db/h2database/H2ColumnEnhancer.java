@@ -34,6 +34,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.TableDefinition;
 import workbench.db.WbConnection;
 
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -47,10 +48,10 @@ public class H2ColumnEnhancer
   @Override
   public void updateColumnDefinition(TableDefinition table, WbConnection conn)
   {
-    updateComputedColumns(table, conn);
+    updateColumnDetails(table, conn);
   }
 
-  private void updateComputedColumns(TableDefinition table, WbConnection conn)
+  private void updateColumnDetails(TableDefinition table, WbConnection conn)
   {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -63,16 +64,17 @@ public class H2ColumnEnhancer
     if (is20)
     {
       sql =
-        "select column_name, generation_expression, is_identity, identity_generation \n" +
+        "select column_name, generation_expression, is_identity, identity_generation, domain_schema, domain_name \n" +
         "from information_schema.columns \n" +
         "where table_name = ? \n" +
         "and table_schema = ? \n" +
-        "and (is_generated <> 'NEVER' or is_identity = 'YES') \n";
+        "and ((is_generated <> 'NEVER' or is_identity = 'YES') " +
+        "      or domain_name is not null)\n";
     }
     else
     {
       sql =
-        "select column_name, null as generation_expression \n" +
+        "select column_name, null as generation_expression, null as domain_name \n" +
         "from information_schema.columns \n" +
         "where table_name = ? \n" +
         "and table_schema = ? \n" +
@@ -88,8 +90,8 @@ public class H2ColumnEnhancer
       rs = stmt.executeQuery();
       while (rs.next())
       {
-        String colname = rs.getString(1);
-        String expression = rs.getString(2);
+        String colname = rs.getString("column_name");
+        String expression = rs.getString("generation_expression");
         ColumnIdentifier col = ColumnIdentifier.findColumnInList(table.getColumns(), colname);
         if (col == null) continue;
 
@@ -116,8 +118,8 @@ public class H2ColumnEnhancer
         }
         if (is20)
         {
-          String identity = rs.getString(3);
-          String identityType = rs.getString(4);
+          String identity = rs.getString("is_identity");
+          String identityType = rs.getString("identity_generation");
           if ("YES".equals(identity))
           {
             if ("BY DEFAULT".equals(identityType))
@@ -129,6 +131,14 @@ public class H2ColumnEnhancer
               col.setGeneratedExpression("GENERATED ALWAYS AS IDENTITY", GeneratedColumnType.identity);
             }
           }
+        }
+        String domainSchema = rs.getString("domain_schema");
+        String domainName = rs.getString("domain_name");
+        if (StringUtil.isNotBlank(domainName))
+        {
+          String name = SqlUtil.buildExpression(conn, null, domainSchema, domainName);
+          col.setDbmsType(name);
+          col.setIsDomain(true);
         }
       }
     }

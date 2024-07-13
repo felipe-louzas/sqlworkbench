@@ -48,46 +48,6 @@ public class TableIdentifierTest
     super("TableIdentifierTest");
   }
 
-
-  @Test
-  public void testTwoElement()
-  {
-    TableIdentifier tbl = new TableIdentifier("cat.table", '.', '.', true, false);
-    assertNull(tbl.getSchema());
-    assertEquals("cat", tbl.getCatalog());
-    assertEquals("table", tbl.getTableName());
-
-    tbl = new TableIdentifier("schema.table", '.', '.', false, true);
-    assertNull(tbl.getCatalog());
-    assertEquals("schema", tbl.getSchema());
-    assertEquals("table", tbl.getTableName());
-
-    tbl = new TableIdentifier("schema.table", '.', '.', true, true);
-    assertNull(tbl.getCatalog());
-    assertEquals("schema", tbl.getSchema());
-    assertEquals("table", tbl.getTableName());
-  }
-
-  @Test
-  public void testGetParts()
-  {
-    String id = "foobar";
-    assertNull(TableIdentifier.getCatalogPart(id, '.'));
-    assertNull(TableIdentifier.getCatalogPart(id, ':'));
-    assertEquals("foo", TableIdentifier.getCatalogPart("foo.bar", '.'));
-    assertEquals("bar", TableIdentifier.getNamePart("foo.bar", '.'));
-
-    assertEquals("foo", TableIdentifier.getCatalogPart("foo:bar", ':'));
-    assertEquals("bar", TableIdentifier.getNamePart("foo/bar", '/'));
-
-    assertEquals("bar.tbl", TableIdentifier.getNamePart("foo/bar.tbl", '/'));
-
-    TableIdentifier tbl = new TableIdentifier("RICH/\"FOO.BAR\"", '/', '/');
-    assertEquals("RICH", tbl.getSchema());
-    assertEquals("FOO.BAR", tbl.getTableName());
-    assertNull(tbl.getCatalog());
-  }
-
   @Test
   public void fullyQualifiedNewTable()
   {
@@ -96,23 +56,6 @@ public class TableIdentifierTest
     String fullname = tbl.getTableExpression();
     assertEquals("some_schema", tbl.getSchema());
     assertEquals("some_schema.new_table", fullname);
-  }
-
-  @Test
-  public void testAlternateSeparator()
-  {
-    TableIdentifier tbl = new TableIdentifier("somelib/sometable", '/', '/');
-    assertEquals("somelib", tbl.getSchema());
-    assertEquals("sometable", tbl.getTableName());
-
-    tbl = new TableIdentifier("somelib/sometable", '.', '.');
-    assertNull(tbl.getSchema());
-    assertEquals("somelib/sometable", tbl.getTableName());
-
-    tbl = new TableIdentifier("somelib:someschema.tablename", ':', '.');
-    assertEquals("somelib", tbl.getCatalog());
-    assertEquals("someschema", tbl.getSchema());
-    assertEquals("tablename", tbl.getTableName());
   }
 
   @Test

@@ -58,6 +58,7 @@ public class ColumnIdentifier
   private boolean isNullable = true;
   private boolean isUpdateable = true;
   private boolean readOnly;
+  private boolean isDomain;
   private String dbmsType;
   private String comment;
   private String defaultValue;
@@ -135,6 +136,16 @@ public class ColumnIdentifier
     setColumnName(aName.trim());
     this.type = aType;
     this.isPk = isPkColumn;
+  }
+
+  public boolean isDomain()
+  {
+    return isDomain;
+  }
+
+  public void setIsDomain(boolean flag)
+  {
+    this.isDomain = flag;
   }
 
   public void setPgStorage(int type)

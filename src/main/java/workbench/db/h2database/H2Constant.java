@@ -37,9 +37,9 @@ import workbench.util.SqlUtil;
 public class H2Constant
   implements DbObject, Serializable
 {
-  private String catalog;
-  private String schema;
-  private String constantName;
+  private final String catalog;
+  private final String schema;
+  private final String constantName;
   private final String objectType = "CONSTANT";
   private String remarks;
   private String value;

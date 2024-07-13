@@ -56,7 +56,6 @@ public class H2SequenceReaderTest
     super("H2SequenceReaderTest");
   }
 
-
   @Before
   public void setUp()
     throws Exception

@@ -31,7 +31,6 @@ import workbench.db.objectcache.DbObjectCacheFactory;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
-import workbench.util.WbStringTokenizer;
 
 /**
  * A class that represents a table (or view) in the database.
@@ -71,7 +70,7 @@ public class TableIdentifier
 
   private boolean cacheSource = false;
   private CharSequence cachedSourceCode;
-  
+
   // for Synonyms
   private TableIdentifier realTable;
 
@@ -646,77 +645,11 @@ public class TableIdentifier
       return;
     }
 
-    WbStringTokenizer tok = new WbStringTokenizer(schemaSeparator, "\"", true);
-    tok.setSourceString(tableId);
-    List<String> elements = tok.getAllTokens();
-
-    switch (elements.size())
-    {
-      case 1:
-        // if only one element is found it could still be a two element identifier
-        // in case the catalog separator is different from the schema separator (e.g. DB2 for iSeries)
-        setCatalog(getCatalogPart(tableId, catalogSeparator));
-        setTablename(getNamePart(tableId, catalogSeparator));
-        break;
-      case 2:
-        if (supportsSchemas && supportsCatalogs)
-        {
-          setCatalog(getCatalogPart(elements.get(0), catalogSeparator));
-          setSchema(getNamePart(elements.get(0), catalogSeparator));
-        }
-        if (supportsSchemas && !supportsCatalogs)
-        {
-          // no catalog supported, the first element must be the schema
-          setSchema(elements.get(0));
-        }
-        if (supportsCatalogs && !supportsSchemas)
-        {
-          // e.g. MySQL qualifier: database.tablename
-          setCatalog(elements.get(0));
-        }
-        setTablename(elements.get(1));
-        break;
-      case 3:
-        // no ambiguity if three elements are used
-        setCatalog(elements.get(0));
-        setSchema(elements.get(1));
-        setTablename(elements.get(2));
-        break;
-      case 4:
-        // support for SQL Server syntax with a linked server
-        setServerPart(elements.get(0));
-        setCatalog(elements.get(1));
-        setSchema(elements.get(2));
-        setTablename(elements.get(3));
-        break;
-      default:
-    }
-  }
-
-  protected static String getCatalogPart(String identifier, char catalogSeparator)
-  {
-    if (identifier == null) return identifier;
-    WbStringTokenizer tok = new WbStringTokenizer(catalogSeparator, "\"", true);
-    tok.setSourceString(identifier);
-    List<String> tokens = tok.getAllTokens();
-    if (tokens.size() == 2)
-    {
-      return tokens.get(0);
-    }
-    return null;
-  }
-
-  protected static String getNamePart(String identifier, char catalogSeparator)
-  {
-    if (identifier == null) return identifier;
-    WbStringTokenizer tok = new WbStringTokenizer(catalogSeparator, "\"", true);
-    tok.setSourceString(identifier);
-    List<String> tokens = tok.getAllTokens();
-    if (tokens.size() == 2)
-    {
-      return tokens.get(1);
-    }
-    return tokens.get(0);
+    ObjectExpressionParser expression = new ObjectExpressionParser(tableId, catalogSeparator, schemaSeparator, supportsCatalogs, supportsSchemas);
+    setServerPart(expression.getServer());
+    setCatalog(expression.getCatalog());
+    setSchema(expression.getSchema());
+    setTablename(expression.getName());
   }
 
   /**

@@ -50,7 +50,7 @@ import workbench.util.StringUtil;
 public class H2SequenceReader
   implements SequenceReader
 {
-  private WbConnection dbConnection;
+  private final WbConnection dbConnection;
 
   public H2SequenceReader(WbConnection conn)
   {

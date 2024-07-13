@@ -31,12 +31,16 @@ import workbench.log.LogMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DomainIdentifier;
 import workbench.db.DropType;
+import workbench.db.IndexDefinition;
 import workbench.db.JdbcUtils;
+import workbench.db.ObjectExpressionParser;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
 
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -61,6 +65,13 @@ public class H2TableSourceBuilder
       if (sql != null) return sql;
     }
     return super.getTableSource(table, drop, includeFk, includeGrants);
+  }
+
+  @Override
+  protected String getAdditionalTableInfo(TableIdentifier table, List<ColumnIdentifier> columns, List<IndexDefinition> indexList)
+  {
+    StringBuilder domainInfo = getDomainInformation(columns, table.getRawSchema());
+    return domainInfo.length() > 0 ? domainInfo.toString() : null;
   }
 
   private String getLinkedTableSource(TableIdentifier table, boolean includeDrop)
@@ -165,6 +176,33 @@ public class H2TableSourceBuilder
       JdbcUtils.closeAll(rs, pstmt);
     }
     tbl.getSourceOptions().setInitialized();
+  }
+
+  private StringBuilder getDomainInformation(List<ColumnIdentifier> columns, String tableSchema)
+  {
+    H2DomainReader reader = new H2DomainReader();
+    StringBuilder result = new StringBuilder();
+
+    for (ColumnIdentifier col : columns)
+    {
+      if (col.isDomain())
+      {
+        ObjectExpressionParser obj = new ObjectExpressionParser(col.getDbmsType());
+
+        String domainSchema = StringUtil.coalesce(SqlUtil.removeObjectQuotes(obj.getSchema()), tableSchema);
+        String domainName = SqlUtil.removeObjectQuotes(obj.getName());
+
+        DomainIdentifier domain = reader.getDomain(dbConnection, domainSchema, domainName);
+        if (domain != null)
+        {
+          result.append("\n-- domain ");
+          result.append(col.getDbmsType());
+          result.append(": ");
+          result.append(domain.getSummary());
+        }
+      }
+    }
+    return result;
   }
 
 }
