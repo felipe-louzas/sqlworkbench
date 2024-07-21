@@ -73,11 +73,8 @@
       </ul>
 
       <div id="noafd">
-        <!-- <a target="_blank" href="http://gesichertrechtsextrem.de"> -->
-          <!-- <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/> -->
-        <!-- </a> -->
-        <a target="_blank" href="https://europawahl.pulseofeurope.eu/en/">
-          <img border="0" width="190" height="190" style="margin-left:25px;margin-top:30px;margin-bottom:10px" src="go-vote.jpg" alt="Vote for democratic parties!"/>
+        <a target="_blank" href="http://gesichertrechtsextrem.de">
+          <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/>
         </a>
       </div>
 
