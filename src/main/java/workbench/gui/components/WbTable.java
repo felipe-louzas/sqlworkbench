@@ -168,6 +168,7 @@ import workbench.storage.SortDefinition;
 import workbench.storage.filter.FilterExpression;
 import workbench.storage.reader.RowDataReader;
 
+import workbench.util.CollectionUtil;
 import workbench.util.FileDialogUtil;
 import workbench.util.NumberStringCache;
 import workbench.util.SqlUtil;
@@ -1869,6 +1870,12 @@ public class WbTable
   {
     final Container c = (this.scrollPane == null ? this : scrollPane);
 
+
+    if (!GuiSettings.getAutomaticOptimalWidth())
+    {
+      saveColumnSizes();
+    }
+
     WbSwingUtilities.invoke(() ->
     {
       updateSortRenderer();
@@ -1900,7 +1907,15 @@ public class WbTable
     final Container c = (this.scrollPane == null ? this : scrollPane);
     EventQueue.invokeLater(() ->
     {
-      adjustRowsAndColumns();
+      if (CollectionUtil.isNonEmpty(savedColumnSizes))
+      {
+        restoreColumnSizes();
+      }
+      else
+      {
+        adjustColumns();
+      }
+      adjustRowHeight();
 
       WbSwingUtilities.showDefaultCursor(c.getParent());
       WbSwingUtilities.showDefaultCursor(getTableHeader());
@@ -1920,11 +1935,21 @@ public class WbTable
     int start = 0;
     if (this.dwModel.isStatusColumnVisible()) start = 1;
 
+
+    Font f = getFont();
+    FontMetrics fm = f == null ? null : getFontMetrics(f);
+    int sortWidth = SortHeaderRenderer.getArrowSize(fm, true);
+
     for (int i=start; i < count; i++)
     {
       TableColumn col = colMod.getColumn(i);
+      int width = col.getPreferredWidth();
+      if (isViewColumnSorted(i))
+      {
+        width -= sortWidth;
+      }
       String name = this.getColumnName(i);
-      savedColumnSizes.put(name, col.getPreferredWidth());
+      savedColumnSizes.put(name, width);
     }
   }
 
@@ -1944,12 +1969,20 @@ public class WbTable
   public void restoreColumnSizes()
   {
     if (this.savedColumnSizes == null) return;
+    Font f = getFont();
+    FontMetrics fm = f == null ? null : getFontMetrics(f);
+    int sortWidth = SortHeaderRenderer.getArrowSize(fm, true);
+
     for (Map.Entry<String, Integer> entry : this.savedColumnSizes.entrySet())
     {
       TableColumn col = this.getColumn(entry.getKey());
       if (col != null)
       {
         int width = entry.getValue();
+        if (isViewColumnSorted(getColumnIndex(entry.getKey())))
+        {
+          width += sortWidth;
+        }
         col.setPreferredWidth(width);
       }
     }
