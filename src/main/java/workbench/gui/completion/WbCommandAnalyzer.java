@@ -448,7 +448,12 @@ public class WbCommandAnalyzer
     {
       WbFile file = (WbFile)selectedObject;
       saveLastDirectory(file);
-      return file.getFullPath();
+      String result = file.getFullPath();
+      if (file.isDirectory())
+      {
+        result += "/";
+      }
+      return result;
     }
     return null;
   }
