@@ -72,6 +72,22 @@ public class SelectAnalyzerTest
   }
 
   @Test
+  public void testPartialJoinColumnCompletion()
+  {
+    String sql =
+      "select t1.* \n" +
+      "from s1.table_1 as t1 \n" +
+      "  join s1.table_2 as t2 on t1.id = t2.col ";
+    int pos = sql.indexOf("t2.col") + 4;
+    StatementContext context = new StatementContext(null, sql, pos, false);
+    BaseAnalyzer analyzer = context.getAnalyzer();
+    analyzer.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, analyzer.getContext());
+    TableIdentifier tbl = analyzer.getTableForColumnList();
+    assertEquals("table_2", tbl.getTableName());
+  }
+
+  @Test
   public void testSRFJoin()
   {
     String sql =

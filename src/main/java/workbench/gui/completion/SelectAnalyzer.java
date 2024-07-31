@@ -240,7 +240,6 @@ public class SelectAnalyzer
       // check if the current qualifier is either one of the
       // tables in the table list or one of the aliases used
       // in the table list.
-      String kw = getQualifierLeftOfCursor();
       TableAlias currentAlias = getTableOrAliasLeftOfCursor(tables);
       if (currentAlias == null && parentAnalyzer != null)
       {
@@ -327,6 +326,7 @@ public class SelectAnalyzer
       SQLToken token = lexer.getNextToken(false, false);
       SQLToken lastToken = null;
       LexerState state = new LexerState();
+      TableAlias currentAlias = getTableOrAliasLeftOfCursor(tablesInSelect);
 
       while (token != null)
       {
@@ -340,8 +340,7 @@ public class SelectAnalyzer
           {
             if (cursorPos >= token.getCharEnd())
             {
-              String word = getQualifierLeftOfCursor();
-              if (word == null)
+              if (currentAlias == null)
               {
                 // right after the ON
                 result = JOIN_FROM_TABLE_LIST;
@@ -359,21 +358,15 @@ public class SelectAnalyzer
           }
           else if (result == JOIN_ON_COLUMN_LIST && cursorPos <= token.getCharBegin())
           {
-            String word = getCurrentWord();
-            if (word != null && word.endsWith(".") && word.length() > 1)
+            if (currentAlias == null)
             {
-              word = word.substring(0, word.length() - 1);
-              TableAlias tbl = findAlias(word, tablesInSelect);
-              if (tbl == null)
-              {
-                // no alias found, assume the current word is a schema name
-                result = JOIN_ON_TABLE_LIST;
-              }
-              else
-              {
-                tableForColumnList = tbl.getTable();
-                break;
-              }
+              // no alias found, assume the current word is a schema name
+              result = JOIN_ON_TABLE_LIST;
+            }
+            else
+            {
+              tableForColumnList = currentAlias.getTable();
+              break;
             }
             break;
           }
