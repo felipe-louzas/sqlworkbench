@@ -451,7 +451,7 @@ public class WbCommandAnalyzer
       String result = file.getFullPath();
       if (file.isDirectory())
       {
-        result += "/";
+        result += System.getProperty("file.separator");
       }
       return result;
     }
