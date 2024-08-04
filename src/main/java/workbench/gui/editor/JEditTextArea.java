@@ -858,7 +858,7 @@ public class JEditTextArea
 
       horizontal.setValues(-horizontalOffset, width, 0, maxLineWidth);
       horizontal.setUnitIncrement(charWidth);
-      horizontal.setBlockIncrement(width / 3);
+      horizontal.setBlockIncrement(width / 4);
 
       if (width >= maxLineWidth)
       {
@@ -3001,27 +3001,34 @@ public class JEditTextArea
   @Override
   public void mouseWheelMoved(MouseWheelEvent e)
   {
-    if (e.getScrollType() != MouseWheelEvent.WHEEL_UNIT_SCROLL) return;
-
     // Do not scroll if the Ctrl-Key is pressed
     // because that combination is handled by the font zoomer
     if (WbAction.isCtrlPressed(e)) return;
 
-    int units = GuiSettings.getWheelScrollLines();
-
-    // The user configured a value that is different from the OS settings
-    if (units > 0)
+    if (WbAction.isShiftPressed(e))
     {
-      if (e.getUnitsToScroll() < 0)
-      {
-        units = -units; // need to scroll up
-      }
+      int units = getScrollAmount(e, GuiSettings.getWheelScrollCharacters());
+      horizontal.setValue(horizontal.getValue() + units);
     }
     else
     {
-      units = e.getUnitsToScroll();
+      int units = getScrollAmount(e, GuiSettings.getWheelScrollLines());
+      vertical.setValue(vertical.getValue() + units);
     }
-    vertical.setValue(vertical.getValue() + units);
+  }
+
+  private int getScrollAmount(MouseWheelEvent evt, int userSetting)
+  {
+    // The user configured a value that is different from the OS settings
+    if (userSetting > 0)
+    {
+      if (evt.getUnitsToScroll() < 0)
+      {
+        return -userSetting;
+      }
+      return userSetting;
+    }
+    return evt.getUnitsToScroll();
   }
 
   private class MutableCaretEvent extends CaretEvent

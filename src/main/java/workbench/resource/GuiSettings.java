@@ -1208,12 +1208,22 @@ public class GuiSettings
 
   public static int getWheelScrollLines()
   {
-    return Settings.getInstance().getIntProperty("workbench.gui.editor.wheelscroll.units", -1);
+    return Settings.getInstance().getIntProperty("workbench.gui.editor.wheelscroll.vertical.units", -1);
   }
 
   public static void setWheelScrollLines(int lines)
   {
-    Settings.getInstance().setProperty("workbench.gui.editor.wheelscroll.units", lines);
+    Settings.getInstance().setProperty("workbench.gui.editor.wheelscroll.vertical.units", lines);
+  }
+
+  public static int getWheelScrollCharacters()
+  {
+    return Settings.getInstance().getIntProperty("workbench.gui.editor.wheelscroll.horizontal.units", 0);
+  }
+
+  public static void setWheelScrollCharacters(int characters)
+  {
+    Settings.getInstance().setProperty("workbench.gui.editor.wheelscroll.horizontal.units", characters);
   }
 
   public static int getNumberDataAlignment()

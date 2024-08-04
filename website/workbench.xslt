@@ -29,7 +29,7 @@
   <xsl:param name="currentDate"/>
   <xsl:param name="includeDev" select="'0'"/>
   <xsl:variable name="fdir">
-    <xsl:value-of select="concat($filedir, '\')"/>
+    <xsl:value-of select="concat($filedir, '/')"/>
   </xsl:variable>
 
 
@@ -73,7 +73,7 @@
       </ul>
 
       <div id="noafd">
-        <a target="_blank" href="http://gesichertrechtsextrem.de">
+        <a target="_blank" href="https://afdnee.de/">
           <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/>
         </a>
       </div>
