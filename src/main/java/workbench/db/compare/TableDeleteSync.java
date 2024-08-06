@@ -51,9 +51,9 @@ import workbench.storage.ColumnData;
 import workbench.storage.ResultInfo;
 import workbench.storage.RowActionMonitor;
 import workbench.storage.RowData;
+import workbench.storage.SqlLiteralFormatter;
 import workbench.storage.reader.RowDataReader;
 import workbench.storage.reader.RowDataReaderFactory;
-import workbench.storage.SqlLiteralFormatter;
 
 import workbench.util.CollectionUtil;
 import workbench.util.StringUtil;
@@ -82,8 +82,8 @@ import workbench.util.StringUtil;
 public class TableDeleteSync
   implements ProgressReporter
 {
-  private WbConnection targetConnection;
-  private WbConnection referenceConnection;
+  private final WbConnection targetConnection;
+  private final WbConnection referenceConnection;
   private TableIdentifier referenceTable;
   private TableDefinition tableToDeleteFrom;
   private BatchedStatement deleteStatement;
@@ -96,7 +96,7 @@ public class TableDeleteSync
   private Writer outputWriter;
   private String lineEnding = "\n";
   private String encoding;
-  private SqlLiteralFormatter formatter;
+  private final SqlLiteralFormatter formatter;
   private long deletedRows;
   private boolean firstDelete;
   private XmlRowDataConverter xmlConverter;
@@ -471,7 +471,7 @@ public class TableDeleteSync
             if (i > 0) this.outputWriter.write(" AND ");
             outputWriter.write(col.getColumnName());
             outputWriter.write(" = ");
-            outputWriter.write(formatter.getDefaultLiteral(new ColumnData(value, col)).toString());
+            outputWriter.write(formatter.getDefaultLiteral(new ColumnData(value, col)));
           }
           outputWriter.write(';');
         }
@@ -581,12 +581,12 @@ public class TableDeleteSync
     }
     else
     {
-      out.write("------------------------------------------------------------------");
+      out.write("-- ----------------------------------------------------------------");
       out.write(lineEnding);
       out.write("-- ");
       out.write(genInfo);
       out.write(lineEnding);
-      out.write("------------------------------------------------------------------");
+      out.write("-- ----------------------------------------------------------------");
       out.write(lineEnding);
     }
   }
