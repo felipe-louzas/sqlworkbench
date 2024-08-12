@@ -79,7 +79,6 @@ import workbench.gui.fontzoom.DecreaseFontSize;
 import workbench.gui.fontzoom.IncreaseFontSize;
 import workbench.gui.fontzoom.ResetFontSize;
 
-import workbench.util.PlatformHelper;
 import workbench.util.StringUtil;
 
 
@@ -162,7 +161,6 @@ public class InputHandler
 
   private boolean sequenceIsMapped = false;
   private boolean enabled = true;
-  private final boolean checkForAltTab;
   private KeyStroke expandKey;
   private final JEditTextArea textArea;
 
@@ -170,7 +168,6 @@ public class InputHandler
   {
     initKeyBindings();
     this.textArea = area;
-    this.checkForAltTab = Settings.getInstance().getBoolProperty("workbench.editor.check.alttab", PlatformHelper.isLinux());
     ShortcutManager.getInstance().addChangeListener(this);
     Settings.getInstance().addPropertyChangeListener(this, GuiSettings.PROPERTY_EXPAND_KEYSTROKE);
   }
@@ -324,13 +321,6 @@ public class InputHandler
   {
     if (!enabled) return;
     int keyCode = evt.getKeyCode();
-
-    if (checkForAltTab && keyCode == KeyEvent.VK_TAB && WbAction.isAltPressed(evt))
-    {
-      // On Linux/KDE cycling through open windows using Alt-Tab, ends up here in the editor
-      evt.consume();
-      return;
-    }
 
     KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(evt);
 
