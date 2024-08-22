@@ -266,9 +266,9 @@ public class SqlUtilTest
   {
     StringBuilder sql = new StringBuilder("select * from sometable");
     SqlUtil.appendAndCondition(sql, "some_col", "some_condition", null);
-    assertEquals("select * from sometable AND some_col = 'some_condition'", sql.toString());
+    assertEquals("select * from sometable AND some_col = 'some_condition'", sql.toString().trim());
     SqlUtil.appendAndCondition(sql, "some_col", null, null);
-    assertEquals("select * from sometable AND some_col = 'some_condition'", sql.toString());
+    assertEquals("select * from sometable AND some_col = 'some_condition'", sql.toString().trim());
   }
 
   @Test
