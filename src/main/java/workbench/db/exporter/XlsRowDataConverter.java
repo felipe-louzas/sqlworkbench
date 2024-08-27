@@ -901,6 +901,6 @@ public class XlsRowDataConverter
     if (!useXLSX) return;
     POIXMLProperties props = ((XSSFWorkbook)workbook).getProperties();
     POIXMLProperties.ExtendedProperties ext =  props.getExtendedProperties();
-    ext.getUnderlyingProperties().setTemplate("XSSF");
+    ext.setTemplate("XSSF");
   }
 }

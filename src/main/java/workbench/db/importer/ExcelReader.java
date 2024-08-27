@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import workbench.log.CallerInfo;
@@ -337,7 +338,7 @@ public class ExcelReader
       xssfWorkbook = new XSSFWorkbook(in)
       {
         @Override
-        public void parseSheet(java.util.Map<String, XSSFSheet> shIdMap, CTSheet ctSheet)
+        public void parseSheet(Map<String, XSSFSheet> shIdMap, CTSheet ctSheet)
         {
           if (toLoad.equals(ctSheet.getName()))
           {

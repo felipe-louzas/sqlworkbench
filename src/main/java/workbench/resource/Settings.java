@@ -1493,23 +1493,18 @@ public class Settings
   {
     return getIntProperty(PROPERTY_DEFAULT_FONT_SIZE, -1);
   }
-  
+
   private Font getMonospacedFont(String property, boolean returnDefault)
   {
     boolean isDefault = false;
-    int defaultSize = getDefaultFontSize(); 
     Font f = this.getFont(property);
     if (f == null && returnDefault)
     {
       UIDefaults def = UIManager.getDefaults();
       Font textFont = def.getFont("TextArea.font");
-      int size = defaultSize;
-      if (size < 1) 
-      {
-        size = textFont == null ? 12 : textFont.getSize();
-      }
+      int size = textFont == null ? 12 : textFont.getSize();
       f = StyleContext.getDefaultStyleContext().getFont("Monospaced", Font.PLAIN, size);
-      isDefault = defaultSize == -1;
+      isDefault = true;
     }
     if (getScaleFonts() && isDefault)
     {
@@ -1617,15 +1612,8 @@ public class Settings
       if ("italic".equalsIgnoreCase(type)) style |= Font.ITALIC;
     }
 
-    int size = 12;
-    try
-    {
-      size = Integer.parseInt(fontSize);
-    }
-    catch (NumberFormatException e)
-    {
-      // ignore
-    }
+    int defaultSize = getDefaultFontSize();
+    int size = defaultSize == -1 ? StringUtil.getIntValue(fontSize, 12) : defaultSize;
     result = StyleContext.getDefaultStyleContext().getFont(name, style, size);
     return result;
   }
