@@ -45,6 +45,7 @@ import workbench.storage.DataStore;
 import workbench.sql.StatementHook;
 import workbench.sql.StatementRunner;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 import workbench.sql.commands.SetCommand;
 import workbench.sql.commands.TransactionEndCommand;
 import workbench.sql.lexer.SQLLexer;
@@ -128,7 +129,7 @@ public class OracleStatementHook
 
   private PreparedStatement statisticsStmt;
   private final Object lock = new Object();
-  private CommandTester wbTester = new CommandTester();
+  private final CommandTester wbTester = new CommandTester();
   private final SQLLexer lexer = SQLLexerFactory.createLexer(ParserType.Oracle, "");
 
   public OracleStatementHook()
@@ -203,7 +204,7 @@ public class OracleStatementHook
           long rows = result.getRowsProcessed();
           int row = stats.addRow();
           stats.setValue(row, nameCol, "rows processed");
-          stats.setValue(row, valueCol, Long.valueOf(rows));
+          stats.setValue(row, valueCol, rows);
           stats.setGeneratingSql(sql);
           stats.resetStatus();
           result.addDataStore(stats);
@@ -224,6 +225,12 @@ public class OracleStatementHook
 
     if (plan != null)
     {
+      ResultNameAnnotation parser = new ResultNameAnnotation();
+      String title = parser.getResultName(sql);
+      if (StringUtil.isNotBlank(title))
+      {
+        plan.setResultName(title);
+      }
       result.addDataStore(plan);
     }
   }
@@ -351,7 +358,7 @@ public class OracleStatementHook
         while (rs.next())
         {
           String key = rs.getString(1);
-          Long val = Long.valueOf(rs.getLong(2));
+          long val = rs.getLong(2);
           values.put(key, val);
         }
         statisticViewsAvailable = true;
@@ -616,8 +623,8 @@ public class OracleStatementHook
         while (rs.next())
         {
           String statName = rs.getString(1);
-          Long value = Long.valueOf(rs.getLong(2));
-          Long startValue = nvl(values.get(statName));
+          long value = rs.getLong(2);
+          long startValue = nvl(values.get(statName));
           int row = statValues.addRow();
           statValues.setValue(row, nameCol, statName);
           statValues.setValue(row, valueCol, (value - startValue));
