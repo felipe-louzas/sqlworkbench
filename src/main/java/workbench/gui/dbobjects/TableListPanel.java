@@ -859,7 +859,7 @@ public class TableListPanel
   {
     TableIdentifier tbl = getObjectTable();
     if (tbl == null) return;
-    if (tbl != null && dbConnection.getMetadata().hasColumns(tbl))
+    if (dbConnection.getMetadata().hasColumns(tbl))
     {
       displayTab.add(ResourceMgr.getString("TxtDbExplorerTableDefinition"), tableDefinition);
     }
@@ -2486,7 +2486,7 @@ public class TableListPanel
 
     String name = ROW_COUNT_COLUMN.getColumnName();
     int column = data.findColumn(name);
-    data.setValue(Long.valueOf(rowCount), row, column);
+    data.setValue(rowCount, row, column);
   }
 
   @Override
