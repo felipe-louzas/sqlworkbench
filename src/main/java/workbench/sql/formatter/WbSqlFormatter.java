@@ -195,7 +195,7 @@ public class WbSqlFormatter
     addSpaceAfterLineBreakComma = Settings.getInstance().getFormatterAddSpaceAfterLineBreakComma();
     joinWrapping = Settings.getInstance().getFormatterJoinWrapStyle();
     indentInsert = Settings.getInstance().getFormatterIndentInsert();
-    identifierCase = Settings.getInstance().getAutoCompletionPasteCase();
+    identifierCase = Settings.getInstance().getFormatterIdentifierCase();
     setDbId(dbId);
   }
 

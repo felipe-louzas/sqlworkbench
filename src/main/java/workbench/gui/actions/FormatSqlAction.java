@@ -38,7 +38,7 @@ import workbench.resource.ResourceMgr;
 public class FormatSqlAction
   extends WbAction
 {
-  private FormattableSql client;
+  private final FormattableSql client;
 
   public FormatSqlAction(FormattableSql aClient)
   {

@@ -62,6 +62,21 @@ public class WbSqlFormatterTest
   }
 
   @Test
+  public void testIdentifierCase()
+  {
+    String sql = "select some_column from the_table where id = 1";
+    WbSqlFormatter f = new WbSqlFormatter(sql, 150, DBID.Oracle.getId());
+    f.setKeywordCase(GeneratedIdentifierCase.lower);
+    f.setIdentifierCase(GeneratedIdentifierCase.upper);
+    f.setFunctionCase(GeneratedIdentifierCase.lower);
+    f.setDataTypecase(GeneratedIdentifierCase.lower);
+    String formatted = f.getFormattedSql();
+    System.out.println(formatted);
+    assertTrue(formatted.contains("select SOME_COLUMN"));
+    assertTrue(formatted.contains("from THE_TABLE"));
+  }
+
+  @Test
   public void testKeyWordCase()
   {
     String sql = "create table t (year int, years int, month int, months int, day int, days int, hour int, hours int, minUte int, minUtes int, second int, first int)";

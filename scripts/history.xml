@@ -4,7 +4,7 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
 
-  <release build="-1" date="2024-07-21">
+  <release build="-1" date="2024-09-03">
     <entry dev-build="2" type="enh">It's now possible to horizontally scroll the editor with the mouse wheel by holding down the shift key.</entry>
     <entry dev-build="1" type="enh">"Double click and drag" now extends the selection by words</entry>
     <entry dev-build="1" type="enh">It's now possible to show a list of all variables used in the current editor</entry>
