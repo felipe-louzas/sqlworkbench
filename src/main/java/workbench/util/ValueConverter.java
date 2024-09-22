@@ -118,8 +118,8 @@ public class ValueConverter
   private final Map<String, Boolean> booleanValues = new HashMap<>();
   private boolean booleanUserMap;
 
-  private Integer integerTrue = Integer.valueOf(1);
-  private Integer integerFalse = Integer.valueOf(0);
+  private Integer integerTrue;
+  private Integer integerFalse = 0;
   private Long longTrue = Long.valueOf(1);
   private Long longFalse = Long.valueOf(0);
   private BigDecimal bigDecimalTrue = BigDecimal.valueOf(1);
@@ -133,14 +133,17 @@ public class ValueConverter
   private boolean logWarnings = true;
 
   private TimestampTZHandler tzType = TimestampTZHandler.DUMMY_HANDLER;
+  private boolean checkDateTimeValuesDynamically = false;
 
   public ValueConverter()
   {
     this(null);
+    this.integerTrue = 1;
   }
 
   public ValueConverter(WbConnection conn)
   {
+    this.integerTrue = 1;
     Settings sett = Settings.getInstance();
     this.setDefaultDateFormat(sett.getDefaultDateFormat());
     this.setDefaultTimestampFormat(sett.getDefaultTimestampFormat());
@@ -177,6 +180,7 @@ public class ValueConverter
 
   public ValueConverter(String aDateFormat, String aTimeStampFormat)
   {
+    this.integerTrue = 1;
     if (StringUtil.isEmpty(aDateFormat))
     {
       this.setDefaultDateFormat(Settings.getInstance().getDefaultDateFormat());
@@ -285,8 +289,8 @@ public class ValueConverter
 
   public void setNumericBooleanValues(int falseValue, int trueValue)
   {
-    integerFalse = Integer.valueOf(falseValue);
-    integerTrue = Integer.valueOf(trueValue);
+    integerFalse = falseValue;
+    integerTrue = trueValue;
 
     longFalse = Long.valueOf(falseValue);
     longTrue = Long.valueOf(trueValue);
@@ -348,11 +352,11 @@ public class ValueConverter
       BigDecimal d = new BigDecimal(this.adjustDecimalString(value));
       if (useInt)
       {
-        return Integer.valueOf(d.intValueExact());
+        return d.intValueExact();
       }
       else
       {
-        return Long.valueOf(d.longValueExact());
+        return d.longValueExact();
       }
     }
     catch (Exception e)
@@ -388,14 +392,7 @@ public class ValueConverter
         Boolean b = getBoolean(value, Types.BOOLEAN);
         if (b != null)
         {
-          if (b.booleanValue())
-          {
-            return longTrue;
-          }
-          else
-          {
-            return longFalse;
-          }
+          return b ? longTrue : longFalse;
         }
       }
       throw new ConverterException(value, Types.BIGINT, e);
@@ -425,14 +422,7 @@ public class ValueConverter
         Boolean b = getBoolean(value, Types.BOOLEAN);
         if (b != null)
         {
-          if (b.booleanValue())
-          {
-            return integerTrue;
-          }
-          else
-          {
-            return integerFalse;
-          }
+          return b ? integerTrue : integerFalse;
         }
       }
       throw new ConverterException(value, type, e);
@@ -458,14 +448,7 @@ public class ValueConverter
         Boolean b = getBoolean(value, Types.BOOLEAN);
         if (b != null)
         {
-          if (b.booleanValue())
-          {
-            return bigDecimalTrue;
-          }
-          else
-          {
-            return bigDecimalFalse;
-          }
+          return b ? bigDecimalTrue : bigDecimalFalse;
         }
       }
       throw new ConverterException(value, type, e);
@@ -475,6 +458,25 @@ public class ValueConverter
   private String makeString(Object value)
   {
     return value.toString().trim();
+  }
+
+  public void setCompareDateTimeValuesToPatterns(boolean flag)
+  {
+    this.checkDateTimeValuesDynamically = flag;
+  }
+
+  private int fixDateTimeType(String inputValue, int originalType)
+  {
+    if (originalType == Types.TIMESTAMP && dateFormatter != null && dateFormatter.toPattern().length() == inputValue.length())
+    {
+      return Types.DATE;
+    }
+
+    if (originalType == Types.DATE && timestampFormatter != null && timestampFormatter.toPattern().length() == inputValue.length())
+    {
+      return Types.TIMESTAMP;
+    }
+    return originalType;
   }
 
   /**
@@ -494,6 +496,11 @@ public class ValueConverter
     }
 
     String strValue = makeString(value);
+
+    if (checkDateTimeValuesDynamically && SqlUtil.isDateType(type))
+    {
+      type = fixDateTimeType(strValue, type);
+    }
 
     switch (type)
     {

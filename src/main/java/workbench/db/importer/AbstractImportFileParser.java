@@ -40,6 +40,7 @@ import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
+import workbench.db.DBID;
 import workbench.db.DbObjectFinder;
 import workbench.db.DbSearchPath;
 import workbench.db.TableDefinition;
@@ -267,6 +268,10 @@ public abstract class AbstractImportFileParser
     if (newConverter != null)
     {
       this.converter = newConverter;
+      if (this.targetTable != null)
+      {
+        checkDateTimeParsing(targetTable);
+      }
     }
   }
 
@@ -428,7 +433,23 @@ public abstract class AbstractImportFileParser
       this.hasErrors = true;
       throw ex;
     }
+    checkDateTimeParsing(targetTable);
     return targetTable;
+  }
+
+  private void checkDateTimeParsing(TableDefinition targetTable)
+  {
+    converter.setCompareDateTimeValuesToPatterns(false);
+    if (DBID.Oracle.isDB(connection))
+    {
+      long dateColumnCount = targetTable.getColumns().stream().filter(col -> "DATE".equalsIgnoreCase(col.getDbmsType())).count();
+      long timestampColumnCount =
+        targetTable.getColumns().stream().filter(col -> col.getDbmsType().startsWith("TIMESTAMP")).count();
+      if (dateColumnCount > 0 && timestampColumnCount > 0)
+      {
+        converter.setCompareDateTimeValuesToPatterns(true);
+      }
+    }
   }
 
   @Override

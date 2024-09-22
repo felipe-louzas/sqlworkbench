@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1457,7 +1458,12 @@ public class DataImporter
         {
           arrayHandler.setValue(pstmt, colIndex, value, column);
         }
-        else if (isOracle && jdbcType == java.sql.Types.DATE && value instanceof java.sql.Date)
+        else if (isOracle && "DATE".equalsIgnoreCase(dbmsType) && value instanceof LocalDate)
+        {
+          java.sql.Timestamp ts = java.sql.Timestamp.valueOf(((LocalDate)value).atStartOfDay());
+          pstmt.setTimestamp(colIndex, ts);
+        }
+        else if (isOracle && "DATE".equalsIgnoreCase(dbmsType) && value instanceof java.sql.Date)
         {
           java.sql.Timestamp ts = new java.sql.Timestamp(((java.sql.Date)value).getTime());
           pstmt.setTimestamp(colIndex, ts);
