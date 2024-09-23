@@ -491,6 +491,11 @@ public class EditorPanel
       WbSwingUtilities.showWaitCursor(this);
       TextFormatter f = new TextFormatter(this.dbId);
       f.formatSql(this, alternateDelimiter);
+      if (StringUtil.isNotBlank(f.getLastError()))
+      {
+        WbSwingUtilities.showDefaultCursor(this);
+        WbSwingUtilities.showFriendlyErrorMessage(this, f.getLastError());
+      }
     }
     finally
     {

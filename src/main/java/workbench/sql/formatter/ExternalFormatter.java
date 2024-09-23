@@ -32,7 +32,6 @@ import workbench.util.FileUtil;
 import workbench.util.StringUtil;
 import workbench.util.WbFile;
 
-
 /**
  *
  * @author Thomas Kellerer
@@ -50,6 +49,7 @@ public class ExternalFormatter
   private String outputEncoding;
   private boolean supportsMultipleStatements;
   private boolean enabled = true;
+  private String lastError;
 
   public ExternalFormatter()
   {
@@ -119,14 +119,23 @@ public class ExternalFormatter
   }
 
   @Override
+  public String getLastError()
+  {
+    return lastError;
+  }
+
+  @Override
   public String getFormattedSql(String sql)
   {
+    lastError = null;
+
     try
     {
       return runFormatter(sql);
     }
     catch (IOException ex)
     {
+      lastError = ex.getMessage();
       LogMgr.logError(new CallerInfo(){}, "Could not format SQL statement", ex);
       return sql;
     }
@@ -215,6 +224,11 @@ public class ExternalFormatter
       LogMgr.logDebug(ci, "Return value was: " + exitValue);
 
       String formatted = FileUtil.readFile(outfile, outputEncoding);
+      if (StringUtil.isEmpty(formatted))
+      {
+        LogMgr.logWarning(ci, "Result from formatter was empty!");
+        formatted = sql;
+      }
 
       if (!useSystemOut)
       {
@@ -225,20 +239,20 @@ public class ExternalFormatter
         }
       }
 
-      String error = readFile(errFile);
-      if (StringUtil.isNotEmpty(error))
+      lastError = readFile(errFile);
+      if (StringUtil.isNotEmpty(lastError))
       {
-        LogMgr.logWarning(ci, "Error message from formatter: " + error);
+        LogMgr.logWarning(ci, "Error message from formatter: " + lastError);
       }
 
       return StringUtil.trim(formatted);
     }
     catch (Exception ex)
     {
-      String error = readFile(errFile);
-      if (StringUtil.isNotEmpty(error))
+      lastError = readFile(errFile);
+      if (StringUtil.isNotEmpty(lastError))
       {
-        LogMgr.logError(ci, "Error message from formatter: " + error, null);
+        LogMgr.logError(ci, "Error message from formatter: " + lastError, null);
         LogMgr.logDebug(ci, "Error cause", ex);
       }
       else

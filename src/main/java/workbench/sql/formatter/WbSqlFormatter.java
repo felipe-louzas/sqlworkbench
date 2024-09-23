@@ -200,6 +200,12 @@ public class WbSqlFormatter
   }
 
   @Override
+  public String getLastError()
+  {
+    return null;
+  }
+
+  @Override
   public boolean supportsMultipleStatements()
   {
     return false;

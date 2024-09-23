@@ -42,15 +42,22 @@ import workbench.sql.parser.ScriptParser;
  */
 public class TextFormatter
 {
-  private String dbId;
+  private final String dbId;
+  private String lastError;
 
   public TextFormatter(String id)
   {
     this.dbId = id;
   }
 
+  public String getLastError()
+  {
+    return lastError;
+  }
+
   public void formatSql(SqlTextContainer editor, DelimiterDefinition alternateDelimiter)
   {
+    lastError = null;
     String sql = editor.getSelectedStatement();
 
     SqlFormatter f = SqlFormatterFactory.createFormatter(dbId);
@@ -60,6 +67,7 @@ public class TextFormatter
     if (f.supportsMultipleStatements())
     {
       text = f.getFormattedSql(sql);
+      lastError = f.getLastError();
     }
     else
     {
@@ -106,6 +114,7 @@ public class TextFormatter
     if (count < 1) return null;
 
     StringBuilder newSql = new StringBuilder(sql.length() + 100);
+    StringBuilder allErrors = new StringBuilder();
 
     for (int i=0; i < count; i++)
     {
@@ -125,6 +134,11 @@ public class TextFormatter
       try
       {
         String formattedSql = formatter.getFormattedSql(command);
+        if (formatter.getLastError() != null)
+        {
+          allErrors.append(formatter.getLastError());
+          allErrors.append("\n");
+        }
         if (i > 0)
         {
           // add a blank line between the statements, but not for the last one
@@ -146,11 +160,17 @@ public class TextFormatter
       }
     }
 
+    if (allErrors.length() > 0)
+    {
+      this.lastError = allErrors.toString();
+    }
+
     if (newSql.length() == 0) return null;
     if (newSql.charAt(newSql.length() - 1) != '\n')
     {
       newSql.append('\n');
     }
+
     return newSql.toString();
   }
 

@@ -28,4 +28,5 @@ public interface SqlFormatter
 {
   String getFormattedSql(String sql);
   boolean supportsMultipleStatements();
+  String getLastError();
 }
