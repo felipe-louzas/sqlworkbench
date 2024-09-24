@@ -70,6 +70,7 @@ public class ObjectTreeNode
   private String tooltip;
   private String iconKey;
   private String iconKeyOpen;
+  private String objectSource;
 
   public ObjectTreeNode(DbObject dbo)
   {
@@ -130,6 +131,16 @@ public class ObjectTreeNode
   public void setChildrenLoaded(boolean flag)
   {
     isLoaded = flag;
+  }
+
+  public String getObjectSource()
+  {
+    return objectSource;
+  }
+
+  public void setObjectSource(String source)
+  {
+    this.objectSource = source;
   }
 
   public boolean isFKTable()

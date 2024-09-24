@@ -62,8 +62,8 @@ public class GenericReportObject
 
   public static final String TAG_TYPE_ATTRS = "attributes";
 
-  private DbObject object;
-  private String source;
+  private final DbObject object;
+  private final String source;
   private String schemaNameToUse;
 
   public GenericReportObject(WbConnection con, DbObject dbo)

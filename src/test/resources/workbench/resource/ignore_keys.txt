@@ -80,6 +80,7 @@ TxtBuildNumber
 TxtCopyright
 TxtCopyright
 TxtCreateIndex
+TxtDbExplorerTableConstraints
 TxtEdPrefix
 TxtFileFilterJson
 TxtFileFilterSqlInsDel

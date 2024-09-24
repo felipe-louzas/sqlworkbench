@@ -1862,6 +1862,12 @@ public class DbSettings
     return getProperty("alter." + getKeyValue(type) + ".drop.fk_constraint", dropConstraint);
   }
 
+  public String getAddTableConstraint()
+  {
+    String globalDefault = Settings.getInstance().getProperty("workbench.db.sql.alter.table.add.constraint", null);
+    return getProperty("alter.table.add.constraint", globalDefault);
+  }
+
   /**
    * Returns the SQL to add a primary key to an object
    *

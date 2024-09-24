@@ -21,6 +21,10 @@
  */
 package workbench.db;
 
+import java.sql.SQLException;
+
+import workbench.db.sqltemplates.TemplateHandler;
+
 import workbench.util.StringUtil;
 
 /**
@@ -30,22 +34,29 @@ import workbench.util.StringUtil;
  */
 public class TableConstraint
   extends ConstraintDefinition
-  implements Comparable<TableConstraint>
+  implements Comparable<TableConstraint>, DbObject
 {
   public static final String NAME_PLACEHOLDER = "%constraintname%";
   public static final String EXPR_PLACEHOLDER = "%expression%";
 
   private String expression;
   private String checkConstraintTemplate;
+  private TableIdentifier constraintTable;
 
   public TableConstraint(String constraintName, String expr)
   {
-    this(constraintName, expr, null);
+    this(null, constraintName, expr, null);
   }
 
-  public TableConstraint(String constraintName, String expr, String sqlTemplate)
+  public TableConstraint(TableIdentifier table, String constraintName, String expr)
+  {
+    this(table, constraintName, expr, null);
+  }
+
+  public TableConstraint(TableIdentifier table, String constraintName, String expr, String sqlTemplate)
   {
     super(constraintName);
+    constraintTable = table == null ? null : table.createCopy();
     expression = StringUtil.isNotBlank(expr) ? expr.trim() : null;
     checkConstraintTemplate = StringUtil.trimToNull(sqlTemplate);
     setConstraintType(ConstraintType.Check);
@@ -151,4 +162,84 @@ public class TableConstraint
     sql = sql.replace(EXPR_PLACEHOLDER, expression);
     return sql;
   }
+
+  @Override
+  public String getCatalog()
+  {
+    return constraintTable == null ? null : constraintTable.getCatalog();
+  }
+
+  @Override
+  public String getSchema()
+  {
+    return constraintTable == null ? null : constraintTable.getSchema();
+  }
+
+  @Override
+  public String getObjectType()
+  {
+    return "CONSTRAINT";
+  }
+
+  @Override
+  public String getObjectName()
+  {
+    return getConstraintName();
+  }
+
+  @Override
+  public String getObjectName(WbConnection conn)
+  {
+    return getConstraintName();
+  }
+
+  @Override
+  public String getObjectExpression(WbConnection conn)
+  {
+    return null;
+  }
+
+  @Override
+  public String getFullyQualifiedName(WbConnection conn)
+  {
+    return null;
+  }
+
+  @Override
+  public CharSequence getSource(WbConnection con)
+    throws SQLException
+  {
+    if (this.constraintTable == null)
+    {
+      return getSql();
+    }
+    String template = con.getDbSettings().getAddTableConstraint();
+    String ddl = TemplateHandler.replaceTablePlaceholder(template, constraintTable, con);
+    ddl = TemplateHandler.replacePlaceholder(ddl, MetaDataSqlManager.CONSTRAINT_NAME_PLACEHOLDER, getConstraintName(), false);
+    ddl = TemplateHandler.replacePlaceholder(ddl, "%constraint_expression%", expression, false);
+    ddl = TemplateHandler.replacePlaceholder(ddl, "%constraint_definition%", getSql(), false);
+    return ddl + ";";
+  }
+
+  @Override
+  public String getObjectNameForDrop(WbConnection con)
+  {
+    return getConstraintName();
+  }
+
+  @Override
+  public String getDropStatement(WbConnection con, boolean cascade)
+  {
+    String template = con.getDbSettings().getDropConstraint(constraintTable.getObjectType());
+    String drop = TemplateHandler.replaceTablePlaceholder(template, constraintTable, con);
+    drop = TemplateHandler.replacePlaceholder(drop, MetaDataSqlManager.CONSTRAINT_NAME_PLACEHOLDER, getConstraintName(), false);
+    return drop + ";";
+  }
+
+  @Override
+  public boolean supportsGetSource()
+  {
+    return true;
+  }
+
 }

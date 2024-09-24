@@ -137,7 +137,7 @@ public class OracleConstraintReader
           {
             expression += " NOVALIDATE";
           }
-          TableConstraint c = new TableConstraint(name, expression);
+          TableConstraint c = new TableConstraint(table, name, expression);
           c.setIsSystemName(isSystemConstraintName(name));
           result.add(c);
         }

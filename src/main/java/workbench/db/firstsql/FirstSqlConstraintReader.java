@@ -80,7 +80,7 @@ public class FirstSqlConstraintReader
       {
         String constraint = rs.getString(1);
         String name = rs.getString(2);
-        result.add(new TableConstraint(name, "(" + constraint + ")"));
+        result.add(new TableConstraint(def.getTable(), name, "(" + constraint + ")"));
       }
     }
     catch (SQLException e)

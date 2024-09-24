@@ -95,8 +95,7 @@ public class ConstraintDefinition
 
   public boolean isDeferred()
   {
-    if (deferrable == null) return false;
-    return deferrable.booleanValue();
+    return deferrable == null ? false : deferrable;
   }
 
   public Boolean isDeferrable()
@@ -106,7 +105,7 @@ public class ConstraintDefinition
 
   public void setDeferrable(boolean deferrable)
   {
-    this.deferrable = Boolean.valueOf(deferrable);
+    this.deferrable = deferrable;
   }
 
   public Boolean isInitiallyDeferred()
@@ -116,7 +115,7 @@ public class ConstraintDefinition
 
   public void setInitiallyDeferred(boolean initiallyDeferred)
   {
-    this.initiallyDeferred = Boolean.valueOf(initiallyDeferred);
+    this.initiallyDeferred = initiallyDeferred;
   }
 
   public String getComment()

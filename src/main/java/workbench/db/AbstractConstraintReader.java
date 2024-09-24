@@ -46,7 +46,7 @@ import workbench.util.StringUtil;
 public abstract class AbstractConstraintReader
   implements ConstraintReader
 {
-  private ConstraintNameTester nameTester;
+  private final ConstraintNameTester nameTester;
 
   public AbstractConstraintReader(String dbId)
   {
@@ -236,7 +236,7 @@ public abstract class AbstractConstraintReader
             constraint = "(" + constraint + ")";
           }
           String template = dbConnection.getDbSettings().getCheckConstraintTemplate();
-          TableConstraint c = new TableConstraint(name, constraint, template);
+          TableConstraint c = new TableConstraint(baseTable, name, constraint, template);
           c.setIsSystemName(isSystemConstraintName(name));
           c.setComment(comment);
           result.add(c);

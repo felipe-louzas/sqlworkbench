@@ -34,7 +34,7 @@ import workbench.util.StringUtil;
 public interface ConstraintReader
 {
   /**
-   *  Retrieve the column constraints for the given table and stores them in the
+   * Retrieve the column constraints for the given table and stores them in the
    * list of columns.
    *
    * The key to the returned Map is the column name, the value is the full expression which can be appended

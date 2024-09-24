@@ -35,6 +35,7 @@ import workbench.resource.Settings;
 import workbench.db.CatalogChanger;
 import workbench.db.CatalogIdentifier;
 import workbench.db.ColumnIdentifier;
+import workbench.db.ConstraintReader;
 import workbench.db.DBID;
 import workbench.db.DbMetadata;
 import workbench.db.DbObject;
@@ -46,8 +47,10 @@ import workbench.db.JdbcUtils;
 import workbench.db.PartitionLister;
 import workbench.db.ProcedureDefinition;
 import workbench.db.ProcedureReader;
+import workbench.db.ReaderFactory;
 import workbench.db.SchemaIdentifier;
 import workbench.db.SubPartitionState;
+import workbench.db.TableConstraint;
 import workbench.db.TableDefinition;
 import workbench.db.TableDependency;
 import workbench.db.TableIdentifier;
@@ -159,6 +162,16 @@ public class TreeLoader
    * referencing the current table.
    */
   public static final String TYPE_REF_LIST = "referencing-fk-list";
+
+  /**
+   * The node type for the list of check constraints nodes in a table.
+   */
+  public static final String TYPE_CONSTRAINTS_LIST = "check-constraints-list";
+
+  /**
+   * The node type for a single (check) constraint.
+   */
+  public static final String TYPE_TABLE_CONSTRAINT = "table-constraint";
 
   /**
    * The node type identifying an index column.
@@ -869,6 +882,14 @@ public class TreeLoader
   {
     addIndexNode(node);
 
+    ConstraintReader reader = ReaderFactory.getConstraintReader(connection.getMetadata());
+    if (reader != ConstraintReader.NULL_READER)
+    {
+      ObjectTreeNode constraints = new ObjectTreeNode(ResourceMgr.getString("TxtDbExplorerTableConstraints"), TYPE_CONSTRAINTS_LIST);
+      constraints.setAllowsChildren(true);
+      node.add(constraints);
+    }
+
     ObjectTreeNode fk = new ObjectTreeNode(ResourceMgr.getString("TxtDbExplorerFkColumns"), TYPE_FK_LIST);
     fk.setAllowsChildren(true);
     node.add(fk);
@@ -1064,6 +1085,25 @@ public class TreeLoader
     depNode.setChildrenLoaded(true);
   }
 
+  private void loadTableConstraints(DbObject dbo, ObjectTreeNode constraintNode)
+  {
+    if (dbo instanceof TableIdentifier)
+    {
+      ConstraintReader reader = ReaderFactory.getConstraintReader(connection.getMetadata());
+      TableIdentifier baseTable = (TableIdentifier)dbo;
+      List<TableConstraint> constraints = reader.getTableConstraints(connection, new TableDefinition(baseTable, CollectionUtil.arrayList()));
+      for (TableConstraint constraint : constraints)
+      {
+        ObjectTreeNode node = new ObjectTreeNode(constraint);
+        node.setNodeType(TYPE_TABLE_CONSTRAINT);
+        node.setObjectSource(constraint.getSql());
+        node.setTooltip(StringUtil.getMaxSubstring(constraint.getExpression(), 80));
+        node.setAllowsChildren(false);
+        constraintNode.add(node);
+      }
+      model.nodeStructureChanged(constraintNode);
+    }
+  }
   private void loadTableColumns(DbObject dbo, ObjectTreeNode columnsNode)
     throws SQLException
   {
@@ -1287,6 +1327,12 @@ public class TreeLoader
       else if (node.isSchemaNode())
       {
         loadTypesForSchema(node);
+      }
+      else if (TYPE_CONSTRAINTS_LIST.equals(type))
+      {
+        ObjectTreeNode parent = node.getParent();
+        DbObject dbo = parent.getDbObject();
+        loadTableConstraints(dbo, node);
       }
       else if (TYPE_DBO_TYPE_NODE.equals(type))
       {

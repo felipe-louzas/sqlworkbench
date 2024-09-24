@@ -75,6 +75,7 @@ public class DbObjectNodeRenderer
     iconMap.put(TreeLoader.TYPE_DEPENDENCY_USED, "deps-used");
     iconMap.put(TreeLoader.TYPE_DEPENDENCY_USING, "deps-using");
     iconMap.put(TreeLoader.TYPE_COLUMN_LIST, "folder");
+    iconMap.put(TreeLoader.TYPE_CONSTRAINTS_LIST, "folder");
     iconMap.put(TreeLoader.TYPE_INDEX_LIST, "folder");
     iconMap.put(TreeLoader.TYPE_REF_LIST, "folder");
     iconMap.put(TreeLoader.TYPE_FK_LIST, "folder");
