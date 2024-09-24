@@ -43,8 +43,7 @@ import workbench.gui.sql.SqlPanel;
 public class FileDiscardAction
   extends WbAction
 {
-
-  private SqlPanel client;
+  private final SqlPanel client;
 
   public FileDiscardAction(SqlPanel aClient)
   {

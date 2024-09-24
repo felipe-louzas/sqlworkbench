@@ -154,6 +154,7 @@ public class EditorPanel
 
   private final List<FilenameChangeListener> filenameChangeListeners = new ArrayList<>();
   private WbFile currentFile;
+  private boolean isNewFile;
   private boolean saveInProgress;
   private boolean loadInProgress;
   private long fileModifiedTime;
@@ -359,10 +360,25 @@ public class EditorPanel
 
       long currentFileTime = currentFile.lastModified();
       int graceTime = Settings.getInstance().getIntProperty("workbench.gui.editor.reload.check.mindiff", 2000);
+      String fname = getCurrentFileName();
 
-      if (Math.abs(currentFileTime - fileModifiedTime) > graceTime)
+      if (!currentFile.exists())
       {
-        String fname = getCurrentFileName();
+        if (!isNewFile)
+        {
+          boolean keep = WbSwingUtilities.getYesNo(this, ResourceMgr.getFormattedString("MsgFileGone", fname));
+          if (keep)
+          {
+            isNewFile = true;
+          }
+          else
+          {
+            closeFile(true);
+          }
+        }
+      }
+      else if (Math.abs(currentFileTime - fileModifiedTime) > graceTime)
+      {
         FileReloadType reloadType = GuiSettings.getReloadType();
 
         if (reloadType != FileReloadType.none)
@@ -610,6 +626,7 @@ public class EditorPanel
   {
     if (this.currentFile == null) return false;
     this.currentFile = null;
+    this.isNewFile = false;
     if (clearText)
     {
       this.setCaretPosition(0);
@@ -678,7 +695,7 @@ public class EditorPanel
   private boolean reloadCurrentFile()
   {
     if (!this.hasFileLoaded()) return false;
-
+    isNewFile = false;
     if (this.isModified())
     {
       String msg = ResourceMgr.getString("MsgConfirmUnsavedReload");
@@ -858,6 +875,7 @@ public class EditorPanel
         currentFile = new WbFile(toLoad);
         fileEncoding = encoding;
         result = true;
+        isNewFile = false;
         fireFilenameChanged(toLoad.getAbsolutePath());
       }
       checkFileActions();
@@ -1035,6 +1053,7 @@ public class EditorPanel
         currentFile = new WbFile(aFile);
         fileEncoding = encoding;
         fileModifiedTime = currentFile.lastModified();
+        isNewFile = false;
         resetModified();
       }
     }
