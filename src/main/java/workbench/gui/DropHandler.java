@@ -43,7 +43,7 @@ import workbench.util.WbFile;
  *
  * @author Thomas Kellerer
  */
-class DropHandler
+public class DropHandler
   implements DropTargetListener
 {
   private final MainWindow client;
@@ -126,6 +126,11 @@ class DropHandler
 
   private void openFiles(final List fileList)
   {
+    openFiles(client, fileList);
+  }
+
+  public static void openFiles(MainWindow parent, final List fileList)
+  {
     WbSwingUtilities.invokeLater(() ->
     {
       int count = fileList.size();
@@ -134,7 +139,7 @@ class DropHandler
       {
         File file = (File)fileList.get(i);
         boolean doSelect = (i == count - 1);
-        SqlPanel newTab = (SqlPanel)client.addTab(doSelect, doSelect, true, true);
+        SqlPanel newTab = (SqlPanel)parent.addTab(doSelect, doSelect, true, true);
         newTab.readFile(file.getAbsolutePath(), null);
       }
     });

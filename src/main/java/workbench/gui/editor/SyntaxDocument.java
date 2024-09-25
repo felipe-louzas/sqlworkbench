@@ -25,24 +25,24 @@ public class SyntaxDocument
   extends PlainDocument
   implements UndoableEditListener
 {
-  private UndoManager undoManager = new UndoManager();
-  protected TokenMarker tokenMarker;
+  private final UndoManager undoManager = new UndoManager();
+  private TokenMarker tokenMarker;
   private WbCompoundEdit undoItem = new WbCompoundEdit();
   private boolean undoSuspended;
   private int maxLineLength;
-  private int maxCompoundEditDelay = Settings.getInstance().getIntProperty("workbench.gui.editor.compoundedit.delay", 150);
+  private final int maxCompoundEditDelay = Settings.getInstance().getIntProperty("workbench.gui.editor.compoundedit.delay", 150);
 
   public SyntaxDocument()
   {
     super();
-    this.addUndoableEditListener(this);
+    this.initUndo();
     this.initDefaultProperties();
   }
 
   public SyntaxDocument(AbstractDocument.Content aContent)
   {
     super(aContent);
-    this.addUndoableEditListener(this);
+    this.initUndo();
     this.initDefaultProperties();
   }
 
@@ -52,10 +52,23 @@ public class SyntaxDocument
     return evt;
   }
 
+  public void setUnlimitedUndo()
+  {
+    clearUndoBuffer();
+    this.undoManager.setLimit(-1);
+  }
+
+  private void initUndo()
+  {
+    int limit = Settings.getInstance().getIntProperty("workbench.gui.editor.undo.size", 100);
+    this.undoManager.setLimit(limit);
+    this.addUndoableEditListener(this);
+  }
+
   protected final void initDefaultProperties()
   {
     this.putProperty("filterNewlines", Boolean.FALSE);
-    this.putProperty(PlainDocument.tabSizeAttribute,Integer.valueOf(Settings.getInstance().getEditorTabWidth()));
+    this.putProperty(PlainDocument.tabSizeAttribute, Settings.getInstance().getEditorTabWidth());
   }
   /**
    * Returns the token marker that is to be used to split lines
@@ -115,6 +128,16 @@ public class SyntaxDocument
   public void resumeUndo()
   {
     this.undoSuspended = false;
+  }
+
+  public boolean canRedo()
+  {
+    return undoManager.canRedo();
+  }
+
+  public boolean canUndo()
+  {
+    return undoManager.canUndo();
   }
 
   public void clearUndoBuffer()

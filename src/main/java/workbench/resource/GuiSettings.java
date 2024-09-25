@@ -356,6 +356,16 @@ public class GuiSettings
     Settings.getInstance().setProperty(PROPERTY_HILITE_ERROR_LINE, flag);
   }
 
+  public static void setAlwaysOpenDroppedFilesInNewTab(boolean flag)
+  {
+    Settings.getInstance().setProperty("workbench.gui.editor.drop.newtab", flag);
+  }
+
+  public static boolean getAlwaysOpenDroppedFilesInNewTab()
+  {
+    return Settings.getInstance().getBoolProperty("workbench.gui.editor.drop.newtab", true);
+  }
+
   public static boolean getDisableEditorDuringExecution()
   {
     return Settings.getInstance().getBoolProperty("workbench.gui.editor.exec.disable", true);

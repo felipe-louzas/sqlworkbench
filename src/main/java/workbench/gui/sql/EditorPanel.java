@@ -22,7 +22,6 @@
 package workbench.gui.sql;
 
 import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
@@ -68,6 +67,7 @@ import workbench.db.DBID;
 import workbench.db.QuoteHandler;
 import workbench.db.WbConnection;
 
+import workbench.gui.DropHandler;
 import workbench.gui.MainWindow;
 import workbench.gui.ModifiedFileStrategy;
 import workbench.gui.WbSwingUtilities;
@@ -84,11 +84,9 @@ import workbench.gui.actions.FormatSqlAction;
 import workbench.gui.actions.JumpToLineAction;
 import workbench.gui.actions.MatchBracketAction;
 import workbench.gui.actions.OpenFileAction;
-import workbench.gui.actions.RedoAction;
 import workbench.gui.actions.ReplaceAction;
 import workbench.gui.actions.ToggleCommentAction;
 import workbench.gui.actions.UnCommentAction;
-import workbench.gui.actions.UndoAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.components.EncodingDropDown;
 import workbench.gui.components.ExtensionFileFilter;
@@ -135,8 +133,6 @@ public class EditorPanel
   private FormatSqlAction formatSql;
   private final SearchAndReplace replacer;
 
-  protected UndoAction undo;
-  protected RedoAction redo;
   protected OpenFileAction fileOpen;
   protected FileSaveAsAction fileSaveAs;
 
@@ -224,11 +220,6 @@ public class EditorPanel
     this.addKeyBinding(this.toggleCommentAction);
     this.addKeyBinding(this.commentAction);
     this.addKeyBinding(this.unCommentAction);
-
-    this.undo = new UndoAction(this);
-    this.redo = new RedoAction(this);
-    this.addKeyBinding(undo);
-    this.addKeyBinding(redo);
 
     Settings.getInstance().addFontChangedListener(this);
     Settings.getInstance().addPropertyChangeListener(this, Settings.PROPERTY_EDITOR_ELECTRIC_SCROLL);
@@ -435,9 +426,6 @@ public class EditorPanel
   {
     return this.columnSelection;
   }
-
-  public UndoAction getUndoAction() { return this.undo; }
-  public RedoAction getRedoAction() { return this.redo; }
 
   public final JumpToLineAction getJumpToLineAction()
   {
@@ -835,6 +823,7 @@ public class EditorPanel
       // too many re-allocations of the internal buffer
       GapContent  content = new GapContent((int)toLoad.length() + 1500);
       doc = new SyntaxDocument(content);
+      doc.setUnlimitedUndo();
       doc.suspendUndo();
 
       int pos = 0;
@@ -1145,29 +1134,26 @@ public class EditorPanel
       {
         evt.acceptDrop(DnDConstants.ACTION_COPY);
         java.util.List fileList = (java.util.List)tr.getTransferData(DataFlavor.javaFileListFlavor);
-        if (fileList != null && fileList.size() == 1)
+        if (CollectionUtil.isNonEmpty(fileList))
         {
-          File file = (File)fileList.get(0);
-          if (this.canCloseFile() != YesNoCancel.cancel)
+          if (fileList.size() > 1 || GuiSettings.getAlwaysOpenDroppedFilesInNewTab())
           {
-            this.readFile(file);
             evt.getDropTargetContext().dropComplete(true);
+            DropHandler.openFiles(getMainWindow(), fileList);
           }
           else
           {
-            evt.getDropTargetContext().dropComplete(false);
+            File file = (File)fileList.get(0);
+            if (this.canCloseFile() != YesNoCancel.cancel)
+            {
+              evt.getDropTargetContext().dropComplete(true);
+              this.readFile(file);
+            }
+            else
+            {
+              evt.getDropTargetContext().dropComplete(false);
+            }
           }
-        }
-        else
-        {
-          evt.getDropTargetContext().dropComplete(false);
-          final Window w = SwingUtilities.getWindowAncestor(this);
-          EventQueue.invokeLater(() ->
-          {
-            w.toFront();
-            w.requestFocus();
-            WbSwingUtilities.showErrorMessageKey(w, "ErrNoMultipleDrop");
-          });
         }
       }
       else if (tr.isDataFlavorSupported(ObjectTreeTransferable.DATA_FLAVOR))

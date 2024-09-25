@@ -72,9 +72,11 @@ import workbench.resource.Settings;
 import workbench.db.QuoteHandler;
 
 import workbench.gui.WbSwingUtilities;
+import workbench.gui.actions.RedoAction;
 import workbench.gui.actions.ScrollDownAction;
 import workbench.gui.actions.ScrollUpAction;
 import workbench.gui.actions.SelectAllAction;
+import workbench.gui.actions.UndoAction;
 import workbench.gui.actions.WbAction;
 import workbench.gui.actions.clipboard.CopyAction;
 import workbench.gui.actions.clipboard.CutAction;
@@ -123,6 +125,9 @@ public class JEditTextArea
   implements MouseWheelListener, Undoable, ClipboardSupport, FocusListener, LineScroller, FontZoomProvider, PropertyChangeListener
 {
   protected boolean rightClickMovesCursor = false;
+
+  protected UndoAction undo;
+  protected RedoAction redo;
 
   private Color alternateSelectionColor;
   private Color errorColor = Settings.getInstance().getEditorErrorColor();
@@ -248,6 +253,14 @@ public class JEditTextArea
     caretVisible = false;
     caretBlinks = true;
 
+    this.undo = new UndoAction(this);
+    this.undo.setEnabled(false);
+    this.redo = new RedoAction(this);
+    this.undo.setEnabled(false);
+
+    this.addKeyBinding(undo);
+    this.addKeyBinding(redo);
+
     electricScroll = Settings.getInstance().getElectricScroll();
     this.setTabSize(Settings.getInstance().getEditorTabWidth());
     this.popup = new TextPopup(this);
@@ -361,6 +374,9 @@ public class JEditTextArea
   {
     return fontZoomer;
   }
+
+  public UndoAction getUndoAction() { return this.undo; }
+  public RedoAction getRedoAction() { return this.redo; }
 
   public Point getCursorLocation()
   {
@@ -1917,6 +1933,7 @@ public class JEditTextArea
   public void clearUndoBuffer()
   {
     this.document.clearUndoBuffer();
+    checkUndoRedoActions();
   }
 
   @Override
@@ -1929,6 +1946,11 @@ public class JEditTextArea
       this.setCaretPosition(pos);
       this.scrollToCaret();
     }
+    if (!document.canUndo())
+    {
+      resetModified();
+    }
+    checkUndoRedoActions();
   }
 
   @Override
@@ -1941,6 +1963,7 @@ public class JEditTextArea
       this.setCaretPosition(pos);
       this.scrollToCaret();
     }
+    checkUndoRedoActions();
   }
 
   public boolean currentSelectionIsTemporary()
@@ -2396,6 +2419,7 @@ public class JEditTextArea
     document.tokenizeLines();
     painter.invalidateLineRange(startLine, endLine);
     updateScrollBars();
+    checkUndoRedoActions();
   }
 
   public void insertText(String text)
@@ -2426,6 +2450,7 @@ public class JEditTextArea
     {
       document.endCompoundEdit();
     }
+    checkUndoRedoActions();
     startUpdateScrollbars();
   }
 
@@ -2925,7 +2950,14 @@ public class JEditTextArea
     {
       this.fireTextStatusChanged(true);
     }
+    checkUndoRedoActions();
     updateScrollBars();
+  }
+
+  private void checkUndoRedoActions()
+  {
+    this.undo.setEnabled(editable && document.canUndo());
+    this.redo.setEnabled(editable && document.canRedo());
   }
 
   private void invalidateLines(int changedLine)
