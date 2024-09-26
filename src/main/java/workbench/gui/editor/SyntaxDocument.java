@@ -2,7 +2,6 @@ package workbench.gui.editor;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
 import javax.swing.text.BadLocationException;
@@ -23,7 +22,6 @@ import workbench.resource.Settings;
  */
 public class SyntaxDocument
   extends PlainDocument
-  implements UndoableEditListener
 {
   private final UndoManager undoManager = new UndoManager();
   private TokenMarker tokenMarker;
@@ -62,7 +60,6 @@ public class SyntaxDocument
   {
     int limit = Settings.getInstance().getIntProperty("workbench.gui.editor.undo.size", 100);
     this.undoManager.setLimit(limit);
-    this.addUndoableEditListener(this);
   }
 
   protected final void initDefaultProperties()
@@ -265,8 +262,7 @@ public class SyntaxDocument
     return this.maxLineLength;
   }
 
-  @Override
-  public synchronized void undoableEditHappened(UndoableEditEvent e)
+  public void undoableEditHappened(UndoableEditEvent e)
   {
     if (undoSuspended) return;
     undoItem.addEdit(e.getEdit());

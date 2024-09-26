@@ -36,7 +36,7 @@ import workbench.resource.ResourceMgr;
 public class UndoAction
   extends WbAction
 {
-  private Undoable client;
+  private final Undoable client;
 
   public UndoAction(Undoable aClient)
   {

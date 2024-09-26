@@ -52,6 +52,8 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.PlainDocument;
@@ -122,7 +124,8 @@ import workbench.util.StringUtil;
  */
 public class JEditTextArea
   extends JComponent
-  implements MouseWheelListener, Undoable, ClipboardSupport, FocusListener, LineScroller, FontZoomProvider, PropertyChangeListener
+  implements MouseWheelListener, Undoable, ClipboardSupport, FocusListener, LineScroller, FontZoomProvider, PropertyChangeListener,
+             UndoableEditListener
 {
   protected boolean rightClickMovesCursor = false;
 
@@ -245,6 +248,11 @@ public class JEditTextArea
     this.addMouseWheelListener(this);
     addFocusListener(this);
 
+    this.undo = new UndoAction(this);
+    this.undo.setEnabled(false);
+    this.redo = new RedoAction(this);
+    this.undo.setEnabled(false);
+
     // Load the defaults
     this.inputHandler = new InputHandler(this);
     setDocument(new SyntaxDocument());
@@ -253,14 +261,8 @@ public class JEditTextArea
     caretVisible = false;
     caretBlinks = true;
 
-    this.undo = new UndoAction(this);
-    this.undo.setEnabled(false);
-    this.redo = new RedoAction(this);
-    this.undo.setEnabled(false);
-
     this.addKeyBinding(undo);
     this.addKeyBinding(redo);
-
     electricScroll = Settings.getInstance().getElectricScroll();
     this.setTabSize(Settings.getInstance().getEditorTabWidth());
     this.popup = new TextPopup(this);
@@ -1347,6 +1349,7 @@ public class JEditTextArea
     {
       this.document.removeDocumentListener(documentHandler);
       this.document.reset();
+      this.document.removeUndoableEditListener(this);
     }
   }
 
@@ -1361,6 +1364,7 @@ public class JEditTextArea
     clearCurrentDocument();
 
     document = newDocument;
+    document.clearUndoBuffer();
     document.tokenizeLines();
 
     setCaretPosition(0);
@@ -1375,6 +1379,7 @@ public class JEditTextArea
       }
 
       this.document.addDocumentListener(documentHandler);
+      this.document.addUndoableEditListener(this);
 
       EventQueue.invokeLater(() ->
       {
@@ -1384,6 +1389,13 @@ public class JEditTextArea
       });
 
     }
+  }
+
+  @Override
+  public void undoableEditHappened(UndoableEditEvent e)
+  {
+    document.undoableEditHappened(e);
+    this.undo.setEnabled(editable);
   }
 
   @Override
@@ -1624,8 +1636,7 @@ public class JEditTextArea
       document.endCompoundEdit();
       document.tokenizeLines();
     }
-
-    startUpdateScrollbars();
+        startUpdateScrollbars();
   }
 
   public boolean isReallyVisible()
@@ -1939,6 +1950,8 @@ public class JEditTextArea
   @Override
   public void undo()
   {
+    if (!this.editable) return;
+
     this.document.undo();
     int pos = this.document.getPositionOfLastChange();
     if (pos > -1)
@@ -1956,6 +1969,8 @@ public class JEditTextArea
   @Override
   public void redo()
   {
+    if (!this.editable) return;
+
     this.document.redo();
     int pos = this.document.getPositionOfLastChange();
     if (pos > -1)
@@ -2419,7 +2434,6 @@ public class JEditTextArea
     document.tokenizeLines();
     painter.invalidateLineRange(startLine, endLine);
     updateScrollBars();
-    checkUndoRedoActions();
   }
 
   public void insertText(String text)
@@ -2450,7 +2464,6 @@ public class JEditTextArea
     {
       document.endCompoundEdit();
     }
-    checkUndoRedoActions();
     startUpdateScrollbars();
   }
 
