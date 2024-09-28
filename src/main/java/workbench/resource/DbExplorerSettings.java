@@ -243,6 +243,11 @@ public class DbExplorerSettings
     return Settings.getInstance().getBoolProperty("workbench.dbexplorer.connection.always.separate", false);
   }
 
+  public static void setAlwaysUseSeparateConnForDbExpWindow(boolean flag)
+  {
+    Settings.getInstance().setProperty("workbench.dbexplorer.connection.always.separate", flag);
+  }
+
   public static String getDefaultExplorerObjectType()
   {
     return Settings.getInstance().getProperty("workbench.gui.dbobjects.TableListPanel.objecttype", null);
