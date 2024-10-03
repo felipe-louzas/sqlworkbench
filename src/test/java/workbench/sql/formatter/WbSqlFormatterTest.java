@@ -22,6 +22,7 @@
 package workbench.sql.formatter;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import workbench.WbTestCase;
 import workbench.resource.GeneratedIdentifierCase;
@@ -129,6 +130,28 @@ public class WbSqlFormatterTest
     f.setIdentifierCase(GeneratedIdentifierCase.lower);
     String formatted = f.getFormattedSql();
     System.out.println(formatted);
+  }
+
+  @Test
+  public void testCommentInsertColumns()
+  {
+    String sql = "insert into test (col1, col2) values (1,2)";
+    WbSqlFormatter f = new WbSqlFormatter(sql, 150, DBID.Postgres.getId());
+    f.setKeywordCase(GeneratedIdentifierCase.upper);
+    f.setIdentifierCase(GeneratedIdentifierCase.lower);
+    f.setColumnsPerInsert(1);
+    f.setAddColumnNameComment(true);
+    String formatted = f.getFormattedSql();
+//    System.out.println(formatted);
+    long count = Pattern.compile("(/\\* col1 \\*/)").matcher(formatted).results().count();
+    assertEquals(1, count);
+    f = new WbSqlFormatter(formatted, 150, DBID.Postgres.getId());
+    f.setColumnsPerInsert(1);
+    f.setAddColumnNameComment(true);
+    formatted = f.getFormattedSql();
+//    System.out.println(formatted);
+    count = Pattern.compile("(/\\* col1 \\*/)").matcher(formatted).results().count();
+    assertEquals(1, count);
   }
 
   @Test

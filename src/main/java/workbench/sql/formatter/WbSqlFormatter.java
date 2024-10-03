@@ -1626,14 +1626,19 @@ public class WbSqlFormatter
         {
           appendText(' ');
         }
+
         if (!collectNames && elementIndex < elementNames.size())
         {
-          if (commaAfterLineBreak && elementIndex == 0)
+          boolean lastWasComment = last != null && last.isComment() && last.getText().toLowerCase().contains(elementNames.get(elementIndex));
+          if (!lastWasComment)
           {
-            this.appendText(' ');
-            if (addSpaceAfterLineBreakComma) this.appendText(' ');
+            if (commaAfterLineBreak && elementIndex == 0)
+            {
+              this.appendText(' ');
+              if (addSpaceAfterLineBreakComma) this.appendText(' ');
+            }
+            this.appendText("/* " + elementNames.get(elementIndex) + " */ ");
           }
-          this.appendText("/* " + elementNames.get(elementIndex) + " */ ");
         }
         this.appendTokenText(t);
         if (collectNames)

@@ -159,6 +159,11 @@
 
   <target name="-make-jar" depends="prepare,compile">
 
+    <copy unless:set="is_windows"
+          quiet="true" overwrite="true"
+          file="../windows/workbench/gui/components/BorderLessWindowsTabbedPaneUI.class"
+          todir="${build}/workbench/gui/components/"/>
+
     <jar compress="true" level="9" jarfile="${distdir}/${jarfile}">
       <manifest>
         <attribute name="Main-Class" value="workbench.WbStarter"/>
