@@ -205,7 +205,7 @@
   </target>
 
   <!-- build a full release -->
-  <target name="release" depends="clean, compile, set-build-number, set-release-info, set-history-release-number, set-history-build-date, make-release-manual, -make-jar, release-src-zip, release-package, -make-sha1">
+  <target name="release" depends="clean, compile, set-build-number, set-release-info, set-history-release-number, set-history-build-date, make-release-manual, -make-jar, release-src-zip, mac-package, release-package, -make-sha1">
 
     <ant dir="..\website" inheritall="false" target="release"/>
 
@@ -229,7 +229,7 @@
   <target name="jar" depends="set-dev-prop, copy-resources, compile, get-dev-build, replace-build-number, -make-jar"/>
 
   <!-- build a development release -->
-  <target name="dev-release" depends="clean, compile, set-dev-build, set-history-build-date, make-dev-manual, -make-jar, release-package, release-src-zip, -make-sha1">
+  <target name="dev-release" depends="clean, compile, set-dev-build, set-history-build-date, make-dev-manual, -make-jar, release-package, mac-package, release-src-zip, -make-sha1">
     <tstamp>
       <format pattern="yyyy-MM-dd" property="today"/>
     </tstamp>
@@ -255,6 +255,54 @@
 
   <target name="website">
     <ant antfile="../website/build.xml" inheritall="false" target="release"/>
+  </target>
+
+  <target name="mac-package" depends="init,jar,copy-libs">
+
+    <mkdir dir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Java/ext"/>
+    <mkdir dir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Java/manual"/>
+    <mkdir dir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/MacOS"/>
+    <mkdir dir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Resources/en.lproj"/>
+    <mkdir dir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/PlugIns"/>
+
+    <copy file="${distdir}/sqlworkbench.jar" todir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Java"/>
+    <copy todir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Java/ext">
+      <fileset dir="${distdir}/libs" >
+        <include name="flatlaf.jar"/>
+        <include name="jsch.jar"/>
+      </fileset>
+    </copy>
+
+    <copy file="${scriptsrc}/mac/Localizable.strings" todir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Resources/en.lproj"/>
+    <copy file="${scriptsrc}/Workbench.icns" todir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Resources"/>
+    <copy file="${scriptsrc}/mac/Info.plist" todir="${distdir}/bundle/SQLWorkbenchJ.app/Contents"/>
+    <copy file="${scriptsrc}/mac/PkgInfo" todir="${distdir}/bundle/SQLWorkbenchJ.app/Contents"/>
+
+    <tar compression="gzip" destfile="${distdir}/Workbench-Build${build.number}-Mac.tgz">
+      <tarfileset dir="${distdir}/bundle">
+        <include name="**/*"/>
+        <exclude name="**/SQLWorkbenchJLauncher"/>
+      </tarfileset>
+      <tarfileset mode="755" dir="${scriptsrc}/mac" prefix="SQLWorkbenchJ.app/Contents/MacOS">
+        <include name="SQLWorkbenchJLauncher"/>
+      </tarfileset>
+    </tar>
+
+    <copy todir="${distdir}/bundle/SQLWorkbenchJ.app/Contents/Java/ext">
+      <fileset dir="${distdir}/libs" >
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
+    <tar compression="gzip" destfile="${distdir}/Workbench-Build${build.number}-Mac-with-optional-libs.tgz">
+      <tarfileset dir="${distdir}/bundle">
+        <include name="**/*"/>
+        <exclude name="**/SQLWorkbenchJLauncher"/>
+      </tarfileset>
+      <tarfileset mode="755" dir="${scriptsrc}/mac" prefix="SQLWorkbenchJ.app/Contents/MacOS">
+        <include name="SQLWorkbenchJLauncher"/>
+      </tarfileset>
+    </tar>
+
   </target>
 
   <target name="release-package" depends="fixshellscripts, copy-libs">

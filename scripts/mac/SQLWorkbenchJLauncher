@@ -1,0 +1,25 @@
+#!/bin/sh
+
+cd "$(dirname "$0")"/../Java
+
+# use Java available on the PATH by default
+JAVACMD="java"
+
+if [ -x "./jre/bin/java" ]
+then
+  # a local JRE exists, use that
+  JAVACMD="./jre/bin/java"
+elif [ -x "$WORKBENCH_JDK/bin/java" ] && [ -n "${WORKBENCH_JDK}" ]
+then
+  JAVACMD="$WORKBENCH_JDK/bin/java"
+fi
+
+cp="./sqlworkbench.jar:./ext/*"
+
+OPTS="--add-opens java.desktop/com.apple.laf=ALL-UNNAMED -Dapple.laf.useScreenMenuBar=true -Dapple.awt.showGrowBoxtrue=true"
+OPTS="$OPTS -Xdock:name=SQLWorkbench/J -Dvisualvm.display.name=SQLWorkbench/J"
+
+# To get a more "native" look and feel try
+#   OPTS="$OPTS -Dapple.awt.brushMetalLook=true"
+
+exec $JAVACMD $OPTS -cp "$cp" workbench.WbStarter "$@"
