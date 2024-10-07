@@ -21,6 +21,7 @@
  */
 package workbench.gui.components;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -39,6 +40,7 @@ import javax.swing.table.TableColumn;
 import workbench.log.CallerInfo;
 import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
+import workbench.resource.Settings;
 
 import workbench.gui.renderer.ToolTipRenderer;
 
@@ -78,15 +80,32 @@ public class RowHeaderRenderer
     }
 
     JTableHeader header = table.getTableHeader();
-    setFont(header.getFont());
+    boolean boldFont = Settings.getInstance().getBoolProperty("workbench.gui.rowheader.boldfont", false);
+    boolean italicFont = Settings.getInstance().getBoolProperty("workbench.gui.rowheader.italicfont", false);
+    Font f = header.getFont();
+    if (f != null)
+    {
+      if (boldFont)
+      {
+        f = f.deriveFont(Font.BOLD);
+      }
+      if (italicFont)
+      {
+        f = f.deriveFont(Font.ITALIC);
+      }
+    }
+    setFont(f);
     setOpaque(true);
     setHorizontalAlignment(SwingConstants.RIGHT);
     setVerticalAlignment(SwingConstants.TOP);
     setVerticalTextPosition(SwingConstants.BOTTOM);
-    setForeground(header.getForeground());
-    setBackground(header.getBackground());
+    Color fg = Settings.getInstance().getColor("workbench.gui.rowheader.foreground", header.getForeground());
+    Color bg = Settings.getInstance().getColor("workbench.gui.rowheader.background", header.getBackground());
+    setForeground(fg);
+    setBackground(bg);
 
     rightMargin = GuiSettings.getRowNumberMargin();
+    insets.right += rightMargin;
     calculateWidth();
   }
 
