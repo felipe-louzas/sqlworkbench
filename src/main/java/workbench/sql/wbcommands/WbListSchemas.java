@@ -35,6 +35,7 @@ import workbench.storage.DataStore;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
@@ -61,7 +62,7 @@ public class WbListSchemas
   }
 
   @Override
-  public StatementRunnerResult execute(String aSql)
+  public StatementRunnerResult execute(String sql)
     throws SQLException
   {
     StatementRunnerResult result = new StatementRunnerResult();
@@ -89,6 +90,7 @@ public class WbListSchemas
       }
     }
     ds.setResultName(ResourceMgr.getString("TxtSchemaList"));
+    ResultNameAnnotation.setResultName(ds, sql);
     ds.setGeneratingSql(VERB);
     ds.resetStatus();
     result.addDataStore(ds);

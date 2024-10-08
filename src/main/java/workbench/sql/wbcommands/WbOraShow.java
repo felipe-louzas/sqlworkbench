@@ -91,7 +91,7 @@ public class WbOraShow
     "FUNCTION", "PROCEDURE", "PACKAGE", "PACKAGE BODY", "TRIGGER", "VIEW", "TYPE", "TYPE BODY", "DIMENSION",
     "JAVA SOURCE", "JAVA CLASS");
 
-  private Map<String, String> propertyUnits = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
+  private final Map<String, String> propertyUnits = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
 
   public WbOraShow()
   {

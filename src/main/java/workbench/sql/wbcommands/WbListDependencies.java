@@ -37,6 +37,7 @@ import workbench.db.dependency.DependencyReaderFactory;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -184,6 +185,7 @@ public class WbListDependencies
       {
         ObjectListDataStore ds = currentConnection.getMetadata().createObjectListDataStore();
         ds.setResultName(ResourceMgr.getFormattedString(titleKey, toUse.getObjectExpression(currentConnection)));
+        ResultNameAnnotation.setResultName(ds, userSql);
         ds.addObjects(objects);
         ds.resetStatus();
         result.addDataStore(ds);

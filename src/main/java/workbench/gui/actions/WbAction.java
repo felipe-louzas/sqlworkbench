@@ -399,8 +399,8 @@ public class WbAction
     {
       char mnemonic = text.charAt(pos + 1);
       text = text.substring(0, pos) + text.substring(pos + 1);
-      Integer keycode = Integer.valueOf((int)mnemonic);
-      Integer index = Integer.valueOf(pos);
+      Integer keycode = (int)mnemonic;
+      Integer index = pos;
       this.putValue(Action.MNEMONIC_KEY, keycode);
       this.putValue(WbAction.MNEMONIC_INDEX, index);
     }
@@ -494,7 +494,7 @@ public class WbAction
     {
       try
       {
-        item.setDisplayedMnemonicIndex(index.intValue());
+        item.setDisplayedMnemonicIndex(index);
       }
       catch (Exception e)
       {
@@ -516,11 +516,7 @@ public class WbAction
   public boolean getCreateMenuSeparator()
   {
     Boolean flag = (Boolean)getValue(WbAction.MENU_SEPARATOR);
-    if (flag == null)
-    {
-      return false;
-    }
-    return flag.booleanValue();
+    return flag == null ? false : flag;
   }
 
   public void setCreateMenuSeparator(boolean flag)

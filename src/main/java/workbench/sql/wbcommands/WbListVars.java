@@ -36,6 +36,7 @@ import workbench.storage.filter.RegExComparator;
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
 import workbench.sql.VariablePool;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.StringUtil;
@@ -95,6 +96,7 @@ public class WbListVars extends SqlCommand
 
     DataStore ds = VariablePool.getInstance(variablePoolID).getVariablesDataStore();
     ds.setResultName(ResourceMgr.getString("TxtVariables"));
+    ResultNameAnnotation.setResultName(ds, aSql);
 
     ColumnExpression filter = null;
     if (cmdLine.hasArguments())

@@ -34,6 +34,7 @@ import workbench.storage.DataStore;
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementHistory;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 import workbench.sql.annotations.ScrollAnnotation;
 
 import workbench.util.SqlUtil;
@@ -99,12 +100,13 @@ public class WbHistory
     for (String entry : history)
     {
       int row = ds.addRow();
-      ds.setValue(row, 0, Integer.valueOf(index));
+      ds.setValue(row, 0, index);
       ds.setValue(row, 1, getDisplayString(entry));
       index ++;
     }
     ds.resetStatus();
     ds.setResultName(VERB);
+    ResultNameAnnotation.setResultName(ds, sql);
     ds.setGeneratingSql(ScrollAnnotation.getScrollToEndAnnotation() + "\n" + VERB);
     result.addDataStore(ds);
     return result;

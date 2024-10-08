@@ -33,6 +33,7 @@ import workbench.storage.SortDefinition;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -90,6 +91,7 @@ public class WbList
     if (resultList != null)
     {
       resultList.setResultName(ResourceMgr.getString("TxtObjList"));
+      ResultNameAnnotation.setResultName(resultList, sql);
       resultList.setGeneratingSql(sql);
       resultList.sort(SortDefinition.getTableListSort());
       result.addDataStore(resultList);

@@ -225,12 +225,7 @@ public class OracleStatementHook
 
     if (plan != null)
     {
-      ResultNameAnnotation parser = new ResultNameAnnotation();
-      String title = parser.getResultName(sql);
-      if (StringUtil.isNotBlank(title))
-      {
-        plan.setResultName(title);
-      }
+      ResultNameAnnotation.setResultName(plan, sql);
       result.addDataStore(plan);
     }
   }

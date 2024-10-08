@@ -36,6 +36,7 @@ import workbench.storage.DataStore;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -111,6 +112,7 @@ public class WbListCatalogs
     }
 
     ConsoleSettings.getInstance().setNextRowDisplay(RowDisplay.SingleLine);
+    ResultNameAnnotation.setResultName(ds, sql);
 
     ds.resetStatus();
     result.addDataStore(ds);

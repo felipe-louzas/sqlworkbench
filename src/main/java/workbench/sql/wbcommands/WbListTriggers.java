@@ -34,6 +34,7 @@ import workbench.storage.DataStore;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -67,12 +68,12 @@ public class WbListTriggers
   }
 
   @Override
-  public StatementRunnerResult execute(String aSql)
+  public StatementRunnerResult execute(String sql)
     throws SQLException
   {
     StatementRunnerResult result = new StatementRunnerResult();
 
-    String options = getCommandLine(aSql);
+    String options = getCommandLine(sql);
 
     cmdLine.parse(options);
     if (displayHelp(result))
@@ -89,6 +90,7 @@ public class WbListTriggers
     DataStore ds = reader.getTriggers(catalog, schema);
 
     ds.setResultName(ResourceMgr.getString("TxtDbExplorerTriggers"));
+    ResultNameAnnotation.setResultName(ds, sql);
     ds.setGeneratingSql(VERB + " " + options);
     result.addDataStore(ds);
     return result;

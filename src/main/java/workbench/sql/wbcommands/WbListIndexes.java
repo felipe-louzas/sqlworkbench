@@ -36,6 +36,7 @@ import workbench.storage.DataStore;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -73,12 +74,12 @@ public class WbListIndexes
   }
 
   @Override
-  public StatementRunnerResult execute(String aSql)
+  public StatementRunnerResult execute(String sql)
     throws SQLException
   {
     StatementRunnerResult result = new StatementRunnerResult();
 
-    String options = getCommandLine(aSql);
+    String options = getCommandLine(sql);
     cmdLine.parse(options);
     if (displayHelp(result))
     {
@@ -143,6 +144,7 @@ public class WbListIndexes
 
     DataStore ds = reader.fillDataStore(indexes, true);
     ds.setResultName(ResourceMgr.getString("TxtDbExplorerIndexes"));
+    ResultNameAnnotation.setResultName(ds, sql);
     result.addDataStore(ds);
 
     return result;

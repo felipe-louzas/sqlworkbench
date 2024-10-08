@@ -38,6 +38,7 @@ import workbench.storage.ResultInfo;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -81,13 +82,13 @@ public class WbListProcedures
   }
 
   @Override
-  public StatementRunnerResult execute(String aSql)
+  public StatementRunnerResult execute(String sql)
     throws SQLException
   {
     StatementRunnerResult result = new StatementRunnerResult();
     ConsoleSettings.getInstance().setNextRowDisplay(RowDisplay.SingleLine);
 
-    String args = getCommandLine(aSql);
+    String args = getCommandLine(sql);
 
     cmdLine.parse(args);
     if (displayHelp(result))
@@ -142,7 +143,8 @@ public class WbListProcedures
     ResultInfo info = ds.getResultInfo();
     info.getColumn(ProcedureReader.COLUMN_IDX_PROC_COLUMNS_RESULT_TYPE).setDataType(Types.VARCHAR);
     ds.setResultName(ResourceMgr.getString("TxtDbExplorerProcs"));
-    ds.setGeneratingSql(aSql);
+    ResultNameAnnotation.setResultName(ds, sql);
+    ds.setGeneratingSql(sql);
     ds.resetStatus();
 
     result.addDataStore(ds);

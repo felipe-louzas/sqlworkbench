@@ -49,6 +49,7 @@ import workbench.storage.SortDefinition;
 
 import workbench.sql.SqlCommand;
 import workbench.sql.StatementRunnerResult;
+import workbench.sql.annotations.ResultNameAnnotation;
 
 import workbench.util.ArgumentParser;
 import workbench.util.ArgumentType;
@@ -281,7 +282,7 @@ public class WbRowCount
         if (includeEmpty || rowCount > 0)
         {
           int dsRow = rowCounts.addRow();
-          rowCounts.setValue(dsRow, 0, Long.valueOf(rowCount));
+          rowCounts.setValue(dsRow, 0, rowCount);
           rowCounts.setValue(dsRow, 1, table.getTableName());
           if (includeType) rowCounts.setValue(dsRow, typeIndex, table.getObjectType());
           if (includeCatalog) rowCounts.setValue(dsRow, catalogIndex, table.getCatalog());
@@ -306,6 +307,7 @@ public class WbRowCount
       rowCounts.sort(sortDef);
     }
     rowCounts.setResultName(VERB);
+    ResultNameAnnotation.setResultName(rowCounts, sql);
     rowCounts.setGeneratingSql(sql);
     rowCounts.resetStatus();
     result.addDataStore(rowCounts);

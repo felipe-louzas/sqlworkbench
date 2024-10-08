@@ -21,6 +21,9 @@
  */
 package workbench.sql.annotations;
 
+import workbench.storage.DataStore;
+
+import workbench.util.StringUtil;
 /**
  * A class to extract a "result name" from a statement's comment, similar
  * to Javadoc tags.
@@ -42,4 +45,15 @@ public class ResultNameAnnotation
     return getAnnotationValue(sql);
   }
 
+
+  public static void setResultName(DataStore result, String sql)
+  {
+    if (result == null || sql == null) return;
+    ResultNameAnnotation parser = new ResultNameAnnotation();
+    String title = parser.getResultName(sql);
+    if (StringUtil.isNotBlank(title))
+    {
+      result.setResultName(title);
+    }
+  }
 }
