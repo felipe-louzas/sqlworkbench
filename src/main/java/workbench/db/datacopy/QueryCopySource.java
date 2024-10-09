@@ -65,16 +65,17 @@ public class QueryCopySource
   private DataReceiver receiver;
   private volatile boolean keepRunning = true;
   private boolean regularStop = false;
-  private WbConnection sourceConnection;
+  private final WbConnection sourceConnection;
   private Statement retrieveStatement;
-  private String retrieveSql;
+  private final String retrieveSql;
   private boolean abortOnError;
-  private boolean hasErrors = false;
-  private boolean hasWarnings = false;
+  private final boolean hasErrors = false;
+  private final boolean hasWarnings = false;
   private RowData currentRow;
-  private ResultBufferingController resultBuffer;
+  private final ResultBufferingController resultBuffer;
   private boolean trimCharData;
   private int maxRows;
+  private boolean wasCancelled;
 
   public QueryCopySource(WbConnection source, String sql)
   {
@@ -130,6 +131,8 @@ public class QueryCopySource
     ResultSet rs = null;
     this.keepRunning = true;
     this.regularStop = false;
+    this.wasCancelled = false;
+
     Savepoint sp = null;
     RowDataReader reader = null;
 
@@ -216,16 +219,24 @@ public class QueryCopySource
   }
 
   @Override
+  public boolean wasCancelled()
+  {
+    return wasCancelled;
+  }
+
+  @Override
   public void stop()
   {
     this.regularStop = true;
     cancel();
+    this.wasCancelled = false;
   }
 
   @Override
   public void cancel()
   {
     this.keepRunning = false;
+    this.wasCancelled = true;
     try
     {
       this.retrieveStatement.cancel();

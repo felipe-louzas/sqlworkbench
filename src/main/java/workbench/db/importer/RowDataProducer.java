@@ -47,6 +47,7 @@ public interface RowDataProducer
    * This is usually called when the user cancels the running SQL statement.
    */
   void cancel();
+  boolean wasCancelled();
 
   /**
    * Stop processing the current input file.

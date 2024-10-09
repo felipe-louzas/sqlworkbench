@@ -418,6 +418,16 @@ public class TextFileParser
     return currentLine;
   }
 
+  @Override
+  public void cancel()
+  {
+    super.cancel();
+    if (this.streamImporter != null)
+    {
+      this.streamImporter.cancel();
+    }
+  }
+
   public void setStreamImporter(StreamImporter importer)
   {
     this.streamImporter = importer;

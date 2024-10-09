@@ -64,7 +64,7 @@ public class PgCopyManager
   private Object copyManager;
   private Method copyIn;
   private final boolean useDefaultClassloader;
-  boolean is90;
+  private final boolean is90;
 
   public PgCopyManager(WbConnection conn)
   {
@@ -73,6 +73,22 @@ public class PgCopyManager
     // During unit testing the classloader in the ConnectionMgr is not initialized because all drivers are alread on the classpath.
     // Therefor we need to load the CopyManager class from the default classpath
     useDefaultClassloader = WbManager.isTest();
+  }
+
+  @Override
+  public void cancel()
+  {
+    if (this.data != null)
+    {
+      try
+      {
+        data.close();
+      }
+      catch (IOException io)
+      {
+        // ignore
+      }
+    }
   }
 
   public boolean isSupported()

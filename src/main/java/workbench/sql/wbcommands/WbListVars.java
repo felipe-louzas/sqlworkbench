@@ -95,9 +95,7 @@ public class WbListVars extends SqlCommand
     }
 
     DataStore ds = VariablePool.getInstance(variablePoolID).getVariablesDataStore();
-    ds.setResultName(ResourceMgr.getString("TxtVariables"));
-    ResultNameAnnotation.setResultName(ds, aSql);
-
+    String defaultName = ResourceMgr.getString("TxtVariables");
     ColumnExpression filter = null;
     if (cmdLine.hasArguments())
     {
@@ -105,12 +103,14 @@ public class WbListVars extends SqlCommand
       if (StringUtil.isNotBlank(regex))
       {
         filter = new ColumnExpression(ds.getColumnName(0), new RegExComparator(), regex);
+        defaultName += " - " + regex;
       }
     }
     else if (StringUtil.isNotBlank(args))
     {
       QuickFilterExpressionBuilder builder = new QuickFilterExpressionBuilder();
       filter = builder.buildExpression(args.trim(), ds.getColumnName(0), true);
+      defaultName += "  -" + filter.getFilterValue();
     }
 
     if (filter != null)
@@ -120,6 +120,8 @@ public class WbListVars extends SqlCommand
     }
     ds.resetStatus();
 
+    ds.setResultName(defaultName);
+    ResultNameAnnotation.setResultName(ds, aSql);
     CommandTester ct = new CommandTester();
     ds.setGeneratingSql(ct.formatVerb(getVerb()) + args);
     result.addDataStore(ds);

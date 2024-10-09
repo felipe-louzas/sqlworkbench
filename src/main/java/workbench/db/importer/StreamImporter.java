@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.sql.SQLException;
 import java.util.List;
+
 import workbench.db.ColumnIdentifier;
 import workbench.db.TableIdentifier;
 
@@ -52,5 +53,5 @@ public interface StreamImporter
 
   long processStreamData()
     throws SQLException, IOException;
-
+  void cancel();
 }

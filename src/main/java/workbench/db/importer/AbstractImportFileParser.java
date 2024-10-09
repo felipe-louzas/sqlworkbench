@@ -501,6 +501,12 @@ public abstract class AbstractImportFileParser
   }
 
   @Override
+  public boolean wasCancelled()
+  {
+    return cancelImport;
+  }
+
+  @Override
   public void cancel()
   {
     LogMgr.logDebug(new CallerInfo(){}, "Cancelling import");

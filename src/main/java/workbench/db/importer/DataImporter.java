@@ -810,15 +810,18 @@ public class DataImporter
     }
     catch (Exception e)
     {
-      this.hasErrors = true;
       this.messages.append(this.source.getMessages());
-      if (parser != null)
+      if (!source.wasCancelled())
       {
-        String msg = ResourceMgr.getFormattedString("ErrFileNotImported", parser.getSourceFilename());
-        messages.append(msg);
-        messages.appendNewLine();
+        this.hasErrors = true;
+        if (parser != null)
+        {
+          String msg = ResourceMgr.getFormattedString("ErrFileNotImported", parser.getSourceFilename());
+          messages.append(msg);
+          messages.appendNewLine();
+        }
+        throw e;
       }
-      throw e;
     }
   }
 
