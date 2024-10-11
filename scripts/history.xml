@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2024-09-03">
+    <entry dev-build="3" type="enh">WbVarList (and other SQL Workbench/J commands) now honors the @WbResult annotation.</entry>
     <entry dev-build="3" type="enh">Improved handling of drag &amp; drop of files into the editor.</entry>
     <entry dev-build="3" type="enh">Table level constraints are now shown in the DbTree.</entry>
     <entry dev-build="2" type="enh">It's now possible to horizontally scroll the editor with the mouse wheel by holding down the shift key.</entry>

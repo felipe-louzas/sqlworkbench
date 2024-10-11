@@ -64,6 +64,22 @@ public class PostgresColumnEnhancerTest
   }
 
   @Test
+  public void testCaseSensitiveColumnNames()
+    throws Exception
+  {
+    WbConnection conn = PostgresTestUtil.getPostgresConnection();
+    assertNotNull(conn);
+    String sql =
+      "create table \"SomeTable\" (\"SomeTableID\" integer not null generated always as identity);\n"+
+      "commit;\n";
+    TestUtil.executeScript(conn, sql);
+    TableDefinition tbl = conn.getMetadata().getTableDefinition(new TableIdentifier("\"SomeTable\""));
+    assertNotNull(tbl);
+    assertTrue(tbl.getColumns().get(0).isIdentityColumn());
+    assertTrue(tbl.getColumns().get(0).getGenerationExpression().contains("ALWAYS AS IDENTITY"));
+  }
+
+  @Test
   public void testUpdateColumnDefinition()
     throws Exception
   {

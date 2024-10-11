@@ -24,6 +24,8 @@ package workbench.db;
 import java.util.Collections;
 import java.util.List;
 
+import workbench.util.CollectionUtil;
+
 /**
  *
  * @author Thomas Kellerer
@@ -63,12 +65,8 @@ public class TableDefinition
 
   public ColumnIdentifier findColumn(String colName)
   {
-    if (getColumnCount() == 0) return null;
-    for (ColumnIdentifier col : columns)
-    {
-      if (col.getColumnName().equalsIgnoreCase(colName)) return col;
-    }
-    return null;
+    if (CollectionUtil.isEmpty(columns)) return null;
+    return ColumnIdentifier.findColumnInList(columns, colName);
   }
 
   @Override
