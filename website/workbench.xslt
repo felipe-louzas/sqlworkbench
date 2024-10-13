@@ -388,19 +388,20 @@
   </xsl:template>
 
   <xsl:template match="no-nazis">
-    <div style="margin-bottom:1em;line-height:110%;border:2px;border-style:solid;border-color:red;padding:0.5em">
+    <div style="margin-bottom:1em;line-height:120%;border:2px;border-style:solid;border-color:red;padding:0.5em">
     If you are a member or voter of the following political parties or agree with their despicable and inhumane political views,
     <br/>you are <b>NOT WELCOME</b> to use my software.
-    <div class="row" style="font-size:85%;margin-bottom:0">
+    <div class="row">
         <div class="column" >
           <ul class="compact" >
             <li>AfD (Germany)</li>
+            <li>CDU aka "AfD mit Substanz" (Germany)</li>
             <li>Werteunion (Germany)</li>
             <li>Die Heimat (Germany)</li>
             <li>Die Basis (Germany)</li>
-            <li>Freie Wähler (Germany, Bavaria)</li>
+            <li>Freie Wähler (Germany)</li>
             <li>BündnisDeutschland (Germany)</li>
-            <li>CDU aka "AfD mit Substanz" (Germany)</li>
+            <li>Bündnis Sahra Wagenknecht (Germany)</li>
             <li>CSU (Germany, Bavaria)</li>
             <li>FPÖ (Austria)</li>
             <li>Prawo i Sprawiedliwość (Poland)</li>
@@ -414,6 +415,7 @@
             <li>Fratelli d’Italia (Italy)</li>
             <li>Lega Nord (Italy)</li>
             <li>Rassemblement National (France)</li>
+            <li>Reform UK (Great Britain)</li>
             <li>Party for Freedom (Netherlands)</li>
             <li>ITN (Bulgaria)</li>
             <li>Vazrazhdane (Bulgaria)</li>
@@ -423,6 +425,7 @@
           </ul>
         </div>
     </div>
+    <div style="font-size:85%;margin-top:0.5em">(Das wird man ja wohl noch sagen dürfen)</div>
     </div>
   </xsl:template>
   <xsl:template match="build-number">
@@ -442,6 +445,12 @@
         </li>
         <li>
           <a href="Workbench-Build{$devBuildNumber}-with-optional-libs.zip">Download development with optional libraries</a> (<a href="Workbench-Build{$devBuildNumber}-with-optional-libs.zip.sha1">sha1</a>)
+        </li>
+        <li>
+          <a href="Workbench-Build{$devBuildNumber}-Mac.tgz">Download development build for Mac</a> (<a href="Workbench-Build{$devBuildNumber}-Mac.tar.gz.sha1">sha1</a>)
+        </li>
+        <li>
+          <a href="Workbench-Build{$devBuildNumber}-Mac-with-optional-libs.tgz">Download development build for Mac with optional libraries</a> (<a href="Workbench-Build{$devBuildNumber}-Mac-with-optional-libs.tar.gz.sha1">sha1</a>)
         </li>
         <li>
           <a href="WorkbenchSrc-Build{$devBuildNumber}.zip">Source code</a> (<a href="WorkbenchSrc-Build{$devBuildNumber}.zip.sha1">sha1</a>)

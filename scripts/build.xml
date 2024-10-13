@@ -405,6 +405,8 @@
         <include name="WorkbenchSrc-Build${build.number}.zip"/>
         <include name="Workbench-Build${build.number}*.zip"/>
         <include name="Workbench-Build${build.number}-with-optional-libs.zip"/>
+        <include name="Workbench-Build${build.number}-Mac.tgz"/>
+        <include name="Workbench-Build${build.number}-Mac-with-optional-libs.tgz"/>
       </fileset>
     </checksum>
   </target>

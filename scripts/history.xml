@@ -4,7 +4,8 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
 
-  <release build="-1" date="2024-09-03">
+  <release build="-1" date="2024-10-13">
+    <entry dev-build="3" type="enh">Bundles for MacOS are now available again (thanks to Henrik for his contribution)</entry>
     <entry dev-build="3" type="enh">WbVarList (and other SQL Workbench/J commands) now honors the @WbResult annotation.</entry>
     <entry dev-build="3" type="enh">Improved handling of drag &amp; drop of files into the editor.</entry>
     <entry dev-build="3" type="enh">Table level constraints are now shown in the DbTree.</entry>

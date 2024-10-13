@@ -15,7 +15,7 @@
     <content>
 
     <no-nazis/>
-    
+
     <p>
     SQL Workbench/J is a DBMS-independent, cross-platform SQL query tool. It is written in Java and
     should run on any operating system that provides a Java Runtime Environment.
@@ -293,7 +293,7 @@ WHERE id=42;</p>
         <li>Check out the SQL Workbench/J <a href="http://groups.google.com/group/sql-workbench" target="_blank">google group</a></li>
         <li>Send an email to <mail-to/> (or use <span style="padding:2px;background-color:lightgray">Help &raquo; Contact the author</span> from within the application)</li>
       </ul>
-      
+
       <p>
         When reporting a problem, always include the build number of SQL Workbench/J you are using together with the DBMS, its version
         and the JDBC driver you are using. This information is shown in the connection info dialog, that can be obtained
@@ -378,7 +378,7 @@ WHERE id=42;</p>
       <p style="margin-top:15px;margin-bottom:10px">
           SQL Workbench/J requires <b>Java 11</b> or later. Using Java 17 is recommended.
       </p>
-      
+
       <p>
         Current stable release: Build <build-number/>, <build-date/> (<a href="history.html">Release History</a>)
       </p>
@@ -416,6 +416,8 @@ WHERE id=42;</p>
       <ul>
           <li><zip-office-link/></li>
           <li><zip-link/></li>
+<!--          <li><mac-link/></li>
+          <li><mac-office-link/></li>-->
           <li><source-link/></li>
       </ul>
 
@@ -493,7 +495,7 @@ WHERE id=42;</p>
     <subtitle>Release Archive</subtitle>
     <content>
       <no-nazis/>
-      
+
       <p>Download archive for SQL Workbench/J</p>
 
         <div style="padding-top:1em;padding-bottom:1em;padding-left:1.5em;padding-right:1.5em;border-style:solid;border-width:3px;border-color:red;margin-bottom:2em;margin-top:2em">
