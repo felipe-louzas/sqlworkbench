@@ -120,8 +120,13 @@ public class ColumnWidthOptimizer
 
   private void optimizeColWidth(int col, int minWidth, int maxWidth, boolean respectColumnName)
   {
-    int width = calculateOptimalColumnWidth(col, minWidth, maxWidth, respectColumnName, null);
     WbSwingUtilities.invoke(() -> {
+      TableCellRenderer realRenderer = table.getTableHeader().getDefaultRenderer();
+      JComponent c = (JComponent)realRenderer.getTableCellRendererComponent(table, "", false, false, -1, 0);
+      Insets insets = c.getInsets();
+      FontMetrics fm = c.getFontMetrics(c.getFont());
+
+      int width = calculateOptimalColumnWidth(col, minWidth, maxWidth, respectColumnName, fm, insets);
       if (width > 0)
       {
         TableColumnModel colMod = this.table.getColumnModel();
@@ -298,13 +303,12 @@ public class ColumnWidthOptimizer
     int iconWidth = 0;
     if (table.isViewColumnSorted(col))
     {
-      iconWidth = (int)(SortHeaderRenderer.getArrowSize(fm, table.isPrimarySortColumn(col)) * 1.05);
+      iconWidth = (int)(SortHeaderRenderer.getArrowSize(fm, table.isPrimarySortColumn(col)));
     }
 
     boolean dataTypeVisible = false;
     boolean remarksVisible = false;
     boolean tableNameVisible = false;
-
     DataStoreTableModel model = table.getDataStoreTableModel();
 
     if (renderer != null)
