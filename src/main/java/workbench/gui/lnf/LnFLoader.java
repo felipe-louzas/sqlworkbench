@@ -43,7 +43,7 @@ import workbench.util.ClasspathUtil;
  */
 public class LnFLoader
 {
-  private LnFDefinition lnfDef;
+  private final LnFDefinition lnfDef;
 
   public LnFLoader(LnFDefinition definition)
   {
