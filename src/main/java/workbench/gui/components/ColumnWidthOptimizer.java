@@ -213,7 +213,7 @@ public class ColumnWidthOptimizer
       {
         String visible = StringUtil.rtrim(displayValue);
         stringWidth += (int)Math.ceil(f.getStringBounds(visible, fm.getFontRenderContext()).getWidth());
-        stringWidth += (int)(fm.getMaxAdvance() / 4);
+        stringWidth += (int)(Math.max(0,fm.getMaxAdvance() / 2));
         if (visible.length() < displayValue.length())
         {
           // accommodate for the "..." display if the string is truncated

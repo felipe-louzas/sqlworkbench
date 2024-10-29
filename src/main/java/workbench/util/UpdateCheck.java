@@ -71,7 +71,7 @@ public class UpdateCheck
     if (!Settings.getInstance().checkJavaVersion()) return;
     if (ResourceMgr.getBuildNumber().getMajorVersion() == 999) return; // don't check if started from IDE
 
-    VersionNumber minVersion = new VersionNumber(11,0);
+    VersionNumber minVersion = new VersionNumber(17,0);
     VersionNumber currentVersion = VersionNumber.getJavaVersion();
     if (!currentVersion.isNewerOrEqual(minVersion))
     {

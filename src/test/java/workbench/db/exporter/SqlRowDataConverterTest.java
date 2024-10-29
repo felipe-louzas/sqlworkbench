@@ -85,7 +85,7 @@ public class SqlRowDataConverterTest
     DataStore ds = new DataStore(info);
     ds.forceUpdateTable(tbl);
     int row = ds.addRow();
-    ds.setValue(row, 0, Integer.valueOf(42));
+    ds.setValue(row, 0, 42);
     ds.setValue(row, 1, ZonedDateTime.of(2022, 4, 2, 19, 20, 21, 0, ZoneId.of("UTC")));
     ds.setValue(row, 2, LocalDate.of(2022, 4, 2));
 
@@ -120,13 +120,13 @@ public class SqlRowDataConverterTest
     DataStore ds = new DataStore(info);
     ds.forceUpdateTable(tbl);
     int row = ds.addRow();
-    ds.setValue(row, 0, Integer.valueOf(42));
+    ds.setValue(row, 0, 42);
     ds.setValue(row, 1, "Arthur");
     ds.setValue(row, 2, "Dent");
     ds.setValue(row, 3, "one");
 
     row = ds.addRow();
-    ds.setValue(row, 0, Integer.valueOf(24));
+    ds.setValue(row, 0, 24);
     ds.setValue(row, 1, "Ford");
     ds.setValue(row, 2, "Prefect");
     ds.setValue(row, 3, "two");
@@ -309,6 +309,57 @@ public class SqlRowDataConverterTest
   }
 
   @Test
+  public void testQuotedIdentifier()
+    throws Exception
+  {
+    WbConnection con = null;
+    Statement stmt = null;
+    ResultSet rs = null;
+    try
+    {
+      TestUtil util = new TestUtil("testQuotedIdentifier");
+      util.prepareEnvironment();
+      con = util.getConnection("sqlConverterTest");
+      String script =
+        "CREATE TABLE data (id integer primary key, \"d'IT\" varchar(20));\n" +
+        "insert into data values (1, 'foo'), (2, 'bar');\n" +
+        "commit;\n";
+      TestUtil.executeScript(con, script);
+
+      TableIdentifier tbl = new DbObjectFinder(con).findTable(new TableIdentifier("DATA"));
+
+      stmt = con.createStatement();
+      rs = stmt.executeQuery("SELECT * FROM data");
+      DataStore ds = new DataStore(rs, true, null, 0, con);
+      ds.setUpdateTableToBeUsed(tbl);
+      ds.checkUpdateTable(con);
+      SqlRowDataConverter converter = new SqlRowDataConverter(con);
+      converter.setResultInfo(ds.getResultInfo());
+      converter.setCreateTable(false);
+      converter.setUseMultiRowInserts(true);
+
+      converter.setType(ExportType.SQL_INSERT);
+      String sql = converter.convertRowData(ds.getRow(0), 1).toString();
+      sql += converter.convertRowData(ds.getRow(1), 2);
+      sql += converter.getEnd(2);
+      System.out.println(sql);
+      String expected =
+        "INSERT INTO DATA (ID,\"d'IT\") \n" +
+        "VALUES\n" +
+        "  (1,'foo'),\n" +
+        "  (2,'bar');\n" +
+        "\n" +
+        "COMMIT;";
+      assertEquals(expected, sql.trim());
+    }
+    finally
+    {
+      con.disconnect();
+      JdbcUtils.closeAll(rs, stmt);
+    }
+  }
+
+  @Test
   public void testSqlGeneration()
     throws Exception
   {
@@ -406,7 +457,7 @@ public class SqlRowDataConverterTest
 
       RowData data = new RowData(info);
       data.setValue(0, "data1");
-      data.setValue(1, Integer.valueOf(42));
+      data.setValue(1, 42);
       Calendar c = Calendar.getInstance();
       c.set(2006, 9, 26, 17, 0);
       c.set(Calendar.SECOND, 0);

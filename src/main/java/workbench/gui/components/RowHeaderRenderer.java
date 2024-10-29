@@ -157,6 +157,7 @@ public class RowHeaderRenderer
     {
       width = 12;
     }
+    width += table.getIntercellSpacing().width;
     String max = NumberStringCache.getNumberString(table.getRowCount());
     colWidth = (max.length() * width) + width + rightMargin + 1;
 

@@ -456,14 +456,16 @@ public class DmlStatement
     if (this.values.size() > 0)
     {
       StringBuilder result = new StringBuilder(this.sql.length() + this.values.size() * 10);
-      boolean inQuotes = false;
+      boolean inSingleQuotes = false;
+      boolean inDoubleQuotes = false;
       int parmIndex = 0;
       for (int i = 0; i < this.sql.length(); ++i)
       {
         char c = sql.charAt(i);
 
-        if (c == '\'') inQuotes = !inQuotes;
-        if (c == '?' && !inQuotes && parmIndex < this.values.size())
+        if (c == '"' && !inSingleQuotes) inDoubleQuotes = !inDoubleQuotes;
+        if (c == '\'' && !inDoubleQuotes) inSingleQuotes = !inSingleQuotes;
+        if (c == '?' && !inSingleQuotes && parmIndex < this.values.size())
         {
           ColumnData data = this.values.get(parmIndex);
           String literal = literalFormatter.getDefaultLiteral(data, trimCharacterValues);
