@@ -12,7 +12,7 @@
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>CFBundleExecutable</key>
-    <string>SqlWorkbenchJLauncher</string>
+    <string>SQLWorkbenchJLauncher</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleIconFile</key>

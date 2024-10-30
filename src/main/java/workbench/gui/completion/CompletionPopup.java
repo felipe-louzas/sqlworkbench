@@ -663,7 +663,7 @@ public class CompletionPopup
     }
 
     nsp.removeNamespaceIfEqual(tbl);
-    return tbl.getTableExpression();
+    return SqlUtil.buildExpression(conn, tbl);
   }
 
   public void selectCurrentWordInEditor(boolean flag)

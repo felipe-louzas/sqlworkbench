@@ -1322,17 +1322,19 @@ public class DbMetadata
 
     if (!isLegalIdentifier(name)) return true;
 
-    if (!this.storesMixedCaseIdentifiers())
+    if (this.storesMixedCaseQuotedIdentifiers() && StringUtil.isMixedCase(name))
     {
-      if (this.storesUpperCaseIdentifiers() && !StringUtil.isUpperCase(name))
-      {
-        return true;
-      }
+      return true;
+    }
 
-      if (this.storesLowerCaseIdentifiers() && !StringUtil.isLowerCase(name))
-      {
-        return true;
-      }
+    if (this.storesUpperCaseIdentifiers() && !StringUtil.isUpperCase(name))
+    {
+      return true;
+    }
+
+    if (this.storesLowerCaseIdentifiers() && !StringUtil.isLowerCase(name))
+    {
+      return true;
     }
 
     return isReservedWord(name);
@@ -1856,6 +1858,18 @@ public class DbMetadata
       boolean mixed = this.metaData.storesMixedCaseIdentifiers();
 
       return mixed || (upper && lower);
+    }
+    catch (SQLException e)
+    {
+      return false;
+    }
+  }
+
+  public boolean storesMixedCaseQuotedIdentifiers()
+  {
+    try
+    {
+      return this.metaData.storesMixedCaseQuotedIdentifiers();
     }
     catch (SQLException e)
     {
