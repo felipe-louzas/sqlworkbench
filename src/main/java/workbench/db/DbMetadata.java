@@ -1322,7 +1322,7 @@ public class DbMetadata
 
     if (!isLegalIdentifier(name)) return true;
 
-    if (this.storesMixedCaseQuotedIdentifiers() && StringUtil.isMixedCase(name))
+    if (this.storesMixedCaseIdentifiers() && StringUtil.isMixedCase(name))
     {
       return true;
     }
@@ -1834,6 +1834,37 @@ public class DbMetadata
     return false;
   }
 
+  public boolean storesMixedCaseSchemas()
+  {
+    IdentifierCase ocase = this.dbSettings.getSchemaNameCase();
+    if (ocase == IdentifierCase.unknown)
+    {
+      return storesMixedCaseIdentifiers();
+    }
+    return ocase == IdentifierCase.mixed;
+  }
+
+  public boolean storesUpperCaseSchemas()
+  {
+    IdentifierCase ocase = this.dbSettings.getSchemaNameCase();
+    if (ocase == IdentifierCase.unknown)
+    {
+      return storesUpperCaseIdentifiers();
+    }
+    return ocase == IdentifierCase.upper;
+  }
+
+  public boolean storesLowerCaseSchemas()
+  {
+    IdentifierCase ocase = this.dbSettings.getSchemaNameCase();
+    if (ocase == IdentifierCase.unknown)
+    {
+      return storesLowerCaseIdentifiers();
+    }
+    return ocase == IdentifierCase.lower;
+  }
+
+
   /**
    * Returns true if the server stores identifiers in mixed case.
    *
@@ -1863,38 +1894,6 @@ public class DbMetadata
     {
       return false;
     }
-  }
-
-  public boolean storesMixedCaseQuotedIdentifiers()
-  {
-    try
-    {
-      return this.metaData.storesMixedCaseQuotedIdentifiers();
-    }
-    catch (SQLException e)
-    {
-      return false;
-    }
-  }
-
-  public boolean storesUpperCaseSchemas()
-  {
-    IdentifierCase ocase = this.dbSettings.getSchemaNameCase();
-    if (ocase == IdentifierCase.unknown)
-    {
-      return storesUpperCaseIdentifiers();
-    }
-    return ocase == IdentifierCase.upper;
-  }
-
-  public boolean storesLowerCaseSchemas()
-  {
-    IdentifierCase ocase = this.dbSettings.getSchemaNameCase();
-    if (ocase == IdentifierCase.unknown)
-    {
-      return storesLowerCaseIdentifiers();
-    }
-    return ocase == IdentifierCase.lower;
   }
 
   /**
