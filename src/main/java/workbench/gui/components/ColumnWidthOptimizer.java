@@ -31,12 +31,14 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import workbench.WbManager;
 import workbench.resource.GuiSettings;
+import workbench.resource.Settings;
 
 import workbench.db.ColumnIdentifier;
 
@@ -62,6 +64,7 @@ public class ColumnWidthOptimizer
   private final int maxLines;
   private final int remarksMinLength;
   private final int remarksMaxLength;
+  private final double addCharPct;
 
   public ColumnWidthOptimizer(WbTable client)
   {
@@ -69,6 +72,7 @@ public class ColumnWidthOptimizer
     this.maxLines = GuiSettings.getAutRowHeightMaxLines();
     this.remarksMinLength = GuiSettings.remarksHeaderMinLength();
     this.remarksMaxLength = GuiSettings.remarksHeaderMaxLength();
+    this.addCharPct = StringUtil.getDoubleValue(Settings.getInstance().getProperty("workbench.gui.column.width.optimize.add.width.pct", null), 0.0);
   }
 
   public void optimizeAllColWidth()
@@ -213,7 +217,7 @@ public class ColumnWidthOptimizer
       {
         String visible = StringUtil.rtrim(displayValue);
         stringWidth += (int)Math.ceil(f.getStringBounds(visible, fm.getFontRenderContext()).getWidth());
-        stringWidth += (int)(Math.max(0,fm.getMaxAdvance() / 2));
+        stringWidth += (int)(Math.max(0,fm.getMaxAdvance() * addCharPct));
         if (visible.length() < displayValue.length())
         {
           // accommodate for the "..." display if the string is truncated
@@ -395,15 +399,25 @@ public class ColumnWidthOptimizer
   private int getAdditionalColumnSpace()
   {
     int addWidth = table.getIntercellSpacing().width;
+    
+    // For FlatLaf
+    Insets cellMargin = UIManager.getInsets("Table.cellMargins");
+    if (cellMargin != null)
+    {
+      addWidth += cellMargin.left + cellMargin.right;
+    }
+    else
+    {
+      addWidth += table.getColumnModel().getColumnMargin();
+    }
+
     if (table.getShowVerticalLines())
     {
-      addWidth += 4;
+      addWidth += Settings.getInstance().getIntProperty("workbench.gui.column.width.optimize.gridwidth", 4);
     }
-    addWidth += table.getColumnModel().getColumnMargin();
-
     if (addWidth == 0)
     {
-      addWidth = 4;
+      addWidth = 6;
     }
     return addWidth;
   }
