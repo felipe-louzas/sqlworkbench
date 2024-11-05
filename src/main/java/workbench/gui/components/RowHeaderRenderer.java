@@ -58,7 +58,6 @@ public class RowHeaderRenderer
   private final JTable table;
   private final TableRowHeader rowHeader;
   private int colWidth = -1;
-  private final int rightMargin;
   private final Insets insets;
   protected final boolean adjustInsets;
 
@@ -104,7 +103,7 @@ public class RowHeaderRenderer
     setForeground(fg);
     setBackground(bg);
 
-    rightMargin = GuiSettings.getRowNumberMargin();
+    int rightMargin = GuiSettings.getRowNumberMargin();
     insets.right += rightMargin;
     calculateWidth();
   }
@@ -157,10 +156,10 @@ public class RowHeaderRenderer
     {
       width = 12;
     }
-    width += Math.max(table.getIntercellSpacing().width, table.getColumnModel().getColumnMargin());
+    int add = insets.left + insets.right + table.getIntercellSpacing().width + table.getColumnModel().getColumnMargin();
 
     String max = NumberStringCache.getNumberString(table.getRowCount());
-    colWidth = (max.length() * width) + width + rightMargin + 1;
+    colWidth = (max.length() * width) + width + add;
 
     try
     {
