@@ -353,7 +353,7 @@ public class PostgresPartitionReader
       "       end as sub_partition_strategy \n" +
       "from pg_catalog.pg_inherits i \n" +
       "  join pg_catalog.pg_class c on i.inhrelid = c.oid \n" +
-      "  join pg_partitioned_table p on p.partrelid = i.inhrelid\n" +
+      "  join pg_partitioned_table p on p.partrelid = i.inhparent\n" +
       "  join pg_class base on base.oid = i.inhparent \n" +
       "where c.relnamespace = cast(? as regnamespace) \n" +
       "  and c.relname = ?";

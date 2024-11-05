@@ -26,9 +26,12 @@ import workbench.TestUtil;
 import workbench.WbTestCase;
 
 import workbench.db.DbObjectFinder;
+import workbench.db.DropType;
 import workbench.db.JdbcUtils;
 import workbench.db.PostgresDbTest;
 import workbench.db.TableIdentifier;
+import workbench.db.TableSourceBuilder;
+import workbench.db.TableSourceBuilderFactory;
 import workbench.db.WbConnection;
 
 import org.junit.After;
@@ -99,7 +102,8 @@ public class PostgresPartitionReaderTest
 
     TestUtil.executeScript(conn, sql);
 
-    TableIdentifier rangeTable = new DbObjectFinder(conn).findTable(new TableIdentifier(TESTID + ".range_table"));
+    DbObjectFinder finder = new DbObjectFinder(conn);
+    TableIdentifier rangeTable = finder.findTable(new TableIdentifier(TESTID + ".range_table"));
 
     PostgresPartitionReader reader = new PostgresPartitionReader(rangeTable, conn);
     reader.readPartitionInformation();
@@ -119,6 +123,12 @@ public class PostgresPartitionReaderTest
     assertTrue(ddl.contains("CREATE TABLE range_table_p1"));
     assertTrue(ddl.contains("CREATE TABLE range_table_p2"));
     assertTrue(ddl.contains("CREATE TABLE range_table_p3"));
+
+    TableIdentifier p1 = finder.findTable(new TableIdentifier(TESTID + ".range_table_p3"));
+    TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(conn);
+    String partDDL = builder.getTableSource(p1, DropType.none, false);
+    assertTrue(partDDL.contains("PARTITION OF range_table"));
+    assertTrue(partDDL.contains("FOR VALUES FROM ('2019-01-01') TO ('2020-01-01')"));
   }
 
   @Test

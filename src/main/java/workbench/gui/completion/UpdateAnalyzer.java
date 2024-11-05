@@ -28,10 +28,10 @@ import workbench.db.TableIdentifier;
 import workbench.db.WbConnection;
 import workbench.db.objectcache.Namespace;
 
+import workbench.sql.formatter.WbSqlFormatter;
 import workbench.sql.lexer.SQLLexer;
 import workbench.sql.lexer.SQLLexerFactory;
 import workbench.sql.lexer.SQLToken;
-import workbench.sql.formatter.WbSqlFormatter;
 
 import workbench.util.SqlUtil;
 import workbench.util.TableAlias;
@@ -60,40 +60,18 @@ public class UpdateAnalyzer
     final int IN_WHERE = 3;
 
     int state = -1;
-    boolean nextIsTable = false;
+    boolean collectTable = false;
     String table = null;
 
     SQLLexer lexer = SQLLexerFactory.createLexer(dbConnection, sql);
     SQLToken t = lexer.getNextToken(false, false);
+    SQLToken last = null;
 
     while (t != null)
     {
-      if (nextIsTable)
+      if (t.getContents().equals("SET"))
       {
-        if (catalogSeparator != '.')
-        {
-          StringBuilder tableName = new StringBuilder(t.getContents());
-          t = SqlUtil.appendCurrentTablename(lexer, tableName, catalogSeparator);
-          table = tableName.toString();
-        }
-        else
-        {
-          table = t.getContents();
-        }
-        nextIsTable = false;
-        continue;
-      }
-
-      if (t.getContents().equals("UPDATE"))
-      {
-        nextIsTable = true;
-        if (cursorPos > t.getCharEnd())
-        {
-          state = IN_UPDATE;
-        }
-      }
-      else if (t.getContents().equals("SET"))
-      {
+        collectTable = false;
         if (cursorPos > t.getCharEnd())
         {
           state = IN_SET;
@@ -106,6 +84,34 @@ public class UpdateAnalyzer
           state = IN_WHERE;
         }
       }
+      else if (t.getContents().equals("UPDATE") || t.getContents().equals("ONLY"))
+      {
+        collectTable = true;
+        if (cursorPos > t.getCharEnd())
+        {
+          state = IN_UPDATE;
+        }
+      }
+      else if (t.getContents().equals("(") && last != null && last.getText().equalsIgnoreCase("ONLY"))
+      {
+        collectTable = true;
+      }
+      else if (collectTable && t.getContents().equals(")"))
+      {
+        collectTable = false;
+      }
+      else if (collectTable)
+      {
+        if (table == null)
+        {
+          table = t.getText();
+        }
+        else
+        {
+          table += t.getText();
+        }
+      }
+      last = t;
       t = lexer.getNextToken(false, false);
     }
 

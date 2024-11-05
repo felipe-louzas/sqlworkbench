@@ -42,6 +42,34 @@ public class UpdateAnalyzerTest
   }
 
   @Test
+  public void testGetTargetTable()
+  {
+    String sql = "update public.foo set ";
+    int pos = sql.indexOf("set ") + 4;
+    UpdateAnalyzer check = new UpdateAnalyzer(null, sql, pos);
+    check.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, check.getContext());
+    assertEquals("foo", check.getTableForColumnList().getRawTableName());
+    assertEquals("public", check.getTableForColumnList().getRawSchema());
+
+    sql = "update \"public\".\"foo\" set ";
+    pos = sql.indexOf("set ") + 4;
+    check = new UpdateAnalyzer(null, sql, pos);
+    check.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, check.getContext());
+    assertEquals("foo", check.getTableForColumnList().getRawTableName());
+    assertEquals("public", check.getTableForColumnList().getRawSchema());
+
+    sql = "update public.\"Foo\" set ";
+    pos = sql.indexOf("set ") + 4;
+    check = new UpdateAnalyzer(null, sql, pos);
+    check.checkContext();
+    assertEquals(BaseAnalyzer.CONTEXT_COLUMN_LIST, check.getContext());
+    assertEquals("Foo", check.getTableForColumnList().getRawTableName());
+    assertEquals("public", check.getTableForColumnList().getRawSchema());
+  }
+
+  @Test
   public void testGetColumns()
   {
     String sql = "update foo set col_1 = 10, col_3 = y, col_5 = 'foobar'";

@@ -93,8 +93,11 @@ public class PostgresTableSourceBuilder
     }
 
     StringBuilder ddl = new StringBuilder(500);
-    ddl.append(generateDrop(table, dropType));
-    ddl.append("\n\n");
+    if (dropType != DropType.none)
+    {
+      ddl.append(generateDrop(table, dropType));
+      ddl.append("\n\n");
+    }
     ddl.append(PostgresPartitionReader.generatePartitionDDL(partition, null, dbConnection));
     ddl.append(";\n\n");
 
