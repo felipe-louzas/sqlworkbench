@@ -746,7 +746,7 @@ public class TreeLoader
         node.setChildrenLoaded(false);
       }
 
-      if (isTable(dbo) && dbo instanceof TableIdentifier)
+      if (isTableOrView(dbo) && dbo instanceof TableIdentifier)
       {
         TableIdentifier tbl = (TableIdentifier)dbo;
         addTableSubNodes(node);
@@ -1266,11 +1266,11 @@ public class TreeLoader
     fkNode.setChildrenLoaded(true);
   }
 
-  private boolean isTable(DbObject dbo)
+  private boolean isTableOrView(DbObject dbo)
   {
     if (dbo == null) return false;
     DbMetadata meta = connection.getMetadata();
-    return meta.isExtendedTableType(dbo.getObjectType());
+    return meta.isExtendedTableType(dbo.getObjectType()) || meta.isViewType(dbo.getObjectType());
   }
 
   private boolean hasColumns(DbObject dbo)
