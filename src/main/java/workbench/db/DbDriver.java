@@ -41,7 +41,7 @@ import workbench.log.LogMgr;
 import workbench.resource.ResourceMgr;
 import workbench.resource.Settings;
 
-import workbench.db.mssql.SqlServerClassLoader;
+import workbench.db.mssql.NativeLibraryClassLoader;
 import workbench.db.postgres.PostgresUtil;
 
 import workbench.util.ClasspathUtil;
@@ -295,7 +295,7 @@ public class DbDriver
       // This is mainly for SQL Server's JDBC driver so that the DLL for integrated security
       // is found without the need to mess around with java.library.path
       WbFile jarFile = buildFile(libraryList.get(0));
-      return new SqlServerClassLoader(jarFile, path, ClassLoader.getSystemClassLoader());
+      return new NativeLibraryClassLoader(jarFile, path, ClassLoader.getSystemClassLoader());
     }
 
     // Use a standard URLClassLoader for everything else
