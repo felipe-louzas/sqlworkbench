@@ -94,6 +94,8 @@ import workbench.util.WbLocale;
 import workbench.util.WbNumberFormatter;
 import workbench.util.WbProperties;
 
+import static workbench.gui.lnf.LnFHelper.*;
+
 /**
  * The singleton to manage configuration settings for SQL Workbench/J.
  *
@@ -1471,7 +1473,12 @@ public class Settings
 
   public Font getMsgLogFont()
   {
-    return getMonospacedFont(PROPERTY_MSGLOG_FONT, true);
+    return getMsgLogFont(true);
+  }
+  
+  public Font getMsgLogFont(boolean returnDefault)
+  {
+    return getMonospacedFont(PROPERTY_MSGLOG_FONT, returnDefault);
   }
 
   public void setDataFont(Font f)
@@ -1491,7 +1498,17 @@ public class Settings
 
   public int getDefaultFontSize()
   {
-    return getIntProperty(PROPERTY_DEFAULT_FONT_SIZE, -1);
+    int size = getIntProperty(PROPERTY_DEFAULT_FONT_SIZE, -1);
+    if (size == -1)
+    {
+      UIDefaults def = UIManager.getDefaults();
+      Font textFont = def.getFont(MENU_FONT_KEY);
+      if (textFont != null)
+      {
+        size = textFont.getSize();
+      }
+    }
+    return size;
   }
 
   private Font getMonospacedFont(String property, boolean returnDefault)
@@ -1500,9 +1517,7 @@ public class Settings
     Font f = this.getFont(property);
     if (f == null && returnDefault)
     {
-      UIDefaults def = UIManager.getDefaults();
-      Font textFont = def.getFont("TextArea.font");
-      int size = textFont == null ? 12 : textFont.getSize();
+      int size = getDefaultFontSize();
       f = StyleContext.getDefaultStyleContext().getFont("Monospaced", Font.PLAIN, size);
       isDefault = true;
     }

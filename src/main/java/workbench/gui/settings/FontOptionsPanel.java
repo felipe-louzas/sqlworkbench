@@ -66,7 +66,7 @@ public class FontOptionsPanel
   {
     editorFont.setSelectedFont(Settings.getInstance().getEditorFont(false));
     dataFont.setSelectedFont(Settings.getInstance().getDataFont());
-    msgLogFont.setSelectedFont(Settings.getInstance().getMsgLogFont());
+    msgLogFont.setSelectedFont(Settings.getInstance().getMsgLogFont(false));
     standardFont.setSelectedFont(Settings.getInstance().getStandardFont());
     wheelZoom.setSelected(GuiSettings.getZoomFontWithMouseWheel());
 

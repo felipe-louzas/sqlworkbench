@@ -118,7 +118,7 @@ public class PanelTextSearcher
     return false;
   }
 
-  private boolean isMatch(String label, String search)
+  public boolean isMatch(String label, String search)
   {
     if (StringUtil.isAnyBlank(label, search)) return false;
     if (GuiSettings.useRegexForSettingsSearch())

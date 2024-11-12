@@ -68,7 +68,7 @@ public class PageListModel
     {
       OptionPanelPage page = itr.next();
       JPanel panel = page.getOptionsPanel();
-      if (!searcher.containsText(panel, search))
+      if (!searcher.containsText(panel, search) && !searcher.isMatch(page.getLabel(), search))
       {
         itr.remove();
         searcher.clearHighlight(panel);
