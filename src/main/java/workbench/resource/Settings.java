@@ -1475,7 +1475,7 @@ public class Settings
   {
     return getMsgLogFont(true);
   }
-  
+
   public Font getMsgLogFont(boolean returnDefault)
   {
     return getMonospacedFont(PROPERTY_MSGLOG_FONT, returnDefault);
@@ -1511,6 +1511,16 @@ public class Settings
     return size;
   }
 
+  public boolean applyDefaultDataFont()
+  {
+    return getBoolProperty("workbench.gui.data.font.apply.default", false);
+  }
+
+  public String getDefaultMonospaceFont()
+  {
+    return getProperty("workbench.gui.monospace.font.default", "Monospaced");
+  }
+
   private Font getMonospacedFont(String property, boolean returnDefault)
   {
     boolean isDefault = false;
@@ -1518,7 +1528,11 @@ public class Settings
     if (f == null && returnDefault)
     {
       int size = getDefaultFontSize();
-      f = StyleContext.getDefaultStyleContext().getFont("Monospaced", Font.PLAIN, size);
+      f = StyleContext.getDefaultStyleContext().getFont(getDefaultMonospaceFont(), Font.PLAIN, size);
+      if (f == null)
+      {
+        f = StyleContext.getDefaultStyleContext().getFont("Monospaced", Font.PLAIN, size);
+      }
       isDefault = true;
     }
     if (getScaleFonts() && isDefault)
@@ -1616,7 +1630,7 @@ public class Settings
     // nothing configured, use the Java defaults
     if (name == null) return null;
 
-    String fontSize = StringUtil.trimToNull(getProperty(baseKey + ".size", "12"));
+    String fontSize = StringUtil.trimToNull(getProperty(baseKey + ".size", Integer.toString(getDefaultFontSize())));
     String type = getProperty(baseKey + ".style", "Plain");
     int style = Font.PLAIN;
     StringTokenizer tok = new StringTokenizer(type);

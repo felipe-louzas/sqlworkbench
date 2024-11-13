@@ -206,7 +206,7 @@ public class LnFHelper
       adjustMetalLNF();
     }
 
-    Font dataFont = settings.getDataFont();
+    Font dataFont = settings.getDataFont(Settings.getInstance().applyDefaultDataFont());
     if (dataFont != null)
     {
       def.put("Table.font", dataFont);

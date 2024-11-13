@@ -74,6 +74,10 @@ public class DdlObjectInfo
 
   public String getDisplayType()
   {
+    if ("USER MAPPING".equalsIgnoreCase(objectType))
+    {
+      return "USER MAPPING for";
+    }
     return StringUtil.capitalize(objectType);
   }
 
@@ -138,27 +142,35 @@ public class DdlObjectInfo
       // if a type was found we assume the next keyword is the name
       if (!SqlUtil.getTypesWithoutNames().contains(this.objectType))
       {
-        SQLToken name = lexer.getNextToken(false, false);
-        if (name == null) return;
-        String content = name.getContents();
+        token = lexer.getNextToken(false, false);
+        if (token == null) return;
+        String content = token.getContents();
 
         // For PostgreSQL
         if (type == ParserType.Postgres && content.equalsIgnoreCase("CONCURRENTLY"))
         {
-          name = lexer.getNextToken(false, false);
-          if (name == null) return;
-          content = name.getContents();
+          token = lexer.getNextToken(false, false);
+          if (token == null) return;
+          content = token.getContents();
         }
 
         if (content.equals("IF NOT EXISTS") || content.equals("IF EXISTS") || content.equals(OracleUtils.KEYWORD_EDITIONABLE))
         {
-          name = lexer.getNextToken(false, false);
-          if (name == null) return;
+          token = lexer.getNextToken(false, false);
+          if (token == null) return;
+          content = token.getContents();
+        }
+
+        if (type == ParserType.Postgres && objectType.equals("USER MAPPING") && content.equalsIgnoreCase("FOR"))
+        {
+          token = lexer.getNextToken(false, false);
+          if (token == null) return;
+          content = token.getContents();
         }
 
         if (type == ParserType.Postgres && "DROP".equalsIgnoreCase(verb))
         {
-          parsePgDropNames(lexer, name);
+          parsePgDropNames(lexer, token);
           return;
         }
 
@@ -166,12 +178,12 @@ public class DdlObjectInfo
         if (next != null && next.getContents().equals("."))
         {
           next = lexer.getNextToken(false, false);
-          if (next != null) name = next;
+          if (next != null) token = next;
         }
 
         if ("CREATE".equalsIgnoreCase(verb) &&
             this.objectType.equalsIgnoreCase("index") &&
-            name.getContents().equalsIgnoreCase("ON"))
+            token.getContents().equalsIgnoreCase("ON"))
         {
           // this is for unnamed CREATE INDEX in Postgres to avoid the message
           // Index "ON" created.
@@ -179,13 +191,13 @@ public class DdlObjectInfo
         }
         else
         {
-          if (next != null && name.getContents().endsWith("."))
+          if (next != null && token.getContents().endsWith("."))
           {
-            this.objectNames.add(SqlUtil.removeObjectQuotes(name.getContents()) + SqlUtil.removeObjectQuotes(next.getContents()));
+            this.objectNames.add(SqlUtil.removeObjectQuotes(token.getContents()) + SqlUtil.removeObjectQuotes(next.getContents()));
           }
           else
           {
-            this.objectNames.add(SqlUtil.removeObjectQuotes(name.getContents()));
+            this.objectNames.add(SqlUtil.removeObjectQuotes(token.getContents()));
           }
         }
       }

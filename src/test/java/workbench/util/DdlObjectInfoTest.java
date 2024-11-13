@@ -170,7 +170,23 @@ public class DdlObjectInfoTest
     assertTrue(info.isValid());
     assertEquals("ix_one", info.getObjectName());
     assertEquals("INDEX", info.getObjectType());
+
+    info = new DdlObjectInfo("create user mapping for zaphod server heart options ()", ParserType.Postgres);
+    assertTrue(info.isValid());
+    assertEquals("zaphod", info.getObjectName());
+    assertEquals("USER MAPPING", info.getObjectType());
+
+    info = new DdlObjectInfo("create user mapping if not exists for zaphod server heart options ()", ParserType.Postgres);
+    assertTrue(info.isValid());
+    assertEquals("zaphod", info.getObjectName());
+    assertEquals("USER MAPPING", info.getObjectType());
+
+    info = new DdlObjectInfo("create server if not exists outerspace foreign data wrapper warp", ParserType.Postgres);
+    assertTrue(info.isValid());
+    assertEquals("outerspace", info.getObjectName());
+    assertEquals("SERVER", info.getObjectType());
   }
+
   @Test
   public void testPostgresMultiple()
   {
