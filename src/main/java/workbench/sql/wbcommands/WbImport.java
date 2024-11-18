@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import workbench.WbManager;
 import workbench.interfaces.ImportFileParser;
@@ -607,14 +608,22 @@ public class WbImport
 
       if (cmdLine.isArgPresent(ARG_PG_COPY) && DBID.Postgres.isDB(currentConnection))
       {
-        if ("insert".equalsIgnoreCase(importMode) == false)
+        PgCopyManager pg = new PgCopyManager(currentConnection);
+        Set<String> allowedModes = CollectionUtil.caseInsensitiveSet(ImportMode.insert.getArgumentString());
+        if (pg.supportsInsertIgnore())
         {
-          result.addErrorMessage("COPY only possible with -mode=insert");
+          allowedModes.add(ImportMode.insertIgnore.getArgumentString());
+        }
+
+        if (!allowedModes.contains(importMode) )
+        {
+          String modes = allowedModes.stream().map(m -> "-mode=" + m).collect(Collectors.joining(", "));
+          result.addErrorMessage("COPY only possible with " + modes);
           return result;
         }
-        PgCopyManager pg = new PgCopyManager(currentConnection);
         if (pg.isSupported())
         {
+          pg.setIgnoreErrors(ImportMode.insertIgnore.getArgumentString().equalsIgnoreCase(importMode));
           textParser.setStreamImporter(pg);
           imp.setReportInterval(0);
         }

@@ -64,15 +64,33 @@ public class PgCopyManager
   private Object copyManager;
   private Method copyIn;
   private final boolean useDefaultClassloader;
-  private final boolean is90;
+  private final boolean is9_0;
+  private final boolean is17;
+  private boolean ignoreErrors;
 
   public PgCopyManager(WbConnection conn)
   {
     this.connection = conn;
-    this.is90 = conn == null ? true : JdbcUtils.hasMinimumServerVersion(conn, "9.0");
+    this.is9_0 = conn == null ? true : JdbcUtils.hasMinimumServerVersion(conn, "9.0");
+    this.is17 = conn == null ? true : JdbcUtils.hasMinimumServerVersion(conn, "17.0");
     // During unit testing the classloader in the ConnectionMgr is not initialized because all drivers are alread on the classpath.
     // Therefor we need to load the CopyManager class from the default classpath
     useDefaultClassloader = WbManager.isTest();
+  }
+
+  public boolean supportsInsertIgnore()
+  {
+    return this.is17;
+  }
+
+  public boolean getIgnoreErrors()
+  {
+    return ignoreErrors;
+  }
+
+  public void setIgnoreErrors(boolean flag)
+  {
+    this.ignoreErrors = flag;
   }
 
   @Override
@@ -237,7 +255,7 @@ public class PgCopyManager
 
   public final String createCopyStatement(TableIdentifier table, List<ColumnIdentifier> columns, TextImportOptions options)
   {
-    if (!is90)
+    if (!is9_0)
     {
       return createCopyStatement84(table, columns, options);
     }
@@ -351,6 +369,10 @@ public class PgCopyManager
     copySql.append(nullString);
     copySql.append('\'');
 
+    if (ignoreErrors && is17)
+    {
+      copySql.append(", ON_ERROR ignore");
+    }
     copySql.append(")");
 
     return copySql.toString();
