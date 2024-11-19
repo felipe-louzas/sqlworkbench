@@ -613,6 +613,18 @@ public class SqlUtilTest
     assertEquals(2, cols.size());
     assertEquals("\"Foo-Bar\"", cols.get(0));
     assertEquals("count(*)", cols.get(1));
+
+    sql = "select top 42 x,y,z from bla";
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.SqlServer);
+    assertEquals("Not enough columns", 3, l.size());
+    assertEquals("x", l.get(0));
+    assertEquals("z", l.get(2));
+
+    sql = "select top (42) x,y,z from bla";
+    l = SqlUtil.getSelectColumns(sql, true, ParserType.SqlServer);
+    assertEquals("Not enough columns", 3, l.size());
+    assertEquals("x", l.get(0));
+    assertEquals("z", l.get(2));
   }
 
 

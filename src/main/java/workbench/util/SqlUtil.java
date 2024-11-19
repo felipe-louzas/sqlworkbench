@@ -951,6 +951,21 @@ public class SqlUtil
         if (t == null) return Collections.emptyList();
       }
 
+      if (t.getContents().equalsIgnoreCase("TOP"))
+      {
+        t = lexer.getNextToken(false, false);
+        if (t != null && t.isNumberLiteral())
+        {
+          t = lexer.getNextToken(false, false);
+        }
+        else if (t != null && t.getContents().equals("("))
+        {
+          t = advanceToClosingParens(lexer);
+        }
+
+        if (t == null) return Collections.emptyList();
+      }
+
       int lastColStart = t.getCharBegin();
       int bracketCount = 0;
       boolean nextIsCol = true;
@@ -1022,6 +1037,30 @@ public class SqlUtil
     }
 
     return result;
+  }
+
+  private static SQLToken advanceToClosingParens(SQLLexer lexer)
+  {
+    SQLToken token = lexer.getNextToken(false, false);
+    int bracketCount = 0;
+    while (token != null)
+    {
+      String text = token.getContents();
+      if ("(".equals(text))
+      {
+        bracketCount ++;
+      }
+      else if (")".equals(text))
+      {
+        bracketCount --;
+      }
+      if (bracketCount < 0)
+      {
+        return lexer.getNextToken(false, false);
+      }
+      token = lexer.getNextToken(false, false);
+    }
+    return null;
   }
 
   public static SQLToken skipCTE(SQLLexer lexer)

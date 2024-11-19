@@ -371,7 +371,7 @@ public class PgCopyManager
 
     if (ignoreErrors && is17)
     {
-      copySql.append(", ON_ERROR ignore");
+      copySql.append(", ON_ERROR ignore, LOG_VERBOSITY verbose");
     }
     copySql.append(")");
 

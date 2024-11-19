@@ -1042,6 +1042,16 @@ public class DataImporter
       try
       {
         insertedRows += stream.processStreamData();
+        CharSequence warnings = SqlUtil.getWarnings(dbConn, null);
+        if (StringUtil.isNotBlank(warnings))
+        {
+          if (this.messages.getLength() > 0)
+          {
+            this.messages.appendNewLine();
+          }
+          this.messages.append(warnings);
+          this.messages.appendNewLine();
+        }
         tableImportFinished();
       }
       catch (SQLException sql)
