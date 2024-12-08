@@ -325,13 +325,13 @@ public class WbConnection
 
   public void setSessionReadOnly(boolean flag)
   {
-    boolean oldValue = sessionReadOnly == null ? false : sessionReadOnly.booleanValue();
+    boolean oldValue = sessionReadOnly == null ? false : sessionReadOnly;
     boolean wasSet = sessionReadOnly != null;
 
-    sessionReadOnly = Boolean.valueOf(flag);
+    sessionReadOnly = flag;
     if (flag)
     {
-      sessionConfirmUpdates = Boolean.valueOf(!flag);
+      sessionConfirmUpdates = !flag;
     }
     if (!wasSet || oldValue != flag)
     {
@@ -368,23 +368,23 @@ public class WbConnection
 
   public boolean isSessionReadOnly()
   {
-    if (sessionReadOnly != null) return sessionReadOnly.booleanValue();
+    if (sessionReadOnly != null) return sessionReadOnly;
     return getProfile().isReadOnly();
   }
 
   public void setSessionConfirmUpdate(boolean flag)
   {
-    sessionConfirmUpdates = Boolean.valueOf(flag);
+    sessionConfirmUpdates = flag;
     if (flag)
     {
-      sessionReadOnly = Boolean.valueOf(!flag);
+      sessionReadOnly = !flag;
       syncReadOnlyState();
     }
   }
 
   public boolean confirmUpdatesInSession()
   {
-    if (sessionConfirmUpdates != null) return sessionConfirmUpdates.booleanValue();
+    if (sessionConfirmUpdates != null) return sessionConfirmUpdates;
     return getProfile().getConfirmUpdates();
   }
 
@@ -1222,7 +1222,7 @@ public class WbConnection
     }
     else
     {
-      fetchSize = Integer.valueOf(size);
+      fetchSize = size;
     }
   }
 
@@ -1238,7 +1238,7 @@ public class WbConnection
   {
     if (fetchSize != null)
     {
-      return fetchSize.intValue();
+      return fetchSize;
     }
     if (getProfile() != null)
     {

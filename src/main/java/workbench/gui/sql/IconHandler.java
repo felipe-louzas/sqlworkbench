@@ -49,7 +49,7 @@ public class IconHandler
   public static final String DEFAULT_BUSY_IMAGE = "loading-static";
   public static final String DEFAULT_CANCEL_IMAGE = "cancelling-static";
 
-  private SqlPanel client;
+  private final SqlPanel client;
 
   private ImageIcon fileIcon;
   private ImageIcon fileModifiedIcon;
@@ -209,6 +209,9 @@ public class IconHandler
           }
           else
           {
+            // Under Linux, not flushing the icon seems to keep it running in the background
+            // which causes a substantial CPU load
+            flush();
             if (client.hasFileLoaded())
             {
               tab.setIconAt(index, getFileIcon());

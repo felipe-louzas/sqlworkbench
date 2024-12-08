@@ -64,10 +64,10 @@ public class FontOptionsPanel
   @Override
   public void restoreSettings()
   {
-    editorFont.setSelectedFont(Settings.getInstance().getEditorFont(false));
-    dataFont.setSelectedFont(Settings.getInstance().getDataFont());
-    msgLogFont.setSelectedFont(Settings.getInstance().getMsgLogFont(false));
-    standardFont.setSelectedFont(Settings.getInstance().getStandardFont());
+    editorFont.setSelectedFont(Settings.getInstance().getConfiguredFont(Settings.PROPERTY_EDITOR_FONT));
+    dataFont.setSelectedFont(Settings.getInstance().getConfiguredFont(Settings.PROPERTY_DATA_FONT));
+    msgLogFont.setSelectedFont(Settings.getInstance().getConfiguredFont(Settings.PROPERTY_MSGLOG_FONT));
+    standardFont.setSelectedFont(Settings.getInstance().getConfiguredFont(Settings.PROPERTY_STANDARD_FONT));
     wheelZoom.setSelected(GuiSettings.getZoomFontWithMouseWheel());
 
     scaleFonts.setSelected(Settings.getInstance().getScaleFonts());

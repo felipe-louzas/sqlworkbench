@@ -46,7 +46,7 @@ public class GenericSchemaInfoReader
   private final boolean useSavepoint;
   private final boolean reuseStmt;
   private final boolean isCacheable;
-  private final boolean useJDBC;
+  private boolean useJDBC;
   private PreparedStatement query;
   private String cachedSchema;
 
@@ -181,10 +181,25 @@ public class GenericSchemaInfoReader
       currentSchema = StringUtil.trim(currentSchema);
       connection.releaseSavepoint(sp, ci);
     }
+    catch (AbstractMethodError ame)
+    {
+      // Not all drivers actually implement getSchema()
+      LogMgr.logError(ci, "Error calling getSchema()", ame);
+      useJDBC = false;
+      connection.getDbSettings().setProperty("getschema.implemented", false);
+      currentSchema = null;
+    }
     catch (Exception e)
     {
       connection.rollback(sp, ci);
-      LogMgr.logWarning(ci, "Error reading current schema using query: " + schemaQuery, e);
+      if (useJDBC)
+      {
+        LogMgr.logWarning(ci, "Error reading current schema using Connection.getSchema()", e);
+      }
+      else
+      {
+        LogMgr.logWarning(ci, "Error reading current schema using query: " + schemaQuery, e);
+      }
       currentSchema = null;
     }
     finally

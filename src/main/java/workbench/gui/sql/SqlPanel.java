@@ -2207,7 +2207,8 @@ public class SqlPanel
       return;
     }
 
-    // Save the current result panel in order to be able to refresh it.
+    // Save the current result panel in order to be able to refresh it
+    // which is used to refresh the result after running a Macro from the result's macro menu.
     // runStatement() might change "currentData" so we have to
     // remember the one that was active before this query is executed.
     final DwPanel result = currentData;

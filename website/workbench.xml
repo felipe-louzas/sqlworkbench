@@ -281,31 +281,6 @@ WHERE id=42;</p>
     </content>
   </page>
 
-  <!-- ======================== Support ========================== -->
-  <page name="support" title="Support" toc="main">
-    <title>SQL Workbench/J</title>
-    <subtitle>Support</subtitle>
-    <content>
-      <no-nazis/>
-      <p>There are three ways how you can get support for SQL Workbench/J</p>
-      <ul>
-        <li>Read the <a href="manual/workbench-manual.html" target="_blank">manual</a></li>
-        <li>Check out the SQL Workbench/J <a href="http://groups.google.com/group/sql-workbench" target="_blank">google group</a></li>
-        <li>Send an email to <mail-to/> (or use <span style="padding:2px;background-color:lightgray">Help &raquo; Contact the author</span> from within the application)</li>
-      </ul>
-
-      <p>
-        When reporting a problem, always include the build number of SQL Workbench/J you are using together with the DBMS, its version
-        and the JDBC driver you are using. This information is shown in the connection info dialog, that can be obtained
-        by right clicking on the connection URL in the main window and choosing "Connection info".
-      </p>
-      <p>
-        Please also attach the <b>full</b> logfile. The location of the logfile is shown in the
-        About dialog (the you can copy the filename from within the dialog).
-      </p>
-    </content>
-  </page>
-
   <!-- ======================== XSLT Files ========================== -->
   <page name="xslt" title="XSLT" toc="main">
     <title>Sample XSL transformations</title>
@@ -503,6 +478,13 @@ WHERE id=42;</p>
         </div>
 
       <ul class="archive-list">
+        <li>Build 130 (requires Java 11)<br/>
+          <ul>
+            <li><a href="archive/Workbench-Build130.zip">All Platforms</a></li>
+            <li><a href="archive/Workbench-Build130-with-optional-libs.zip">With optional libraries</a></li>
+            <li><a href="archive/WorkbenchSrc-Build130.zip">Source Code</a></li>
+          </ul>
+        </li>
         <li>Build 129 (requires Java 11)<br/>
           <ul>
             <li><a href="archive/Workbench-Build129.zip">All Platforms</a></li>

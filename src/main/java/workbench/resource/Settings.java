@@ -1400,21 +1400,21 @@ public class Settings
   }
 
   // <editor-fold defaultstate="collapsed" desc="Font Settings">
-  public void setFont(String aFontName, Font aFont)
+  public void setFont(String propertyName, Font newFont)
   {
-    String baseKey = "workbench.font." + aFontName;
+    String baseKey = "workbench.font." + propertyName;
     this.removeProperty(baseKey + TOOLS_NAME);
     this.removeProperty(baseKey + ".size");
     this.removeProperty(baseKey + ".style");
 
-    if (aFont == null)
+    if (newFont == null)
     {
       return;
     }
 
-    String name = aFont.getFamily();
-    String size = Integer.toString(aFont.getSize());
-    int style = aFont.getStyle();
+    String name = newFont.getFamily();
+    String size = Integer.toString(newFont.getSize());
+    int style = newFont.getStyle();
     this.props.setProperty(baseKey + TOOLS_NAME, name);
     this.props.setProperty(baseKey + ".size", size);
     String value = null;
@@ -1430,7 +1430,12 @@ public class Settings
     }
     if (value == null) value = "PLAIN";
     this.props.setProperty(baseKey + ".style", value);
-    this.fireFontChangedEvent(aFontName, aFont);
+    if (newFont.getSize() <= 0)
+    {
+      // re-calculate with default size
+      newFont = getFont(propertyName);
+    }
+    this.fireFontChangedEvent(propertyName, newFont);
   }
 
   public void fireFontChangedEvent(String aKey, Font aFont)
@@ -1521,10 +1526,15 @@ public class Settings
     return getProperty("workbench.gui.monospace.font.default", "Monospaced");
   }
 
+  public Font getConfiguredFont(String property)
+  {
+    return getFont(property, false);
+  }
+
   private Font getMonospacedFont(String property, boolean returnDefault)
   {
     boolean isDefault = false;
-    Font f = this.getFont(property);
+    Font f = this.getFont(property, true);
     if (f == null && returnDefault)
     {
       int size = getDefaultFontSize();
@@ -1618,19 +1628,24 @@ public class Settings
   }
 
   /**
-   *  Returns the font configured for this keyword
+   *  Returns the font configured for this property name
    */
-  public Font getFont(String aFontName)
+  public Font getFont(String fontProperty)
+  {
+    return getFont(fontProperty, true);
+  }
+
+  private Font getFont(String fontProperty, boolean useDefaultFont)
   {
     Font result = null;
 
-    String baseKey = "workbench.font." + aFontName;
+    String baseKey = "workbench.font." + fontProperty;
     String name = StringUtil.trimToNull(getProperty(baseKey + ".name", null));
 
     // nothing configured, use the Java defaults
     if (name == null) return null;
 
-    String fontSize = StringUtil.trimToNull(getProperty(baseKey + ".size", Integer.toString(getDefaultFontSize())));
+    int fontSize = StringUtil.getIntValue(StringUtil.trimToNull(getProperty(baseKey + ".size", "")), -1);
     String type = getProperty(baseKey + ".style", "Plain");
     int style = Font.PLAIN;
     StringTokenizer tok = new StringTokenizer(type);
@@ -1641,9 +1656,11 @@ public class Settings
       if ("italic".equalsIgnoreCase(type)) style |= Font.ITALIC;
     }
 
-    int defaultSize = getDefaultFontSize();
-    int size = defaultSize == -1 ? StringUtil.getIntValue(fontSize, 12) : defaultSize;
-    result = StyleContext.getDefaultStyleContext().getFont(name, style, size);
+    if (fontSize <= 0 && useDefaultFont)
+    {
+      fontSize = getDefaultFontSize();
+    }
+    result = StyleContext.getDefaultStyleContext().getFont(name, style, fontSize);
     return result;
   }
   // </editor-fold>

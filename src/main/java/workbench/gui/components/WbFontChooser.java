@@ -72,15 +72,20 @@ public class WbFontChooser
   extends JPanel
   implements ValidatingComponent
 {
-  private boolean updateing;
+  private boolean updating;
   private WbThread fontFiller;
   private final boolean monospacedOnly;
   private Font toSelect;
+  private final String defaultLabel;
 
   public WbFontChooser(boolean monospacedOnly)
   {
     super();
+    this.defaultLabel = ResourceMgr.getString("LblDefaultIndicator");
     initComponents();
+    fontSizeComboBox.setPrototypeDisplayValue(" (" + defaultLabel + ") ");
+    this.fontSizeComboBox.insertItemAt(defaultLabel, 0);
+    this.fontSizeComboBox.setSelectedIndex(0);
     this.monospacedOnly = monospacedOnly;
   }
 
@@ -107,7 +112,7 @@ public class WbFontChooser
     {
       value = this.fontSizeComboBox.getEditor().getItem();
     }
-    if (StringUtil.isNumber(value.toString()))
+    if (value != null && defaultLabel.equals(value.toString()) || StringUtil.isNumber(value.toString()))
     {
       return true;
     }
@@ -132,7 +137,7 @@ public class WbFontChooser
     }
   }
 
-  public void setSelectedFont(Font aFont)
+ public void setSelectedFont(Font aFont)
   {
     if (this.fontNameList.getModel().getSize() <= 0)
     {
@@ -141,23 +146,31 @@ public class WbFontChooser
       return;
     }
 
-    this.updateing = true;
+    this.updating = true;
     try
     {
       if (aFont != null)
       {
         String name = aFont.getFamily();
-        String size = Integer.toString(aFont.getSize());
+        int size = aFont.getSize();
         int style = aFont.getStyle();
 
         this.fontNameList.setSelectedValue(name, true);
-        this.fontSizeComboBox.setSelectedItem(size);
+        if (size <= 0)
+        {
+          this.fontSizeComboBox.setSelectedIndex(0);
+        }
+        else
+        {
+          this.fontSizeComboBox.setSelectedItem(Integer.toString(size));
+        }
         this.boldCheckBox.setSelected((style & Font.BOLD) == Font.BOLD);
         this.italicCheckBox.setSelected((style & Font.ITALIC) == Font.ITALIC);
       }
       else
       {
         this.fontNameList.clearSelection();
+        this.fontSizeComboBox.setSelectedIndex(0);
         this.boldCheckBox.setSelected(false);
         this.italicCheckBox.setSelected(false);
       }
@@ -165,7 +178,7 @@ public class WbFontChooser
     catch (Exception e)
     {
     }
-    this.updateing = false;
+    this.updating = false;
     this.updateFontDisplay();
   }
 
@@ -192,10 +205,10 @@ public class WbFontChooser
   public static Font chooseFont(JComponent owner, Font defaultFont, boolean monospacedOnly)
   {
     WbFontChooser chooser = new WbFontChooser(monospacedOnly);
-    if (defaultFont != null) chooser.setSelectedFont(defaultFont);
-    Dimension d = new Dimension(320, 240);
-    chooser.setSize(d);
-    chooser.setPreferredSize(d);
+    chooser.setSelectedFont(defaultFont);
+//    Dimension d = new Dimension(320, 240);
+//    chooser.setSize(d);
+//    chooser.setPreferredSize(d);
 
     Font result = null;
     JDialog parent = null;
@@ -346,18 +359,18 @@ public class WbFontChooser
 
   private void updateFontDisplay()
   {
-    if (!this.updateing)
+    if (!this.updating)
     {
       synchronized (this)
       {
-        this.updateing = true;
+        this.updating = true;
         try
         {
           Font f = this.getSelectedFont();
           if (f != null)
           {
-            this.sampleLabel.setFont(f);
-            this.sampleLabel.setText((String)this.fontNameList.getSelectedValue());
+            this.sampleLabel.setFont(getDisplayFont(f));
+            this.sampleLabel.setText(f.getFontName());
           }
           else
           {
@@ -366,10 +379,16 @@ public class WbFontChooser
         }
         finally
         {
-          this.updateing = false;
+          this.updating = false;
         }
       }
     }
+  }
+
+  public static Font getDisplayFont(Font f)
+  {
+    if (f == null || f.getSize() > 0) return f;
+    return new Font(f.getFontName(), f.getStyle(), Settings.getInstance().getDefaultFontSize());
   }
 
   /** This method is called from within the constructor to
@@ -395,7 +414,6 @@ public class WbFontChooser
 
     fontSizeComboBox.setEditable(true);
     fontSizeComboBox.setModel(new DefaultComboBoxModel(new String[] { "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "36" }));
-    fontSizeComboBox.setSelectedIndex(4);
     fontSizeComboBox.addItemListener(new ItemListener()
     {
       public void itemStateChanged(ItemEvent evt)

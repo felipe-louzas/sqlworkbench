@@ -261,6 +261,7 @@ public class ValidatingDialog
   public static boolean showOKCancelDialog(Dialog parent, JComponent editor, String title)
   {
     ValidatingDialog dialog = new ValidatingDialog(parent, title, editor, true);
+    dialog.pack();
     WbSwingUtilities.center(dialog, parent);
     dialog.setDefaultButton(0);
     dialog.setVisible(true);

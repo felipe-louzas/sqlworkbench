@@ -47,7 +47,7 @@ import workbench.util.CaseInsensitiveComparator;
 public class CommandTester
 {
 
-  private Map<String, String> commands;
+  private final Map<String, String> commands;
 
   public CommandTester()
   {

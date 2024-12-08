@@ -177,8 +177,14 @@ public class WbFontPicker
     }
     else
     {
-      this.fontName.setFont(f);
-      this.fontName.setText(f.getFontName() + ", " + f.getSize());
+      Font displayFont = WbFontChooser.getDisplayFont(f);
+      this.fontName.setFont(displayFont);
+      String name = f.getFontName();
+      if (f.getSize() > 0)
+      {
+        name += ", " + displayFont.getSize();
+      }
+      this.fontName.setText(name);
     }
   }
 
