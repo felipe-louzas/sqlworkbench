@@ -70,10 +70,15 @@ public class IconHandler
     flush();
   }
 
-  protected void flush()
+  protected void flushBusyIcons()
   {
     if (cancelIcon != null) cancelIcon.getImage().flush();
     if (loadingIcon != null) loadingIcon.getImage().flush();
+  }
+
+  protected void flush()
+  {
+    flushBusyIcons();
     if (!Settings.getInstance().getCacheIcons())
     {
       if (fileIcon != null) fileIcon.getImage().flush();
@@ -85,6 +90,7 @@ public class IconHandler
   {
     if (client.isBusy()) return;
     showIconForTab(null);
+    flush();
   }
 
   public void showFileIcon()
@@ -209,9 +215,6 @@ public class IconHandler
           }
           else
           {
-            // Under Linux, not flushing the icon seems to keep it running in the background
-            // which causes a substantial CPU load
-            flush();
             if (client.hasFileLoaded())
             {
               tab.setIconAt(index, getFileIcon());
@@ -220,6 +223,9 @@ public class IconHandler
             {
               tab.setIconAt(index, null);
             }
+            // Under Linux, not flushing the icon seems to keep it running in the background
+            // which causes a substantial CPU load
+            flushBusyIcons();
           }
         }
         catch (Throwable th)
