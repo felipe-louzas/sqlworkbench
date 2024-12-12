@@ -173,14 +173,19 @@ public class LnFHelper
     Font configuredStdFont = settings.getStandardFont();
     Font stdFont = configuredStdFont;
 
-    if (stdFont == null && isWindowsLookAndFeel())
+    if (stdFont == null)
     {
-      // The default Windows Look & Feel uses "Tahoma", but Windows uses Segoe UI
-      Font f = def.getFont("Menu.font");
-
-      // new Font("Segoe UI") creates a font with the family "Dialog"
-      // that looks very different to a "Segoe UI" with the family "Segoe UI" that is created by StyleContext.getFont()
-      stdFont = StyleContext.getDefaultStyleContext().getFont("Segoe UI", Font.PLAIN, f.getSize());
+      if (isWindowsLookAndFeel())
+      {
+        // new Font("Segoe UI") creates a font with the family "Dialog"
+        // that looks very different to a "Segoe UI" with the family "Segoe UI" that is created by StyleContext.getFont()
+        stdFont = StyleContext.getDefaultStyleContext().getFont("Segoe UI", Font.PLAIN, Settings.getInstance().getDefaultFontSize());
+      }
+      else if (Settings.getInstance().hasGlobalFontSizeDefined())
+      {
+        Font defaultFont = def.getFont("Menu.font");
+        stdFont = defaultFont.deriveFont((float)Settings.getInstance().getDefaultFontSize());
+      }
     }
 
     if (stdFont != null)

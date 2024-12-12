@@ -1501,6 +1501,11 @@ public class Settings
     return getMonospacedFont(PROPERTY_DATA_FONT, returnDefault);
   }
 
+  public boolean hasGlobalFontSizeDefined()
+  {
+    return getIntProperty(PROPERTY_DEFAULT_FONT_SIZE, -1) > 0;
+  }
+
   public int getDefaultFontSize()
   {
     int size = getIntProperty(PROPERTY_DEFAULT_FONT_SIZE, -1);
@@ -1656,7 +1661,7 @@ public class Settings
       if ("italic".equalsIgnoreCase(type)) style |= Font.ITALIC;
     }
 
-    if (fontSize <= 0 && useDefaultFont)
+    if ((fontSize <= 0 && useDefaultFont) || hasGlobalFontSizeDefined())
     {
       fontSize = getDefaultFontSize();
     }
