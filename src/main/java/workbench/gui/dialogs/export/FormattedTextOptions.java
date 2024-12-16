@@ -28,4 +28,5 @@ public interface FormattedTextOptions
 {
   boolean useGitHubMarkdown();
   boolean includeHeaders();
+  boolean createMarkdownCodeBlock();
 }

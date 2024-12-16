@@ -47,7 +47,7 @@ public class DataStorePrinter
   extends ConsolePrinter
 {
   private final String longValueSuffix = " (...)";
-  private DataStore data;
+  private final DataStore data;
   private int maxDataLength = Integer.MAX_VALUE;
 
   public DataStorePrinter(DataStore source)
@@ -100,7 +100,7 @@ public class DataStorePrinter
     {
       int dataWidth = getMaxDataWidth(i);
       int width = getDataWidthToUse(dataWidth);
-      widths.put(Integer.valueOf(i), Integer.valueOf(width));
+      widths.put(i, width);
     }
     return widths;
   }
@@ -187,6 +187,10 @@ public class DataStorePrinter
       if (showRowCount)
       {
         pw.println();
+        if (createMarkdownCodeBlock)
+        {
+          pw.print("    ");
+        }
         pw.println(ResourceMgr.getFormattedString("MsgRows", count));
       }
       pw.flush();

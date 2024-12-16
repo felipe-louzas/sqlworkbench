@@ -63,17 +63,17 @@ public class DataStorePrinterTest
     DataStore ds = new DataStore(cols, types, sizes);
     int row = ds.addRow();
     ds.setValue(row, 0, "Very long test value");
-    ds.setValue(row, 1, Integer.valueOf(1));
+    ds.setValue(row, 1, 1);
     ds.setValue(row, 2, "Beeblebrox");
 
     row = ds.addRow();
     ds.setValue(row, 0, "Multi-line\ntest value");
-    ds.setValue(row, 1, Integer.valueOf(2));
+    ds.setValue(row, 1, 2);
     ds.setValue(row, 2, "Dent on\ntwo lines");
 
     row = ds.addRow();
     ds.setValue(row, 0, "My comment");
-    ds.setValue(row, 1, Integer.valueOf(3));
+    ds.setValue(row, 1, 3);
     ds.setValue(row, 2, "lastname \nwith two lines");
 
     row = ds.addRow();
@@ -83,9 +83,76 @@ public class DataStorePrinterTest
 
     row = ds.addRow();
     ds.setValue(row, 0, "Some Comment");
-    ds.setValue(row, 1, Integer.valueOf(5));
+    ds.setValue(row, 1, 5);
     ds.setValue(row, 2, null);
     return ds;
+  }
+
+  @Test
+  public void testCodeBlock()
+  {
+    DataStore ds = createTestData2();
+    DataStorePrinter printer = new DataStorePrinter(ds);
+    printer.setUseIndentedMarkdownCodeBlock(true);
+    printer.setUseMarkdownFormatting(true);
+    printer.setFormatColumns(true);
+    StringWriter sw = new StringWriter(500);
+    TextPrinter pw = TextPrinter.createPrinter(sw);
+    printer.printTo(pw);
+//    System.out.println(sw.toString());
+    String[] lines = sw.toString().split(StringUtil.LINE_TERMINATOR);
+    assertEquals(7, lines.length);
+    for (int i=0; i < 5; i++)
+    {
+      assertTrue(lines[i].startsWith("    "));
+    }
+    assertTrue(lines[6].startsWith("    ("));
+  }
+
+  @Test
+  public void testCodeBlockRecords()
+  {
+    DataStore ds = createTestData2();
+    DataStorePrinter printer = new DataStorePrinter(ds);
+    printer.setUseIndentedMarkdownCodeBlock(true);
+    printer.setUseMarkdownFormatting(true);
+    printer.setPrintRowsAsLine(false);
+    printer.setFormatColumns(true);
+    StringWriter sw = new StringWriter(500);
+    TextPrinter pw = TextPrinter.createPrinter(sw);
+    printer.printTo(pw);
+//    System.out.println(sw.toString());
+    String[] lines = sw.toString().split(StringUtil.LINE_TERMINATOR);
+    for (String line : lines)
+    {
+      if (StringUtil.isNotBlank(line))
+      {
+        assertTrue(line.startsWith("    "));
+      }
+    }
+  }
+
+  @Test
+  public void testCodeBlockMultiline()
+  {
+    DataStore ds = createTestData();
+    DataStorePrinter printer = new DataStorePrinter(ds);
+    printer.setUseIndentedMarkdownCodeBlock(true);
+    printer.setUseMarkdownFormatting(true);
+    printer.setFormatColumns(true);
+    StringWriter sw = new StringWriter(500);
+    TextPrinter pw = TextPrinter.createPrinter(sw);
+    printer.printTo(pw);
+//    System.out.println(sw.toString());
+    String[] lines = sw.toString().split(StringUtil.LINE_TERMINATOR);
+    assertEquals(11, lines.length);
+    for (String line : lines)
+    {
+      if (StringUtil.isNotBlank(line))
+      {
+        assertTrue(line.startsWith("    "));
+      }
+    }
   }
 
   @Test
@@ -145,17 +212,17 @@ public class DataStorePrinterTest
 
     DataStore ds = new DataStore(cols, types, sizes);
     int row = ds.addRow();
-    ds.setValue(row, 0, Integer.valueOf(1));
+    ds.setValue(row, 0, 1);
     ds.setValue(row, 1, "Zaphod");
     ds.setValue(row, 2, "Beeblebrox");
 
     row = ds.addRow();
-    ds.setValue(row, 0, Integer.valueOf(2));
+    ds.setValue(row, 0, 2);
     ds.setValue(row, 1, "Ford");
     ds.setValue(row, 2, "Prefect");
 
     row = ds.addRow();
-    ds.setValue(row, 0, Integer.valueOf(3));
+    ds.setValue(row, 0, 3);
     ds.setValue(row, 1, "Arthur");
     ds.setValue(row, 2, "Dent");
 

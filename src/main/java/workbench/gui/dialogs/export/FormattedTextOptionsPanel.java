@@ -40,6 +40,12 @@ public class FormattedTextOptionsPanel
   }
 
   @Override
+  public boolean createMarkdownCodeBlock()
+  {
+    return createCodeBlock.isSelected();
+  }
+
+  @Override
   public boolean useGitHubMarkdown()
   {
     return useMD.isSelected();
@@ -56,6 +62,7 @@ public class FormattedTextOptionsPanel
     Settings s = Settings.getInstance();
     s.setProperty("workbench." + type + ".consoletext.markdown", this.useGitHubMarkdown());
     s.setProperty("workbench." + type + ".consoletext.header", this.includeHeaders());
+    s.setProperty("workbench." + type + ".consoletext.codeindent", this.createMarkdownCodeBlock());
   }
 
   public void restoreSettings(String type)
@@ -63,8 +70,13 @@ public class FormattedTextOptionsPanel
     Settings s = Settings.getInstance();
     this.useMD.setSelected(s.getBoolProperty("workbench." + type + ".consoletext.markdown"));
     this.includeHeaders.setSelected(s.getBoolProperty("workbench." + type + ".consoletext.header"));
+    this.createCodeBlock.setSelected(s.getBoolProperty("workbench." + type + ".consoletext.codeindent"));
   }
 
+  private void checkSettings()
+  {
+    this.createCodeBlock.setEnabled(this.useMD.isSelected());
+  }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -79,6 +91,7 @@ public class FormattedTextOptionsPanel
 
     includeHeaders = new javax.swing.JCheckBox();
     useMD = new javax.swing.JCheckBox();
+    createCodeBlock = new javax.swing.JCheckBox();
 
     setLayout(new java.awt.GridBagLayout());
 
@@ -96,12 +109,21 @@ public class FormattedTextOptionsPanel
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1.0;
     add(useMD, gridBagConstraints);
+
+    createCodeBlock.setText("Create markdown code block");
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    add(createCodeBlock, gridBagConstraints);
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JCheckBox createCodeBlock;
   private javax.swing.JCheckBox includeHeaders;
   private javax.swing.JCheckBox useMD;
   // End of variables declaration//GEN-END:variables

@@ -71,6 +71,7 @@ public abstract class ConsolePrinter
   protected boolean showResultName = true;
   protected boolean printHeader = true;
   protected boolean useMarkdownFormatting = false;
+  protected boolean createMarkdownCodeBlock = false;
   protected boolean cancelled;
   protected RowActionMonitor rowMonitor;
 
@@ -81,6 +82,11 @@ public abstract class ConsolePrinter
     converter.setDefaultIntegerFormatter(Settings.getInstance().createDefaultIntegerFormatter());
     nullString = ConsoleSettings.getNullString();
     useMarkdownFormatting = Settings.getInstance().useMarkDownForConsolePrint();
+  }
+
+  public void setUseIndentedMarkdownCodeBlock(boolean flag)
+  {
+    this.createMarkdownCodeBlock = flag;
   }
 
   public void setUseMarkdownFormatting(boolean flag)
@@ -180,10 +186,18 @@ public abstract class ConsolePrinter
 
     if (showResultName && StringUtil.isNotBlank(resultName))
     {
+      if (createMarkdownCodeBlock)
+      {
+        pw.print("    ");
+      }
       pw.println("---- " + resultName);
     }
     int headerWidth = 0;
     int currentCol = 0;
+    if (createMarkdownCodeBlock)
+    {
+      pw.print("    ");
+    }
     if (doFormat && useMarkdownFormatting)
     {
       pw.print("|");
@@ -197,7 +211,7 @@ public abstract class ConsolePrinter
 
       if (doFormat)
       {
-        int colWidth = columnWidths.get(Integer.valueOf(col));
+        int colWidth = columnWidths.get(col);
         writePadded(pw, colName, colWidth, false);
         headerWidth += colWidth;
       }
@@ -216,6 +230,10 @@ public abstract class ConsolePrinter
     if (headerWidth > 0 && doFormat)
     {
       currentCol = 0;
+      if (createMarkdownCodeBlock)
+      {
+        pw.print("    ");
+      }
       if (doFormat && useMarkdownFormatting)
       {
         pw.print("|");
@@ -236,7 +254,7 @@ public abstract class ConsolePrinter
             pw.print("-+-");
           }
         }
-        pw.print(StringUtil.padRight("-", columnWidths.get(Integer.valueOf(i)), '-'));
+        pw.print(StringUtil.padRight("-", columnWidths.get(i), '-'));
         currentCol ++;
       }
       if (doFormat && useMarkdownFormatting)
@@ -286,6 +304,10 @@ public abstract class ConsolePrinter
     int colcount = row.getColumnCount();
     int colwidth = 0;
 
+    if (createMarkdownCodeBlock)
+    {
+      pw.print("    ");
+    }
     pw.println("---- [" + ResourceMgr.getString("TxtRow") + " " + (rowNum + 1) + "] -------------------------------");
 
     // Calculate max. colname width
@@ -301,6 +323,10 @@ public abstract class ConsolePrinter
       if (!isColumnIncluded(colname)) continue;
 
       String value = getDisplayValue(row, col);
+      if (createMarkdownCodeBlock)
+      {
+        pw.print("    ");
+      }
       writePadded(pw, colname, colwidth + 1, false);
       pw.print(": ");
       if (doFormat)
@@ -358,11 +384,17 @@ public abstract class ConsolePrinter
   protected void printAsLine(TextPrinter pw, RowData row)
   {
     int colcount = row.getColumnCount();
+
     try
     {
+      // Stores the multiline values per column index
       Map<Integer, String[]> continuationLines = new HashMap<>(colcount);
 
       int realColCount = 0;
+      if (createMarkdownCodeBlock)
+      {
+        pw.print("    ");
+      }
       if (doFormat && useMarkdownFormatting)
       {
         pw.print("|");
@@ -376,7 +408,7 @@ public abstract class ConsolePrinter
 
         if (doFormat)
         {
-          int colwidth = columnWidths.get(Integer.valueOf(col));
+          int colwidth = columnWidths.get(col);
           String[] lines = value.split(StringUtil.REGEX_CRLF);
           if (lines.length == 0)
           {
@@ -435,6 +467,7 @@ public abstract class ConsolePrinter
   private void printContinuationLines(TextPrinter pw, Map<Integer, String[]> lineMap)
   {
     boolean printed = true;
+    boolean indented = false;
     int colcount = getColumnCount();
     int currentLine = 1; // line 0 has already been printed
     int printedColNr = 0;
@@ -451,6 +484,11 @@ public abstract class ConsolePrinter
         if (lines == null) continue;
         if (lines.length <= currentLine) continue;
 
+        if (!indented && createMarkdownCodeBlock)
+        {
+          pw.print("     ");
+          indented = true;
+        }
         int colstart = getColStartColumn(col) - currentpos;
         writePadded(pw, "", colstart, false);
         if (printContinuationIndicator && printedColNr > 1)

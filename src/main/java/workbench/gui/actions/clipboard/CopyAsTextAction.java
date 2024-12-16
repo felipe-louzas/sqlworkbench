@@ -314,6 +314,7 @@ public class CopyAsTextAction
       printer.setPrintRowCount(false);
       printer.setPrintHeader(dialog.getFormattedTextOptions().includeHeaders());
       printer.setUseMarkdownFormatting(dialog.getFormattedTextOptions().useGitHubMarkdown());
+      printer.setUseIndentedMarkdownCodeBlock(dialog.getFormattedTextOptions().createMarkdownCodeBlock());
       printer.setShowResultName(GuiSettings.copyToClipboardFormattedTextWithResultName());
       List<ColumnIdentifier> columnsToCopy = dialog.getColumnsToExport();
       if (columnsToCopy != null)
