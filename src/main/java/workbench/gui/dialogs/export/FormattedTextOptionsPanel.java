@@ -111,7 +111,7 @@ public class FormattedTextOptionsPanel
     gridBagConstraints.weightx = 1.0;
     add(useMD, gridBagConstraints);
 
-    createCodeBlock.setText("Create markdown code block");
+    createCodeBlock.setText(ResourceMgr.getString("LblExportUseCodeBlock")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
