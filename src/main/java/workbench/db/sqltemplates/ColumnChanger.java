@@ -32,6 +32,7 @@ import workbench.db.DBID;
 import workbench.db.DbObject;
 import workbench.db.DbSettings;
 import workbench.db.MetaDataSqlManager;
+import workbench.db.QuoteHandler;
 import workbench.db.TableIdentifier;
 import workbench.db.TableSourceBuilder;
 import workbench.db.WbConnection;
@@ -365,6 +366,11 @@ public class ColumnChanger
 
   public String getColumnCommentSql(DbObject table, ColumnIdentifier column)
   {
+    return getColumnCommentSql(table, column, SqlUtil.getQuoteHandler(this.dbConn));
+  }
+
+  public String getColumnCommentSql(DbObject table, ColumnIdentifier column, QuoteHandler quoteHandler)
+  {
     String remarks = column.getComment();
     if (StringUtil.isBlank(remarks)) remarks = "";
 
@@ -372,8 +378,8 @@ public class ColumnChanger
 
     sql = sql.replace(CommentSqlManager.COMMENT_FQ_OBJECT_NAME_PLACEHOLDER, table.getFullyQualifiedName(dbConn));
     sql = sql.replace(CommentSqlManager.COMMENT_OBJECT_NAME_PLACEHOLDER, table.getObjectExpression(dbConn));
-    sql = TemplateHandler.replaceTablePlaceholder(sql, table, dbConn, false);
-    sql = sql.replace(TableSourceBuilder.SCHEMA_PLACEHOLDER, table.getSchema() == null ? "" : table.getSchema());
+    sql = TemplateHandler.replaceTablePlaceholder(sql, table, dbConn, false, quoteHandler);
+    sql = sql.replace(TableSourceBuilder.SCHEMA_PLACEHOLDER, table.getSchema() == null ? "" : quoteHandler.quoteObjectname(table.getSchema()));
     sql = sql.replace(CommentSqlManager.COMMENT_COLUMN_PLACEHOLDER, getColumnExpression(column));
     sql = sql.replace(CommentSqlManager.COMMENT_PLACEHOLDER, remarks.replace("'", "''"));
     sql = sql.replace(PARAM_DATATYPE, column.getDbmsType());
@@ -422,7 +428,7 @@ public class ColumnChanger
     }
     if (sql != null)
     {
-      sql = sql.replace(MetaDataSqlManager.COLUMN_NAME_PLACEHOLDER, getColumnExpression(oldDefinition));
+      sql = sql.replace(MetaDataSqlManager.COLUMN_NAME_PLACEHOLDER, SqlUtil.getQuoteHandler(dbConn).quoteObjectname(oldDefinition.getColumnName()));
       sql = sql.replace(PARAM_DATATYPE, oldDefinition.getDbmsType());
       sql = sql.replace(PARAM_NEW_DATATYPE, newDefinition.getDbmsType());
     }

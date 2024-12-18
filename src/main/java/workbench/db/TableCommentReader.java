@@ -30,6 +30,7 @@ import workbench.resource.Settings;
 import workbench.db.sqltemplates.ColumnChanger;
 
 import workbench.util.CollectionUtil;
+import workbench.util.SqlUtil;
 import workbench.util.StringUtil;
 
 /**
@@ -55,6 +56,7 @@ public class TableCommentReader
     CommentSqlManager mgr = new CommentSqlManager(dbConnection.getMetadata().getDbId());
 
     String commentStatement = mgr.getCommentSqlTemplate(table.getType(), CommentSqlManager.COMMENT_ACTION_SET);
+    boolean quoteIdentifier = dbConnection.getDbSettings().useQuotedColumnsForComments();
 
     if (StringUtil.isBlank(commentStatement))
     {
@@ -72,6 +74,8 @@ public class TableCommentReader
       comment = getTableComment(dbConnection, table);
     }
 
+    QuoteHandler quoter = quoteIdentifier ? dbConnection.getMetadata() : getDummyQuoteHandler();
+
     String result = null;
     if (Settings.getInstance().getIncludeEmptyComments() || StringUtil.isNotBlank(comment))
     {
@@ -86,9 +90,9 @@ public class TableCommentReader
         result = StringUtil.replace(result, CommentSqlManager.COMMENT_OBJECT_NAME_PLACEHOLDER, table.getObjectExpression(dbConnection));
       }
 
-      result = replaceObjectNamePlaceholder(result, MetaDataSqlManager.TABLE_NAME_PLACEHOLDER, dbConnection.getMetadata().quoteObjectname(table.getTableName()));
-      result = replaceObjectNamePlaceholder(result, TableSourceBuilder.SCHEMA_PLACEHOLDER, dbConnection.getMetadata().quoteObjectname(table.getSchema()));
-      result = replaceObjectNamePlaceholder(result, TableSourceBuilder.CATALOG_PLACEHOLDER, dbConnection.getMetadata().quoteObjectname(table.getCatalog()));
+      result = replaceObjectNamePlaceholder(result, MetaDataSqlManager.TABLE_NAME_PLACEHOLDER, quoter.quoteObjectname(table.getTableName()));
+      result = replaceObjectNamePlaceholder(result, TableSourceBuilder.SCHEMA_PLACEHOLDER, quoter.quoteObjectname(table.getSchema()));
+      result = replaceObjectNamePlaceholder(result, TableSourceBuilder.CATALOG_PLACEHOLDER, quoter.quoteObjectname(table.getCatalog()));
       result = StringUtil.replace(result, CommentSqlManager.COMMENT_PLACEHOLDER, comment == null ? "" : comment.replace("'", "''"));
       result += ";";
     }
@@ -129,6 +133,9 @@ public class TableCommentReader
     StringBuilder result = new StringBuilder(columns.size() * 25);
     ColumnChanger colChanger = new ColumnChanger(con);
 
+    boolean quoteIdentifier = con.getDbSettings().useQuotedColumnsForComments();
+    QuoteHandler quoter = quoteIdentifier ? con.getMetadata() : getDummyQuoteHandler();
+
     for (ColumnIdentifier col : columns)
     {
       String comment = col.getComment();
@@ -136,7 +143,7 @@ public class TableCommentReader
       {
         try
         {
-          String commentSql = colChanger.getColumnCommentSql(table, col);
+          String commentSql = colChanger.getColumnCommentSql(table, col, quoter);
           result.append(commentSql);
           result.append(";\n");
         }
@@ -158,4 +165,44 @@ public class TableCommentReader
     return source.replace(placeHolder, replacement);
   }
 
+  private QuoteHandler getDummyQuoteHandler() {
+      return new QuoteHandler()
+      {
+        @Override
+        public boolean isQuoted(String name)
+        {
+          return SqlUtil.isQuotedIdentifier(name);
+        }
+
+        @Override
+        public String removeQuotes(String name)
+        {
+          return SqlUtil.removeObjectQuotes(name);
+        }
+
+        @Override
+        public String quoteObjectname(String name)
+        {
+          return name;
+        }
+
+        @Override
+        public String quoteObjectname(String name, boolean quoteAlways)
+        {
+          return name;
+        }
+
+        @Override
+        public boolean needsQuotes(String name)
+        {
+          return false;
+        }
+
+        @Override
+        public boolean isLegalIdentifier(String name)
+        {
+          return true;
+        }
+      };
+  }
 }

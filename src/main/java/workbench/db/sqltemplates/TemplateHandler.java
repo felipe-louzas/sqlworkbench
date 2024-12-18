@@ -144,9 +144,13 @@ public abstract class TemplateHandler
 
   public static String replaceTablePlaceholder(String sql, DbObject table, WbConnection connection, boolean addWhitespace)
   {
+    return replaceTablePlaceholder(sql, table, connection, addWhitespace, SqlUtil.getQuoteHandler(connection));
+  }
+
+  public static String replaceTablePlaceholder(String sql, DbObject table, WbConnection connection, boolean addWhitespace, QuoteHandler handler)
+  {
     if (sql == null) return sql;
     if (table == null) return sql;
-    QuoteHandler handler = SqlUtil.getQuoteHandler(connection);
     if (handler == null)
     {
       handler = QuoteHandler.STANDARD_HANDLER;
