@@ -392,6 +392,7 @@ public class DefaultTriggerReader
 
     try
     {
+      long start = System.currentTimeMillis();
       if (useSavepoint)
       {
         sp = dbConnection.setSavepoint();
@@ -491,6 +492,8 @@ public class DefaultTriggerReader
         }
       }
       dbConnection.releaseSavepoint(sp);
+      long duration = System.currentTimeMillis() - start;
+      LogMgr.logInfo(new CallerInfo(){}, "Retrieving trigger source for \"" + triggerName + "\" took " + duration + "ms");
     }
     catch (SQLException e)
     {

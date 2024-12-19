@@ -59,9 +59,9 @@ public class TriggerDisplayPanel
   implements ListSelectionListener, Resettable
 {
   private TriggerReader reader;
-  private WbTable triggers;
-  private EditorPanel source;
-  private WbSplitPane splitPane;
+  private final WbTable triggers;
+  private final EditorPanel source;
+  private final WbSplitPane splitPane;
 
   public TriggerDisplayPanel()
   {

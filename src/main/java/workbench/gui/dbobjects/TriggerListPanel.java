@@ -23,7 +23,6 @@ package workbench.gui.dbobjects;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -328,7 +327,7 @@ public class TriggerListPanel
     this.currentCatalog = aCatalog;
     if (initialized && this.isVisible() && retrieve)
     {
-      this.retrieve();
+      this.startRetrieval();
     }
     else
     {
@@ -339,7 +338,24 @@ public class TriggerListPanel
 
   public void panelSelected()
   {
-    if (this.shouldRetrieve) this.retrieve();
+    if (this.shouldRetrieve)
+    {
+      this.startRetrieval();
+    }
+  }
+
+  private void startRetrieval()
+  {
+    WbThread retrieval = new WbThread("Trigger Retrieval")
+    {
+      @Override
+      public void run()
+      {
+        retrieve();
+      }
+    };
+    WbSwingUtilities.showWaitCursorOnWindow(this);
+    retrieval.start();
   }
 
   public void retrieve()
@@ -398,7 +414,7 @@ public class TriggerListPanel
     super.setVisible(aFlag);
     if (aFlag && this.shouldRetrieve)
     {
-      this.retrieve();
+      this.startRetrieval();
     }
   }
 
@@ -516,8 +532,8 @@ public class TriggerListPanel
       return;
     }
 
-    Container parent = this.getParent();
-    WbSwingUtilities.showWaitCursor(parent);
+    WbSwingUtilities.showWaitCursor(this.source);
+    WbSwingUtilities.showWaitCursorOnWindow(this);
 
     try
     {
@@ -558,7 +574,8 @@ public class TriggerListPanel
     }
     finally
     {
-      WbSwingUtilities.showDefaultCursor(parent);
+      WbSwingUtilities.showDefaultCursor(this.source);
+      WbSwingUtilities.showDefaultCursorOnWindow(this);
       levelChanger.restoreIsolationLevel(dbConnection);
       dbConnection.setBusy(false);
     }
@@ -636,7 +653,7 @@ public class TriggerListPanel
   {
     if (!WbSwingUtilities.isConnectionIdle(this, dbConnection)) return;
     this.reset();
-    this.retrieve();
+    this.startRetrieval();
   }
 
 }

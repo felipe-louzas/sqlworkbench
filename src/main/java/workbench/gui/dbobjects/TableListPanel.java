@@ -2119,12 +2119,25 @@ public class TableListPanel
   }
 
   protected void retrieveTriggers()
-    throws SQLException
+  {
+    WbThread th = new WbThread("Trigger Retrieval")
+    {
+      @Override
+      public void run()
+      {
+        _retrieveTriggers();
+      }
+    };
+    WbSwingUtilities.showWaitCursor(this);
+    th.start();
+  }
+
+  private void _retrieveTriggers()
   {
     try
     {
       setActivePanelIndex(triggers);
-      WbSwingUtilities.showDefaultCursor(this);
+      WbSwingUtilities.showWaitCursor(this);
       triggers.readTriggers(getObjectTable());
       this.shouldRetrieveTriggers = false;
     }
