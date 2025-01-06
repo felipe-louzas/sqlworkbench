@@ -335,7 +335,35 @@ public class PostgresPartitionReader
    */
   public static PostgresPartition getPartitionDefinition(TableIdentifier table, WbConnection dbConnection)
   {
-    String sql =
+    String sql;
+
+    if (JdbcUtils.hasMinimumServerVersion(dbConnection, "13")){
+      sql =
+      "-- SQL Workbench/J \n" +
+      "select base.relnamespace::regnamespace::text as base_table_schema, \n" +
+      "       base.relname as base_table, \n" +
+      "       pg_catalog.pg_get_expr(c.relpartbound, c.oid, true) as partition_expression, \n" +
+      "       pg_catalog.pg_get_expr(p.partexprs, p.partrelid, true) as sub_partition_expression, \n" +
+      "       (select string_agg(case when x.attnum = 0 then '<expr>' else att.attname end, ', ' order by x.idx) \n" +
+      "        from unnest(p.partattrs) with ordinality as x(attnum, idx)\n" +
+      "          left join pg_catalog.pg_attribute att \n" +
+      "                 on att.attnum = x.attnum \n" +
+      "                and att.attrelid = p.partrelid) as sub_part_cols,\n" +
+      "       case p.partstrat \n" +
+      "         when 'l' then 'LIST' \n" +
+      "         when 'r' then 'RANGE' \n" +
+      "         when 'h' then 'HASH' \n" +
+      "       end as sub_partition_strategy \n" +
+      "from pg_class c \n" +
+      "  join lateral pg_partition_tree(c.oid) pt on pt.level = 0  \n" +
+      "  join pg_class base on base.oid = pt.parentrelid\n" +
+      "  join pg_partitioned_table p on p.partrelid = case pt.isleaf when true then pt.parentrelid else pt.relid end \n" +
+      "where c.relnamespace = cast(? as regnamespace) \n" +
+      "  and c.relname = ?";
+    }
+    else
+    {
+      sql =
       "-- SQL Workbench/J \n" +
       "select base.relnamespace::regnamespace::text as base_table_schema, \n" +
       "       base.relname as base_table, \n" +
@@ -357,7 +385,7 @@ public class PostgresPartitionReader
       "  join pg_class base on base.oid = i.inhparent \n" +
       "where c.relnamespace = cast(? as regnamespace) \n" +
       "  and c.relname = ?";
-
+    }
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Savepoint sp = null;
