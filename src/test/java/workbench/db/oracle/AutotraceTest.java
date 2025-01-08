@@ -184,7 +184,7 @@ public class AutotraceTest
       data = result.getDataStores();
       assertEquals(2, data.size());
       assertEquals("Statistics", data.get(0).getResultName());
-      assertEquals("Execution plan", data.get(1).getResultName());
+      assertEquals("tabledata", data.get(1).getResultName());
       StringBuilder plan = new StringBuilder();
       for (int row=0; row < data.get(1).getRowCount(); row++)
       {

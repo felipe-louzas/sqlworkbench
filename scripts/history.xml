@@ -13,6 +13,7 @@
     <entry dev-build="1" type="enh">"Double click and drag" now extends the selection by words</entry>
     <entry dev-build="1" type="enh">It's now possible to show a list of all variables used in the current editor</entry>
     <entry dev-build="1" type="enh">For DuckDB, macros are now shown in the DbExplorer and DbTree.</entry>
+    <entry dev-build="4" type="fix">For Sybase, disable the use of getSchema() through configuration</entry>
     <entry dev-build="4" type="fix">For SQL Server, the generated code for sp_addextendedproperty was not correct when object names needed quoting</entry>
     <entry dev-build="4" type="fix">For PostgreSQL, the source of partitions was not generated correctly</entry>
     <entry dev-build="3" type="fix">The built-in SQL formatter duplicated existing column comments when using the option "Column name comment for INSERT"</entry>

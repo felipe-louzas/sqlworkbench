@@ -219,7 +219,6 @@ public class OracleTableSourceBuilderTest
       TableSourceBuilder builder = TableSourceBuilderFactory.getBuilder(con);
       TableDefinition tbl = con.getMetadata().getTableDefinition(new TableIdentifier("SUBPART_TEST"));
       String source = builder.getTableSource(tbl.getTable(), tbl.getColumns());
-//      System.out.println(source);
       String expected =
         "CREATE TABLE SUBPART_TEST\n" +
         "(\n" +
@@ -229,16 +228,25 @@ public class OracleTableSourceBuilderTest
         ")\n" +
         "PARTITION BY LIST (PART_KEY)\n" +
         "SUBPARTITION BY LIST (SUB_KEY)\n" +
-        "SUBPARTITIONS TEMPLATE\n" +
+        "SUBPARTITION TEMPLATE\n" +
         "(\n" +
         "  SUBPARTITION SP_1 VALUES (1, 2, 3),\n" +
         "  SUBPARTITION SP_2 VALUES (4, 5, 6)\n" +
         ")\n" +
         "(\n" +
-        "  PARTITION P_1 VALUES (1),\n" +
+        "  PARTITION P_1 VALUES (1)\n" +
+        "  (\n" +
+        "      SUBPARTITION P_1_SP_1 VALUES (1, 2, 3),\n" +
+        "      SUBPARTITION P_1_SP_2 VALUES (4, 5, 6)\n" +
+        "  ),\n" +
         "  PARTITION P_2 VALUES (2)\n" +
+        "  (\n" +
+        "      SUBPARTITION P_2_SP_1 VALUES (1, 2, 3),\n" +
+        "      SUBPARTITION P_2_SP_2 VALUES (4, 5, 6)\n" +
+        "  )\n" +
         ")\n" +
         "TABLESPACE USERS;";
+//      System.out.println(expected + "\n---\n" + source);
       assertEquals(expected, source.trim());
     }
     finally

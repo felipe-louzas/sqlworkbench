@@ -225,7 +225,12 @@ public class OracleStatementHook
 
     if (plan != null)
     {
-      ResultNameAnnotation.setResultName(plan, sql);
+      // If the result data is not shown, use the result name
+      // for the execution plan
+      if (traceOnly)
+      {
+        ResultNameAnnotation.setResultName(plan, sql);
+      }
       result.addDataStore(plan);
     }
   }

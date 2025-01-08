@@ -92,6 +92,7 @@ public class PostgresDomainReader
         "      SELECT " + defSource +
         "      FROM pg_catalog.pg_constraint ci\n" +
         "      WHERE ci.contypid = t.oid \n" +
+        "        AND ci.contype <> 'n' \n" + // needed for Postgres 17+
         "    ) c ON true \n");
 
     baseSql_93 = sqlTemplate.replace("__CONSTRAINTS__",
