@@ -89,12 +89,12 @@ public class WbAboutDialog
     getRootPane().setDefaultButton(closeButton);
     escAction = new EscAction(this, this);
     WbFile f = Settings.getInstance().getConfigFile();
-    String s = ResourceMgr.getFormattedString("LblSettingsLocation", f.getFullPath());
+    String s = ResourceMgr.getFormattedString("LblSettingsLocation", f.getFullpathForLogging());
     settingsLabel.setText(s);
     settingsLabel.setCaretPosition(0);
     settingsLabel.setBorder(new EmptyBorder(1, 0, 1, 0));
     WbFile logFile = LogMgr.getLogfile();
-    logfileLabel.setText(ResourceMgr.getFormattedString("LblLogLocation", logFile == null ? "": logFile.getFullPath()));
+    logfileLabel.setText(ResourceMgr.getFormattedString("LblLogLocation", logFile == null ? "": logFile.getFullpathForLogging()));
     logfileLabel.setCaretPosition(0);
     logfileLabel.setBorder(new EmptyBorder(1, 0, 1, 0));
     long freeMem = MemoryWatcher.getFreeMemory() / (1024*1024);
