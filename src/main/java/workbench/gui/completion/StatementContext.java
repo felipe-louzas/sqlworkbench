@@ -157,6 +157,10 @@ public class StatementContext
     {
       verbAnalyzer = MergeAnalyzer.createAnalyzer(conn, sql, pos);
     }
+    else if ("VACUUM".equalsIgnoreCase(verb) && DBID.Postgres.isDB(conn))
+    {
+      verbAnalyzer = new PgVacuumAnalyzer(conn, sql, pos);
+    }
     else if ("SHOW".equalsIgnoreCase(verb) || "SET".equalsIgnoreCase(verb) || "RESET".equalsIgnoreCase(verb))
     {
       if (DBID.fromConnection(conn).isAny(DBID.Postgres, DBID.Greenplum))
