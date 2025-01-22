@@ -406,13 +406,23 @@ WHERE trigger_name not like 'BIN$%'
   </void>
 
   <void method="put">
-   <string>Adaptive Server Anywhere</string>
-   <object idref="list_asa_trg"/>
+   <string>SQL Anywhere</string>
+   <object id="list_sap_any" class="workbench.db.GetMetaDataSql">
+    <void property="baseSql">
+     <string>select trigname as trigger_name, trigtime as trigger_type, event as trigger_event from systriggers</string>
+    </void>
+    <void property="objectNameField">
+     <string>tname</string>
+    </void>
+    <void property="orderBy">
+     <string>ORDER BY trigname</string>
+    </void>
+   </object>
   </void>
 
   <void method="put">
-   <string>SQL Anywhere</string>
-   <object idref="list_asa_trg"/>
+   <string>Adaptive Server Anywhere</string>
+   <object idref="list_sap_any"/>
   </void>
 
   <void method="put">
