@@ -161,6 +161,10 @@ public class StatementContext
     {
       verbAnalyzer = new PgVacuumAnalyzer(conn, sql, pos);
     }
+    else if (("ANALYZE".equalsIgnoreCase(verb) || "ANALYSE".equalsIgnoreCase(verb)) && DBID.Postgres.isDB(conn))
+    {
+      verbAnalyzer = new PgAnalyzeAnalyzer(conn, sql, pos);
+    }
     else if ("SHOW".equalsIgnoreCase(verb) || "SET".equalsIgnoreCase(verb) || "RESET".equalsIgnoreCase(verb))
     {
       if (DBID.fromConnection(conn).isAny(DBID.Postgres, DBID.Greenplum))
