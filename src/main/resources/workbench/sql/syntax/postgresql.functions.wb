@@ -87,6 +87,7 @@ json_build_array
 json_build_object
 json_each
 json_each_text
+json_exists
 json_extract_path
 json_extract_path_text
 json_object
@@ -94,11 +95,14 @@ json_object_agg
 json_object_keys
 json_populate_record
 json_populate_recordset
+json_query
 json_strip_nulls
+json_table
 json_to_record
 json_to_recordset
 json_to_tsvector
 json_typeof
+json_value
 jsonb_agg
 jsonb_array_elements
 jsonb_array_elements_text
@@ -175,6 +179,7 @@ pg_client_encoding
 pg_column_size
 pg_current_wal_lsn
 pg_database_size
+pg_get_expr
 pg_get_serial_sequence
 pg_indexes_size
 pg_ls_waldir
@@ -202,11 +207,15 @@ quote_nullable
 radians
 random
 rank
+regexp_count
+regexp_instr
+regexp_like
 regexp_match
 regexp_matches
 regexp_replace
 regexp_split_to_array
 regexp_split_to_table
+regexp_substr
 regr_avgx
 regr_avgy
 regr_count
