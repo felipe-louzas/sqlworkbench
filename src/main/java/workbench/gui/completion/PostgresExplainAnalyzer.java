@@ -58,8 +58,7 @@ public class PostgresExplainAnalyzer
   {
     String explain = getExplainSql();
     Set<String> usedOptions = CollectionUtil.caseInsensitiveSet();
-    boolean isV10 = JdbcUtils.hasMinimumServerVersion(dbConnection, "10");
-    Map<String, List<String>> options90 = get90Options(isV10);
+    Map<String, List<String>> allOptions = getOptions(dbConnection);
 
     int analyzePosition = -1;
     int verbosePosition = -1;
@@ -75,7 +74,7 @@ public class PostgresExplainAnalyzer
     {
       if (use90Options)
       {
-        if (options90.containsKey(t.getContents()))
+        if (allOptions.containsKey(t.getContents()))
         {
           usedOptions.add(t.getContents());
         }
@@ -106,21 +105,21 @@ public class PostgresExplainAnalyzer
     {
       if (usedOptions.isEmpty())
       {
-        elements = new ArrayList<>(options90.keySet());
+        elements = new ArrayList<>(allOptions.keySet());
         context = CONTEXT_SYNTAX_COMPLETION;
       }
       else
       {
         String word = currentWord;
-        if (options90.containsKey(word))
+        if (allOptions.containsKey(word))
         {
-          elements = options90.get(word);
+          elements = allOptions.get(word);
           context = CONTEXT_STATEMENT_PARAMETER;
         }
         else
         {
           elements = CollectionUtil.arrayList();
-          for (String option : options90.keySet())
+          for (String option : allOptions.keySet())
           {
             if (!usedOptions.contains(option))
             {
@@ -153,7 +152,7 @@ public class PostgresExplainAnalyzer
     }
   }
 
-  private Map<String, List<String>> get90Options(boolean isV10)
+  private Map<String, List<String>> getOptions(WbConnection conn)
   {
     Map<String, List<String>> options = new TreeMap<>(CaseInsensitiveComparator.INSTANCE);
     List<String> booleanValues = CollectionUtil.arrayList("true", "false");
@@ -163,9 +162,26 @@ public class PostgresExplainAnalyzer
     options.put("buffers", booleanValues);
     options.put("format", CollectionUtil.arrayList("text", "xml", "json", "yaml"));
     options.put("timing", booleanValues);
-    if (isV10)
+    if (JdbcUtils.hasMinimumServerVersion(conn, "10"))
     {
       options.put("summary", booleanValues);
+    }
+    if (JdbcUtils.hasMinimumServerVersion(conn, "11"))
+    {
+      options.put("settings", booleanValues);
+    }
+    if (JdbcUtils.hasMinimumServerVersion(conn, "13"))
+    {
+      options.put("wal", booleanValues);
+    }
+    if (JdbcUtils.hasMinimumServerVersion(conn, "16"))
+    {
+      options.put("generic_plan", booleanValues);
+    }
+    if (JdbcUtils.hasMinimumServerVersion(conn, "17"))
+    {
+      options.put("serialize", List.of("none", "text", "binary"));
+      options.put("memory", booleanValues);
     }
     return options;
   }

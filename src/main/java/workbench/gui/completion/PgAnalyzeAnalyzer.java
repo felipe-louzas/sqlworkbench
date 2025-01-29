@@ -42,18 +42,18 @@ import static workbench.gui.completion.BaseAnalyzer.*;
 public class PgAnalyzeAnalyzer
   extends BaseAnalyzer
 {
-  private final Set<String> options = CollectionUtil.caseInsensitiveSet("VERBOSE");
+  private final Set<String> options = CollectionUtil.caseInsensitiveSet("verbose");
 
   public PgAnalyzeAnalyzer(WbConnection conn, String statement, int cursorPos)
   {
     super(conn, statement, cursorPos);
     if (JdbcUtils.hasMinimumServerVersion(conn, "12.0"))
     {
-      options.add("SKIP_LOCKED");
+      options.add("skip_locked");
     }
     if (JdbcUtils.hasMinimumServerVersion(conn, "16.0"))
     {
-      options.add("BUFFER_USAGE_LIMIT ");
+      options.add("buffer_usage_limit ");
     }
   }
 

@@ -42,35 +42,35 @@ import static workbench.gui.completion.BaseAnalyzer.*;
 public class PgVacuumAnalyzer
   extends BaseAnalyzer
 {
-  private final Set<String> options = CollectionUtil.caseInsensitiveSet("FULL", "FREEZE", "VERBOSE", "ANALYZE");
+  private final Set<String> options = CollectionUtil.caseInsensitiveSet("full", "freeze", "verbose", "analyze");
 
   public PgVacuumAnalyzer(WbConnection conn, String statement, int cursorPos)
   {
     super(conn, statement, cursorPos);
     if (JdbcUtils.hasMinimumServerVersion(conn, "11.0"))
     {
-      options.add("DISABLE_PAGE_SKIPPING");
+      options.add("disable_page_skipping");
     }
     if (JdbcUtils.hasMinimumServerVersion(conn, "12.0"))
     {
-      options.add("SKIP_LOCKED");
-      options.add("INDEX_CLEANUP");
-      options.add("TRUNCATE");
+      options.add("skip_locked");
+      options.add("index_cleanup");
+      options.add("truncate");
     }
     if (JdbcUtils.hasMinimumServerVersion(conn, "13.0"))
     {
-      options.add("PARALLEL");
+      options.add("parallel");
     }
     if (JdbcUtils.hasMinimumServerVersion(conn, "14.0"))
     {
-      options.add("PROCESS_TOAST");
+      options.add("process_toast");
     }
     if (JdbcUtils.hasMinimumServerVersion(conn, "16.0"))
     {
-      options.add("PROCESS_MAIN");
-      options.add("SKIP_DATABASE_STATS");
-      options.add("ONLY_DATABASE_STATS");
-      options.add("BUFFER_USAGE_LIMIT");
+      options.add("process_main");
+      options.add("skip_database_stats");
+      options.add("only_database_stats");
+      options.add("buffer_usage_limit");
     }
   }
 
