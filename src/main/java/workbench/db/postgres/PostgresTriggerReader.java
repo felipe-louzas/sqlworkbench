@@ -73,7 +73,6 @@ public class PostgresTriggerReader
     return result;
   }
 
-
   @Override
   public String getTriggerSource(String triggerCatalog, String triggerSchema, String triggerName, TableIdentifier triggerTable, String trgComment, boolean includeDependencies)
     throws SQLException
@@ -185,8 +184,10 @@ public class PostgresTriggerReader
       "  JOIN pg_catalog.pg_proc proc ON proc.oid = trg.tgfoid \n" +
       "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
       "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
-      "WHERE trg.tgname = ? \n" +
-      "  AND tblsch.nspname = ? ";
+      "WHERE trgsch.nspname = ? \n" +
+      "  AND trg.tgname = ? \n" +
+      "  AND tblsch.nspname = ? \n" +
+      "  AND tbl.relname = ? ";
 
     final CallerInfo ci = new CallerInfo(){};
     LogMgr.logMetadataSql(ci, "dependent trigger source", sql, triggerName, triggerTable.getSchema());
@@ -203,8 +204,10 @@ public class PostgresTriggerReader
       sp = dbConnection.setSavepoint();
 
       stmt = dbConnection.getSqlConnection().prepareStatement(sql);
-      stmt.setString(1, triggerName);
-      stmt.setString(2, triggerTable.getSchema());
+      stmt.setString(1, triggerSchema);
+      stmt.setString(2, triggerName);
+      stmt.setString(3, triggerTable.getRawSchema());
+      stmt.setString(4, triggerTable.getRawTableName());
       rs = stmt.executeQuery();
       if (rs.next())
       {

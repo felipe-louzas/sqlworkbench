@@ -37,6 +37,7 @@ import workbench.db.JdbcUtils;
 import workbench.db.ProcedureDefinition;
 import workbench.db.SequenceDefinition;
 import workbench.db.TableIdentifier;
+import workbench.db.TriggerDefinition;
 import workbench.db.WbConnection;
 import workbench.db.dependency.DependencyReader;
 
@@ -91,7 +92,7 @@ public class PostgresDependencyReader
     "where (vtu.table_schema, vtu.table_name) = (?, ?) \n" +
     "order by vtu.view_schema, vtu.view_name";
 
-  private String typesUsedByFunction =
+  private final String typesUsedByFunction =
     "-- SQL Workbench/J \n" +
     "select distinct ts.nspname as type_schema, typ.typname as type_name, 'TYPE', obj_description(typ.oid) as remarks \n" +
     "from pg_catalog.pg_proc c \n" +
@@ -188,8 +189,11 @@ public class PostgresDependencyReader
     "  JOIN pg_catalog.pg_proc p ON p.oid = trg.tgfoid \n" +
     "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = p.pronamespace \n" +
     "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
-    "WHERE tblsch.nspname =  ? \n" +
-    "  AND trg.tgname = ? ";
+    "WHERE trgsch.nspname = ? \n" +
+    "  AND trg.tgname = ? \n" +
+    "  AND tblsch.nspname = ? \n" +
+    "  AND tbl.relname = ?";
+
 
   private final String triggerTable =
     "-- SQL Workbench/J \n" +
@@ -200,7 +204,9 @@ public class PostgresDependencyReader
     "  JOIN pg_catalog.pg_namespace trgsch ON trgsch.oid = proc.pronamespace \n" +
     "  JOIN pg_catalog.pg_namespace tblsch ON tblsch.oid = tbl.relnamespace \n" +
     "WHERE tblsch.nspname =  ? \n" +
-    "  AND trg.tgname = ? ";
+    "  AND trg.tgname = ? \n" +
+    "  AND tblsch.nspname = ? \n" +
+    "  AND tbl.relname = ?";
 
   private final String triggersUsingFunction =
     "-- SQL Workbench/J \n" +
@@ -385,6 +391,12 @@ public class PostgresDependencyReader
       pstmt = connection.getSqlConnection().prepareStatement(sql);
       pstmt.setString(1, base.getSchema());
       pstmt.setString(2, base.getObjectName());
+      if (base instanceof TriggerDefinition)
+      {
+        TableIdentifier tbl = ((TriggerDefinition)base).getRelatedTable();
+        pstmt.setString(3, tbl.getRawSchema());
+        pstmt.setString(4, tbl.getRawTableName());
+      }
 
       rs = pstmt.executeQuery();
       while (rs.next())

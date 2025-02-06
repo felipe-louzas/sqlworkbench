@@ -39,7 +39,6 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -186,12 +185,11 @@ public class ToolTipRenderer
 
   public static Insets getDefaultInsets()
   {
-    UIDefaults def = UIManager.getDefaults();
-    // This used by FlatLaf
-    Insets result = def.getInsets("Table.cellMargins");
+    // This is used by FlatLaf
+    Insets result = UIManager.getDefaults().getInsets("Table.cellMargins");
     if (result != null)
     {
-      return result;
+      return WbSwingUtilities.cloneInsets(result);
     }
 
     String prop = Settings.getInstance().getProperty("workbench.gui.renderer.insets", null);

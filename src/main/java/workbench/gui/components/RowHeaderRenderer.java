@@ -42,6 +42,7 @@ import workbench.log.LogMgr;
 import workbench.resource.GuiSettings;
 import workbench.resource.Settings;
 
+import workbench.gui.WbSwingUtilities;
 import workbench.gui.renderer.ToolTipRenderer;
 
 import workbench.util.NumberStringCache;
@@ -70,12 +71,12 @@ public class RowHeaderRenderer
     if (lafInsets == null)
     {
       adjustInsets = true;
-      insets = ToolTipRenderer.getDefaultInsets();
+      insets = WbSwingUtilities.cloneInsets(ToolTipRenderer.getDefaultInsets());
     }
     else
     {
       adjustInsets = false;
-      insets = lafInsets;
+      insets = WbSwingUtilities.cloneInsets(lafInsets);
     }
 
     JTableHeader header = table.getTableHeader();

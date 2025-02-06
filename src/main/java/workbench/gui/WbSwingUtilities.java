@@ -143,6 +143,12 @@ public class WbSwingUtilities
     return new Insets(0, 0, 0, 0);
   }
 
+  public static Insets cloneInsets(Insets source)
+  {
+    if (source == null) return null;
+    return new Insets(source.top, source.left, source.bottom, source.right);
+  }
+
   public static boolean containsComponent(JComponent container, JComponent toCheck)
   {
     Component[] children = container.getComponents();
@@ -1845,7 +1851,7 @@ public class WbSwingUtilities
     int offset = icon.getIconWidth() + renderer.getIconTextGap();
     return new Point(r.x + offset, r.y + r.height);
   }
-  
+
   public static void makeBold(JComponent comp)
   {
     if (comp == null) return;
