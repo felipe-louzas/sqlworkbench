@@ -22,6 +22,7 @@ package workbench.util;
 
 import java.awt.Window;
 import java.io.File;
+import java.util.Arrays;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -50,17 +51,17 @@ public class WorkspaceSelector {
     this.parentWindow = parentWindow;
   }
 
-  public String showSaveDialog()
+  public String showSaveDialog(boolean defaultToDirectory)
   {
-    return getWorkspaceFilename(true);
+    return getWorkspaceFilename(true, defaultToDirectory);
   }
 
-  public String showLoadDialog()
+  public String showLoadDialog(boolean defaultToDirectory)
   {
-    return getWorkspaceFilename(false);
+    return getWorkspaceFilename(false, defaultToDirectory);
   }
 
-  private String getWorkspaceFilename(boolean toSave)
+  private String getWorkspaceFilename(boolean toSave, boolean defaultToDirectory)
   {
     try
     {
@@ -68,8 +69,14 @@ public class WorkspaceSelector {
       WbFileChooser fc = new WbFileChooser(lastDir);
 
       FileFilter wkspFF = ExtensionFileFilter.getWorkspaceFileFilter();
+      FileFilter dirFF = getDirectoryFileFilter(toSave);
       fc.removeChoosableFileFilter(fc.getFileFilter()); // remove the default "All files" filter
       fc.addChoosableFileFilter(wkspFF);
+      fc.addChoosableFileFilter(dirFF);
+      if (defaultToDirectory)
+      {
+        fc.setFileFilter(dirFF);
+      }
       fc.setMultiSelectionEnabled(false);
       fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
@@ -119,21 +126,16 @@ public class WorkspaceSelector {
             }
           }
 
+          filename = selected.getAbsolutePath();
           FileFilter ff = fc.getFileFilter();
           if (ff == wkspFF)
           {
-            filename = selected.getAbsolutePath();
-
-            String ext = ExtensionFileFilter.getExtension(selected);
+             String ext = ExtensionFileFilter.getExtension(selected);
             if (StringUtil.isEmpty(ext) && !selected.isDirectory())
             {
               if (!filename.endsWith(".")) filename += ".";
               filename += ExtensionFileFilter.WORKSPACE_EXT;
             }
-          }
-          else
-          {
-            filename = selected.getAbsolutePath();
           }
           lastDir = selected.getParentFile().getAbsolutePath();
           Settings.getInstance().setLastWorkspaceDir(lastDir);
@@ -186,7 +188,43 @@ public class WorkspaceSelector {
     {
       return true;
     }
-    File[] files = selected.listFiles();
-    return (files == null || files.length == 0);
+    return isEmpty(selected);
   }
+
+  private boolean isEmpty(File dir)
+  {
+    if (dir == null || !dir.isDirectory()) return false;
+
+    File[] files = dir.listFiles();
+    if (files == null || files.length == 0) {
+      return true;
+    }
+    long numDirs = Arrays.stream(files).filter(f -> f.isDirectory()).count();
+    return numDirs == files.length;
+  }
+
+  private FileFilter getDirectoryFileFilter(final boolean onlyEmpty)
+  {
+    return new FileFilter()
+    {
+      @Override
+      public boolean accept(File f)
+      {
+        if (f == null || !f.isDirectory()) return false;
+        if (onlyEmpty)
+        {
+          return isEmpty(f);
+        }
+        return isValidWorkspace(f);
+      }
+
+      @Override
+      public String getDescription()
+      {
+        return ResourceMgr.getString("TxtFileFilterDir");
+      }
+    };
+  }
+
+
 }

@@ -5,6 +5,7 @@
   <!-- build number must be set to -1 for development builds -->
 
   <release build="-1" date="2024-10-13">
+    <entry dev-build="4" type="enh">Build 132 will be the last build to support Java 11. The next build will require Java 21</entry>
     <entry dev-build="3" type="enh">Bundles for MacOS are now available again (thanks to Henrik for his contribution)</entry>
     <entry dev-build="3" type="enh">WbVarList (and other SQL Workbench/J commands) now honors the @WbResult annotation.</entry>
     <entry dev-build="3" type="enh">Improved handling of drag &amp; drop of files into the editor.</entry>
@@ -13,6 +14,7 @@
     <entry dev-build="1" type="enh">"Double click and drag" now extends the selection by words</entry>
     <entry dev-build="1" type="enh">It's now possible to show a list of all variables used in the current editor</entry>
     <entry dev-build="1" type="enh">For DuckDB, macros are now shown in the DbExplorer and DbTree.</entry>
+    <entry dev-build="4" type="fix">For Postgres, if multiple triggers with the same name were attached to different tables, the trigger source would not be displayed correctly.</entry>
     <entry dev-build="4" type="fix">For Sybase, disable the use of getSchema() through configuration</entry>
     <entry dev-build="4" type="fix">For SQL Server, the generated code for sp_addextendedproperty was not correct when object names needed quoting</entry>
     <entry dev-build="4" type="fix">For PostgreSQL, the source of partitions was not generated correctly</entry>

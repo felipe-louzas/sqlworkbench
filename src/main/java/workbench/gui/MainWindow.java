@@ -151,6 +151,7 @@ import workbench.gui.actions.workspace.SaveWorkspaceAction;
 import workbench.gui.bookmarks.BookmarkManager;
 import workbench.gui.bookmarks.NamedScriptLocation;
 import workbench.gui.components.ConnectionSelector;
+import workbench.gui.components.ExtensionFileFilter;
 import workbench.gui.components.MenuScroller;
 import workbench.gui.components.RunningJobIndicator;
 import workbench.gui.components.TabCloser;
@@ -2204,7 +2205,7 @@ public class MainWindow
             return true;
           case LOAD_OTHER:
             WorkspaceSelector selector = new WorkspaceSelector(this);
-            String fname = selector.showLoadDialog();
+            String fname = selector.showLoadDialog(isCurrentWorkpaceDirectory());
             realFilename = getRealWorkspaceFilename(fname);
         }
       }
@@ -2456,7 +2457,7 @@ public class MainWindow
       {
         case LOAD_OTHER:
           WorkspaceSelector selector = new WorkspaceSelector(this);
-          workspaceFilename = selector.showLoadDialog();
+          workspaceFilename = selector.showLoadDialog(realFilename.endsWith(ExtensionFileFilter.WORKSPACE_EXT));
           currentProfile.setWorkspaceFile(workspaceFilename);
           break;
         case IGNORE:
@@ -3458,7 +3459,7 @@ public class MainWindow
   {
     this.saveWorkspace();
     WorkspaceSelector selector = new WorkspaceSelector(this);
-    String filename = selector.showLoadDialog();
+    String filename = selector.showLoadDialog(isCurrentWorkpaceDirectory());
     if (filename == null) return;
     boolean loaded = this.loadWorkspace(filename, true);
     if (loaded && Settings.getInstance().getBoolProperty("workbench.gui.workspace.load.askassign", true))
@@ -3612,6 +3613,12 @@ public class MainWindow
     }
   }
 
+  private boolean isCurrentWorkpaceDirectory()
+  {
+    if (this.currentWorkspace == null) return false;
+    return this.currentWorkspace.isDirectoryWorkspace();
+  }
+
   /**
    * Saves the current SQL history to a workspace with the given filename
    * If filename == null, a SaveAs dialog will be displayed.
@@ -3630,7 +3637,7 @@ public class MainWindow
     {
       interactive = true;
       WorkspaceSelector selector = new WorkspaceSelector(this);
-      filename = selector.showLoadDialog();
+      filename = selector.showSaveDialog(isCurrentWorkpaceDirectory());
       if (filename == null) return true;
     }
 

@@ -27,7 +27,6 @@ import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -1510,7 +1509,7 @@ public class ConnectionEditorPanel
   public void selectWorkspace()
   {
     WorkspaceSelector selector = new WorkspaceSelector(SwingUtilities.getWindowAncestor(this));
-    String filename = selector.showLoadDialog();
+    String filename = selector.showLoadDialog(false);
     if (filename == null)
     {
       return;

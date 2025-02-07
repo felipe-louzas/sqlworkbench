@@ -168,7 +168,7 @@ public class WorkspaceBackupListPanel
     if (e.getSource() == selectWorkspaceButton)
     {
       WorkspaceSelector selector = new WorkspaceSelector(SwingUtilities.getWindowAncestor(this));
-      String filename = selector.showLoadDialog();
+      String filename = selector.showLoadDialog(workspaceFile != null && workspaceFile.isDirectory());
       if (filename != null)
       {
         setWorkspacefile(new File(filename));

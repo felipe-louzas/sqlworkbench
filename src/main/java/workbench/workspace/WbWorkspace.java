@@ -157,6 +157,11 @@ public class WbWorkspace
     return false;
   }
 
+  public boolean isDirectoryWorkspace()
+  {
+    return persistence instanceof DirectoryWorkspacePersistence;
+  }
+
   public void setFilename(String archiveName)
   {
     if (archiveName == null) throw new NullPointerException("Filename cannot be null");
