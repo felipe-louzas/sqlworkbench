@@ -22,7 +22,6 @@ package workbench.util;
 
 import java.awt.Window;
 import java.io.File;
-import java.util.Arrays;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -170,25 +169,21 @@ public class WorkspaceSelector {
 
   private YesNoCancel confirmDirectorySelection(File selected)
   {
-    String msg = ResourceMgr.getFormattedString("MsgWkspBckDirNotEmpty", selected.getAbsolutePath());
+    String msg = ResourceMgr.getFormattedString("MsgWkspDirNotEmpty", selected.getAbsolutePath());
     return WbSwingUtilities.getYesNoCancel(parentWindow, msg);
   }
 
   private boolean isValidWorkspace(File selected)
   {
     if (selected == null) return false;
-    if (selected.isFile() || !selected.exists())
+    if (selected.isFile() || !selected.exists() || isEmpty(selected))
     {
       return true;
     }
 
     // Only allow directories that are empty or already contain a workspace
     File props = new File(selected, WbWorkspace.TABINFO_FILENAME);
-    if (props.exists())
-    {
-      return true;
-    }
-    return isEmpty(selected);
+    return props.exists();
   }
 
   private boolean isEmpty(File dir)
@@ -196,11 +191,7 @@ public class WorkspaceSelector {
     if (dir == null || !dir.isDirectory()) return false;
 
     File[] files = dir.listFiles();
-    if (files == null || files.length == 0) {
-      return true;
-    }
-    long numDirs = Arrays.stream(files).filter(f -> f.isDirectory()).count();
-    return numDirs == files.length;
+    return (files == null || files.length == 0);
   }
 
   private FileFilter getDirectoryFileFilter(final boolean onlyEmpty)
@@ -210,12 +201,7 @@ public class WorkspaceSelector {
       @Override
       public boolean accept(File f)
       {
-        if (f == null || !f.isDirectory()) return false;
-        if (onlyEmpty)
-        {
-          return isEmpty(f);
-        }
-        return isValidWorkspace(f);
+        return (f != null && f.isDirectory());
       }
 
       @Override
