@@ -2,7 +2,7 @@
 
 case "$(uname -s)" in
   Darwin)
-    url="https://api.adoptium.net/v3/binary/latest/17/ga/mac/x64/jdk/hotspot/normal/adoptium?project=jdk"
+    url="https://api.adoptium.net/v3/binary/latest/21/ga/mac/x64/jre/hotspot/normal/eclipse"
     ;;
   Linux*)
     url="https://www.sql-workbench.eu/jre/jre_linux64.tar.gz"
@@ -13,9 +13,9 @@ case "$(uname -s)" in
     ;;
 esac
 
-curl --insecure -L "${url}" -o jre17.tar.gz
+curl --insecure -L "${url}" -o jre.tar.gz
 
 rm -Rf jre
 mkdir jre
 
-tar xf jre17.tar.gz --strip-components=1 --directory jre
+tar xf jre.tar.gz --strip-components=1 --directory jre

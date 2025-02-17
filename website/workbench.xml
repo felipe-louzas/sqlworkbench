@@ -351,7 +351,8 @@ WHERE id=42;</p>
 
       <h3 style="margin-top:20px">Stable release</h3>
       <p style="margin-top:15px;margin-bottom:10px">
-          SQL Workbench/J requires <b>Java 11</b> or later. Using Java 17 is recommended.
+        SQL Workbench/J requires <b>Java 11</b> or later. Build 132 is the last build to support Java 11<br/>
+        The next build will require Java 21.
       </p>
 
       <p>

@@ -1,5 +1,5 @@
 @echo off
-echo This batchfile will download a Java 17 JRE (64bit) from https://www.sql-workbench.eu
+echo This batchfile will download a Java 21 JRE (64bit) from https://www.sql-workbench.eu
 echo to be used with SQL Workbench/J
 echo.
 
@@ -23,14 +23,12 @@ setlocal
 if exist jdk* for /d %%i in (jdk*) do @echo jdkdir exists: [%%~nxi] -^> renaming to [jre] & ren "%%i" jre
 
 if Not exist jre (
-      echo Error: No JRE created in %~dp0jre! 
-	  pause 
-	  goto :eof
-	  )
-
+  echo Error: No JRE created in %~dp0jre!
+  pause
+  goto :eof
+)
 
 set zipfile=
-
 
 echo.
 echo JRE created in %~dp0jre

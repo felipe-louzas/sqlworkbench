@@ -4,7 +4,7 @@
 <history>
   <!-- build number must be set to -1 for development builds -->
 
-  <release build="-1" date="2024-10-13">
+  <release build="132" date="2025-02-17">
     <entry dev-build="4" type="enh">Build 132 will be the last build to support Java 11. The next build will require Java 21</entry>
     <entry dev-build="3" type="enh">Bundles for MacOS are now available again (thanks to Henrik for his contribution)</entry>
     <entry dev-build="3" type="enh">WbVarList (and other SQL Workbench/J commands) now honors the @WbResult annotation.</entry>

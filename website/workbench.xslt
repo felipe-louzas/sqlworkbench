@@ -73,7 +73,7 @@
       </ul>
 
       <div id="noafd">
-        <a target="_blank" href="https://afdnee.de/">
+        <a target="_blank" href="https://afd-verbot.jetzt">
           <img border="0" width="190" height="190" style="margin-left:15px;margin-top:30px;margin-bottom:10px" src="keine_alternative.png" alt="Hass ist keine Alternative!"/>
         </a>
       </div>
@@ -389,20 +389,20 @@
 
   <xsl:template match="no-nazis">
     <div style="margin-bottom:1em;line-height:120%;border:2px;border-style:solid;border-color:red;padding:0.5em">
-    If you are a member or voter of the following political parties or agree with their despicable and inhumane political views,
-    <br/>you are <b>NOT WELCOME</b> to use my software.
+      If you agree with the despicable politics of the following political parties and their contempt for human rights,
+      you are <b>NOT WELCOME</b> to use my software.
     <div class="row">
         <div class="column" >
           <ul class="compact" >
             <li>AfD (Germany)</li>
             <li>CDU aka "AfD mit Substanz" (Germany)</li>
+            <li>CSU aka "Steigbügelhalter" (Germany, Bavaria)</li>
             <li>Werteunion (Germany)</li>
             <li>Die Heimat (Germany)</li>
             <li>Die Basis (Germany)</li>
             <li>Freie Wähler (Germany)</li>
             <li>BündnisDeutschland (Germany)</li>
             <li>Bündnis Sahra Wagenknecht (Germany)</li>
-            <li>CSU (Germany, Bavaria)</li>
             <li>FPÖ (Austria)</li>
             <li>Prawo i Sprawiedliwość (Poland)</li>
             <li>Fidesz (Hungary)</li>
