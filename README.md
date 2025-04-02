@@ -1,6 +1,8 @@
 # SQL Workbench/J
 
-This is the public Git repository for SQL Workbench/J
+This is a partial mirror of the Git repository for SQL Workbench/J, tracking the latest release branch
+
+Official Git repository: https://codeberg.org/sql-workbench/workbench
 
 Homepage and downloads are here: http://www.sql-workbench.eu
 
